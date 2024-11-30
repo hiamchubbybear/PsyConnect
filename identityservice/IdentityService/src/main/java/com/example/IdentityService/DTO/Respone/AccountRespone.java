@@ -1,5 +1,6 @@
 package com.example.IdentityService.DTO.Respone;
 
+import com.example.IdentityService.Entity.RoleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,4 +14,5 @@ public class AccountRespone {
     String username;
     String password;
     String email;
+    RoleEntity role;
 }
