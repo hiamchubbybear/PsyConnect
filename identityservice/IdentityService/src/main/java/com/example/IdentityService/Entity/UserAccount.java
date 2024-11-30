@@ -1,12 +1,9 @@
 package com.example.IdentityService.Entity;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jdk.jfr.Enabled;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.Set;
@@ -26,7 +23,6 @@ public class UserAccount {
     private String password;
     @Property("email")
     private String email;
-
-//    @Relationship(type = "ACTED_IN",direction = Relationship.Direction.INCOMING  )
-//    Set<Role> role;
+    @Relationship(type = "HAS_ROLE",direction = Relationship.Direction.OUTGOING  )
+    RoleEntity role;
 }

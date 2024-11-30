@@ -1,5 +1,6 @@
 package com.example.IdentityService.Entity;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -13,10 +14,11 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role {
-    @Id
-    String role_Id;
-    @Property
+public class RoleEntity {
+    @Id @Property("roleId")
+    String roleId;
+    @Property("permisstion")
     String permission;
-
+    @Property("description")
+    String description;
 }

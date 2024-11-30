@@ -2,6 +2,7 @@ package com.example.IdentityService.Service;
 
 import com.example.IdentityService.DTO.Request.AccountRequest;
 import com.example.IdentityService.DTO.Respone.AccountRespone;
+import com.example.IdentityService.Entity.UserAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class UserController {
     @Autowired
     public  UserAccountService userAccountService;
     @PostMapping("/create")
-    public ResponseEntity<AccountRespone> register(@RequestBody AccountRequest accountRequest) {
+    public ResponseEntity<UserAccount> register(@RequestBody AccountRequest accountRequest) {
         var  respone  = userAccountService.createAccount(accountRequest);
         if(respone!=null) {
             return ResponseEntity.ok(respone);
