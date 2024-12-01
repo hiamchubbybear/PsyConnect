@@ -40,7 +40,7 @@ public class UserAccountService {
         account.setPassword(
                 new BCryptPasswordEncoder().encode(request.getPassword()));
         account.setId(UUID.randomUUID());
-        account.setRole(roleRepository.findById("002").get());
+        account.setRole(roleRepository.findById(request.getRole()).get());
         accountRepository.save(account);
         return account;
     }
