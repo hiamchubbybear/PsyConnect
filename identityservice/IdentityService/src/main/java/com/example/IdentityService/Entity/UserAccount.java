@@ -1,5 +1,6 @@
 package com.example.IdentityService.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +25,6 @@ public class UserAccount {
     @Property("email")
     private String email;
     @Relationship(type = "HAS_ROLE",direction = Relationship.Direction.OUTGOING  )
+    @JsonIgnore
     RoleEntity role;
 }

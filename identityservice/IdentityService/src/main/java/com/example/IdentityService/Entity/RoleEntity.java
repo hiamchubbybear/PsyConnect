@@ -1,13 +1,10 @@
 package com.example.IdentityService.Entity;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
+import org.springframework.data.neo4j.core.schema.*;
 
-import java.util.UUID;
+import java.util.List;
+import java.util.Set;
 
 @Node("role")
 @Getter
@@ -17,8 +14,8 @@ import java.util.UUID;
 public class RoleEntity {
     @Id @Property("roleId")
     String roleId;
-    @Property("permisstion")
-    String permission;
+    @Relationship(type = "HAS_PERMISSION" , direction = Relationship.Direction.OUTGOING)
+    List<Permission> permission;
     @Property("description")
     String description;
 }

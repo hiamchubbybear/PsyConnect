@@ -1,13 +1,26 @@
 package com.example.IdentityService.Enum;
 
-public enum RoleEnum {
-    ROLE_ADMIN("001", "Permit All" , "Admin has all permission to do "),
-    ROLE_USER("002", "User Permission" , "User has user permission to do "),
-    ROLE_THERAPIST("003", "Therapist Permission" , "Therapist has therapist permission to do ");
-    String id ;
-    String permission;
-    String description;
+import com.example.IdentityService.Entity.Permission;
 
+import java.util.Arrays;
+import java.util.List;
+
+public enum RoleEnum {
+        ADMIN("Admin","Admin default permission", Arrays.asList(PermissionEnum.values())),
+        THERAPIST("Therapist","Therapist default permission", Arrays.asList(
+                PermissionEnum.THERAPIST_CREATE_POST,
+                PermissionEnum.THERAPIST_EDIT_POST,
+                PermissionEnum.THERAPIST_RESPOND_TO_MESSAGE,
+                PermissionEnum.THERAPIST_MANAGE_APPOINTMENTS
+        )),
+        USER("Client","Client default permission", Arrays.asList(
+                PermissionEnum.USER_VIEW_POSTS,
+                PermissionEnum.USER_SEND_MESSAGE,
+                PermissionEnum.USER_BOOK_APPOINTMENT
+        ));
+        private String id;
+        private final List<PermissionEnum> permissions;
+        private final String description;
     public String getId() {
         return id;
     }
@@ -16,25 +29,17 @@ public enum RoleEnum {
         this.id = id;
     }
 
-    public String getPermission() {
-        return permission;
-    }
-
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
-
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    RoleEnum(String id, String description , List<PermissionEnum> permissions) {
+        this.id = id;
+        this.permissions = permissions;
         this.description = description;
     }
 
-    RoleEnum(String id, String permission, String description) {
-        this.id = id;
-        this.permission = permission;
-        this.description = description;
+    public List<PermissionEnum> getPermissions() {
+            return permissions;
+        }
     }
-}

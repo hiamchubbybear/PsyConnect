@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RoleRepository extends Neo4jRepository<RoleEntity,String> {
     boolean existsByRoleId(String id);
+    RoleEntity findByRoleId(String roleId);
 }
