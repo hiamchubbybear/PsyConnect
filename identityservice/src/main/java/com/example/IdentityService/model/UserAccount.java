@@ -21,6 +21,7 @@ public class UserAccount {
     private String username;
     private String password;
     private String email;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
     Set<RoleEntity> role;
 }

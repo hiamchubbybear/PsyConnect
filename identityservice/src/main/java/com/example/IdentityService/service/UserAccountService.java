@@ -29,21 +29,21 @@ import java.util.UUID;
 public class UserAccountService {
     private static final Logger log = LoggerFactory.getLogger(UserAccountService.class);
     RoleRepository roleRepository;
-     UserAccountRepository userAccountRepository;
-     ProfileRepository profileRepository;
-     UserAccountMapper mapper;
-     UserAccountRepository accountRepository;
-     PasswordEncodingService passwordEncodingService;
+    UserAccountRepository userAccountRepository;
+    ProfileRepository profileRepository;
+    UserAccountMapper mapper;
+    UserAccountRepository accountRepository;
+    PasswordEncodingService passwordEncodingService;
 
-    public UserAccountCreationRespone createAccount(UserAccountCreationRequest request) {
-        if (userAccountRepository.existsByUsername(request.getUsername()))
+    public UserAccount createAccount(UserAccountCreationRequest request) {
+        if (userAccountRepository.existsByUsername(request.getUsername())
+                || userAccountRepository.existsByEmail(request.getEmail()))
             throw new IllegalArgumentException("User existed");
-
         Set<RoleEntity> roles = new HashSet<>();
         roleRepository.findById(request.getRole()).ifPresentOrElse(roles::add, () -> {
             throw new IllegalArgumentException("Role not exist");
         });
-
+        roles.stream().forEach(roleEntity -> log.info("Role {}", roleEntity));
         UserAccount account = UserAccount.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -59,7 +59,7 @@ public class UserAccountService {
         var profileResponseRaw = profileRepository.createProfile(temp);
         UserProfileCreationRequest profileResponse = objectMapper.convertValue(profileResponseRaw, UserProfileCreationRequest.class);
         var res = mapper.toUserAccountRespone(profileResponse);
-        return res;
+        return savedAccount;
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.IdentityService.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,10 +13,12 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class RoleEntity {
     @Id
     private String roleId;
 
+    @JsonIgnore
     @ManyToMany( fetch = FetchType.LAZY)
     @JoinTable(
             name = "role_permission",
@@ -23,7 +26,8 @@ public class RoleEntity {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private List<Permission> permissions;
-    @ManyToMany()
+    @JsonIgnore
+    @ManyToMany
     private Set<UserAccount> userAccount;
     private String name;
 }
