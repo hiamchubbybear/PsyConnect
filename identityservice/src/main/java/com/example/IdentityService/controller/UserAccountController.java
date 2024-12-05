@@ -1,7 +1,9 @@
-package com.example.IdentityService.service;
+package com.example.IdentityService.controller;
 
-import com.example.IdentityService.dto.request.AccountCreationRequest;
+import com.example.IdentityService.dto.request.UserAccountCreationRequest;
+import com.example.IdentityService.dto.respone.UserAccountCreationRespone;
 import com.example.IdentityService.model.UserAccount;
+import com.example.IdentityService.service.UserAccountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,15 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/account")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserController {
+public class UserAccountController {
     UserAccountService userAccountService;
 
     @PostMapping("/create")
-    public ResponseEntity<UserAccount> register(@RequestBody AccountCreationRequest accountRequest) {
+    public ResponseEntity<UserAccountCreationRespone> register(@RequestBody UserAccountCreationRequest accountRequest) {
         var respone = userAccountService.createAccount(accountRequest);
+
         if (respone != null) {
             return ResponseEntity.ok(respone);
         } else {

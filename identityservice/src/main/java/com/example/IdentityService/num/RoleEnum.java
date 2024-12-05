@@ -1,15 +1,8 @@
 package com.example.IdentityService.num;
 
-import com.fasterxml.jackson.databind.annotation.EnumNaming;
-import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public enum RoleEnum {
     ADMIN("Admin", "Admin default permission", Arrays.asList(PermissionEnum.values())),
