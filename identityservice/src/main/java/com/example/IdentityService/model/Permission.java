@@ -1,5 +1,6 @@
 package com.example.IdentityService.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,5 +21,6 @@ public class Permission {
     private String name;
     private String description;
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<RoleEntity> roles;
 }
