@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PasswordEncodingService {
-    String SIGNER_KEY = "Jh6OEn0FD9bsClIQBqVU9889ElikEJnC";
+    String SIGNER_KEY = "ZW5jb2RlX3Bhc3NrZXlfYW5fbG9uX2E=";
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder(10 );

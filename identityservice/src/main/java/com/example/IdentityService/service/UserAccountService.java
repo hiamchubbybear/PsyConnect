@@ -1,42 +1,66 @@
 package com.example.IdentityService.service;
 
-import com.example.IdentityService.dto.request.AccountCreationRequest;
+import com.example.IdentityService.dto.request.UserAccountCreationRequest;
+import com.example.IdentityService.dto.request.UserProfileCreationRequest;
+import com.example.IdentityService.dto.respone.UserAccountCreationRespone;
+import com.example.IdentityService.model.RoleEntity;
 import com.example.IdentityService.model.UserAccount;
-import com.example.IdentityService.Mapper.AccountMapper;
+import com.example.IdentityService.mapper.UserAccountMapper;
 import com.example.IdentityService.repository.RoleRepository;
 import com.example.IdentityService.repository.UserAccountRepository;
+import com.example.IdentityService.repository.https.ProfileRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.experimental.FieldDefaults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserAccountService {
-    private final RoleRepository roleRepository;
-    public AccountMapper mapper;
-    public UserAccountRepository accountRepository;
-    public PasswordEncodingService passwordEncodingService;
-    @Autowired
-    public UserAccountService(AccountMapper mapper, UserAccountRepository accountRepository , PasswordEncodingService passwordEncodingService, RoleRepository roleRepository) {
-        this.mapper = mapper;
-        this.accountRepository = accountRepository;
-        this.passwordEncodingService = passwordEncodingService;
-        this.roleRepository = roleRepository;
+    private static final Logger log = LoggerFactory.getLogger(UserAccountService.class);
+    RoleRepository roleRepository;
+     UserAccountRepository userAccountRepository;
+     ProfileRepository profileRepository;
+     UserAccountMapper mapper;
+     UserAccountRepository accountRepository;
+     PasswordEncodingService passwordEncodingService;
+
+    public UserAccountCreationRespone createAccount(UserAccountCreationRequest request) {
+        if (userAccountRepository.existsByUsername(request.getUsername()))
+            throw new IllegalArgumentException("User existed");
+
+        Set<RoleEntity> roles = new HashSet<>();
+        roleRepository.findById(request.getRole()).ifPresentOrElse(roles::add, () -> {
+            throw new IllegalArgumentException("Role not exist");
+        });
+
+        UserAccount account = UserAccount.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(new BCryptPasswordEncoder().encode(request.getPassword()))
+                .id(UUID.randomUUID().toString())
+                .role(roles)
+                .build();
+        var savedAccount = accountRepository.save(account);
+        log.info("Created account: {}", savedAccount);
+        UserProfileCreationRequest temp = mapper.toAccountRespone(request);
+        temp.setUserId(savedAccount.getId());
+        ObjectMapper objectMapper = new ObjectMapper();
+        var profileResponseRaw = profileRepository.createProfile(temp);
+        UserProfileCreationRequest profileResponse = objectMapper.convertValue(profileResponseRaw, UserProfileCreationRequest.class);
+        var res = mapper.toUserAccountRespone(profileResponse);
+        return res;
     }
 
-    public UserAccount createAccount(AccountCreationRequest request) {
-        UserAccount account = new UserAccount();
-        account.setUsername(request.getUsername());
-        account.setEmail(request.getEmail());
-        account.setPassword(
-                new BCryptPasswordEncoder().encode(request.getPassword()));
-        account.setId(UUID.randomUUID());
-        account.setRole(roleRepository.findById(request.getRole()).get());
-        accountRepository.save(account);
-        return account;
-    }
 
 }

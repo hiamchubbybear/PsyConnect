@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountCreationRespone {
+public class UserAccountCreationRespone {
     String username;
     String password;
     String email;

@@ -16,12 +16,9 @@ import java.util.Set;
 public class Permission {
     @Id
     private String id;
-
     @Column(nullable = false, unique = true)
     private String name;
-
     private String description;
-
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.EAGER)
     private List<RoleEntity> roles;
 }

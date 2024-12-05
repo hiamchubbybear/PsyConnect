@@ -23,7 +23,7 @@ public class RoleEntity {
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
     private List<Permission> permissions;
-    @OneToOne(mappedBy = "role")
-    private UserAccount userAccount;
+    @ManyToMany()
+    private Set<UserAccount> userAccount;
     private String name;
 }
