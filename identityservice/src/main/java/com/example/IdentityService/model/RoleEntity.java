@@ -1,11 +1,13 @@
 package com.example.IdentityService.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.List;
 import java.util.Set;
+
+import jakarta.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.*;
 
 @Entity
 @Table(name = "role")
@@ -19,15 +21,16 @@ public class RoleEntity {
     private String roleId;
 
     @JsonIgnore
-    @ManyToMany( fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "role_permission",
             joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<Permission> permissions;
+
     @JsonIgnore
     @ManyToMany
     private Set<UserAccount> userAccount;
+
     private String name;
 }

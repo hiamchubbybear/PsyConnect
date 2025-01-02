@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PasswordEncodingService {
     String SIGNER_KEY = "ZW5jb2RlX3Bhc3NrZXlfYW5fbG9uX2E=";
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder(10 );
+
+    public static String encoder(String rawPassword) {
+        return new BCryptPasswordEncoder(10).encode(rawPassword);
     }
 }

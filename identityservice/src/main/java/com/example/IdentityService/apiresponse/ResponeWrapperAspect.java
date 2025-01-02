@@ -16,13 +16,8 @@ public class ResponeWrapperAspect {
         if (result instanceof ResponseEntity) {
             ResponseEntity<?> response = (ResponseEntity<?>) result;
             return ResponseEntity.status(response.getStatusCode())
-                    .body(new ApiResponse<>(
-                            response.getStatusCode().value(),
-                            "Success",
-                            response.getBody()
-                    ));
-        }
-        else if (result instanceof ApiResponse) {
+                    .body(new ApiResponse<>(response.getStatusCode().value(), "Success", response.getBody()));
+        } else if (result instanceof ApiResponse) {
             return result;
         }
         return new ApiResponse<>(200, "Success", result);
