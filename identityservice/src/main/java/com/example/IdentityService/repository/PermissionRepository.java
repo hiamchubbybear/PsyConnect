@@ -1,8 +1,9 @@
 package com.example.IdentityService.repository;
 
-import com.example.IdentityService.model.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.example.IdentityService.model.Permission;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, String> {

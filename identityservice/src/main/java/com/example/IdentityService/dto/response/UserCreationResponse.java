@@ -1,4 +1,4 @@
-package com.example.profileservice.dto.request;
+package com.example.IdentityService.dto.response;
 
 import java.time.LocalDate;
 
@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserProfileCreationRequest {
+public class UserCreationResponse {
+    String userId;
     String firstName;
     String lastName;
     @JsonFormat(pattern = "yyyy-MM-dd")
