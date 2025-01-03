@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.example.profileservice.dto.request.UserProfileCreationRequest;
-import com.example.profileservice.dto.respone.UserProfileCreationResponse;
+import com.example.profileservice.dto.response.UserProfileCreationResponse;
 import com.example.profileservice.mapper.UserProfileMapper;
 import com.example.profileservice.model.UserProfile;
 import com.example.profileservice.repository.ProfileRepository;

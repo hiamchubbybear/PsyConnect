@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.profileservice.dto.request.UserProfileCreationRequest;
-import com.example.profileservice.dto.respone.UserProfileCreationResponse;
+import com.example.profileservice.dto.response.UserProfileCreationResponse;
 import com.example.profileservice.service.UserProfileService;
 
 import lombok.AccessLevel;

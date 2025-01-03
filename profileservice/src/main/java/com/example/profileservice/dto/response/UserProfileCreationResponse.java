@@ -1,4 +1,4 @@
-package com.example.profileservice.dto.respone;
+package com.example.profileservice.dto.response;
 
 import java.time.LocalDate;
 

@@ -3,7 +3,7 @@ package com.example.profileservice.mapper;
 import org.mapstruct.Mapper;
 
 import com.example.profileservice.dto.request.UserProfileCreationRequest;
-import com.example.profileservice.dto.respone.UserProfileCreationResponse;
+import com.example.profileservice.dto.response.UserProfileCreationResponse;
 import com.example.profileservice.model.UserProfile;
 
 @Mapper(componentModel = "spring")
