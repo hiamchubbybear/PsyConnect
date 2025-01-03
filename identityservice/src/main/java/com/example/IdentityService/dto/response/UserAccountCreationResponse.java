@@ -1,18 +1,17 @@
 package com.example.IdentityService.dto.response;
 
 import com.example.IdentityService.model.RoleEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserAccountCreationRespone {
+@Builder
+public class UserAccountCreationResponse {
     String username;
     String password;
     String email;
-    RoleEntity role;
+    String role;
 }

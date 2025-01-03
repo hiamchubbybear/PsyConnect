@@ -1,11 +1,12 @@
 package com.example.IdentityService.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.Set;
-import java.util.UUID;
+
+import jakarta.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.*;
 
 @Getter
 @Setter
@@ -18,9 +19,11 @@ public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
     private String username;
     private String password;
     private String email;
+
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     Set<RoleEntity> role;
