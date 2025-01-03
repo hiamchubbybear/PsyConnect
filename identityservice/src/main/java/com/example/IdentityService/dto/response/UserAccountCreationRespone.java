@@ -1,4 +1,4 @@
-package com.example.IdentityService.dto.respone;
+package com.example.IdentityService.dto.response;
 
 import com.example.IdentityService.model.RoleEntity;
 import lombok.AllArgsConstructor;

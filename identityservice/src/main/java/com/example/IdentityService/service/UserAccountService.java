@@ -2,7 +2,6 @@ package com.example.IdentityService.service;
 
 import com.example.IdentityService.dto.request.UserAccountCreationRequest;
 import com.example.IdentityService.dto.request.UserProfileCreationRequest;
-import com.example.IdentityService.dto.respone.UserAccountCreationRespone;
 import com.example.IdentityService.model.RoleEntity;
 import com.example.IdentityService.model.UserAccount;
 import com.example.IdentityService.mapper.UserAccountMapper;
@@ -10,6 +9,7 @@ import com.example.IdentityService.repository.RoleRepository;
 import com.example.IdentityService.repository.UserAccountRepository;
 import com.example.IdentityService.repository.https.ProfileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -58,6 +57,7 @@ public class UserAccountService {
         ObjectMapper objectMapper = new ObjectMapper();
         var profileResponseRaw = profileRepository.createProfile(temp);
         UserProfileCreationRequest profileResponse = objectMapper.convertValue(profileResponseRaw, UserProfileCreationRequest.class);
+        objectMapper.registerModule(new JavaTimeModule());
         var res = mapper.toUserAccountRespone(profileResponse);
         return savedAccount;
     }
