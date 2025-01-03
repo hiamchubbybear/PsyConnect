@@ -23,7 +23,6 @@ public enum PermissionEnum {
     THERAPIST_VIEW_USER_PROFILE(16, "therapist_view_user_profile", "Xem hồ sơ người dùng", "Therapist"),
     THERAPIST_RATE_USER(17, "therapist_rate_user", "Đánh giá người dùng sau khi tư vấn", "Therapist"),
 
-
     USER_VIEW_POSTS(18, "user_view_posts", "Xem bài đăng tư vấn tâm lý", "Client"),
     USER_SEND_MESSAGE(19, "user_send_message", "Gửi tin nhắn tư vấn tâm lý", "Client"),
     USER_BOOK_APPOINTMENT(20, "user_book_appointment", "Đặt lịch hẹn trực tiếp với therapist", "Client"),
@@ -33,7 +32,6 @@ public enum PermissionEnum {
     USER_VIEW_PROFILE(24, "user_view_profile", "Xem hồ sơ cá nhân", "Client"),
     USER_UPDATE_PROFILE(25, "user_update_profile", "Cập nhật thông tin cá nhân", "Client"),
     USER_ACCESS_DASHBOARD(26, "user_access_dashboard", "Truy cập bảng điều khiển Client", "Client"),
-
 
     MANAGE_NOTIFICATIONS(27, "manage_notifications", "Quản lý thông báo hệ thống", "Admin"),
     VIEW_REPORTS(28, "view_reports", "Xem báo cáo hoạt động", "Admin"),

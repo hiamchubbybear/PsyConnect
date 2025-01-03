@@ -1,25 +1,25 @@
 package com.example.IdentityService.configuration;
 
+import java.util.*;
+
+import jakarta.transaction.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import com.example.IdentityService.model.Permission;
 import com.example.IdentityService.model.RoleEntity;
 import com.example.IdentityService.num.PermissionEnum;
 import com.example.IdentityService.num.RoleEnum;
 import com.example.IdentityService.repository.PermissionRepository;
 import com.example.IdentityService.repository.RoleRepository;
-import jakarta.transaction.Transactional;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Configuration
 @RequiredArgsConstructor
@@ -45,8 +45,7 @@ public class BeanConfiguration {
                             String.valueOf(permissionEnum.getId()),
                             permissionEnum.getName(),
                             permissionEnum.getDescription(),
-                            new ArrayList<>()
-                    );
+                            new ArrayList<>());
                     permissionRepository.save(permission);
                     log.info("Created permission: {}", permissionEnum.getName());
                 }
@@ -60,7 +59,10 @@ public class BeanConfiguration {
                         if (permission != null) {
                             permissions.add(permission);
                         } else {
-                            log.warn("Permission {} not found for role {}", permissionEnum.getName(), roleEnum.getName());
+                            log.warn(
+                                    "Permission {} not found for role {}",
+                                    permissionEnum.getName(),
+                                    roleEnum.getName());
                         }
                     }
 
@@ -74,8 +76,11 @@ public class BeanConfiguration {
 
             for (PermissionEnum permissionEnum : PermissionEnum.values()) {
                 Permission permission = permissionRepository.findByName(permissionEnum.getName());
-                if (permission != null && (permission.getRoles() == null || permission.getRoles().isEmpty())) {
-                    List<RoleEntity> roleEntities = roleRepository.findAllById(Collections.singleton(permissionEnum.getRole()));
+                if (permission != null
+                        && (permission.getRoles() == null
+                                || permission.getRoles().isEmpty())) {
+                    List<RoleEntity> roleEntities =
+                            roleRepository.findAllById(Collections.singleton(permissionEnum.getRole()));
                     if (!roleEntities.isEmpty()) {
                         permission.setRoles(roleEntities);
                         permissionRepository.save(permission);

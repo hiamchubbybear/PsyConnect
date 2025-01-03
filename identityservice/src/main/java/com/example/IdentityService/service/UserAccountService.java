@@ -2,6 +2,7 @@ package com.example.IdentityService.service;
 
 import com.example.IdentityService.dto.request.UserAccountCreationRequest;
 import com.example.IdentityService.dto.request.UserProfileCreationRequest;
+import com.example.IdentityService.dto.response.UserAccountCreationResponse;
 import com.example.IdentityService.model.RoleEntity;
 import com.example.IdentityService.model.UserAccount;
 import com.example.IdentityService.mapper.UserAccountMapper;
@@ -32,35 +33,34 @@ public class UserAccountService {
     ProfileRepository profileRepository;
     UserAccountMapper mapper;
     UserAccountRepository accountRepository;
-    PasswordEncodingService passwordEncodingService;
 
-    public UserAccount createAccount(UserAccountCreationRequest request) {
-        if (userAccountRepository.existsByUsername(request.getUsername())
-                || userAccountRepository.existsByEmail(request.getEmail()))
+    public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
+        if (userAccountRepository.existsByUsername(request.getUsername()))
             throw new IllegalArgumentException("User existed");
+        if (userAccountRepository.existsByEmail(request.getEmail()))
+            throw new IllegalArgumentException("Email  address already in use");
         Set<RoleEntity> roles = new HashSet<>();
         roleRepository.findById(request.getRole()).ifPresentOrElse(roles::add, () -> {
             throw new IllegalArgumentException("Role not exist");
         });
-        roles.stream().forEach(roleEntity -> log.info("Role {}", roleEntity));
+        roles.forEach(roleEntity -> log.info("Role {}", roleEntity));
         UserAccount account = UserAccount.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
-                .password(new BCryptPasswordEncoder().encode(request.getPassword()))
+                .password(PasswordEncodingService.encoder(request.getPassword()))
                 .id(UUID.randomUUID().toString())
                 .role(roles)
                 .build();
         var savedAccount = accountRepository.save(account);
         log.info("Created account: {}", savedAccount);
-        UserProfileCreationRequest temp = mapper.toAccountRespone(request);
+        UserProfileCreationRequest temp = mapper.toAccountResponse(request);
         temp.setUserId(savedAccount.getId());
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         var profileResponseRaw = profileRepository.createProfile(temp);
         UserProfileCreationRequest profileResponse = objectMapper.convertValue(profileResponseRaw, UserProfileCreationRequest.class);
-        objectMapper.registerModule(new JavaTimeModule());
-        var res = mapper.toUserAccountRespone(profileResponse);
-        return savedAccount;
+        return UserAccountCreationResponse.builder().username(request.getUsername())
+                .password(account.getPassword()).email(account.getEmail())
+                .role(roles.stream().findFirst().get().getName()).build();
     }
-
-
 }
