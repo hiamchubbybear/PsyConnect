@@ -1,7 +1,7 @@
 package com.example.profileservice.service;
 
 import com.example.profileservice.dto.request.UserProfileCreationRequest;
-import com.example.profileservice.dto.respone.UserProfileCreationRespone;
+import com.example.profileservice.dto.response.UserProfileCreationResponse;
 import com.example.profileservice.mapper.UserProfileMapper;
 import com.example.profileservice.model.UserProfile;
 import com.example.profileservice.repository.ProfileRepository;
@@ -22,7 +22,7 @@ public class UserProfileService {
     ProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
 
-    public UserProfileCreationRespone createProfile(UserProfileCreationRequest request) {
+    public UserProfileCreationResponse createProfile(UserProfileCreationRequest request) {
         UserProfile profile = userProfileMapper.toUserProfileMapper(request);
         var temp = userProfileRepository.save(profile);
         log.info("Created profile: {}", profile);

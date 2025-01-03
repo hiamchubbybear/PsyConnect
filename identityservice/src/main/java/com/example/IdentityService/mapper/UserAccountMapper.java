@@ -2,7 +2,7 @@ package com.example.IdentityService.mapper;
 
 import com.example.IdentityService.dto.request.UserAccountCreationRequest;
 import com.example.IdentityService.dto.request.UserProfileCreationRequest;
-import com.example.IdentityService.dto.respone.UserAccountCreationRespone;
+import com.example.IdentityService.dto.response.UserAccountCreationRespone;
 import com.example.IdentityService.model.UserAccount;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

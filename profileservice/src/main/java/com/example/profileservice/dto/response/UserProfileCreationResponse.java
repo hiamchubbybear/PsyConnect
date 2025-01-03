@@ -1,5 +1,6 @@
-package com.example.IdentityService.dto.respone;
+package com.example.profileservice.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +12,11 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCreationRespone {
+public class UserProfileCreationResponse {
     String userId;
     String firstName;
     String lastName;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate dob;
     String address;
     String gender;
