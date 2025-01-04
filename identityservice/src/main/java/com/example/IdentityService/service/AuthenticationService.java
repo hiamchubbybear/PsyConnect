@@ -30,11 +30,12 @@ public class AuthenticationService {
 
     @Value("${SIGNER_KEY}")
     private String SIGNER_KEY;
-    static long TIME_EXPIRED = 30 * 60 * 60;
+    static long TIME_EXPIRED = 30 * 60 * 60 * 60;
 
 
     final RoleRepository roleRepository;
     final UserAccountRepository userAccountRepository;
+
     @Autowired
     public AuthenticationService(RoleRepository roleRepository, UserAccountRepository userAccountRepository) {
         this.roleRepository = roleRepository;
@@ -98,7 +99,7 @@ public class AuthenticationService {
                 .issueTime(new Date())
                 .jwtID(UUID.randomUUID().toString())
                 .issuer("PsyConnect Authentication Service")
-                .claim("SCOPE", buildScope(role))
+                .claim("scope", buildScope(role))
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
@@ -126,10 +127,11 @@ public class AuthenticationService {
         return signedJWT;
 
     }
+
     // Use to authenticate account
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) throws AuthenticationException {
         var user = userAccountRepository.findByUsername(authenticationRequest.getUsername())
-                .orElseThrow(() -> new InvalidPropertyException(UserAccount.class,"User not found" , authenticationRequest.getUsername()));
+                .orElseThrow(() -> new InvalidPropertyException(UserAccount.class, "User not found", authenticationRequest.getUsername()));
 
         var password = authenticationRequest.getPassword();
         // Password not found throw
@@ -148,24 +150,27 @@ public class AuthenticationService {
             return response;
         }
     }
-    
-    // Helper method to build the scope (permissions) from the user's role
-    private String buildScope(String role) {
-        StringBuilder builder = new StringBuilder(); // Use StringBuilder to concatenate permissions
 
-        // Find the role in the roleRepository based on the role name
+    private String buildScope(String role) {
+        StringBuilder builder = new StringBuilder();
+
+        // Prefix the role with "ROLE_" to match Spring Security conventions
+        builder.append("ROLE_").append(role).append(" ");
+
+        // Find the role in the repository and retrieve its permissions
         roleRepository.findByName(role).ifPresentOrElse(roleEntity -> {
-            // Loop through the role's permissions and append to the builder
+            // Map each permission to the Spring Security format and append to the builder
             roleEntity.getPermissions().stream()
-                    .map(Permission::getName)
-                    .forEach(builder::append);
+                    .map(permission -> "PERMISSION_" + permission.getName()) // Prefix permissions for clarity
+                    .forEach(permission -> builder.append(permission).append(" "));
         }, () -> {
             throw new IllegalArgumentException("Invalid role: " + role);
         });
 
-        log.debug("Build scope for role: {}", role);
+        log.debug("Built scope for role {}: {}", role, builder.toString().trim());
 
-        // Return the concatenated permissions as a string
-        return builder.toString();
+        // Return the concatenated authorities as a trimmed string
+        return builder.toString().trim();
     }
+
 }
