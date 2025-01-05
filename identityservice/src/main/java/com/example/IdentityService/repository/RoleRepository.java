@@ -7,10 +7,13 @@ import org.springframework.stereotype.Repository;
 import javax.management.relation.Role;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface RoleRepository extends JpaRepository<RoleEntity,String> {
     boolean existsByRoleId(String id);
 
     Optional<RoleEntity> findByName(String name);
+
+    Set<RoleEntity> findAllByName(String client);
 }
