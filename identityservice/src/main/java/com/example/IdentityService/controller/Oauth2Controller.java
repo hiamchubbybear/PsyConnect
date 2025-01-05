@@ -1,20 +1,15 @@
-package com.example.IdentityService.model;
+package com.example.IdentityService.controller;
 
 import com.example.IdentityService.apiresponse.ApiResponse;
 import com.example.IdentityService.apiresponse.CustomResponseWrapper;
 import com.example.IdentityService.dto.response.UserAccountCreationResponse;
 import com.example.IdentityService.service.OAuth2Service;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
-import java.util.Map;
 
 @Controller
 @RestController
