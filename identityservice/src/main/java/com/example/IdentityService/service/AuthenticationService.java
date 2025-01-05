@@ -71,6 +71,53 @@ public class AuthenticationService {
            Example :
            {
              "alg": "HS256",
+@Service
+@Slf4j
+public class AuthenticationService {
+
+    @Value("${SIGNER_KEY}")
+    private String SIGNER_KEY;
+    static long TIME_EXPIRED = 30 * 60 * 60 * 60;
+
+
+    final RoleRepository roleRepository;
+    final UserAccountRepository userAccountRepository;
+
+    @Autowired
+    public AuthenticationService(RoleRepository roleRepository, UserAccountRepository userAccountRepository) {
+        this.roleRepository = roleRepository;
+        this.userAccountRepository = userAccountRepository;
+    }
+
+    // PasswordEncoder is initialized with strength 10
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10);
+    }
+
+    // This method generates a JWT token
+    public String generateToken(AuthenticationRequest authenticationRequest) {
+        // Get the username from the authentication request
+        var username = authenticationRequest.getUsername();
+        // Get the role of the user based on the username
+        var role = userAccountRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"))
+                .getRole().stream().findFirst().get().getName();
+
+        // Create the JWT header using the RS256 algorithm
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+
+        /*
+         Build the claims for the JWT (user-related information)
+        -> Jwt Structure :
+         -  Header
+         -  Payload
+         -  Signature
+        -> Header :
+            Contain 2 parts : signing algorithm being used ( HMAC SHA256 or RSA )
+            and which type of token.
+           Example :
+           {
+             "alg": "HS256",
              "typ": "JWT"
            }
         -> Payload :

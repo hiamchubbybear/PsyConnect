@@ -1,10 +1,7 @@
 package com.example.IdentityService.controller;
 
 import com.example.IdentityService.dto.response.UserAccountCreationResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.IdentityService.apiresponse.ApiResponse;
 import com.example.IdentityService.apiresponse.CustomResponseWrapper;
@@ -27,5 +24,10 @@ public class UserAccountController {
     @CustomResponseWrapper
     public ApiResponse<UserAccountCreationResponse> register(@RequestBody UserAccountCreationRequest accountRequest) {
         return new ApiResponse<>(userAccountService.createAccount(accountRequest));
+    }
+    @GetMapping("/hello")
+    @CustomResponseWrapper
+    public ApiResponse<String> register() {
+        return new ApiResponse<>("Hello World");
     }
 }
