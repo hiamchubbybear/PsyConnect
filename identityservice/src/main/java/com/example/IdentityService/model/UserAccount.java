@@ -2,6 +2,7 @@ package com.example.IdentityService.model;
 
 import java.util.Set;
 
+import com.example.IdentityService.num.Provider;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
