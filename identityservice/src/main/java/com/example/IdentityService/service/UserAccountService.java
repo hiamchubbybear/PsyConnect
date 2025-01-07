@@ -3,6 +3,8 @@ package com.example.IdentityService.service;
 import com.example.IdentityService.dto.request.UserAccountCreationRequest;
 import com.example.IdentityService.dto.request.UserProfileCreationRequest;
 import com.example.IdentityService.dto.response.UserAccountCreationResponse;
+import com.example.IdentityService.globalexceptionhandle.CustomExceptionHandler;
+import com.example.IdentityService.globalexceptionhandle.ErrorCode;
 import com.example.IdentityService.mapper.UserAccountMapper;
 import com.example.IdentityService.model.RoleEntity;
 import com.example.IdentityService.model.UserAccount;
@@ -35,12 +37,12 @@ public class UserAccountService {
 
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
         if (userAccountRepository.existsByUsername(request.getUsername()))
-            throw new IllegalArgumentException("User existed");
+            throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
         if (userAccountRepository.existsByEmail(request.getEmail()))
-            throw new IllegalArgumentException("Email  address already in use");
+            throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
         Set<RoleEntity> roles = new HashSet<>();
         roleRepository.findById(request.getRole()).ifPresentOrElse(roles::add, () -> {
-            throw new IllegalArgumentException("Role not exist");
+            throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
         });
         roles.forEach(roleEntity -> log.info("Role {}", roleEntity));
         UserAccount account = UserAccount.builder()
