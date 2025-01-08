@@ -31,19 +31,12 @@ public class Oauth2Controller {
     OAuth2Service oAuth2Service;
     private final AuthenticationService authenticationService;
 
-    //    @GetMapping("/oauth2/userInfo/google")
-//    @CustomResponseWrapper
-//    public ApiResponse<String> oAuth2Google(Authentication authentication) {
-//        DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-//        String email = user.getAttribute("email");
-//        return new ApiResponse<>(authenticationService.generateGoogleAuthToken(new GoogleAuthenticationRequest(email),"GOOGLE"));
-//    }
-    @GetMapping("/oauth2/userInfo/google")
+        @GetMapping("/oauth2/userInfo/google")
     @CustomResponseWrapper
-    public ApiResponse<Principal> oAuth2Google() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Principal principal = (Principal) authentication.getPrincipal();
-        return new ApiResponse<>(principal);
+    public ApiResponse<String> oAuth2Google(Authentication authentication) {
+        DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
+        String email = user.getAttribute("email");
+        return new ApiResponse<>(authenticationService.generateGoogleAuthToken(new GoogleAuthenticationRequest(email),"GOOGLE"));
     }
 
     @GetMapping("/oauth2/callback/google")

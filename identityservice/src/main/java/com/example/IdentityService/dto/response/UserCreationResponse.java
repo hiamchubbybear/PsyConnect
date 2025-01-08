@@ -1,5 +1,6 @@
 package com.example.IdentityService.dto.response;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserCreationResponse {
-    String userId;
+    UUID userId;
     String firstName;
     String lastName;
     @JsonFormat(pattern = "yyyy-MM-dd")

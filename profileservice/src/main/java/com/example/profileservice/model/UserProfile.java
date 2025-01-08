@@ -24,8 +24,10 @@ public class UserProfile {
     String profileId;
 
     @Property("userId")
-    @GeneratedValue(UUIDStringGenerator.class)
     String userId;
+
+    @Property("username")
+    String username;
 
     @Property("firstName")
     String firstName;
@@ -42,4 +44,10 @@ public class UserProfile {
 
     @Property("gender")
     String gender;
+
+    @Property("email")
+    String email;
+
+    @Property("avatarUri")
+    String avatarUri;
 }

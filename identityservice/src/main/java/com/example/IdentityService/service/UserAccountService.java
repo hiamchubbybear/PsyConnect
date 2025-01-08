@@ -49,14 +49,12 @@ public class UserAccountService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(PasswordEncodingService.encoder(request.getPassword()))
-                .id(UUID.randomUUID().toString())
                 .role(roles)
-
                 .build();
         var savedAccount = accountRepository.save(account);
-        log.info("Created account: {}", savedAccount);
+        log.info("Created account: {}", savedAccount.getUserId());
         UserProfileCreationRequest temp = mapper.toAccountResponse(request);
-        temp.setUserId(savedAccount.getId());
+        temp.setUserId(account.getUserId());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         var profileResponseRaw = profileRepository.createProfile(temp);

@@ -1,23 +1,20 @@
-package com.example.IdentityService.dto.request;
+package com.example.profileservice.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserAccountCreationRequest {
+public class UserProfileUpdateResponse {
     UUID userId;
     String username;
-    String password;
     String firstName;
     String lastName;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -25,7 +22,5 @@ public class UserAccountCreationRequest {
     LocalDate dob;
     String address;
     String gender;
-    String email;
     String avatarUri;
-    String role;
 }

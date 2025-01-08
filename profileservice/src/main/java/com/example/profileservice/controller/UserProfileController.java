@@ -1,9 +1,12 @@
 package com.example.profileservice.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.profileservice.apiresponse.ApiResponse;
+import com.example.profileservice.apiresponse.CustomResponseWrapper;
+import com.example.profileservice.dto.request.UserProfileUpdateRequest;
+import com.example.profileservice.dto.response.UserProfileUpdateResponse;
+import com.google.protobuf.Api;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.profileservice.dto.request.UserProfileCreationRequest;
 import com.example.profileservice.dto.response.UserProfileCreationResponse;
@@ -18,11 +21,15 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserProfileController {
-
     UserProfileService userProfileService;
 
     @PostMapping("/user")
-    UserProfileCreationResponse createUserProfile(@RequestBody UserProfileCreationRequest body) {
-        return userProfileService.createProfile(body);
+    ApiResponse<UserProfileCreationResponse> createUserProfile(@RequestBody UserProfileCreationRequest body) {
+        return new ApiResponse<>(userProfileService.createProfile(body));
+    }
+    @PostMapping("/update")
+    ApiResponse<UserProfileUpdateResponse> updateUserProfile(@RequestBody UserProfileUpdateRequest body
+            , @RequestParam String email) {
+        return new ApiResponse<>(userProfileService.profileUpdateResponse(body, email));
     }
 }
