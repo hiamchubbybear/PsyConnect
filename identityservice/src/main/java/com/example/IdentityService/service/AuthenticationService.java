@@ -131,9 +131,11 @@ public class AuthenticationService {
         return jwsObject.serialize();
     }
     public String generateGoogleAuthToken(GoogleAuthenticationRequest googleAuthenticationRequest , String loginType) {
-        var roles = userAccountRepository.findByEmail(googleAuthenticationRequest.getEmail())
-                .orElse(null)
-                .getRole().stream().findFirst().get().getName();
+         var user = userAccountRepository.findByEmail(googleAuthenticationRequest.getEmail())
+                .orElse(null);
+        assert user != null;
+        var roles = user.getRole().stream().findFirst().get().getName();
+        UUID uuid = user.getUserId();
 
         // Create the JWT header using the RS256 algorithm
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
@@ -194,6 +196,7 @@ public class AuthenticationService {
                 .issuer("PsyConnect Authentication Service")
                 .claim("scope", buildScope(roles))
                 .claim("type", loginType)
+                .claim("uuid", uuid.toString())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);

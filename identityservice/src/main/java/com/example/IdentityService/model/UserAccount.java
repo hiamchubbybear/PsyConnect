@@ -1,6 +1,7 @@
 package com.example.IdentityService.model;
 
 import java.util.Set;
+import java.util.UUID;
 
 import com.example.IdentityService.num.Provider;
 import jakarta.persistence.*;
@@ -15,12 +16,11 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "user_account", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
+@Table(name = "user_account", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
+    private UUID userId;
     private String username;
     private String password;
     private String email;

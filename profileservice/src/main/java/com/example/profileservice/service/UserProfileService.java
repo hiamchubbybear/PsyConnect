@@ -2,6 +2,12 @@ package com.example.profileservice.service;
 
 import java.util.Optional;
 
+import com.example.profileservice.controller.UserProfileController;
+import com.example.profileservice.dto.request.UserProfileUpdateRequest;
+import com.example.profileservice.dto.response.UserProfileUpdateResponse;
+import com.example.profileservice.globalexceptionhandle.CustomExceptionHandler;
+import com.example.profileservice.globalexceptionhandle.ErrorCode;
+import jakarta.validation.constraints.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,14 +31,21 @@ public class UserProfileService {
     UserProfileMapper userProfileMapper;
 
     public UserProfileCreationResponse createProfile(UserProfileCreationRequest request) {
+        log.info("Create user with userId {}", request.getUserId());
         UserProfile profile = userProfileMapper.toUserProfileMapper(request);
         var temp = userProfileRepository.save(profile);
-        log.info("Created profile: {}", profile);
+        log.info("Created profile: {}", profile.getUserId());
         return userProfileMapper.toUserProfile(temp);
     }
 
     public UserProfile getProfile(String profileId) {
         Optional<UserProfile> profile = userProfileRepository.findById(profileId);
         return profile.orElse(null);
+    }
+
+    public UserProfileUpdateResponse profileUpdateResponse(UserProfileUpdateRequest userProfileUpdateRequest, String email) {
+        var updateUser = userProfileRepository.findByEmail(email);
+        UserProfile updatedUser = userProfileRepository.save(updateUser.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOTFOUND)));
+        return userProfileMapper.toUserProfileUpdateResponse(updatedUser);
     }
 }

@@ -12,11 +12,10 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileCreationRequest {
+    UUID userId;
     String username;
-    String userId;
     String firstName;
     String lastName;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -27,4 +26,10 @@ public class UserProfileCreationRequest {
     String email;
     String role;
     String avatarUri;
+
+    public UserProfileCreationRequest(UUID userId, String email, String role, String avatarUri) {
+        this.email = email;
+        this.role = role;
+        this.avatarUri = avatarUri;
+    }
 }

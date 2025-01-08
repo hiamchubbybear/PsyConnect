@@ -1,6 +1,7 @@
 package com.example.profileservice.dto.request;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -15,6 +16,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserProfileCreationRequest {
+    UUID userId;
+    String username;
     String firstName;
     String lastName;
     @JsonFormat(pattern = "yyyy-MM-dd")
