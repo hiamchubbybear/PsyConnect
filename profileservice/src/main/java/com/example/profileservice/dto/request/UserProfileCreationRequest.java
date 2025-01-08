@@ -22,4 +22,5 @@ public class UserProfileCreationRequest {
     LocalDate dob;
     String address;
     String gender;
+    String avatarUri;
 }

@@ -24,5 +24,6 @@ public class UserAccountCreationRequest {
     String address;
     String gender;
     String email;
+    String avatarUri;
     String role;
 }
