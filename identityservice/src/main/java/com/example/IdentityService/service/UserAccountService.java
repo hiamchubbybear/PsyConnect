@@ -51,6 +51,7 @@ public class UserAccountService {
                 .password(PasswordEncodingService.encoder(request.getPassword()))
                 .id(UUID.randomUUID().toString())
                 .role(roles)
+
                 .build();
         var savedAccount = accountRepository.save(account);
         log.info("Created account: {}", savedAccount);

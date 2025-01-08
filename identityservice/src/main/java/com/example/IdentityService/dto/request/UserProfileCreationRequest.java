@@ -26,4 +26,5 @@ public class UserProfileCreationRequest {
     String gender;
     String email;
     String role;
+    String avatarUri;
 }

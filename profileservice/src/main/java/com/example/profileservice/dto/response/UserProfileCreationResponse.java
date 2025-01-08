@@ -23,4 +23,5 @@ public class UserProfileCreationResponse {
     LocalDate dob;
     String address;
     String gender;
+    String avatarUri;
 }

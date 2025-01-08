@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
@@ -25,17 +26,24 @@ import java.security.Principal;
 @Controller
 @RestController
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Oauth2Controller {
     OAuth2Service oAuth2Service;
     private final AuthenticationService authenticationService;
 
+    //    @GetMapping("/oauth2/userInfo/google")
+//    @CustomResponseWrapper
+//    public ApiResponse<String> oAuth2Google(Authentication authentication) {
+//        DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
+//        String email = user.getAttribute("email");
+//        return new ApiResponse<>(authenticationService.generateGoogleAuthToken(new GoogleAuthenticationRequest(email),"GOOGLE"));
+//    }
     @GetMapping("/oauth2/userInfo/google")
     @CustomResponseWrapper
-    public ApiResponse<String> oAuth2Google(Authentication authentication) {
-        DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-        String email = user.getAttribute("email");
-        return new ApiResponse<>(authenticationService.generateGoogleAuthToken(new GoogleAuthenticationRequest(email),"GOOGLE"));
+    public ApiResponse<Principal> oAuth2Google() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Principal principal = (Principal) authentication.getPrincipal();
+        return new ApiResponse<>(principal);
     }
 
     @GetMapping("/oauth2/callback/google")

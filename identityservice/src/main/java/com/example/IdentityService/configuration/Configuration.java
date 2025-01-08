@@ -57,7 +57,6 @@ public class Configuration {
                         try {
                             DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
                             String email = user.getAttribute("email");
-
                             if (email == null) {
                                 log.error("Email attribute not found in OIDC user information");
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Email not found in user information");
@@ -77,7 +76,8 @@ public class Configuration {
                         } catch (Exception ex) {
                             log.error("Error handling successful authentication", ex);
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
-                        }});
+                        }
+                    });
                     oAuth2Login.failureHandler((HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) -> {
                         log.error("OAuth2 login failed: {}", exception.getMessage());
                         response.setContentType("application/json");
