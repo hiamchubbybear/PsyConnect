@@ -50,13 +50,16 @@ public class Configuration {
                             String email = user.getAttribute("email");
                             String avatarUri = user.getAttribute("picture");
                             if (email == null) {
+                                // Logging
                                 log.error("Email attribute not found in OIDC user information");
                                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Email not found in user information");
                                 return;
                             }
                             log.info("OAuth2 Login successful. Email: {}", email);
                             // Logic after Authentication success
-                            oAuth2Service.processOAuthPostLoginGoogle(new CreateProfileOauth2GoogleRequest(email , Provider.GOOGLE.toString(), avatarUri));
+                            var trans = oAuth2Service.processOAuthPostLoginGoogle(new CreateProfileOauth2GoogleRequest(email, Provider.GOOGLE.toString(), avatarUri));
+                            // Logging
+                            log.info("OAuth2 Create account successful. Email: {}", trans.getEmail());
                             // Get url from session
                             String redirectUrl = (String) request.getSession()
                                     .getAttribute("SPRING_SECURITY_SAVED_REQUEST");
@@ -71,14 +74,17 @@ public class Configuration {
                         }
                     });
                     oAuth2Login.failureHandler((HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) -> {
+                        // Logging
                         log.error("OAuth2 login failed: {}", exception.getMessage());
+                        // If failed response a error
                         response.setContentType("application/json");
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.getWriter().write("{\"error\": \"Authentication failed: " + exception.getMessage() + "\"}");
                     });
-
+                    // Authentication uri
                     oAuth2Login.authorizationEndpoint(authorizationEndpointConfig ->
                                     authorizationEndpointConfig.baseUri("/oauth2/authorization/google"))
+                            // Redirect endpoint after failed
                             .redirectionEndpoint(redirectionEndpointConfig ->
                                     redirectionEndpointConfig.baseUri("/oauth2/callback/google"));
                 })
