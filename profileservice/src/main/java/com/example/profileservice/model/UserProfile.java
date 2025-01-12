@@ -1,53 +1,54 @@
 package com.example.profileservice.model;
 
-import java.time.LocalDate;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 
-import lombok.*;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor()
 @Node("user_profile")
 public class UserProfile {
+
     @Id
     @GeneratedValue(UUIDStringGenerator.class)
-    String profileId;
+    private String profileId;
 
     @Property("userId")
-    String userId;
+    @NotNull
+    private String userId;
 
     @Property("username")
-    String username;
+    private String username;
 
     @Property("firstName")
-    String firstName;
+    private String firstName;
 
     @Property("lastName")
-    String lastName;
+    private String lastName;
 
     @Property("dob")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate dob;
+    private LocalDate dob;
 
     @Property("address")
-    String address;
+    private String address;
 
     @Property("gender")
-    String gender;
-
-    @Property("email")
-    String email;
+    private String gender;
 
     @Property("avatarUri")
-    String avatarUri;
+    private String avatarUri;
+
+    @Transient
+    private String elementId;
 }
