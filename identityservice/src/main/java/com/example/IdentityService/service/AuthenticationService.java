@@ -32,7 +32,7 @@ public class AuthenticationService {
 
     @Value("${SIGNER_KEY}")
     private String SIGNER_KEY;
-    static long TIME_EXPIRED = 30 * 60 * 60 * 60;
+    static long TIME_EXPIRED = 30 * 60 * 60 * 100;
 
 
     final RoleRepository roleRepository;
