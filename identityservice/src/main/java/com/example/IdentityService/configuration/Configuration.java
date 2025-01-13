@@ -39,7 +39,7 @@ public class Configuration {
         return http
                 .authorizeRequests(requests -> {
                     // Config Allowed Endpoint
-                    requests.requestMatchers("/", "/oauth2/register/google", "/oauth2/userInfo/google", "/login", "/oauth2/authorization/google", "/identity/create").permitAll();
+                    requests.requestMatchers("/", "/oauth2/register/google", "/oauth2/userInfo/google", "/auth/login", "/oauth2/authorization/google", "/identity/create").permitAll();
                     requests.anyRequest().authenticated();
                 })
                 .oauth2Login(oAuth2Login -> {

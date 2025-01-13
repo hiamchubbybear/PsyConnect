@@ -37,9 +37,9 @@ public class UserAccountService {
 
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
         if (userAccountRepository.existsByUsername(request.getUsername()))
-            throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
+            throw new CustomExceptionHandler(ErrorCode.USERNAME_INVALID);
         if (userAccountRepository.existsByEmail(request.getEmail()))
-            throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
+            throw new CustomExceptionHandler(ErrorCode.EMAIL_INVALID);
         Set<RoleEntity> roles = new HashSet<>();
         roleRepository.findById(request.getRole()).ifPresentOrElse(roles::add, () -> {
             throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
@@ -58,7 +58,7 @@ public class UserAccountService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         var profileResponseRaw = profileRepository.createProfile(temp);
-        UserProfileCreationRequest profileResponse = objectMapper.convertValue(profileResponseRaw, UserProfileCreationRequest.class);
+//        UserProfileCreationRequest profileResponse = objectMapper.convertValue(profileResponseRaw, UserProfileCreationRequest.class);
         return UserAccountCreationResponse.builder().username(request.getUsername())
                 .password(account.getPassword()).email(account.getEmail())
                 .role(roles.stream().findFirst().get().getName()).build();

@@ -230,7 +230,7 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest , String loginType) throws AuthenticationException {
         var user = userAccountRepository.findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new InvalidPropertyException(UserAccount.class, "User not found", authenticationRequest.getUsername()));
-
+        log.debug("User request token is {}", authenticationRequest.getUsername());
         var password = authenticationRequest.getPassword();
         // Password not found throw
         if (password == null) {
