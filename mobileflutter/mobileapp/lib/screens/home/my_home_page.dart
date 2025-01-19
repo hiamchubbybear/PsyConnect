@@ -1,3 +1,4 @@
+import 'package:PsyConnect/screens/component/setting.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -38,15 +39,14 @@ class _MyHomePageState extends State<MyHomePage>
           Center(child: Text("Schedule Page")),
           Center(child: Text("Chat Page")),
           Center(child: Text("Notifications Page")),
-          Center(child: Text("Settings Page")),
+          Setting()
         ],
       ),
       bottomNavigationBar: Material(
-
         child: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(icon: Icon(Icons.home, size: 36)),
+            Tab(icon: Icon(Icons.home, size: 37)),
             Tab(
                 icon: ImageIcon(
                     AssetImage("assets/images/dark_mode_schedule.png"),

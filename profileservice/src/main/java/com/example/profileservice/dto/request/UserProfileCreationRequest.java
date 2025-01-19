@@ -17,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @NoArgsConstructor
 public class UserProfileCreationRequest {
     UUID userId;
-    String username;
+    String email;
     String firstName;
     String lastName;
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -25,5 +25,6 @@ public class UserProfileCreationRequest {
     LocalDate dob;
     String address;
     String gender;
+    String role;
     String avatarUri;
 }

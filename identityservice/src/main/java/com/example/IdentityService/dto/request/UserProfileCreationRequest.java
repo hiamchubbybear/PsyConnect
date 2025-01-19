@@ -23,13 +23,6 @@ public class UserProfileCreationRequest {
     LocalDate dob;
     String address;
     String gender;
-    String email;
     String role;
     String avatarUri;
-
-    public UserProfileCreationRequest(UUID userId, String email, String role, String avatarUri) {
-        this.email = email;
-        this.role = role;
-        this.avatarUri = avatarUri;
-    }
 }
