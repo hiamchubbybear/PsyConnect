@@ -57,8 +57,7 @@ public class UserAccountService {
         temp.setUserId(account.getUserId());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        var profileResponseRaw = profileRepository.createProfile(temp);
-        UserProfileCreationRequest profileResponse = objectMapper.convertValue(profileResponseRaw, UserProfileCreationRequest.class);
+         profileRepository.createProfile(temp);
         return UserAccountCreationResponse.builder().username(request.getUsername())
                 .password(account.getPassword()).email(account.getEmail())
                 .role(roles.stream().findFirst().get().getName()).build();

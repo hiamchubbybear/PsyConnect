@@ -9,21 +9,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserAccountMapper {
-    //    @Mapping(ignore = true, target = "userId")
     @Mapping(target = "role", ignore = true)
+    @Mapping(target = "userId", ignore = true)
     UserProfileCreationRequest toAccountResponse(UserAccountCreationRequest userAccount);
 
-    //    @Mapping(ignore = true, target = "userId")
     @Mapping(target = "role", ignore = true)
     UserProfileCreationRequest toUserProfileCreationRequest(UserAccount userAccount);
-
-    @Mapping(target = "role", ignore = true)
-    UserAccountCreationResponse toUserAccountResponse(UserProfileCreationRequest userProfileCreationRequest);
-
-    @Mapping(target = "role", ignore = true)
-    UserAccountCreationResponse toUserProfileCreationResponse(UserAccount userAccount);
-
-    @Mapping(target = "role", ignore = true)
-    UserAccount toUserProfileFromCreationRequest(UserProfileCreationRequest userAccountCreationRequest);
 
 }
