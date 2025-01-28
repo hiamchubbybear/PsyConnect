@@ -1,8 +1,9 @@
 package com.example.profileservice.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
@@ -10,7 +11,9 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.*;
 
 @Data
 @Builder

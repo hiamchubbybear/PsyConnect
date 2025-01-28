@@ -1,9 +1,9 @@
 package com.example.IdentityService.configuration;
 
+import java.util.List;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import java.util.List;
 
 public class LoginTypeValidator implements ConstraintValidator<ValidateLoginType, String> {
 

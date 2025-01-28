@@ -12,6 +12,6 @@ public class CustomExceptionHandler extends IllegalStateException {
         super(errorCode.getStatus());
         this.errorCode = errorCode;
     }
-    private ErrorCode errorCode;
 
+    private ErrorCode errorCode;
 }

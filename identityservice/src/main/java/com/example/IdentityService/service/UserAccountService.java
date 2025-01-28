@@ -1,5 +1,12 @@
 package com.example.IdentityService.service;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import com.example.IdentityService.dto.request.UserAccountCreationRequest;
 import com.example.IdentityService.dto.request.UserProfileCreationRequest;
 import com.example.IdentityService.dto.response.UserAccountCreationResponse;
@@ -13,16 +20,10 @@ import com.example.IdentityService.repository.UserAccountRepository;
 import com.example.IdentityService.repository.https.ProfileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -57,9 +58,12 @@ public class UserAccountService {
         temp.setUserId(account.getUserId());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-         profileRepository.createProfile(temp);
-        return UserAccountCreationResponse.builder().username(request.getUsername())
-                .password(account.getPassword()).email(account.getEmail())
-                .role(roles.stream().findFirst().get().getName()).build();
+        profileRepository.createProfile(temp);
+        return UserAccountCreationResponse.builder()
+                .username(request.getUsername())
+                .password(account.getPassword())
+                .email(account.getEmail())
+                .role(roles.stream().findFirst().get().getName())
+                .build();
     }
 }
