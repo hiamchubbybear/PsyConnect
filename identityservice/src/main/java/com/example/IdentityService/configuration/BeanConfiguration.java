@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 
 import com.example.IdentityService.model.Permission;
 import com.example.IdentityService.model.RoleEntity;
-import com.example.IdentityService.num.PermissionEnum;
-import com.example.IdentityService.num.RoleEnum;
+import com.example.IdentityService.enumeration.PermissionEnum;
+import com.example.IdentityService.enumeration.RoleEnum;
 import com.example.IdentityService.repository.PermissionRepository;
 import com.example.IdentityService.repository.RoleRepository;
 

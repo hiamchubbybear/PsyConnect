@@ -1,11 +1,11 @@
 package com.example.IdentityService.mapper;
 
-import com.example.IdentityService.dto.request.UserAccountCreationRequest;
-import com.example.IdentityService.dto.request.UserProfileCreationRequest;
-import com.example.IdentityService.dto.response.UserAccountCreationResponse;
-import com.example.IdentityService.model.UserAccount;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import com.example.IdentityService.dto.request.UserAccountCreationRequest;
+import com.example.IdentityService.dto.request.UserProfileCreationRequest;
+import com.example.IdentityService.model.UserAccount;
 
 @Mapper(componentModel = "spring")
 public interface UserAccountMapper {
@@ -15,5 +15,4 @@ public interface UserAccountMapper {
 
     @Mapping(target = "role", ignore = true)
     UserProfileCreationRequest toUserProfileCreationRequest(UserAccount userAccount);
-
 }

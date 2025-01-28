@@ -1,4 +1,4 @@
-package com.example.IdentityService.num;
+package com.example.IdentityService.enumeration;
 
 import lombok.Getter;
 

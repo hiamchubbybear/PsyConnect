@@ -1,4 +1,4 @@
-import 'package:PsyConnect/widgets/components/login.dart';
+import 'package:PsyConnect/page/login_page.dart';
 import 'package:flutter/material.dart';
 
 class Setting extends StatefulWidget {

@@ -1,26 +1,17 @@
 package com.example.IdentityService;
 
-import com.example.IdentityService.dto.request.AuthenticationRequest;
-import com.example.IdentityService.model.RoleEntity;
-import com.example.IdentityService.model.UserAccount;
-import com.example.IdentityService.repository.RoleRepository;
-import com.example.IdentityService.repository.UserAccountRepository;
-import com.example.IdentityService.service.AuthenticationService;
-import com.google.common.base.Optional;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collections;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import com.example.IdentityService.model.UserAccount;
+import com.example.IdentityService.repository.RoleRepository;
+import com.example.IdentityService.repository.UserAccountRepository;
+import com.example.IdentityService.service.AuthenticationService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
@@ -52,5 +43,4 @@ class AuthenticationServiceTest {
         user.setEmail(TEST_EMAIL);
         return user;
     }
-
 }

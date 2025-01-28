@@ -45,5 +45,19 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- Thêm phần này để yêu cầu quyền truy cập internet -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library to upload photos.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera to take pictures.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>We need access to your microphone for video recording.</string>
+
 </dict>
 </plist>

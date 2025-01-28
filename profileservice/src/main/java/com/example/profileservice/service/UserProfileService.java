@@ -3,17 +3,17 @@ package com.example.profileservice.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.profileservice.dto.UserProfileResponse;
-import com.example.profileservice.dto.request.UserProfileUpdateRequest;
-import com.example.profileservice.dto.response.UserProfileUpdateResponse;
-import com.example.profileservice.globalexceptionhandle.CustomExceptionHandler;
-import com.example.profileservice.globalexceptionhandle.ErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.example.profileservice.dto.UserProfileResponse;
 import com.example.profileservice.dto.request.UserProfileCreationRequest;
+import com.example.profileservice.dto.request.UserProfileUpdateRequest;
 import com.example.profileservice.dto.response.UserProfileCreationResponse;
+import com.example.profileservice.dto.response.UserProfileUpdateResponse;
+import com.example.profileservice.globalexceptionhandle.CustomExceptionHandler;
+import com.example.profileservice.globalexceptionhandle.ErrorCode;
 import com.example.profileservice.mapper.UserProfileMapper;
 import com.example.profileservice.model.UserProfile;
 import com.example.profileservice.repository.ProfileRepository;
@@ -52,7 +52,8 @@ public class UserProfileService {
     // Update profile
     public UserProfileUpdateResponse update(UserProfileUpdateRequest userProfileUpdateRequest, String userId) {
         // Find exists user from db
-        UserProfile existingUser = userProfileRepository.findByUserId(userId)
+        UserProfile existingUser = userProfileRepository
+                .findByUserId(userId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOTFOUND));
         log.debug("Updating profile for userId: {}", existingUser.getUserId());
         // Mapping to user profile for existed profile
