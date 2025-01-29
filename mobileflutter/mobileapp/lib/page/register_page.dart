@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:PsyConnect/page/forgot_page.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
+import 'package:PsyConnect/service/account_service/image.dart';
 import 'package:PsyConnect/service/account_service/register.dart';
 import 'package:PsyConnect/toasting&loading/toast.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
       r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
   RegExp mailRegex =
       RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-      RegisterService registerService = RegisterService();
+  RegisterService registerService = RegisterService();
   File? _image;
   final ImagePicker _picker = ImagePicker();
   bool showProfileFields = false;
@@ -38,6 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  final ImageService imageService = ImageService();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController retypePasswordController =
@@ -117,10 +119,10 @@ class _RegisterPageState extends State<RegisterPage> {
               },
               child: Text(showProfileFields ? 'Profile' : 'Profile',
                   style: showProfileFields
-                      ? TextStyle(
+                      ? const TextStyle(
                           fontSize: 16,
                         )
-                      : TextStyle(
+                      : const TextStyle(
                           fontSize: 16,
                         )),
             ),
@@ -329,7 +331,7 @@ class _RegisterPageState extends State<RegisterPage> {
   _handleOnFacebookRegister() {}
 
   Future<void> _handleOnRegisterButton({required dynamic userProvider}) async {
-    Map<String, String> requestBody = {
+    Map<String, String> jsonData = {
       "username": usernameController.text,
       "password": passwordController.text,
       "firstName": firstNameController.text,
@@ -339,6 +341,12 @@ class _RegisterPageState extends State<RegisterPage> {
       "email": emailController.text,
       "role": roleController.text,
     };
-    registerService.registerHandle(requestBody: requestBody, userProvider: userProvider);
+    if (_image != null) {
+      await registerService.registerHandle(
+        requestBody: jsonData,
+        userProvider: userProvider,
+        image: _image
+      );
+    }
   }
 }
