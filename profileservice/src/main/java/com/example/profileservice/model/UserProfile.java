@@ -21,37 +21,14 @@ import lombok.*;
 @AllArgsConstructor()
 @Node("user_profile")
 public class UserProfile {
-
-    @Id
-    @GeneratedValue(UUIDStringGenerator.class)
-    private String profileId;
-
-    @Property("userId")
-    @NotNull
-    private String userId;
-
-    @Property("username")
-    private String username;
-
-    @Property("firstName")
-    private String firstName;
-
-    @Property("lastName")
-    private String lastName;
-
-    @Property("dob")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dob;
-
-    @Property("address")
-    private String address;
-
-    @Property("gender")
-    private String gender;
-
-    @Property("avatarUri")
-    private String avatarUri;
-
-    @Transient
-    private String elementId;
+    private @GeneratedValue(UUIDStringGenerator.class) @Id String profileId;
+    private @Property("userId") @NotNull String userId;
+    private @Property("username") String username;
+    private @Property("firstName") String firstName;
+    private @Property("lastName") String lastName;
+    private @Property("dob") @JsonFormat(pattern = "yyyy-MM-dd") LocalDate dob;
+    private @Property("address") String address;
+    private @Property("gender") String gender;
+    private @Property("avatarUri") String avatarUri;
+    private @Transient String elementId;
 }

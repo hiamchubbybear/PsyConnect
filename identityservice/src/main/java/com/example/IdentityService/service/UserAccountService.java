@@ -37,14 +37,18 @@ public class UserAccountService {
     UserAccountRepository accountRepository;
 
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
+        // Validate if the user not found
         if (userAccountRepository.existsByUsername(request.getUsername()))
             throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
+        // Validate if the email not found
         if (userAccountRepository.existsByEmail(request.getEmail()))
             throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
-        Set<RoleEntity> roles = new HashSet<>();
+        // Find all role and save it to our response data
+        Set<RoleEntity> roles = new HashSet<>(); // Get the first role Admin ->  Therapist -> Client
         roleRepository.findById(request.getRole()).ifPresentOrElse(roles::add, () -> {
             throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
         });
+        // Logging
         roles.forEach(roleEntity -> log.info("Role {}", roleEntity));
         UserAccount account = UserAccount.builder()
                 .username(request.getUsername())
@@ -52,13 +56,19 @@ public class UserAccountService {
                 .password(PasswordEncodingService.encoder(request.getPassword()))
                 .role(roles)
                 .build();
+        // Get the data saved to "savedAccount"
         var savedAccount = accountRepository.save(account);
+        // Logging "savedAccount" to audit action and activity
         log.info("Created account: {}", savedAccount.getUserId());
+
         UserProfileCreationRequest temp = mapper.toAccountResponse(request);
+        // Set the userId to identity the account id
         temp.setUserId(account.getUserId());
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        // Trigger to Profile Service Request -> POST -x http://localhost:8081/profile/user
         profileRepository.createProfile(temp);
+        // Mapping and logging and return to client response
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
                 .password(account.getPassword())
