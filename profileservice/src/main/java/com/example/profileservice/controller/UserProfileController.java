@@ -1,8 +1,10 @@
 package com.example.profileservice.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.profileservice.apiresponse.ApiResponse;
 import com.example.profileservice.dto.UserProfileResponse;
@@ -28,8 +30,9 @@ public class UserProfileController {
     Only trigger with openfeign to listen http request
      */
     @PostMapping("/user")
-    ApiResponse<UserProfileCreationResponse> createUserProfile(@RequestBody UserProfileCreationRequest body) {
-        return new ApiResponse<>(userProfileService.create(body));
+    ApiResponse<UserProfileCreationResponse> createUserProfile(
+            @RequestBody UserProfileCreationRequest body, @RequestPart MultipartFile file) throws IOException {
+        return new ApiResponse<>(userProfileService.create(body, file));
     }
 
     // Update user profile by user id

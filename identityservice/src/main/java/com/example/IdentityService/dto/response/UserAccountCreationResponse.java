@@ -12,4 +12,5 @@ public class UserAccountCreationResponse {
     String password;
     String email;
     String role;
+    String imageUri;
 }

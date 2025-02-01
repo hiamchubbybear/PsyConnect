@@ -6,6 +6,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.IdentityService.dto.request.UserAccountCreationRequest;
 import com.example.IdentityService.dto.request.UserProfileCreationRequest;
@@ -36,7 +37,7 @@ public class UserAccountService {
     UserAccountMapper mapper;
     UserAccountRepository accountRepository;
 
-    public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
+    public UserAccountCreationResponse createAccount(UserAccountCreationRequest request, MultipartFile file) {
         // Validate if the user not found
         if (userAccountRepository.existsByUsername(request.getUsername()))
             throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
@@ -67,7 +68,7 @@ public class UserAccountService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         // Trigger to Profile Service Request -> POST -x http://localhost:8081/profile/user
-        profileRepository.createProfile(temp);
+        profileRepository.createProfile(temp, file);
         // Mapping and logging and return to client response
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
