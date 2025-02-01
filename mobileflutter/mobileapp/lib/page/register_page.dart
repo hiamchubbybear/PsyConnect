@@ -1,9 +1,11 @@
+import 'dart:core';
 import 'dart:io';
 
 import 'package:PsyConnect/page/forgot_page.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:PsyConnect/service/account_service/image.dart';
 import 'package:PsyConnect/service/account_service/register.dart';
+import 'package:PsyConnect/service/logic.dart';
 import 'package:PsyConnect/toasting&loading/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
@@ -40,6 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   final ImageService imageService = ImageService();
+  BusinessLogic businessLogic = BusinessLogic();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController retypePasswordController =
@@ -331,7 +334,7 @@ class _RegisterPageState extends State<RegisterPage> {
   _handleOnFacebookRegister() {}
 
   Future<void> _handleOnRegisterButton({required dynamic userProvider}) async {
-    Map<String, String> jsonData = {
+    Map<String, dynamic> jsonData = {
       "username": usernameController.text,
       "password": passwordController.text,
       "firstName": firstNameController.text,
@@ -340,13 +343,13 @@ class _RegisterPageState extends State<RegisterPage> {
       "gender": genderController.text,
       "email": emailController.text,
       "role": roleController.text,
+      "avatarUri": null
     };
     if (_image != null) {
       await registerService.registerHandle(
-        requestBody: jsonData,
-        userProvider: userProvider,
-        image: _image
-      );
+          requestBody: jsonData,
+          userProvider: userProvider,
+          file: _image as File);
     }
   }
 }

@@ -2,6 +2,7 @@ package com.example.profileservice.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
@@ -29,6 +30,6 @@ public class UserProfile {
     private @Property("dob") @JsonFormat(pattern = "yyyy-MM-dd") LocalDate dob;
     private @Property("address") String address;
     private @Property("gender") String gender;
-    private @Property("avatarUri") String avatarUri;
+    private @Lob @Property("avatarUri") byte avatarUri;
     private @Transient String elementId;
 }

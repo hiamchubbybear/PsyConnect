@@ -65,7 +65,7 @@ public class OAuth2Service {
             // Logging
             log.info("Trigger to profile service {} ", savedUser.getUserId());
             // Trigger to profile service with http:localhost:8081/profile/create
-            profileRepository.createProfile(createProfileRequest);
+            profileRepository.createProfile(createProfileRequest, null);
             // Mapping
             var response =
                     createProfileOauth2GoogleMapper.toCreateProfileOauth2Google(createProfileOauth2GoogleRequest);
