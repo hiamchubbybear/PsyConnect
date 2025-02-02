@@ -16,7 +16,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileCreationRequest {
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     UUID userId;
+
     String username;
     String firstName;
     String lastName;

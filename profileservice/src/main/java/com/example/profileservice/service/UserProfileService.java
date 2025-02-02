@@ -1,13 +1,11 @@
 package com.example.profileservice.service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.profileservice.dto.UserProfileResponse;
 import com.example.profileservice.dto.request.UserProfileCreationRequest;
@@ -31,14 +29,9 @@ public class UserProfileService {
     private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
     ProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
-    ImageService imageService;
     // Create user profile
-    public UserProfileCreationResponse create(UserProfileCreationRequest request, MultipartFile file)
-            throws IOException {
+    public UserProfileCreationResponse create(UserProfileCreationRequest request) {
         log.debug("Create user with userId {}", request.getUserId());
-
-        // Upload image
-        imageService.uploadImageFromMultiPartedFile(file, request.getUserId());
         // Mapping user profile from request
         UserProfile profile = userProfileMapper.toUserProfileMapper(request);
         // Save user profile from request

@@ -5,6 +5,7 @@ import 'package:PsyConnect/page/forgot_page.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:PsyConnect/service/account_service/image.dart';
 import 'package:PsyConnect/service/account_service/register.dart';
+import 'package:PsyConnect/service/api/cloudinary_api_service.dart';
 import 'package:PsyConnect/service/logic.dart';
 import 'package:PsyConnect/toasting&loading/toast.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  final CloudinaryApiService cloudinaryApiService = CloudinaryApiService();
   final ImageService imageService = ImageService();
   BusinessLogic businessLogic = BusinessLogic();
   final TextEditingController usernameController = TextEditingController();
@@ -334,22 +336,28 @@ class _RegisterPageState extends State<RegisterPage> {
   _handleOnFacebookRegister() {}
 
   Future<void> _handleOnRegisterButton({required dynamic userProvider}) async {
-    Map<String, dynamic> jsonData = {
-      "username": usernameController.text,
-      "password": passwordController.text,
-      "firstName": firstNameController.text,
-      "lastName": lastNameController.text,
-      "address": addressController.text,
-      "gender": genderController.text,
-      "email": emailController.text,
-      "role": roleController.text,
-      "avatarUri": null
-    };
     if (_image != null) {
-      await registerService.registerHandle(
-          requestBody: jsonData,
-          userProvider: userProvider,
-          file: _image as File);
+      try {
+        String? cloudinaryUrlImage =
+            await cloudinaryApiService.uploadImage(_image as File);
+            print(cloudinaryUrlImage);
+        Map<String, String> jsonData = {
+          "username": usernameController.text.toLowerCase(),
+          "password": passwordController.text,
+          "firstName": firstNameController.text,
+          "lastName": lastNameController.text,
+          "address": addressController.text,
+          "gender": genderController.text,
+          "email": emailController.text,
+          "role": roleController.text,
+          "avatarUri": cloudinaryUrlImage ?? ""
+        };
+
+        await registerService.registerHandle(
+            requestBody: jsonData, userProvider: userProvider);
+      } catch (e) {
+        ToastService.showErrorToast(message: "Some error ${e}");
+      }
     }
   }
 }

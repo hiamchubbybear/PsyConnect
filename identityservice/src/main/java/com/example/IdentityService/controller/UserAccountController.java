@@ -1,8 +1,6 @@
 package com.example.IdentityService.controller;
 
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.IdentityService.apiresponse.ApiResponse;
 import com.example.IdentityService.apiresponse.CustomResponseWrapper;
@@ -21,11 +19,10 @@ import lombok.experimental.FieldDefaults;
 public class UserAccountController {
     UserAccountService userAccountService;
 
-    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/create")
     @CustomResponseWrapper
-    public ApiResponse<UserAccountCreationResponse> register(
-            @RequestPart("json") UserAccountCreationRequest accountRequest, @RequestPart("file") MultipartFile file) {
-        return new ApiResponse<>(userAccountService.createAccount(accountRequest, file));
+    public ApiResponse<UserAccountCreationResponse> register(@RequestBody UserAccountCreationRequest accountRequest) {
+        return new ApiResponse<>(userAccountService.createAccount(accountRequest));
     }
 
     @GetMapping("/hello")
