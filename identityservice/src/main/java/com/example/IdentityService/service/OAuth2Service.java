@@ -17,7 +17,7 @@ import com.example.IdentityService.model.RoleEntity;
 import com.example.IdentityService.model.UserAccount;
 import com.example.IdentityService.repository.RoleRepository;
 import com.example.IdentityService.repository.UserAccountRepository;
-import com.example.IdentityService.repository.https.ProfileRepository;
+import com.example.IdentityService.repository.feign.ProfileRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

@@ -15,13 +15,16 @@ class ApiService {
   }) async {
     final Uri uri = Uri.parse("$_baseUrl/$endpoint");
     try {
+      var encodedJson = jsonEncode(body);
       final response = await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
+        body: encodedJson,
       );
-      print("${uri}");
+
+      print("${encodedJson}");
       if (response.statusCode == 200) {
+
         return jsonDecode(response.body);
       } else {
         throw Exception("Error : ${response.statusCode}");

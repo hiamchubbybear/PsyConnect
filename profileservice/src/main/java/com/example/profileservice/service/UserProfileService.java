@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.profileservice.dto.UserProfileResponse;
@@ -19,16 +20,21 @@ import com.example.profileservice.model.UserProfile;
 import com.example.profileservice.repository.ProfileRepository;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Service
-@RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserProfileService {
     private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
     ProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
+
+    @Autowired
+    public UserProfileService(ProfileRepository userProfileRepository, UserProfileMapper userProfileMapper) {
+        this.userProfileRepository = userProfileRepository;
+        this.userProfileMapper = userProfileMapper;
+    }
+
     // Create user profile
     public UserProfileCreationResponse create(UserProfileCreationRequest request) {
         log.debug("Create user with userId {}", request.getUserId());
@@ -45,7 +51,8 @@ public class UserProfileService {
         // Find user by profileId
         Optional<UserProfile> profile = userProfileRepository.findById(profileId);
         // Mapping to response user profile
-        return userProfileMapper.toUserProfileResponse(profile.orElse(null));
+        return userProfileMapper.toUserProfileResponse(
+                profile.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOTFOUND)));
     }
 
     // Update profile

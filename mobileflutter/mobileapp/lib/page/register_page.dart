@@ -350,7 +350,7 @@ class _RegisterPageState extends State<RegisterPage> {
           "gender": genderController.text,
           "email": emailController.text,
           "role": roleController.text,
-          "avatarUri": cloudinaryUrlImage ?? ""
+          "avatarUri": cloudinaryUrlImage.toString() ?? ""
         };
 
         await registerService.registerHandle(
