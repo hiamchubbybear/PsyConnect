@@ -39,10 +39,10 @@ public class UserAccountService {
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
         // Validate if the user not found
         if (userAccountRepository.existsByUsername(request.getUsername()))
-            throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
+            throw new CustomExceptionHandler(ErrorCode.USERNAME_ALREADY_EXISTS);
         // Validate if the email not found
         if (userAccountRepository.existsByEmail(request.getEmail()))
-            throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
+            throw new CustomExceptionHandler(ErrorCode.EMAIL_ALREADY_EXISTS);
         // Find all role and save it to our response data
         Set<RoleEntity> roles = new HashSet<>(); // Get the first role Admin ->  Therapist -> Client
         roleRepository.findById(request.getRole()).ifPresentOrElse(roles::add, () -> {

@@ -9,28 +9,34 @@ class ApiService {
       ? androidBaseUrlProfileService
       : iosBaseUrlProfileService;
 
-  static Future<Map<String, dynamic>> post({
+  static Future<http.Response> post({
     required String endpoint,
     required Map<String, String> body,
   }) async {
     final Uri uri = Uri.parse("$_baseUrl/$endpoint");
+    var encodedJson = jsonEncode(body);
+
     try {
-      var encodedJson = jsonEncode(body);
-      final response = await http.post(
+      return await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
         body: encodedJson,
       );
-
-      print("${encodedJson}");
-      if (response.statusCode == 200) {
-
-        return jsonDecode(response.body);
-      } else {
-        throw Exception("Error : ${response.statusCode}");
-      }
     } catch (e) {
-      throw Exception("Failed to make request to backend: $e");
+      throw Exception("Failed to connect to backend: $e");
+    }
+  }
+
+  static Future<http.Response> postWithParameters({
+    required String endpoint,
+    required String param,
+    required String paramValue,
+  }) async {
+    final Uri uri = Uri.parse("$_baseUrl/$endpoint?$param=$paramValue");
+    try {
+      return await http.post(uri);
+    } catch (e) {
+      throw new Exception("There are some error $e");
     }
   }
 }
