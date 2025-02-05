@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public enum ErrorCode {
     // NOT FOUND _ RESPONSE
-    USER_NOTFOUND(001, "User not found", HttpStatus.INTERNAL_SERVER_ERROR),
+    USER_NOTFOUND(001, "User not found", HttpStatus.NOT_FOUND),
     IMAGES_NOTFOUND(001, "Images not found", HttpStatus.NOT_FOUND),
     TOKEN_NOTFOUND(001, "Token not found or expired", HttpStatus.NOT_FOUND),
     RESOURCE_NOT_FOUND(001, "Resource not found", HttpStatus.NOT_FOUND),

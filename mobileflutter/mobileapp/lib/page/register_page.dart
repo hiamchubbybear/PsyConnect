@@ -1,7 +1,6 @@
 import 'dart:core';
 import 'dart:io';
 
-import 'package:PsyConnect/page/forgot_page.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:PsyConnect/service/account_service/image.dart';
 import 'package:PsyConnect/service/account_service/register.dart';
@@ -21,6 +20,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  bool _isLoading = false;
+  final _formKey = GlobalKey<FormState>();
+
   RegExp passReg = RegExp(
       r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
   RegExp mailRegex =
@@ -29,6 +31,17 @@ class _RegisterPageState extends State<RegisterPage> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
   bool showProfileFields = false;
+  _setStartLoading() {
+    setState(() {
+      _isLoading = true;
+    });
+    Future.delayed(Duration(seconds: 3), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
@@ -67,41 +80,42 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.photo_library),
-                        title: const Text('Choose from gallery'),
-                        onTap: () {
-                          _pickImage(ImageSource.gallery);
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.camera_alt),
-                        title: const Text('Take a photo'),
-                        onTap: () {
-                          _pickImage(ImageSource.camera);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: CircleAvatar(
-                radius: 100,
-                backgroundImage: _image != null
-                    ? FileImage(_image!)
-                    : const NetworkImage(
-                        'https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg',
-                      ) as ImageProvider,
-              ),
-            ),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.photo_library),
+                          title: const Text('Choose from gallery'),
+                          onTap: () {
+                            _pickImage(ImageSource.gallery);
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.camera_alt),
+                          title: const Text('Take a photo'),
+                          onTap: () {
+                            _pickImage(ImageSource.camera);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage: _image != null
+                      ? FileImage(_image!)
+                      : const NetworkImage(
+                          'https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg',
+                        ) as ImageProvider,
+                  backgroundColor:
+                      Colors.transparent, // Đảm bảo nền không bị che
+                )),
             const SizedBox(height: 16),
             ElevatedButton(
               style: ButtonStyle(
@@ -138,13 +152,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: TextFormField(
-                          textCapitalization: TextCapitalization.sentences,
-                          controller: firstNameController,
-                          decoration: const InputDecoration(
-                              labelText: 'My first name is'),
-                        ),
-                      ),
+                          child: TextFormField(
+                        textCapitalization: TextCapitalization.sentences,
+                        controller: firstNameController,
+                        decoration: const InputDecoration(
+                            labelText: 'My first name is'),
+                        onChanged: (value) => setState(() {
+                          firstNameController.text = value;
+                        }),
+                      )),
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextFormField(
@@ -152,8 +168,11 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: lastNameController,
                           decoration: const InputDecoration(
                               labelText: 'My last name is'),
+                          onChanged: (value) => setState(() {
+                            lastNameController.text = value;
+                          }),
                         ),
-                      ),
+                      )
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -228,10 +247,18 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: addressController,
-                    textInputAction: TextInputAction.route,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                  ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Address is required';
+                        }
+                        return null;
+                      },
+                      controller: addressController,
+                      textInputAction: TextInputAction.route,
+                      decoration: const InputDecoration(labelText: 'Address'),
+                      onChanged: (value) => setState(() {
+                            addressController.text = value;
+                          })),
                 ],
               ),
             const SizedBox(height: 16),
@@ -253,10 +280,10 @@ class _RegisterPageState extends State<RegisterPage> {
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
               validator: (password) {
-                if (password == null && !passReg.hasMatch(password!)) {
-                  ToastService.showErrorToast(
-                      message: "password must be longer than 3 characters");
-                  return "password must be greater than 3 characters";
+                if (password == null &&
+                    !passReg.hasMatch(password!) &&
+                    password.length > 3) {
+                  return "Password must be greater than 3 characters";
                 }
                 return null;
               },
@@ -268,7 +295,7 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: const InputDecoration(labelText: 'Confirm password'),
               validator: (retypePass) {
                 if (retypePass != passwordController.text) {
-                  return "Confirm password doesn't match with password";
+                  return "Password and Confirm password doesn't match";
                 }
                 return null;
               },
@@ -279,14 +306,29 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
                 validator: (email) {
-                  return (mailRegex.hasMatch(email!)) ? "Invalid email" : null;
+                  if (email == null || email.isEmpty) {
+                    return "Email cannot be empty";
+                  }
+                  if (!mailRegex.hasMatch(email)) {
+                    return "Invalid email format";
+                  }
+                  return null;
                 }),
             const SizedBox(height: 8),
             SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () =>
-                  _handleOnRegisterButton(userProvider: userProvider),
-              child: const Text('Register'),
+              onPressed: () {
+                // if (_formKey.currentState!.validate()) {
+                _setStartLoading();
+                _handleOnRegisterButton(userProvider: userProvider);
+                // } else {
+                //   ToastService.showErrorToast(
+                //       message: "Please fix the errors in the form");
+                // }
+              },
+              child: (!_isLoading)
+                  ? const Text('Register')
+                  : const CircularProgressIndicator(),
             ),
             const SizedBox(height: 16),
             Row(
@@ -315,10 +357,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 const Text("Forgot your password?"),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ForgotPassword()),
-                    );
+                    // Navigator.push(
+                    // context,
+                    // MaterialPageRoute(builder: (context) => }),
+                    // );
                   },
                   child: const Text('Reset it'),
                 ),
@@ -338,9 +380,12 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _handleOnRegisterButton({required dynamic userProvider}) async {
     if (_image != null) {
       try {
-        String? cloudinaryUrlImage =
-            await cloudinaryApiService.uploadImage(_image as File);
-            print(cloudinaryUrlImage);
+        String? cloudinaryUrlImage = await cloudinaryApiService.uploadImage(
+            imageFile: _image as File, username: usernameController.text);
+        print(cloudinaryUrlImage);
+        if (cloudinaryUrlImage == null) {
+          ToastService.showErrorToast(message: "Image doesn't exceptable");
+        }
         Map<String, String> jsonData = {
           "username": usernameController.text.toLowerCase(),
           "password": passwordController.text,
@@ -352,7 +397,6 @@ class _RegisterPageState extends State<RegisterPage> {
           "role": roleController.text,
           "avatarUri": cloudinaryUrlImage.toString() ?? ""
         };
-
         await registerService.registerHandle(
             requestBody: jsonData, userProvider: userProvider);
       } catch (e) {

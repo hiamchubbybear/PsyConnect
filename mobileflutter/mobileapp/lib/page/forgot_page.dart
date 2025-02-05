@@ -1,35 +1,48 @@
 import 'package:flutter/material.dart';
 
-class ForgotPassword extends StatelessWidget {
-  const ForgotPassword({super.key});
+class VerifiedPage extends StatelessWidget {
+  const VerifiedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final emailConfirmController = TextEditingController();
     return Scaffold(
       body: Align(
         alignment: Alignment.center,
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset("assets/gifs/forgot_password_animation.gif"),
-              const SizedBox(height: 10),
-              const SizedBox(height: 10),
-              TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Email',
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset("assets/gifs/forgot_password_animation.gif"),
+                const SizedBox(height: 10),
+                TextFormField(
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: 'Verified email',
+                    ),
+                    onChanged: (value) {
+                      setState() {
+                        emailConfirmController.text = value!;
+                      }
+                    }),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () =>
+                      _onVerifiedHandle(email: emailConfirmController.text),
+                  child: const Text('Send'),
                 ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Send'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+      
     );
+  }
+
+  void _onVerifiedHandle({required String email}) {
+
   }
 }
