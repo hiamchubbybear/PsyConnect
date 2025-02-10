@@ -1,11 +1,43 @@
+import 'package:PsyConnect/service/account_service/forgot.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 
-class VerifiedPage extends StatelessWidget {
-  const VerifiedPage({super.key});
+class ForgotPage extends StatefulWidget {
+  const ForgotPage({super.key});
+
+  @override
+  State<ForgotPage> createState() => _ForgotPageState();
+}
+
+class _ForgotPageState extends State<ForgotPage> {
+  final TextEditingController verifiedCodeController = TextEditingController();
+  ForgotService forgotService = ForgotService();
+
+  bool isSent = false;
+  String savedEmail = ""; // Lưu email khi gửi yêu cầu
+
+  void _changeSentStatus(String email) {
+    setState(() {
+      isSent = true;
+      savedEmail = email; // Lưu email để dùng khi xác nhận mã
+    });
+  }
+
+  void _onVerifiedHandle({required String email}) {
+    print("Processing email: $email");
+    _changeSentStatus(email);
+  }
+
+  void _onVerifiedCode({required String token}) {
+    if (savedEmail.isNotEmpty) {
+      forgotService.registerHandle(email: savedEmail, token: token);
+    } else {
+      print("Error: Email is missing");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final emailConfirmController = TextEditingController();
     return Scaffold(
       body: Align(
         alignment: Alignment.center,
@@ -17,32 +49,40 @@ class VerifiedPage extends StatelessWidget {
               children: [
                 Image.asset("assets/gifs/forgot_password_animation.gif"),
                 const SizedBox(height: 10),
-                TextFormField(
-                    decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: 'Verified email',
-                    ),
-                    onChanged: (value) {
-                      setState() {
-                        emailConfirmController.text = value!;
-                      }
-                    }),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () =>
-                      _onVerifiedHandle(email: emailConfirmController.text),
-                  child: const Text('Send'),
-                ),
+                if (!isSent) ...[
+                  ElevatedButton(
+                    onPressed: () {
+                      String email =
+                          "user@example.com"; // Lấy email từ API hoặc context
+                      print("Sending request for email: $email");
+                      _onVerifiedHandle(email: email);
+                    },
+                    child: const Text('Send Verification Code'),
+                  )
+                ] else ...[
+                  OtpTextField(
+                    numberOfFields: 5,
+                    showFieldAsBox: false,
+                    borderWidth: 4.0,
+                    onSubmit: (String value) {
+                      setState(() {
+                        verifiedCodeController.text = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      _onVerifiedCode(token: verifiedCodeController.text);
+                    },
+                    child: const Text('Confirm Code'),
+                  ),
+                ]
               ],
             ),
           ),
         ),
       ),
-      
     );
-  }
-
-  void _onVerifiedHandle({required String email}) {
-
   }
 }

@@ -6,12 +6,12 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static final String _baseUrl = Platform.isAndroid
-      ? androidBaseUrlProfileService
-      : iosBaseUrlProfileService;
+      ? androidBaseUrl
+      : iosBaseUrl;
 
   static Future<http.Response> post({
     required String endpoint,
-    required Map<String, String> body,
+    required Map<String, dynamic> body,
   }) async {
     final Uri uri = Uri.parse("$_baseUrl/$endpoint");
     var encodedJson = jsonEncode(body);

@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.IdentityService.model.UserAccount;
-import com.example.IdentityService.repository.RoleRepository;
-import com.example.IdentityService.repository.UserAccountRepository;
-import com.example.IdentityService.service.AuthenticationService;
+import dev.psyconnect.identity_service.model.UserAccount;
+import dev.psyconnect.identity_service.repository.RoleRepository;
+import dev.psyconnect.identity_service.repository.UserAccountRepository;
+import dev.psyconnect.identity_service.service.AuthenticationService;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {

@@ -1,0 +1,52 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Flutter
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+android/.gradle/
+android/app/build/
+
+# Spring Boot
+target/
+*.jar
+*.war
+*.ear
+.mvn/
+
+# Golang
+bin/
+obj/
+*.exe
+*.out
+*.test
+cover.out
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+*.bak
+
+* text=auto
+*.sh text eol=lf
+*.cmd text eol=crlf

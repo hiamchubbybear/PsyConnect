@@ -1,4 +1,4 @@
-import 'package:PsyConnect/page/forgot_page.dart';
+import 'package:PsyConnect/page/login_page.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -21,14 +21,17 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'PsyConnect',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 125, 170, 249)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 125, 170, 249)),
         useMaterial3: true,
       ),
       supportedLocales: const [
         Locale('vi', 'VN'),
         Locale('en', 'US'),
       ],
-      home: const VerifiedPage(),
+      home:
+          // const VerifiedPage()
+          const LoginPage(),
     );
   }
 }
