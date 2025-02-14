@@ -1,6 +1,5 @@
-package dev.psyconnect.identity_service.dto.request;
+package com.example.IdentityService.dto.request;
 
-import dev.psyconnect.identity_service.configuration.ValidateLoginType;
 import lombok.*;
 
 @Getter
@@ -11,7 +10,4 @@ import lombok.*;
 public class AuthenticationRequest {
     private String username;
     private String password;
-
-    @ValidateLoginType
-    private String loginType;
 }
