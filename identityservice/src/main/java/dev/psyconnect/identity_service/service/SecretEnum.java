@@ -1,0 +1,122 @@
+package dev.psyconnect.identity_service.service;
+
+import java.util.Random;
+
+public enum SecretEnum {
+    MESSAGE_1("Are you sure you want to leave us? We'll miss you!"),
+    MESSAGE_2("This is goodbye? We hate to see you go!"),
+    MESSAGE_3("Leaving already? We’d love to have you stay!"),
+    MESSAGE_4("Think twice! Your journey with us has been amazing!"),
+    MESSAGE_5("We value you! Are you sure about this?"),
+    MESSAGE_6("If you leave, a part of us goes with you!"),
+    MESSAGE_7("We’re sad to see you go! Is there anything we can do?"),
+    MESSAGE_8("You’ll always have a place here! Do you really want to leave?"),
+    MESSAGE_9("Come back anytime! Are you really leaving now?"),
+    MESSAGE_10("Goodbye is never easy! Are you absolutely sure?"),
+    MESSAGE_11("The memories we've created together are priceless!"),
+    MESSAGE_12("Every goodbye is a new beginning, but are you really ready?"),
+    MESSAGE_13("Your journey with us isn’t over yet!"),
+    MESSAGE_14("We’ve shared some great moments! Would you reconsider?"),
+    MESSAGE_15("If you need a break, we’ll be here when you return!"),
+    MESSAGE_16("You’ve made an impact here! Are you sure you want to go?"),
+    MESSAGE_17("We’re always improving – stick around and see what’s next!"),
+    MESSAGE_18("You’re more than a user, you’re part of our family!"),
+    MESSAGE_19("Leaving us means missing out on what’s coming next!"),
+    MESSAGE_20("You’re an important part of our story – don’t leave yet!"),
+    MESSAGE_21("Before you go, is there anything we can improve for you?"),
+    MESSAGE_22("Your presence makes this community better!"),
+    MESSAGE_23("If you leave, who will brighten our days?"),
+    MESSAGE_24("We hope you’re making the best decision for yourself!"),
+    MESSAGE_25("If you ever change your mind, we’ll be waiting!"),
+    MESSAGE_26("It’s hard to say goodbye – are you sure?"),
+    MESSAGE_27("What if the best moments are yet to come?"),
+    MESSAGE_28("You might regret this later! Give it one more thought."),
+    MESSAGE_29("You mean a lot to us! We hate to see you leave."),
+    MESSAGE_30("Leaving is permanent, but regrets aren’t!"),
+    MESSAGE_31("This is not just an account, it’s part of your journey!"),
+    MESSAGE_32("Are you really sure about this decision?"),
+    MESSAGE_33("We wish you the best, but we’d love to keep you here!"),
+    MESSAGE_34("A simple click can change everything – think again!"),
+    MESSAGE_35("It won’t be the same without you!"),
+    MESSAGE_36("If you leave, there’s no turning back!"),
+    MESSAGE_37("We’re here to help if you have any concerns!"),
+    MESSAGE_38("Have you tried reaching out to us first?"),
+    MESSAGE_39("Before you go, is there anything we can fix for you?"),
+    MESSAGE_40("We’re working hard to make things better! Stay with us!"),
+    MESSAGE_41("Every user is special, and that includes you!"),
+    MESSAGE_42("Your feedback has helped us grow! Will you stay?"),
+    MESSAGE_43("A break might help instead of leaving permanently!"),
+    MESSAGE_44("Once you leave, there’s no easy way back!"),
+    MESSAGE_45("We appreciate you – give us one last chance!"),
+    MESSAGE_46("Have you explored all your options?"),
+    MESSAGE_47("Let’s talk! We’re here to help."),
+    MESSAGE_48("Saying goodbye is never easy – are you 100% sure?"),
+    MESSAGE_49("Your experience matters to us!"),
+    MESSAGE_50("We care about your happiness. Can we help?"),
+    MESSAGE_51("Our journey together doesn’t have to end today!"),
+    MESSAGE_52("Your voice is important! Would you like to share your thoughts?"),
+    MESSAGE_53("Maybe all you need is a little time away!"),
+    MESSAGE_54("Great things are ahead – stay with us!"),
+    MESSAGE_55("You’re making a big decision – take a moment!"),
+    MESSAGE_56("We’ll always be here for you!"),
+    MESSAGE_57("We’d love to hear what made you decide this!"),
+    MESSAGE_58("We value every moment we’ve had with you!"),
+    MESSAGE_59("Our community won’t be the same without you!"),
+    MESSAGE_60("It’s sad to see a great user leave!"),
+    MESSAGE_61("Your presence makes a difference here!"),
+    MESSAGE_62("Every goodbye leaves a hole in our hearts!"),
+    MESSAGE_63("We’re sad, but we respect your decision!"),
+    MESSAGE_64("We hope this isn’t truly goodbye!"),
+    MESSAGE_65("If you ever need us, we’re just one click away!"),
+    MESSAGE_66("We’ll keep improving, thanks to users like you!"),
+    MESSAGE_67("Leaving is easy, but staying could be worth it!"),
+    MESSAGE_68("Have you thought about what you’ll miss?"),
+    MESSAGE_69("Maybe this isn’t the right time to say goodbye!"),
+    MESSAGE_70("We wish you well, no matter what you decide!"),
+    MESSAGE_71("No pressure, but we’d love to see you stay!"),
+    MESSAGE_72("You’ve been with us for so long – reconsider?"),
+    MESSAGE_73("What if the best is yet to come?"),
+    MESSAGE_74("Leaving now means missing out on future updates!"),
+    MESSAGE_75("Think about all the good times we’ve had!"),
+    MESSAGE_76("We cherish every user, especially you!"),
+    MESSAGE_77("Life moves forward, but do you have to leave now?"),
+    MESSAGE_78("We’re not just a service, we’re a community!"),
+    MESSAGE_79("Your journey with us has been meaningful!"),
+    MESSAGE_80("If you’re unhappy, let’s find a solution together!"),
+    MESSAGE_81("Is there anything we can do to make you stay?"),
+    MESSAGE_82("We’re here to make things better – give us a chance!"),
+    MESSAGE_83("Don’t let frustration make the final decision!"),
+    MESSAGE_84("You’ve built something special here!"),
+    MESSAGE_85("It won’t be the same without you!"),
+    MESSAGE_86("Let’s make things better together!"),
+    MESSAGE_87("There’s always a way to improve – stay and see!"),
+    MESSAGE_88("If you ever change your mind, we’d love to have you back!"),
+    MESSAGE_89("You’ve been an amazing part of our journey!"),
+    MESSAGE_90("This is more than an account; it’s a connection!"),
+    MESSAGE_91("You are always welcome here!"),
+    MESSAGE_92("Think twice – is leaving the best option?"),
+    MESSAGE_93("We can’t force you to stay, but we’d love if you did!"),
+    MESSAGE_94("Goodbye? We hope not!"),
+    MESSAGE_95("What if there’s something new you haven’t tried yet?"),
+    MESSAGE_96("We’d love to hear what’s making you leave!"),
+    MESSAGE_97("You’ve brought so much value here!"),
+    MESSAGE_98("A fresh start doesn’t always mean leaving!"),
+    MESSAGE_99("You belong here – are you sure you want to go?"),
+    MESSAGE_100("If you ever return, we’ll welcome you with open arms!");
+
+    private final String message;
+
+    SecretEnum(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public static String getRandomMessage() {
+        SecretEnum[] messages = values();
+        int randomIndex = new Random().nextInt(messages.length);
+        return messages[randomIndex].getMessage();
+    }
+}
