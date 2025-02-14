@@ -43,6 +43,7 @@ public enum ErrorCode {
 
     // UNCATEGORIZED_EXCEPTION
     UNCATEGORIZED_EXCEPTION(007, "Uncategorize Exception", HttpStatus.I_AM_A_TEAPOT), // 418
+    DELETE_ACCOUNT_FAILED(007, "An orrcur error while delete account", HttpStatus.I_AM_A_TEAPOT), // 418
 
     // NULL
     NULL_EXCEPTION(010, "Your input data is null", HttpStatus.GONE); // 410

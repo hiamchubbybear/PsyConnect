@@ -8,7 +8,7 @@
         <version>3.2.5</version>
         <relativePath/>
     </parent>
-    <groupId>com.devteria</groupId>
+    <groupId>dev.psyconnect</groupId>
     <artifactId>profile-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>profile-service</name>
@@ -114,11 +114,13 @@
         <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
-            <version>2.2.4</version>
+            <version>3.0.0</version>
         </dependency>
+
     </dependencies>
 
     <build>
+        <finalName>profileservice</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -135,10 +137,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
+                <version>3.12.1</version>  <!-- Cập nhật lên bản mới nhất -->
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>21</release>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -156,13 +157,9 @@
                             <version>${mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
-                    <compilerArgs>
-                        <arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
-                        <arg>-Amapstruct.defaultComponentModel=spring</arg>
-                        <arg>-Amapstruct.verbose=true</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -183,10 +180,10 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>com/devteria/profile/dto/**</exclude>
-                        <exclude>com/devteria/profile/entity/**</exclude>
-                        <exclude>com/devteria/profile/mapper/**</exclude>
-                        <exclude>com/devteria/profile/configuration/**</exclude>
+                        <exclude>dev/psyconnect/profile/dto/**</exclude>
+                        <exclude>dev/psyconnect/profile/entity/**</exclude>
+                        <exclude>dev/psyconnect/profile/mapper/**</exclude>
+                        <exclude>dev/psyconnect/profile/configuration/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

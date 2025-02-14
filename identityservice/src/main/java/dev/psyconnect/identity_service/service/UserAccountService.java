@@ -2,7 +2,6 @@ package dev.psyconnect.identity_service.service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -15,18 +14,16 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import dev.psyconnect.identity_service.dto.request.AcitvateAccountRequest;
-import dev.psyconnect.identity_service.dto.request.CreateAccountNotificationRequest;
-import dev.psyconnect.identity_service.dto.request.UserAccountCreationRequest;
-import dev.psyconnect.identity_service.dto.request.UserProfileCreationRequest;
+import dev.psyconnect.identity_service.dto.request.*;
 import dev.psyconnect.identity_service.dto.response.ActivateAccountResponse;
+import dev.psyconnect.identity_service.dto.response.DeleteAccountResponse;
 import dev.psyconnect.identity_service.dto.response.UserAccountCreationResponse;
 import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
-import dev.psyconnect.identity_service.model.ActivationModel;
 import dev.psyconnect.identity_service.model.RoleEntity;
+import dev.psyconnect.identity_service.model.Token;
 import dev.psyconnect.identity_service.model.UserAccount;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
@@ -49,7 +46,6 @@ public class UserAccountService {
     UserAccountRepository accountRepository;
     NotificationRepository notificationRepository;
     ActivateRepository activateRepository;
-    ZoneOffset offset = ZoneOffset.ofHours(7);
 
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
         // Validate if the user not found
@@ -84,19 +80,23 @@ public class UserAccountService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         String activateCode = String.valueOf(new Random().nextInt(90000) + 10000);
-        // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create
+        // Trigger to Profile Service Request -> POST -x http://localhost:8081/profile/internal/user
+        if (profileRepository.createProfile(temp) == null)
+            // If there are no response from Profile Service -> throw uncategorized exception
+            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+        // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create and get the
+        // response.
+        var response = notificationRepository.sendCreateEmail(CreateAccountNotificationRequest.builder()
+                .fullname(request.getFirstName() + request.getLastName())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .code(activateCode)
+                .build());
         // If response is 200 create a new Activate Model
-        if (notificationRepository
-                        .sendCreateEmail(CreateAccountNotificationRequest.builder()
-                                .fullname(request.getFirstName() + request.getLastName())
-                                .username(request.getUsername())
-                                .email(request.getEmail())
-                                .code(activateCode)
-                                .build())
-                        .status()
-                == 200) {
+        if (response.status() == 200) {
             // Create a new ActivateModel and set the expired time and issue time
-            activateRepository.save(ActivationModel.builder()
+            activateRepository.save(Token.builder()
                     .username(savedAccount.getUsername())
                     .activateId(savedAccount.getUserId())
                     .expires(Timestamp.from(
@@ -106,10 +106,10 @@ public class UserAccountService {
                     .revoked(false)
                     .build());
         }
-        // Trigger to Profile Service Request -> POST -x http://localhost:8081/profile/internal/user
-        if (profileRepository.createProfile(temp) == null)
-            // If there are no response from Profile Service -> throw a uncategorized exception
-            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        //  If status code is 500 log an error
+        else if (response.status() == 500) {
+            log.error("There are error while sending token {}", response.body());
+        }
         // Mapping and logging and return to client response
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
@@ -121,30 +121,113 @@ public class UserAccountService {
 
     @Transactional
     public ActivateAccountResponse activateAccount(AcitvateAccountRequest activateAccountRequest) {
+        // Declared and assign email
         String email = activateAccountRequest.getEmail();
+        // Log an email for audit
         log.debug("Activation Model account for user email {}", email);
+        // Check if email not exist throw an error 404 NOT FOUND
         if (!userAccountRepository.existsByEmail(email)) {
             throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
         }
+        // Declared and assign foundObject for Token Object if found assign it or else assign for null
         var foundObject = activateRepository
                 .findByToken(activateAccountRequest.getToken())
                 .orElse(null);
+        // If foundObject is null return a response facilitate failed
         if (foundObject == null) {
             return ActivateAccountResponse.builder()
                     .isSuccess(false)
                     .message("Invalid or expired activation token")
                     .build();
         }
+        // If expire time before current time return activation token has expired
         if (foundObject.getExpires().before(new Date())) {
             return ActivateAccountResponse.builder()
                     .isSuccess(false)
                     .message("Activation token has expired")
                     .build();
         }
+        // Activate account if there are no validation
         userAccountRepository.activateUser(email);
         return ActivateAccountResponse.builder()
                 .isSuccess(true)
                 .message("Account activation successful")
                 .build();
+    }
+
+    // Delete account internal use
+    public boolean deleteAccountWithoutCheck(UUID userId) {
+        try {
+            // Delete without check call only
+            userAccountRepository.deleteById(userId);
+            // Builder a response for account
+            return true;
+        } catch (Exception e) {
+            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+    }
+
+    // Delete account external use
+    public DeleteAccountResponse deleteAccount(DeleteAccountRequest deleteAccountRequest, UUID uuid) {
+        // Find the user account object
+        UserAccount userObject = userAccountRepository
+                .findById(uuid)
+                .orElseThrow(() ->
+                        // If not found throw an exception 404
+                        new CustomExceptionHandler(ErrorCode.USER_NOTFOUND));
+        log.debug("Deleting account {}", userObject.getUsername());
+        // Check if username not match or password doesn't match
+        if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
+                || PasswordEncodingService.getBCryptPasswordEncoder()
+                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+            // If not found throw an exception 418
+            throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
+        // Check if token doesn't match
+        if (!userObject.getToken().getToken().equals(deleteAccountRequest.getToken()))
+            // If not match throw an exception 407
+            throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
+        // Build an object to trigger to notification service
+        var sendObject = DeleteNotificationRequest.builder()
+                .email(deleteAccountRequest.getEmail())
+                .secret(SecretEnum.getRandomMessage())
+                .token(userObject.getToken().getToken())
+                .build();
+        // Trigger to Notification Service Request -> POST -x http://localhost:8081/noti/internal/account/delete
+        if (notificationRepository.sendDeleteEmail(sendObject).status() != 200) {
+            // If send error throw an exception 429
+            throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
+        } else
+            return DeleteAccountResponse.builder()
+                    .isSuccess(true)
+                    .secret(sendObject.getSecret())
+                    .session(UUID.randomUUID())
+                    .session(userObject.getSession())
+                    .timestamp(deleteAccountRequest.getTimestamp())
+                    .build();
+    }
+
+    public boolean deleteAccountRequest(DeleteAccountConfirmRequest removeAccountRequest, UUID uuid) {
+        // Find the user account object
+        UserAccount userObject = userAccountRepository
+                .findById(uuid)
+                .orElseThrow(() ->
+                        // If not found throw an exception 404
+                        new CustomExceptionHandler(ErrorCode.USER_NOTFOUND));
+        // Check if session match
+        if (!removeAccountRequest.getSession().equals(userObject.getSession())
+                || !userObject.getToken().getToken().equals(removeAccountRequest.getToken()))
+            // If not throw a 418 status code
+            throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
+        try {
+            // Delete account
+            userAccountRepository.deleteById(uuid);
+            log.warn("User account {} deleted", userObject.getUsername());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // If not throw a 418 status code
+            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
+        // return a true
+        return true;
     }
 }

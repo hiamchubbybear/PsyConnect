@@ -15,6 +15,7 @@ app.use(cors({
 
 app.use("/noti/", require("./controllers/mail_controller"));
 
+
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
 });

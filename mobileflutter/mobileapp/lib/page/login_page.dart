@@ -31,7 +31,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
             child: Scaffold(
               appBar: AppBar(
-                title: const Text('PsyConnect'),
                 bottom: const TabBar(
                   tabs: [Tab(text: 'Login'), Tab(text: 'Register')],
                 ),

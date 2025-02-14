@@ -8,7 +8,7 @@
         <version>3.2.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.devteria</groupId>
+    <groupId>dev.psyconnect</groupId>
     <artifactId>identity-service</artifactId>
     <name>identity-service</name>
     <version>0.0.1-SNAPSHOT</version>
@@ -107,6 +107,11 @@
             <version>2.15.0</version> <!-- Use the appropriate version for your project -->
         </dependency>
 
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
+        </dependency>
 
         <!--Oauth2 To Authentication With Google-->
         <dependency>
@@ -119,10 +124,17 @@
             <version>2.5</version>
             <scope>compile</scope>
         </dependency>
+        <!--Redis-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-redis</artifactId>-->
+<!--            <version>1.4.7.RELEASE</version>-->
+<!--        </dependency>-->
 
 
     </dependencies>
     <build>
+        <finalName>identityservice</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -187,10 +199,10 @@
                 </executions>
                 <configuration>
                     <excludes>
-                        <exclude>com/devteria/identity/dto/**</exclude>
-                        <exclude>com/devteria/identity/entity/**</exclude>
-                        <exclude>com/devteria/identity/mapper/**</exclude>
-                        <exclude>com/devteria/identity/configuration/**</exclude>
+                        <exclude>dev/psyconnect/identity/dto/**</exclude>
+                        <exclude>dev/psyconnect/identity/entity/**</exclude>
+                        <exclude>dev/psyconnect/identity/mapper/**</exclude>
+                        <exclude>dev/psyconnect/identity/configuration/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

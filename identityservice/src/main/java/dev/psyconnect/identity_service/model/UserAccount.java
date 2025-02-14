@@ -40,6 +40,8 @@ public class UserAccount {
     @ManyToMany(fetch = FetchType.LAZY)
     Set<RoleEntity> role;
 
+    UUID session;
+
     @OneToOne
-    private ActivationModel activate;
+    private Token token;
 }

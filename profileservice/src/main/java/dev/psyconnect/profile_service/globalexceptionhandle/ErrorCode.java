@@ -23,6 +23,7 @@ public enum ErrorCode {
 
     // INVALID RESPONSE
     USERNAME_INVALID(003, "Username must be at least 4 characters and less than 20 characters", HttpStatus.BAD_REQUEST),
+    EMAIL_INVALID(003, "Email already existed or doesn't match", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(003, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
     TOKEN_INVALID(003, "Token is used or has expired", HttpStatus.NOT_ACCEPTABLE),
 
@@ -41,8 +42,9 @@ public enum ErrorCode {
 
     // SERVER
     UNCATEGORIZED_EXCEPTION(007, "Uncategorize Exception", HttpStatus.INTERNAL_SERVER_ERROR),
-    SERVER_INTERNAL_ERROR(007, "Server Internal Error", HttpStatus.INTERNAL_SERVER_ERROR)
-
+    SERVER_INTERNAL_ERROR(007, "Server Internal Error", HttpStatus.INTERNAL_SERVER_ERROR),
+    // EXISTED
+    USER_EXISTED(011, "User existed", HttpStatus.NOT_ACCEPTABLE)
     // NULL
     ,
     NULL_EXCEPTION(010, "Your input data is null", HttpStatus.GONE);

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import dev.psyconnect.identity_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.identity_service.dto.response.UserAccountCreationResponse;
 
-@FeignClient(name = "profile-service", url = "http://localhost:8081/profile")
+@FeignClient(name = "profileservice", url = "http://${baseUriProfileService}:8081/profile")
 public interface ProfileRepository {
     @PostMapping(
             path = "/internal/user",

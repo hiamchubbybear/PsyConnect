@@ -1,0 +1,11 @@
+
+GOOGLE_CLIENT_ID={your-variable}{your-variable}
+GOOGLE_CLIENT_SECRET={your-variable}
+MAIL_USERNAME={your-variable}
+MAIL_PASSWORD={your-variable}
+JWT_SIGNER_KEY={your-variable}
+NEO4J_PASSWORD_PROFILE_SERVICE={your-variable}
+MYSQL_SPRING_DATASOURCE_PASSWORD={your-variable}
+MYSQL_SPRING_DATASOURCE_USERNAME={your-variable}
+SPRING_DATASOURCE_URL={your-variable}
+SERVER_PORT={your-variable}

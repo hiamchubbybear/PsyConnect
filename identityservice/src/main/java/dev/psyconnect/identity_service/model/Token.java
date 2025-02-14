@@ -14,7 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-public class ActivationModel {
+public class Token {
     @Id
     private UUID activateId;
 
