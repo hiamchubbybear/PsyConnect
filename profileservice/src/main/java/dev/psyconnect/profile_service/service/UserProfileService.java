@@ -40,6 +40,7 @@ public class UserProfileService {
         // Mapping user profile from request
         UserProfile profile = userProfileMapper.toUserProfileMapper(request);
         // Save user profile from request
+        profile.setDob(DateTimeFormatting.parseFromString(request.getDob()));
         var temp = userProfileRepository.save(profile);
         log.debug("Created profile: {}", profile.getUserId());
         // Mapping to response

@@ -1,4 +1,4 @@
-package com.example.IdentityService.dto.request;
+package dev.psyconnect.identity_service.dto.request;
 
 import lombok.*;
 

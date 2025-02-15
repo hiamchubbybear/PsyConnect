@@ -290,7 +290,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   RegExp passReg = RegExp(
                       r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
                   if (password == null ||
-                      !passReg.hasMatch(password!) ||
+                      passReg.hasMatch(password!) ||
                       password.length > 3) {
                     return "Password must than 3 characters and include character , number  ";
                   }
@@ -409,7 +409,8 @@ class _RegisterPageState extends State<RegisterPage> {
           "gender": genderController.text,
           "email": emailController.text,
           "role": roleController.text,
-          "avatarUri": cloudinaryUrlImage.toString() ?? ""
+          "avatarUri": cloudinaryUrlImage.toString() ?? "",
+          "dob" : dobController.text
         };
         await registerService.registerHandle(
             requestBody: jsonData, userProvider: userProvider , context : context);

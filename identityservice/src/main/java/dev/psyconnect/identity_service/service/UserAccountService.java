@@ -85,7 +85,8 @@ public class UserAccountService {
             // If there are no response from Profile Service -> throw uncategorized exception
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
 
-        // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create and get the response.
+        // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create and get the
+        // response.
         var response = notificationRepository.sendCreateEmail(CreateAccountNotificationRequest.builder()
                 .fullname(request.getFirstName() + request.getLastName())
                 .username(request.getUsername())

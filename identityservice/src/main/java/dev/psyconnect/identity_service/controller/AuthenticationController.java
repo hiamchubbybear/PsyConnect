@@ -1,14 +1,18 @@
 package dev.psyconnect.identity_service.controller;
 
+import java.text.ParseException;
 import javax.naming.AuthenticationException;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.nimbusds.jose.JOSEException;
+
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
-import dev.psyconnect.identity_service.apiresponse.CustomResponseWrapper;
 import dev.psyconnect.identity_service.configuration.ValidateLoginType;
 import dev.psyconnect.identity_service.dto.request.AuthenticationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
+import dev.psyconnect.identity_service.dto.response.IntrospectRequest;
+import dev.psyconnect.identity_service.dto.response.IntrospectResponse;
 import dev.psyconnect.identity_service.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +25,16 @@ import lombok.experimental.FieldDefaults;
 public class AuthenticationController {
     AuthenticationService authenticationService;
 
-    @CustomResponseWrapper
     @PostMapping("/login")
     public ApiResponse<AuthenticationResponse> loginRequest(
             @RequestBody AuthenticationRequest authenticationRequest, @RequestParam @ValidateLoginType String loginType)
             throws AuthenticationException {
         return new ApiResponse<>(authenticationService.authenticate(authenticationRequest, loginType));
+    }
+
+    @PostMapping("/introspect")
+    public ApiResponse<IntrospectResponse> introspectRequest(@RequestBody IntrospectRequest introspectRequest)
+            throws ParseException, JOSEException {
+        return new ApiResponse<>(authenticationService.introspectToken(introspectRequest));
     }
 }

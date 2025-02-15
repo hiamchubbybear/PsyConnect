@@ -7,10 +7,8 @@ services:
       MYSQL_ROOT_PASSWORD: "123456"
     ports:
       - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
     networks:
-      - dev_network
+      - mynetwork
 
   neo4j:
     image: neo4j:latest
@@ -21,16 +19,9 @@ services:
     ports:
       - "7474:7474"
       - "7687:7687"
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
     networks:
-      - dev_network
-
-volumes:
-  mysql_data:
-  neo4j_data:
-  neo4j_logs:
+      - mynetwork
 
 networks:
-  dev_network:
+  mynetwork:
+    driver: bridge

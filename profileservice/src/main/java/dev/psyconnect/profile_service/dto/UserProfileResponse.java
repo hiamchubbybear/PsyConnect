@@ -1,8 +1,7 @@
 package dev.psyconnect.profile_service.dto;
 
-import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.type.DateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +19,7 @@ public class UserProfileResponse {
     String lastName;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate dob;
+    DateTime dob;
 
     String address;
     String gender;
