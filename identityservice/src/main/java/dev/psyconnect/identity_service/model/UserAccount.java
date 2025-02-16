@@ -1,6 +1,8 @@
 package dev.psyconnect.identity_service.model;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import dev.psyconnect.identity_service.enumeration.Provider;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @Setter
@@ -44,4 +48,5 @@ public class UserAccount {
 
     @OneToOne
     private Token token;
+
 }

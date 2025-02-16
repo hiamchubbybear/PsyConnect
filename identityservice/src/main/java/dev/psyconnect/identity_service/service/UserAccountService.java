@@ -7,8 +7,16 @@ import java.util.*;
 
 import jakarta.transaction.Transactional;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +45,7 @@ import lombok.experimental.FieldDefaults;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserAccountService {
+public class UserAccountService implements UserDetailsService {
     private static final Logger log = LoggerFactory.getLogger(UserAccountService.class);
     RoleRepository roleRepository;
     UserAccountRepository userAccountRepository;
@@ -47,6 +55,7 @@ public class UserAccountService {
     NotificationRepository notificationRepository;
     ActivateRepository activateRepository;
 
+    @Transactional
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
         // Validate if the user not found
         if (userAccountRepository.existsByUsername(request.getUsername()))
@@ -81,9 +90,18 @@ public class UserAccountService {
         objectMapper.registerModule(new JavaTimeModule());
         String activateCode = String.valueOf(new Random().nextInt(90000) + 10000);
         // Trigger to Profile Service Request -> POST -x http://localhost:8081/profile/internal/user
-        if (profileRepository.createProfile(temp) == null)
-            // If there are no response from Profile Service -> throw uncategorized exception
-            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        try {
+            var profileResponse = profileRepository.createProfile(temp);
+            if (profileResponse == null) {
+                // If there are no response from Profile Service -> throw run time error exception
+                throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
+            }
+        } catch (Exception e) {
+            // If there are no response from Profile Service -> throw run time error exception
+            log.error("Error creating profile: {}", e.getMessage());
+            throw new RuntimeException("Profile creation failed, rolling back...", e);
+        }
+
 
         // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create and get the
         // response.
@@ -120,14 +138,14 @@ public class UserAccountService {
     }
 
     @Transactional
-    public ActivateAccountResponse activateAccount(AcitvateAccountRequest activateAccountRequest) {
+    public ActivateAccountResponse activateAccount(ActivateAccountRequest activateAccountRequest) {
         // Declared and assign email
         String email = activateAccountRequest.getEmail();
         // Log an email for audit
         log.debug("Activation Model account for user email {}", email);
         // Check if email not exist throw an error 404 NOT FOUND
         if (!userAccountRepository.existsByEmail(email)) {
-            throw new CustomExceptionHandler(ErrorCode.USER_NOTFOUND);
+            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
         }
         // Declared and assign foundObject for Token Object if found assign it or else assign for null
         var foundObject = activateRepository
@@ -174,12 +192,12 @@ public class UserAccountService {
                 .findById(uuid)
                 .orElseThrow(() ->
                         // If not found throw an exception 404
-                        new CustomExceptionHandler(ErrorCode.USER_NOTFOUND));
+                        new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.debug("Deleting account {}", userObject.getUsername());
         // Check if username not match or password doesn't match
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             // If not found throw an exception 418
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         // Check if token doesn't match
@@ -212,7 +230,7 @@ public class UserAccountService {
                 .findById(uuid)
                 .orElseThrow(() ->
                         // If not found throw an exception 404
-                        new CustomExceptionHandler(ErrorCode.USER_NOTFOUND));
+                        new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         // Check if session match
         if (!removeAccountRequest.getSession().equals(userObject.getSession())
                 || !userObject.getToken().getToken().equals(removeAccountRequest.getToken()))
@@ -229,5 +247,20 @@ public class UserAccountService {
         }
         // return a true
         return true;
+    }
+
+    public UserAccount getUserAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userAccountRepository.findByUsername(username).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public AuthenticationFilterRequest loadUserByUsername(String username) throws CustomExceptionHandler {
+        var foundObject = userAccountRepository.findByUsername(username).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        return AuthenticationFilterRequest.builder()
+                .username(foundObject.getUsername())
+                .password(foundObject.getPassword())
+                .build();
     }
 }

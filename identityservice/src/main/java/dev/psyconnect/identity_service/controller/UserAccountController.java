@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
 import dev.psyconnect.identity_service.apiresponse.CustomResponseWrapper;
-import dev.psyconnect.identity_service.dto.request.AcitvateAccountRequest;
+import dev.psyconnect.identity_service.dto.request.ActivateAccountRequest;
 import dev.psyconnect.identity_service.dto.request.UserAccountCreationRequest;
 import dev.psyconnect.identity_service.dto.response.ActivateAccountResponse;
 import dev.psyconnect.identity_service.dto.response.UserAccountCreationResponse;
@@ -29,7 +29,7 @@ public class UserAccountController {
     @PostMapping(value = "/activate")
     @CustomResponseWrapper
     public ApiResponse<ActivateAccountResponse> activateAccount(
-            @RequestBody AcitvateAccountRequest acitvateAccountRequest) {
+            @RequestBody ActivateAccountRequest acitvateAccountRequest) {
         return new ApiResponse<>(userAccountService.activateAccount(acitvateAccountRequest));
     }
 
@@ -38,4 +38,5 @@ public class UserAccountController {
     public ApiResponse<String> register() {
         return new ApiResponse<>("Hello World");
     }
+
 }

@@ -2,11 +2,11 @@ package dev.psyconnect.identity_service.dto.response;
 
 import lombok.*;
 
+@Builder
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class IntrospectResponse {
-    boolean isSuccessful;
+public class LogoutRequest {
+    String token;
 }

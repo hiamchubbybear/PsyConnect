@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CustomExceptionHandler extends IllegalStateException {
     public CustomExceptionHandler(ErrorCode errorCode) {
-        super(errorCode.getStatus());
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 

@@ -1,11 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ApiGatewayApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <option name="ACTIVE_PROFILES" value="dev" />
     <option name="ALTERNATIVE_JRE_PATH" value="openjdk-23" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <module name="api_service" />
-    <selectedOptions>
-      <option name="spring.boot.profiles" visible="false" />
-    </selectedOptions>
     <option name="SPRING_BOOT_MAIN_CLASS" value="dev.psyconnect.api_service.ApiGatewayApplication" />
     <extension name="net.ashald.envfile">
       <option name="IS_ENABLED" value="false" />

@@ -1,20 +1,28 @@
 package dev.psyconnect.profile_service.apiresponse;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class ApiResponse<T> {
-    int code;
-    String message;
-    T data;
+    private int code = HttpStatus.OK.value();
+    private String message;
+
+    private T data;
 
     public ApiResponse(T data) {
-        this.code = 200;
+        this.code = HttpStatus.OK.value();
         this.message = "Success";
         this.data = data;
+
     }
 }

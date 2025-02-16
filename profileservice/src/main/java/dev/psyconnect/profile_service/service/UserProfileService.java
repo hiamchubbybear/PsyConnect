@@ -52,7 +52,7 @@ public class UserProfileService {
         Optional<UserProfile> profile = userProfileRepository.findById(profileId);
         // Mapping to response user profile
         return userProfileMapper.toUserProfileResponse(
-                profile.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOTFOUND)));
+                profile.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND)));
     }
 
     // Update profile
@@ -60,7 +60,7 @@ public class UserProfileService {
         // Find exists user from db
         UserProfile existingUser = userProfileRepository
                 .findByUserId(userId)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOTFOUND));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.debug("Updating profile for userId: {}", existingUser.getUserId());
         // Mapping to user profile for existed profile
         UserProfile updatedUser = userProfileMapper.toUserProfile(userProfileUpdateRequest);

@@ -11,8 +11,8 @@ import dev.psyconnect.identity_service.apiresponse.ApiResponse;
 import dev.psyconnect.identity_service.configuration.ValidateLoginType;
 import dev.psyconnect.identity_service.dto.request.AuthenticationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
-import dev.psyconnect.identity_service.dto.response.IntrospectRequest;
-import dev.psyconnect.identity_service.dto.response.IntrospectResponse;
+import dev.psyconnect.identity_service.dto.response.LogoutRequest;
+import dev.psyconnect.identity_service.dto.response.LogoutResponse;
 import dev.psyconnect.identity_service.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +33,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/introspect")
-    public ApiResponse<IntrospectResponse> introspectRequest(@RequestBody IntrospectRequest introspectRequest)
+    public ApiResponse<LogoutResponse> introspectRequest(@RequestBody LogoutRequest introspectRequest)
             throws ParseException, JOSEException {
-        return new ApiResponse<>(authenticationService.introspectToken(introspectRequest));
+        return new ApiResponse<>(authenticationService.logout(introspectRequest));
     }
 }

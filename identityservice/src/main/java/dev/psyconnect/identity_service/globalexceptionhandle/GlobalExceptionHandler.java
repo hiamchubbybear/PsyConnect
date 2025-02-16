@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleGeneralException(Exception ex) {
         log.warn("General Exception: ", ex);
         ApiResponse<String> response =
-                new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), "Internal Server Error");
+                new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server Error", null);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleNullPointerException(NullPointerException ex) {
         log.warn("NullPointerException: ", ex);
         ApiResponse<String> response =
-                new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Null value encountered", "Bad Request");
+                new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Null value encountered", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -43,8 +43,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("IllegalArgumentException: ", ex);
-        ApiResponse<String> response =
-                new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), "Illegal Argument");
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Illegal Argument", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -57,8 +56,7 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .orElse("Validation error");
 
-        ApiResponse<String> response =
-                new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), errorMessage, "Validation Failed");
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Validation Failed", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -67,10 +65,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleMethodNotSupportedException(
             HttpRequestMethodNotSupportedException ex) {
         log.warn("HttpRequestMethodNotSupportedException: ", ex);
-        ApiResponse<String> response = new ApiResponse<>(
-                HttpStatus.METHOD_NOT_ALLOWED.value(),
-                "HTTP method not supported: " + ex.getMethod(),
-                "Method Not Allowed");
+        ApiResponse<String> response =
+                new ApiResponse<>(HttpStatus.METHOD_NOT_ALLOWED.value(), "Method Not Allowed", null);
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
     }
 
@@ -79,8 +75,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleMissingParamsException(
             MissingServletRequestParameterException ex) {
         log.warn("MissingServletRequestParameterException: ", ex);
-        ApiResponse<String> response = new ApiResponse<>(
-                HttpStatus.BAD_REQUEST.value(), "Missing parameter: " + ex.getParameterName(), "Bad Request");
+        ApiResponse<String> response =
+                new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Missing parameter: " + "Bad Request", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -88,10 +84,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ApiResponse<String>> handleDataAccessException(DataAccessException ex) {
         log.warn("DataAccessException: ", ex);
-        ApiResponse<String> response = new ApiResponse<>(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Database error: " + ex.getMessage(),
-                "Internal Server Error");
+        ApiResponse<String> response =
+                new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Database error", null);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
@@ -99,8 +93,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
         log.warn("NoHandlerFoundException: ", ex);
-        ApiResponse<String> response = new ApiResponse<>(
-                HttpStatus.NOT_FOUND.value(), "Endpoint not found: " + ex.getRequestURL(), "Not Found");
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Endpoint not found: ", null);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
@@ -108,8 +101,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<String>> handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("AccessDeniedException: ", ex);
-        ApiResponse<String> response =
-                new ApiResponse<>(HttpStatus.FORBIDDEN.value(), "Access denied: " + ex.getMessage(), "Forbidden");
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.FORBIDDEN.value(), "Access denied", null);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
@@ -118,8 +110,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleCustomException(CustomExceptionHandler customExceptionHandler) {
         log.warn("CustomExceptionHandler: ", customExceptionHandler);
         ErrorCode errorCode = customExceptionHandler.getErrorCode();
-        return ResponseEntity.status(errorCode.getStatusCode())
-                .body(new ApiResponse<>(
-                        errorCode.getCode(), "An error occurred while processing the request", errorCode.getStatus()));
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(ApiResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
     }
 }

@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = "dev.psyconnect.profile_service")
-public class ProfileserviceApplication {
+public class ProfileServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ProfileserviceApplication.class, args);
+        SpringApplication.run(ProfileServiceApplication.class, args);
     }
 }

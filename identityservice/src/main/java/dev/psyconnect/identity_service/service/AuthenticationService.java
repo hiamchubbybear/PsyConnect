@@ -1,13 +1,21 @@
 package dev.psyconnect.identity_service.service;
 
+import java.security.Key;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
+import java.util.function.Function;
 import javax.naming.AuthenticationException;
 
+import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,8 +29,8 @@ import com.nimbusds.jwt.SignedJWT;
 import dev.psyconnect.identity_service.dto.request.AuthenticationRequest;
 import dev.psyconnect.identity_service.dto.request.GoogleAuthenticationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
-import dev.psyconnect.identity_service.dto.response.IntrospectRequest;
-import dev.psyconnect.identity_service.dto.response.IntrospectResponse;
+import dev.psyconnect.identity_service.dto.response.LogoutRequest;
+import dev.psyconnect.identity_service.dto.response.LogoutResponse;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.model.BlackListToken;
@@ -236,7 +244,7 @@ public class AuthenticationService {
         SignedJWT signedJWT = SignedJWT.parse(token);
         var verifyResult = signedJWT.verify(verifier);
         Date expirationDate = signedJWT.getJWTClaimsSet().getExpirationTime();
-        if (expirationDate.after(new Date())) {
+        if (expirationDate.before(new Date())) {
             throw new ParseException("Expired JWT", 0);
         }
         return signedJWT;
@@ -247,8 +255,7 @@ public class AuthenticationService {
             throws AuthenticationException {
         var user = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
-                .orElseThrow(() -> new InvalidPropertyException(
-                        UserAccount.class, "User not found", authenticationRequest.getUsername()));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.debug("User request token is {}", authenticationRequest.getUsername());
         var password = authenticationRequest.getPassword();
         // Password not found throw
@@ -296,26 +303,64 @@ public class AuthenticationService {
         return builder.toString().trim();
     }
 
-    public IntrospectResponse introspectToken(IntrospectRequest request) throws JOSEException, ParseException {
+    public LogoutResponse logout(LogoutRequest request) throws JOSEException, ParseException {
         if (request.getToken() == null || request.getToken().isEmpty()) {
-            return new IntrospectResponse(false); // Ignore empty or null tokens
+            return new LogoutResponse(false); // Ignore empty or null tokens
         }
         try {
             SignedJWT signedJWT = verifyToken(request.getToken());
             Date expirationDate = signedJWT.getJWTClaimsSet().getExpirationTime();
 
             // If the token is expired, add it to the blacklist
-            if (expirationDate.before(new Date())) {
+            if (expirationDate.after(new Date())) {
                 blackListTokenRepository.save(
                         BlackListToken.builder().token(request.getToken()).build());
-                return new IntrospectResponse(true);
+                return new LogoutResponse(true);
             }
         } catch (ParseException | JOSEException e) {
             // If the token is invalid (tampered or incorrectly formatted), blacklist it
             blackListTokenRepository.save(
                     BlackListToken.builder().token(request.getToken()).build());
-            return new IntrospectResponse(true);
+            return new LogoutResponse(true);
         }
-        return new IntrospectResponse(false);
+        return new LogoutResponse(false);
+    }
+
+    public String extractUsername(String token) throws ParseException, JOSEException {
+        return extractClaim(token, JWTClaimsSet::getSubject);
+    }
+
+    // Extract the expiration date from the token
+    public Date extractExpiration(String token) throws ParseException, JOSEException {
+        return extractClaim(token, JWTClaimsSet::getExpirationTime);
+    }
+
+    // Extract a specific claim from the token
+    public <T> T extractClaim(String token, Function<JWTClaimsSet, T> claimsResolver) throws ParseException, JOSEException {
+        final JWTClaimsSet claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    // Extract all claims from the token
+    private JWTClaimsSet extractAllClaims(String token) throws ParseException, JOSEException {
+        return verifyToken(token).getJWTClaimsSet();
+    }
+
+
+    // Check if the token is expired
+    private Boolean isTokenExpired(String token) throws ParseException, JOSEException {
+        return extractExpiration(token).before(new Date());
+    }
+
+    // Validate the token against user details and expiration
+    public Boolean validateToken(String token, String username) throws ParseException, JOSEException {
+        final String extractedUsername = extractUsername(token);
+        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    }
+
+    // Validate the token against user details and expiration
+    public Boolean validateToken(String token, AuthenticationFilterRequest authenticationRequest) throws ParseException, JOSEException {
+        final String username = extractUsername(token);
+        return (username.equals(authenticationRequest.getUsername()) && !isTokenExpired(token));
     }
 }
