@@ -8,4 +8,6 @@ import dev.psyconnect.identity_service.model.Permission;
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, String> {
     Permission findByName(String name);
+
+    boolean existsByName(String name);
 }

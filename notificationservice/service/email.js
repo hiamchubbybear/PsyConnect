@@ -12,7 +12,7 @@ const sendEmail = async (options) => {
     }
 
     emailTemplate = emailTemplate.replace("{USERNAME}", options.username)
-                                 .replace("{CODE}", options.code);
+        .replace("{CODE}", options.code);
     const transporter = nodemailer.createTransport({
         service: process.env.SMPT_SERVICE,
         auth: {
@@ -26,8 +26,6 @@ const sendEmail = async (options) => {
         subject: `Hey ${options.fullname}!! Your Verification Code`,
         html: emailTemplate,
     };
-
     await transporter.sendMail(mailOptions);
 };
-
-module.exports = { sendEmail };
+module.exports = {sendEmail};

@@ -15,7 +15,7 @@ router.use((req, res, next) => {
     next(); // Chuyển request đến middleware hoặc route tiếp theo
 });
 
-router.post("/internal/user", async (req, res) => {
+sendActivateEmail = async (req, res) => {
     try {
         const {username, code, email, fullname} = req.body;
         if (!username || !code || !email || !fullname) {
@@ -27,5 +27,7 @@ router.post("/internal/user", async (req, res) => {
         console.error(error);
         res.status(500).json({message: "Failed to send email"});
     }
-});
-module.exports = router;
+};
+router.post("/internal/user",sendActivateEmail);
+router.post("/internal/account/req/activate",sendActivateEmail);
+    module.exports = router;

@@ -1,6 +1,7 @@
 package dev.psyconnect.identity_service.model;
 
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.*;
 
@@ -26,5 +27,5 @@ public class Permission {
 
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.EAGER)
     @JsonIgnore
-    private List<RoleEntity> roles;
+    private Set<RoleEntity> roles;
 }

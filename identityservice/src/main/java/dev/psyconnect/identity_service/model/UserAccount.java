@@ -41,7 +41,7 @@ public class UserAccount {
     private @CreationTimestamp Timestamp createdAt;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<RoleEntity> role;
 
     UUID session;

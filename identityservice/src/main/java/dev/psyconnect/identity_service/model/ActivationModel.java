@@ -14,8 +14,9 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Token {
+public class ActivationModel {
     @Id
+    private UUID activateId;
     private String username;
     private String token;
     private Timestamp issuedAt;

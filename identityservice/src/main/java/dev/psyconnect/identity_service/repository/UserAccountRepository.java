@@ -27,4 +27,12 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> 
     Optional<UserAccount> findByUsername(String username);
 
     Optional<UserAccount> findByEmail(String email);
+
+    @Query("SELECT u.isActivated AS boolean_value\n" +
+            "FROM UserAccount  u where u.username=?1")
+    boolean isActive(String username);
+
+    @Query("SELECT u.isActivated AS boolean_value\n" +
+            "FROM UserAccount  u where u.email=?1")
+    String isActiveByEmail(String email);
 }

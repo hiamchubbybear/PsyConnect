@@ -4,18 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum RoleEnum {
-    ADMIN("Admin", "Admin default permission", Arrays.asList(PermissionEnum.values())),
+    ADMIN("ADMIN", "ADMIN_PERMISSION", Arrays.asList(PermissionEnum.values())),
     THERAPIST(
-            "Therapist",
-            "Therapist default permission",
+            "THERAPIST",
+            "THERAPIST_PERMISSION",
             Arrays.asList(
                     PermissionEnum.THERAPIST_CREATE_POST,
                     PermissionEnum.THERAPIST_EDIT_POST,
                     PermissionEnum.THERAPIST_RESPOND_TO_MESSAGE,
                     PermissionEnum.THERAPIST_MANAGE_APPOINTMENTS)),
     USER(
-            "Client",
-            "Client default permission",
+            "CLIENT",
+            "CLIENT_PERMISSION",
             Arrays.asList(
                     PermissionEnum.USER_VIEW_POSTS,
                     PermissionEnum.USER_SEND_MESSAGE,

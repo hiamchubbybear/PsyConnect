@@ -1,5 +1,6 @@
 package dev.psyconnect.identity_service.configuration;
 
+import dev.psyconnect.identity_service.interfaces.IUserAccountService;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

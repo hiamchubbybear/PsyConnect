@@ -29,30 +29,29 @@ public class BeanConfiguration {
     RoleRepository roleRepository;
     PermissionRepository permissionRepository;
 
-    /**
-     * @return This bean run when initializing the application.
-     * This checks roles, creates permissions from PermissionEnum, and associates roles with permissions.
-     */
     @Bean
     @Transactional
     ApplicationRunner runner() {
         return args -> {
+            // Tạo các Permission từ PermissionEnum
+            List<Permission> permissionsToSave = new ArrayList<>();
             for (PermissionEnum permissionEnum : PermissionEnum.values()) {
-                Permission permission = permissionRepository.findByName(permissionEnum.getName());
-                if (permission == null) {
-                    permission = new Permission(
-                            String.valueOf(permissionEnum.getId()),
+                if (!permissionRepository.existsByName(permissionEnum.getName())) {
+                    Permission permission = new Permission(String.valueOf(permissionEnum.getId()),
                             permissionEnum.getName(),
                             permissionEnum.getDescription(),
-                            new ArrayList<>());
-                    permissionRepository.save(permission);
+                            new HashSet<>());
+                    permissionsToSave.add(permission);
                     log.info("Created permission: {}", permissionEnum.getName());
                 }
             }
+            permissionRepository.saveAll(permissionsToSave);
 
+            // Tạo các RoleEntity từ RoleEnum và liên kết với Permission
+            Set<RoleEntity> rolesToSave = new HashSet<>();
             for (RoleEnum roleEnum : RoleEnum.values()) {
                 if (!roleRepository.existsByRoleId(roleEnum.getId())) {
-                    List<Permission> permissions = new ArrayList<>();
+                    Set<Permission> permissions = new HashSet<>();
                     for (PermissionEnum permissionEnum : roleEnum.getPermissions()) {
                         Permission permission = permissionRepository.findByName(permissionEnum.getName());
                         if (permission != null) {
@@ -66,20 +65,19 @@ public class BeanConfiguration {
                     }
 
                     RoleEntity roleEntity = new RoleEntity(roleEnum.getId(), permissions, null, roleEnum.getName());
-                    roleRepository.save(roleEntity);
+                    rolesToSave.add(roleEntity);
                     log.info("Created role: {}", roleEntity.getRoleId());
                 } else {
                     log.info("Role {} already exists.", roleEnum.getName());
                 }
             }
+            roleRepository.saveAll(rolesToSave);
 
+            // Cập nhật quan hệ giữa Permission và RoleEntity
             for (PermissionEnum permissionEnum : PermissionEnum.values()) {
                 Permission permission = permissionRepository.findByName(permissionEnum.getName());
-                if (permission != null
-                        && (permission.getRoles() == null
-                                || permission.getRoles().isEmpty())) {
-                    List<RoleEntity> roleEntities =
-                            roleRepository.findAllById(Collections.singleton(permissionEnum.getRole()));
+                if (permission != null && (permission.getRoles() == null || permission.getRoles().isEmpty())) {
+                    Set<RoleEntity> roleEntities = roleRepository.findAllByPermissionsContaining(permission);
                     if (!roleEntities.isEmpty()) {
                         permission.setRoles(roleEntities);
                         permissionRepository.save(permission);

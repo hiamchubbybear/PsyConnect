@@ -1,5 +1,7 @@
 package dev.psyconnect.identity_service.repository.feign;
 
+import dev.psyconnect.identity_service.dto.request.ActivateAccountNotificationRequest;
+import dev.psyconnect.identity_service.dto.request.SendActivateAccountRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,4 +24,10 @@ public interface NotificationRepository {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     Response sendDeleteEmail(@RequestBody DeleteNotificationRequest deleteNotificationRequest);
+
+    @PostMapping(
+            path = "/internal/account/req/activate",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    Response sendActivateToken(@RequestBody ActivateAccountNotificationRequest deleteNotificationRequest);
 }

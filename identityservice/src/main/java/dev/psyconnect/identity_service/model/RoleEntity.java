@@ -25,7 +25,7 @@ public class RoleEntity {
             name = "role_permission",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private List<Permission> permissions;
+    private Set<Permission> permissions;
 
     @JsonIgnore
     @ManyToMany

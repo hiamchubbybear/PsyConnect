@@ -1,23 +1,22 @@
 package dev.psyconnect.identity_service.service;
 
-import java.security.Key;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import javax.naming.AuthenticationException;
 
 import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.InvalidPropertyException;
+import dev.psyconnect.identity_service.model.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.*;
@@ -34,7 +33,6 @@ import dev.psyconnect.identity_service.dto.response.LogoutResponse;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.model.BlackListToken;
-import dev.psyconnect.identity_service.model.UserAccount;
 import dev.psyconnect.identity_service.repository.BlackListTokenRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
@@ -72,6 +70,8 @@ public class AuthenticationService {
     // This method generates a JWT token
     public String generateToken(AuthenticationRequest authenticationRequest, String loginType) {
         // Get the username from the authentication request
+        UserAccount userAccountObject = userAccountRepository.findByUsername(authenticationRequest.getUsername()).
+                orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         var username = authenticationRequest.getUsername();
         // Get the role of the user based on the username
         var roles = userAccountRepository
@@ -142,6 +142,7 @@ public class AuthenticationService {
                 .issuer("PsyConnect Authentication Service")
                 .claim("scope", buildScope(roles))
                 .claim("type", loginType)
+                .claim("accountId", userAccountObject.getUserId())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
@@ -362,5 +363,31 @@ public class AuthenticationService {
     public Boolean validateToken(String token, AuthenticationFilterRequest authenticationRequest) throws ParseException, JOSEException {
         final String username = extractUsername(token);
         return (username.equals(authenticationRequest.getUsername()) && !isTokenExpired(token));
+    }
+
+    public static String extractUsernameAuthenticationObject(Authentication authentication) {
+        if (authentication == null) {
+            throw new CustomExceptionHandler(ErrorCode.UNAUTHORIZED);
+        }
+        return authentication.getName();
+    }
+
+    public boolean isTokenInvalid(String token) {
+        return blackListTokenRepository.existsById(token);
+    }
+
+    public static String extractUUIDClaim(Authentication authentication) {
+        if (authentication == null) {
+            throw new CustomExceptionHandler(ErrorCode.UNAUTHORIZED);
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof org.springframework.security.oauth2.jwt.Jwt) {
+            org.springframework.security.oauth2.jwt.Jwt jwt = (Jwt) principal;
+            Map<String, Object> returnValue = (jwt.getClaims());
+            String uuid = returnValue.get("uuid").toString();
+            log.debug("UUID is {}", uuid);
+            return uuid;
+        }
+        throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
     }
 }

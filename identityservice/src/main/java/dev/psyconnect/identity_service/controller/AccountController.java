@@ -2,6 +2,9 @@ package dev.psyconnect.identity_service.controller;
 
 import java.util.UUID;
 
+import dev.psyconnect.identity_service.dto.request.UpdateAccountRequest;
+import dev.psyconnect.identity_service.dto.response.UpdateAccountResponse;
+import dev.psyconnect.identity_service.dto.response.UserInfoResponse;
 import dev.psyconnect.identity_service.model.UserAccount;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +35,16 @@ public class AccountController {
             @RequestBody DeleteAccountConfirmRequest request, @PathVariable UUID uuid) {
         return new ApiResponse<>(userAccountService.deleteAccountRequest(request, uuid));
     }
+
     @GetMapping("/info")
-    public ApiResponse<UserAccount> getAccount(){
+    public ApiResponse<UserInfoResponse> getAccount() {
         return new ApiResponse<>(userAccountService.getUserAccount());
+    }
+
+    @PutMapping("/update/{uuid}")
+    public ApiResponse<UpdateAccountResponse> updateAccount(
+            @RequestBody UpdateAccountRequest request, @PathVariable String uuid
+    ) {
+        return new ApiResponse<>(userAccountService.updateAccount(request, uuid));
     }
 }

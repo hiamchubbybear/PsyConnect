@@ -3,6 +3,9 @@ package dev.psyconnect.identity_service.configuration;
 import com.nimbusds.jose.JOSEException;
 import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
 import dev.psyconnect.identity_service.dto.request.AuthenticationRequest;
+import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
+import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.identity_service.interfaces.IUserAccountService;
 import dev.psyconnect.identity_service.model.UserAccount;
 import dev.psyconnect.identity_service.service.AuthenticationService;
 import dev.psyconnect.identity_service.service.UserAccountService;
@@ -29,7 +32,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private AuthenticationService authenticationService;
 
     @Autowired
-    private UserAccountService userAccountService;
+    private IUserAccountService userAccountService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -42,6 +45,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7); // Extract token
             log.info("JWT token: {}", token);
+            // Check if token is not in black list
+            if(authenticationService.isTokenInvalid(token)) throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
             try {
                 username = authenticationService.extractUsername(token); // Extract username from token
             } catch (ParseException e) {
@@ -51,10 +56,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
+
         // If the token is valid and no authentication is set in the context
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             AuthenticationFilterRequest userAccount = userAccountService.loadUserByUsername(username);
-
             // Validate token and set authentication
             try {
                 if (authenticationService.validateToken(token, userAccount)) {
