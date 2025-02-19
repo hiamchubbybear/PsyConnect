@@ -1,12 +1,13 @@
 package dev.psyconnect.profile_service.apiresponse;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.http.HttpStatus;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
@@ -23,6 +24,5 @@ public class ApiResponse<T> {
         this.code = HttpStatus.OK.value();
         this.message = "Success";
         this.data = data;
-
     }
 }

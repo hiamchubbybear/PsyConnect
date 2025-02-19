@@ -1,7 +1,6 @@
 package dev.psyconnect.identity_service.model;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,6 +16,7 @@ import lombok.*;
 public class Token {
     @Id
     private String username;
+
     private String token;
     private Timestamp issuedAt;
     private Timestamp expires;

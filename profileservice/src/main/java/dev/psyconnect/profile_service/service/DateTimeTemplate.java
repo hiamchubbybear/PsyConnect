@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-public class DateTimeFormatting {
+public class DateTimeTemplate {
     public static int MOOD_TIME_EXPIRES = 24;
 
     public static LocalDate parseFromString(String stringDateTime) {
@@ -13,11 +13,9 @@ public class DateTimeFormatting {
         return LocalDate.parse(stringDateTime, formatter);
     }
 
-    public static Map<String, Long> setMoodExpires() {
-        return Map.of(
-                "currentTimeMillis",
-                Instant.now().toEpochMilli(),
-                "expiresTimeMillis",
-                Instant.now().toEpochMilli());
-    }
+    public static final Map<String, Long> MOOD_EXPIRES = Map.of(
+            "currentTimeMillis",
+            Instant.now().toEpochMilli(),
+            "expiresTimeMillis",
+            Instant.now().toEpochMilli());
 }

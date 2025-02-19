@@ -2,7 +2,8 @@ package dev.psyconnect.identity_service.dto.request;
 
 import lombok.*;
 
-@Getter@Setter
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

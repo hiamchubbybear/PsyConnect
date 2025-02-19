@@ -1,3 +1,4 @@
+import 'package:PsyConnect/page/login_page.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:PsyConnect/service/account_service/forgot.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ class _VerifiedPageState extends State<VerifiedPage> {
 
   void _onVerifiedCode({required String token, required String email}) {
     forgotService.registerHandle(email: email, token: token);
+    Navigator.pushReplacement(
+        (context), MaterialPageRoute(builder: (context) => const LoginPage()));
   }
 
   @override
@@ -42,7 +45,7 @@ class _VerifiedPageState extends State<VerifiedPage> {
                 const SizedBox(height: 10),
                 OtpTextField(
                   numberOfFields: 5,
-                  showFieldAsBox: false,
+                  showFieldAsBox: true,
                   borderWidth: 4.0,
                   onSubmit: (String value) {
                     setState(() {

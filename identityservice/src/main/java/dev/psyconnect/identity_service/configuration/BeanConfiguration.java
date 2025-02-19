@@ -37,7 +37,8 @@ public class BeanConfiguration {
             List<Permission> permissionsToSave = new ArrayList<>();
             for (PermissionEnum permissionEnum : PermissionEnum.values()) {
                 if (!permissionRepository.existsByName(permissionEnum.getName())) {
-                    Permission permission = new Permission(String.valueOf(permissionEnum.getId()),
+                    Permission permission = new Permission(
+                            String.valueOf(permissionEnum.getId()),
                             permissionEnum.getName(),
                             permissionEnum.getDescription(),
                             new HashSet<>());
@@ -76,7 +77,9 @@ public class BeanConfiguration {
             // Cập nhật quan hệ giữa Permission và RoleEntity
             for (PermissionEnum permissionEnum : PermissionEnum.values()) {
                 Permission permission = permissionRepository.findByName(permissionEnum.getName());
-                if (permission != null && (permission.getRoles() == null || permission.getRoles().isEmpty())) {
+                if (permission != null
+                        && (permission.getRoles() == null
+                                || permission.getRoles().isEmpty())) {
                     Set<RoleEntity> roleEntities = roleRepository.findAllByPermissionsContaining(permission);
                     if (!roleEntities.isEmpty()) {
                         permission.setRoles(roleEntities);

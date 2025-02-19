@@ -2,16 +2,15 @@ package dev.psyconnect.identity_service.controller;
 
 import java.util.UUID;
 
-import dev.psyconnect.identity_service.dto.request.UpdateAccountRequest;
-import dev.psyconnect.identity_service.dto.response.UpdateAccountResponse;
-import dev.psyconnect.identity_service.dto.response.UserInfoResponse;
-import dev.psyconnect.identity_service.model.UserAccount;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
 import dev.psyconnect.identity_service.dto.request.DeleteAccountConfirmRequest;
 import dev.psyconnect.identity_service.dto.request.DeleteAccountRequest;
+import dev.psyconnect.identity_service.dto.request.UpdateAccountRequest;
 import dev.psyconnect.identity_service.dto.response.DeleteAccountResponse;
+import dev.psyconnect.identity_service.dto.response.UpdateAccountResponse;
+import dev.psyconnect.identity_service.dto.response.UserInfoResponse;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +42,7 @@ public class AccountController {
 
     @PutMapping("/update/{uuid}")
     public ApiResponse<UpdateAccountResponse> updateAccount(
-            @RequestBody UpdateAccountRequest request, @PathVariable String uuid
-    ) {
+            @RequestBody UpdateAccountRequest request, @PathVariable String uuid) {
         return new ApiResponse<>(userAccountService.updateAccount(request, uuid));
     }
 }

@@ -24,7 +24,6 @@ public enum ErrorCode {
     PASSWORD_INVALID(302, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
     TOKEN_INVALID(303, "Token is used or has expired", HttpStatus.BAD_REQUEST),
 
-
     // NOT MATCH - 404
     UUID_NOT_MATCH(401, "UUID provided does not match any user", HttpStatus.NOT_FOUND),
 

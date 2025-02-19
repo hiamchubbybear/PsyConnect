@@ -4,12 +4,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
-
-import dev.psyconnect.identity_service.dto.response.*;
-import dev.psyconnect.identity_service.interfaces.IUserAccountService;
-import dev.psyconnect.identity_service.model.*;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -19,14 +14,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import dev.psyconnect.identity_service.dto.request.*;
+import dev.psyconnect.identity_service.dto.response.*;
 import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.identity_service.interfaces.IUserAccountService;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
+import dev.psyconnect.identity_service.model.*;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
@@ -39,7 +34,6 @@ import lombok.experimental.FieldDefaults;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-
 public class UserAccountService implements UserDetailsService, IUserAccountService {
     private static final Logger log = LoggerFactory.getLogger(UserAccountService.class);
     private static final int MINUTE_EXPIRED = 10;
@@ -73,7 +67,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .username(request.getUsername())
                 .build());
         var savedToken = tokenRepository.save(activateTokenEntity);
-        log.info("Activate account entity for: {} ", activateTokenEntity.getUsername() );
+        log.info("Activate account entity for: {} ", activateTokenEntity.getUsername());
         // Find role by id and save it to our response data
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
 
@@ -120,7 +114,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public ActivateAccountResponse activateAccount(ActivateAccountRequest activateAccountRequest) {
         // Declared and assign email
         String email = activateAccountRequest.getEmail();
-        if (isActivate(userAccountRepository.isActiveByEmail(email))) {
+        if (userAccountRepository.isActiveByEmail(email)) {
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
         }
         // Log an email for audit
@@ -179,7 +173,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Check if username not match or password doesn't match
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             // If not found throw an exception 418
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         // Check if token doesn't match
@@ -234,26 +228,28 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public UserInfoResponse getUserAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        var userResponse = userAccountRepository.findByUsername(username).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        if (isActivate(username))
+        var userResponse = userAccountRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        if (userAccountRepository.isActive(username))
             return UserInfoResponse.builder()
                     .username(username)
                     .userId(userResponse.getUserId())
-                    .createdAt(userResponse.getCreatedAt().toLocalDateTime()
-                            .toLocalDate())
+                    .createdAt(userResponse.getCreatedAt().toLocalDateTime().toLocalDate())
                     .role(userResponse.getRole())
                     .email(userResponse.getEmail())
                     .isActivated(userResponse.isActivated())
                     .provider(userResponse.getProvider())
                     .build();
-        else
-            throw new CustomExceptionHandler(ErrorCode.ACCOUNT_INACTIVE);
+        else throw new CustomExceptionHandler(ErrorCode.ACCOUNT_INACTIVE);
     }
 
     @Override
     public AuthenticationFilterRequest loadUserByUsername(String username) throws CustomExceptionHandler {
         // Load user with username and parse it to security filter
-        var foundObject = userAccountRepository.findByUsername(username).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        var foundObject = userAccountRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         // Build object
         return AuthenticationFilterRequest.builder()
                 .username(foundObject.getUsername())
@@ -261,29 +257,27 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .build();
     }
 
-    public boolean isActivate(String username) {
-        // Check account is activated
-        return (userAccountRepository.isActive(username)) ? true
-                : false;
-    }
-
     @Transactional
     public UpdateAccountResponse updateAccount(UpdateAccountRequest updateAccountRequest, String accountId) {
         // Find existing account
         UUID uuid = UUID.fromString(accountId);
         log.info("Updating account {}", uuid);
-        UUID userAccountId = UUID.fromString(AuthenticationService.extractUUIDClaim(SecurityContextHolder.getContext().getAuthentication()));
+        UUID userAccountId = UUID.fromString(AuthenticationService.extractUUIDClaim(
+                SecurityContextHolder.getContext().getAuthentication()));
         log.info("UUID parsed: {}", uuid);
         // If account id from JWT Token doesn't match with account id provide >> throw Account Not Match exception
         if (userAccountId != uuid) {
             throw new CustomExceptionHandler(ErrorCode.ACCOUNT_NOT_MATCH);
         }
-        var foundObject = userAccountRepository.findById(uuid)
+        var foundObject = userAccountRepository
+                .findById(uuid)
                 // If not found throw exception 401 NOT FOUND
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         if (foundObject.getUsername() != updateAccountRequest.getUsername())
             foundObject.setUsername(foundObject.getUsername());
-        if (!passwordEncodingService.getBCryptPasswordEncoder().matches(updateAccountRequest.getPassword(), foundObject.getPassword())) {
+        if (!passwordEncodingService
+                .getBCryptPasswordEncoder()
+                .matches(updateAccountRequest.getPassword(), foundObject.getPassword())) {
             foundObject.setPassword(updateAccountRequest.getPassword());
         }
         if (foundObject.getEmail() != updateAccountRequest.getEmail()) {
@@ -301,7 +295,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     // Send email for activate request
     public Boolean requestActivateAccount(RequestActivationAccount requestActivationAccount) {
         // Check if account is activated throw an exception
-        if (isActivate(requestActivationAccount.getUsername()))
+        if (accountRepository.isActive(requestActivationAccount.getUsername()))
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
         sendNotification(ActivateAccountNotificationRequest.builder()
                 .email(requestActivationAccount.getEmail())
@@ -319,7 +313,8 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
     public Token sendNotification(ActivateAccountNotificationRequest request) {
         log.info("Sending activation notification {}", request.getCode());
-        // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create and get there sponse.
+        // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create and get there
+        // sponse.
         var response = notificationRepository.sendCreateEmail(CreateAccountNotificationRequest.builder()
                 .fullname(request.getFullname())
                 .username(request.getUsername())
@@ -337,13 +332,11 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
     public Token saveActivationModel(String username, String activateCode) {
         log.info("Activate account {}", activateCode);
-        var foundObject =
-                userAccountRepository.findByUsername(username).orElse(null);
+        var foundObject = userAccountRepository.findByUsername(username).orElse(null);
         if (foundObject == null) {
             return Token.builder()
                     .username(username)
-                    .expires(Timestamp.from(
-                            Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)))
+                    .expires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)))
                     .issuedAt(Timestamp.from(Instant.now()))
                     .token(activateCode)
                     .revoked(false)
@@ -351,8 +344,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         } else {
             Token token = foundObject.getToken();
             token.setToken(activateCode);
-            token.setExpires(Timestamp.from(
-                    Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
+            token.setExpires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
             return tokenRepository.save(token);
         }
     }

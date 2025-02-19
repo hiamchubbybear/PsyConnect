@@ -6,6 +6,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import dev.psyconnect.profile_service.dto.UserProfileResponse;
@@ -23,6 +26,7 @@ import lombok.experimental.FieldDefaults;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@EnableCaching
 public class UserProfileService {
     private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
     ProfileRepository userProfileRepository;
@@ -40,13 +44,14 @@ public class UserProfileService {
         // Mapping user profile from request
         UserProfile profile = userProfileMapper.toUserProfileMapper(request);
         // Save user profile from request
-        profile.setDob(DateTimeFormatting.parseFromString(request.getDob()));
+        profile.setDob(DateTimeTemplate.parseFromString(request.getDob()));
         var temp = userProfileRepository.save(profile);
-        log.debug("Created profile: {}", profile.getUserId());
+        log.debug("Created profile: {}", profile.getProfileId());
         // Mapping to response
         return userProfileMapper.toUserProfile(temp);
     }
 
+    @Cacheable(key = "#profileId", value = "profile")
     public UserProfileResponse get(String profileId) {
         // Find user by profileId
         Optional<UserProfile> profile = userProfileRepository.findById(profileId);
@@ -56,17 +61,18 @@ public class UserProfileService {
     }
 
     // Update profile
-    public UserProfileUpdateResponse update(UserProfileUpdateRequest userProfileUpdateRequest, String userId) {
+    @CacheEvict(value = "profile", key = "#profileId")
+    public UserProfileUpdateResponse update(UserProfileUpdateRequest userProfileUpdateRequest, String profileId) {
         // Find exists user from db
         UserProfile existingUser = userProfileRepository
-                .findByUserId(userId)
+                .findByProfileId(profileId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        log.debug("Updating profile for userId: {}", existingUser.getUserId());
+        log.debug("Updating profile for profileId: {}", existingUser.getProfileId());
         // Mapping to user profile for existed profile
         UserProfile updatedUser = userProfileMapper.toUserProfile(userProfileUpdateRequest);
         // Keep user profile and user id
         updatedUser.setProfileId(existingUser.getProfileId());
-        updatedUser.setUserId(existingUser.getUserId());
+        updatedUser.setAccountId(existingUser.getAccountId());
         // Update to database
         UserProfile savedUser = userProfileRepository.save(updatedUser);
         //        log.info("Updated profile successfully: {}", savedUser);

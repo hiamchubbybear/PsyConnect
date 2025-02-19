@@ -12,6 +12,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_dotenv: ^5.1.0
   http: ^1.2.2
+  intl: ^0.18.1
+  # Rename
+  rename: ^2.1.1
+  # Change app icon
+  flutter_launcher_icons: ^0.13.1
   flutter_platform_widgets: ^7.0.1
   flutter_datetime_picker: ^1.5.1
   flutter_datetime_picker_plus: ^2.1.0
@@ -40,3 +45,7 @@ flutter:
     - assets/gifs/
     - lang/
     - .env
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo_psyconnect.png"

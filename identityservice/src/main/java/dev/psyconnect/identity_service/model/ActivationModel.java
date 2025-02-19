@@ -17,6 +17,7 @@ import lombok.*;
 public class ActivationModel {
     @Id
     private UUID activateId;
+
     private String username;
     private String token;
     private Timestamp issuedAt;

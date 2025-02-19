@@ -1,8 +1,9 @@
 package dev.psyconnect.profile_service.globalexceptionhandle;
 
+import org.springframework.http.HttpStatus;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public enum ErrorCode {
 
     // SERVER ERROR - 500
     SERVER_INTERNAL_ERROR(701, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
+    QUERY_FAILED(702, "Query failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // GENERAL EXCEPTIONS - 500
     UNCATEGORIZED_EXCEPTION(801, "Uncategorized exception", HttpStatus.INTERNAL_SERVER_ERROR),

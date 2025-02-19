@@ -1,5 +1,5 @@
-import 'package:PsyConnect/service/account_service/login.dart';
 import 'package:PsyConnect/page/register_page.dart';
+import 'package:PsyConnect/service/account_service/login.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
       child: DefaultTabController(
           length: 2,
           child: Container(
+            
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             decoration: const BoxDecoration(
@@ -30,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             child: Scaffold(
+
               appBar: AppBar(
                 bottom: const TabBar(
                   tabs: [Tab(text: 'Login'), Tab(text: 'Register')],

@@ -12,11 +12,10 @@ import dev.psyconnect.profile_service.model.UserProfile;
 
 @Repository
 public interface ProfileRepository extends Neo4jRepository<UserProfile, String> {
-
     // Find all profile
     @Query(
             "MATCH (userProfile:`user_profile`) RETURN userProfile, elementId(userProfile) AS __elementId__ SKIP $skip LIMIT $limit")
     List<UserProfile> findAllProfilesPaged(@Param("skip") int skip, @Param("limit") int limit);
 
-    Optional<UserProfile> findByUserId(String userId);
+    Optional<UserProfile> findByProfileId(String userId);
 }

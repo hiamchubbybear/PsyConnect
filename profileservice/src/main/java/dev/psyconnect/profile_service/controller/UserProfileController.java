@@ -48,7 +48,7 @@ public class UserProfileController {
 
     // Get all user profiles with page and size of page
     @GetMapping("/all")
-    ApiResponse<List<?>> getAllUserProfiles(int page, int size) {
+    ApiResponse<List<?>> getAllUserProfiles(@RequestParam int page, @RequestParam int size) {
         return new ApiResponse<>(userProfileService.getAll(page, size));
     }
 }

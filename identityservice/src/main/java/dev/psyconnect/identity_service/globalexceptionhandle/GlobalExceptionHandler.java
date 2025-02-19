@@ -110,6 +110,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleCustomException(CustomExceptionHandler customExceptionHandler) {
         log.warn("CustomExceptionHandler: ", customExceptionHandler);
         ErrorCode errorCode = customExceptionHandler.getErrorCode();
-        return ResponseEntity.status(errorCode.getHttpStatus()).body(ApiResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(ApiResponse.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
     }
 }

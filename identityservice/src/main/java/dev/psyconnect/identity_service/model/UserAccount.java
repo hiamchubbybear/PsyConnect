@@ -1,8 +1,6 @@
 package dev.psyconnect.identity_service.model;
 
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,8 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import dev.psyconnect.identity_service.enumeration.Provider;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @Setter
@@ -25,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @Table(name = "user_account", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class UserAccount {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;
@@ -36,7 +33,7 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    private @Builder.Default boolean isActivated = false;
+    private boolean isActivated = false;
 
     private @CreationTimestamp Timestamp createdAt;
 
@@ -48,5 +45,4 @@ public class UserAccount {
 
     @OneToOne
     private Token token;
-
 }

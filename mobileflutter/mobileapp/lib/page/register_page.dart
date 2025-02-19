@@ -11,6 +11,7 @@ import 'package:PsyConnect/toasting&loading/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -190,9 +191,11 @@ class _RegisterPageState extends State<RegisterPage> {
                             maxTime: DateTime.now(),
                             onConfirm: (date) {
                               setState(() {
-                                dobController.text =
-                                    "${date.year}-${date.month}-${date.day}";
-                                print("${dobController.text}");
+                                setState(() {
+                                  dobController.text =
+                                      DateFormat('yyyy-MM-dd').format(date);
+                                  print(dobController.text);
+                                });
                               });
                             },
                             currentTime: DateTime.now(),
@@ -287,10 +290,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
                 validator: (password) {
-                  RegExp passReg = RegExp(
-                      r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
+                  // RegExp passReg = RegExp(
+                  //     r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
                   if (password == null ||
-                      passReg.hasMatch(password!) ||
+                      // passReg.hasMatch(password!) ||
                       password.length > 3) {
                     return "Password must than 3 characters and include character , number  ";
                   }
@@ -334,8 +337,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 onPressed: () {
                   if (!_accountFormKey.currentState!.validate()) {
                     _setStartLoading();
-                    _handleOnRegisterButton(userProvider: userProvider , context: context);
-
+                    _handleOnRegisterButton(
+                        userProvider: userProvider, context: context);
                   }
                 },
                 child: (!_isLoading)
@@ -391,7 +394,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   _handleOnFacebookRegister() {}
 
-  Future<void> _handleOnRegisterButton({required dynamic userProvider , required BuildContext context}) async {
+  Future<void> _handleOnRegisterButton(
+      {required dynamic userProvider, required BuildContext context}) async {
     if (_image != null) {
       try {
         String? cloudinaryUrlImage = await cloudinaryApiService.uploadImage(
@@ -410,10 +414,12 @@ class _RegisterPageState extends State<RegisterPage> {
           "email": emailController.text,
           "role": roleController.text,
           "avatarUri": cloudinaryUrlImage.toString() ?? "",
-          "dob" : dobController.text
+          "dob": dobController.text
         };
         await registerService.registerHandle(
-            requestBody: jsonData, userProvider: userProvider , context : context);
+            requestBody: jsonData,
+            userProvider: userProvider,
+            context: context);
       } catch (e) {
         ToastService.showErrorToast(message: "Some error ${e}");
       }

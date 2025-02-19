@@ -1,12 +1,11 @@
 package dev.psyconnect.identity_service.repository.feign;
 
-import dev.psyconnect.identity_service.dto.request.ActivateAccountNotificationRequest;
-import dev.psyconnect.identity_service.dto.request.SendActivateAccountRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import dev.psyconnect.identity_service.dto.request.ActivateAccountNotificationRequest;
 import dev.psyconnect.identity_service.dto.request.CreateAccountNotificationRequest;
 import dev.psyconnect.identity_service.dto.request.DeleteNotificationRequest;
 import feign.Response;

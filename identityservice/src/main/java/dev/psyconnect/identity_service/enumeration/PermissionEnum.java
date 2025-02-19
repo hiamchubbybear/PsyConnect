@@ -37,7 +37,6 @@ public enum PermissionEnum {
     VIEW_REPORTS(28, "VIEW_REPORTS", "Admin views activity reports", "ADMIN"),
     VIEW_ANALYTICS(29, "VIEW_ANALYTICS", "Admin views system analytics", "ADMIN");
 
-
     private final int id;
     private final String name;
     private final String description;

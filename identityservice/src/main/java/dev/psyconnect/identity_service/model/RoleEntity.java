@@ -1,6 +1,5 @@
 package dev.psyconnect.identity_service.model;
 
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;

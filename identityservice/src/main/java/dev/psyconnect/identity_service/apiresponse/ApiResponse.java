@@ -1,7 +1,8 @@
 package dev.psyconnect.identity_service.apiresponse;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.*;
 

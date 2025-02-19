@@ -6,7 +6,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
     volumes:
-      - ./mysql-init:/docker-entrypoint-initdb.d
+      - "/Users/chessy/CodeSpace/PsyConnect/mysql-init/init.sql:/docker-entrypoint-initdb.d/init.sql"
     ports:
       - "3306:3306"
     networks:
@@ -23,7 +23,15 @@ services:
       - "7687:7687"
     networks:
       - mynetwork
-
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass 12345678
+volumes:
+  cache:
+    driver: local
 networks:
   mynetwork:
     driver: bridge

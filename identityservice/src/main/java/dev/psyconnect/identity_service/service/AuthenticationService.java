@@ -7,13 +7,9 @@ import java.util.UUID;
 import java.util.function.Function;
 import javax.naming.AuthenticationException;
 
-import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
-import dev.psyconnect.identity_service.model.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -25,6 +21,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
+import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
 import dev.psyconnect.identity_service.dto.request.AuthenticationRequest;
 import dev.psyconnect.identity_service.dto.request.GoogleAuthenticationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
@@ -33,6 +30,7 @@ import dev.psyconnect.identity_service.dto.response.LogoutResponse;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.model.BlackListToken;
+import dev.psyconnect.identity_service.model.UserAccount;
 import dev.psyconnect.identity_service.repository.BlackListTokenRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
@@ -70,8 +68,9 @@ public class AuthenticationService {
     // This method generates a JWT token
     public String generateToken(AuthenticationRequest authenticationRequest, String loginType) {
         // Get the username from the authentication request
-        UserAccount userAccountObject = userAccountRepository.findByUsername(authenticationRequest.getUsername()).
-                orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        UserAccount userAccountObject = userAccountRepository
+                .findByUsername(authenticationRequest.getUsername())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         var username = authenticationRequest.getUsername();
         // Get the role of the user based on the username
         var roles = userAccountRepository
@@ -337,7 +336,8 @@ public class AuthenticationService {
     }
 
     // Extract a specific claim from the token
-    public <T> T extractClaim(String token, Function<JWTClaimsSet, T> claimsResolver) throws ParseException, JOSEException {
+    public <T> T extractClaim(String token, Function<JWTClaimsSet, T> claimsResolver)
+            throws ParseException, JOSEException {
         final JWTClaimsSet claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -346,7 +346,6 @@ public class AuthenticationService {
     private JWTClaimsSet extractAllClaims(String token) throws ParseException, JOSEException {
         return verifyToken(token).getJWTClaimsSet();
     }
-
 
     // Check if the token is expired
     private Boolean isTokenExpired(String token) throws ParseException, JOSEException {
@@ -360,7 +359,8 @@ public class AuthenticationService {
     }
 
     // Validate the token against user details and expiration
-    public Boolean validateToken(String token, AuthenticationFilterRequest authenticationRequest) throws ParseException, JOSEException {
+    public Boolean validateToken(String token, AuthenticationFilterRequest authenticationRequest)
+            throws ParseException, JOSEException {
         final String username = extractUsername(token);
         return (username.equals(authenticationRequest.getUsername()) && !isTokenExpired(token));
     }
