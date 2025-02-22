@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import dev.psyconnect.identity_service.model.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import dev.psyconnect.identity_service.model.UserAccount;
 import lombok.*;
 
 @Getter
@@ -21,7 +21,7 @@ public class AuthenticationFilterRequest implements UserDetails {
     private String password;
     private List<GrantedAuthority> authorities;
 
-    public AuthenticationFilterRequest(UserAccount user) {
+    public AuthenticationFilterRequest(Account user) {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.authorities = user.getRole().stream()

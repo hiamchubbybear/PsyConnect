@@ -3,6 +3,7 @@ package dev.psyconnect.identity_service.repository;
 import java.util.Optional;
 import java.util.UUID;
 
+import dev.psyconnect.identity_service.model.Account;
 import jakarta.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,11 +12,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import dev.psyconnect.identity_service.model.UserAccount;
-
 @Repository
-public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> {
-    @Query("update UserAccount m set m.isActivated = true where m.email = :email")
+public interface UserAccountRepository extends JpaRepository<Account, UUID> {
+    @Query("update Account m set m.isActivated = true where m.email = :email")
     @Modifying
     @Transactional
     void activateUser(@Param("email") String email);
@@ -24,13 +23,13 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, UUID> 
 
     boolean existsByEmail(String email);
 
-    Optional<UserAccount> findByUsername(String username);
+    Optional<Account> findByUsername(String username);
 
-    Optional<UserAccount> findByEmail(String email);
+    Optional<Account> findByEmail(String email);
 
-    @Query("SELECT u.isActivated AS boolean_value\n" + "FROM UserAccount  u where u.username=?1")
+    @Query("SELECT u.isActivated AS boolean_value\n" + "FROM Account  u where u.username=?1")
     Boolean isActive(String username);
 
-    @Query("SELECT u.isActivated AS boolean_value\n" + "FROM UserAccount  u where u.email=?1")
+    @Query("SELECT u.isActivated AS boolean_value\n" + "FROM Account  u where u.email=?1")
     Boolean isActiveByEmail(String email);
 }

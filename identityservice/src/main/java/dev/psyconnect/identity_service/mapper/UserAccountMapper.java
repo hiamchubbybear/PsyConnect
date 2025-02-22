@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 
 import dev.psyconnect.identity_service.dto.request.UserAccountCreationRequest;
 import dev.psyconnect.identity_service.dto.request.UserProfileCreationRequest;
-import dev.psyconnect.identity_service.model.UserAccount;
+import dev.psyconnect.identity_service.model.Account;
 
 @Mapper(componentModel = "spring")
 public interface UserAccountMapper {
@@ -14,5 +14,5 @@ public interface UserAccountMapper {
     UserProfileCreationRequest toAccountResponse(UserAccountCreationRequest userAccount);
 
     @Mapping(target = "role", ignore = true)
-    UserProfileCreationRequest toUserProfileCreationRequest(UserAccount userAccount);
+    UserProfileCreationRequest toUserProfileCreationRequest(Account userAccount);
 }

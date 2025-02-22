@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 public class MoodUpdateRequest {
-    private String id;
-    private String title;
-    private String description;
+    String mood;
+    String moodDescription;
+    String visibility;
 }

@@ -28,7 +28,7 @@ public class RoleEntity {
 
     @JsonIgnore
     @ManyToMany
-    private Set<UserAccount> userAccount;
+    private Set<Account> userAccount;
 
     private String name;
 }

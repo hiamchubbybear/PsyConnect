@@ -14,7 +14,7 @@ import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.mapper.CreateProfileOauth2GoogleMapper;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.RoleEntity;
-import dev.psyconnect.identity_service.model.UserAccount;
+import dev.psyconnect.identity_service.model.Account;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import dev.psyconnect.identity_service.repository.feign.ProfileRepository;
@@ -40,14 +40,14 @@ public class OAuth2Service {
         // Get avatarUri from request
         String avatarUri = createProfileOauth2GoogleRequest.getAvatarUri();
         // Find the existed user by email
-        UserAccount existUser = userAccountRepository.findByEmail(email).orElse(null);
+        Account existUser = userAccountRepository.findByEmail(email).orElse(null);
         // Find the role of user by Client id
         Set<RoleEntity> roleEntities = roleRepository.findAllByRoleId("Client");
         // Logging
         log.info("Client Role {} :", roleEntities.stream().findFirst().toString());
         // If null create a new user only have email  , provider , role
         if (existUser == null) {
-            UserAccount newUser = UserAccount.builder()
+            Account newUser = Account.builder()
                     .email(email)
                     .provider(Provider.GOOGLE)
                     .role(roleEntities)

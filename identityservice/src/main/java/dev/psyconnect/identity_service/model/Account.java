@@ -20,7 +20,7 @@ import lombok.*;
 @Entity
 @Builder
 @Table(name = "user_account", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
-public class UserAccount {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

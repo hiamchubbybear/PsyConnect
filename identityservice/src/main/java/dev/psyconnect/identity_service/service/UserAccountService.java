@@ -71,8 +71,8 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Find role by id and save it to our response data
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
 
-        // Create UserAccount and assign roles
-        UserAccount account = UserAccount.builder()
+        // Create Account and assign roles
+        Account account = Account.builder()
                 .username(request.getUsername())
                 .isActivated(false)
                 .createdAt(Timestamp.from(Instant.now()))
@@ -83,7 +83,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .token(savedToken)
                 .build();
 
-        // Save the UserAccount object
+        // Save the Account object
         var savedAccount = accountRepository.save(account);
         log.info("Created account: {}", savedAccount.getUserId());
 
@@ -164,7 +164,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     // Delete account external use
     public DeleteAccountResponse deleteAccount(DeleteAccountRequest deleteAccountRequest, UUID uuid) {
         // Find the user account object
-        UserAccount userObject = userAccountRepository
+        Account userObject = userAccountRepository
                 .findById(uuid)
                 .orElseThrow(() ->
                         // If not found throw an exception 404
@@ -202,7 +202,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
     public boolean deleteAccountRequest(DeleteAccountConfirmRequest removeAccountRequest, UUID uuid) {
         // Find the user account object
-        UserAccount userObject = userAccountRepository
+        Account userObject = userAccountRepository
                 .findById(uuid)
                 .orElseThrow(() ->
                         // If not found throw an exception 404

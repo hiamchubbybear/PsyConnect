@@ -17,8 +17,10 @@ public class ActivityLog {
     @Id
     @GeneratedValue(generatorClass = UUIDStringGenerator.class)
     private String id;
-
     private String profileId;
     private String action;
     private long timestamp;
+    private String targetId;
+    private String targetType;
+    private String extraData;
 }

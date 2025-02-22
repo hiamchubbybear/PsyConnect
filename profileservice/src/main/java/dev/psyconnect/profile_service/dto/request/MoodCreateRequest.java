@@ -1,4 +1,4 @@
-package dev.psyconnect.profile_service;
+package dev.psyconnect.profile_service.dto.request;
 
 import lombok.*;
 

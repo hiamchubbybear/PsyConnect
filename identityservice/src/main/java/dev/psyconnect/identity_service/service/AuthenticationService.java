@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import javax.naming.AuthenticationException;
 
+import dev.psyconnect.identity_service.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -30,7 +31,6 @@ import dev.psyconnect.identity_service.dto.response.LogoutResponse;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.model.BlackListToken;
-import dev.psyconnect.identity_service.model.UserAccount;
 import dev.psyconnect.identity_service.repository.BlackListTokenRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
@@ -68,7 +68,7 @@ public class AuthenticationService {
     // This method generates a JWT token
     public String generateToken(AuthenticationRequest authenticationRequest, String loginType) {
         // Get the username from the authentication request
-        UserAccount userAccountObject = userAccountRepository
+        Account userAccountObject = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         var username = authenticationRequest.getUsername();

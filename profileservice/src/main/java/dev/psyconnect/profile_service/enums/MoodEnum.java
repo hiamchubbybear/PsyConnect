@@ -1,4 +1,4 @@
-package dev.psyconnect.profile_service.model;
+package dev.psyconnect.profile_service.enums;
 
 public enum MoodEnum {
     PRIVATE,

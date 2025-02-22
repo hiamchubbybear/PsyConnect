@@ -3,6 +3,8 @@ package dev.psyconnect.profile_service.controller;
 import java.io.IOException;
 import java.util.List;
 
+import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
+import org.neo4j.graphdb.Path;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
@@ -50,5 +52,10 @@ public class UserProfileController {
     @GetMapping("/all")
     ApiResponse<List<?>> getAllUserProfiles(@RequestParam int page, @RequestParam int size) {
         return new ApiResponse<>(userProfileService.getAll(page, size));
+    }
+
+    @GetMapping("/friends/{profileId}")
+    ApiResponse<ProfileWithRelationShipResponse> getFriends(@PathVariable String profileId) {
+        return new ApiResponse<>(userProfileService.getProfileWithMood(profileId));
     }
 }

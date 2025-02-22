@@ -1,5 +1,6 @@
 package dev.psyconnect.profile_service.dto.response;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MoodCreateResponse {
+public class MoodCreateResponse implements Serializable {
     String profileId;
     boolean isSuccess;
     String mood;

@@ -1,5 +1,6 @@
 package com.example.IdentityService;
 
+import dev.psyconnect.identity_service.model.Account;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import dev.psyconnect.identity_service.model.UserAccount;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import dev.psyconnect.identity_service.service.AuthenticationService;
@@ -36,8 +36,8 @@ class AuthenticationServiceTest {
     private static final String TEST_EMAIL = "test@gmail.com";
     private static final String TEST_LOGIN_TYPE = "default";
 
-    private UserAccount mockUserAccount() {
-        var user = new UserAccount();
+    private Account mockUserAccount() {
+        var user = new Account();
         user.setUsername(TEST_USERNAME);
         user.setPassword(passwordEncoder.encode(TEST_PASSWORD));
         user.setEmail(TEST_EMAIL);
