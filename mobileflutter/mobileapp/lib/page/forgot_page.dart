@@ -14,12 +14,12 @@ class _ForgotPageState extends State<ForgotPage> {
   ForgotService forgotService = ForgotService();
 
   bool isSent = false;
-  String savedEmail = ""; // Lưu email khi gửi yêu cầu
+  String savedEmail = "";
 
   void _changeSentStatus(String email) {
     setState(() {
       isSent = true;
-      savedEmail = email; // Lưu email để dùng khi xác nhận mã
+      savedEmail = email;
     });
   }
 
@@ -52,8 +52,7 @@ class _ForgotPageState extends State<ForgotPage> {
                 if (!isSent) ...[
                   ElevatedButton(
                     onPressed: () {
-                      String email =
-                          "user@example.com"; // Lấy email từ API hoặc context
+                      String email = "user@example.com";
                       print("Sending request for email: $email");
                       _onVerifiedHandle(email: email);
                     },

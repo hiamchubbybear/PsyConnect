@@ -4,21 +4,23 @@ publish_to: 'none'
 version: 1.0.0+1
 environment:
   sdk: ^3.5.4
-flutter_localizations:
-  sdk: flutter
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
   cupertino_icons: ^1.0.8
   flutter_dotenv: ^5.1.0
   http: ^1.2.2
-  intl: ^0.18.1
   # Rename
   rename: ^2.1.1
   # Change app icon
   flutter_launcher_icons: ^0.13.1
   flutter_platform_widgets: ^7.0.1
   flutter_datetime_picker: ^1.5.1
+  # Fonts
+  google_fonts: ^6.1.0
   flutter_datetime_picker_plus: ^2.1.0
   # OTP Text Field
   flutter_otp_text_field: ^1.1.0+2

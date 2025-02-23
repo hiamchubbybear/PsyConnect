@@ -8,8 +8,10 @@ import 'package:PsyConnect/service/account_service/register.dart';
 import 'package:PsyConnect/service/api/cloudinary_api_service.dart';
 import 'package:PsyConnect/service/logic.dart';
 import 'package:PsyConnect/toasting&loading/toast.dart';
+import 'package:PsyConnect/variable/variable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -88,7 +90,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         children: [
                           ListTile(
                             leading: const Icon(Icons.photo_library),
-                            title: const Text('Choose from gallery'),
+                            title: Text(
+                              'Choose from gallery',
+                              style: textStyle,
+                            ),
                             onTap: () {
                               _pickImage(ImageSource.gallery);
                               Navigator.pop(context);
@@ -97,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ListTile(
                             contentPadding: EdgeInsets.all(10),
                             leading: const Icon(Icons.camera_alt),
-                            title: const Text('Take a photo'),
+                            title: Text('Take a photo', style: textStyle),
                             onTap: () {
                               _pickImage(ImageSource.camera);
                               Navigator.pop(context);
@@ -138,11 +143,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 },
                 child: Text(showProfileFields ? 'Profile' : 'Profile',
                     style: (showProfileFields)
-                        ? const TextStyle(
-                            fontSize: 16,
-                          )
+                        ? GoogleFonts.quicksand(
+                            fontSize: 18, fontWeight: FontWeight.bold)
                         : const TextStyle(
-                            fontSize: 16,
+                            fontSize: 17,
                           )),
               ),
               if (showProfileFields)
@@ -153,13 +157,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         Expanded(
                             child: TextFormField(
+                          style: textFieldStyle,
                           textCapitalization: TextCapitalization.sentences,
-                          validator: (value) => value == null
-                              ? "Hey you forgot field first name"
-                              : null,
+                          validator: (value) =>
+                              value == null ? "Missing first name field" : null,
                           controller: firstNameController,
-                          decoration: const InputDecoration(
-                              labelText: 'My first name is'),
+                          decoration:
+                              const InputDecoration(labelText: 'First name'),
                           onChanged: (value) => setState(() {
                             firstNameController.text = value;
                           }),
@@ -167,13 +171,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextFormField(
+                            style: textFieldStyle,
                             textCapitalization: TextCapitalization.sentences,
                             validator: (value) => value == null
-                                ? "Hey you forgot field last name"
+                                ? "Missing last name field"
                                 : null,
                             controller: lastNameController,
-                            decoration: const InputDecoration(
-                                labelText: 'My last name is'),
+                            decoration:
+                                const InputDecoration(labelText: 'Last name'),
                             onChanged: (value) => setState(() {
                               lastNameController.text = value;
                             }),
@@ -204,22 +209,26 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                         child: InputDecorator(
                           decoration: const InputDecoration(
-                            labelText: 'My birthday in',
+                            labelText: 'Date of birth',
                             hintText: 'Choose date',
                           ),
-                          child: Text(dobController.text.isEmpty
-                              ? "Choose date"
-                              : dobController.text),
+                          child: Text(
+                            dobController.text.isEmpty
+                                ? "Choose date"
+                                : dobController.text,
+                            style: textFieldStyle,
+                          ),
                         )),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
+                            style: textFieldStyle,
                             validator: (value) =>
-                                value == null ? "What do you wanna be" : null,
-                            decoration:
-                                const InputDecoration(labelText: 'Wanna be a'),
+                                value == null ? "Wanna be" : null,
+                            decoration: const InputDecoration(
+                                labelText: 'Select your role'),
                             value: roleController.text.isEmpty
                                 ? null
                                 : roleController.text,
@@ -237,8 +246,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: DropdownButtonFormField<String>(
+                            style: textFieldStyle,
                             decoration:
-                                const InputDecoration(labelText: 'I am a'),
+                                const InputDecoration(labelText: 'Gender'),
                             value: genderController.text.isEmpty
                                 ? null
                                 : genderController.text,
@@ -266,6 +276,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ? 'Address is required'
                               : null;
                         },
+                        style: textFieldStyle,
                         controller: addressController,
                         textInputAction: TextInputAction.route,
                         decoration: const InputDecoration(labelText: 'Address'),
@@ -277,31 +288,35 @@ class _RegisterPageState extends State<RegisterPage> {
               const SizedBox(height: 16),
               TextFormField(
                 validator: (username) {
-                  (username == null || username!.length <= 3)
+                  (username == null || username.length <= 3)
                       ? "Username must be greater than 3 characters"
                       : null;
                 },
+                style: textFieldStyle,
                 controller: usernameController,
                 decoration: const InputDecoration(labelText: 'Username'),
               ),
               const SizedBox(height: 8),
               TextFormField(
+                style: textFieldStyle,
                 controller: passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
                 validator: (password) {
-                  // RegExp passReg = RegExp(
-                  //     r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
-                  if (password == null ||
-                      // passReg.hasMatch(password!) ||
-                      password.length > 3) {
-                    return "Password must than 3 characters and include character , number  ";
+                  RegExp passReg = RegExp(
+                      // Regex have
+                      r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
+                  if (password == null || passReg.hasMatch(password!)) {
+                    return "Password include lowercase letter , uppercase letter ,  number, and special character";
+                  } else if (password.length < 8) {
+                    return "Password have to at least 8 characters";
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 8),
               TextFormField(
+                style: textFieldStyle,
                 onChanged: (value) => {retypePasswordController.text = value},
                 controller: retypePasswordController,
                 obscureText: true,
@@ -317,6 +332,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 8),
               TextFormField(
+                  style: textFieldStyle,
                   controller: emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
@@ -335,14 +351,14 @@ class _RegisterPageState extends State<RegisterPage> {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  if (!_accountFormKey.currentState!.validate()) {
+                  if (_accountFormKey.currentState!.validate()) {
                     _setStartLoading();
                     _handleOnRegisterButton(
                         userProvider: userProvider, context: context);
                   }
                 },
                 child: (!_isLoading)
-                    ? const Text('Register')
+                    ? Text('Register', style: textStyle)
                     : const CircularProgressIndicator(),
               ),
               const SizedBox(height: 16),
@@ -369,7 +385,10 @@ class _RegisterPageState extends State<RegisterPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Forgot your password?"),
+                  Text(
+                    "Forgot your password?",
+                    style: textStyle,
+                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -378,7 +397,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             builder: (context) => const ForgotPage()),
                       );
                     },
-                    child: const Text('Reset it'),
+                    child: Text(
+                      'Reset it',
+                      style: textStyle,
+                    ),
                   ),
                 ],
               ),
@@ -396,13 +418,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _handleOnRegisterButton(
       {required dynamic userProvider, required BuildContext context}) async {
+    print("Register handle");
     if (_image != null) {
       try {
         String? cloudinaryUrlImage = await cloudinaryApiService.uploadImage(
             imageFile: _image as File, username: usernameController.text);
         print(cloudinaryUrlImage);
         if (cloudinaryUrlImage == null) {
-          ToastService.showErrorToast(message: "Image doesn't exceptable");
+          ToastService.showToast(
+              message: "Image doesn't exceptable!",
+              context: context,
+              title: 'Image!!',
+              type: ToastType.error);
         }
         Map<String, String> jsonData = {
           "username": usernameController.text.toLowerCase(),
@@ -421,8 +448,18 @@ class _RegisterPageState extends State<RegisterPage> {
             userProvider: userProvider,
             context: context);
       } catch (e) {
-        ToastService.showErrorToast(message: "Some error ${e}");
+        ToastService.showToast(
+            message: "Some unknown error occurred",
+            context: context,
+            title: 'Error!!',
+            type: ToastType.error);
       }
+    } else {
+      ToastService.showToast(
+          message: "Please choose your image!",
+          context: context,
+          title: 'Image!!',
+          type: ToastType.error);
     }
   }
 }

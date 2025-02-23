@@ -26,7 +26,11 @@ class RegisterService {
         }
         userProvider.setUser(userData);
         debugPrint("Email from UserProvider: ${userProvider.user?["email"]}");
-        ToastService.showSuccessToast(message: "Register successful!");
+        ToastService.showToast(
+            message: "Register successful!",
+            context: context,
+            title: 'Notification',
+            type: ToastType.success);
         if (!context.mounted) return responseDecoded;
         Navigator.pushReplacement(
           context,
@@ -37,18 +41,29 @@ class RegisterService {
       }
       switch (response.statusCode) {
         case 409:
-          ToastService.showErrorToast(
-              message: "Username or email already used");
+          ToastService.showToast(
+              message: "username or email already used!",
+              context: context,
+              title: 'Exists field',
+              type: ToastType.error);
           throw Exception("Username or email already used");
         case 500:
           throw Exception("Server error: ${response.statusCode}");
         default:
-          ToastService.showErrorToast(message: "An error occurred");
+          ToastService.showToast(
+              message: "Un error ocurred!",
+              context: context,
+              title: 'Error',
+              type: ToastType.error);
           throw Exception("Unexpected error: ${response.statusCode}");
       }
     } catch (e) {
       debugPrint("RegisterService Error: $e");
-      ToastService.showErrorToast(message: "Something went wrong: $e");
+      ToastService.showToast(
+          message: "There are an expected error with server}!",
+          context: context,
+          title: 'Unknown error',
+          type: ToastType.error);
       return null;
     }
   }

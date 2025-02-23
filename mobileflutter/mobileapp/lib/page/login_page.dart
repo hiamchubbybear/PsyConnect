@@ -1,5 +1,7 @@
+import 'package:PsyConnect/page/forgot_page.dart';
 import 'package:PsyConnect/page/register_page.dart';
 import 'package:PsyConnect/service/account_service/login.dart';
+import 'package:PsyConnect/variable/variable.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -12,6 +14,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool isPasswordVisible = false;
+
   LoginService loginService = LoginService();
 
   @override
@@ -20,7 +24,6 @@ class _LoginPageState extends State<LoginPage> {
       child: DefaultTabController(
           length: 2,
           child: Container(
-            
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             decoration: const BoxDecoration(
@@ -31,10 +34,12 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             child: Scaffold(
-
               appBar: AppBar(
-                bottom: const TabBar(
-                  tabs: [Tab(text: 'Login'), Tab(text: 'Register')],
+                bottom: TabBar(
+                  tabs: [
+                    Tab(child: Text('Login', style: textStyle)),
+                    Tab(child: Text('Register', style: textStyle))
+                  ],
                 ),
               ),
               body: TabBarView(
@@ -57,21 +62,36 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
+                maxLength: 20,
+                style: textStyle,
                 controller: nameController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30)),
+                      borderRadius: BorderRadius.circular(20)),
                   labelText: 'Username',
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
-                obscureText: true,
+                style: textStyle,
+                obscureText: !isPasswordVisible,
                 controller: passwordController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30)),
+                      borderRadius: BorderRadius.circular(20)),
                   labelText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -112,18 +132,21 @@ class _LoginPageState extends State<LoginPage> {
                     "android",
                   );
                 },
-                child: const Text('Login'),
+                child: Text(
+                  'Login',
+                  style: textStyle,
+                ),
               ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text('Forgot your password?'),
+                  Text('Forgot your password?', style: textStyle),
                   TextButton(
-                    onPressed: () {},
-                    child: const Text(
+                    onPressed: () => _handleOnResetPassword(context: context),
+                    child: Text(
                       'Reset now',
-                      style: TextStyle(fontSize: 15),
+                      style: textStyle,
                     ),
                   ),
                 ],
@@ -136,20 +159,14 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   _handleOnGoogleLogin() {}
-
   _handleOnFacebookLogin() {}
-
   _handleOnAppleIdLogin() {}
-
-  Widget _RegisterForm(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(),
-    );
-  }
-
-  Widget _ForgotPasswordForm(BuildContext context) {
-    return Center(
-      child: Text("Forgot Password Form - Work in Progress"),
+  _handleOnResetPassword({
+    required BuildContext context,
+  }) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ForgotPage()),
     );
   }
 }

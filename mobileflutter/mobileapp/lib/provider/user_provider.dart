@@ -8,7 +8,10 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Map<String, dynamic>? get getData => _user?["data"];
+
   void clearUser() {
+    print("Clear user data");
     _user = null;
     notifyListeners();
   }
