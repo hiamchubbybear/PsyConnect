@@ -24,8 +24,8 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID userId;
-
+    private UUID accountId;
+    private UUID profileId;
     private String username;
     private String password;
     private String email;

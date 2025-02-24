@@ -1,16 +1,22 @@
 package dev.psyconnect.profile_service.controller;
 
+import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
+import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
+import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
+import org.springframework.web.bind.annotation.*;
+
+import dev.psyconnect.profile_service.apiresponse.ApiResponse;
 import dev.psyconnect.profile_service.dto.request.MoodCreateRequest;
 import dev.psyconnect.profile_service.dto.request.MoodUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.DeleteMoodResponse;
 import dev.psyconnect.profile_service.dto.response.GetMoodResponse;
-import dev.psyconnect.profile_service.service.MoodService;
-import org.springframework.web.bind.annotation.*;
-import dev.psyconnect.profile_service.apiresponse.ApiResponse;
 import dev.psyconnect.profile_service.dto.response.MoodCreateResponse;
+import dev.psyconnect.profile_service.service.MoodService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/mood")
@@ -19,23 +25,28 @@ import lombok.experimental.FieldDefaults;
 public class MoodController {
     MoodService moodService;
 
-    @PostMapping("/add/{id}")
-    public ApiResponse<MoodCreateResponse> addMood(@PathVariable String id, @RequestBody MoodCreateRequest request) {
-        return new ApiResponse<>(moodService.createMoodByProfileId(id, request));
+    @PostMapping("/add")
+    public ApiResponse<MoodCreateResponse> addMood(@RequestHeader(value = "X-Profile-Id", required = true) String profileId, @RequestBody MoodCreateRequest request) {
+        if (profileId == null) {
+            throw new CustomExceptionHandler(ErrorCode.MISSING_TOKEN);
+        }
+        return new ApiResponse<>(moodService.createMoodByProfileId(profileId, request));
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<GetMoodResponse> getMood(@PathVariable String id) {
-        return new ApiResponse<>(moodService.getMoodById(id));
+    @GetMapping
+    public ApiResponse<GetMoodResponse> getMood(@RequestHeader(value = "X-Profile-Id", required = true) String profileId) {
+
+        return new ApiResponse<>(moodService.getMoodById(profileId));
     }
 
-    @PutMapping("/{id}")
-    public ApiResponse<MoodCreateResponse> updateMood(@PathVariable String id, @RequestBody MoodUpdateRequest request) {
-        return new ApiResponse<>(moodService.updateMoodByProfileId(id, request));
+
+    @PutMapping
+    public ApiResponse<MoodCreateResponse> updateMood(@RequestHeader(value = "X-Profile-Id", required = true) String profileId, @RequestBody MoodUpdateRequest request) {
+        return new ApiResponse<>(moodService.updateMoodByProfileId(profileId, request));
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<DeleteMoodResponse> updateMood(@PathVariable String id) {
-        return new ApiResponse<>(moodService.deleteMood(id));
+    @DeleteMapping
+    public ApiResponse<DeleteMoodResponse> updateMood(@RequestHeader(value = "X-Profile-Id", required = true) String profileId) {
+        return new ApiResponse<>(moodService.deleteMood(profileId));
     }
 }

@@ -32,37 +32,42 @@ class _MyHomePageState extends State<MyHomePage>
       appBar: AppBar(
         automaticallyImplyLeading: false,
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          Center(child: Text("Home Page")),
-          Center(child: Text("Schedule Page")),
-          Center(child: Text("Chat Page")),
-          Center(child: Text("Notifications Page")),
-          Setting()
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: TabBarView(
+          controller: _tabController,
+          children: const [
+            Center(child: Text("Home Page")),
+            Center(child: Text("Schedule Page")),
+            Center(child: Text("Chat Page")),
+            Center(child: Text("Notifications Page")),
+            Setting(),
+          ],
+        ),
       ),
       bottomNavigationBar: Material(
-        child: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.home, size: 37)),
-            Tab(
-                icon: ImageIcon(
-                    AssetImage("assets/images/dark_mode_schedule.png"),
-                    size: 28)),
-            Tab(
-                icon: ImageIcon(AssetImage("assets/images/dark_mode_chat.png"),
-                    size: 28)),
-            Tab(
-                icon: ImageIcon(
-                    AssetImage("assets/images/dark_mode_notification.png"),
-                    size: 28)),
-            Tab(icon: Icon(Icons.settings, size: 36)),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(icon: Icon(Icons.home, size: 37)),
+              Tab(
+                  icon: ImageIcon(
+                      AssetImage("assets/images/dark_mode_schedule.png"),
+                      size: 28)),
+              Tab(
+                  icon: ImageIcon(AssetImage("assets/images/dark_mode_chat.png"),
+                      size: 28)),
+              Tab(
+                  icon: ImageIcon(
+                      AssetImage("assets/images/dark_mode_notification.png"),
+                      size: 28)),
+              Tab(icon: Icon(Icons.settings, size: 36)),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

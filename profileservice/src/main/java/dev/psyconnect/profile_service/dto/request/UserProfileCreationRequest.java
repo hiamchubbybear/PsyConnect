@@ -16,7 +16,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserProfileCreationRequest {
-    UUID userId;
+    String accountId;
+    String profileId;
     String firstName;
     String lastName;
 

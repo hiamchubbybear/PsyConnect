@@ -20,7 +20,7 @@ class CustomTextButton extends StatelessWidget {
     this.onPressed,
     this.textColor = blackColor,
     this.backgroundColor = Colors.transparent,
-    this.fontSize = 20,
+    this.fontSize = 15,
     this.fontWeight = FontWeight.w600,
     this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
     this.icon,

@@ -13,8 +13,8 @@ import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHand
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.mapper.CreateProfileOauth2GoogleMapper;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
-import dev.psyconnect.identity_service.model.RoleEntity;
 import dev.psyconnect.identity_service.model.Account;
+import dev.psyconnect.identity_service.model.RoleEntity;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import dev.psyconnect.identity_service.repository.feign.ProfileRepository;
@@ -51,18 +51,18 @@ public class OAuth2Service {
                     .email(email)
                     .provider(Provider.GOOGLE)
                     .role(roleEntities)
-                    .build();
+                    .isActivated(true).build();
             log.info("Creating new user account with provider GOOGLE {} ", email);
             // Write new user to db
             var savedUser = userAccountRepository.save(newUser);
             // Logging
-            log.info("Create new user account with accountId {} ", savedUser.getUserId());
+            log.info("Create new user account with accountId {} ", savedUser.getAccountId());
             // Mapping request to trigger to profile service with http:localhost:8081/profile/create
             var createProfileRequest = userAccountMapper.toUserProfileCreationRequest(savedUser);
             // Set avatarUri for profile
             createProfileRequest.setAvatarUri(avatarUri);
             // Logging
-            log.info("Trigger to profile service {} ", savedUser.getUserId());
+            log.info("Trigger to profile service {} ", savedUser.getAccountId());
             // Trigger to profile service with http:localhost:8081/profile/create
             profileRepository.createProfile(createProfileRequest);
             // Mapping

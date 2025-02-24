@@ -70,7 +70,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         log.info("Activate account entity for: {} ", activateTokenEntity.getUsername());
         // Find role by id and save it to our response data
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
-
+        UUID profileId = UUID.randomUUID();
         // Create Account and assign roles
         Account account = Account.builder()
                 .username(request.getUsername())
@@ -81,15 +81,19 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .password(PasswordEncodingService.encoder(request.getPassword()))
                 .role(roles)
                 .token(savedToken)
+                .profileId(profileId)
                 .build();
 
         // Save the Account object
         var savedAccount = accountRepository.save(account);
-        log.info("Created account: {}", savedAccount.getUserId());
+        log.info("Created account: {}", savedAccount.getAccountId());
 
         // Prepare response
         UserProfileCreationRequest temp = mapper.toAccountResponse(request);
-        temp.setUserId(account.getUserId());
+        temp.setAccountId(account.getAccountId().toString());
+        temp.setProfileId(profileId.toString());
+        log.info("Created account: {}", temp.getAccountId());
+        log.info("Created account: {}", temp.getProfileId());
 
         // Send request to Profile Service
         try {
@@ -114,6 +118,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public ActivateAccountResponse activateAccount(ActivateAccountRequest activateAccountRequest) {
         // Declared and assign email
         String email = activateAccountRequest.getEmail();
+        String activateToken = activateAccountRequest.getToken();
         if (userAccountRepository.isActiveByEmail(email)) {
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
         }
@@ -125,8 +130,8 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         }
         // Declared and assign foundObject for Token Object if found assign it or else assign for null
         var foundObject = activateRepository
-                .findByToken(activateAccountRequest.getToken())
-                .orElse(null);
+                .findByToken(activateToken)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ACTIVATION_FAILED));
         // If foundObject is null return a response facilitate failed
         if (foundObject == null) {
             return ActivateAccountResponse.builder()
@@ -150,10 +155,10 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     }
 
     // Delete account internal use
-    public boolean deleteAccountWithoutCheck(UUID userId) {
+    public boolean deleteAccountWithoutCheck(UUID accountId) {
         try {
             // Delete without check call only
-            userAccountRepository.deleteById(userId);
+            userAccountRepository.deleteById(accountId);
             // Builder a response for account
             return true;
         } catch (Exception e) {
@@ -173,7 +178,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Check if username not match or password doesn't match
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             // If not found throw an exception 418
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         // Check if token doesn't match
@@ -234,7 +239,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         if (userAccountRepository.isActive(username))
             return UserInfoResponse.builder()
                     .username(username)
-                    .userId(userResponse.getUserId())
+                    .accountId(userResponse.getAccountId())
                     .createdAt(userResponse.getCreatedAt().toLocalDateTime().toLocalDate())
                     .role(userResponse.getRole())
                     .email(userResponse.getEmail())

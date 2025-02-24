@@ -13,48 +13,44 @@ import dev.psyconnect.profile_service.model.Mood;
 public interface MoodRepository extends Neo4jRepository<Mood, String> {
     @Query(
             """
-                    MATCH (u:user_profile {profileId: $profileId})
-                    CREATE (m:mood {
-                    	moodId: $profileId,
-                    	mood: $mood,
-                    	description: $description,
-                    	createdAt: $currentTimestamp,
-                    	expiresAt: $expiresTimestamp,
-                    	visibility: $visibility
+					MATCH (u:user_profile {profileId: $profileId})
+					CREATE (m:mood {
+						moodId: $profileId,
+						mood: $mood,
+						description: $description,
+						createdAt: $currentTimestamp,
+						expiresAt: $expiresTimestamp,
+						visibility: $visibility
 
-                    })
-                    CREATE (u)-[:HAS_MOOD]->(m)
-                    RETURN m
-                    """)
+					})
+					CREATE (u)-[:HAS_MOOD]->(m)
+					RETURN m
+					""")
     Optional<Mood> createMood(
             @Param("profileId") String profileId,
             @Param("mood") String mood,
             @Param("description") String description,
             @Param("visibility") String visibility,
-            @Param("currenTimestamp") long currentTimestamp,
+            @Param("currentTimestamp") long currentTimestamp,
             @Param("expiresTimestamp") long expiresTimestamp);
 
     @Query(
             """
-                    MATCH (u:user_profile {profileId: $profileId})-[:HAS_MOOD]->(m)
-                    SET m.mood = $mood,
-                    	m.description = $description,
-                    	m.visibility = $visibility
-                    RETURN m
-                    """)
+					MATCH (u:user_profile {profileId: $profileId})-[:HAS_MOOD]->(m)
+					SET m.mood = $mood,
+						m.description = $description,
+						m.visibility = $visibility
+					RETURN m
+					""")
     Optional<Mood> updateMood(
             @Param("profileId") String profileId,
             @Param("mood") String mood,
             @Param("description") String description,
-            @Param("visibility") String visibility
-    );
+            @Param("visibility") String visibility);
 
-    @Query(
-            """
-                    MATCH( u:user_profile {profileId: $profileId})-[:HAS_MOOD]->(m:mood)
-                    RETURN m
-                    """
-    )
+    @Query("""
+					MATCH( u:user_profile {profileId: $profileId})-[:HAS_MOOD]->(m:mood)
+					RETURN m
+					""")
     Optional<Mood> getMood(@Param("profileId") String profileId);
-
 }

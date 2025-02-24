@@ -13,7 +13,7 @@ public enum ErrorCode {
     IMAGES_NOT_FOUND(102, "Images not found", HttpStatus.NOT_FOUND),
     TOKEN_NOT_FOUND(103, "Token not found or expired", HttpStatus.NOT_FOUND),
     RESOURCE_NOT_FOUND(104, "Resource not found", HttpStatus.NOT_FOUND),
-    ROLE_NOT_FOUND(105, "Role does not exist or cannot be found", HttpStatus.NOT_FOUND),
+    ROLE_NOT_FOUND(105, "Role does not exist or cannot be found", HttpStatus.NOT_FOUND), MISSING_TOKEN(106, "Missing token", HttpStatus.NOT_FOUND),
 
     // ALREADY EXISTS - 409
     EMAIL_ALREADY_EXISTS(201, "Email already exists", HttpStatus.CONFLICT),

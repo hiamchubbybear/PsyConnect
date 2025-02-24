@@ -30,7 +30,8 @@ class _ForgotPageState extends State<ForgotPage> {
 
   void _onVerifiedCode({required String token}) {
     if (savedEmail.isNotEmpty) {
-      forgotService.registerHandle(email: savedEmail, token: token);
+      forgotService.registerHandle(
+          email: savedEmail, token: token, context: context);
     } else {
       print("Error: Email is missing");
     }

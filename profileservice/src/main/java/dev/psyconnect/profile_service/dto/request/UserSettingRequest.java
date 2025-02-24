@@ -5,13 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserSettingRequest  {
+public class UserSettingRequest {
     private String privacyLevel;
     private boolean showLastSeen;
     private boolean showProfilePicture;

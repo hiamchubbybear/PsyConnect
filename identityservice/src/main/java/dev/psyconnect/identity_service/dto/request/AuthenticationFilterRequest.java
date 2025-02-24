@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import dev.psyconnect.identity_service.model.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import dev.psyconnect.identity_service.model.Account;
 import lombok.*;
 
 @Getter

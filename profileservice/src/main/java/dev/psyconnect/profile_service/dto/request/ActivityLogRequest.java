@@ -13,4 +13,3 @@ public class ActivityLogRequest {
     private String targetType;
     private String extraData;
 }
-

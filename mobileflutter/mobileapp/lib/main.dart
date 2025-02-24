@@ -1,13 +1,20 @@
 import 'package:PsyConnect/page/login_page.dart';
+import 'package:PsyConnect/provider/auth_token_provider.dart';
+import 'package:PsyConnect/provider/user_profile_provider.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+
 void main() async {
   await dotenv.load(fileName: ".env");
-  runApp(ChangeNotifierProvider(
-    create: (context) => UserProvider(),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => UserProvider()),
+      ChangeNotifierProvider(create: (context) => UserProfileProvider()),
+      ChangeNotifierProvider(create: (context) => AuthTokenProvider()),
+    ],
     child: const MyApp(),
   ));
 }

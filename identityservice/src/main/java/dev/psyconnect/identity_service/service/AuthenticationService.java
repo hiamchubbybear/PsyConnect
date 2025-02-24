@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import javax.naming.AuthenticationException;
 
-import dev.psyconnect.identity_service.model.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -30,6 +29,7 @@ import dev.psyconnect.identity_service.dto.response.LogoutRequest;
 import dev.psyconnect.identity_service.dto.response.LogoutResponse;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.identity_service.model.Account;
 import dev.psyconnect.identity_service.model.BlackListToken;
 import dev.psyconnect.identity_service.repository.BlackListTokenRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
@@ -141,7 +141,8 @@ public class AuthenticationService {
                 .issuer("PsyConnect Authentication Service")
                 .claim("scope", buildScope(roles))
                 .claim("type", loginType)
-                .claim("accountId", userAccountObject.getUserId())
+                .claim("accountId", userAccountObject.getAccountId())
+                .claim("profileId", userAccountObject.getProfileId())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
@@ -162,7 +163,7 @@ public class AuthenticationService {
                 .orElse(null);
         assert user != null;
         var roles = user.getRole().stream().findFirst().get().getName();
-        UUID uuid = user.getUserId();
+        UUID uuid = user.getAccountId();
 
         // Create the JWT header using the RS256 algorithm
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
@@ -223,7 +224,8 @@ public class AuthenticationService {
                 .issuer("PsyConnect Authentication Service")
                 .claim("scope", buildScope(roles))
                 .claim("type", loginType)
-                .claim("uuid", uuid.toString())
+                .claim("accountId", uuid.toString())
+                .claim("profileId", user.getProfileId().toString())
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);

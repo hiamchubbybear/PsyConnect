@@ -1,6 +1,5 @@
 package com.example.IdentityService;
 
-import dev.psyconnect.identity_service.model.Account;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import dev.psyconnect.identity_service.model.Account;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import dev.psyconnect.identity_service.service.AuthenticationService;

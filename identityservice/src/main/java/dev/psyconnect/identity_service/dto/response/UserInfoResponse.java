@@ -18,7 +18,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class UserInfoResponse {
-    private UUID userId;
+    private UUID accountId;
     private String username;
     private String email;
 

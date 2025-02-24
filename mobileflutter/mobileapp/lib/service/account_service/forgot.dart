@@ -1,8 +1,14 @@
 import 'package:PsyConnect/service/api/api_service.dart';
+import 'package:PsyConnect/toasting&loading/toast.dart';
+import 'package:flutter/material.dart';
 
 class ForgotService {
-    DateTime now = DateTime.now();
-  registerHandle({required String email, required String token}) async {
+  DateTime now = DateTime.now();
+  Future<bool> registerHandle(
+      {required String email,
+      required String token,
+      required BuildContext context}) async {
+    print("Token $token");
     Map<String, dynamic> jsonBody = {
       "token": "$token",
       "email": "$email",
@@ -12,11 +18,19 @@ class ForgotService {
     final response =
         await ApiService.post(endpoint: "identity/activate", body: jsonBody);
     if (response.statusCode == 200) {
-      print("Activate success");
+      ToastService.showToast(
+          context: context,
+          message: "Acitvate your account successfull",
+          title: "Success",
+          type: ToastType.success);
+      return true;
     } else {
-
-      print("Activate failed");
-      print("${response.body}");
+      ToastService.showToast(
+          context: context,
+          message: "Wrong activate token!!",
+          title: "Acitvate failed",
+          type: ToastType.warning);
+      return false;
     }
   }
 }

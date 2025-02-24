@@ -1,9 +1,10 @@
 package dev.psyconnect.profile_service.dto.response;
 
-import lombok.*;
+import java.io.Serializable;
+
 import org.springframework.data.neo4j.core.schema.Id;
 
-import java.io.Serializable;
+import lombok.*;
 
 @Setter
 @Getter
@@ -13,6 +14,7 @@ import java.io.Serializable;
 public class GetMoodResponse implements Serializable {
     @Id
     private String moodId;
+
     private String mood;
     private String description;
     private String visibility;

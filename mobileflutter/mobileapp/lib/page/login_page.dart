@@ -1,8 +1,11 @@
 import 'package:PsyConnect/page/forgot_page.dart';
 import 'package:PsyConnect/page/register_page.dart';
+import 'package:PsyConnect/provider/auth_token_provider.dart';
+import 'package:PsyConnect/provider/user_profile_provider.dart';
 import 'package:PsyConnect/service/account_service/login.dart';
 import 'package:PsyConnect/variable/variable.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -54,6 +57,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _LoginForm(BuildContext context) {
+    UserProfileProvider userProfileProvider =
+        Provider.of<UserProfileProvider>(context, listen: false);
+    AuthTokenProvider tokenProvider =
+        Provider.of<AuthTokenProvider>(context, listen: false);
     return Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -125,12 +132,13 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: () {
                   loginService.loginHandle(
-                    nameController.text,
-                    passwordController.text,
-                    "NORMAL",
-                    context,
-                    "android",
-                  );
+                      nameController.text,
+                      passwordController.text,
+                      "NORMAL",
+                      context,
+                      "android",
+                      tokenProvider,
+                      userProfileProvider);
                 },
                 child: Text(
                   'Login',

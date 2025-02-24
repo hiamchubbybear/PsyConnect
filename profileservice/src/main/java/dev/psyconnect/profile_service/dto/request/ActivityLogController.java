@@ -1,12 +1,13 @@
 package dev.psyconnect.profile_service.dto.request;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/activity-log")
@@ -17,9 +18,7 @@ public class ActivityLogController {
 
     @PostMapping("/{profileId}")
     public ApiResponse<ActivityLogResponse> addLog(
-            @PathVariable String profileId,
-            @RequestBody ActivityLogRequest request
-    ) {
+            @PathVariable String profileId, @RequestBody ActivityLogRequest request) {
         return new ApiResponse<>(activityLogService.createLog(profileId, request));
     }
 

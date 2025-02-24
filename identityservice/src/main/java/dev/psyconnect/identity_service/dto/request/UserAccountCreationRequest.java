@@ -13,12 +13,12 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserAccountCreationRequest {
-    UUID userId;
+    String accountId;
+    String profileId;
     String username;
     String password;
     String firstName;
     String lastName;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     String dob;

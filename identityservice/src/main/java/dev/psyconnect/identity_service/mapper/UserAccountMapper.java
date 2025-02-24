@@ -10,7 +10,7 @@ import dev.psyconnect.identity_service.model.Account;
 @Mapper(componentModel = "spring")
 public interface UserAccountMapper {
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "accountId", ignore = true)
     UserProfileCreationRequest toAccountResponse(UserAccountCreationRequest userAccount);
 
     @Mapping(target = "role", ignore = true)

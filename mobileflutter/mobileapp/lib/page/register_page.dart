@@ -49,9 +49,11 @@ class _RegisterPageState extends State<RegisterPage> {
         _image = File(pickedFile.path);
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No image selected')),
-      );
+      ToastService.showToast(
+          message: "No image selected!",
+          context: context,
+          title: 'Image!!',
+          type: ToastType.error);
     }
   }
 
@@ -418,7 +420,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Future<void> _handleOnRegisterButton(
       {required dynamic userProvider, required BuildContext context}) async {
-    print("Register handle");
     if (_image != null) {
       try {
         String? cloudinaryUrlImage = await cloudinaryApiService.uploadImage(

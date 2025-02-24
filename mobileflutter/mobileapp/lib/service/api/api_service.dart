@@ -5,9 +5,8 @@ import 'package:PsyConnect/variable/variable.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static final String _baseUrl = Platform.isAndroid
-      ? androidBaseUrl
-      : iosBaseUrl;
+  static final String _baseUrl =
+      Platform.isAndroid ? androidBaseUrl : iosBaseUrl;
 
   static Future<http.Response> post({
     required String endpoint,
@@ -37,6 +36,24 @@ class ApiService {
       return await http.post(uri);
     } catch (e) {
       throw new Exception("There are some error $e");
+    }
+  }
+
+  static Future<http.Response> getUserAccount({
+    required String endpoint,
+    required String token,
+  }) async {
+    final Uri uri = Uri.parse("$_baseUrl/$endpoint");
+    try {
+      return await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } catch (e) {
+      throw Exception("Failed to connect to backend: $e");
     }
   }
 }
