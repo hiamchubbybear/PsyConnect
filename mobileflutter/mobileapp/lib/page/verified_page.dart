@@ -18,10 +18,10 @@ class _VerifiedPageState extends State<VerifiedPage> {
   ForgotService forgotService = ForgotService();
 
   void _onVerifiedCode({required String token, required String email}) async {
-    var res = await forgotService.registerHandle(
+    var resource = await forgotService.registerHandle(
         email: email, token: token, context: context);
-        print("Response from server $res");
-    if (res) {
+        print("Response from server $resource");
+    if (resource) {
       Navigator.pushReplacement((context),
           MaterialPageRoute(builder: (context) => const LoginPage()));
     } else {
