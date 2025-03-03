@@ -21,28 +21,31 @@ public class UserSettingController {
 
     @PostMapping("/add")
     public ApiResponse<UserSettingResponse> addUserSetting(
-            @RequestHeader(value = "X-Profile-Id" , required = true) String id, @RequestBody UserSettingRequest request) {
+            @RequestHeader(value = "X-Profile-Id", required = true) String id,
+            @RequestBody UserSettingRequest request) {
         return new ApiResponse<>(userSettingService.createUserSetting(id, request));
     }
 
     @GetMapping("")
-    public ApiResponse<Setting> getUserSetting(@RequestHeader(value = "X-Profile-Id" , required = true) String id) {
+    public ApiResponse<Setting> getUserSetting(@RequestHeader(value = "X-Profile-Id", required = true) String id) {
         return new ApiResponse<>(userSettingService.getUserSettingById(id));
     }
 
     @PutMapping("")
     public ApiResponse<UserSettingResponse> updateUserSetting(
-            @RequestHeader(value = "X-Profile-Id" , required = true) String id, @RequestBody UserSettingRequest request) {
+            @RequestHeader(value = "X-Profile-Id", required = true) String id,
+            @RequestBody UserSettingRequest request) {
         return new ApiResponse<>(userSettingService.updateUserSetting(id, request));
     }
 
     @DeleteMapping("")
-    public ApiResponse<DeleteResponse> deleteUserSetting(@RequestHeader(value = "X-Profile-Id" , required = true) String id) {
+    public ApiResponse<DeleteResponse> deleteUserSetting(
+            @RequestHeader(value = "X-Profile-Id", required = true) String id) {
         return new ApiResponse<>(userSettingService.deleteUserSetting(id));
     }
 
     @PostMapping("/default")
-    public ApiResponse<Setting> setDefaultSetting(@RequestHeader(value = "X-Profile-Id" , required = true) String id) {
+    public ApiResponse<Setting> setDefaultSetting(@RequestHeader(value = "X-Profile-Id", required = true) String id) {
         return new ApiResponse<>(userSettingService.resetSettings(id));
     }
 }

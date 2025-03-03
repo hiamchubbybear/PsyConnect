@@ -83,7 +83,14 @@
             <artifactId>spring-security-oauth2-jose</artifactId>
             <version>6.4.1</version>
         </dependency>
-
+        <!--Parent-->
+        <dependency>
+            <groupId>dev.psyconnect</groupId>
+            <artifactId>psyconnect-project</artifactId>
+            <version>1.0.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

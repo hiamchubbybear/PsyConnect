@@ -1,4 +1,4 @@
-package dev.psyconnect.profile_service.dto.response;
+package dev.psyconnect.identity_service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

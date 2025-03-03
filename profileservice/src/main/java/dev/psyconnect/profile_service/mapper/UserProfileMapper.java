@@ -3,6 +3,8 @@ package dev.psyconnect.profile_service.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import dev.psyconnect.grpc.ProfileCreationRequest;
+import dev.psyconnect.grpc.ProfileCreationResponse;
 import dev.psyconnect.profile_service.dto.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
@@ -30,5 +32,38 @@ public interface UserProfileMapper {
     UserProfileUpdateResponse toUserProfileUpdateResponse(UserProfileUpdateResponse updatedUser);
 
     @Mapping(ignore = true, target = "dob")
-    UserProfileResponse toUserProfileResponse(Profile profile);
+    UserProfileResponse toUserProfileRequest(Profile profile);
+
+    UserProfileCreationRequest toUserProfileRequest(ProfileCreationRequest profile);
+
+    ProfileCreationResponse toUserProfileResponse(UserProfileCreationResponse profileCreationResponse);
+
+    @Mapping(source = "profileId", target = "profileId")
+    @Mapping(source = "firstName", target = "firstName")
+    @Mapping(source = "lastName", target = "lastName")
+    @Mapping(source = "dob", target = "dob")
+    @Mapping(source = "address", target = "address")
+    @Mapping(source = "gender", target = "gender")
+    @Mapping(source = "avatarUri", target = "avatarUri")
+    UserProfileCreationResponse toDTO(ProfileCreationResponse proto);
+
+    // Map từ DTO -> Proto (dùng builder)
+    @Mapping(target = "profileId", source = "profileId")
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
+    @Mapping(target = "dob", source = "dob")
+    @Mapping(target = "address", source = "address")
+    @Mapping(target = "gender", source = "gender")
+    @Mapping(target = "avatarUri", source = "avatarUri")
+    default ProfileCreationResponse toProto(UserProfileCreationResponse dto) {
+        return ProfileCreationResponse.newBuilder()
+                .setProfileId(dto.getProfileId())
+                .setFirstName(dto.getFirstName())
+                .setLastName(dto.getLastName())
+                .setDob(dto.getDob())
+                .setAddress(dto.getAddress())
+                .setGender(dto.getGender())
+                .setAvatarUri(dto.getAvatarUri())
+                .build();
+    }
 }

@@ -1,7 +1,5 @@
 package dev.psyconnect.profile_service.dto.request;
 
-import java.util.UUID;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -20,11 +18,7 @@ public class UserProfileCreationRequest {
     String profileId;
     String firstName;
     String lastName;
-
-    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     String dob;
-
     String address;
     String gender;
     String role;

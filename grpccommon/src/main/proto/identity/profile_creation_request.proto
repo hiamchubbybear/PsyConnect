@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package dev.psyconnect.grpc;
+option java_package = "dev.psyconnect.grpc";
+option java_multiple_files = true;
+service ProfileCreationService {
+  rpc createUser (ProfileCreationRequest) returns (ProfileCreationResponse);
+  rpc helloword (Hello) returns (HelloResponse);
+}
+
+message ProfileCreationRequest {
+  string accountId = 1;
+  string profileId = 2;
+  string firstName = 3;
+  string lastName = 4;
+  string dob = 5;
+  string address = 6;
+  string gender = 7;
+  string role = 8;
+  string avatarUri = 9;
+}
+
+message ProfileCreationResponse {
+  string profileId = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string dob = 4;
+  string address = 5;
+  string gender = 6;
+  string avatarUri = 7;
+}
+
+
+message Hello {
+  string message = 1;
+}
+message HelloResponse {
+  string message = 1;
+}

@@ -98,7 +98,7 @@ public class UserSettingService {
     @CacheEvict(key = "#profileId", value = "setting")
     public Setting resetSettings(String profileId) {
         return userSettingRepository
-                .updateUserSetting(
+                .createUserSetting(
                         profileId, "PRIVATE", true, true, false, false, false, false, false, false, false, "", "en",
                         "light", true)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));

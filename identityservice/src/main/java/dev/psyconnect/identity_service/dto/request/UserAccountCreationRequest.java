@@ -1,7 +1,5 @@
 package dev.psyconnect.identity_service.dto.request;
 
-import java.util.UUID;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,6 +17,7 @@ public class UserAccountCreationRequest {
     String password;
     String firstName;
     String lastName;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     String dob;

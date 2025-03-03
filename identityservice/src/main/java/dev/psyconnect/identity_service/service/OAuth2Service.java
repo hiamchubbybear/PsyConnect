@@ -2,6 +2,7 @@ package dev.psyconnect.identity_service.service;
 
 import java.util.Set;
 
+import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,10 @@ import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.mapper.CreateProfileOauth2GoogleMapper;
-import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.Account;
 import dev.psyconnect.identity_service.model.RoleEntity;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
-import dev.psyconnect.identity_service.repository.feign.ProfileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +29,6 @@ public class OAuth2Service {
     UserAccountRepository userAccountRepository;
     RoleRepository roleRepository;
     UserAccountMapper userAccountMapper;
-    ProfileRepository profileRepository;
     private final CreateProfileOauth2GoogleMapper createProfileOauth2GoogleMapper;
 
     public CreateProfileOauth2GoogleResponse processOAuthPostLoginGoogle(
@@ -51,7 +49,8 @@ public class OAuth2Service {
                     .email(email)
                     .provider(Provider.GOOGLE)
                     .role(roleEntities)
-                    .isActivated(true).build();
+                    .isActivated(true)
+                    .build();
             log.info("Creating new user account with provider GOOGLE {} ", email);
             // Write new user to db
             var savedUser = userAccountRepository.save(newUser);
@@ -64,7 +63,7 @@ public class OAuth2Service {
             // Logging
             log.info("Trigger to profile service {} ", savedUser.getAccountId());
             // Trigger to profile service with http:localhost:8081/profile/create
-            profileRepository.createProfile(createProfileRequest);
+            //            profileRepository.createProfile(createProfileRequest);
             // Mapping
             var response =
                     createProfileOauth2GoogleMapper.toCreateProfileOauth2Google(createProfileOauth2GoogleRequest);
