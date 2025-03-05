@@ -5,7 +5,5 @@ import org.springframework.kafka.annotation.KafkaListener;
 
 public class KafkaIdentityController {
     @KafkaListener(topics = "identity.user-created")
-    public void listen(ConsumerRecord<String, String> record) {
-
-    }
+    public void listen(ConsumerRecord<String, String> record) {}
 }

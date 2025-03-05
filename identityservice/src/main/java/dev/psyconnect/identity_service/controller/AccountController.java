@@ -2,9 +2,6 @@ package dev.psyconnect.identity_service.controller;
 
 import java.util.UUID;
 
-import dev.psyconnect.kafka.template.KafkaProducerTemplate;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
@@ -16,6 +13,7 @@ import dev.psyconnect.identity_service.dto.response.UpdateAccountResponse;
 import dev.psyconnect.identity_service.dto.response.UserInfoResponse;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @RequestMapping("/account")

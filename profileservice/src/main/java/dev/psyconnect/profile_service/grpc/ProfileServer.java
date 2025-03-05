@@ -11,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 
-
 @GrpcService
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -27,9 +26,8 @@ public class ProfileServer extends ProfileCreationServiceGrpc.ProfileCreationSer
 
     @Override
     public void helloword(Hello request, StreamObserver<HelloResponse> responseObserver) {
-        HelloResponse response = HelloResponse.newBuilder()
-                .setMessage(request.getMessage())
-                .build();
+        HelloResponse response =
+                HelloResponse.newBuilder().setMessage(request.getMessage()).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

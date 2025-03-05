@@ -1,16 +1,15 @@
 package dev.psyconnect.identity_service.repository;
 
-import dev.psyconnect.identity_service.dto.request.CreateAccountNotificationRequest;
-import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
-import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+import org.springframework.stereotype.Component;
+
+import dev.psyconnect.identity_service.dto.request.CreateAccountNotificationRequest;
+import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
+import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 
 @Component
 public class NotificationRepository {

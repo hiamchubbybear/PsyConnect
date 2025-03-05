@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import dev.psyconnect.identity_service.repository.NotificationRepository;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -25,6 +24,7 @@ import dev.psyconnect.identity_service.interfaces.IUserAccountService;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.*;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
+import dev.psyconnect.identity_service.repository.NotificationRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import lombok.AccessLevel;
@@ -187,7 +187,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Check if username not match or password doesn't match
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             // If not found throw an exception 418
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         // Check if token doesn't match
