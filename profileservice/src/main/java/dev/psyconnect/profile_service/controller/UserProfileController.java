@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
-import dev.psyconnect.profile_service.dto.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
@@ -37,7 +36,8 @@ public class UserProfileController {
     // Update user profile by user id
     @PostMapping()
     ApiResponse<UserProfileUpdateResponse> updateUserProfile(
-            @RequestBody UserProfileUpdateRequest body, @RequestHeader(name = "X-User-Id", required = true) String userId) {
+            @RequestBody UserProfileUpdateRequest body,
+            @RequestHeader(name = "X-User-Id", required = true) String userId) {
         return new ApiResponse<>(userProfileService.update(body, userId));
     }
 
@@ -56,7 +56,8 @@ public class UserProfileController {
     }
 
     @GetMapping("/friends")
-    ApiResponse<ProfileWithRelationShipResponse> getFriends(@RequestHeader(value = "X-Profile-Id", required = true) String profileId) {
+    ApiResponse<ProfileWithRelationShipResponse> getFriends(
+            @RequestHeader(value = "X-Profile-Id", required = true) String profileId) {
         return new ApiResponse<>(userProfileService.getProfileWithMood(profileId));
     }
 }

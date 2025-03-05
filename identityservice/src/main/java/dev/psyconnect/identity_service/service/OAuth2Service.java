@@ -51,7 +51,8 @@ public class OAuth2Service {
                     .email(email)
                     .provider(Provider.GOOGLE)
                     .role(roleEntities)
-                    .isActivated(true).build();
+                    .isActivated(true)
+                    .build();
             log.info("Creating new user account with provider GOOGLE {} ", email);
             // Write new user to db
             var savedUser = userAccountRepository.save(newUser);

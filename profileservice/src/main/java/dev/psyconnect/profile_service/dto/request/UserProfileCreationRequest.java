@@ -1,7 +1,5 @@
 package dev.psyconnect.profile_service.dto.request;
 
-import java.util.UUID;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;

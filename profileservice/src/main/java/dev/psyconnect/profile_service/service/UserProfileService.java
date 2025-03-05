@@ -1,9 +1,7 @@
 package dev.psyconnect.profile_service.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import dev.psyconnect.profile_service.dto.UserProfileResponse;
+import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
@@ -38,13 +37,16 @@ public class UserProfileService {
     ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public UserProfileService(ProfileRepository userProfileRepository, UserProfileMapper userProfileMapper, UserSettingService userSettingService, ApplicationEventPublisher eventPublisher) {
+    public UserProfileService(
+            ProfileRepository userProfileRepository,
+            UserProfileMapper userProfileMapper,
+            UserSettingService userSettingService,
+            ApplicationEventPublisher eventPublisher) {
         this.userProfileRepository = userProfileRepository;
         this.userProfileMapper = userProfileMapper;
         this.userSettingService = userSettingService;
         this.eventPublisher = eventPublisher;
     }
-
 
     public UserProfileCreationResponse create(UserProfileCreationRequest request) {
         log.info("Create user with accountId {}", request.getAccountId());
@@ -67,7 +69,9 @@ public class UserProfileService {
     public UserProfileResponse get(String profileId) {
         log.info("UserProfileService.get: profileId {}", profileId);
         // Find user by profileId
-        Profile profile = userProfileRepository.findById(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        Profile profile = userProfileRepository
+                .findById(profileId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         // Mapping to response user profile
         return userProfileMapper.toUserProfileResponse(profile);
     }
@@ -76,7 +80,9 @@ public class UserProfileService {
     @CacheEvict(value = "profile", key = "#profileId")
     public UserProfileUpdateResponse update(UserProfileUpdateRequest userProfileUpdateRequest, String profileId) {
         // Find exists user from db
-        Profile existingUser = userProfileRepository.findById(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        Profile existingUser = userProfileRepository
+                .findById(profileId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.info("Updating profile for profileId: {}", existingUser.getProfileId());
         // Mapping to user profile for existed profile
         Profile updatedUser = userProfileMapper.toUserProfile(userProfileUpdateRequest);
@@ -97,7 +103,9 @@ public class UserProfileService {
 
     @Cacheable(key = "#profileId", value = "profile_mood")
     public ProfileWithRelationShipResponse getProfileWithMood(String profileId) {
-        return userProfileRepository.getProfileWithAllRelations(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
+        return userProfileRepository
+                .getProfileWithAllRelations(profileId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
     }
 
     @EventListener

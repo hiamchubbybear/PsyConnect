@@ -41,8 +41,11 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="grpccommon" target="21" />
       <module name="identity-service" target="21" />
+      <module name="kafka" target="21" />
       <module name="profileservice" target="23" />
+      <module name="psyconnect-project" target="1.5" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

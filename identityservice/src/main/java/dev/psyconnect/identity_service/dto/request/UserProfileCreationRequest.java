@@ -1,7 +1,5 @@
 package dev.psyconnect.identity_service.dto.request;
 
-import java.util.UUID;
-
 import lombok.*;
 
 @Getter
