@@ -128,6 +128,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Declared and assign email
         String email = activateAccountRequest.getEmail();
         String activateToken = activateAccountRequest.getToken();
+        log.info("Activate account entity for: {} ", activateToken);
         if (userAccountRepository.isActiveByEmail(email)) {
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
         }

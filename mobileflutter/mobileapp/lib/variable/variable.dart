@@ -15,6 +15,7 @@ const Color blackColor = Colors.black;
 const Color whiteColor = Colors.white;
 final Color error = Colors.red.shade300;
 final Color successStatus = Colors.blue.shade200;
+final Color secondaryColor= Colors.grey.shade400;
 final Map<String, String> headers = {
   'Content-Type': 'application/json; charset=UTF-8',
 };
@@ -23,6 +24,18 @@ TextStyle textStyle = GoogleFonts.quicksand(
   fontWeight: FontWeight.bold,
   color: Colors.black,
 );
+TextStyle quickSand15Font = GoogleFonts.quicksand(
+  fontSize: 17,
+  fontWeight: FontWeight.w600,
+  color: Colors.black,
+);
+
+TextStyle quickSand12Font = GoogleFonts.quicksand(
+  fontSize: 12,
+  fontWeight: FontWeight.w600,
+  color: Colors.black,
+);
+
 TextStyle textFieldStyle = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.w600,

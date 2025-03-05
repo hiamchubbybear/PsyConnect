@@ -5,11 +5,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import dev.psyconnect.profile_service.dto.request.UserSettingRequest;
+import dev.psyconnect.profile_service.dto.response.DeleteResponse;
 import dev.psyconnect.profile_service.dto.response.UserSettingResponse;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.profile_service.model.Setting;
-import dev.psyconnect.profile_service.repository.DeleteResponse;
 import dev.psyconnect.profile_service.repository.ProfileRepository;
 import dev.psyconnect.profile_service.repository.SettingRepository;
 import lombok.RequiredArgsConstructor;

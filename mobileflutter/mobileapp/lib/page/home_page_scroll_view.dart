@@ -1,4 +1,4 @@
-import 'package:PsyConnect/themes/colors/color.dart';
+import 'package:PsyConnect/variable/variable.dart';
 import 'package:PsyConnect/widgets/posts/post.dart';
 import 'package:flutter/material.dart';
 

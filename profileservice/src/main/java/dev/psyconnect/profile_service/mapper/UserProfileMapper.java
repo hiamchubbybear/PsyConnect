@@ -47,7 +47,6 @@ public interface UserProfileMapper {
     @Mapping(source = "avatarUri", target = "avatarUri")
     UserProfileCreationResponse toDTO(ProfileCreationResponse proto);
 
-    // Map từ DTO -> Proto (dùng builder)
     @Mapping(target = "profileId", source = "profileId")
     @Mapping(target = "firstName", source = "firstName")
     @Mapping(target = "lastName", source = "lastName")
