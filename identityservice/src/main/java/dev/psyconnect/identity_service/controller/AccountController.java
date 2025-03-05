@@ -18,22 +18,23 @@ import lombok.experimental.FieldDefaults;
 
 @RequestMapping("/account")
 @RestController
+@RequiredArgsConstructor()
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public class AccountController {
     UserAccountService userAccountService;
 
     @PostMapping("/delete")
     public ApiResponse<DeleteAccountResponse> deleteAccount(
-            @RequestBody DeleteAccountRequest request, @RequestHeader(value = "X-User-Id", required = true) UUID userId) {
+            @RequestBody DeleteAccountRequest request,
+            @RequestHeader(value = "X-User-Id", required = true) UUID userId) {
+
         return new ApiResponse<>(userAccountService.deleteAccount(request, userId));
     }
 
-    //                        .header("X-User-Id", accountId)
-//                        .header("X-Profile-Id", profileId)
     @DeleteMapping("/delete")
     public ApiResponse<Boolean> deleteAccountConfirm(
-            @RequestBody DeleteAccountConfirmRequest request, @RequestHeader(value = "X-User-Id", required = true) UUID userId) {
+            @RequestBody DeleteAccountConfirmRequest request,
+            @RequestHeader(value = "X-User-Id", required = true) UUID userId) {
         return new ApiResponse<>(userAccountService.deleteAccountRequest(request, userId));
     }
 
@@ -45,6 +46,6 @@ public class AccountController {
     @PutMapping("/update/{uuid}")
     public ApiResponse<UpdateAccountResponse> updateAccount(
             @RequestBody UpdateAccountRequest request, @PathVariable String uuid) {
-        return new ApiResponse<>(userAccountService.updateAccount(request, uuid ));
+        return new ApiResponse<>(userAccountService.updateAccount(request, uuid));
     }
 }

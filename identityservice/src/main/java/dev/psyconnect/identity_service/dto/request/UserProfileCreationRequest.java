@@ -1,7 +1,5 @@
 package dev.psyconnect.identity_service.dto.request;
 
-import java.util.UUID;
-
 import lombok.*;
 
 @Getter
@@ -14,7 +12,6 @@ public class UserProfileCreationRequest {
     String firstName;
     String lastName;
     String dob;
-
     String address;
     String gender;
     String role;

@@ -1,3 +1,4 @@
+import 'package:PsyConnect/page/home_page_scroll_view.dart';
 import 'package:PsyConnect/screens/component/setting.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage>
         child: TabBarView(
           controller: _tabController,
           children: const [
-            Center(child: Text("Home Page")),
+            HomePageScrollView(),
             Center(child: Text("Schedule Page")),
             Center(child: Text("Chat Page")),
             Center(child: Text("Notifications Page")),

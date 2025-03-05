@@ -119,7 +119,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     backgroundImage: _image != null
                         ? FileImage(_image!)
                         : const NetworkImage(
-                            'https://static.vecteezy.com/system/resources/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg',
+                            'https://static.vecteezy.com/system/resource/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg',
                           ) as ImageProvider,
                     backgroundColor: Colors.transparent,
                   )),

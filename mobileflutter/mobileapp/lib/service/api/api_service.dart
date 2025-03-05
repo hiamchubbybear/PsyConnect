@@ -43,6 +43,7 @@ class ApiService {
     required String endpoint,
     required String token,
   }) async {
+    print("Token là : ${token}");
     final Uri uri = Uri.parse("$_baseUrl/$endpoint");
     try {
       return await http.get(

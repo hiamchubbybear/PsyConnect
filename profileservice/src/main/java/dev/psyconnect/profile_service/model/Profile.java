@@ -7,11 +7,9 @@ import java.util.List;
 import jakarta.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
-import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

@@ -19,14 +19,14 @@ import dev.psyconnect.identity_service.dto.response.*;
 import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.identity_service.grpc.client.ProfileGRPCClient;
 import dev.psyconnect.identity_service.interfaces.IUserAccountService;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.*;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
+import dev.psyconnect.identity_service.repository.NotificationRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
-import dev.psyconnect.identity_service.repository.feign.NotificationRepository;
-import dev.psyconnect.identity_service.repository.feign.ProfileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,17 +35,17 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserAccountService implements UserDetailsService, IUserAccountService {
+    private NotificationRepository notificationRepository;
     private static final Logger log = LoggerFactory.getLogger(UserAccountService.class);
     private static final int MINUTE_EXPIRED = 10;
     RoleRepository roleRepository;
     UserAccountRepository userAccountRepository;
-    ProfileRepository profileRepository;
     UserAccountMapper mapper;
     UserAccountRepository accountRepository;
-    NotificationRepository notificationRepository;
     ActivateRepository activateRepository;
     private final PasswordEncodingService passwordEncodingService;
     private final TokenRepository tokenRepository;
+    private final ProfileGRPCClient profileGRPCClient;
 
     @Transactional
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
@@ -92,20 +92,29 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         UserProfileCreationRequest temp = mapper.toAccountResponse(request);
         temp.setAccountId(account.getAccountId().toString());
         temp.setProfileId(profileId.toString());
-        log.info("Created account: {}", temp.getAccountId());
-        log.info("Created account: {}", temp.getProfileId());
+        temp.setRole(request.getRole());
 
         // Send request to Profile Service
         try {
-            var profileResponse = profileRepository.createProfile(temp);
-            if (profileResponse == null) {
+            var profileResponse = profileGRPCClient.createProfile(temp);
+            // Call to gRPC client
+            if (UUID.fromString(profileResponse.getProfileId())
+                    .equals(savedAccount.getProfileId().toString())) {
                 throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
             }
         } catch (Exception e) {
-            log.error("Error creating profile: {}", e.getMessage());
-            throw new RuntimeException("Profile creation failed, rolling back...", e);
+            log.error("Error creating profile: {}", e);
+            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
-
+        String fullName = request.getFirstName() + " " + request.getLastName();
+        String username = request.getUsername();
+        String email = savedAccount.getEmail();
+        notificationRepository.notificationSend(CreateAccountNotificationRequest.builder()
+                .code(token)
+                .username(username)
+                .email(email)
+                .fullname(fullName)
+                .build());
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
                 .email(account.getEmail())
@@ -119,6 +128,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Declared and assign email
         String email = activateAccountRequest.getEmail();
         String activateToken = activateAccountRequest.getToken();
+        log.info("Activate account entity for: {} ", activateToken);
         if (userAccountRepository.isActiveByEmail(email)) {
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
         }
@@ -178,7 +188,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Check if username not match or password doesn't match
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             // If not found throw an exception 418
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         // Check if token doesn't match
@@ -192,17 +202,17 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .token(userObject.getToken().getToken())
                 .build();
         // Trigger to Notification Service Request -> POST -x http://localhost:8081/noti/internal/account/delete
-        if (notificationRepository.sendDeleteEmail(sendObject).status() != 200) {
-            // If send error throw an exception 429
-            throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
-        } else
-            return DeleteAccountResponse.builder()
-                    .isSuccess(true)
-                    .secret(sendObject.getSecret())
-                    .session(UUID.randomUUID())
-                    .session(userObject.getSession())
-                    .timestamp(deleteAccountRequest.getTimestamp())
-                    .build();
+        //        if (notificationRepository.sendDeleteEmail(sendObject).status() != 200) {
+        //            // If send error throw an exception 429
+        //            throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
+        //        } else
+        return DeleteAccountResponse.builder()
+                .isSuccess(true)
+                .secret(sendObject.getSecret())
+                .session(UUID.randomUUID())
+                .session(userObject.getSession())
+                .timestamp(deleteAccountRequest.getTimestamp())
+                .build();
     }
 
     public boolean deleteAccountRequest(DeleteAccountConfirmRequest removeAccountRequest, UUID uuid) {
@@ -320,17 +330,17 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         log.info("Sending activation notification {}", request.getCode());
         // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create and get there
         // sponse.
-        var response = notificationRepository.sendCreateEmail(CreateAccountNotificationRequest.builder()
-                .fullname(request.getFullname())
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .code(request.getCode())
-                .build());
-        //  If status code is 500 log an error
-        if (response.status() != 200) {
-            log.error("Error while sending notification {}", response.body());
-            throw new CustomExceptionHandler(ErrorCode.SEND_FAILED);
-        }
+        //        var response = notificationRepository.sendCreateEmail(CreateAccountNotificationRequest.builder()
+        //                .fullname(request.getFullname())
+        //                .username(request.getUsername())
+        //                .email(request.getEmail())
+        //                .code(request.getCode())
+        //                .build());
+        //        //  If status code is 500 log an error
+        //        if (response.status() != 200) {
+        //            log.error("Error while sending notification {}", response.body());
+        //            throw new CustomExceptionHandler(ErrorCode.SEND_FAILED);
+        //        }
         // Create a new ActivateModel and set the expired time and issue time;
         return saveActivationModel(request.getUsername(), request.getCode());
     }

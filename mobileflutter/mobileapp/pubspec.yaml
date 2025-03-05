@@ -38,6 +38,7 @@ dependencies:
 # Cloudinary
   cloudinary_url_gen: ^1.0.0
   cloudinary_api: ^1.0.0
+  timeago: ^3.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

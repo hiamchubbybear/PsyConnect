@@ -25,6 +25,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID accountId;
+
     private UUID profileId;
     private String username;
     private String password;
