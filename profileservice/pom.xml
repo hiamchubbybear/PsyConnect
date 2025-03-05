@@ -181,6 +181,11 @@
             <version>2.10.5</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>dev.psyconnect</groupId>
+            <artifactId>event-broker-service</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>

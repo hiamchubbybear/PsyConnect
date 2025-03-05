@@ -2,7 +2,6 @@ package dev.psyconnect.identity_service.service;
 
 import java.util.Set;
 
-import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.mapper.CreateProfileOauth2GoogleMapper;
+import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.Account;
 import dev.psyconnect.identity_service.model.RoleEntity;
 import dev.psyconnect.identity_service.repository.RoleRepository;

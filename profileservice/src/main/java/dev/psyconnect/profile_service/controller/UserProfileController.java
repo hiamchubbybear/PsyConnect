@@ -3,6 +3,7 @@ package dev.psyconnect.profile_service.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
@@ -37,12 +38,12 @@ public class UserProfileController {
     @PostMapping()
     ApiResponse<UserProfileUpdateResponse> updateUserProfile(
             @RequestBody UserProfileUpdateRequest body,
-            @RequestHeader(name = "X-User-Id", required = true) String userId) {
+            @RequestHeader(name = "X-User-Id") String userId) {
         return new ApiResponse<>(userProfileService.update(body, userId));
     }
 
     @GetMapping()
-    ApiResponse<?> getUserProfile(@RequestHeader(value = "X-Profile-Id", required = true) String profileId) {
+    ApiResponse<?> getUserProfile(@RequestHeader(value = "X-Profile-Id") String profileId) {
         if (profileId == null || profileId.isEmpty()) {
             return new ApiResponse<>("Empty ProfileId");
         }
@@ -57,7 +58,8 @@ public class UserProfileController {
 
     @GetMapping("/friends")
     ApiResponse<ProfileWithRelationShipResponse> getFriends(
-            @RequestHeader(value = "X-Profile-Id", required = true) String profileId) {
+            @RequestHeader(value = "X-Profile-Id") String profileId) {
         return new ApiResponse<>(userProfileService.getProfileWithMood(profileId));
     }
+
 }

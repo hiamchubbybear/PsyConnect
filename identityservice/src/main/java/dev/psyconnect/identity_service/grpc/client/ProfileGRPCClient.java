@@ -1,5 +1,9 @@
 package dev.psyconnect.identity_service.grpc.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import dev.psyconnect.grpc.ProfileCreationRequest;
 import dev.psyconnect.grpc.ProfileCreationResponse;
 import dev.psyconnect.grpc.ProfileCreationServiceGrpc;
@@ -8,11 +12,6 @@ import dev.psyconnect.identity_service.dto.response.UserProfileCreationResponse;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProfileGRPCClient {
@@ -21,7 +20,9 @@ public class ProfileGRPCClient {
     private final UserAccountMapper userAccountMapper;
 
     public ProfileGRPCClient(UserAccountMapper userAccountMapper) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("127.0.0.1", 9091).usePlaintext().build();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("127.0.0.1", 9091)
+                .usePlaintext()
+                .build();
         stub = ProfileCreationServiceGrpc.newBlockingStub(channel);
         this.userAccountMapper = userAccountMapper;
     }

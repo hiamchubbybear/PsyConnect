@@ -5,8 +5,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import dev.psyconnect.identity_service.grpc.client.ProfileGRPCClient;
-import dev.psyconnect.identity_service.mapper.UserAccountMapper;
+import dev.psyconnect.identity_service.repository.NotificationRepository;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -21,7 +20,9 @@ import dev.psyconnect.identity_service.dto.response.*;
 import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.identity_service.grpc.client.ProfileGRPCClient;
 import dev.psyconnect.identity_service.interfaces.IUserAccountService;
+import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.*;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
@@ -34,6 +35,7 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserAccountService implements UserDetailsService, IUserAccountService {
+    private NotificationRepository notificationRepository;
     private static final Logger log = LoggerFactory.getLogger(UserAccountService.class);
     private static final int MINUTE_EXPIRED = 10;
     RoleRepository roleRepository;
@@ -91,21 +93,28 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         temp.setAccountId(account.getAccountId().toString());
         temp.setProfileId(profileId.toString());
         temp.setRole(request.getRole());
-        log.info("Created account id: {}", temp.getAccountId());
-        log.info("Created profile id: {}", temp.getProfileId());
 
-        //Send request to Profile Service
+        // Send request to Profile Service
         try {
             var profileResponse = profileGRPCClient.createProfile(temp);
             // Call to gRPC client
-            if (UUID.fromString(profileResponse.getProfileId()).equals(savedAccount.getProfileId().toString())) {
+            if (UUID.fromString(profileResponse.getProfileId())
+                    .equals(savedAccount.getProfileId().toString())) {
                 throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
             }
         } catch (Exception e) {
             log.error("Error creating profile: {}", e);
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
-
+        String fullName = request.getFirstName() + " " + request.getLastName();
+        String username = request.getUsername();
+        String email = savedAccount.getEmail();
+        notificationRepository.notificationSend(CreateAccountNotificationRequest.builder()
+                .code(token)
+                .username(username)
+                .email(email)
+                .fullname(fullName)
+                .build());
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
                 .email(account.getEmail())

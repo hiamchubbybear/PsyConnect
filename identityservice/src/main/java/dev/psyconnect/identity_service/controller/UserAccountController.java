@@ -1,5 +1,6 @@
 package dev.psyconnect.identity_service.controller;
 
+import dev.psyconnect.kafka.template.KafkaProducerTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;

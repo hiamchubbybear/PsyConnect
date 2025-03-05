@@ -1,14 +1,13 @@
 package dev.psyconnect.identity_service.mapper;
 
-import dev.psyconnect.grpc.ProfileCreationRequest;
-import dev.psyconnect.grpc.ProfileCreationResponse;
-import dev.psyconnect.identity_service.dto.response.UserCreationResponse;
-import dev.psyconnect.identity_service.dto.response.UserProfileCreationResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import dev.psyconnect.grpc.ProfileCreationRequest;
+import dev.psyconnect.grpc.ProfileCreationResponse;
 import dev.psyconnect.identity_service.dto.request.UserAccountCreationRequest;
 import dev.psyconnect.identity_service.dto.request.UserProfileCreationRequest;
+import dev.psyconnect.identity_service.dto.response.UserProfileCreationResponse;
 import dev.psyconnect.identity_service.model.Account;
 
 @Mapper(componentModel = "spring")

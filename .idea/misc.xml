@@ -14,7 +14,13 @@
         <option value="$PROJECT_DIR$/identityservice/pom.xml" />
         <option value="$PROJECT_DIR$/apigateway/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/kafka/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/event-broker-service/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="openjdk-23" project-jdk-type="JavaSDK">
