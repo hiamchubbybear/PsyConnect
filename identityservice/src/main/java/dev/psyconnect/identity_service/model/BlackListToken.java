@@ -1,6 +1,7 @@
 package dev.psyconnect.identity_service.model;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 
 @Entity
