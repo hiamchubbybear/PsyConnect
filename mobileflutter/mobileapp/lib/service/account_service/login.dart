@@ -72,23 +72,31 @@ class LoginService {
               message: "Login successful",
               title: "Success",
               type: ToastType.success);
-          final token = jsonDecode(response.body)["data"].toString();
+          final token = jsonDecode(response.body)["data"]["token"].toString();
           print("${token}");
           tokenProvider.setToken(token);
-          profileService.getUserProfile(
-              username: username, password: password, token: token);
+          profileService.getUserProfile(token: token);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => const MyHomePage(title: 'Home Page')),
           );
-        } else if (response.statusCode == 500) {
+        } else if (response.statusCode == 409) {
           ToastService.showToast(
               context: context,
               message: "Wrong username or password.",
               title: "Failed",
               type: ToastType.error);
-        } else {
+        } else if (response.statusCode == 404){
+
+          ToastService.showToast(
+              context: context,
+              message:
+                  "Username not found",
+              title: "Not found",
+              type: ToastType.error);
+        } else if (response.statusCode == 500){
+
           ToastService.showToast(
               context: context,
               message:

@@ -12,7 +12,6 @@ public class UserProfileCreationRequest {
     String firstName;
     String lastName;
     String dob;
-
     String address;
     String gender;
     String role;

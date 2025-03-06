@@ -4,9 +4,9 @@ import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
 import dev.psyconnect.profile_service.dto.request.UserSettingRequest;
+import dev.psyconnect.profile_service.dto.response.DeleteResponse;
 import dev.psyconnect.profile_service.dto.response.UserSettingResponse;
 import dev.psyconnect.profile_service.model.Setting;
-import dev.psyconnect.profile_service.repository.DeleteResponse;
 import dev.psyconnect.profile_service.service.UserSettingService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

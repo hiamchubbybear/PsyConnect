@@ -12,12 +12,13 @@ router.use((req, res, next) => {
     console.log("Query Parameters:", req.query);
     console.log("Body:", req.body);
     console.log("------------------------");
-    next(); // Chuyển request đến middleware hoặc route tiếp theo
+    next();
 });
 
 sendActivateEmail = async (req, res) => {
     try {
         const {username, code, email, fullname} = req.body;
+        console.log("username: " , username , " code : " ,code," email : ",email," fullname : ",fullname )
         if (!username || !code || !email || !fullname) {
             return res.status(400).json({message: "Missing required fields"});
         }

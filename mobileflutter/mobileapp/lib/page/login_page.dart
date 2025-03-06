@@ -130,16 +130,13 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
-                  loginService.loginHandle(
-                      nameController.text,
-                      passwordController.text,
-                      "NORMAL",
-                      context,
-                      "android",
-                      tokenProvider,
-                      userProfileProvider);
-                },
+                onPressed: ()=>  _handleOnLoginButton(username:nameController.text,
+                       password:passwordController.text,
+                        loginType:"NORMAL",
+                         context: context,
+                          tokenProvider: tokenProvider,
+                           userProfileProvider: userProfileProvider,
+                           ),
                 child: Text(
                   'Login',
                   style: textStyle,
@@ -165,7 +162,10 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
+  _handleOnLoginButton({required String username , required String password ,required  String loginType , required BuildContext context , required   AuthTokenProvider tokenProvider , required UserProfileProvider userProfileProvider}) {
+      loginService.loginHandle(username, password, loginType, context,loginType, tokenProvider, userProfileProvider);
+      }
+  }
   _handleOnGoogleLogin() {}
   _handleOnFacebookLogin() {}
   _handleOnAppleIdLogin() {}
@@ -177,4 +177,3 @@ class _LoginPageState extends State<LoginPage> {
       MaterialPageRoute(builder: (context) => const ForgotPage()),
     );
   }
-}

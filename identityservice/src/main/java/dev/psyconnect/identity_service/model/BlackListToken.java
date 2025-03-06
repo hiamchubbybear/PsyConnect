@@ -1,9 +1,6 @@
 package dev.psyconnect.identity_service.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -14,6 +11,10 @@ import lombok.*;
 @Getter
 public class BlackListToken {
     @Id
-    @Column(length = 512)
-    String token;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private Long id;
+
+    @Lob
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String token;
 }

@@ -18,6 +18,7 @@ public class Token {
     private String username;
 
     private String token;
+
     private Timestamp issuedAt;
     private Timestamp expires;
     private boolean revoked;

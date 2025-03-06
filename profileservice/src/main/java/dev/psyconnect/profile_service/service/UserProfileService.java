@@ -59,10 +59,11 @@ public class UserProfileService {
         var temp = userProfileRepository.save(profile);
         log.info("Created profile: {}", temp.getProfileId());
 
-        // Phát sự kiện thay vì gọi trực tiếp
-        eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
-
-        return userProfileMapper.toUserProfile(temp);
+        // Push setting default event
+        //        eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
+        var response = userProfileMapper.toUserProfile(temp);
+        response.setDob(request.getDob());
+        return response;
     }
 
     @Cacheable(key = "#profileId", value = "profile")
@@ -73,7 +74,7 @@ public class UserProfileService {
                 .findById(profileId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         // Mapping to response user profile
-        return userProfileMapper.toUserProfileResponse(profile);
+        return userProfileMapper.toUserProfileRequest(profile);
     }
 
     // Update profile
