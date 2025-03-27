@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 import dev.psyconnect.identity_service.model.BlackListToken;
 
 @Repository
-public interface BlackListTokenRepository extends JpaRepository<BlackListToken, String> {}
+public interface BlackListTokenRepository extends JpaRepository<BlackListToken, String> {
+
+    boolean existsByToken(String token);
+}

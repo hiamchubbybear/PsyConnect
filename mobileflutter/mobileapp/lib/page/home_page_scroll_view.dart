@@ -61,10 +61,11 @@ class StoriesWidget extends StatelessWidget {
   ];
   final List<String> username = [
     'Trần Meo',
-    'Nguyễn Thị Thu Meo',
+    'Nguyễn Thị Như Meo',
     'Phan Công Meo',
     'Phùng Đình Quang Meo',
-    'Nguyễn Thị Như Meo',
+    'Nguyễn Thị Thu Meo',
+
   ];
   StoriesWidget({super.key});
 
