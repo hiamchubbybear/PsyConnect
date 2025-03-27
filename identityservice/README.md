@@ -1,28 +1,85 @@
-#
-Getting Started
+# Identity Service - PsyConnect - v0.1
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Overview
+The **Identity Service** is responsible for user authentication, account management, and authorization within the PsyConnect platform. It provides secure and scalable identity management features, integrating OAuth2 and JWT authentication mechanisms.
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.0/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.4.0/maven-plugin/build-image.html)
-* [Spring Data Neo4j](https://docs.spring.io/spring-boot/3.4.0/reference/data/nosql.html#data.nosql.neo4j)
-* [Spring Web](https://docs.spring.io/spring-boot/3.4.0/reference/web/servlet.html)
-* [Java Mail Sender](https://docs.spring.io/spring-boot/3.4.0/reference/io/email.html)
+## Features
+- User registration and activation
+- Authentication with email/password and OAuth2 providers
+- Token-based authentication (JWT)
+- Account management (update, delete, retrieve)
+- OAuth2 authentication (Google, etc.)
+- Role-based access control (RBAC)
+- Account deletion confirmation
 
-### Guides
-The following guides illustrate how to use some features concretely:
+## Technology Stack
+- **Backend**: Java Spring Boot
+- **Database**: MySQL
+- **Security**: OAuth 2.0, JWT Authentication
+- **API Communication**: RESTful APIs
 
-* [Accessing Data with Neo4j](https://spring.io/guides/gs/accessing-data-neo4j/)
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+## API Endpoints
 
-### Maven Parent overrides
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/login` | Authenticate user and generate JWT token |
+| POST | `/auth/introspect` | Logout user and invalidate token |
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+### User Account Management
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/identity/create` | Register a new user account |
+| POST | `/identity/activate` | Activate user account |
+| POST | `/identity/req/activate` | Request activation link |
+| GET | `/identity/hello` | Test API endpoint |
 
+### Account Settings
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/account/delete` | Request account deletion |
+| DELETE | `/account/delete` | Confirm account deletion |
+| GET | `/account/info` | Retrieve account details |
+| PUT | `/account/update/{uuid}` | Update account information |
+
+### OAuth2 Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/oauth2/userInfo/google` | Authenticate user via Google OAuth2 |
+| GET | `/oauth2/callback/google` | Google OAuth2 callback handler |
+
+## Setup & Configuration
+### Environment Variables
+Ensure the following environment variables are set before running the service:
+```env
+MYSQL_SPRING_DATASOURCE_PASSWORD={your-variable}
+MYSQL_SPRING_DATASOURCE_USERNAME={your-variable}
+SPRING_DATASOURCE_URL={your-variable}
+SERVER_PORT={your-variable}
+```
+
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/hiamchubbybear/PsyConnect.git
+   cd PsyConnect/identity-service
+   ```
+2. Build and run the service:
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
+
+## Contributing
+We welcome contributions! Please follow the standard Git workflow:
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -m 'Add YourFeature'`)
+4. Push to your branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
+
+## Contact
+For inquiries, reach out via:
+- **Project Lead**: Chessy
+- **Email**: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)
+- **GitHub Repository**: [PsyConnect](https://github.com/hiamchubbybear/PsyConnect)

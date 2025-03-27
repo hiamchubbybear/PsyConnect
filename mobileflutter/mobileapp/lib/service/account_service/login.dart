@@ -81,7 +81,7 @@ class LoginService {
             MaterialPageRoute(
                 builder: (context) => const MyHomePage(title: 'Home Page')),
           );
-        } else if (response.statusCode == 409) {
+        } else if (response.statusCode == 400) {
           ToastService.showToast(
               context: context,
               message: "Wrong username or password.",
