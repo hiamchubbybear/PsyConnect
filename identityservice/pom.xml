@@ -47,11 +47,6 @@
                 <version>3.1.2</version>
             </dependency>
             <dependency>
-                <groupId>dev.psyconnect</groupId>
-                <artifactId>event-broker-service</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>${protobuf.version}</version>
@@ -175,12 +170,6 @@
         <dependency>
             <groupId>dev.psyconnect</groupId>
             <artifactId>grpccommon</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <!--Event Broker Service-->
-        <dependency>
-            <groupId>dev.psyconnect</groupId>
-            <artifactId>event-broker-service</artifactId>
             <version>1.0.0</version>
         </dependency>
 <!--        Gson-->

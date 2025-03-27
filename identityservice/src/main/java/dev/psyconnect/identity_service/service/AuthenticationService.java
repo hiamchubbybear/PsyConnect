@@ -375,7 +375,7 @@ public class AuthenticationService {
     }
 
     public boolean isTokenInvalid(String token) {
-        return blackListTokenRepository.existsById(token);
+        return blackListTokenRepository.existsByToken(token);
     }
 
     public static String extractUUIDClaim(Authentication authentication) {

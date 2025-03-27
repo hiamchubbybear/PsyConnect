@@ -59,8 +59,8 @@ public class UserProfileService {
         var temp = userProfileRepository.save(profile);
         log.info("Created profile: {}", temp.getProfileId());
 
-        // Push setting default event
-        //        eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
+        //         Push setting default event
+        eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
         var response = userProfileMapper.toUserProfile(temp);
         response.setDob(request.getDob());
         return response;
