@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package profile;
 option java_package = "dev.psyconnect.grpc.consultation_profile";
-service ProfileService {
+service CheckProfileService {
   rpc CheckProfileExists (ProfileRequest) returns (ProfileResponse);
 }
 
