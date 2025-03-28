@@ -25,11 +25,13 @@ func (r *TherapistRepository) CreateTherapistMatchingProfile(therapist *model.Th
 	}
 	return res, nil
 }
-func (r *TherapistRepository) FindTherapistMatchingProfile(therapist *model.Therapist) (interface{}, error) {
-	data := therapist
-	err := r.MongoDBCollection.FindOne(context.Background(), bson.D{{Key: "profile_id", Value: data.ProfileId}}).Decode(&data)
+func (r *TherapistRepository) FindTherapistMatchingProfile(therapistId string) (interface{}, error) {
+	data := new(model.Therapist)
+	err := r.MongoDBCollection.FindOne(context.Background(), bson.D{{Key: "profile_id", Value: therapistId}}).Decode(&data)
 	if err != nil {
-		log.Println("TherapistRepository FindTherapistMatchingProfile err:", err)
+		return nil, errors.New("Some error suddenly finding the therapist ")
+	}
+	if data == nil {
 		return nil, errors.New("No therapist found")
 	}
 	return data, nil

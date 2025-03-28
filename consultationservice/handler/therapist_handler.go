@@ -3,6 +3,7 @@ package handlers
 import (
 	"consultationservice/apiresponse"
 	"consultationservice/db"
+	"consultationservice/grpc/handler"
 	"consultationservice/model"
 	"consultationservice/repository"
 	"github.com/gin-gonic/gin"
@@ -16,35 +17,50 @@ var (
 )
 
 func InitTherapistHandler() {
-	therapistDB = db.InitTherapistDB()
+	therapistDB = db.GetTherapistCollection()
 	therapistRepo = repository.NewTherapistRepository(therapistDB)
 }
 
-// GET /therapist
-func GetTherapist(c *gin.Context) {
-	response := apiresponse.NewApiResponse("Therapist data fetched", http.StatusOK, gin.H{
-		"id":   "1",
-		"name": "Dr. Alice",
-	})
-	c.JSON(response.Status, response)
+// External Rest API -- GET /consultation/{profile_id}
+func GetTherapistHandler(c *gin.Context) {
+	profileID := c.Param("profile_id")
+	res, err := therapistRepo.FindTherapistMatchingProfile(profileID)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 404, err.Error())
+		return
+	}
+	apiresponse.NewApiResponse(c, res)
 }
 
-// POST /therapist
-func PostTherapist(c *gin.Context) {
+// External Rest API -- POST /consultation/:=profile_id
+func PostTherapistHandler(c *gin.Context) {
 	var therapist model.Therapist
-	if err := c.ShouldBindJSON(&therapist); err != nil {
-		response := apiresponse.NewErrorHandler("Invalid input", http.StatusBadRequest)
-		c.JSON(response.Status, response)
+	profile_id := c.Param("profile_id")
+	if profile_id == "" {
+		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing path variable")
 		return
 	}
-
+	if err := c.ShouldBindJSON(&therapist); err != nil {
+		apiresponse.ErrorHandler(c, 500, "Invalid input")
+		return
+	}
+	res, err := handler.CheckProfileExists(profile_id)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 500, err.Error())
+		return
+	}
+	if !res {
+		apiresponse.ErrorHandler(c, 404, "Profile not found")
+		return
+	}
+	therapist.ProfileId = profile_id
 	result, err := therapistRepo.CreateTherapistMatchingProfile(&therapist)
 	if err != nil {
-		response := apiresponse.NewErrorHandler(err.Error(), http.StatusInternalServerError)
-		c.JSON(response.Status, response)
+		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return
 	}
+	apiresponse.NewApiResponse(c, result)
+}
+func gRPCProfileChecking(c *gin.Context) {
 
-	response := apiresponse.NewApiResponse("Therapist created successfully", http.StatusCreated, result)
-	c.JSON(response.Status, response)
 }

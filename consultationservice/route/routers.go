@@ -9,9 +9,9 @@ func RouterInit() *gin.Engine {
 	router := gin.Default()
 	therapistRoutes := router.Group("/consultation")
 	{
-		therapistRoutes.GET("/", handlers.GetTherapist)
-		therapistRoutes.POST("/", handlers.PostTherapist)
-	}
+		therapistRoutes.GET("/:profile_id", handlers.GetTherapistHandler)
+		therapistRoutes.POST("/", handlers.PostTherapistHandler)
 
+	}
 	return router
 }
