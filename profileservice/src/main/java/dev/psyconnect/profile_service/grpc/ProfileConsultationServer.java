@@ -23,7 +23,7 @@ class ProfileConsultationServer extends CheckProfileServiceGrpc.CheckProfileServ
     // Check whether profile exists in profile service before create a new therapist profile ______
     @Override
     public void checkProfileExists(CheckExistedProfile.ProfileRequest request, StreamObserver<CheckExistedProfile.ProfileResponse> responseObserver) {
-        boolean result = userProfileService.checkProfileExisted(request.getProfileId());
+        Boolean result = userProfileService.checkProfileExisted(request.getProfileId());
         log.info("Check user request: {}", request.getProfileId());
         var response  = CheckExistedProfile.ProfileResponse.newBuilder().setExists(result).build();
         responseObserver.onNext(response);

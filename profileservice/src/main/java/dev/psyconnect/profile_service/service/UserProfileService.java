@@ -116,7 +116,7 @@ public class UserProfileService {
         userSettingService.resetSettings(profileId);
     }
     // Check profile existed ?
-    public boolean checkProfileExisted(String profileId) {
+    public Boolean checkProfileExisted(String profileId) {
         return userProfileRepository.existsById(profileId);
     }
 }

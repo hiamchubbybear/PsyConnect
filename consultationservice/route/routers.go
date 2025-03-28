@@ -10,7 +10,7 @@ func RouterInit() *gin.Engine {
 	therapistRoutes := router.Group("/consultation")
 	{
 		therapistRoutes.GET("/:profile_id", handlers.GetTherapistHandler)
-		therapistRoutes.POST("/", handlers.PostTherapistHandler)
+		therapistRoutes.POST("/:profile_id", handlers.PostTherapistHandler)
 
 	}
 	return router

@@ -37,7 +37,7 @@ func PostTherapistHandler(c *gin.Context) {
 	var therapist model.Therapist
 	profile_id := c.Param("profile_id")
 	if profile_id == "" {
-		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing path variable")
+		apiresponse.ErrorHandler(c, 400, "Missing path variable")
 		return
 	}
 	if err := c.ShouldBindJSON(&therapist); err != nil {
@@ -54,12 +54,12 @@ func PostTherapistHandler(c *gin.Context) {
 		return
 	}
 	therapist.ProfileId = profile_id
-	result, err := therapistRepo.CreateTherapistMatchingProfile(&therapist)
+	_, err = therapistRepo.CreateTherapistMatchingProfile(&therapist)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	apiresponse.NewApiResponse(c, result)
+	apiresponse.NewApiResponse(c, therapist)
 }
 func gRPCProfileChecking(c *gin.Context) {
 
