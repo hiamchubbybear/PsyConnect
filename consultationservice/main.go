@@ -5,7 +5,6 @@ import (
 	"consultationservice/db"
 	handlers "consultationservice/handler"
 	"consultationservice/route"
-	"fmt"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -15,9 +14,6 @@ func main() {
 	db.InitDB()
 	env := bootstrap.LoadEnv()
 	handlers.InitTherapistHandler()
-	//grcpHandler.InitGrpcClient()
-	routes := route.RouterInit()
-	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
-	routes.Run(urI)
+	route.RouterInit(env)
 
 }

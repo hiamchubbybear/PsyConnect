@@ -12,7 +12,6 @@ type ApiResponse struct {
 }
 
 func NewApiResponse(c *gin.Context, data interface{}) {
-
 	c.JSON(
 		http.StatusOK,
 		ApiResponse{
@@ -21,7 +20,15 @@ func NewApiResponse(c *gin.Context, data interface{}) {
 			Data:    data,
 		})
 }
-
+func NewApiResponseWithStatus(c *gin.Context, data interface{}, status int) {
+	c.JSON(
+		status,
+		ApiResponse{
+			Message: "success",
+			Status:  status,
+			Data:    data,
+		})
+}
 func ErrorHandler(c *gin.Context, status int, message string) {
 	c.JSON(status,
 		ApiResponse{

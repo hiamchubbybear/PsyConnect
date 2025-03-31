@@ -1,6 +1,5 @@
 package dev.psyconnect.profile_service.grpc;
 
-import dev.psyconnect.grpc.ProfileCreationServiceGrpc;
 import dev.psyconnect.grpc.consultation_profile.CheckExistedProfile;
 import dev.psyconnect.grpc.consultation_profile.CheckProfileServiceGrpc;
 import dev.psyconnect.profile_service.service.UserProfileService;
@@ -14,7 +13,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 class ProfileConsultationServer extends CheckProfileServiceGrpc.CheckProfileServiceImplBase {
-    private  UserProfileService  userProfileService;
+    private UserProfileService userProfileService;
 
     ProfileConsultationServer(UserProfileService userProfileService) {
         this.userProfileService = userProfileService;
@@ -22,10 +21,14 @@ class ProfileConsultationServer extends CheckProfileServiceGrpc.CheckProfileServ
 
     // Check whether profile exists in profile service before create a new therapist profile ______
     @Override
-    public void checkProfileExists(CheckExistedProfile.ProfileRequest request, StreamObserver<CheckExistedProfile.ProfileResponse> responseObserver) {
+    public void checkProfileExists(
+            CheckExistedProfile.ProfileRequest request,
+            StreamObserver<CheckExistedProfile.ProfileResponse> responseObserver) {
         Boolean result = userProfileService.checkProfileExisted(request.getProfileId());
         log.info("Check user request: {}", request.getProfileId());
-        var response  = CheckExistedProfile.ProfileResponse.newBuilder().setExists(result).build();
+        var response = CheckExistedProfile.ProfileResponse.newBuilder()
+                .setExists(result)
+                .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
