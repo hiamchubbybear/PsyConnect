@@ -115,4 +115,8 @@ public class UserProfileService {
         log.info("Create default setting for account {}", profileId);
         userSettingService.resetSettings(profileId);
     }
+    // Check profile existed ?
+    public Boolean checkProfileExisted(String profileId) {
+        return userProfileRepository.existsById(profileId);
+    }
 }

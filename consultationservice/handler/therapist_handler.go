@@ -3,11 +3,13 @@ package handlers
 import (
 	"consultationservice/apiresponse"
 	"consultationservice/db"
+	"consultationservice/grpc/handler"
 	"consultationservice/model"
 	"consultationservice/repository"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
+	"strconv"
 )
 
 var (
@@ -15,36 +17,108 @@ var (
 	therapistRepo *repository.TherapistRepository
 )
 
+type TherapistHandler struct {
+}
+
 func InitTherapistHandler() {
-	therapistDB = db.InitTherapistDB()
+	therapistDB = db.GetTherapistCollection()
 	therapistRepo = repository.NewTherapistRepository(therapistDB)
 }
 
-// GET /therapist
-func GetTherapist(c *gin.Context) {
-	response := apiresponse.NewApiResponse("Therapist data fetched", http.StatusOK, gin.H{
-		"id":   "1",
-		"name": "Dr. Alice",
-	})
-	c.JSON(response.Status, response)
+// External Rest API -- GET /consultation/{profile_id}
+// Header -X Profile-Id = {id}
+func (r TherapistHandler) GetTherapistHandler(c *gin.Context) {
+	profileID := c.Request.Header["X-Profile-Id"][0]
+	if profileID == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
+	res, err := therapistRepo.FindTherapistMatchingProfile(profileID)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 404, err.Error())
+		return
+	}
+	apiresponse.NewApiResponse(c, res)
 }
 
-// POST /therapist
-func PostTherapist(c *gin.Context) {
+// External Rest API -- POST /consultation/:=profile_id
+// Header -X Profile-Id = {id}
+func (r TherapistHandler) PostTherapistHandler(c *gin.Context) {
 	var therapist model.Therapist
+	profileId := c.Request.Header["X-Profile-Id"][0]
+	if profileId == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
 	if err := c.ShouldBindJSON(&therapist); err != nil {
-		response := apiresponse.NewErrorHandler("Invalid input", http.StatusBadRequest)
-		c.JSON(response.Status, response)
+		apiresponse.ErrorHandler(c, 500, "Invalid input")
 		return
 	}
-
-	result, err := therapistRepo.CreateTherapistMatchingProfile(&therapist)
+	res, err := handler.CheckProfileExists(profileId)
 	if err != nil {
-		response := apiresponse.NewErrorHandler(err.Error(), http.StatusInternalServerError)
-		c.JSON(response.Status, response)
+		apiresponse.ErrorHandler(c, 500, err.Error())
 		return
 	}
+	if !res {
+		apiresponse.ErrorHandler(c, 404, "Profile not found")
+		return
+	}
+	therapist.ProfileId = profileId
+	_, err = therapistRepo.CreateTherapistMatchingProfile(&therapist)
+	if err != nil {
+		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	apiresponse.NewApiResponse(c, therapist)
+}
 
-	response := apiresponse.NewApiResponse("Therapist created successfully", http.StatusCreated, result)
-	c.JSON(response.Status, response)
+// External Rest API -- POST /consultation
+// Header -X Profile-Id = {id}
+func (r TherapistHandler) PutTherapistHandler(c *gin.Context) {
+	var therapist *model.Therapist
+	profileId := c.Request.Header["X-Profile-Id"][0]
+	if profileId == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
+	if err := c.ShouldBindJSON(&therapist); err != nil {
+		apiresponse.ErrorHandler(c, 400, "Invalid input")
+		return
+	}
+	res, err := therapistRepo.UpdateMatchingProfile(profileId, therapist)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 500, err.Error())
+		return
+	}
+	apiresponse.NewApiResponse(c, res)
+
+}
+
+func (r TherapistHandler) ChangeTherapistProfileStatus(c *gin.Context) {
+	profileId := c.GetHeader("X-Profile-Id")
+	statusStr := c.Param("status")
+	status, err := strconv.ParseBool(statusStr)
+
+	if profileId == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
+	object, err := therapistRepo.FindTherapistMatchingProfile(profileId)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 404, err.Error())
+		return
+	}
+	if object.CurrentSession != nil {
+		apiresponse.ErrorHandler(c, 404, "You can not disable account please complete all your current schedules ")
+		return
+	}
+	res, err := therapistRepo.DisableTherapistMatchingProfile(profileId, status)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 500, err.Error())
+		return
+	}
+	if !res {
+		apiresponse.ErrorHandler(c, 404, "Failed to disable account")
+	}
+	apiresponse.NewApiResponse(c, status)
 }

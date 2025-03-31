@@ -9,8 +9,10 @@ type Therapist struct {
 	Experience        int      `json:"experience,omitempty" bson:"experience"`
 	Rating            float64  `json:"rating,omitempty" bson:"rating"`
 	PricePerSession   int      `json:"price_per_session,omitempty" bson:"price_per_session"`
+	IsAvailable       bool     `json:"is_available,omitempty" bson:"is_available"`
 	Availability      struct {
 		Days      []string `json:"days,omitempty" bson:"days"`
 		TimeSlots []string `json:"time_slots,omitempty" bson:"time_slots"`
 	} `json:"availability,omitempty" bson:"availability"`
+	CurrentSession []string `json:"current_session,omitempty" bson:"current_session"`
 }
