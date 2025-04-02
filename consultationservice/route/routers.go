@@ -5,11 +5,18 @@ import (
 	"consultationservice/handler"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func RouterInit(env *bootstrap.Env) {
 	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 	router := gin.Default()
+	router.Run(urI)
+	defer func() {
+		if err := recover(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 	var (
 		therapistHandler handlers.TherapistHandler
 		clientHandler    handlers.ClientHandler
@@ -28,5 +35,4 @@ func RouterInit(env *bootstrap.Env) {
 			therapistRoutes.PUT("/client", clientHandler.PutClientHandler)
 		}
 	}
-	router.Run(urI)
 }

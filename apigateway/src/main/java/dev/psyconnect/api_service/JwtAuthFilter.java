@@ -45,7 +45,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
                 log.info("User id: {}, Profile id: {} , Username: {} ", userId, profileId,username);
 
-                // Thêm accountId và profileId vào header request
+                // Add accountId and profileId into header request
                 ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                         .header("X-User-Id", userId)
                         .header("X-Profile-Id", profileId)

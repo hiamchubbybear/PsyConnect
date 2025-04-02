@@ -1,0 +1,11 @@
+kafka:
+  broker: "localhost:9092"
+  topics:
+    - "user.events"
+    - "consultation.requests"
+    - "consultation.matches"
+    - "notification.events"
+  partitions: 3
+  replication_factor: 1
+server:
+  port: 8080
