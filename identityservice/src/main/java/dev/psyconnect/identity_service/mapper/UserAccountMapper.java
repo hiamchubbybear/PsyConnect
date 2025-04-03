@@ -21,5 +21,6 @@ public interface UserAccountMapper {
     @Mapping(target = "role", ignore = true)
     ProfileCreationRequest toUserProfileCreateRequest(UserProfileCreationRequest userAccount);
 
+    @Mapping(target = "dob", ignore = true)
     UserProfileCreationResponse toUserProfileCreateResponse(ProfileCreationResponse userAccount);
 }

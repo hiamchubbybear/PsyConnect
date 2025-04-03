@@ -8,7 +8,7 @@ import (
 
 var (
 	kafkaProducer sarama.SyncProducer
-	configKafka   = config.LoadConfig()
+	configKafka   = config.LoadConfig("../config")
 )
 
 func InitConsumer() {
