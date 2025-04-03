@@ -20,10 +20,13 @@ type Config struct {
 
 var AppConfig Config
 
-func LoadConfig() Config {
+func LoadConfig(path string) Config {
+	if path == "" {
+		path = "../config"
+	}
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../config")
+	viper.AddConfigPath(path)
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 

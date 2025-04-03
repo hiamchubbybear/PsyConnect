@@ -80,7 +80,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .email(request.getEmail())
                 .password(PasswordEncodingService.encoder(request.getPassword()))
                 .role(roles)
-                .token(savedToken)
+                //                .token(savedToken)
                 .profileId(profileId)
                 .build();
 
@@ -109,12 +109,12 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         String fullName = request.getFirstName() + " " + request.getLastName();
         String username = request.getUsername();
         String email = savedAccount.getEmail();
-        notificationRepository.notificationSend(CreateAccountNotificationRequest.builder()
-                .code(token)
-                .username(username)
-                .email(email)
-                .fullname(fullName)
-                .build());
+                notificationRepository.notificationSend(CreateAccountNotificationRequest.builder()
+                        .code(token)
+                        .username(username)
+                        .email(email)
+                        .fullname(fullName)
+                        .build());
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
                 .email(account.getEmail())
@@ -328,19 +328,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
     public Token sendNotification(ActivateAccountNotificationRequest request) {
         log.info("Sending activation notification {}", request.getCode());
-        // Trigger to Send Verified Code Request -> POST -x http://localhost:8082/noti/internal/create and get there
-        // sponse.
-        //        var response = notificationRepository.sendCreateEmail(CreateAccountNotificationRequest.builder()
-        //                .fullname(request.getFullname())
-        //                .username(request.getUsername())
-        //                .email(request.getEmail())
-        //                .code(request.getCode())
-        //                .build());
-        //        //  If status code is 500 log an error
-        //        if (response.status() != 200) {
-        //            log.error("Error while sending notification {}", response.body());
-        //            throw new CustomExceptionHandler(ErrorCode.SEND_FAILED);
-        //        }
         // Create a new ActivateModel and set the expired time and issue time;
         return saveActivationModel(request.getUsername(), request.getCode());
     }

@@ -44,7 +44,7 @@ public class AuthenticationService {
 
     @Value("${SIGNER_KEY}")
     private String SIGNER_KEY;
-
+    // 30 Minutes
     static long TIME_EXPIRED = 30 * 60 * 60 * 100;
 
     final RoleRepository roleRepository;
@@ -67,6 +67,8 @@ public class AuthenticationService {
 
     // This method generates a JWT token
     public String generateToken(AuthenticationRequest authenticationRequest, String loginType) {
+        // If login is mobile set expire times about 1 month  else set it to 30 minutes
+        TIME_EXPIRED = (loginType.equals("mobile")) ? TIME_EXPIRED * 2 * 24 * 30 : TIME_EXPIRED;
         // Get the username from the authentication request
         Account userAccountObject = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())

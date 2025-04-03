@@ -1,5 +1,7 @@
 package dev.psyconnect.identity_service.controller;
 
+import dev.psyconnect.identity_service.kafka.producer.KafkaService;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
@@ -17,16 +19,20 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserAccountController {
     UserAccountService userAccountService;
+    KafkaService kafkaService;
 
     @PostMapping(value = "/create")
     public ApiResponse<UserAccountCreationResponse> register(@RequestBody UserAccountCreationRequest accountRequest) {
-        return new ApiResponse<>(userAccountService.createAccount(accountRequest));
+        var res = userAccountService.createAccount(accountRequest);
+        kafkaService.send("user.events", res);
+        return new ApiResponse<>(res);
     }
 
     @PostMapping(value = "/activate")
     public ApiResponse<ActivateAccountResponse> activateAccount(
-            @RequestBody ActivateAccountRequest acitvateAccountRequest) {
-        return new ApiResponse<>(userAccountService.activateAccount(acitvateAccountRequest));
+            @RequestBody ActivateAccountRequest activateAccountRequest) {
+
+        return new ApiResponse<>(userAccountService.activateAccount(activateAccountRequest));
     }
 
     @PostMapping(value = "/req/activate")

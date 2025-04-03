@@ -9,7 +9,7 @@ import (
 
 var (
 	kafkaProducer sarama.SyncProducer
-	configKafka   = config.LoadConfig()
+	configKafka   = config.LoadConfig("")
 )
 
 func InitKafkaProducer() error {
@@ -27,7 +27,6 @@ func InitKafkaProducer() error {
 	return nil
 }
 func SendMessage(topic, key, message string) error {
-
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
 		Key:   sarama.StringEncoder(key),

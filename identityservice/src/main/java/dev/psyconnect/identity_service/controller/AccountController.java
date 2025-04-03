@@ -25,16 +25,14 @@ public class AccountController {
 
     @PostMapping("/delete")
     public ApiResponse<DeleteAccountResponse> deleteAccount(
-            @RequestBody DeleteAccountRequest request,
-            @RequestHeader(value = "X-User-Id", required = true) UUID userId) {
+            @RequestBody DeleteAccountRequest request, @RequestHeader(value = "X-User-Id") UUID userId) {
 
         return new ApiResponse<>(userAccountService.deleteAccount(request, userId));
     }
 
     @DeleteMapping("/delete")
     public ApiResponse<Boolean> deleteAccountConfirm(
-            @RequestBody DeleteAccountConfirmRequest request,
-            @RequestHeader(value = "X-User-Id", required = true) UUID userId) {
+            @RequestBody DeleteAccountConfirmRequest request, @RequestHeader(value = "X-User-Id") UUID userId) {
         return new ApiResponse<>(userAccountService.deleteAccountRequest(request, userId));
     }
 

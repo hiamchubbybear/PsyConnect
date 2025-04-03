@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	config.LoadConfig()
+	config.LoadConfig("../config")
 	err := producer.InitKafkaProducer()
 	if err != nil {
 		log.Fatal(err)
