@@ -2,6 +2,7 @@ package dev.psyconnect.identity_service.controller;
 
 import java.util.UUID;
 
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
@@ -26,7 +27,6 @@ public class AccountController {
     @PostMapping("/delete")
     public ApiResponse<DeleteAccountResponse> deleteAccount(
             @RequestBody DeleteAccountRequest request, @RequestHeader(value = "X-User-Id") UUID userId) {
-
         return new ApiResponse<>(userAccountService.deleteAccount(request, userId));
     }
 

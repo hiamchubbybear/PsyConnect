@@ -5,10 +5,16 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import dev.psyconnect.identity_service.kafka.producer.KafkaService;
 import jakarta.transaction.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.common.value.qual.BottomVal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,20 +38,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserAccountService implements UserDetailsService, IUserAccountService {
-    private NotificationRepository notificationRepository;
-    private static final Logger log = LoggerFactory.getLogger(UserAccountService.class);
-    private static final int MINUTE_EXPIRED = 10;
-    RoleRepository roleRepository;
-    UserAccountRepository userAccountRepository;
-    UserAccountMapper mapper;
-    UserAccountRepository accountRepository;
-    ActivateRepository activateRepository;
-    private final PasswordEncodingService passwordEncodingService;
-    private final TokenRepository tokenRepository;
-    private final ProfileGRPCClient profileGRPCClient;
+    public  int MINUTE_EXPIRED = 10;
+    @Value("${NOTIFICATION_CREATE_TOPIC}")
+    String NOTIFICATION_CREATE_TOPIC;
+    final KafkaService kafkaService;
+    final RoleRepository roleRepository;
+    final UserAccountRepository userAccountRepository;
+    final UserAccountMapper mapper;
+    final UserAccountRepository accountRepository;
+    final ActivateRepository activateRepository;
+    final PasswordEncodingService passwordEncodingService;
+    final TokenRepository tokenRepository;
+    final ProfileGRPCClient profileGRPCClient;
 
     @Transactional
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
@@ -80,7 +88,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .email(request.getEmail())
                 .password(PasswordEncodingService.encoder(request.getPassword()))
                 .role(roles)
-                //                .token(savedToken)
+                .token(savedToken)
                 .profileId(profileId)
                 .build();
 
@@ -109,7 +117,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         String fullName = request.getFirstName() + " " + request.getLastName();
         String username = request.getUsername();
         String email = savedAccount.getEmail();
-                notificationRepository.notificationSend(CreateAccountNotificationRequest.builder()
+        kafkaService.send(NOTIFICATION_CREATE_TOPIC,CreateAccountNotificationRequest.builder()
                         .code(token)
                         .username(username)
                         .email(email)
@@ -201,11 +209,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .secret(SecretEnum.getRandomMessage())
                 .token(userObject.getToken().getToken())
                 .build();
-        // Trigger to Notification Service Request -> POST -x http://localhost:8081/noti/internal/account/delete
-        //        if (notificationRepository.sendDeleteEmail(sendObject).status() != 200) {
-        //            // If send error throw an exception 429
-        //            throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
-        //        } else
         return DeleteAccountResponse.builder()
                 .isSuccess(true)
                 .secret(sendObject.getSecret())
@@ -280,7 +283,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         UUID userAccountId = UUID.fromString(AuthenticationService.extractUUIDClaim(
                 SecurityContextHolder.getContext().getAuthentication()));
         log.info("UUID parsed: {}", uuid);
-        // If account id from JWT Token doesn't match with account id provide >> throw Account Not Match exception
+        // If account id from JWT Token doesn't match with account id provide >> throw AccountNotMatch exception
         if (userAccountId != uuid) {
             throw new CustomExceptionHandler(ErrorCode.ACCOUNT_NOT_MATCH);
         }
@@ -306,13 +309,13 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .build();
     }
 
-    @Transactional
     // Send email for activate request
-    public Boolean requestActivateAccount(RequestActivationAccount requestActivationAccount) {
+    @KafkaListener(topics = "identity.user-activate-request" , groupId = "identity-service")
+    public Boolean requestActivateAccount(@Payload RequestActivationAccount requestActivationAccount) {
         // Check if account is activated throw an exception
         if (accountRepository.isActive(requestActivationAccount.getUsername()))
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
-        sendNotification(ActivateAccountNotificationRequest.builder()
+        kafkaService.send(NOTIFICATION_CREATE_TOPIC,ActivateAccountNotificationRequest.builder()
                 .email(requestActivationAccount.getEmail())
                 .fullname(requestActivationAccount.getFullname())
                 .code(generateActivationCode())

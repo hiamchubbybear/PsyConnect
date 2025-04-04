@@ -29,6 +29,16 @@ sendActivateEmail = async (req, res) => {
         res.status(500).json({message: "Failed to send email"});
     }
 };
+sendActivateEmailKafka = async (username, code, email, fullname) =>  {
+    if (!username || !code || !email || !fullname) {
+        console.error("Missing field");
+    }
+    await sendEmail({username, code, email, fullname}).catch((err) => {
+        console.error(error);
+    } );
+    return true;
+
+}
 router.post("/internal/user",sendActivateEmail);
 router.post("/internal/account/req/activate",sendActivateEmail);
     module.exports = router;
