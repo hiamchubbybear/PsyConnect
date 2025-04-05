@@ -1,15 +1,14 @@
 package dev.psyconnect.profile_service.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 public class UserSettingRequest {
+    private String profileId;
     private String privacyLevel;
     private boolean showLastSeen;
     private boolean showProfilePicture;

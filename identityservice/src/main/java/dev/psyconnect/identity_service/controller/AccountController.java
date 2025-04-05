@@ -2,7 +2,6 @@ package dev.psyconnect.identity_service.controller;
 
 import java.util.UUID;
 
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;

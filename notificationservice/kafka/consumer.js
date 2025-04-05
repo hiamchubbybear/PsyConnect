@@ -25,5 +25,21 @@ const startConsumer = async () => {
     }
   });
 };
+const listenOnActivate = async () => {
+    await consumer.connect();
+    await consumer.subscribe({
+        topic : "notification.user-activate",
+        fromBeginning : true
+    })
+    await consumer.run(
+        {
+        eachMessage: async ({ topic, partition, message }) => {
+        res = JSON.parse(message.value.toString());
+        console.log(res.username, res.code , res.email , res.fullname);
+        sendActivateEmailKafka(res.username, res.code , res.email , res.fullname);
+            }
+        }
+    )
+}
 
 module.exports = startConsumer;

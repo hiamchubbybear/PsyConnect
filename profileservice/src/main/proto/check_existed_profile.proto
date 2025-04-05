@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package profile;
+option java_package = "dev.psyconnect.grpc.consultation_profile";
+service CheckProfileService {
+  rpc CheckProfileExists (ProfileRequest) returns (ProfileResponse);
+}
+
+message ProfileRequest {
+  string profile_id = 1;
+}
+
+message ProfileResponse {
+  bool exists = 1;
+}

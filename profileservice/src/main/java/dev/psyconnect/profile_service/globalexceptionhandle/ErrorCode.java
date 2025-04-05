@@ -41,14 +41,17 @@ public enum ErrorCode {
     // SERVER ERROR - 500
     SERVER_INTERNAL_ERROR(701, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
     QUERY_FAILED(702, "Query failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    JSON_PROCESSING_ERROR(903, "Json process error", HttpStatus.NOT_EXTENDED),
 
     // GENERAL EXCEPTIONS - 500
     UNCATEGORIZED_EXCEPTION(801, "Uncategorized exception", HttpStatus.INTERNAL_SERVER_ERROR),
     DELETE_ACCOUNT_FAILED(802, "An error occurred while deleting the account", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // NULL INPUT - 410
-    NULL_EXCEPTION(901, "Your input data is null", HttpStatus.GONE);
-
+    NULL_EXCEPTION(901, "Your input data is null", HttpStatus.GONE),
+    JSON_MAPPING_ERROR(902, "Json mapping error", HttpStatus.NOT_EXTENDED),
+    KAFKA_SERVER_ERROR(703, "Kafka error", HttpStatus.INTERNAL_SERVER_ERROR),
+    ;
     private final int code;
     private final String message;
     private final HttpStatus httpStatus;

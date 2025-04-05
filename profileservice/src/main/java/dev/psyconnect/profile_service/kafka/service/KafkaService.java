@@ -1,4 +1,4 @@
-package dev.psyconnect.identity_service.kafka.producer;
+package dev.psyconnect.profile_service.kafka.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -8,8 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
-import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
+import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 
 @Service
 public class KafkaService {

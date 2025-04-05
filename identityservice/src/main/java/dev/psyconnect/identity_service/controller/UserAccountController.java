@@ -1,13 +1,12 @@
 package dev.psyconnect.identity_service.controller;
 
-import dev.psyconnect.identity_service.kafka.producer.KafkaService;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
 import dev.psyconnect.identity_service.dto.request.*;
 import dev.psyconnect.identity_service.dto.response.ActivateAccountResponse;
 import dev.psyconnect.identity_service.dto.response.UserAccountCreationResponse;
+import dev.psyconnect.identity_service.kafka.producer.KafkaService;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,7 @@ public class UserAccountController {
     @PostMapping(value = "/req/activate")
     public ApiResponse<Boolean> activateAccount(
             @RequestBody RequestActivationAccount activateAccountNotificationRequest) {
-        kafkaService.send("identity.user-activate-request",activateAccountNotificationRequest);
+        kafkaService.send("identity.user-activate-request", activateAccountNotificationRequest);
         return new ApiResponse<>(true);
     }
 

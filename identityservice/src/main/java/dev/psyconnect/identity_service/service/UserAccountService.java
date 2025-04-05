@@ -5,13 +5,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import dev.psyconnect.identity_service.kafka.producer.KafkaService;
 import jakarta.transaction.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.common.value.qual.BottomVal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -27,24 +22,27 @@ import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHand
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.grpc.client.ProfileGRPCClient;
 import dev.psyconnect.identity_service.interfaces.IUserAccountService;
+import dev.psyconnect.identity_service.kafka.producer.KafkaService;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.*;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
-import dev.psyconnect.identity_service.repository.NotificationRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserAccountService implements UserDetailsService, IUserAccountService {
-    public  int MINUTE_EXPIRED = 10;
+    public int MINUTE_EXPIRED = 10;
+
     @Value("${NOTIFICATION_CREATE_TOPIC}")
     String NOTIFICATION_CREATE_TOPIC;
+
     final KafkaService kafkaService;
     final RoleRepository roleRepository;
     final UserAccountRepository userAccountRepository;
@@ -117,7 +115,9 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         String fullName = request.getFirstName() + " " + request.getLastName();
         String username = request.getUsername();
         String email = savedAccount.getEmail();
-        kafkaService.send(NOTIFICATION_CREATE_TOPIC,CreateAccountNotificationRequest.builder()
+        kafkaService.send(
+                NOTIFICATION_CREATE_TOPIC,
+                CreateAccountNotificationRequest.builder()
                         .code(token)
                         .username(username)
                         .email(email)
@@ -310,17 +310,23 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     }
 
     // Send email for activate request
-    @KafkaListener(topics = "identity.user-activate-request" , groupId = "identity-service")
-    public Boolean requestActivateAccount(@Payload RequestActivationAccount requestActivationAccount) {
+    @KafkaListener(
+            topics = "identity.user-activate-request",
+            groupId = "identity-service",
+            containerFactory = "kafkaListenerContainerFactory")
+    public Boolean requestActivateAccount(@Payload String requestActivationAccount) {
         // Check if account is activated throw an exception
-        if (accountRepository.isActive(requestActivationAccount.getUsername()))
-            throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
-        kafkaService.send(NOTIFICATION_CREATE_TOPIC,ActivateAccountNotificationRequest.builder()
-                .email(requestActivationAccount.getEmail())
-                .fullname(requestActivationAccount.getFullname())
-                .code(generateActivationCode())
-                .username(requestActivationAccount.getUsername())
-                .build());
+        RequestActivationAccount object =
+                KafkaService.objectMapping(requestActivationAccount, RequestActivationAccount.class);
+        if (accountRepository.isActive(object.getUsername())) throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
+        kafkaService.send(
+                NOTIFICATION_CREATE_TOPIC,
+                ActivateAccountNotificationRequest.builder()
+                        .email(object.getEmail())
+                        .fullname(object.getFullname())
+                        .code(generateActivationCode())
+                        .username(object.getUsername())
+                        .build());
         return true;
     }
 
