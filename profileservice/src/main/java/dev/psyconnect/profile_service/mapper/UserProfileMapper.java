@@ -1,7 +1,5 @@
 package dev.psyconnect.profile_service.mapper;
 
-import dev.psyconnect.grpc.ProfileCreationRequest;
-import dev.psyconnect.grpc.ProfileCreationResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -34,9 +32,10 @@ public interface UserProfileMapper {
     @Mapping(ignore = true, target = "dob")
     UserProfileResponse toUserProfileRequest(Profile profile);
 
-    UserProfileCreationRequest toUserProfileRequest(ProfileCreationRequest profile);
+    UserProfileCreationRequest toUserProfileRequest(dev.psyconnect.grpc.identityservice.ProfileCreationRequest profile);
 
-    ProfileCreationResponse toUserProfileResponse(UserProfileCreationResponse profileCreationResponse);
+    dev.psyconnect.grpc.identityservice.ProfileCreationResponse toUserProfileResponse(
+            UserProfileCreationResponse profileCreationResponse);
 
     @Mapping(source = "profileId", target = "profileId")
     @Mapping(source = "firstName", target = "firstName")
@@ -45,7 +44,7 @@ public interface UserProfileMapper {
     @Mapping(source = "address", target = "address")
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "avatarUri", target = "avatarUri")
-    UserProfileCreationResponse toDTO(ProfileCreationResponse proto);
+    UserProfileCreationResponse toDTO(dev.psyconnect.grpc.identityservice.ProfileCreationResponse proto);
 
     @Mapping(target = "profileId", source = "profileId")
     @Mapping(target = "firstName", source = "firstName")
@@ -54,8 +53,8 @@ public interface UserProfileMapper {
     @Mapping(target = "address", source = "address")
     @Mapping(target = "gender", source = "gender")
     @Mapping(target = "avatarUri", source = "avatarUri")
-    default ProfileCreationResponse toProto(UserProfileCreationResponse dto) {
-        return ProfileCreationResponse.newBuilder()
+    default dev.psyconnect.grpc.identityservice.ProfileCreationResponse toProto(UserProfileCreationResponse dto) {
+        return dev.psyconnect.grpc.identityservice.ProfileCreationResponse.newBuilder()
                 .setProfileId(dto.getProfileId())
                 .setFirstName(dto.getFirstName())
                 .setLastName(dto.getLastName())
