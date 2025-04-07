@@ -159,7 +159,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         Expanded(
                             child: TextFormField(
-                          style: textFieldStyle,
+                          style: subHeadingStyle,
                           textCapitalization: TextCapitalization.sentences,
                           validator: (value) =>
                               value == null ? "Missing first name field" : null,
@@ -173,7 +173,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextFormField(
-                            style: textFieldStyle,
+                            style: subHeadingStyle,
                             textCapitalization: TextCapitalization.sentences,
                             validator: (value) => value == null
                                 ? "Missing last name field"
@@ -218,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             dobController.text.isEmpty
                                 ? "Choose date"
                                 : dobController.text,
-                            style: textFieldStyle,
+                            style: subHeadingStyle,
                           ),
                         )),
                     const SizedBox(height: 8),
@@ -226,7 +226,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            style: textFieldStyle,
+                            style: subHeadingStyle,
                             validator: (value) =>
                                 value == null ? "Wanna be" : null,
                             decoration: const InputDecoration(
@@ -248,7 +248,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            style: textFieldStyle,
+                            style: subHeadingStyle,
                             decoration:
                                 const InputDecoration(labelText: 'Gender'),
                             value: genderController.text.isEmpty
@@ -278,7 +278,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ? 'Address is required'
                               : null;
                         },
-                        style: textFieldStyle,
+                        style: subHeadingStyle,
                         controller: addressController,
                         textInputAction: TextInputAction.route,
                         decoration: const InputDecoration(labelText: 'Address'),
@@ -294,13 +294,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       ? "Username must be greater than 3 characters"
                       : null;
                 },
-                style: textFieldStyle,
+                style: subHeadingStyle,
                 controller: usernameController,
                 decoration: const InputDecoration(labelText: 'Username'),
               ),
               const SizedBox(height: 8),
               TextFormField(
-                style: textFieldStyle,
+                style: subHeadingStyle,
                 controller: passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
@@ -318,7 +318,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 8),
               TextFormField(
-                style: textFieldStyle,
+                style: subHeadingStyle,
                 onChanged: (value) => {retypePasswordController.text = value},
                 controller: retypePasswordController,
                 obscureText: true,
@@ -334,7 +334,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 8),
               TextFormField(
-                  style: textFieldStyle,
+                  style: subHeadingStyle,
                   controller: emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
