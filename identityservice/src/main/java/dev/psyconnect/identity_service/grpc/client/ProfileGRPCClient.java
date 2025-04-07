@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-
 import dev.psyconnect.identity_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.identity_service.dto.response.UserProfileCreationResponse;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;

@@ -82,7 +82,7 @@ class _PostWidgetState extends State<PostWidget> {
                         Text(
                             timeago.format(DateTime.fromMillisecondsSinceEpoch(
                                 widget.postedTime)),
-                            style: quickSand12Font),
+                            style: subHeadingStyle),
                         const SizedBox(width: 5),
                         Icon(
                             widget.privacy == "public"
