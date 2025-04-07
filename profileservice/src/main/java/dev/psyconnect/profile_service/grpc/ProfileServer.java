@@ -1,6 +1,12 @@
 package dev.psyconnect.profile_service.grpc;
 
 import dev.psyconnect.grpc.*;
+import dev.psyconnect.grpc.Hello;
+import dev.psyconnect.grpc.HelloResponse;
+import dev.psyconnect.grpc.ProfileCreationRequest;
+import dev.psyconnect.grpc.ProfileCreationResponse;
+import dev.psyconnect.grpc.ProfileCreationServiceGrpc;
+import dev.psyconnect.grpc.identityservice.*;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
 import dev.psyconnect.profile_service.mapper.UserProfileMapper;
