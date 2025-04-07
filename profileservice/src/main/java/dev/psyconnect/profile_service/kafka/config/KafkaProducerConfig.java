@@ -1,4 +1,4 @@
-package dev.psyconnect.identity_service.kafka.config;
+package dev.psyconnect.profile_service.kafka.config;
 
 import java.util.Map;
 
@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.*;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +25,7 @@ public class KafkaProducerConfig {
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 "localhost:9092",
                 ConsumerConfig.GROUP_ID_CONFIG,
-                "identity-service",
+                "profile-service",
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,

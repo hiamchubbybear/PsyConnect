@@ -83,14 +83,6 @@
             <artifactId>spring-security-oauth2-jose</artifactId>
             <version>6.4.1</version>
         </dependency>
-        <!--Parent-->
-        <dependency>
-            <groupId>dev.psyconnect</groupId>
-            <artifactId>psyconnect-project</artifactId>
-            <version>1.0.0</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -107,6 +99,23 @@
     <build>
         <finalName>apigateway</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.36</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
