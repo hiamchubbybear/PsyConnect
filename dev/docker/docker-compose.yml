@@ -3,7 +3,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql
-    platform: linux/amd64
+    platform: linux/arm64
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
@@ -17,7 +17,7 @@ services:
   zookeeper:
     image: wurstmeister/zookeeper
     container_name: zookeeper
-    platform: linux/amd64
+    platform: linux/arm64
     ports:
       - "2181:2181"
     networks:
@@ -26,7 +26,7 @@ services:
   kafka:
     image: wurstmeister/kafka
     container_name: kafka
-    platform: linux/amd64
+    platform: linux/arm64
     ports:
       - "9092:9092"
     environment:
@@ -45,7 +45,7 @@ services:
     image: neo4j:latest
     container_name: neo4j
     restart: always
-    platform: linux/amd64
+    platform: linux/arm64
     environment:
       NEO4J_AUTH: "neo4j/12345678"
     ports:

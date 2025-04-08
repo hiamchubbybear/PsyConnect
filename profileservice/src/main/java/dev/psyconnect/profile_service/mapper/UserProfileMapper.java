@@ -1,5 +1,6 @@
 package dev.psyconnect.profile_service.mapper;
 
+
 import dev.psyconnect.grpc.ProfileCreationRequest;
 import dev.psyconnect.grpc.ProfileCreationResponse;
 import org.mapstruct.Mapper;
@@ -36,8 +37,7 @@ public interface UserProfileMapper {
 
     UserProfileCreationRequest toUserProfileRequest(ProfileCreationRequest profile);
 
-    ProfileCreationResponse toUserProfileResponse(
-            UserProfileCreationResponse profileCreationResponse);
+    ProfileCreationResponse toUserProfileResponse(UserProfileCreationResponse profileCreationResponse);
 
     @Mapping(source = "profileId", target = "profileId")
     @Mapping(source = "firstName", target = "firstName")

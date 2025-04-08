@@ -30,13 +30,13 @@ TextStyle quickSand15Font = GoogleFonts.quicksand(
   color: Colors.black,
 );
 
-TextStyle subHeadingStyle = GoogleFonts.lato(
+TextStyle subHeadingStyle = GoogleFonts.quicksand(
   fontSize: 12,
   fontWeight: FontWeight.w600,
   color: Colors.black,
 );
 
-TextStyle headingStyle = GoogleFonts.lato(
+TextStyle headingStyle = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.w600,
   color: Colors.black,
