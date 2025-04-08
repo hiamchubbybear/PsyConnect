@@ -37,11 +37,12 @@ import lombok.experimental.FieldDefaults;
 public class Configuration {
     private static final Logger log = LoggerFactory.getLogger(Configuration.class);
     OAuth2Service oAuth2Service;
-    JwtAuthFilter authFilter;
+    JwtAuthFilterConfig authFilter;
     UserAccountService userAccountService;
 
     @Autowired
-    public Configuration(OAuth2Service oAuth2Service, JwtAuthFilter authFilter, UserAccountService userAccountService) {
+    public Configuration(
+            OAuth2Service oAuth2Service, JwtAuthFilterConfig authFilter, UserAccountService userAccountService) {
         this.oAuth2Service = oAuth2Service;
         this.authFilter = authFilter;
         this.userAccountService = userAccountService;

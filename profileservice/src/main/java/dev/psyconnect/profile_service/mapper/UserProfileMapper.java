@@ -1,5 +1,7 @@
 package dev.psyconnect.profile_service.mapper;
 
+import dev.psyconnect.grpc.ProfileCreationRequest;
+import dev.psyconnect.grpc.ProfileCreationResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -32,9 +34,9 @@ public interface UserProfileMapper {
     @Mapping(ignore = true, target = "dob")
     UserProfileResponse toUserProfileRequest(Profile profile);
 
-    UserProfileCreationRequest toUserProfileRequest(dev.psyconnect.grpc.identityservice.ProfileCreationRequest profile);
+    UserProfileCreationRequest toUserProfileRequest(ProfileCreationRequest profile);
 
-    dev.psyconnect.grpc.identityservice.ProfileCreationResponse toUserProfileResponse(
+    ProfileCreationResponse toUserProfileResponse(
             UserProfileCreationResponse profileCreationResponse);
 
     @Mapping(source = "profileId", target = "profileId")
@@ -44,7 +46,7 @@ public interface UserProfileMapper {
     @Mapping(source = "address", target = "address")
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "avatarUri", target = "avatarUri")
-    UserProfileCreationResponse toDTO(dev.psyconnect.grpc.identityservice.ProfileCreationResponse proto);
+    UserProfileCreationResponse toDTO(ProfileCreationResponse proto);
 
     @Mapping(target = "profileId", source = "profileId")
     @Mapping(target = "firstName", source = "firstName")
@@ -53,8 +55,8 @@ public interface UserProfileMapper {
     @Mapping(target = "address", source = "address")
     @Mapping(target = "gender", source = "gender")
     @Mapping(target = "avatarUri", source = "avatarUri")
-    default dev.psyconnect.grpc.identityservice.ProfileCreationResponse toProto(UserProfileCreationResponse dto) {
-        return dev.psyconnect.grpc.identityservice.ProfileCreationResponse.newBuilder()
+    default ProfileCreationResponse toProto(UserProfileCreationResponse dto) {
+        return ProfileCreationResponse.newBuilder()
                 .setProfileId(dto.getProfileId())
                 .setFirstName(dto.getFirstName())
                 .setLastName(dto.getLastName())

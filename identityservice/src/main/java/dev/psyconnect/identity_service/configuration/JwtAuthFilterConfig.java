@@ -26,12 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class JwtAuthFilter extends OncePerRequestFilter {
-    @Autowired
-    private AuthenticationService authenticationService;
+public class JwtAuthFilterConfig extends OncePerRequestFilter {
+
+    private final AuthenticationService authenticationService;
+    private final IUserAccountService userAccountService;
 
     @Autowired
-    private IUserAccountService userAccountService;
+    public JwtAuthFilterConfig(AuthenticationService authenticationService, IUserAccountService userAccountService) {
+        this.authenticationService = authenticationService;
+        this.userAccountService = userAccountService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

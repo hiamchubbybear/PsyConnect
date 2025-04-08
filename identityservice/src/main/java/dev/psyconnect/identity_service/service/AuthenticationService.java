@@ -34,10 +34,12 @@ import dev.psyconnect.identity_service.model.BlackListToken;
 import dev.psyconnect.identity_service.repository.BlackListTokenRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AuthenticationService {
 
     private final BlackListTokenRepository blackListTokenRepository;
