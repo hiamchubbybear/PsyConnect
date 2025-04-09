@@ -181,6 +181,12 @@
             <artifactId>spring-kafka</artifactId>
             <version>3.0.7</version>
         </dependency>
+        <dependency>
+            <groupId>dev.psyconnect</groupId>
+            <artifactId>grpccommon</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
