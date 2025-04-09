@@ -26,7 +26,6 @@ public class AccountController {
     @PostMapping("/delete")
     public ApiResponse<DeleteAccountResponse> deleteAccount(
             @RequestBody DeleteAccountRequest request, @RequestHeader(value = "X-User-Id") UUID userId) {
-
         return new ApiResponse<>(userAccountService.deleteAccount(request, userId));
     }
 
