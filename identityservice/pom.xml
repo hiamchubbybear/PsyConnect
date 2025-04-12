@@ -95,6 +95,11 @@
             <version>${grpc.version}</version>
         </dependency>
         <dependency>
+            <groupId>dev.psyconnect</groupId>
+            <artifactId>grpccommon</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
@@ -169,8 +174,8 @@
         </dependency>
         <dependency>
             <groupId>dev.psyconnect</groupId>
-            <artifactId>grpccommon</artifactId>
-            <version>1.0.0</version>
+            <artifactId>profile-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
