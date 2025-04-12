@@ -2,6 +2,7 @@ package dev.psyconnect.profile_service.service;
 
 import java.util.List;
 
+import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import dev.psyconnect.profile_service.dto.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
