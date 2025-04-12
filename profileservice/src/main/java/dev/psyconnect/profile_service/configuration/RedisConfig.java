@@ -1,4 +1,4 @@
-package dev.psyconnect.profile_service.dto;
+package dev.psyconnect.profile_service.configuration;
 
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;

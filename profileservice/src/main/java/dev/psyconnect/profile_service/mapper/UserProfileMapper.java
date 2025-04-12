@@ -2,10 +2,10 @@ package dev.psyconnect.profile_service.mapper;
 
 import dev.psyconnect.grpc.ProfileCreationRequest;
 import dev.psyconnect.grpc.ProfileCreationResponse;
+import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import dev.psyconnect.profile_service.dto.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;

@@ -1,0 +1,6 @@
+-- Delete relationship
+MATCH ()-[r:HAS_FRIEND]->() DELETE r
+-- Delete relationship 2
+MATCH(a:user_profile {profileId : $Id})
+-[r:HAS_FRIEND]->(b:user_profile {profileId : $toId})
+WHERE r.status = $status DELETE r
