@@ -1,14 +1,10 @@
 package dev.psyconnect.profile_service.utils;
 
-import dev.psyconnect.profile_service.enums.FriendShipStatus;
-import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
-import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
+import org.springframework.stereotype.Service;
+
 import dev.psyconnect.profile_service.model.FriendRelationship;
 import dev.psyconnect.profile_service.model.Profile;
 import dev.psyconnect.profile_service.repository.ProfileRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class FriendShipUtils {

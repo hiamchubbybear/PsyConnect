@@ -1,5 +1,5 @@
 import 'package:PsyConnect/service/api/api_service.dart';
-import 'package:PsyConnect/toasting&loading/toast.dart';
+import 'package:PsyConnect/ui/toasting&loading/toast.dart';
 import 'package:flutter/material.dart';
 
 class ForgotService {

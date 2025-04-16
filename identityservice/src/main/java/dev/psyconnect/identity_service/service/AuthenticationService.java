@@ -282,8 +282,8 @@ public class AuthenticationService {
     private String buildScope(String role) {
         StringBuilder builder = new StringBuilder();
 
-        // Prefix the role with "ROLE_" to match Spring Security conventions
-        builder.append("ROLE_").append(role).append(" ");
+        // Change prefix to match with OpenID Standard & Oauth2
+        builder.append("role.").append(role).append(" ");
 
         // Find the role in the repository and retrieve its permissions
         roleRepository
@@ -293,7 +293,7 @@ public class AuthenticationService {
                             // Map each permission to the Spring Security format and append to the builder
                             roleEntity.getPermissions().stream()
                                     .map(permission ->
-                                            "PERMISSION_" + permission.getName()) // Prefix permissions for clarity
+                                             permission.getName()) // Prefix permissions for clarity
                                     .forEach(permission ->
                                             builder.append(permission).append(" "));
                         },

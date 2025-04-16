@@ -8,6 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FriendRRequest {
-    private  String target;
-
+    private String target;
 }

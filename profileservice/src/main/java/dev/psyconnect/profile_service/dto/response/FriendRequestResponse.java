@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FriendRequestResponse {
-    String status ;
+    String status;
     String friendRequestStatus;
 }

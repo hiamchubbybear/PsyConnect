@@ -9,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 public class FriendAcceptResponse {
     public String status;
-    public  FriendShipStatus acceptStatus;
+    public FriendShipStatus acceptStatus;
 }

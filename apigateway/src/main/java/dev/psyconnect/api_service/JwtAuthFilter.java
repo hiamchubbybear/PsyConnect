@@ -1,5 +1,6 @@
 package dev.psyconnect.api_service;
 
+import com.sun.jdi.InternalException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
@@ -42,17 +43,18 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                 String username = claims.getSubject();
                 String userId = claims.get("accountId", String.class);
                 String profileId = claims.get("profileId", String.class);
-
-                log.info("User id: {}, Profile id: {} , Username: {} ", userId, profileId,username);
-
+                String scopes = claims.get("scope", String.class);
+                String iss = claims.get("iss", String.class);
+                // If token issuer is not PsyConnect Authentication Service throw exception
+                if (!iss.equals("PsyConnect Authentication Service"))
+                    throw new InternalException("Token authentication failed");
                 // Add accountId and profileId into header request
                 ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                         .header("X-User-Id", userId)
                         .header("X-Profile-Id", profileId)
+                        .header("X-Roles", scopes)
                         .build();
-
                 return chain.filter(exchange.mutate().request(mutatedRequest).build());
-
             } catch (SignatureException e) {
                 log.error("Invalid JWT signature: {}", e.getMessage());
             }

@@ -2,7 +2,6 @@ package dev.psyconnect.profile_service.service;
 
 import java.util.List;
 
-import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
+import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileUpdateResponse;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
@@ -97,7 +97,7 @@ public class UserProfileService {
         updatedUser.setAccountId(existingUser.getAccountId());
         // Update to database
         Profile savedUser = userProfileRepository.save(updatedUser);
-        //        log.info("Updated profile successfully: {}", savedUser);
+        // log.info("Updated profile successfully: {}", savedUser);
         // Mapping to response user profile
         return userProfileMapper.toUserProfileUpdateResponse(savedUser);
     }
@@ -121,6 +121,7 @@ public class UserProfileService {
         log.info("Create default setting for account {}", profileId);
         userSettingService.resetSettings(profileId);
     }
+
     // Check profile existed ?
     public Boolean checkProfileExisted(String profileId) {
         return userProfileRepository.existsById(profileId);

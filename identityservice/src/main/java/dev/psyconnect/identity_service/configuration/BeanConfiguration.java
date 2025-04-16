@@ -2,6 +2,11 @@ package dev.psyconnect.identity_service.configuration;
 
 import java.util.*;
 
+import dev.psyconnect.identity_service.enumeration.Provider;
+import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
+import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.identity_service.model.Account;
+import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -20,6 +25,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import javax.swing.undo.CannotUndoException;
+
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -31,7 +38,7 @@ public class BeanConfiguration {
 
     @Bean
     @Transactional
-    ApplicationRunner runner() {
+    ApplicationRunner runner(UserAccountRepository userAccountRepository) {
         return args -> {
             // Tạo các Permission từ PermissionEnum
             List<Permission> permissionsToSave = new ArrayList<>();
@@ -79,7 +86,7 @@ public class BeanConfiguration {
                 Permission permission = permissionRepository.findByName(permissionEnum.getName());
                 if (permission != null
                         && (permission.getRoles() == null
-                                || permission.getRoles().isEmpty())) {
+                        || permission.getRoles().isEmpty())) {
                     Set<RoleEntity> roleEntities = roleRepository.findAllByPermissionsContaining(permission);
                     if (!roleEntities.isEmpty()) {
                         permission.setRoles(roleEntities);
@@ -90,6 +97,13 @@ public class BeanConfiguration {
                     }
                 }
             }
+            // Create admin account for dev env
+            Account account = new Account().
+                    createAdminAccount(roleRepository.findById("admin")
+                            .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND)));
+            userAccountRepository.save(account);
+            log.info("Created admin account");
+
         };
     }
 }

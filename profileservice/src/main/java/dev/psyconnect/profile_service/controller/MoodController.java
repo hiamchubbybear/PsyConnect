@@ -24,7 +24,7 @@ public class MoodController {
 
     @PostMapping("/add")
     public ApiResponse<MoodCreateResponse> addMood(
-            @RequestHeader(value = "X-Profile-Id", required = true) String profileId,
+            @RequestHeader(value = "X-Profile-Id") String profileId,
             @RequestBody MoodCreateRequest request) {
         if (profileId == null) {
             throw new CustomExceptionHandler(ErrorCode.MISSING_TOKEN);
@@ -34,21 +34,21 @@ public class MoodController {
 
     @GetMapping
     public ApiResponse<GetMoodResponse> getMood(
-            @RequestHeader(value = "X-Profile-Id", required = true) String profileId) {
+            @RequestHeader(value = "X-Profile-Id") String profileId) {
 
         return new ApiResponse<>(moodService.getMoodById(profileId));
     }
 
     @PutMapping
-    public ApiResponse<MoodCreateResponse> updateMood(
-            @RequestHeader(value = "X-Profile-Id", required = true) String profileId,
+    public ApiResponse<MoodCreateResponse> deleteMood(
+            @RequestHeader(value = "X-Profile-Id") String profileId,
             @RequestBody MoodUpdateRequest request) {
         return new ApiResponse<>(moodService.updateMoodByProfileId(profileId, request));
     }
 
     @DeleteMapping
-    public ApiResponse<DeleteMoodResponse> updateMood(
-            @RequestHeader(value = "X-Profile-Id", required = true) String profileId) {
+    public ApiResponse<DeleteMoodResponse> deleteMood(
+            @RequestHeader(value = "X-Profile-Id") String profileId) {
         return new ApiResponse<>(moodService.deleteMood(profileId));
     }
 }
