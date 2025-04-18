@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .header {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+        }
+        .code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8ab5e3;
+            padding: 10px 20px;
+            display: inline-block;
+            background: #f0f8ff;
+            border-radius: 5px;
+            letter-spacing: 2px;
+        }
+        .message {
+            font-size: 16px;
+            color: #555;
+            margin-top: 15px;
+        }
+        .footer {
+            font-size: 14px;
+            color: #888;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">🔐 Verify Your Account</div>
+        <p class="message">Hello <strong>{USERNAME}</strong>,</p>
+        <p class="message">Here is your verification code. This code will expire in 10 minutes:</p>
+        <div class="code">{CODE}</div>
+        <p class="message">If you did not request this code, please ignore this email.</p>
+        <div class="footer">
+            &copy; 2025 PsyConnect. All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
