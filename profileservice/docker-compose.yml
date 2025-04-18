@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j_container
+    restart: always
+    environment:
+      - NEO4J_AUTH=neo4j/12345678
+    ports:
+      - "7687:7687"
+      - "7474:7474" # Web UI
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+
+  redis:
+    image: redis:7
+    container_name: redis_container
+    restart: always
+    command: ["redis-server", "--requirepass", "12345678"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  redis_data:

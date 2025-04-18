@@ -44,7 +44,7 @@ public class AuthenticationService {
 
     @Value("${SIGNER_KEY}")
     private String SIGNER_KEY;
-
+    // 30 Minutes
     static long TIME_EXPIRED = 30 * 60 * 60 * 100;
 
     final RoleRepository roleRepository;
@@ -67,6 +67,8 @@ public class AuthenticationService {
 
     // This method generates a JWT token
     public String generateToken(AuthenticationRequest authenticationRequest, String loginType) {
+        // If login is mobile set expire times about 1 month  else set it to 30 minutes
+        TIME_EXPIRED = (loginType.equals("mobile")) ? TIME_EXPIRED * 2 * 24 * 30 : TIME_EXPIRED;
         // Get the username from the authentication request
         Account userAccountObject = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
@@ -280,8 +282,8 @@ public class AuthenticationService {
     private String buildScope(String role) {
         StringBuilder builder = new StringBuilder();
 
-        // Prefix the role with "ROLE_" to match Spring Security conventions
-        builder.append("ROLE_").append(role).append(" ");
+        // Change prefix to match with OpenID Standard & Oauth2
+        builder.append("role.").append(role).append(" ");
 
         // Find the role in the repository and retrieve its permissions
         roleRepository
@@ -291,7 +293,7 @@ public class AuthenticationService {
                             // Map each permission to the Spring Security format and append to the builder
                             roleEntity.getPermissions().stream()
                                     .map(permission ->
-                                            "PERMISSION_" + permission.getName()) // Prefix permissions for clarity
+                                             permission.getName()) // Prefix permissions for clarity
                                     .forEach(permission ->
                                             builder.append(permission).append(" "));
                         },

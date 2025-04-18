@@ -6,6 +6,5 @@ import lombok.*;
 @Builder
 public class UpdateAccountRequest {
     private String username;
-    private String password;
     private String email;
 }

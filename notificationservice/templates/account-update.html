@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Update Notification</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f7;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      background-color: #ffffff;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      border-bottom: 2px solid #4a90e2;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #999;
+      text-align: center;
+    }
+    .highlight {
+      color: #4a90e2;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Hi <span class="highlight">{USERNAME}</span>,</h2>
+    </div>
+    <p>We wanted to let you know that your account <strong>{USERNAME}</strong> has recently been updated.</p>
+    <p>If you did not request this change, please contact our support team immediately to secure your account.</p>
+    <p>Thank you for trusting <strong>PsyConnect</strong>.</p>
+
+    <div class="footer">
+      &copy; 2025 PsyConnect. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>

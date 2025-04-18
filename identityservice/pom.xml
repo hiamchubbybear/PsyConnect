@@ -34,12 +34,6 @@
                 <artifactId>spring-kafka</artifactId>
                 <version>3.0.7</version>
             </dependency>
-            <!--Data Transfer-->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.18.2</version>
-            </dependency>
             <!--Logging-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -167,16 +161,17 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.11.5</version>
         </dependency>
-        <dependency>
-            <groupId>dev.psyconnect</groupId>
-            <artifactId>grpccommon</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-<!--        Gson-->
+        <!--        Gson-->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.psyconnect</groupId>
+            <artifactId>grpccommon</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

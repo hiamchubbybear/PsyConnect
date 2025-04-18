@@ -14,7 +14,6 @@
         <module>profileservice</module>
         <module>apigateway</module>
         <module>grpccommon</module>
-        <module>kafka</module>
 
     </modules>
 
@@ -22,10 +21,9 @@
         <java.version>21</java.version>
         <spring.boot.version>3.2.5</spring.boot.version>
         <spring.cloud.version>2023.0.1</spring.cloud.version>
-        <!--        <grpc.version>3.0.0</grpc.version>-->
         <grpc.version>1.62.2</grpc.version>
-        <protobuf.version>3.25.3</protobuf.version> <!-- Thêm version của Protobuf -->
-
+        <protobuf.version>3.25.3</protobuf.version>
+        <grpc.commom.version>1.0.0</grpc.commom.version>
     </properties>
 
     <dependencyManagement>
@@ -62,6 +60,11 @@
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-protobuf</artifactId>
                 <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.psyconnect</groupId>
+                <artifactId>grpccommon</artifactId>
+                <version>1.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

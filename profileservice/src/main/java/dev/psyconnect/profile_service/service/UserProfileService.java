@@ -9,17 +9,19 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import dev.psyconnect.profile_service.dto.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
+import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileUpdateResponse;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.profile_service.kafka.service.KafkaService;
 import dev.psyconnect.profile_service.mapper.UserProfileMapper;
 import dev.psyconnect.profile_service.model.Profile;
 import dev.psyconnect.profile_service.repository.ProfileRepository;
@@ -33,6 +35,7 @@ public class UserProfileService {
     private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
     ProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
+    KafkaService kafkaService;
     private final UserSettingService userSettingService;
     ApplicationEventPublisher eventPublisher;
 
@@ -40,10 +43,12 @@ public class UserProfileService {
     public UserProfileService(
             ProfileRepository userProfileRepository,
             UserProfileMapper userProfileMapper,
+            KafkaService kafkaService,
             UserSettingService userSettingService,
             ApplicationEventPublisher eventPublisher) {
         this.userProfileRepository = userProfileRepository;
         this.userProfileMapper = userProfileMapper;
+        this.kafkaService = kafkaService;
         this.userSettingService = userSettingService;
         this.eventPublisher = eventPublisher;
     }
@@ -60,7 +65,7 @@ public class UserProfileService {
         log.info("Created profile: {}", temp.getProfileId());
 
         //         Push setting default event
-        eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
+        kafkaService.send("profile.user-create-setting", request.getProfileId());
         var response = userProfileMapper.toUserProfile(temp);
         response.setDob(request.getDob());
         return response;
@@ -92,7 +97,7 @@ public class UserProfileService {
         updatedUser.setAccountId(existingUser.getAccountId());
         // Update to database
         Profile savedUser = userProfileRepository.save(updatedUser);
-        //        log.info("Updated profile successfully: {}", savedUser);
+        // log.info("Updated profile successfully: {}", savedUser);
         // Mapping to response user profile
         return userProfileMapper.toUserProfileUpdateResponse(savedUser);
     }
@@ -109,10 +114,16 @@ public class UserProfileService {
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
     }
 
-    @EventListener
-    public void handleOnCreateProfile(OnProfileCreatedEvent event) {
-        String profileId = event.getProfileId();
+    // Handle kafka listener to create user settings
+    @KafkaListener(topics = "profile.user-create-setting")
+    public void handleOnCreateProfile(@Payload String raw) {
+        String profileId = KafkaService.objectMapping(raw, String.class);
         log.info("Create default setting for account {}", profileId);
         userSettingService.resetSettings(profileId);
+    }
+
+    // Check profile existed ?
+    public Boolean checkProfileExisted(String profileId) {
+        return userProfileRepository.existsById(profileId);
     }
 }

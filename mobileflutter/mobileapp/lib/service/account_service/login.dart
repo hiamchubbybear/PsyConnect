@@ -4,9 +4,9 @@ import 'dart:io';
 
 import 'package:PsyConnect/provider/auth_token_provider.dart';
 import 'package:PsyConnect/provider/user_profile_provider.dart';
-import 'package:PsyConnect/screens/home/my_home_page.dart';
+import 'package:PsyConnect/ui/screens/home/my_home_page.dart';
 import 'package:PsyConnect/service/account_service/profile.dart';
-import 'package:PsyConnect/toasting&loading/toast.dart';
+import 'package:PsyConnect/ui/toasting&loading/toast.dart';
 import 'package:PsyConnect/variable/variable.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

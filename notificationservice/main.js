@@ -1,21 +1,17 @@
 const express = require("express");
 const cors = require("cors");
-const PORT = process.env.PORT || 8082;
+const dotenv = require("dotenv");
+const startConsumer = require("./kafka/consumer");
 
-require("dotenv").config();
+dotenv.config();
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
-app.use(cors({
-    origin: ['http://localhost:3000'],
-    credentials: true,
-}));
+app.use("/noti", require("./controllers/mail_controller"));
 
-app.use("/noti/", require("./controllers/mail_controller"));
+startConsumer().catch(console.error);
 
-
-app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
-});
+const PORT = process.env.PORT || 8082;
+app.listen(PORT, () => console.log(`Notification service running on port ${PORT}`));
