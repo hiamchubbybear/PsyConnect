@@ -1,9 +1,9 @@
 package dev.psyconnect.profile_service.controller;
 
-import dev.psyconnect.profile_service.configuration.filter.AllowedRoles;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
+import dev.psyconnect.profile_service.configuration.filter.AllowedRoles;
 import dev.psyconnect.profile_service.dto.request.UserSettingRequest;
 import dev.psyconnect.profile_service.dto.response.DeleteResponse;
 import dev.psyconnect.profile_service.dto.response.UserSettingResponse;

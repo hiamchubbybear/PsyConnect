@@ -41,8 +41,7 @@ public enum RoleEnum {
         return name;
     }
 
-    RoleEnum() {
-    }
+    RoleEnum() {}
 
     RoleEnum(String id, String name, List<PermissionEnum> permissions) {
         this.id = id;

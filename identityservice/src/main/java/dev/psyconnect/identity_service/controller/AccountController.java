@@ -1,22 +1,19 @@
 package dev.psyconnect.identity_service.controller;
 
-import java.lang.reflect.GenericArrayType;
-import java.util.List;
 import java.util.UUID;
 
-import dev.psyconnect.identity_service.configuration.AllowedRoles;
-import dev.psyconnect.identity_service.model.Account;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
+import dev.psyconnect.identity_service.configuration.AllowedRoles;
 import dev.psyconnect.identity_service.dto.request.DeleteAccountConfirmRequest;
 import dev.psyconnect.identity_service.dto.request.DeleteAccountRequest;
 import dev.psyconnect.identity_service.dto.request.UpdateAccountRequest;
 import dev.psyconnect.identity_service.dto.response.DeleteAccountResponse;
 import dev.psyconnect.identity_service.dto.response.UpdateAccountResponse;
 import dev.psyconnect.identity_service.dto.response.UserInfoResponse;
+import dev.psyconnect.identity_service.model.Account;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

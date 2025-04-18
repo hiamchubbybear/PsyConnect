@@ -292,8 +292,7 @@ public class AuthenticationService {
                         roleEntity -> {
                             // Map each permission to the Spring Security format and append to the builder
                             roleEntity.getPermissions().stream()
-                                    .map(permission ->
-                                             permission.getName()) // Prefix permissions for clarity
+                                    .map(permission -> permission.getName()) // Prefix permissions for clarity
                                     .forEach(permission ->
                                             builder.append(permission).append(" "));
                         },

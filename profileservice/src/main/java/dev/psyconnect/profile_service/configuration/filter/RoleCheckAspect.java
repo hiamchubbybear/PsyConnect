@@ -1,14 +1,16 @@
 package dev.psyconnect.profile_service.configuration.filter;
 
-import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
-import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
+import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
+import lombok.extern.slf4j.Slf4j;
 
 @Aspect
 @Component
@@ -16,7 +18,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class RoleCheckAspect {
     @Before("@annotation(allowedRoles)")
     public void checkRoles(AllowedRoles allowedRoles) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpServletRequest request =
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String header = request.getHeader("X-Roles");
         String role = header.substring(0, header.indexOf(':'));
         boolean isAllowed = false;

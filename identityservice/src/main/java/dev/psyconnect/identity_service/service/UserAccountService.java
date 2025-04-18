@@ -14,8 +14,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -203,7 +201,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Check if username not match or password doesn't match
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             // If not found throw an exception 418
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         // Check if token doesn't match
@@ -302,10 +300,12 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         }
         userAccountRepository.save(foundObject);
         // Send kafka notification update
-        kafkaService.send(("notification.account-change"), UpdateAccountNotificatorRequest.builder()
-                .email(foundObject.getEmail())
-                .username(foundObject.getUsername())
-                .build());
+        kafkaService.send(
+                ("notification.account-change"),
+                UpdateAccountNotificatorRequest.builder()
+                        .email(foundObject.getEmail())
+                        .username(foundObject.getUsername())
+                        .build());
         return UpdateAccountResponse.builder()
                 .email(foundObject.getEmail())
                 .username(foundObject.getUsername())
@@ -325,7 +325,9 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                         .username(requestActivationAccount.getUsername())
                         .build());
         sendNotification(ActivateAccountNotificationRequest.builder()
-                .username(requestActivationAccount.getUsername()).email(requestActivationAccount.getEmail()).build());
+                .username(requestActivationAccount.getUsername())
+                .email(requestActivationAccount.getEmail())
+                .build());
         return true;
     }
 

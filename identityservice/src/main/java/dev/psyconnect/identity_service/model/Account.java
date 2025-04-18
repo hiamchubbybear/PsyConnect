@@ -1,23 +1,19 @@
 package dev.psyconnect.identity_service.model;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
-import com.google.type.DateTime;
 import jakarta.persistence.*;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import dev.psyconnect.identity_service.enumeration.Provider;
 import lombok.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Setter
@@ -52,7 +48,6 @@ public class Account {
 
     @OneToOne
     private Token token;
-
 
     public Account createAdminAccount(RoleEntity roleEntity) {
         Account admin = new Account();

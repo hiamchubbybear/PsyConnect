@@ -3,10 +3,10 @@ package dev.psyconnect.profile_service.controller;
 import java.io.IOException;
 import java.util.List;
 
-import dev.psyconnect.profile_service.configuration.filter.AllowedRoles;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
+import dev.psyconnect.profile_service.configuration.filter.AllowedRoles;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;

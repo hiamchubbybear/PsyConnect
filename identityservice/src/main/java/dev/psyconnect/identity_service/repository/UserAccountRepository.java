@@ -1,6 +1,5 @@
 package dev.psyconnect.identity_service.repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,5 +38,4 @@ public interface UserAccountRepository extends JpaRepository<Account, UUID> {
     boolean isActiveByEmail(String email);
 
     Page<Account> findAll(Pageable pageable);
-
 }
