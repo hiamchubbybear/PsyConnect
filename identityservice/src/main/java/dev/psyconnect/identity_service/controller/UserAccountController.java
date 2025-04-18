@@ -34,8 +34,7 @@ public class UserAccountController {
     @PostMapping(value = "/req/activate")
     public ApiResponse<Boolean> activateAccount(
             @RequestBody RequestActivationAccount activateAccountNotificationRequest) {
-        kafkaService.send("identity.user-activate-request", activateAccountNotificationRequest);
-        return new ApiResponse<>(true);
+        return new ApiResponse<>(userAccountService.requestActivateAccount(activateAccountNotificationRequest));
     }
 
     @GetMapping("/hello")

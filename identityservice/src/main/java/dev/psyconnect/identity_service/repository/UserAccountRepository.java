@@ -1,10 +1,13 @@
 package dev.psyconnect.identity_service.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import jakarta.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,9 +31,13 @@ public interface UserAccountRepository extends JpaRepository<Account, UUID> {
 
     Optional<Account> findByEmail(String email);
 
-    @Query("SELECT u.isActivated AS boolean_value\n" + "FROM Account  u where u.username=?1")
-    Boolean isActive(String username);
+    boolean existsByUsernameAndIsActivatedTrue(String username);
 
-    @Query("SELECT u.isActivated AS boolean_value\n" + "FROM Account  u where u.email=?1")
-    Boolean isActiveByEmail(String email);
+    boolean existsByEmailAndIsActivatedTrue(String username);
+
+    @Query("SELECT u.isActivated AS boolean_value FROM Account  u where u.email=?1")
+    boolean isActiveByEmail(String email);
+
+    Page<Account> findAll(Pageable pageable);
+
 }

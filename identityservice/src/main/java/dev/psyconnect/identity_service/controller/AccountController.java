@@ -1,7 +1,13 @@
 package dev.psyconnect.identity_service.controller;
 
+import java.lang.reflect.GenericArrayType;
+import java.util.List;
 import java.util.UUID;
 
+import dev.psyconnect.identity_service.configuration.AllowedRoles;
+import dev.psyconnect.identity_service.model.Account;
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
@@ -36,13 +42,19 @@ public class AccountController {
     }
 
     @GetMapping("/info")
-    public ApiResponse<UserInfoResponse> getAccount() {
-        return new ApiResponse<>(userAccountService.getUserAccount());
+    public ApiResponse<UserInfoResponse> getAccount(@RequestHeader(value = "X-User-Id") UUID username) {
+        return new ApiResponse<>(userAccountService.getUserAccount(username));
     }
 
-    @PutMapping("/update/{uuid}")
+    @GetMapping("/all/{page}")
+    @AllowedRoles({"ADMIN"})
+    public ApiResponse<Page<Account>> getAll(@PathVariable int page) {
+        return new ApiResponse<>(userAccountService.getAllAccount(page));
+    }
+
+    @PutMapping("/update")
     public ApiResponse<UpdateAccountResponse> updateAccount(
-            @RequestBody UpdateAccountRequest request, @PathVariable String uuid) {
+            @RequestBody UpdateAccountRequest request, @RequestHeader(value = "X-User-Id") UUID uuid) {
         return new ApiResponse<>(userAccountService.updateAccount(request, uuid));
     }
 }

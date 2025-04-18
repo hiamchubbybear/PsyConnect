@@ -11,6 +11,8 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.util.backoff.FixedBackOff;
 
 @Slf4j
 @Configuration
@@ -32,10 +34,24 @@ public class KafkaProducerConfig {
     }
 
     @Bean
+    public DefaultErrorHandler errorHandler() {
+        // Retry 3 lần, cách nhau 1 giây
+        FixedBackOff backOff = new FixedBackOff(1000L, 3);
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(backOff);
+
+        errorHandler.setRetryListeners((record, ex, deliveryAttempt) -> {
+            log.error("Failed to consume record: {}, attempt {}, error: {}", record, deliveryAttempt, ex.getMessage());
+        });
+
+        return errorHandler;
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+        factory.setCommonErrorHandler(errorHandler());
         return factory;
     }
 }

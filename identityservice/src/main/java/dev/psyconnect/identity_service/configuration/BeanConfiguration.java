@@ -98,11 +98,14 @@ public class BeanConfiguration {
                 }
             }
             // Create admin account for dev env
+
             Account account = new Account().
                     createAdminAccount(roleRepository.findById("admin")
                             .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND)));
-            userAccountRepository.save(account);
-            log.info("Created admin account");
+            if (!userAccountRepository.existsByUsername(account.getUsername())) {
+                userAccountRepository.save(account);
+                log.info("Created admin account");
+            }
 
         };
     }

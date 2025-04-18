@@ -21,7 +21,7 @@ public class KafkaService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void send(String topic, Object payload) {
+    public void send(String topic, Object payload ) {
         try {
             String objectMapper = new ObjectMapper().writeValueAsString(payload);
             kafkaTemplate.send(topic, objectMapper);

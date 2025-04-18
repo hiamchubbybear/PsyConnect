@@ -8,10 +8,14 @@ import java.util.*;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -54,6 +58,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     final ProfileGRPCClient profileGRPCClient;
 
     @Transactional
+    @Cacheable(key = "#request.accountId", value = "account")
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
         // Validate if the user not found
         if (userAccountRepository.existsByUsername(request.getUsername()))
@@ -116,7 +121,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         String username = request.getUsername();
         String email = savedAccount.getEmail();
         kafkaService.send(
-                NOTIFICATION_CREATE_TOPIC,
+                (NOTIFICATION_CREATE_TOPIC),
                 CreateAccountNotificationRequest.builder()
                         .code(token)
                         .username(username)
@@ -132,12 +137,13 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     }
 
     @Transactional
-    public ActivateAccountResponse activateAccount(ActivateAccountRequest activateAccountRequest) {
+    @CachePut(key = "#request.accountId", value = "account")
+    public ActivateAccountResponse activateAccount(ActivateAccountRequest request) {
         // Declared and assign email
-        String email = activateAccountRequest.getEmail();
-        String activateToken = activateAccountRequest.getToken();
+        String email = request.getEmail();
+        String activateToken = request.getToken();
         log.info("Activate account entity for: {} ", activateToken);
-        if (userAccountRepository.isActiveByEmail(email)) {
+        if (userAccountRepository.existsByEmailAndIsActivatedTrue(email)) {
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
         }
         // Log an email for audit
@@ -185,6 +191,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     }
 
     // Delete account external use
+    @CachePut(key = "uuid", value = "account")
     public DeleteAccountResponse deleteAccount(DeleteAccountRequest deleteAccountRequest, UUID uuid) {
         // Find the user account object
         Account userObject = userAccountRepository
@@ -196,7 +203,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         // Check if username not match or password doesn't match
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             // If not found throw an exception 418
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         // Check if token doesn't match
@@ -243,15 +250,14 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         return true;
     }
 
-    public UserInfoResponse getUserAccount() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+    @CachePut(key = "#result.accountId", value = "account")
+    public UserInfoResponse getUserAccount(UUID accountId) {
         var userResponse = userAccountRepository
-                .findByUsername(username)
+                .findById((accountId))
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        if (userAccountRepository.isActive(username))
+        if (userAccountRepository.existsByUsernameAndIsActivatedTrue(userResponse.getUsername()))
             return UserInfoResponse.builder()
-                    .username(username)
+                    .username(userResponse.getUsername())
                     .accountId(userResponse.getAccountId())
                     .createdAt(userResponse.getCreatedAt().toLocalDateTime().toLocalDate())
                     .role(userResponse.getRole())
@@ -275,58 +281,51 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .build();
     }
 
+    @Override
+    public Page<Account> getAllAccount(int page) {
+        Pageable pageable = PageRequest.of(page, 10);
+        log.info("User account {} ", pageable.first().toString());
+        return userAccountRepository.findAll(pageable);
+    }
+
     @Transactional
-    public UpdateAccountResponse updateAccount(UpdateAccountRequest updateAccountRequest, String accountId) {
-        // Find existing account
-        UUID uuid = UUID.fromString(accountId);
-        log.info("Updating account {}", uuid);
-        UUID userAccountId = UUID.fromString(AuthenticationService.extractUUIDClaim(
-                SecurityContextHolder.getContext().getAuthentication()));
-        log.info("UUID parsed: {}", uuid);
-        // If account id from JWT Token doesn't match with account id provide >> throw AccountNotMatch exception
-        if (userAccountId != uuid) {
-            throw new CustomExceptionHandler(ErrorCode.ACCOUNT_NOT_MATCH);
-        }
-        var foundObject = userAccountRepository
-                .findById(uuid)
+    @CacheEvict(key = "#request.accountId", value = "account")
+    public UpdateAccountResponse updateAccount(UpdateAccountRequest updateAccountRequest, UUID accountId) {
+        Account foundObject = userAccountRepository
+                .findById(accountId)
                 // If not found throw exception 401 NOT FOUND
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         if (foundObject.getUsername() != updateAccountRequest.getUsername())
             foundObject.setUsername(foundObject.getUsername());
-        if (!passwordEncodingService
-                .getBCryptPasswordEncoder()
-                .matches(updateAccountRequest.getPassword(), foundObject.getPassword())) {
-            foundObject.setPassword(updateAccountRequest.getPassword());
-        }
         if (foundObject.getEmail() != updateAccountRequest.getEmail()) {
             foundObject.setEmail(updateAccountRequest.getEmail());
         }
         userAccountRepository.save(foundObject);
+        // Send kafka notification update
+        kafkaService.send(("notification.account-change"), UpdateAccountNotificatorRequest.builder()
+                .email(foundObject.getEmail())
+                .username(foundObject.getUsername())
+                .build());
         return UpdateAccountResponse.builder()
                 .email(foundObject.getEmail())
-                .password(foundObject.getPassword())
                 .username(foundObject.getUsername())
                 .build();
     }
 
-    // Send email for activate request
-    @KafkaListener(
-            topics = "identity.user-activate-request",
-            groupId = "identity-service",
-            containerFactory = "kafkaListenerContainerFactory")
-    public Boolean requestActivateAccount(@Payload String requestActivationAccount) {
-        // Check if account is activated throw an exception
-        RequestActivationAccount object =
-                KafkaService.objectMapping(requestActivationAccount, RequestActivationAccount.class);
-        if (accountRepository.isActive(object.getUsername())) throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
+    public Boolean requestActivateAccount(RequestActivationAccount requestActivationAccount) {
+        if (accountRepository.existsByUsernameAndIsActivatedTrue(requestActivationAccount.getUsername()))
+            throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
+        // Send to kafka
         kafkaService.send(
-                NOTIFICATION_CREATE_TOPIC,
+                (NOTIFICATION_CREATE_TOPIC),
                 ActivateAccountNotificationRequest.builder()
-                        .email(object.getEmail())
-                        .fullname(object.getFullname())
+                        .email(requestActivationAccount.getEmail())
+                        .fullname(requestActivationAccount.getFullname())
                         .code(generateActivationCode())
-                        .username(object.getUsername())
+                        .username(requestActivationAccount.getUsername())
                         .build());
+        sendNotification(ActivateAccountNotificationRequest.builder()
+                .username(requestActivationAccount.getUsername()).email(requestActivationAccount.getEmail()).build());
         return true;
     }
 
@@ -337,7 +336,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
     public Token sendNotification(ActivateAccountNotificationRequest request) {
         log.info("Sending activation notification {}", request.getCode());
-        // Create a new ActivateModel and set the expired time and issue time;
         return saveActivationModel(request.getUsername(), request.getCode());
     }
 
@@ -345,13 +343,13 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         log.info("Activate account {}", activateCode);
         var foundObject = userAccountRepository.findByUsername(username).orElse(null);
         if (foundObject == null) {
-            return Token.builder()
+            return tokenRepository.save(Token.builder()
                     .username(username)
                     .expires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)))
                     .issuedAt(Timestamp.from(Instant.now()))
-                    .token(activateCode)
+                    .token(generateActivationCode())
                     .revoked(false)
-                    .build();
+                    .build());
         } else {
             Token token = foundObject.getToken();
             token.setToken(activateCode);
