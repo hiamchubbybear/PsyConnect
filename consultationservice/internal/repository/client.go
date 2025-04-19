@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"consultationservice/model"
+	"consultationservice/internal/model"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,6 +18,17 @@ func NewClientRepository(collection *mongo.Collection) *ClientRepository {
 	return &ClientRepository{MongoDBCollection: collection}
 }
 func (r *ClientRepository) CreateClientMatchingProfile(client *model.Client) (interface{}, error) {
+	filter := bson.D{{Key: "profile_id", Value: client.ProfileId}}
+	var existingClient model.Client
+	err := r.MongoDBCollection.FindOne(context.Background(), filter).Decode(&existingClient)
+	if err == nil {
+		log.Println("Client already exists with profile_id:", client.ProfileId)
+		return nil, errors.New("Client with this profile already exists")
+	}
+	if err != mongo.ErrNoDocuments {
+		log.Println("Error checking if client exists:", err)
+		return nil, errors.New("Failed to check if client exists")
+	}
 	res, err := r.MongoDBCollection.InsertOne(context.Background(), client)
 	if err != nil {
 		log.Println("ClientRepository CreateClientMatchingProfile err:", err)
@@ -25,6 +36,7 @@ func (r *ClientRepository) CreateClientMatchingProfile(client *model.Client) (in
 	}
 	return res, nil
 }
+
 func (r *ClientRepository) FindClientMatchingProfile(clientId string) (*model.Client, error) {
 	data := new(model.Client)
 	err := r.MongoDBCollection.FindOne(context.Background(), bson.D{{Key: "profile_id", Value: clientId}}).Decode(&data)

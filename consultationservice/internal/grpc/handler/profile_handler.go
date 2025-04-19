@@ -1,7 +1,7 @@
 package handler
 
 import (
-	pb "consultationservice/grpc/gprc.grpc_generated"
+	"consultationservice/internal/grpc/gprc.grpc_generated"
 	"context"
 	"errors"
 	"google.golang.org/grpc"
@@ -20,10 +20,10 @@ func CheckProfileExists(profileId string) (bool, error) {
 	}
 	log.Println("Connected to gRPC profile server")
 	defer conn.Close()
-	client := pb.NewCheckProfileServiceClient(conn)
+	client := gprc_grpc_generated.NewCheckProfileServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	res, err := client.CheckProfileExists(ctx, &pb.ProfileRequest{ProfileId: profileId})
+	res, err := client.CheckProfileExists(ctx, &gprc_grpc_generated.ProfileRequest{ProfileId: profileId})
 	if err != nil {
 		log.Printf("Error calling Profile Service: %v", err)
 		return false, errors.New("Failed to call gRPC profile server")

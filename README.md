@@ -9,16 +9,6 @@ PsyConnect is a comprehensive mental health platform built with modern microserv
 - [Architecture Overview](#architecture-overview)
 - [Technology Stack](#technology-stack)
 - [Core Services](#core-services)
-    - [Identity Service](identityservice/README.md)
-    - [Profile Service](profileservice/README.md)
-    - [Payment Service](#payment-service)
-    - [Matching Service](#matching-service)
-    - [Messaging Service](#messaging-service)
-    - [Review & Feedback](#review-feedback)
-    - [Booking & Scheduling](#booking-scheduling)
-    - [Content Services](#content-services)
-    - [Support Services](#support-services)
-    - [Api Gateway](apigateway/README.md)
 - [Setup Environment](#setup-environment)
 - [Installation](#installation)
 - [Development & Deployment](#development-deployment)
@@ -67,62 +57,18 @@ Our platform utilizes a distributed system design with the following key feature
 
 ## 🔧 Core Services
 
-### Identity Service
+#### - [Identity Service](identityservice/README.md)
+#### - [Profile Service](profileservice/README.md)
+#### - Payment Service
+#### - [Matching Service](consultationservice/README.md)
+#### - Messaging Service
+#### - Review & Feedback
+#### - Booking & Scheduling
+#### - [Api Gateway](apigateway/README.md)
 
-- User authentication and registration
-- Multifactorial authentication
-- Authorization management
+![Image](https://private-user-images.githubusercontent.com/51482452/403526354-a5116da7-6296-4387-9599-62641acd6993.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDUwNzYzNzksIm5iZiI6MTc0NTA3NjA3OSwicGF0aCI6Ii81MTQ4MjQ1Mi80MDM1MjYzNTQtYTUxMTZkYTctNjI5Ni00Mzg3LTk1OTktNjI2NDFhY2Q2OTkzLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA0MTklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNDE5VDE1MjExOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTA4Yzk2ZjkwYmQ2NWIxZWUyMmMwN2ZlNmJhY2M4OWVhYTYwYWNjZjY2Yjc0NGQ4MTI2ZjMzNWIwOTQ5YzJkNWMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.XaZux9tZfHm5XNoYGEhj32HYGg6zPkeVB2P7o8ruNgQ)
 
-### Profile Service
-
-- User profile management
-- Customization options
-- Privacy controls
-
-### Payment Service
-
-- Multiple payment method support
-- Subscription management
-- Transaction history
-
-### Matching Service
-
-- Advanced therapist-client matching
-- Preference-based recommendations
-- Availability matching
-
-### Messaging Service
-
-- Real-time communication
-- Secure file sharing
-- Message history
-
-### Review & Feedback
-
-- Therapist/client reviews
-- Session feedback system
-- Rating analytics
-
-### Booking & Scheduling
-
-- Appointment management
-- Calendar integration
-- Automated reminders
-
-### Content Services
-
-- Blog management
-- Support group forums
-- Community interactions
-
-### Support Services
-
-- Push notifications
-- Email/SMS alerts
-- System logging
-- Performance monitoring
-
-## 🌍 Setup Environment
+## Setup Environment
 
 Ensure you have the following environment variables set up before running the project:
 
@@ -141,7 +87,7 @@ SERVER_PORT={your-variable}
 
 **Note**: All environment variables must be configured correctly before running the application.
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 
@@ -170,7 +116,7 @@ docker-compose up --build
 - Metrics: Prometheus & Grafana
 - Performance: New Relic
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Please follow these steps:
 
@@ -189,11 +135,11 @@ We welcome contributions! Please follow these steps:
    ```
 5. Open a Pull Request
 
-## 📜 License
+##  License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
-## 📞 Contact
+##  Contact
 
 - Project Lead: Chessy
 - Email: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)

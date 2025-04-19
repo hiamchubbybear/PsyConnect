@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class TokenCheckService {
+public class TokenValidateService {
 
     private final RestTemplate restTemplate;
     private final String identityServiceUrl;
     private final String identityServicePort;
     @Autowired
-    public TokenCheckService(RestTemplate restTemplate, @Value("${base.url}") String identityServiceUrl,
-                             @Value("${identity.port}") String identityServicePort) {
+    public TokenValidateService(RestTemplate restTemplate, @Value("${base.url}") String identityServiceUrl,
+                                @Value("${identity.port}") String identityServicePort) {
         this.restTemplate = restTemplate;
         this.identityServiceUrl = identityServiceUrl;
         this.identityServicePort = identityServicePort;

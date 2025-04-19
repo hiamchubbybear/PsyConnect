@@ -20,7 +20,7 @@ var (
 
 func InitDB() *mongo.Client {
 	once.Do(func() {
-		err := gotenv.Load()
+		err := gotenv.Load("../.env")
 		if err != nil {
 			log.Fatal("Error loading .env file")
 		}

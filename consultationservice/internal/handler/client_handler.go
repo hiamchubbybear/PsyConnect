@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"consultationservice/apiresponse"
-	"consultationservice/db"
-	"consultationservice/grpc/handler"
-	"consultationservice/model"
-	"consultationservice/repository"
+	"consultationservice/internal/db"
+	"consultationservice/internal/grpc/handler"
+	"consultationservice/internal/model"
+	"consultationservice/internal/repository"
+	"consultationservice/pkg/apiresponse"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
@@ -25,7 +25,6 @@ func InitClientHandler() {
 }
 
 // External Rest API -- GET /consultation/client
-// Header -X Profile-Id = {id}
 func (r ClientHandler) GetClientHandler(c *gin.Context) {
 	profileID := c.Request.Header["X-Profile-Id"][0]
 	if profileID == "" {
@@ -41,7 +40,6 @@ func (r ClientHandler) GetClientHandler(c *gin.Context) {
 }
 
 // External Rest API -- POST /consultation/client
-// Header -X Profile-Id = {id}
 func (r ClientHandler) PostClientHandler(c *gin.Context) {
 	var client model.Client
 	profileId := c.Request.Header["X-Profile-Id"][0]
@@ -72,7 +70,6 @@ func (r ClientHandler) PostClientHandler(c *gin.Context) {
 }
 
 // External Rest API -- POST /consultation/client
-
 func (r ClientHandler) PutClientHandler(c *gin.Context) {
 	var client *model.Client
 	profileId := c.GetHeader("X-Profile-Id")
@@ -90,5 +87,4 @@ func (r ClientHandler) PutClientHandler(c *gin.Context) {
 		return
 	}
 	apiresponse.NewApiResponse(c, res)
-
 }

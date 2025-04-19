@@ -13,7 +13,10 @@ type Env struct {
 
 func LoadEnv() *Env {
 	v := viper.New()
-	v.SetConfigFile(".env")
+	v.SetConfigName(".env")
+	v.SetConfigType("env")
+	v.AddConfigPath(".")
+	v.AddConfigPath("../")
 	v.AutomaticEnv()
 	if err := v.ReadInConfig(); err != nil {
 		log.Printf("Warning: No .env file found, using environment variables only")

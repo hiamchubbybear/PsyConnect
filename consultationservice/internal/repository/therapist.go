@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"consultationservice/model"
+	"consultationservice/internal/model"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,6 +19,17 @@ func NewTherapistRepository(collection *mongo.Collection) *TherapistRepository {
 }
 
 func (r *TherapistRepository) CreateTherapistMatchingProfile(therapist *model.Therapist) (interface{}, error) {
+	filter := bson.D{{Key: "profile_id", Value: therapist.ProfileId}}
+	var existingTherapist model.Therapist
+	err := r.MongoDBCollection.FindOne(context.Background(), filter).Decode(&existingTherapist)
+	if err == nil {
+		log.Println("Client already exists with profile_id:", therapist.ProfileId)
+		return nil, errors.New("Therapist with this profile already exists")
+	}
+	if err != mongo.ErrNoDocuments {
+		log.Println("Error checking if therapist exists:", err)
+		return nil, errors.New("Failed to check if therapist exists")
+	}
 	res, err := r.MongoDBCollection.InsertOne(context.Background(), therapist)
 	if err != nil {
 		log.Println("TherapistRepository CreateTherapistMatchingProfile err:", err)

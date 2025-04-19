@@ -3,7 +3,7 @@ package dev.psyconnect.api_service.configuration;
 import com.sun.jdi.InternalException;
 import dev.psyconnect.api_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.api_service.globalexceptionhandle.ErrorCode;
-import dev.psyconnect.api_service.service.TokenCheckService;
+import dev.psyconnect.api_service.service.TokenValidateService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
@@ -14,9 +14,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -30,7 +28,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     @Value("${SIGNER_KEY}")
     private String SIGNER_KEY;
     @Autowired
-    TokenCheckService service;
+    TokenValidateService service;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -50,7 +48,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                 String scopes = claims.get("scope", String.class);
                 String iss = claims.get("iss", String.class);
                 // If token issuer is not PsyConnect Authentication Service throw exception
-                if (!iss.equals("PsyCo  qnnect Authentication Service"))
+                if (!iss.equals("PsyConnect Authentication Service"))
                     throw new InternalException("Token authentication failed");
                 // Add accountId and profileId into header request
                 ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()

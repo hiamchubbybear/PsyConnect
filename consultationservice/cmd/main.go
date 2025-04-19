@@ -2,9 +2,9 @@ package main
 
 import (
 	"consultationservice/bootstrap"
-	"consultationservice/db"
-	handlers "consultationservice/handler"
-	"consultationservice/route"
+	"consultationservice/internal/db"
+	"consultationservice/internal/handler"
+	"consultationservice/internal/route"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -14,6 +14,6 @@ func main() {
 	db.InitDB()
 	env := bootstrap.LoadEnv()
 	handlers.InitTherapistHandler()
+	handlers.InitClientHandler()
 	route.RouterInit(env)
-
 }

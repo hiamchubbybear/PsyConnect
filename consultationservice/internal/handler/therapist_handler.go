@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"consultationservice/apiresponse"
-	"consultationservice/db"
-	"consultationservice/grpc/handler"
-	"consultationservice/model"
-	"consultationservice/repository"
+	"consultationservice/internal/db"
+	"consultationservice/internal/grpc/handler"
+	"consultationservice/internal/model"
+	"consultationservice/internal/repository"
+	"consultationservice/pkg/apiresponse"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
@@ -26,7 +26,6 @@ func InitTherapistHandler() {
 }
 
 // External Rest API -- GET /consultation/{profile_id}
-// Header -X Profile-Id = {id}
 func (r TherapistHandler) GetTherapistHandler(c *gin.Context) {
 	profileID := c.Request.Header["X-Profile-Id"][0]
 	if profileID == "" {
@@ -42,7 +41,6 @@ func (r TherapistHandler) GetTherapistHandler(c *gin.Context) {
 }
 
 // External Rest API -- POST /consultation/:=profile_id
-// Header -X Profile-Id = {id}
 func (r TherapistHandler) PostTherapistHandler(c *gin.Context) {
 	var therapist model.Therapist
 	profileId := c.Request.Header["X-Profile-Id"][0]
