@@ -1,6 +1,11 @@
 version: '3.8'
 
 services:
+  consultation-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: profileservice
   neo4j:
     image: neo4j:latest
     container_name: neo4j_container
@@ -15,7 +20,7 @@ services:
       - neo4j_logs:/logs
 
   redis:
-    image: redis:7
+    image: redis:6.2-alpine
     container_name: redis_container
     restart: always
     command: ["redis-server", "--requirepass", "12345678"]

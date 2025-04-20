@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the ports to kill
-PORTS=(8080 8081 8082 8083 8888)
+PORTS=(8080 8081 8082 8084 8083 8888)
 
 echo "Attempting to kill processes on ports: ${PORTS[*]}"
 

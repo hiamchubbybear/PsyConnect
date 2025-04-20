@@ -3,13 +3,14 @@ package db
 import (
 	"context"
 	"fmt"
-	"github.com/subosito/gotenv"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/subosito/gotenv"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -21,15 +22,20 @@ var (
 func InitDB() *mongo.Client {
 	once.Do(func() {
 		err := gotenv.Load("../.env")
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
 
 		dbUser := os.Getenv("DB_USER")
 		dbPass := os.Getenv("DB_PASS")
 		dbHost := os.Getenv("DB_HOST")
 		dbPort := os.Getenv("DB_PORT")
 		dbName = os.Getenv("DB_NAME")
+		if (dbUser == " " ||
+			dbPass == " " ||
+			dbHost == " " ||
+			dbPort == " " ||
+			dbName == " ") && err != nil {
+			log.Fatal("Error loading .env file")
+		}
+
 		uri := fmt.Sprintf("mongodb://%s:%s@%s:%s/", dbUser, dbPass, dbHost, dbPort)
 
 		log.Printf("Connecting to MongoDB at %s", uri)

@@ -3,7 +3,6 @@ package dev.psyconnect.identity_service.controller;
 import java.text.ParseException;
 import javax.naming.AuthenticationException;
 
-import lombok.Getter;
 import org.springframework.web.bind.annotation.*;
 
 import com.nimbusds.jose.JOSEException;
@@ -41,8 +40,7 @@ public class AuthenticationController {
 
     // For access token validate
     @PostMapping("internal/invalid/{token}")
-    public Boolean introspectRequest(@RequestBody String token)
-            throws ParseException, JOSEException {
+    public Boolean introspectRequest(@RequestBody String token) throws ParseException, JOSEException {
         return (authenticationService.isTokenInvalid(token));
     }
 }
