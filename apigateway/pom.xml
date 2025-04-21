@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>dev.psyconnect</groupId>
-    <artifactId>api_service</artifactId>
+    <artifactId>apiservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>api-gateway</name>
     <description>Api Gateway Service</description>

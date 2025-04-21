@@ -3,7 +3,6 @@ import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/provider/user_profile_provider.dart';
 import 'package:PsyConnect/service/account_service/login.dart';
 import 'package:PsyConnect/ui/page/forgot_page.dart';
-import 'package:PsyConnect/ui/page/register_page.dart';
 import 'package:PsyConnect/variable/variable.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -43,7 +42,6 @@ class _LoginPageState extends State<LoginPage> {
               body: TabBarView(
                 children: [
                   _LoginForm(context),
-                  const RegisterPage(),
                 ],
               ),
             ),
@@ -102,17 +100,17 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   IconButton(
                       onPressed: () => _handleOnAppleIdLogin(),
-                      icon: Icon(
+                      icon: const Icon(
                         FontAwesomeIcons.apple,
                         size: 32,
                       )),
                   IconButton(
                     onPressed: () => _handleOnGoogleLogin(),
-                    icon: Icon(FontAwesomeIcons.facebook),
+                    icon: const Icon(FontAwesomeIcons.facebook),
                   ),
                   IconButton(
                       onPressed: () => _handleOnFacebookLogin(),
-                      icon: Icon(FontAwesomeIcons.google)),
+                      icon: const Icon(FontAwesomeIcons.google)),
                 ],
               ),
               const SizedBox(height: 16),
@@ -189,12 +187,16 @@ AppBar _appBar(BuildContext context) {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Brightness'),
-                Switch.adaptive(
-                  value: themeProvider.isLight,
-                  onChanged: (value) {
-                    Navigator.pop(context);
-                    themeProvider.toggleTheme(value);
-                  },
+                Transform.scale(
+                  scale: 0.8,
+                  child: Switch.adaptive(
+                    activeTrackColor: Colors.black,
+                    value: themeProvider.isDarkMode,
+                    onChanged: (value) {
+                      Navigator.pop(context);
+                      themeProvider.toggleTheme(value);
+                    },
+                  ),
                 ),
               ],
             ),

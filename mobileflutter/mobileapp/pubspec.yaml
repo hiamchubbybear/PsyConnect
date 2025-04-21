@@ -17,6 +17,7 @@ dependencies:
   # Rename
   rename: ^2.1.1
   shared_preferences: ^2.5.3
+  get: ^4.7.2
   # Change app icon
   flutter_launcher_icons: ^0.13.1
   flutter_platform_widgets: ^7.0.1

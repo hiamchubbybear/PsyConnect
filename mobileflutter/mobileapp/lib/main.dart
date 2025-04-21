@@ -16,7 +16,7 @@ void main() async {
       ChangeNotifierProvider(create: (context) => UserProvider()),
       ChangeNotifierProvider(create: (context) => UserProfileProvider()),
       ChangeNotifierProvider(create: (context) => AuthTokenProvider()),
-      ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ChangeNotifierProvider(create: (context) => ThemeProvider()),
     ],
     child: const MyApp(),
   ));
@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemesApp.light,
+        darkTheme: ThemesApp.light,
         themeMode: themeProvider.themeMode,
         supportedLocales: const [
           Locale('vi', 'VN'),

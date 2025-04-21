@@ -1,12 +1,12 @@
 import 'dart:core';
 import 'dart:io';
 
-import 'package:PsyConnect/ui/page/forgot_page.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:PsyConnect/service/account_service/image.dart';
 import 'package:PsyConnect/service/account_service/register.dart';
 import 'package:PsyConnect/service/api/cloudinary_api_service.dart';
 import 'package:PsyConnect/service/logic.dart';
+import 'package:PsyConnect/ui/page/forgot_page.dart';
 import 'package:PsyConnect/ui/toasting&loading/toast.dart';
 import 'package:PsyConnect/variable/variable.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +94,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             leading: const Icon(Icons.photo_library),
                             title: Text(
                               'Choose from gallery',
-                              style: textStyle,
+                              style: quickSand12Font,
                             ),
                             onTap: () {
                               _pickImage(ImageSource.gallery);
@@ -104,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ListTile(
                             contentPadding: EdgeInsets.all(10),
                             leading: const Icon(Icons.camera_alt),
-                            title: Text('Take a photo', style: textStyle),
+                            title: Text('Take a photo', style: quickSand12Font),
                             onTap: () {
                               _pickImage(ImageSource.camera);
                               Navigator.pop(context);
@@ -159,7 +159,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         Expanded(
                             child: TextFormField(
-                          style: textFieldStyle,
+                          style: quickSand12Font,
                           textCapitalization: TextCapitalization.sentences,
                           validator: (value) =>
                               value == null ? "Missing first name field" : null,
@@ -173,7 +173,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextFormField(
-                            style: textFieldStyle,
+                            style: quickSand12Font,
                             textCapitalization: TextCapitalization.sentences,
                             validator: (value) => value == null
                                 ? "Missing last name field"
@@ -218,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             dobController.text.isEmpty
                                 ? "Choose date"
                                 : dobController.text,
-                            style: textFieldStyle,
+                            style: quickSand12Font,
                           ),
                         )),
                     const SizedBox(height: 8),
@@ -226,7 +226,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            style: textFieldStyle,
+                            style: quickSand12Font,
                             validator: (value) =>
                                 value == null ? "Wanna be" : null,
                             decoration: const InputDecoration(
@@ -248,7 +248,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            style: textFieldStyle,
+                            style: quickSand12Font,
                             decoration:
                                 const InputDecoration(labelText: 'Gender'),
                             value: genderController.text.isEmpty
@@ -278,7 +278,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ? 'Address is required'
                               : null;
                         },
-                        style: textFieldStyle,
+                        style: quickSand12Font,
                         controller: addressController,
                         textInputAction: TextInputAction.route,
                         decoration: const InputDecoration(labelText: 'Address'),
@@ -294,13 +294,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       ? "Username must be greater than 3 characters"
                       : null;
                 },
-                style: textFieldStyle,
+                style: quickSand12Font,
                 controller: usernameController,
                 decoration: const InputDecoration(labelText: 'Username'),
               ),
               const SizedBox(height: 8),
               TextFormField(
-                style: textFieldStyle,
+                style: quickSand12Font,
                 controller: passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
@@ -318,7 +318,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 8),
               TextFormField(
-                style: textFieldStyle,
+                style: quickSand12Font,
                 onChanged: (value) => {retypePasswordController.text = value},
                 controller: retypePasswordController,
                 obscureText: true,
@@ -334,7 +334,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 8),
               TextFormField(
-                  style: textFieldStyle,
+                  style: quickSand12Font,
                   controller: emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
@@ -360,7 +360,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   }
                 },
                 child: (!_isLoading)
-                    ? Text('Register', style: textStyle)
+                    ? Text('Register', style: quickSand12Font)
                     : const CircularProgressIndicator(),
               ),
               const SizedBox(height: 16),
@@ -389,7 +389,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   Text(
                     "Forgot your password?",
-                    style: textStyle,
+                    style: quickSand12Font,
                   ),
                   TextButton(
                     onPressed: () {
@@ -401,7 +401,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                     child: Text(
                       'Reset it',
-                      style: textStyle,
+                      style: quickSand12Font,
                     ),
                   ),
                 ],

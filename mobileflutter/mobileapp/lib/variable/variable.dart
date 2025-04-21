@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final String androidBaseUrl = "http://10.0.2.2:8888";
@@ -22,22 +23,22 @@ final Map<String, String> headers = {
 TextStyle textStyle = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.bold,
-  color: Colors.black,
+    color: Get.isDarkMode ? Colors.white : Colors.black,
 );
 TextStyle quickSand15Font = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.w600,
-  color: Colors.black,
+    color: Get.isDarkMode ? Colors.white : Colors.black,
 );
 
 TextStyle quickSand12Font = GoogleFonts.quicksand(
   fontSize: 12,
   fontWeight: FontWeight.w600,
-  color: Colors.black,
+  color: Get.isDarkMode ? Colors.white : Colors.black,
 );
 
 TextStyle textFieldStyle = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.w600,
-  color: Colors.black,
+    color: Get.isDarkMode ? Colors.white : Colors.black,
 );

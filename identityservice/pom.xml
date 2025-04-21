@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>dev.psyconnect</groupId>
-    <artifactId>identity-service</artifactId>
+    <artifactId>identityservice</artifactId>
     <name>identity-service</name>
     <version>0.0.1-SNAPSHOT</version>
     <description>Identity service</description>

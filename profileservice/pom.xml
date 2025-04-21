@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>dev.psyconnect</groupId>
-    <artifactId>profile-service</artifactId>
+    <artifactId>profileservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>profile-service</name>
     <description>Profile service</description>

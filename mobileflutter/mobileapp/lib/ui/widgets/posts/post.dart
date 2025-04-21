@@ -42,7 +42,7 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      margin: const EdgeInsets.all(15),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -125,21 +125,23 @@ class _PostWidgetState extends State<PostWidget> {
                       },
                     ),
                     Text("${widget.nol + (isLiked ? 1 : 0)} Likes",
-                        style: quickSand15Font),
+                        style: quickSand12Font),
                     SizedBox(
                       width: 10,
                     ),
                     Icon(
                       Icons.comment_sharp,
                       color: Colors.grey,
-                      size: 20,
+                      size: 18,
                     ),
                     const SizedBox(width: 5),
-                    Text("${widget.noc}"),
+                    Text("${widget.noc}" , style: quickSand12Font,),
                   ],
                 ),
                 Row(
-                  children: [],
+                  children: [
+
+                  ],
                 ),
               ],
             ),
