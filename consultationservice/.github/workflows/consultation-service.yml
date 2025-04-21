@@ -3,10 +3,10 @@ name: Consultation Service CI/CD
 on:
   push:
     branches:
-      - main
+      - dev_chessy
   pull_request:
     branches:
-      - main
+      - dev_chessy
 
 env:
   SERVICE_PORT: 8080
