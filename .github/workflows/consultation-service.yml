@@ -54,13 +54,19 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Install dependencies
-        run: go mod download
+        run: |
+          cd consultationservice
+          go mod download
 
       - name: Build the application
-        run: go build -o consultation-service ./cmd
+        run: |
+          cd consultationservice
+          go build -o consultation-service ./cmd
 
       - name: Run tests
-        run: go test ./...
+        run: |
+          cd consultationservice
+          go test ./...
 
   docker-run:
     runs-on: ubuntu-latest
@@ -71,7 +77,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image locally
-        run: docker build -t consultation-service .
+        run: docker build -t consultation-service ./consultationservice
 
       - name: Run Docker container
         run: docker run -d -p 8080:8080 consultation-service
