@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "511968865826",
+    "project_id": "psyconnect--chat",
+    "storage_bucket": "psyconnect--chat.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:511968865826:android:2a42e938a441007434a47b",
+        "android_client_info": {
+          "package_name": "com.example.mobileapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDitc2hYt8psitMyxqpp4otFp1qhwEf8Rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
-import 'package:PsyConnect/ui/themes/colors/color.dart';
-import 'package:PsyConnect/variable/variable.dart';
+import 'package:PsyConnect/core/colors/color.dart';
+import 'package:PsyConnect/core/variable/variable.dart';
+import 'package:PsyConnect/ui/widgets/posts/post_options.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -16,7 +17,11 @@ class PostWidget extends StatefulWidget {
   final List<String> comment;
   final int nol;
   final int noc;
-
+  // For post interaction
+  final String userId;
+  final String? postedUser;
+  final String postId;
+// Đi ?
   const PostWidget({
     super.key,
     required this.avatarUri,
@@ -30,6 +35,9 @@ class PostWidget extends StatefulWidget {
     required this.comment,
     required this.nol,
     required this.noc,
+    required this.postId,
+    required this.userId,
+    this.postedUser,
   });
 
   @override
@@ -70,9 +78,11 @@ class _PostWidgetState extends State<PostWidget> {
                                 fontWeight: FontWeight.bold, fontSize: 16),
                             overflow: TextOverflow.ellipsis,
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.abc),
-                            onPressed: () => _handleOnPostOptions(),
+                          PostOptionsMenu(
+                            onSelected: (value) {
+                              if (value == 'edit') {
+                              } else if (value == 'delete') {}
+                            },
                           ),
                         ],
                       )
@@ -126,22 +136,23 @@ class _PostWidgetState extends State<PostWidget> {
                     ),
                     Text("${widget.nol + (isLiked ? 1 : 0)} Likes",
                         style: quickSand12Font),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Icon(
+                    const Icon(
                       Icons.comment_sharp,
                       color: Colors.grey,
                       size: 18,
                     ),
                     const SizedBox(width: 5),
-                    Text("${widget.noc}" , style: quickSand12Font,),
+                    Text(
+                      "${widget.noc}",
+                      style: quickSand12Font,
+                    ),
                   ],
                 ),
-                Row(
-                  children: [
-
-                  ],
+                const Row(
+                  children: [],
                 ),
               ],
             ),
@@ -151,5 +162,12 @@ class _PostWidgetState extends State<PostWidget> {
     );
   }
 
-  _handleOnPostOptions() {}
+  // _handleOnPostOptions({required BuildContext context}) {
+  //   return Center(
+  //     child: DropdownButton<String>(
+  //       value :  ,
+  //       items: [],
+  //     ),
+  //   );
+  // }
 }

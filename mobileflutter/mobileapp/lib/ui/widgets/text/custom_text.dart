@@ -1,4 +1,4 @@
-import 'package:PsyConnect/variable/variable.dart';
+import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
