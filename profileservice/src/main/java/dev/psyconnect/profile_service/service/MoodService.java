@@ -33,7 +33,7 @@ public class MoodService {
     @CacheEvict(key = "#profileId", value = "mood")
     public MoodCreateResponse createMoodByProfileId(String profileId, MoodCreateRequest request) {
         if (!profileRepository.existsById(profileId) || moodRepository.existsById(profileId))
-            throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
+            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
         log.info("Profile Id {}", profileId);
         final int TIME_ZONE = +7;
         Map<String, Long> dateTime = Time.MOOD_EXPIRES;

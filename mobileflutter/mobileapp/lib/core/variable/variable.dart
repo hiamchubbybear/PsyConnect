@@ -47,7 +47,11 @@ TextStyle headingStyle = GoogleFonts.quicksand(
   fontWeight: FontWeight.bold,
   color: Get.isDarkMode ? Colors.white : Colors.black,
 );
-
+TextStyle subHeadingStyle = GoogleFonts.quicksand(
+  fontSize: 25,
+  fontWeight: FontWeight.bold,
+  color: Get.isDarkMode ? Colors.white : Colors.black,
+);
 const double kDefault = 16.0;
 const double kCircle = 20;
 

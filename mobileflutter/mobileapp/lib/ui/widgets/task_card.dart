@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 class TaskCard extends StatelessWidget {
   const TaskCard({
     super.key,
-    required this.size, required this.index,
+    required this.size,
+    required this.index,
   });
 
   final Size size;
@@ -19,25 +20,28 @@ class TaskCard extends StatelessWidget {
       child: Stack(
         children: [
           Container(
-            margin: const EdgeInsets.symmetric(vertical: kDefault / 2,horizontal: kDefault * 1.2),
+            margin: const EdgeInsets.symmetric(
+                vertical: kDefault / 2, horizontal: kDefault * 1.2),
             padding: const EdgeInsets.all(kDefault),
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(kDefault),
                 boxShadow: [
                   BoxShadow(
-                      offset: const Offset(0,.5),
+                      offset: const Offset(0, .5),
                       color: Colors.grey.withOpacity(.23),
-                      blurRadius: 12.0
-                  )
-                ]
-            ),
+                      blurRadius: 12.0)
+                ]),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(right: kDefault / 2),
-                  child: Icon(taskList[index].icon,color: taskList[index].progressColor,size: kCircle / 1.2,),
+                  child: Icon(
+                    taskList[index].icon,
+                    color: taskList[index].progressColor,
+                    size: kCircle / 1.2,
+                  ),
                 ),
                 Expanded(
                   child: Column(
@@ -56,8 +60,7 @@ class TaskCard extends StatelessWidget {
                     painter: CircleIndicator(
                         thickness: 6,
                         mColor: taskList[index].progressColor,
-                        progress: taskList[index].progress
-                    ),
+                        progress: taskList[index].progress),
                     child: Center(
                       child: Text(taskList[index].progressText),
                     ),
@@ -65,11 +68,15 @@ class TaskCard extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: kDefault),
-                  child: Icon(Icons.arrow_forward_ios,color: Colors.grey,),
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey,
+                  ),
                 )
               ],
             ),
           ),
+
           ///dot color
           Positioned(
             top: kDefault * 2.5,
@@ -77,20 +84,19 @@ class TaskCard extends StatelessWidget {
             child: Container(
               width: 1.6,
               height: kDefault,
-              decoration:  BoxDecoration(
+              decoration:
+                  BoxDecoration(color: taskList[index].dotColor, boxShadow: [
+                BoxShadow(
+                  offset: const Offset(6.0, 0),
+                  blurRadius: 12.0,
                   color: taskList[index].dotColor,
-                  boxShadow: [
-                    BoxShadow(
-                      offset: const Offset(6.0, 0),
-                      blurRadius: 12.0,
-                      color: taskList[index].dotColor,
-                      spreadRadius: 1.8,
-                    )
-                  ]
-              ),
+                  spreadRadius: 1.8,
+                )
+              ]),
             ),
           ),
         ],
-      ),);
+      ),
+    );
   }
 }

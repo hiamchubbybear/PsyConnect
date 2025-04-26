@@ -1,8 +1,8 @@
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/ui/screens/chat_page.dart';
 import 'package:PsyConnect/ui/screens/home_page_scroll_view.dart';
+import 'package:PsyConnect/ui/screens/profile_page.dart';
 import 'package:PsyConnect/ui/screens/schedule_home_page.dart';
-import 'package:PsyConnect/ui/screens/setting.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -22,7 +22,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this); // Updated to 6 tabs
+    _tabController = TabController(length: 5, vsync: this);
     _tabController.addListener(_handleTabSelection);
   }
 
@@ -55,8 +55,8 @@ class _MyHomePageState extends State<MyHomePage>
           const HomePageScrollView(),
           ScheduleHomePage(size: size),
           const ChatPage(),
-          const Center(child: Text("Notifications Page")),
-          const Setting()
+          ChatPage(),
+          ProfilePage()
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -102,11 +102,11 @@ class _MyHomePageState extends State<MyHomePage>
                     label: 'Schedule',
                     index: 1,
                   ),
-                  const SizedBox(width: 40), // Space for FAB
+                  const SizedBox(width: 40),
                   _buildNavItem(
                     icon: Icons.notifications_outlined,
-                    activeIcon: Icons.notifications,
-                    label: 'Alerts',
+                    activeIcon: Icons.chat,
+                    label: 'Chat',
                     index: 3,
                   ),
                   _buildNavItem(
@@ -151,10 +151,7 @@ class _MyHomePageState extends State<MyHomePage>
             size: 23,
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style :quickSand12Font
-          ),
+          Text(label, style: quickSand12Font),
         ],
       ),
     );

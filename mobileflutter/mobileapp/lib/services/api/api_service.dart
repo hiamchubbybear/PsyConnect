@@ -39,15 +39,34 @@ class ApiService {
     }
   }
 
-  static Future<http.Response> getUserAccount({
+  static Future<http.Response> getWithAccessToken({
     required String endpoint,
     required String token,
   }) async {
-    print("Token là : ${token}");
     final Uri uri = Uri.parse("$_baseUrl/$endpoint");
     try {
       return await http.get(
         uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } catch (e) {
+      throw Exception("Failed to connect to backend: $e");
+    }
+  }
+
+  static Future<http.Response> postWithAccessTokenAndBody({
+    required String endpoint,
+    required String token,
+    required Map<String, dynamic> body,
+  }) async {
+    final Uri uri = Uri.parse("$_baseUrl/$endpoint");
+    try {
+      return await http.post(
+        uri,
+        body: body,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

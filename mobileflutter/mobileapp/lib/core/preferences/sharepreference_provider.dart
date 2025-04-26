@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:PsyConnect/models/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesProvider {
@@ -15,9 +18,13 @@ class SharedPreferencesProvider {
   static const String _emailKey = "email";
   static const String _roleKey = "role";
   static const String _themeModeKey = "isDarkMode";
-
+  static const String _userProfile = "userProfile";
   Future<void> setJwt(String token) async =>
       (await SharedPreferences.getInstance()).setString(_accessTokenKey, token);
+  Future<void> setUserProfile(UserProfile userProfile) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userProfile, jsonEncode(userProfile.toJson()));
+  }
 
   Future<void> setUserId(String userId) async =>
       (await SharedPreferences.getInstance()).setString(_userIdKey, userId);
@@ -50,14 +57,14 @@ class SharedPreferencesProvider {
 
   Future<String?> getRole() async =>
       (await SharedPreferences.getInstance()).getString(_roleKey);
-
-  // Đọc trạng thái theme mode
   Future<bool> isDarkMode() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_themeModeKey) ??
-        false; // mặc định là false nếu không có dữ liệu
+    return prefs.getBool(_themeModeKey) ?? false;
   }
 
+  Future<String?> getUserProfile() async =>
+      (await SharedPreferences.getInstance()).getString(_userProfile);
   Future<void> clearAll() async =>
       (await SharedPreferences.getInstance()).clear();
 }
+    

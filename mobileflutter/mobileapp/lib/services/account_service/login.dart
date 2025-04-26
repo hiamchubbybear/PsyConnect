@@ -75,7 +75,6 @@ class LoginService {
           final token = jsonDecode(response.body)["data"]["token"].toString();
           print("${token}");
           tokenProvider.setToken(token);
-          profileService.getUserProfile(token: token);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -87,16 +86,13 @@ class LoginService {
               message: "Wrong username or password.",
               title: "Failed",
               type: ToastType.error);
-        } else if (response.statusCode == 404){
-
+        } else if (response.statusCode == 404) {
           ToastService.showToast(
               context: context,
-              message:
-                  "Username not found",
+              message: "Username not found",
               title: "Not found",
               type: ToastType.error);
-        } else if (response.statusCode == 500){
-
+        } else if (response.statusCode == 500) {
           ToastService.showToast(
               context: context,
               message:

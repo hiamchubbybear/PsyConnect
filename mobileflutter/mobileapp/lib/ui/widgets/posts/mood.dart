@@ -1,4 +1,7 @@
+import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
+import 'package:PsyConnect/models/mood.dart';
+import 'package:PsyConnect/services/profile_service/mood.dart';
 import 'package:flutter/material.dart';
 
 class MoodWidget extends StatefulWidget {
@@ -15,6 +18,7 @@ List<String> items = [
   "Public",
   "Friends only",
 ];
+MoodService moodService = MoodService();
 
 class _MoodWidgetState extends State<MoodWidget> {
   @override
@@ -75,6 +79,7 @@ void showPostDialog(BuildContext context) {
                             onChanged: (String? value) {
                               setState(() {
                                 selectedItem = value!;
+                                visibility = value!;
                               });
                             },
                           ),
@@ -105,7 +110,26 @@ void showPostDialog(BuildContext context) {
                         ElevatedButton(
                           child: const Text("Post"),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            if (mood.isEmpty) {
+                              ToastService.showToast(
+                                  context: context,
+                                  message: "Please type what you are thinking",
+                                  title: "Warning",
+                                  type: ToastType.warning);
+                            } else if (visibility.isEmpty) {
+                              ToastService.showToast(
+                                  context: context,
+                                  message: "Please choose post privacy",
+                                  title: "Warning",
+                                  type: ToastType.warning);
+                            } else {
+                              MoodModel moodModel = MoodModel(
+                                  mood: mood,
+                                  moodDescription: moodDescription,
+                                  visibility: visibility);
+                              moodService.createMoodPost(
+                                  mood: moodModel, context: context);
+                            }
                           },
                         ),
                       ],

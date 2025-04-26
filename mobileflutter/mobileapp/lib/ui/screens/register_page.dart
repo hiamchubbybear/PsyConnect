@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:PsyConnect/services/account_service/image.dart';
 import 'package:PsyConnect/services/account_service/register.dart';
-import 'package:PsyConnect/services/api/cloudinary_api_service.dart';
+import 'package:PsyConnect/services/account_service/cloudinary_service.dart';
 import 'package:PsyConnect/services/logic.dart';
 import 'package:PsyConnect/ui/screens/forgot_page.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
