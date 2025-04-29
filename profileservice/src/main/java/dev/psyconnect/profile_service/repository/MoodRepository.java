@@ -1,7 +1,9 @@
 package dev.psyconnect.profile_service.repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.neo4j.driver.Record;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,8 +51,17 @@ public interface MoodRepository extends Neo4jRepository<Mood, String> {
             @Param("visibility") String visibility);
 
     @Query("""
-					MATCH( u:user_profile {profileId: $profileId})-[:HAS_MOOD]->(m:mood)
-					RETURN m
-					""")
+			MATCH( u:user_profile {profileId: $profileId})-[:HAS_MOOD]->(m:mood)
+			RETURN m
+			""")
     Optional<Mood> getMood(@Param("profileId") String profileId);
+
+    @Query(
+            """
+			MATCH (n:user_profile {profileId: $profileId})
+				-[:HAS_FRIEND]-> (u:user_profile)
+				-[:HAS_MOOD]-> (mo:mood)
+			RETURN u AS profile, mo AS mood
+			""")
+    List<Record> getFriendsMoodRaw(@Param("profileId") String profileId);
 }

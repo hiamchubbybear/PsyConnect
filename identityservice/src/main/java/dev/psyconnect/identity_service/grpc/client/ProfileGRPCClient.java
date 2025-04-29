@@ -24,6 +24,7 @@ public class ProfileGRPCClient {
                 .usePlaintext()
                 .build();
         stub = ProfileCreationServiceGrpc.newBlockingStub(channel);
+        log.info("Gửi request đến {}" , channel.toString());
         this.userAccountMapper = userAccountMapper;
     }
 
@@ -35,8 +36,8 @@ public class ProfileGRPCClient {
             ProfileCreationResponse response = stub.createUser(request);
             return userAccountMapper.toUserProfileCreateResponse(response);
         } catch (Exception e) {
-            log.error("Error creating profile", e); // Use error level for clarity
-            throw e; // Re-throw to see the full stack trace
+            log.error("Error creating profile", e);
+            throw e;
         }
     }
 }

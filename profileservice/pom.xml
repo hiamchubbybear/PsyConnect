@@ -185,12 +185,11 @@
             <groupId>dev.psyconnect</groupId>
             <artifactId>grpccommon</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
+        <scope>compile</scope>
         </dependency>
     </dependencies>
-
     <build>
-        <finalName>profile-service</finalName>
+        <finalName>profileservice</finalName>
         <plugins>
             <!-- Spring Boot Plugin -->
             <plugin>
@@ -204,7 +203,7 @@
                         </exclude>
                     </excludes>
                     <!--Main class-->
-                    <mainClass>dev.psyconnect.ProfileServiceApplication</mainClass>
+                    <mainClass>dev.psyconnect.profile_service.ProfileServiceApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
@@ -220,7 +219,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <outputDirectory>target/classes</outputDirectory>
                     <release>21</release>
                     <annotationProcessorPaths>
                         <path>

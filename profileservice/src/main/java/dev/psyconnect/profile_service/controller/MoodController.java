@@ -23,7 +23,8 @@ public class MoodController {
     MoodService moodService;
 
     @PostMapping("/add")
-    public ApiResponse<MoodCreateResponse> addMood(@RequestHeader(value = "X-Profile-Id") String profileId, @RequestBody MoodCreateRequest request) {
+    public ApiResponse<MoodCreateResponse> addMood(
+            @RequestHeader(value = "X-Profile-Id") String profileId, @RequestBody MoodCreateRequest request) {
         if (profileId == null) throw new CustomExceptionHandler(ErrorCode.MISSING_TOKEN);
         return new ApiResponse<>(moodService.createMoodByProfileId(profileId, request));
     }
@@ -34,12 +35,21 @@ public class MoodController {
     }
 
     @PutMapping
-    public ApiResponse<MoodCreateResponse> deleteMood(@RequestHeader(value = "X-Profile-Id") String profileId, @RequestBody MoodUpdateRequest request) {
+    public ApiResponse<MoodCreateResponse> deleteMood(
+            @RequestHeader(value = "X-Profile-Id") String profileId, @RequestBody MoodUpdateRequest request) {
         return new ApiResponse<>(moodService.updateMoodByProfileId(profileId, request));
     }
 
     @DeleteMapping
     public ApiResponse<DeleteMoodResponse> deleteMood(@RequestHeader(value = "X-Profile-Id") String profileId) {
         return new ApiResponse<>(moodService.deleteMood(profileId));
+    }
+
+    @GetMapping("/friends")
+    public void getMoodById(@RequestHeader(value = "X-Profile-Id") String profileId) {
+        //    public ApiResponse<List<ProfileMoodDTO>> getMoodById(@RequestHeader(value = "X-Profile-Id") String
+        // profileId) {
+        //        return new ApiResponse<>(moodService.getFriendsMood(profileId));
+        moodService.getFriendsMood(profileId);
     }
 }

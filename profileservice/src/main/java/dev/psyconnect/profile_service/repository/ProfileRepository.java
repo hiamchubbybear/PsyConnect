@@ -20,17 +20,12 @@ public interface ProfileRepository extends Neo4jRepository<Profile, String> {
 
     @Query(
             """
-	MATCH (u:user_profile {profileId: $profileId})
-	OPTIONAL MATCH (u)-[:HAS_MOOD]->(m:mood)
-	OPTIONAL MATCH (u)-[:HAS_SETTING]->(s:user_setting)
-	RETURN u as profile, m AS mood, s AS setting
-""")
-    //    @Query("""
-    //    MATCH (u:user_profile {profileId: $profileId})
-    //    OPTIONAL MATCH (u)-[:HAS_MOOD]->(m:mood)
-    //    OPTIONAL MATCH (u)-[:HAS_SETTING]->(s:user_setting)
-    //    OPTIONAL MATCH (u)-[:FRIEND]->(f:user_profile)
-    //    RETURN u, collect(m) AS moods, collect(s) AS settings, collect(f) AS friends
-    // """)
+						MATCH (u:user_profile {profileId: $profileId})
+						OPTIONAL MATCH (u)-[:HAS_MOOD]->(m:mood)
+						OPTIONAL MATCH (u)-[:HAS_SETTING]->(s:user_setting)
+						RETURN u as profile, m AS mood, s AS setting
+					""")
     Optional<ProfileWithRelationShipResponse> getProfileWithAllRelations(@Param("profileId") String profileId);
+
+    List<Profile> findByProfileIdAndFriendsIsNotNull(String profileId);
 }

@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  consultation-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: profileservice
+#  consultation-service:
+ #   build:
+  #    context: .
+   #   dockerfile: Dockerfile
+    #container_name: profileservice
   neo4j:
     image: neo4j:latest
     container_name: neo4j_container

@@ -2,7 +2,6 @@ package dev.psyconnect.profile_service.service;
 
 import java.time.OffsetDateTime;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import dev.psyconnect.profile_service.dto.request.*;
@@ -29,7 +28,6 @@ public class FriendsService {
     private final FriendShipUtils friendShipUtils;
     private final FriendRepository friendRepository;
 
-    @Cacheable
     public FriendRequestResponse createFriend(FriendRRequest request, String senderId) {
         // Validate not sending to self
         if (request.getTarget().equals(senderId)) throw new CustomExceptionHandler(ErrorCode.CAN_NOT_REQUEST);

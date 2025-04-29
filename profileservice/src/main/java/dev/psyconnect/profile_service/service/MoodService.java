@@ -1,6 +1,7 @@
 package dev.psyconnect.profile_service.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,6 +16,7 @@ import dev.psyconnect.profile_service.dto.response.MoodCreateResponse;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.profile_service.model.Mood;
+import dev.psyconnect.profile_service.model.Profile;
 import dev.psyconnect.profile_service.repository.MoodRepository;
 import dev.psyconnect.profile_service.repository.ProfileRepository;
 import lombok.AccessLevel;
@@ -95,5 +97,12 @@ public class MoodService {
                 .isSuccess(true)
                 .message("Delete success")
                 .build();
+    }
+
+    public void getFriendsMood(String profileId) {
+        //    public List<ProfileMoodDTO> getFriendsMood(String profileId) {
+        List<Profile> returnObject = profileRepository.findByProfileIdAndFriendsIsNotNull(profileId);
+        returnObject.stream().iterator().toString();
+        //        return mappedResults;
     }
 }
