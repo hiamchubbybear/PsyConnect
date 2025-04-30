@@ -1,19 +1,23 @@
 package dev.psyconnect.profile_service.controller;
 
+import dev.psyconnect.profile_service.dto.ProfileMoodDTO;
+import dev.psyconnect.profile_service.dto.response.*;
+import dev.psyconnect.profile_service.model.Mood;
+import dev.psyconnect.profile_service.model.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
 import dev.psyconnect.profile_service.dto.request.MoodCreateRequest;
 import dev.psyconnect.profile_service.dto.request.MoodUpdateRequest;
-import dev.psyconnect.profile_service.dto.response.DeleteMoodResponse;
-import dev.psyconnect.profile_service.dto.response.GetMoodResponse;
-import dev.psyconnect.profile_service.dto.response.MoodCreateResponse;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.profile_service.service.MoodService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mood")
@@ -23,8 +27,7 @@ public class MoodController {
     MoodService moodService;
 
     @PostMapping("/add")
-    public ApiResponse<MoodCreateResponse> addMood(
-            @RequestHeader(value = "X-Profile-Id") String profileId, @RequestBody MoodCreateRequest request) {
+    public ApiResponse<MoodCreateResponse> addMood(@RequestHeader(value = "X-Profile-Id") String profileId, @RequestBody MoodCreateRequest request) {
         if (profileId == null) throw new CustomExceptionHandler(ErrorCode.MISSING_TOKEN);
         return new ApiResponse<>(moodService.createMoodByProfileId(profileId, request));
     }
@@ -35,8 +38,7 @@ public class MoodController {
     }
 
     @PutMapping
-    public ApiResponse<MoodCreateResponse> deleteMood(
-            @RequestHeader(value = "X-Profile-Id") String profileId, @RequestBody MoodUpdateRequest request) {
+    public ApiResponse<MoodCreateResponse> deleteMood(@RequestHeader(value = "X-Profile-Id") String profileId, @RequestBody MoodUpdateRequest request) {
         return new ApiResponse<>(moodService.updateMoodByProfileId(profileId, request));
     }
 
@@ -46,10 +48,7 @@ public class MoodController {
     }
 
     @GetMapping("/friends")
-    public void getMoodById(@RequestHeader(value = "X-Profile-Id") String profileId) {
-        //    public ApiResponse<List<ProfileMoodDTO>> getMoodById(@RequestHeader(value = "X-Profile-Id") String
-        // profileId) {
-        //        return new ApiResponse<>(moodService.getFriendsMood(profileId));
-        moodService.getFriendsMood(profileId);
+    public ApiResponse<List<FriendMoodDTO>> getMoodById(@RequestHeader(value = "X-Profile-Id") String profileId) {
+        return new ApiResponse<>(moodService.getFriendsMood(profileId));
     }
 }

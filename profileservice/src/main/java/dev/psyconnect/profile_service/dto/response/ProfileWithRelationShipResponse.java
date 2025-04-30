@@ -15,6 +15,4 @@ import lombok.*;
 public class ProfileWithRelationShipResponse implements Serializable {
     private Profile profile;
     private Mood mood;
-    private Setting setting;
-    //    private List<Profile> friends;
 }
