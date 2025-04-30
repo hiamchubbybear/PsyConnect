@@ -21,7 +21,6 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // 1. Xử lý ngoại lệ chung (Exception)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleGeneralException(Exception ex) {
         log.warn("General Exception: ", ex);
@@ -30,7 +29,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-    // 2. Xử lý ngoại lệ NullPointerException
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ApiResponse<String>> handleNullPointerException(NullPointerException ex) {
         log.warn("NullPointerException: ", ex);
@@ -39,7 +37,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // 3. Xử lý ngoại lệ IllegalArgumentException
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("IllegalArgumentException: ", ex);
@@ -47,7 +44,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // 4. Xử lý ngoại lệ MethodArgumentNotValidException (Validation lỗi)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<String>> handleValidationException(MethodArgumentNotValidException ex) {
         log.warn("Validation Exception: ", ex);
@@ -60,7 +56,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // 5. Xử lý ngoại lệ HttpRequestMethodNotSupportedException
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse<String>> handleMethodNotSupportedException(
             HttpRequestMethodNotSupportedException ex) {
@@ -70,7 +65,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
     }
 
-    // 6. Xử lý ngoại lệ MissingServletRequestParameterException
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiResponse<String>> handleMissingParamsException(
             MissingServletRequestParameterException ex) {
@@ -80,7 +74,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // 7. Xử lý ngoại lệ DataAccessException (liên quan đến database)
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ApiResponse<String>> handleDataAccessException(DataAccessException ex) {
         log.warn("DataAccessException: ", ex);
@@ -89,7 +82,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-    // 8. Xử lý ngoại lệ NoHandlerFoundException (404 Not Found)
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
         log.warn("NoHandlerFoundException: ", ex);
@@ -97,7 +89,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    // 9. Xử lý ngoại lệ AccessDeniedException (403 Forbidden)
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<String>> handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("AccessDeniedException: ", ex);
@@ -105,7 +96,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
-    // 10. Xử lý ngoại lệ CustomExceptionHandler (ngoại lệ tuỳ chỉnh)
     @ExceptionHandler(CustomExceptionHandler.class)
     public ResponseEntity<ApiResponse<?>> handleCustomException(CustomExceptionHandler customExceptionHandler) {
         log.warn("CustomExceptionHandler: ", customExceptionHandler);

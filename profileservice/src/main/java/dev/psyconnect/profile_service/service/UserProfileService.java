@@ -54,17 +54,9 @@ public class UserProfileService {
     }
 
     public UserProfileCreationResponse create(UserProfileCreationRequest request) {
-        log.info("Create user with accountId {}", request.getAccountId());
-
-        // Mapping user profile from request
         Profile profile = userProfileMapper.toUserProfileMapper(request);
         profile.setDob(Time.parseFromString(request.getDob()));
-
-        // Save user profile
         var temp = userProfileRepository.save(profile);
-        log.info("Created profile: {}", temp.getProfileId());
-
-        //         Push setting default event
         kafkaService.send("profile.user-create-setting", request.getProfileId());
         var response = userProfileMapper.toUserProfile(temp);
         response.setDob(request.getDob());
@@ -73,36 +65,24 @@ public class UserProfileService {
 
     @Cacheable(key = "#profileId", value = "profile")
     public UserProfileResponse get(String profileId) {
-        log.info("UserProfileService.get: profileId {}", profileId);
-        // Find user by profileId
         Profile profile = userProfileRepository
                 .findById(profileId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        // Mapping to response user profile
         return userProfileMapper.toUserProfileRequest(profile);
     }
 
-    // Update profile
     @CacheEvict(value = "profile", key = "#profileId")
     public UserProfileUpdateResponse update(UserProfileUpdateRequest userProfileUpdateRequest, String profileId) {
-        // Find exists user from db
         Profile existingUser = userProfileRepository
                 .findById(profileId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        log.info("Updating profile for profileId: {}", existingUser.getProfileId());
-        // Mapping to user profile for existed profile
         Profile updatedUser = userProfileMapper.toUserProfile(userProfileUpdateRequest);
-        // Keep user profile and user id
         updatedUser.setProfileId(existingUser.getProfileId());
         updatedUser.setAccountId(existingUser.getAccountId());
-        // Update to database
         Profile savedUser = userProfileRepository.save(updatedUser);
-        // log.info("Updated profile successfully: {}", savedUser);
-        // Mapping to response user profile
         return userProfileMapper.toUserProfileUpdateResponse(savedUser);
     }
 
-    // Get user profile with page and size of page
     public List<?> getAll(int page, int size) {
         return userProfileRepository.findAllProfilesPaged(page, size);
     }
@@ -114,15 +94,12 @@ public class UserProfileService {
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
     }
 
-    // Handle kafka listener to create user settings
     @KafkaListener(topics = "profile.user-create-setting")
     public void handleOnCreateProfile(@Payload String raw) {
         String profileId = KafkaService.objectMapping(raw, String.class);
-        log.info("Create default setting for account {}", profileId);
         userSettingService.resetSettings(profileId);
     }
 
-    // Check profile existed ?
     public Boolean checkProfileExisted(String profileId) {
         return userProfileRepository.existsById(profileId);
     }

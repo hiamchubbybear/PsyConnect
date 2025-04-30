@@ -35,10 +35,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         log.info("Security filters: {}", authHeader);
-        AuthorizationResult authorizationResult;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            // If token in black list throw exception
             if (service.isTokenInvalid(token))  throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
             try {
                 Claims claims = getClaimsFromToken(token);

@@ -60,189 +60,80 @@ public class AuthenticationService {
         this.blackListTokenRepository = blackListTokenRepository;
     }
 
-    // PasswordEncoder is initialized with strength 10
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 
-    // This method generates a JWT token
     public String generateToken(AuthenticationRequest authenticationRequest, String loginType) {
-        // If login is mobile set expire times about 1 month  else set it to 30 minutes
-        TIME_EXPIRED = (loginType.equals("mobile")) ? TIME_EXPIRED * 2 * 24 * 30 : TIME_EXPIRED;
-        // Get the username from the authentication request
-        Account userAccountObject = userAccountRepository
+        Account account = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        var username = authenticationRequest.getUsername();
-        // Get the role of the user based on the username
-        var roles = userAccountRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND))
-                .getRole()
-                .stream()
-                .findFirst()
-                .get()
-                .getName();
 
-        // Create the JWT header using the RS256 algorithm
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
-
-        /*
-        Build the claims for the JWT (user-related information)
-        -> Jwt Structure :
-        -  Header
-        -  Payload
-        -  Signature
-        -> Header :
-        	Contain 2 parts : signing algorithm being used ( HMAC SHA256 or RSA )
-        	and which type of token.
-        Example :
-        {
-        	"alg": "HS256",
-        	"type": "JWT"
-
+        String role = null;
+        if (account.getRole() != null && !account.getRole().isEmpty()) {
+            role = account.getRole().iterator().next().getName();
+        } else {
+            throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
         }
-        Build the claims for the JWT (user-related information)
-        -> Jwt Structure :
-        -  Header
-        -  Payload
-        -  Signature
-        -> Header :
-        	Contain 2 parts : signing algorithm being used ( HMAC SHA256 or RSA )
-        	and which type of token.
-        Example :
-        {
-        	"alg": "HS256",
-        	"typ": "JWT"
+        return createJwtToken(
+                authenticationRequest.getUsername(),
+                account.getAccountId().toString(),
+                account.getProfileId().toString(),
+                role,
+                loginType
+        );
+    }
+
+    public String generateGoogleAuthToken(GoogleAuthenticationRequest request, String loginType) {
+        Account account = userAccountRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+
+        String role = null;
+        if (account.getRole() != null && !account.getRole().isEmpty()) {
+            role = account.getRole().iterator().next().getName();
+        } else {
+            throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
         }
-        -> Payload :
-        	The second part of the token is the payload, which contains the claims.
-        	Claims are statements about an entity (typically, the user) and additional data.
-        	There are three types of claims: registered, public, and private claims.
-        Example :
-        	{
-        	"sub": "1234567890",
-        	"name": "John Doe",
-        	"admin": true
-        	}
-        -> Signature :
-        	To create the signature part you have to take the encoded header,
-        	the encoded payload, a secret, the algorithm specified in the header, and sign that.
-        Example :
-        	HMACSHA256(
-        	base64UrlEncode(header) + "." +
-        	base64UrlEncode(payload),
-        	secret)
-         */
+        return createJwtToken(
+                request.getEmail(),
+                account.getAccountId().toString(),
+                account.getProfileId().toString(),
+                role,
+                loginType
+        );
+    }
+
+    private String createJwtToken(String subject, String accountId, String profileId, String role, String loginType) {
+        long expiration = loginType.equalsIgnoreCase("mobile")
+                ? TIME_EXPIRED * 2 * 24 * 30L
+                : TIME_EXPIRED;
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(authenticationRequest.getUsername())
-                .expirationTime(new Date(new Date().getTime() + TIME_EXPIRED))
+                .subject(subject)
+                .expirationTime(new Date(System.currentTimeMillis() + expiration))
                 .issueTime(new Date())
                 .jwtID(UUID.randomUUID().toString())
                 .issuer("PsyConnect Authentication Service")
-                .claim("scope", buildScope(roles))
+                .claim("scope", buildScope(role))
                 .claim("type", loginType)
-                .claim("accountId", userAccountObject.getAccountId())
-                .claim("profileId", userAccountObject.getProfileId())
+                .claim("accountId", accountId)
+                .claim("profileId", profileId)
                 .build();
-        Payload payload = new Payload(claimsSet.toJSONObject());
-        JWSObject jwsObject = new JWSObject(header, payload);
+
+        JWSObject jwsObject = new JWSObject(
+                new JWSHeader(JWSAlgorithm.HS512),
+                new Payload(claimsSet.toJSONObject())
+        );
 
         try {
             jwsObject.sign(new MACSigner(SIGNER_KEY));
+            return jwsObject.serialize();
         } catch (JOSEException e) {
-            throw new RuntimeException("Sign Jwt failed with exception", e);
+            throw new RuntimeException("Sign Jwt failed", e);
         }
-
-        // Return the serialized JWT
-        return jwsObject.serialize();
     }
 
-    public String generateGoogleAuthToken(GoogleAuthenticationRequest googleAuthenticationRequest, String loginType) {
-        var user = userAccountRepository
-                .findByEmail(googleAuthenticationRequest.getEmail())
-                .orElse(null);
-        assert user != null;
-        var roles = user.getRole().stream().findFirst().get().getName();
-        UUID uuid = user.getAccountId();
-
-        // Create the JWT header using the RS256 algorithm
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
-
-        /*
-        Build the claims for the JWT (user-related information)
-        -> Jwt Structure :
-        -  Header
-        -  Payload
-        -  Signature
-        -> Header :
-        	Contain 2 parts : signing algorithm being used ( HMAC SHA256 or RSA )
-        	and which type of token.
-        Example :
-        {
-        	"alg": "HS256",
-        	"type": "JWT"
-
-        }
-        Build the claims for the JWT (user-related information)
-        -> Jwt Structure :
-        -  Header
-        -  Payload
-        -  Signature
-        -> Header :
-        	Contain 2 parts : signing algorithm being used ( HMAC SHA256 or RSA )
-        	and which type of token.
-        Example :
-        {
-        	"alg": "HS256",
-        	"typ": "JWT"
-        }
-        -> Payload :
-        	The second part of the token is the payload, which contains the claims.
-        	Claims are statements about an entity (typically, the user) and additional data.
-        	There are three types of claims: registered, public, and private claims.
-        Example :
-        	{
-        	"sub": "1234567890",
-        	"name": "John Doe",
-        	"admin": true
-        	}
-        -> Signature :
-        	To create the signature part you have to take the encoded header,
-        	the encoded payload, a secret, the algorithm specified in the header, and sign that.
-        Example :
-        	HMACSHA256(
-        	base64UrlEncode(header) + "." +
-        	base64UrlEncode(payload),
-        	secret)
-         */
-
-        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(googleAuthenticationRequest.getEmail())
-                .expirationTime(new Date(new Date().getTime() + TIME_EXPIRED))
-                .issueTime(new Date())
-                .jwtID(UUID.randomUUID().toString())
-                .issuer("PsyConnect Authentication Service")
-                .claim("scope", buildScope(roles))
-                .claim("type", loginType)
-                .claim("accountId", uuid.toString())
-                .claim("profileId", user.getProfileId().toString())
-                .build();
-        Payload payload = new Payload(claimsSet.toJSONObject());
-        JWSObject jwsObject = new JWSObject(header, payload);
-
-        try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY));
-        } catch (JOSEException e) {
-            throw new RuntimeException("Sign Jwt failed with exception", e);
-        }
-
-        // Return the serialized JWT
-        return jwsObject.serialize();
-    }
-
-    // Use to verify token
     public SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -254,7 +145,7 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-    // Use to authenticate account
+
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String loginType)
             throws AuthenticationException {
         var user = userAccountRepository
@@ -262,12 +153,10 @@ public class AuthenticationService {
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.debug("User request token is {}", authenticationRequest.getUsername());
         var password = authenticationRequest.getPassword();
-        // Password not found throw
+
         if (password == null) {
             throw new IllegalArgumentException("Username and password are required");
-        }
-        // Password does not match with user account
-        else if (!passwordEncoder().matches(password, user.getPassword())) {
+        } else if (!passwordEncoder().matches(password, user.getPassword())) {
             throw new IllegalArgumentException("Password does not match");
         } else {
             var response = AuthenticationResponse.builder()
@@ -282,17 +171,17 @@ public class AuthenticationService {
     private String buildScope(String role) {
         StringBuilder builder = new StringBuilder();
 
-        // Change prefix to match with OpenID Standard & Oauth2
+
         builder.append("role.").append(role).append(" ");
 
-        // Find the role in the repository and retrieve its permissions
+
         roleRepository
                 .findByName(role)
                 .ifPresentOrElse(
                         roleEntity -> {
-                            // Map each permission to the Spring Security format and append to the builder
+
                             roleEntity.getPermissions().stream()
-                                    .map(permission -> permission.getName()) // Prefix permissions for clarity
+                                    .map(permission -> permission.getName())
                                     .forEach(permission ->
                                             builder.append(permission).append(" "));
                         },
@@ -302,26 +191,26 @@ public class AuthenticationService {
 
         log.debug("Built scope for role {}: {}", role, builder.toString().trim());
 
-        // Return the concatenated authorities as a trimmed string
+
         return builder.toString().trim();
     }
 
     public LogoutResponse logout(LogoutRequest request) throws JOSEException, ParseException {
         if (request.getToken() == null || request.getToken().isEmpty()) {
-            return new LogoutResponse(false); // Ignore empty or null tokens
+            return new LogoutResponse(false);
         }
         try {
             SignedJWT signedJWT = verifyToken(request.getToken());
             Date expirationDate = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-            // If the token is expired, add it to the blacklist
+
             if (expirationDate.after(new Date())) {
                 blackListTokenRepository.save(
                         BlackListToken.builder().token(request.getToken()).build());
                 return new LogoutResponse(true);
             }
         } catch (ParseException | JOSEException e) {
-            // If the token is invalid (tampered or incorrectly formatted), blacklist it
+
             blackListTokenRepository.save(
                     BlackListToken.builder().token(request.getToken()).build());
             return new LogoutResponse(true);
@@ -333,7 +222,7 @@ public class AuthenticationService {
         return extractClaim(token, JWTClaimsSet::getSubject);
     }
 
-    // Extract the expiration date from the token
+
     public Date extractExpiration(String token) throws ParseException, JOSEException {
         return extractClaim(token, JWTClaimsSet::getExpirationTime);
     }
