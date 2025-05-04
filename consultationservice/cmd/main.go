@@ -15,5 +15,6 @@ func main() {
 	env := bootstrap.LoadEnv()
 	handlers.InitTherapistHandler()
 	handlers.InitClientHandler()
+	handlers.InitMatchHandler()
 	route.RouterInit(env)
 }

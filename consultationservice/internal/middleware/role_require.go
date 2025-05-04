@@ -9,6 +9,7 @@ import (
 
 func RoleRequire(required string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		expectedRole := fmt.Sprintf("role.%s:permission", required)
 
 		headerRoles := c.GetHeader("X-Roles")
@@ -17,14 +18,15 @@ func RoleRequire(required string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 		roles := strings.Split(headerRoles, " ")
+		if roles[0] == "role.admin:permission" {
+			c.Next()
+		}
 		if len(roles) == 0 || roles[0] != expectedRole {
 			apiresponse.ErrorHandler(c, 401, "Unauthenticated")
 			c.Abort()
 			return
 		}
-
 		c.Next()
 	}
 }

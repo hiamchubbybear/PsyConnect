@@ -24,7 +24,7 @@ public class ProfileGRPCClient {
                 .usePlaintext()
                 .build();
         stub = ProfileCreationServiceGrpc.newBlockingStub(channel);
-        log.info("Gửi request đến {}" , channel.toString());
+        log.info("Gửi request đến {}", channel.toString());
         this.userAccountMapper = userAccountMapper;
     }
 

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import dev.psyconnect.profile_service.model.Mood;
 import dev.psyconnect.profile_service.model.Profile;
-import dev.psyconnect.profile_service.model.Setting;
 import lombok.*;
 
 @Getter

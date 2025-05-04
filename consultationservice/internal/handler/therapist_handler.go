@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"consultationservice/internal/db"
-	"consultationservice/internal/grpc/handler"
 	"consultationservice/internal/model"
 	"consultationservice/internal/repository"
 	"consultationservice/pkg/apiresponse"
@@ -52,7 +51,7 @@ func (r TherapistHandler) PostTherapistHandler(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 500, "Invalid input")
 		return
 	}
-	res, err := handler.CheckProfileExists(profileId)
+	res, err := grpcProfile.CheckProfileExists(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return

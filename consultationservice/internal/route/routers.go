@@ -21,6 +21,7 @@ func RouterInit(env *bootstrap.Env) {
 	var (
 		therapistHandler handlers.TherapistHandler
 		clientHandler    handlers.ClientHandler
+		matchingHandler  handlers.MatchHandler
 	)
 	therapistGroup := router.Group("/consultation/therapist")
 	therapistGroup.Use(middleware.RoleRequire("therapist"))
@@ -37,6 +38,12 @@ func RouterInit(env *bootstrap.Env) {
 		clientGroup.GET("/", clientHandler.GetClientHandler)
 		clientGroup.POST("/", clientHandler.PostClientHandler)
 		clientGroup.PUT("/", clientHandler.PutClientHandler)
+	}
+
+	publicGroup := router.Group("/consultation/therapist")
+	{
+		publicGroup.GET("/match", matchingHandler.GetAllMatchTherapist)
+		publicGroup.POST("/match", matchingHandler.MatchRequest)
 	}
 
 	router.Run(urI)

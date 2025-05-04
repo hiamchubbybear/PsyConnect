@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	clientDB   *mongo.Collection
-	clientRepo *repository.ClientRepository
+	clientDB    *mongo.Collection
+	clientRepo  *repository.ClientRepository
+	grpcProfile *handler.ProfileGrpc
 )
 
 type ClientHandler struct {
@@ -51,7 +52,7 @@ func (r ClientHandler) PostClientHandler(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 500, "Invalid input")
 		return
 	}
-	res, err := handler.CheckProfileExists(profileId)
+	res, err := grpcProfile.CheckProfileExists(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return

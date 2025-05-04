@@ -1,7 +1,6 @@
 package dev.psyconnect.profile_service.dto.response;
 
 import lombok.*;
-import org.checkerframework.checker.signature.qual.ClassGetName;
 
 @Getter
 @Setter

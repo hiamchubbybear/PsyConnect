@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import dev.psyconnect.profile_service.dto.response.*;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import dev.psyconnect.profile_service.dto.request.MoodCreateRequest;
 import dev.psyconnect.profile_service.dto.request.MoodUpdateRequest;
+import dev.psyconnect.profile_service.dto.response.*;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.profile_service.model.Mood;
@@ -40,30 +40,61 @@ public class MoodService {
         long currentTime = dateTime.get("currentTimeMillis");
         long expiresTime = dateTime.get("expiresTimeMillis");
         LocalDateTime localDateTimeExpires = Time.fromTimeStampToLCD(TIME_ZONE, expiresTime);
-        var response = moodRepository.createMood(profileId, request.getMood(), request.getMoodDescription(), request.getVisibility(), currentTime, expiresTime).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
+        var response = moodRepository
+                .createMood(
+                        profileId,
+                        request.getMood(),
+                        request.getMoodDescription(),
+                        request.getVisibility(),
+                        currentTime,
+                        expiresTime)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
         log.info("Creating mood for profile {}", response.getMood());
-        return MoodCreateResponse.builder().profileId(profileId).isSuccess(true).moodDescription(request.getMoodDescription()).mood(request.getMood()).timeExpires(localDateTimeExpires).build();
+        return MoodCreateResponse.builder()
+                .profileId(profileId)
+                .isSuccess(true)
+                .moodDescription(request.getMoodDescription())
+                .mood(request.getMood())
+                .timeExpires(localDateTimeExpires)
+                .build();
     }
 
     @CacheEvict(key = "#profileId", value = "mood")
     public MoodCreateResponse updateMoodByProfileId(String profileId, MoodUpdateRequest request) {
         if (!profileRepository.existsById(profileId)) throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
-        var response = moodRepository.updateMood(profileId, request.getMood(), request.getMoodDescription(), request.getVisibility()).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
+        var response = moodRepository
+                .updateMood(profileId, request.getMood(), request.getMoodDescription(), request.getVisibility())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
         log.info("Updating mood for profile {}", response.getMood());
-        return MoodCreateResponse.builder().isSuccess(true).moodDescription(response.getDescription()).profileId(profileId).build();
+        return MoodCreateResponse.builder()
+                .isSuccess(true)
+                .moodDescription(response.getDescription())
+                .profileId(profileId)
+                .build();
     }
 
     @Cacheable(key = "#profileId", value = "mood")
     public GetMoodResponse getMoodById(String profileId) {
-        Mood mood = moodRepository.getMood(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
-        return GetMoodResponse.builder().moodId(mood.getMoodId()).mood(mood.getMood()).description(mood.getDescription()).expiresAt(mood.getExpiresAt()).createdAt(mood.getCreatedAt()).visibility(mood.getVisibility()).build();
+        Mood mood =
+                moodRepository.getMood(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
+        return GetMoodResponse.builder()
+                .moodId(mood.getMoodId())
+                .mood(mood.getMood())
+                .description(mood.getDescription())
+                .expiresAt(mood.getExpiresAt())
+                .createdAt(mood.getCreatedAt())
+                .visibility(mood.getVisibility())
+                .build();
     }
 
     @CacheEvict(key = "#profileId", value = "mood")
     public DeleteMoodResponse deleteMood(String profileId) {
         if (!profileRepository.existsById(profileId)) throw new CustomExceptionHandler(ErrorCode.QUERY_FAILED);
         moodRepository.deleteById(profileId);
-        return DeleteMoodResponse.builder().isSuccess(true).message("Delete success").build();
+        return DeleteMoodResponse.builder()
+                .isSuccess(true)
+                .message("Delete success")
+                .build();
     }
 
     public List<FriendMoodDTO> getFriendsMood(String profileId) {
@@ -86,6 +117,4 @@ public class MoodService {
         }
         return response;
     }
-
-
 }

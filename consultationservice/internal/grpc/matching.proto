@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package profile;
+option go_package="gprc.grpc_generated";
+
+service CreateMatchingRequest {
+  rpc CreateMatchingRequest (MatchingRequest) returns (MatchingResponse);
+}
+
+message MatchingRequest {
+  string clientProfileId = 1;
+  string therapistProfileId = 2;
+}
+
+message MatchingResponse {
+  bool success = 1;
+  string status =2;
+}

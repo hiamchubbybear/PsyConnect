@@ -173,12 +173,11 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public DeleteAccountResponse deleteAccount(DeleteAccountRequest deleteAccountRequest, UUID uuid) {
         Account userObject = userAccountRepository
                 .findById(uuid)
-                .orElseThrow(() ->
-                        new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.info("Deleting account {}", userObject.getUsername());
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         if (!userObject.getToken().getToken().equals(deleteAccountRequest.getToken()))
             throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
@@ -199,8 +198,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public boolean deleteAccountRequest(DeleteAccountConfirmRequest removeAccountRequest, UUID uuid) {
         Account userObject = userAccountRepository
                 .findById(uuid)
-                .orElseThrow(() ->
-                        new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         if (!removeAccountRequest.getSession().equals(userObject.getSession())
                 || !userObject.getToken().getToken().equals(removeAccountRequest.getToken()))
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);

@@ -23,7 +23,7 @@ func (r *TherapistRepository) CreateTherapistMatchingProfile(therapist *model.Th
 	var existingTherapist model.Therapist
 	err := r.MongoDBCollection.FindOne(context.Background(), filter).Decode(&existingTherapist)
 	if err == nil {
-		log.Println("Client already exists with profile_id:", therapist.ProfileId)
+		log.Println("Therapist already exists with profile_id:", therapist.ProfileId)
 		return nil, errors.New("Therapist with this profile already exists")
 	}
 	if err != mongo.ErrNoDocuments {
@@ -35,44 +35,43 @@ func (r *TherapistRepository) CreateTherapistMatchingProfile(therapist *model.Th
 		log.Println("TherapistRepository CreateTherapistMatchingProfile err:", err)
 		return nil, errors.New("Failed to insert into therapist")
 	}
-	return res, nil
+	return res.InsertedID, nil
 }
+
 func (r *TherapistRepository) FindTherapistMatchingProfile(therapistId string) (*model.Therapist, error) {
-	data := new(model.Therapist)
+	var data model.Therapist
 	err := r.MongoDBCollection.FindOne(context.Background(), bson.D{{Key: "profile_id", Value: therapistId}}).Decode(&data)
 	if err != nil {
 		return nil, err
 	}
-	if data == nil {
-		return nil, errors.New("No therapist found")
-	}
-	return data, nil
+	return &data, nil
 }
-func (r *TherapistRepository) FindAllTherapistMatchingProfiles(therapist *model.Therapist) ([]model.Therapist, error) {
-	result, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
-	if err != nil {
 
+func (r *TherapistRepository) FindAllTherapistMatchingProfiles() ([]model.Therapist, error) {
+	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
+	if err != nil {
 		return nil, errors.New("Failed to find all therapist")
 	}
 	var results []model.Therapist
-	err = result.All(context.Background(), &results)
+	err = cursor.All(context.Background(), &results)
 	if err != nil {
-		return nil, errors.New("Failed")
+		return nil, errors.New("Failed to decode therapist data")
 	}
 	return results, nil
 }
-func (r *TherapistRepository) DeleteMatchingProfile(therapist *model.Therapist) (int64, error) {
-	_, err := r.MongoDBCollection.DeleteOne(context.Background(),
-		bson.D{{Key: "profile_id", Value: therapist.ProfileId}})
+
+func (r *TherapistRepository) DeleteMatchingProfile(profileId string) (int64, error) {
+	res, err := r.MongoDBCollection.DeleteOne(context.Background(), bson.D{{Key: "profile_id", Value: profileId}})
 	if err != nil {
 		return 0, errors.New("Failed to delete therapist")
 	}
-	return 1, nil
+	return res.DeletedCount, nil
 }
+
 func (r *TherapistRepository) UpdateMatchingProfile(profileId string, therapist *model.Therapist) (interface{}, error) {
-	var result model.Therapist
 	therapist.ProfileId = profileId
 	update := bson.D{{Key: "$set", Value: therapist}}
+	var result model.Therapist
 
 	err := r.MongoDBCollection.FindOneAndUpdate(
 		context.Background(),
@@ -83,25 +82,16 @@ func (r *TherapistRepository) UpdateMatchingProfile(profileId string, therapist 
 	if err != nil {
 		return nil, errors.New("Failed to update therapist")
 	}
-	log.Println("TherapistRepository UpdateMatchingProfile result:", result)
 	return result, nil
 }
+
 func (r *TherapistRepository) DisableTherapistMatchingProfile(profileId string, isAvailable bool) (bool, error) {
-	filter := bson.D{{
-		Key: "profile_id", Value: profileId,
-	}}
-	update := bson.D{
-		{
-			Key: "$set", Value: bson.D{
-				{Key: "is_available", Value: isAvailable},
-			},
-		},
+	filter := bson.D{{Key: "profile_id", Value: profileId}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "is_available", Value: isAvailable}}}}
+
+	res, err := r.MongoDBCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return false, errors.New("Failed to update therapist availability")
 	}
-	res, _ := r.MongoDBCollection.UpdateOne(context.Background(),
-		filter, update,
-	)
-	if res.MatchedCount == 0 {
-		return false, errors.New("Failed to update therapist account status")
-	}
-	return true, nil
+	return res.MatchedCount > 0, nil
 }

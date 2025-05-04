@@ -3,12 +3,12 @@ package dev.psyconnect.profile_service.repository;
 import java.util.List;
 import java.util.Optional;
 
-import dev.psyconnect.profile_service.dto.response.ProfileWithMood;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import dev.psyconnect.profile_service.dto.response.ProfileWithMood;
 import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
 import dev.psyconnect.profile_service.model.Profile;
 
@@ -17,25 +17,26 @@ public interface ProfileRepository extends Neo4jRepository<Profile, String> {
     // Find all profile
     @Query(
             """
-                    MATCH (userProfile:`user_profile`)
-                    RETURN userProfile, elementId(userProfile)
-                    AS __elementId__ SKIP $skip LIMIT $limit""")
+					MATCH (userProfile:`user_profile`)
+					RETURN userProfile, elementId(userProfile)
+					AS __elementId__ SKIP $skip LIMIT $limit""")
     List<Profile> findAllProfilesPaged(@Param("skip") int skip, @Param("limit") int limit);
 
     @Query(
             """
-                    	MATCH (u:user_profile {profileId: $profileId})
-                    	OPTIONAL MATCH (u)-[:HAS_MOOD]->(m:mood)
-                    	OPTIONAL MATCH (u)-[:HAS_SETTING]->(s:user_setting)
-                    	RETURN u as profile, m AS mood, s AS setting
-                    """)
+						MATCH (u:user_profile {profileId: $profileId})
+						OPTIONAL MATCH (u)-[:HAS_MOOD]->(m:mood)
+						OPTIONAL MATCH (u)-[:HAS_SETTING]->(s:user_setting)
+						RETURN u as profile, m AS mood, s AS setting
+					""")
     Optional<ProfileWithRelationShipResponse> getProfileWithAllRelations(@Param("profileId") String profileId);
 
-    @Query("""
-                MATCH (u:user_profile {profileId: $profileId})
-                      -[:HAS_FRIEND]->(p:user_profile) 
-                      -[:HAS_MOOD]-> (m:mood)
-                RETURN p as profile, m as mood
-            """)
+    @Query(
+            """
+				MATCH (u:user_profile {profileId: $profileId})
+					-[:HAS_FRIEND]->(p:user_profile)
+					-[:HAS_MOOD]-> (m:mood)
+				RETURN p as profile, m as mood
+			""")
     List<ProfileWithMood> findFriendsWithMoodsByProfileId(String profileId);
 }

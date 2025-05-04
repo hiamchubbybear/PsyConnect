@@ -1,4 +1,3 @@
-
 services:
   mysql:
     image: mysql:8.0
@@ -24,6 +23,14 @@ services:
       - "2181:2181"
     networks:
       - mynetwork
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: consultationservice
+      MONGO_INITDB_ROOT_PASSWORD: 123456
 
   kafka:
     image: bitnami/kafka:3.3.2

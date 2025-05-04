@@ -80,8 +80,7 @@ public class AuthenticationService {
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
-                loginType
-        );
+                loginType);
     }
 
     public String generateGoogleAuthToken(GoogleAuthenticationRequest request, String loginType) {
@@ -100,14 +99,11 @@ public class AuthenticationService {
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
-                loginType
-        );
+                loginType);
     }
 
     private String createJwtToken(String subject, String accountId, String profileId, String role, String loginType) {
-        long expiration = loginType.equalsIgnoreCase("mobile")
-                ? TIME_EXPIRED * 2 * 24 * 30L
-                : TIME_EXPIRED;
+        long expiration = loginType.equalsIgnoreCase("mobile") ? TIME_EXPIRED * 2 * 24 * 30L : TIME_EXPIRED;
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(subject)
@@ -121,10 +117,7 @@ public class AuthenticationService {
                 .claim("profileId", profileId)
                 .build();
 
-        JWSObject jwsObject = new JWSObject(
-                new JWSHeader(JWSAlgorithm.HS512),
-                new Payload(claimsSet.toJSONObject())
-        );
+        JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS512), new Payload(claimsSet.toJSONObject()));
 
         try {
             jwsObject.sign(new MACSigner(SIGNER_KEY));
@@ -144,7 +137,6 @@ public class AuthenticationService {
         }
         return signedJWT;
     }
-
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String loginType)
             throws AuthenticationException {
@@ -171,15 +163,12 @@ public class AuthenticationService {
     private String buildScope(String role) {
         StringBuilder builder = new StringBuilder();
 
-
         builder.append("role.").append(role).append(" ");
-
 
         roleRepository
                 .findByName(role)
                 .ifPresentOrElse(
                         roleEntity -> {
-
                             roleEntity.getPermissions().stream()
                                     .map(permission -> permission.getName())
                                     .forEach(permission ->
@@ -191,7 +180,6 @@ public class AuthenticationService {
 
         log.debug("Built scope for role {}: {}", role, builder.toString().trim());
 
-
         return builder.toString().trim();
     }
 
@@ -202,7 +190,6 @@ public class AuthenticationService {
         try {
             SignedJWT signedJWT = verifyToken(request.getToken());
             Date expirationDate = signedJWT.getJWTClaimsSet().getExpirationTime();
-
 
             if (expirationDate.after(new Date())) {
                 blackListTokenRepository.save(
@@ -221,7 +208,6 @@ public class AuthenticationService {
     public String extractUsername(String token) throws ParseException, JOSEException {
         return extractClaim(token, JWTClaimsSet::getSubject);
     }
-
 
     public Date extractExpiration(String token) throws ParseException, JOSEException {
         return extractClaim(token, JWTClaimsSet::getExpirationTime);
