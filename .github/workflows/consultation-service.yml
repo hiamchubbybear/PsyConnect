@@ -1,6 +1,4 @@
 name: Consultation Service CI/CD
-- name: Build Docker image locally
-  run: docker build -t consultation-service ./consultationservice
 
 on:
   push:
