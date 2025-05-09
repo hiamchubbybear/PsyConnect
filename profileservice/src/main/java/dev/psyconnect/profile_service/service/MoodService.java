@@ -35,6 +35,7 @@ public class MoodService {
         if (!profileRepository.existsById(profileId) || moodRepository.existsById(profileId))
             throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
         log.info("Profile Id {}", profileId);
+        // Ho_Chi_Minh TimeZones
         final int TIME_ZONE = +7;
         Map<String, Long> dateTime = Time.MOOD_EXPIRES;
         long currentTime = dateTime.get("currentTimeMillis");

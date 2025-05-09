@@ -2,18 +2,22 @@ package handlers
 
 import (
 	"consultationservice/internal/db"
+	"consultationservice/internal/grpc/handler"
 	"consultationservice/internal/model"
 	"consultationservice/internal/repository"
 	"consultationservice/pkg/apiresponse"
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var (
-	therapistDB   *mongo.Collection
-	therapistRepo *repository.TherapistRepository
+	therapistDB    *mongo.Collection
+	therapistRepo  *repository.TherapistRepository
+	grpcRepository *handler.ProfileGrpc
 )
 
 type TherapistHandler struct {
@@ -22,6 +26,7 @@ type TherapistHandler struct {
 func InitTherapistHandler() {
 	therapistDB = db.GetTherapistCollection()
 	therapistRepo = repository.NewTherapistRepository(therapistDB)
+	grpcRepository, _ = handler.NewProfileGrpc("127.0.0.1:9091")
 }
 
 // External Rest API -- GET /consultation/{profile_id}
@@ -51,7 +56,10 @@ func (r TherapistHandler) PostTherapistHandler(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 500, "Invalid input")
 		return
 	}
-	res, err := grpcProfile.CheckProfileExists(profileId)
+	if grpcRepository == nil {
+		log.Printf("Grpc are not initialize")
+	}
+	res, err := grpcRepository.CheckProfileExists(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return

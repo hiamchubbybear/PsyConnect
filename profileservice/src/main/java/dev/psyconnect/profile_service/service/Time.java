@@ -10,7 +10,6 @@ import java.util.Map;
 
 public class Time {
     public static int MOOD_TIME_EXPIRES = 24;
-
     public static final Map<String, Long> MOOD_EXPIRES = Map.of(
             "currentTimeMillis",
             Instant.now().toEpochMilli(),

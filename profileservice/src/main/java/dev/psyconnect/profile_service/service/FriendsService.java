@@ -43,6 +43,7 @@ public class FriendsService {
         FriendRelationship relationship = FriendRelationship.builder()
                 .target(receiver)
                 .createdAt(OffsetDateTime.now())
+                .message(request.getMessage())
                 .status(FriendShipStatus.PENDING)
                 .build();
         sender.setFriendShip(relationship);

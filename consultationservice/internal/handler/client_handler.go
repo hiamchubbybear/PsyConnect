@@ -3,18 +3,20 @@ package handlers
 import (
 	"consultationservice/internal/db"
 	"consultationservice/internal/grpc/handler"
+	grpc "consultationservice/internal/grpc/handler"
 	"consultationservice/internal/model"
 	"consultationservice/internal/repository"
 	"consultationservice/pkg/apiresponse"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
-	"net/http"
 )
 
 var (
 	clientDB    *mongo.Collection
 	clientRepo  *repository.ClientRepository
-	grpcProfile *handler.ProfileGrpc
+	grpcProfile *grpc.ProfileGrpc
 )
 
 type ClientHandler struct {
@@ -23,6 +25,7 @@ type ClientHandler struct {
 func InitClientHandler() {
 	clientDB = db.GetClientCollection()
 	clientRepo = repository.NewClientRepository(clientDB)
+	grpcProfile, _ = handler.NewProfileGrpc("127.0.0.1:9091")
 }
 
 // External Rest API -- GET /consultation/client

@@ -21,17 +21,130 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ResponseMatchingResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResponseMatchingResponse) Reset() {
+	*x = ResponseMatchingResponse{}
+	mi := &file_matching_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResponseMatchingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResponseMatchingResponse) ProtoMessage() {}
+
+func (x *ResponseMatchingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_matching_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResponseMatchingResponse.ProtoReflect.Descriptor instead.
+func (*ResponseMatchingResponse) Descriptor() ([]byte, []int) {
+	return file_matching_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *ResponseMatchingResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *ResponseMatchingResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+type ResponseMatchingRequest struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	ClientProfileId    string                 `protobuf:"bytes,1,opt,name=clientProfileId,proto3" json:"clientProfileId,omitempty"`
+	TherapistProfileId string                 `protobuf:"bytes,2,opt,name=therapistProfileId,proto3" json:"therapistProfileId,omitempty"`
+	Option             string                 `protobuf:"bytes,3,opt,name=option,proto3" json:"option,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ResponseMatchingRequest) Reset() {
+	*x = ResponseMatchingRequest{}
+	mi := &file_matching_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResponseMatchingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResponseMatchingRequest) ProtoMessage() {}
+
+func (x *ResponseMatchingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_matching_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResponseMatchingRequest.ProtoReflect.Descriptor instead.
+func (*ResponseMatchingRequest) Descriptor() ([]byte, []int) {
+	return file_matching_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ResponseMatchingRequest) GetClientProfileId() string {
+	if x != nil {
+		return x.ClientProfileId
+	}
+	return ""
+}
+
+func (x *ResponseMatchingRequest) GetTherapistProfileId() string {
+	if x != nil {
+		return x.TherapistProfileId
+	}
+	return ""
+}
+
+func (x *ResponseMatchingRequest) GetOption() string {
+	if x != nil {
+		return x.Option
+	}
+	return ""
+}
+
 type MatchingRequest struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
 	ClientProfileId    string                 `protobuf:"bytes,1,opt,name=clientProfileId,proto3" json:"clientProfileId,omitempty"`
 	TherapistProfileId string                 `protobuf:"bytes,2,opt,name=therapistProfileId,proto3" json:"therapistProfileId,omitempty"`
+	Message            string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
 
 func (x *MatchingRequest) Reset() {
 	*x = MatchingRequest{}
-	mi := &file_matching_proto_msgTypes[0]
+	mi := &file_matching_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +156,7 @@ func (x *MatchingRequest) String() string {
 func (*MatchingRequest) ProtoMessage() {}
 
 func (x *MatchingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_matching_proto_msgTypes[0]
+	mi := &file_matching_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +169,7 @@ func (x *MatchingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MatchingRequest.ProtoReflect.Descriptor instead.
 func (*MatchingRequest) Descriptor() ([]byte, []int) {
-	return file_matching_proto_rawDescGZIP(), []int{0}
+	return file_matching_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *MatchingRequest) GetClientProfileId() string {
@@ -73,6 +186,13 @@ func (x *MatchingRequest) GetTherapistProfileId() string {
 	return ""
 }
 
+func (x *MatchingRequest) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 type MatchingResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
@@ -83,7 +203,7 @@ type MatchingResponse struct {
 
 func (x *MatchingResponse) Reset() {
 	*x = MatchingResponse{}
-	mi := &file_matching_proto_msgTypes[1]
+	mi := &file_matching_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -95,7 +215,7 @@ func (x *MatchingResponse) String() string {
 func (*MatchingResponse) ProtoMessage() {}
 
 func (x *MatchingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_matching_proto_msgTypes[1]
+	mi := &file_matching_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -108,7 +228,7 @@ func (x *MatchingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MatchingResponse.ProtoReflect.Descriptor instead.
 func (*MatchingResponse) Descriptor() ([]byte, []int) {
-	return file_matching_proto_rawDescGZIP(), []int{1}
+	return file_matching_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *MatchingResponse) GetSuccess() bool {
@@ -129,15 +249,24 @@ var File_matching_proto protoreflect.FileDescriptor
 
 const file_matching_proto_rawDesc = "" +
 	"\n" +
-	"\x0ematching.proto\x12\aprofile\"k\n" +
+	"\x0ematching.proto\x12\aprofile\"L\n" +
+	"\x18ResponseMatchingResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\"\x8b\x01\n" +
+	"\x17ResponseMatchingRequest\x12(\n" +
+	"\x0fclientProfileId\x18\x01 \x01(\tR\x0fclientProfileId\x12.\n" +
+	"\x12therapistProfileId\x18\x02 \x01(\tR\x12therapistProfileId\x12\x16\n" +
+	"\x06option\x18\x03 \x01(\tR\x06option\"\x85\x01\n" +
 	"\x0fMatchingRequest\x12(\n" +
 	"\x0fclientProfileId\x18\x01 \x01(\tR\x0fclientProfileId\x12.\n" +
-	"\x12therapistProfileId\x18\x02 \x01(\tR\x12therapistProfileId\"D\n" +
+	"\x12therapistProfileId\x18\x02 \x01(\tR\x12therapistProfileId\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"D\n" +
 	"\x10MatchingResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status2e\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status2\xc5\x01\n" +
 	"\x15CreateMatchingRequest\x12L\n" +
-	"\x15CreateMatchingRequest\x12\x18.profile.MatchingRequest\x1a\x19.profile.MatchingResponseB\x15Z\x13gprc.grpc_generatedb\x06proto3"
+	"\x15CreateMatchingRequest\x12\x18.profile.MatchingRequest\x1a\x19.profile.MatchingResponse\x12^\n" +
+	"\x17ResponseRequestMatching\x12 .profile.ResponseMatchingRequest\x1a!.profile.ResponseMatchingResponseB\x15Z\x13gprc.grpc_generatedb\x06proto3"
 
 var (
 	file_matching_proto_rawDescOnce sync.Once
@@ -151,16 +280,20 @@ func file_matching_proto_rawDescGZIP() []byte {
 	return file_matching_proto_rawDescData
 }
 
-var file_matching_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_matching_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_matching_proto_goTypes = []any{
-	(*MatchingRequest)(nil),  // 0: profile.MatchingRequest
-	(*MatchingResponse)(nil), // 1: profile.MatchingResponse
+	(*ResponseMatchingResponse)(nil), // 0: profile.ResponseMatchingResponse
+	(*ResponseMatchingRequest)(nil),  // 1: profile.ResponseMatchingRequest
+	(*MatchingRequest)(nil),          // 2: profile.MatchingRequest
+	(*MatchingResponse)(nil),         // 3: profile.MatchingResponse
 }
 var file_matching_proto_depIdxs = []int32{
-	0, // 0: profile.CreateMatchingRequest.CreateMatchingRequest:input_type -> profile.MatchingRequest
-	1, // 1: profile.CreateMatchingRequest.CreateMatchingRequest:output_type -> profile.MatchingResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 0: profile.CreateMatchingRequest.CreateMatchingRequest:input_type -> profile.MatchingRequest
+	1, // 1: profile.CreateMatchingRequest.ResponseRequestMatching:input_type -> profile.ResponseMatchingRequest
+	3, // 2: profile.CreateMatchingRequest.CreateMatchingRequest:output_type -> profile.MatchingResponse
+	0, // 3: profile.CreateMatchingRequest.ResponseRequestMatching:output_type -> profile.ResponseMatchingResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -177,7 +310,7 @@ func file_matching_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_matching_proto_rawDesc), len(file_matching_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -9,4 +9,5 @@ import lombok.*;
 @AllArgsConstructor
 public class FriendRRequest {
     private String target;
+    private String message;
 }

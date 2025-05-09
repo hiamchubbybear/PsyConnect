@@ -2,17 +2,17 @@ package route
 
 import (
 	"consultationservice/bootstrap"
-	"consultationservice/internal/handler"
+	handlers "consultationservice/internal/handler"
 	"consultationservice/internal/middleware"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RouterInit(env *bootstrap.Env) {
 	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 	router := gin.Default()
-
 	defer func() {
 		if err := recover(); err != nil {
 			log.Fatal(err)
@@ -29,6 +29,7 @@ func RouterInit(env *bootstrap.Env) {
 		therapistGroup.GET("/", therapistHandler.GetTherapistHandler)
 		therapistGroup.POST("/", therapistHandler.PostTherapistHandler)
 		therapistGroup.PUT("/", therapistHandler.PutTherapistHandler)
+		therapistGroup.POST("/match/response", matchingHandler.ResponseMatchingRequest)
 		therapistGroup.PUT("/status/:status", therapistHandler.ChangeTherapistProfileStatus)
 	}
 
@@ -38,6 +39,7 @@ func RouterInit(env *bootstrap.Env) {
 		clientGroup.GET("/", clientHandler.GetClientHandler)
 		clientGroup.POST("/", clientHandler.PostClientHandler)
 		clientGroup.PUT("/", clientHandler.PutClientHandler)
+
 	}
 
 	publicGroup := router.Group("/consultation/therapist")

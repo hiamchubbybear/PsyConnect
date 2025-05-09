@@ -2,7 +2,7 @@ package repository
 
 import (
 	"consultationservice/internal/dto"
-	"consultationservice/internal/grpc/handler"
+	grpc "consultationservice/internal/grpc/handler"
 	"consultationservice/internal/model"
 	"context"
 	"errors"
@@ -16,14 +16,16 @@ import (
 type MatchingRepository struct {
 	MongoDBCollection *mongo.Collection
 	clientRepo        *ClientRepository
-	grpcProfile       *handler.ProfileGrpc
+	therapistRepo     *TherapistRepository
+	grpcProfile       *grpc.ProfileGrpc
 }
 
-func NewMatchingRepository(collection *mongo.Collection, clientRepo *ClientRepository, grpcProfile *handler.ProfileGrpc) *MatchingRepository {
+func NewMatchingRepository(collection *mongo.Collection, clientRepo *ClientRepository, grpcProfile *grpc.ProfileGrpc, therapistRepo *TherapistRepository) *MatchingRepository {
 	return &MatchingRepository{
 		MongoDBCollection: collection,
 		clientRepo:        clientRepo,
 		grpcProfile:       grpcProfile,
+		therapistRepo:     therapistRepo,
 	}
 }
 
@@ -47,6 +49,7 @@ func (r *MatchingRepository) FilterAllMatching(matchProfileId string, page int64
 			"$lte": matching.RangePrice,
 		}
 	}
+	filter["matched_clients"] = bson.M{"$nin": []string{matchProfileId}}
 	if len(matching.ConsultationModes) > 0 && matching.ConsultationModes[0] != "optional" {
 		filter["consultation_modes"] = bson.M{"$in": matching.ConsultationModes}
 	}
@@ -70,6 +73,7 @@ func (r *MatchingRepository) FilterAllMatching(matchProfileId string, page int64
 	findOptions.SetSkip((page - 1) * limit)
 
 	cursor, err := r.MongoDBCollection.Find(ctx, filter, findOptions)
+
 	if err != nil {
 		return nil, err
 	}
@@ -84,9 +88,70 @@ func (r *MatchingRepository) RequestMatching(request dto.MatchingRequest, profil
 	if request.ThearpistId == profileId {
 		return false, errors.New("You can not request to yourself")
 	}
-	isSuccess, err := r.grpcProfile.FriendRequestAccept(request.ThearpistId, profileId)
+	isSuccess, err := r.grpcProfile.FriendRequestAccept(request.ThearpistId, profileId, request.Message)
 	if err != nil {
 		return false, err
 	}
 	return isSuccess, nil
+}
+func (r *MatchingRepository) FindClientLogs(profileId string) (interface{}, error) {
+	ctx := context.TODO()
+	if profileId == "" {
+		return nil, errors.New("Profile Id is invalid ")
+	}
+	opts := bson.M{"profileId": profileId}
+	cursor, err := r.therapistRepo.MongoDBCollection.Find(ctx, opts)
+	if err != nil {
+		return false, errors.New("Failed to find matched client")
+	}
+	for cursor.Next(ctx) {
+		var result bson.M
+		err := cursor.Decode(&result)
+		if err != nil {
+			log.Printf("Failted to find matched object")
+			return false, errors.New("Failed to find matched client")
+		}
+		return result, nil
+	}
+	return nil, errors.New("Failed")
+}
+func (r *MatchingRepository) CheckExistedClientLogs(profileId string, clientId string) (bool, error) {
+	filter := bson.M{
+		"profileId": profileId,
+		"matched_clients": bson.M{
+			"$ne": clientId,
+		},
+	}
+	count, err := r.therapistRepo.MongoDBCollection.CountDocuments(context.TODO(), filter)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *MatchingRepository) AddMatchedClient(profileId string, clientId string) (bool, error) {
+	ctx := context.TODO()
+	existed, err := r.CheckExistedClientLogs(profileId, clientId)
+	if err != nil {
+		return false, err
+	}
+	if existed {
+		return true, nil
+	}
+	client, error := r.clientRepo.FindClientMatchingProfile(profileId)
+	if error != nil {
+		log.Printf(error.Error())
+	}
+	filter := bson.M{"profile_id": profileId}
+	update := bson.M{
+		"$push": bson.M{
+			"matched_clients": client,
+		},
+	}
+	_, updateError := r.therapistRepo.MongoDBCollection.UpdateOne(ctx, filter, update)
+	if updateError != nil {
+		return false, errors.New("Failed to add client matched")
+	}
+
+	return true, nil
 }

@@ -31,5 +31,6 @@ public class FriendRelationship implements Serializable {
     @Enumerated(EnumType.STRING)
     private FriendShipStatus status;
 
+    private String message;
     private OffsetDateTime createdAt;
 }

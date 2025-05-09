@@ -15,4 +15,5 @@ type Therapist struct {
 		TimeSlots []string `json:"time_slots,omitempty" bson:"time_slots"`
 	} `json:"availability,omitempty" bson:"availability"`
 	CurrentSession []string `json:"current_session,omitempty" bson:"current_session"`
+	MatchedClients []string `json:"matched_clients,omitempty" bson:"matched_clients"`
 }
