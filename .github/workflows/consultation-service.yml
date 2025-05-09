@@ -41,7 +41,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd consultationservice/consultationservice
+          cd consultationservice
           go mod download
 
       - name: Build the application
