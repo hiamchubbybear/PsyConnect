@@ -3,7 +3,7 @@ version: '3.9'
 services:
   consultation-service:
     build:
-      context: ./
+      context: ./consultationservice
       dockerfile: Dockerfile
     container_name: consultation_service
     ports:
