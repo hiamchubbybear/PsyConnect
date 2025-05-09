@@ -46,7 +46,7 @@ jobs:
 
       - name: Build the application
         run: |
-          cd consultationservice
+          cd consultationservice/consultationservice
           go build -o consultation-service ./cmd/main.go
 
   docker-run:
