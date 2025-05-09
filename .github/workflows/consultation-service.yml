@@ -5,13 +5,13 @@ name: Consultation Service CI/CD
 on:
   push:
     branches:
-      - dev_chessy
+      - cicd_dev
   pull_request:
     branches:
-      - dev_chessy
+      - cicd_dev
 
 env:
-  SERVICE_PORT: 8080
+  SERVICE_PORT: 8084
   DB_HOST: localhost
   DB_PORT: 27017
   DB_USER: root
@@ -63,4 +63,4 @@ jobs:
         run: docker build -t consultation-service ./consultationservice
 
       - name: Run Docker container
-        run: docker run -d -p 8080:8080 consultation-service
+        run: docker run -d -p 8084:8084 consultation-service
