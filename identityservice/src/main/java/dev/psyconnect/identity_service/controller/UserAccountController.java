@@ -25,7 +25,7 @@ public class UserAccountController {
         return new ApiResponse<>(userAccountService.createAccount(accountRequest));
     }
 
-    @PostMapping(value = "/acticd vate")
+    @PostMapping(value = "/acticdvate")
     public ApiResponse<ActivateAccountResponse> activateAccount(
             @RequestBody ActivateAccountRequest activateAccountRequest) {
         return new ApiResponse<>(userAccountService.activateAccount(activateAccountRequest));

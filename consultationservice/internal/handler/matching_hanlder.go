@@ -1,15 +1,15 @@
 package handlers
 
 import (
+	"consultationservice/bootstrap"
 	"consultationservice/internal/db"
 	"consultationservice/internal/dto"
 	grpc "consultationservice/internal/grpc/handler"
 	"consultationservice/internal/repository"
 	"consultationservice/internal/utils"
 	"consultationservice/pkg/apiresponse"
-	"log"
-
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 var (
@@ -19,10 +19,14 @@ var (
 
 type MatchHandler struct{}
 
-func InitMatchHandler() {
+func InitMatchHandler(env *bootstrap.Env) {
 	clientRepo := repository.NewClientRepository(db.GetClientCollection())
 	therapistRepo := repository.NewTherapistRepository(db.GetClientCollection())
-	grpcProfile, err := grpc.NewProfileGrpc("127.0.0.1:9091")
+	grpcAddress := env.GrpcAdd
+	if grpcAddress == "" {
+		log.Fatal("Failed to read from env file")
+	}
+	grpcProfile, err := grpc.NewProfileGrpc(grpcAddress)
 
 	if err != nil {
 		log.Printf("Error while create grpcConnection %v", err)
@@ -76,16 +80,8 @@ func (r *MatchHandler) MatchRequest(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return
 	}
-	addStatus, err := matchingRepo.AddMatchedClient(request.ThearpistId, profileId)
-	if !addStatus {
-		apiresponse.ErrorHandler(c, 500, "Failed to add client to therapist")
-		return
-	}
-	if err != nil {
-		apiresponse.ErrorHandler(c, 500, err.Error())
-		return
-	}
 	apiresponse.NewApiResponse(c, res)
+	return
 }
 func (r *MatchHandler) ResponseMatchingRequest(c *gin.Context) {
 	var request dto.ResponseMatchingRequest
@@ -94,14 +90,23 @@ func (r *MatchHandler) ResponseMatchingRequest(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 404, "Invalid input")
 		return
 	}
-	profileId := c.GetHeader("X-Profile-Id")
-	if profileId == "" {
+	therapistId := c.GetHeader("X-Profile-Id")
+	if therapistId == "" {
 		apiresponse.ErrorHandler(c, 404, "Profile id not found")
 		return
 	}
-	responseStatus, err := grpcProfile.ResponseMatchingRequest(request, profileId)
+	responseStatus, err := grpcProfile.ResponseMatchingRequest(request, therapistId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 504, err.Error())
+		return
+	}
+	addStatus, err := matchingRepo.AddMatchedClient(therapistId, request.ClientId)
+	if !addStatus {
+		apiresponse.ErrorHandler(c, 500, "Failed to add client to therapist")
+		return
+	}
+	if err != nil {
+		apiresponse.ErrorHandler(c, 500, err.Error())
 		return
 	}
 	apiresponse.NewApiResponse(c, responseStatus)

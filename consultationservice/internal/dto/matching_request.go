@@ -1,6 +1,5 @@
 package dto
 
-type MatchFilter struct{}
 type Match struct {
 	Gender      string   `json:"gender" bson:"gender"`
 	Address     string   `json:"address" bson:"address"`

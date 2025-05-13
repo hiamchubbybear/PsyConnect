@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"consultationservice/bootstrap"
 	"consultationservice/internal/db"
 	"consultationservice/internal/grpc/handler"
 	"consultationservice/internal/model"
@@ -23,10 +24,14 @@ var (
 type TherapistHandler struct {
 }
 
-func InitTherapistHandler() {
+func InitTherapistHandler(env *bootstrap.Env) {
 	therapistDB = db.GetTherapistCollection()
 	therapistRepo = repository.NewTherapistRepository(therapistDB)
-	grpcRepository, _ = handler.NewProfileGrpc("127.0.0.1:9091")
+	grpcAddress := env.GrpcAdd
+	if grpcAddress == "" {
+		log.Fatal("Failed to load env file")
+	}
+	grpcRepository, _ = handler.NewProfileGrpc(grpcAddress)
 }
 
 // External Rest API -- GET /consultation/{profile_id}

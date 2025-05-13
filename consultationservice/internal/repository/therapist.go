@@ -4,10 +4,11 @@ import (
 	"consultationservice/internal/model"
 	"context"
 	"errors"
+	"log"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 type TherapistRepository struct {
@@ -30,6 +31,7 @@ func (r *TherapistRepository) CreateTherapistMatchingProfile(therapist *model.Th
 		log.Println("Error checking if therapist exists:", err)
 		return nil, errors.New("Failed to check if therapist exists")
 	}
+	therapist.MatchedClients = []string{}
 	res, err := r.MongoDBCollection.InsertOne(context.Background(), therapist)
 	if err != nil {
 		log.Println("TherapistRepository CreateTherapistMatchingProfile err:", err)
@@ -84,7 +86,9 @@ func (r *TherapistRepository) UpdateMatchingProfile(profileId string, therapist 
 	}
 	return result, nil
 }
+func (r *TherapistRepository) AddMatchedClient() {
 
+}
 func (r *TherapistRepository) DisableTherapistMatchingProfile(profileId string, isAvailable bool) (bool, error) {
 	filter := bson.D{{Key: "profile_id", Value: profileId}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "is_available", Value: isAvailable}}}}

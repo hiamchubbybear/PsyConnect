@@ -35,7 +35,7 @@ func (r *MatchingRepository) FilterAllMatching(matchProfileId string, page int64
 	matching, err := r.clientRepo.FindClientMatchingProfile(matchProfileId)
 	if err != nil {
 		log.Println(err.Error())
-		return nil, errors.New("Client profile not found")
+		return nil, errors.New("client profile not found")
 	}
 	if len(matching.Languages) > 0 {
 		filter["languages"] = bson.M{"$in": matching.Languages}
@@ -86,7 +86,7 @@ func (r *MatchingRepository) FilterAllMatching(matchProfileId string, page int64
 }
 func (r *MatchingRepository) RequestMatching(request dto.MatchingRequest, profileId string) (bool, error) {
 	if request.ThearpistId == profileId {
-		return false, errors.New("You can not request to yourself")
+		return false, errors.New("you can not request to yourself")
 	}
 	isSuccess, err := r.grpcProfile.FriendRequestAccept(request.ThearpistId, profileId, request.Message)
 	if err != nil {
@@ -97,27 +97,27 @@ func (r *MatchingRepository) RequestMatching(request dto.MatchingRequest, profil
 func (r *MatchingRepository) FindClientLogs(profileId string) (interface{}, error) {
 	ctx := context.TODO()
 	if profileId == "" {
-		return nil, errors.New("Profile Id is invalid ")
+		return nil, errors.New("profile Id is invalid ")
 	}
-	opts := bson.M{"profileId": profileId}
+	opts := bson.M{"profile_id": profileId}
 	cursor, err := r.therapistRepo.MongoDBCollection.Find(ctx, opts)
 	if err != nil {
-		return false, errors.New("Failed to find matched client")
+		return false, errors.New("failed to find matched client")
 	}
 	for cursor.Next(ctx) {
 		var result bson.M
 		err := cursor.Decode(&result)
 		if err != nil {
 			log.Printf("Failted to find matched object")
-			return false, errors.New("Failed to find matched client")
+			return false, errors.New("failed to find matched client")
 		}
 		return result, nil
 	}
-	return nil, errors.New("Failed")
+	return nil, errors.New("failed")
 }
 func (r *MatchingRepository) CheckExistedClientLogs(profileId string, clientId string) (bool, error) {
 	filter := bson.M{
-		"profileId": profileId,
+		"profile_id": profileId,
 		"matched_clients": bson.M{
 			"$ne": clientId,
 		},
@@ -130,7 +130,7 @@ func (r *MatchingRepository) CheckExistedClientLogs(profileId string, clientId s
 }
 
 func (r *MatchingRepository) AddMatchedClient(profileId string, clientId string) (bool, error) {
-	ctx := context.TODO()
+	ctx := context.Background()
 	existed, err := r.CheckExistedClientLogs(profileId, clientId)
 	if err != nil {
 		return false, err
@@ -138,19 +138,32 @@ func (r *MatchingRepository) AddMatchedClient(profileId string, clientId string)
 	if existed {
 		return true, nil
 	}
-	client, error := r.clientRepo.FindClientMatchingProfile(profileId)
+	_, error := r.clientRepo.FindClientMatchingProfile(clientId)
 	if error != nil {
-		log.Printf(error.Error())
+		log.Printf("failed find clients: %v", error.Error())
+		return false, nil
+	}
+	_, error = r.therapistRepo.FindTherapistMatchingProfile(profileId)
+	if error != nil {
+		log.Printf("Find find therapist : %v", error.Error())
+		return false, nil
 	}
 	filter := bson.M{"profile_id": profileId}
 	update := bson.M{
 		"$push": bson.M{
-			"matched_clients": client,
+			"matched_clients": clientId,
 		},
 	}
-	_, updateError := r.therapistRepo.MongoDBCollection.UpdateOne(ctx, filter, update)
+	res, updateError := r.therapistRepo.MongoDBCollection.UpdateOne(ctx, filter, update)
 	if updateError != nil {
-		return false, errors.New("Failed to add client matched")
+		return false, errors.New("failed to add client matched")
+	}
+	if res.MatchedCount == 0 {
+		log.Println("No document matched for profile_id:", profileId)
+		return false, errors.New("therapist not found")
+	}
+	if res.ModifiedCount == 0 {
+		log.Println("Document matched but not modified, maybe already contains clientId?")
 	}
 
 	return true, nil

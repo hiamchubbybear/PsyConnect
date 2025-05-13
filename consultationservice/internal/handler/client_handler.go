@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"consultationservice/bootstrap"
 	"consultationservice/internal/db"
 	"consultationservice/internal/grpc/handler"
 	grpc "consultationservice/internal/grpc/handler"
 	"consultationservice/internal/model"
 	"consultationservice/internal/repository"
 	"consultationservice/pkg/apiresponse"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,10 +24,14 @@ var (
 type ClientHandler struct {
 }
 
-func InitClientHandler() {
+func InitClientHandler(env *bootstrap.Env) {
 	clientDB = db.GetClientCollection()
 	clientRepo = repository.NewClientRepository(clientDB)
-	grpcProfile, _ = handler.NewProfileGrpc("127.0.0.1:9091")
+	grpcAddress := env.GrpcAdd
+	if grpcAddress == "" {
+		log.Fatal("Failed to load env file")
+	}
+	grpcProfile, _ = handler.NewProfileGrpc(grpcAddress)
 }
 
 // External Rest API -- GET /consultation/client
