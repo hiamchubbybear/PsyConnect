@@ -1,9 +1,10 @@
-module PsyConnect
+module loggingservice
 
-go 1.24.2
+go 1.24
 
 require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
+	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

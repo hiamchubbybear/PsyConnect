@@ -221,7 +221,7 @@ public class AuthenticationService {
     }
 
     // Extract all claims from the token
-    private JWTClaimsSet extractAllClaims(String token) throws ParseException, JOSEException {
+    public JWTClaimsSet extractAllClaims(String token) throws ParseException, JOSEException {
         return verifyToken(token).getJWTClaimsSet();
     }
 

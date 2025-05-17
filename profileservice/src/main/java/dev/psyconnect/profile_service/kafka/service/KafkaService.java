@@ -1,5 +1,7 @@
 package dev.psyconnect.profile_service.kafka.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -8,11 +10,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import dev.psyconnect.profile_service.dto.request.LogEvent;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 
 @Service
 public class KafkaService {
+    private static final Logger log = LoggerFactory.getLogger(KafkaService.class);
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -23,11 +27,16 @@ public class KafkaService {
 
     public void send(String topic, Object payload) {
         try {
+            log.info("Send to " + topic + " values : " + payload);
             String objectMapper = new ObjectMapper().writeValueAsString(payload);
             kafkaTemplate.send(topic, objectMapper);
         } catch (Exception e) {
             throw new CustomExceptionHandler(ErrorCode.KAFKA_SERVER_ERROR);
         }
+    }
+
+    public void sendLog(LogEvent log) {
+        send("logging-service", log);
     }
 
     public static <T> T objectMapping(String rawString, Class<T> clazz) {

@@ -1,6 +1,7 @@
 package dev.psyconnect.profile_service.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import dev.psyconnect.profile_service.dto.request.LogEvent;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
@@ -57,7 +59,12 @@ public class UserProfileService {
         Profile profile = userProfileMapper.toUserProfileMapper(request);
         profile.setDob(Time.parseFromString(request.getDob()));
         var temp = userProfileRepository.save(profile);
+
         kafkaService.send("profile.user-create-setting", request.getProfileId());
+
+        kafkaService.sendLog(
+                buildLog("profile-service", request.getProfileId(), "Create profile", "Success", Map.of()));
+
         var response = userProfileMapper.toUserProfile(temp);
         response.setDob(request.getDob());
         return response;
@@ -65,33 +72,68 @@ public class UserProfileService {
 
     @Cacheable(key = "#profileId", value = "profile")
     public UserProfileResponse get(String profileId) {
-        Profile profile = userProfileRepository
-                .findById(profileId)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        return userProfileMapper.toUserProfileRequest(profile);
+        UserProfileResponse response;
+        try {
+            Profile profile = userProfileRepository
+                    .findById(profileId)
+                    .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+            response = userProfileMapper.toUserProfileRequest(profile);
+        } catch (Exception e) {
+            kafkaService.sendLog(
+                    buildLog("profile-service", profileId, "Get profile", "Failed", Map.of("error", e.getMessage())));
+            throw e;
+        }
+        return response;
     }
 
     @CacheEvict(value = "profile", key = "#profileId")
     public UserProfileUpdateResponse update(UserProfileUpdateRequest userProfileUpdateRequest, String profileId) {
-        Profile existingUser = userProfileRepository
-                .findById(profileId)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        Profile updatedUser = userProfileMapper.toUserProfile(userProfileUpdateRequest);
-        updatedUser.setProfileId(existingUser.getProfileId());
-        updatedUser.setAccountId(existingUser.getAccountId());
-        Profile savedUser = userProfileRepository.save(updatedUser);
-        return userProfileMapper.toUserProfileUpdateResponse(savedUser);
+        UserProfileUpdateResponse response;
+        try {
+            Profile existingUser = userProfileRepository
+                    .findById(profileId)
+                    .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+            Profile updatedUser = userProfileMapper.toUserProfile(userProfileUpdateRequest);
+            updatedUser.setProfileId(existingUser.getProfileId());
+            updatedUser.setAccountId(existingUser.getAccountId());
+            Profile savedUser = userProfileRepository.save(updatedUser);
+
+            response = userProfileMapper.toUserProfileUpdateResponse(savedUser);
+
+            kafkaService.sendLog(buildLog("profile-service", profileId, "Update profile", "Success", Map.of()));
+        } catch (Exception e) {
+            kafkaService.sendLog(buildLog(
+                    "profile-service", profileId, "Update profile", "Failed", Map.of("error", e.getMessage())));
+            throw e;
+        }
+        return response;
     }
 
     public List<?> getAll(int page, int size) {
-        return userProfileRepository.findAllProfilesPaged(page, size);
+        List<?> result;
+        try {
+            result = userProfileRepository.findAllProfilesPaged(page, size);
+        } catch (Exception e) {
+            kafkaService.sendLog(buildLog(
+                    "profile-service", "system", "Get all profiles", "Failed", Map.of("error", e.getMessage())));
+            throw e;
+        }
+        return result;
     }
 
     @Cacheable(key = "#profileId", value = "profile_mood")
     public ProfileWithRelationShipResponse getProfileWithMood(String profileId) {
-        return userProfileRepository
-                .getProfileWithAllRelations(profileId)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
+        ProfileWithRelationShipResponse response;
+        try {
+            response = userProfileRepository
+                    .getProfileWithAllRelations(profileId)
+                    .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
+        } catch (Exception e) {
+            kafkaService.sendLog(buildLog(
+                    "profile-service", profileId, "Get profile with mood", "Failed", Map.of("error", e.getMessage())));
+            throw e;
+        }
+        return response;
     }
 
     @KafkaListener(topics = "profile.user-create-setting")
@@ -102,5 +144,17 @@ public class UserProfileService {
 
     public Boolean checkProfileExisted(String profileId) {
         return userProfileRepository.existsById(profileId);
+    }
+
+    private LogEvent buildLog(
+            String service, String userId, String action, String message, Map<String, Object> metadata) {
+        return LogEvent.builder()
+                .service(service)
+                .eventId("LOG")
+                .userId(userId)
+                .action(action)
+                .message(message)
+                .metadata(metadata)
+                .build();
     }
 }

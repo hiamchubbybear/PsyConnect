@@ -65,7 +65,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
             throw new CustomExceptionHandler(ErrorCode.EMAIL_ALREADY_EXISTS);
 
         String token = generateActivationCode();
-        log.info("Generated activation code: {}", token);
         var activateTokenEntity = sendNotification(ActivateAccountNotificationRequest.builder()
                 .code(token)
                 .email(request.getEmail())
@@ -73,7 +72,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .username(request.getUsername())
                 .build());
         var savedToken = tokenRepository.save(activateTokenEntity);
-        log.info("Activate account entity for: {} ", activateTokenEntity.getUsername());
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
         UUID profileId = UUID.randomUUID();
         Account account = Account.builder()
@@ -89,7 +87,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .build();
 
         var savedAccount = accountRepository.save(account);
-        log.info("Created account: {}", savedAccount.getAccountId());
 
         UserProfileCreationRequest temp = mapper.toAccountResponse(request);
         temp.setAccountId(account.getAccountId().toString());
@@ -103,20 +100,31 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
             }
         } catch (Exception e) {
-            log.error("Error creating profile: {}", e);
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    request.getUsername(),
+                    "Create account",
+                    "Failed",
+                    Map.of("error", e.getMessage())));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+
         String fullName = request.getFirstName() + " " + request.getLastName();
-        String username = request.getUsername();
-        String email = savedAccount.getEmail();
         kafkaService.send(
                 (NOTIFICATION_CREATE_TOPIC),
                 CreateAccountNotificationRequest.builder()
                         .code(token)
-                        .username(username)
-                        .email(email)
+                        .username(request.getUsername())
+                        .email(savedAccount.getEmail())
                         .fullname(fullName)
                         .build());
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                request.getUsername(),
+                "Create account",
+                "Success",
+                Map.of("fullname", fullName, "email", savedAccount.getEmail())));
+
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
                 .email(account.getEmail())
@@ -130,30 +138,31 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public ActivateAccountResponse activateAccount(ActivateAccountRequest request) {
         String email = request.getEmail();
         String activateToken = request.getToken();
-        log.info("Activate account entity for: {} ", activateToken);
+
         if (userAccountRepository.existsByEmailAndIsActivatedTrue(email)) {
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
         }
-        log.info("Activation Model account for user email {}", email);
         if (!userAccountRepository.existsByEmail(email)) {
             throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
         }
         var foundObject = activateRepository
                 .findByToken(activateToken)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ACTIVATION_FAILED));
-        if (foundObject == null) {
-            return ActivateAccountResponse.builder()
-                    .isSuccess(false)
-                    .message("Invalid or expired activation token")
-                    .build();
-        }
+
         if (foundObject.getExpires().before(new Date())) {
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    request.getEmail(),
+                    "Activate account",
+                    "Failed",
+                    Map.of("reason", "Token expired")));
             return ActivateAccountResponse.builder()
                     .isSuccess(false)
                     .message("Activation token has expired")
                     .build();
         }
         userAccountRepository.activateUser(email);
+        kafkaService.sendLog(buildLog("identity-service", request.getEmail(), "Activate account", "Success", Map.of()));
         return ActivateAccountResponse.builder()
                 .isSuccess(true)
                 .message("Account activation successful")
@@ -163,8 +172,16 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public boolean deleteAccountWithoutCheck(UUID accountId) {
         try {
             userAccountRepository.deleteById(accountId);
+            kafkaService.sendLog(
+                    buildLog("identity-service", accountId.toString(), "Delete account (force)", "Success", Map.of()));
             return true;
         } catch (Exception e) {
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    accountId.toString(),
+                    "Delete account (force)",
+                    "Failed",
+                    Map.of("error", e.getMessage())));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
@@ -174,22 +191,24 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         Account userObject = userAccountRepository
                 .findById(uuid)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        log.info("Deleting account {}", userObject.getUsername());
+
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
                         .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         if (!userObject.getToken().getToken().equals(deleteAccountRequest.getToken()))
             throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
-        var sendObject = DeleteNotificationRequest.builder()
-                .email(deleteAccountRequest.getEmail())
-                .secret(SecretEnum.getRandomMessage())
-                .token(userObject.getToken().getToken())
-                .build();
+
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                userObject.getUsername(),
+                "Delete account",
+                "Requested",
+                Map.of("email", deleteAccountRequest.getEmail())));
+
         return DeleteAccountResponse.builder()
                 .isSuccess(true)
-                .secret(sendObject.getSecret())
-                .session(UUID.randomUUID())
+                .secret(SecretEnum.getRandomMessage())
                 .session(userObject.getSession())
                 .timestamp(deleteAccountRequest.getTimestamp())
                 .build();
@@ -204,9 +223,15 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         try {
             userAccountRepository.deleteById(uuid);
-            log.warn("User account {} deleted", userObject.getUsername());
+            kafkaService.sendLog(
+                    buildLog("identity-service", userObject.getUsername(), "Delete account", "Success", Map.of()));
         } catch (Exception e) {
-            e.printStackTrace();
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    userObject.getUsername(),
+                    "Delete account",
+                    "Failed",
+                    Map.of("error", e.getMessage())));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
         return true;
@@ -217,7 +242,9 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         var userResponse = userAccountRepository
                 .findById((accountId))
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        if (userAccountRepository.existsByUsernameAndIsActivatedTrue(userResponse.getUsername()))
+        if (userAccountRepository.existsByUsernameAndIsActivatedTrue(userResponse.getUsername())) {
+            kafkaService.sendLog(
+                    buildLog("identity-service", userResponse.getUsername(), "Get user account", "Success", Map.of()));
             return UserInfoResponse.builder()
                     .username(userResponse.getUsername())
                     .accountId(userResponse.getAccountId())
@@ -227,7 +254,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     .isActivated(userResponse.isActivated())
                     .provider(userResponse.getProvider())
                     .build();
-        else throw new CustomExceptionHandler(ErrorCode.ACCOUNT_INACTIVE);
+        } else throw new CustomExceptionHandler(ErrorCode.ACCOUNT_INACTIVE);
     }
 
     @Override
@@ -254,8 +281,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         Account foundObject = userAccountRepository
                 .findById(accountId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        if (foundObject.getUsername() != updateAccountRequest.getUsername())
-            foundObject.setUsername(foundObject.getUsername());
+
         if (foundObject.getEmail() != updateAccountRequest.getEmail()) {
             foundObject.setEmail(updateAccountRequest.getEmail());
         }
@@ -266,6 +292,12 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                         .email(foundObject.getEmail())
                         .username(foundObject.getUsername())
                         .build());
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                foundObject.getUsername(),
+                "Update account",
+                "Success",
+                Map.of("newEmail", foundObject.getEmail())));
         return UpdateAccountResponse.builder()
                 .email(foundObject.getEmail())
                 .username(foundObject.getUsername())
@@ -287,7 +319,25 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .username(requestActivationAccount.getUsername())
                 .email(requestActivationAccount.getEmail())
                 .build());
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                requestActivationAccount.getUsername(),
+                "Request account activation",
+                "Success",
+                Map.of()));
         return true;
+    }
+
+    private LogEvent buildLog(
+            String service, String userId, String action, String message, Map<String, Object> metadata) {
+        return LogEvent.builder()
+                .service(service)
+                .eventId("LOG")
+                .userId(userId)
+                .action(action)
+                .message(message)
+                .metadata(metadata)
+                .build();
     }
 
     public String generateActivationCode() {
