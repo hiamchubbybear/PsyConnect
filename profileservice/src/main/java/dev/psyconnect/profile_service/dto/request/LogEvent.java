@@ -3,6 +3,7 @@ package dev.psyconnect.profile_service.dto.request;
 import java.time.Instant;
 import java.util.Map;
 
+import dev.psyconnect.profile_service.service.LogLevel;
 import lombok.*;
 
 @Data
@@ -10,13 +11,12 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LogEvent {
-    private String eventId;
     private String service;
     private String action;
-    private String level;
+    private LogLevel level;
     private String userId;
     private String traceId;
-    private Instant timestamp = Instant.now();
-    private Map<String, Object> metadata;
+    private String timestamp;
+    private Map<String, ?> metadata;
     private String message;
 }

@@ -31,6 +31,7 @@ public class KafkaService {
             String objectMapper = new ObjectMapper().writeValueAsString(payload);
             kafkaTemplate.send(topic, objectMapper);
         } catch (Exception e) {
+            log.info(e.getMessage());
             throw new CustomExceptionHandler(ErrorCode.KAFKA_SERVER_ERROR);
         }
     }

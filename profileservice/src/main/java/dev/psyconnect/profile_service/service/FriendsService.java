@@ -1,5 +1,6 @@
 package dev.psyconnect.profile_service.service;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class FriendsService {
                     senderId,
                     "Create friend request",
                     "Success",
-                    Map.of("target", request.getTarget())));
+                    Map.of("metadata", request.getTarget()),LogLevel.LOG));
 
             return FriendRequestResponse.builder()
                     .friendRequestStatus("Success")
@@ -69,7 +70,7 @@ public class FriendsService {
                     senderId,
                     "Create friend request",
                     "Failed",
-                    Map.of("target", request.getTarget(), "error", e.getMessage())));
+                    Map.of("metadata", request.getTarget(), "error", e.getMessage()),LogLevel.ERROR));
             throw e;
         }
     }
@@ -90,7 +91,7 @@ public class FriendsService {
             friendRepository.create(tarId, reqId, FriendShipStatus.ACCEPTED);
 
             kafkaService.sendLog(buildLog(
-                    "friends-service", accepterId, "Accept friend request", "Success", Map.of("target", reqId)));
+                    "friends-service", accepterId, "Accept friend request", "Success", Map.of("metadata", reqId),LogLevel.LOG));
 
             return new FriendAcceptResponse("Success", FriendShipStatus.ACCEPTED);
         } catch (Exception e) {
@@ -99,7 +100,7 @@ public class FriendsService {
                     accepterId,
                     "Accept friend request",
                     "Failed",
-                    Map.of("target", request.getTarget(), "error", e.getMessage())));
+                    Map.of("metadata", request.getTarget(), "error", e.getMessage()),LogLevel.ERROR));
             throw e;
         }
     }
@@ -116,7 +117,7 @@ public class FriendsService {
             friendRepository.delete(reqId, tarId, FriendShipStatus.ACCEPTED);
 
             kafkaService.sendLog(
-                    buildLog("friends-service", unfriendUserId, "Unfriend user", "Success", Map.of("target", reqId)));
+                    buildLog("friends-service", unfriendUserId, "Unfriend user", "Success", Map.of("metadata", reqId),LogLevel.LOG));
 
             return new UnFriendResponse("Success", FriendShipStatus.ACCEPTED);
         } catch (Exception e) {
@@ -125,7 +126,7 @@ public class FriendsService {
                     unfriendUserId,
                     "Unfriend user",
                     "Failed",
-                    Map.of("target", request.getTarget(), "error", e.getMessage())));
+                    Map.of("metadata", request.getTarget(), "error", e.getMessage()),LogLevel.ERROR));
             throw e;
         }
     }
@@ -142,7 +143,7 @@ public class FriendsService {
             friendRepository.delete(reqId, tarId, FriendShipStatus.PENDING);
 
             kafkaService.sendLog(
-                    buildLog("friends-service", undoUserId, "Undo friend request", "Success", Map.of("target", reqId)));
+                    buildLog("friends-service", undoUserId, "Undo friend request", "Success", Map.of("metadata", reqId),LogLevel.LOG));
 
             return new UndoFriendRequestResponse("Success", FriendShipStatus.UNFRIEND);
         } catch (Exception e) {
@@ -151,7 +152,7 @@ public class FriendsService {
                     undoUserId,
                     "Undo friend request",
                     "Failed",
-                    Map.of("target", request.getTarget(), "error", e.getMessage())));
+                    Map.of("metadata", request.getTarget(), "error", e.getMessage()),LogLevel.ERROR));
             throw e;
         }
     }
@@ -168,7 +169,7 @@ public class FriendsService {
             friendRepository.delete(reqId, tarId, FriendShipStatus.PENDING);
 
             kafkaService.sendLog(buildLog(
-                    "friends-service", declineUserId, "Decline friend request", "Success", Map.of("target", reqId)));
+                    "friends-service", declineUserId, "Decline friend request", "Success", Map.of("metadata", reqId),LogLevel.AUDIT));
 
             return new DeclineFriendRequestResponse("Success", FriendShipStatus.UNFRIEND);
         } catch (Exception e) {
@@ -177,16 +178,17 @@ public class FriendsService {
                     declineUserId,
                     "Decline friend request",
                     "Failed",
-                    Map.of("target", request.getTarget(), "error", e.getMessage())));
+                    Map.of("metadata", request.getTarget(), "error", e.getMessage()),LogLevel.LOG ));
             throw e;
         }
     }
 
     private LogEvent buildLog(
-            String service, String userId, String action, String message, Map<String, Object> metadata) {
+            String service, String userId, String action, String message, Map<String, Object> metadata, LogLevel level) {
         return LogEvent.builder()
                 .service(service)
-                .eventId("LOG")
+                .level(level)
+                .timestamp(Instant.now().toString())
                 .userId(userId)
                 .action(action)
                 .message(message)

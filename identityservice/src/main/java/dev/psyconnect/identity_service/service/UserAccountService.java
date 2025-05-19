@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.psyconnect.identity_service.dto.LogLevel;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -105,7 +107,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     request.getUsername(),
                     "Create account",
                     "Failed",
-                    Map.of("error", e.getMessage())));
+                    Map.of("error", e.getMessage()), LogLevel.ERROR));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
 
@@ -123,7 +125,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 request.getUsername(),
                 "Create account",
                 "Success",
-                Map.of("fullname", fullName, "email", savedAccount.getEmail())));
+                Map.of("fullname", fullName, "email", savedAccount.getEmail()), LogLevel.LOG));
 
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
@@ -155,14 +157,14 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     request.getEmail(),
                     "Activate account",
                     "Failed",
-                    Map.of("reason", "Token expired")));
+                    Map.of("reason", "Token expired"), LogLevel.WARN));
             return ActivateAccountResponse.builder()
                     .isSuccess(false)
                     .message("Activation token has expired")
                     .build();
         }
         userAccountRepository.activateUser(email);
-        kafkaService.sendLog(buildLog("identity-service", request.getEmail(), "Activate account", "Success", Map.of()));
+        kafkaService.sendLog(buildLog("identity-service", request.getEmail(), "Activate account", "Success", Map.of("status", true), LogLevel.AUDIT));
         return ActivateAccountResponse.builder()
                 .isSuccess(true)
                 .message("Account activation successful")
@@ -173,7 +175,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         try {
             userAccountRepository.deleteById(accountId);
             kafkaService.sendLog(
-                    buildLog("identity-service", accountId.toString(), "Delete account (force)", "Success", Map.of()));
+                    buildLog("identity-service", accountId.toString(), "Delete account (force)", "Success", Map.of("status", true), LogLevel.AUDIT));
             return true;
         } catch (Exception e) {
             kafkaService.sendLog(buildLog(
@@ -181,7 +183,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     accountId.toString(),
                     "Delete account (force)",
                     "Failed",
-                    Map.of("error", e.getMessage())));
+                    Map.of("error", e.getMessage()), LogLevel.ERROR));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
@@ -194,7 +196,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         if (!userObject.getToken().getToken().equals(deleteAccountRequest.getToken()))
             throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
@@ -204,7 +206,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 userObject.getUsername(),
                 "Delete account",
                 "Requested",
-                Map.of("email", deleteAccountRequest.getEmail())));
+                Map.of("email", deleteAccountRequest.getEmail()), LogLevel.LOG));
 
         return DeleteAccountResponse.builder()
                 .isSuccess(true)
@@ -224,14 +226,14 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         try {
             userAccountRepository.deleteById(uuid);
             kafkaService.sendLog(
-                    buildLog("identity-service", userObject.getUsername(), "Delete account", "Success", Map.of()));
+                    buildLog("identity-service", userObject.getUsername(), "Delete account", "Success", Map.of("metadata", true), LogLevel.LOG));
         } catch (Exception e) {
             kafkaService.sendLog(buildLog(
                     "identity-service",
                     userObject.getUsername(),
                     "Delete account",
                     "Failed",
-                    Map.of("error", e.getMessage())));
+                    Map.of("error", e.getMessage()), LogLevel.ERROR));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
         return true;
@@ -244,7 +246,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         if (userAccountRepository.existsByUsernameAndIsActivatedTrue(userResponse.getUsername())) {
             kafkaService.sendLog(
-                    buildLog("identity-service", userResponse.getUsername(), "Get user account", "Success", Map.of()));
+                    buildLog("identity-service", userResponse.getUsername(), "Get user account", "Success", Map.of("status", true), LogLevel.LOG));
             return UserInfoResponse.builder()
                     .username(userResponse.getUsername())
                     .accountId(userResponse.getAccountId())
@@ -297,7 +299,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 foundObject.getUsername(),
                 "Update account",
                 "Success",
-                Map.of("newEmail", foundObject.getEmail())));
+                Map.of("newEmail", foundObject.getEmail()), LogLevel.LOG));
         return UpdateAccountResponse.builder()
                 .email(foundObject.getEmail())
                 .username(foundObject.getUsername())
@@ -307,14 +309,16 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public Boolean requestActivateAccount(RequestActivationAccount requestActivationAccount) {
         if (accountRepository.existsByUsernameAndIsActivatedTrue(requestActivationAccount.getUsername()))
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
+        ActivateAccountNotificationRequest req = ActivateAccountNotificationRequest.builder()
+                .email(requestActivationAccount.getEmail())
+                .fullname(requestActivationAccount.getFullname())
+                .code(generateActivationCode())
+                .username(requestActivationAccount.getUsername())
+                .build();
         kafkaService.send(
                 (NOTIFICATION_CREATE_TOPIC),
-                ActivateAccountNotificationRequest.builder()
-                        .email(requestActivationAccount.getEmail())
-                        .fullname(requestActivationAccount.getFullname())
-                        .code(generateActivationCode())
-                        .username(requestActivationAccount.getUsername())
-                        .build());
+                req
+        );
         sendNotification(ActivateAccountNotificationRequest.builder()
                 .username(requestActivationAccount.getUsername())
                 .email(requestActivationAccount.getEmail())
@@ -324,15 +328,16 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 requestActivationAccount.getUsername(),
                 "Request account activation",
                 "Success",
-                Map.of()));
+                Map.of("metadata", req), LogLevel.LOG));
         return true;
     }
 
     private LogEvent buildLog(
-            String service, String userId, String action, String message, Map<String, Object> metadata) {
+            String service, String userId, String action, String message, Map<String, ?> metadata, LogLevel level) {
         return LogEvent.builder()
                 .service(service)
-                .eventId("LOG")
+                .level(level)
+                .timestamp(Instant.now().toString())
                 .userId(userId)
                 .action(action)
                 .message(message)
