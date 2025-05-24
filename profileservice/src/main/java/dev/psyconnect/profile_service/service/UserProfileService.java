@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+import dev.psyconnect.profile_service.dto.request.LogLevel;
 import org.joda.time.Minutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,11 @@ public class UserProfileService {
         Profile profile = userProfileMapper.toUserProfileMapper(request);
         profile.setDob(Time.parseFromString(request.getDob()));
         var temp = userProfileRepository.save(profile);
+
+        log.info("Created profile: {}", temp.getProfileId());
+
+        //         Push setting default event
+        eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
         kafkaService.send("profile.user-create-setting", request.getProfileId());
         kafkaService.sendLog(
                 buildLog("profile-service", request.getProfileId(), "Create profile", "Success", Map.of("metadata", temp), LogLevel.LOG));

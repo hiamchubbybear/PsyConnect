@@ -1,6 +1,9 @@
 package dev.psyconnect.api_service.configuration;
 
 import com.sun.jdi.InternalException;
+import dev.psyconnect.api_service.configuration.producer.KafkaService;
+import dev.psyconnect.api_service.dto.LogEvent;
+import dev.psyconnect.api_service.dto.LogLevel;
 import dev.psyconnect.api_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.api_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.api_service.service.TokenValidateService;
@@ -21,6 +24,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -29,6 +34,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     private String SIGNER_KEY;
     @Autowired
     TokenValidateService service;
+    @Autowired
+    private KafkaService kafkaService;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -37,7 +44,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         log.info("Security filters: {}", authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            if (service.isTokenInvalid(token))  throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
+            if (service.isTokenInvalid(token)) throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
             try {
                 Claims claims = getClaimsFromToken(token);
                 String username = claims.getSubject();
@@ -56,6 +63,11 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                         .build();
                 return chain.filter(exchange.mutate().request(mutatedRequest).build());
             } catch (SignatureException e) {
+                kafkaService.sendLog(buildLog(
+                        "api-gateway", "",
+                        "login", "Invalid JWT signature",
+                        null, LogLevel.ERROR
+                ));
                 log.error("Invalid JWT signature: {}", e.getMessage());
             }
         }
@@ -74,5 +86,18 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         return -1;
+    }
+
+    private LogEvent buildLog(
+            String service, String userId, String action, String message, Map<String, Object> metadata, LogLevel level) {
+        return LogEvent.builder()
+                .service(service)
+                .level(level)
+                .timestamp(Instant.now().toString())
+                .userId(userId)
+                .action(action)
+                .message(message)
+                .metadata(metadata)
+                .build();
     }
 }

@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.psyconnect.identity_service.dto.LogEvent;
 import dev.psyconnect.identity_service.dto.LogLevel;
 import jakarta.transaction.Transactional;
 
@@ -137,39 +137,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
     @Transactional
     @CachePut(key = "#request.accountId", value = "account")
-    public ActivateAccountResponse activateAccount(ActivateAccountRequest request) {
-        String email = request.getEmail();
-        String activateToken = request.getToken();
-
-        if (userAccountRepository.existsByEmailAndIsActivatedTrue(email)) {
-            throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
-        }
-        if (!userAccountRepository.existsByEmail(email)) {
-            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
-        }
-        var foundObject = activateRepository
-                .findByToken(activateToken)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ACTIVATION_FAILED));
-
-        if (foundObject.getExpires().before(new Date())) {
-            kafkaService.sendLog(buildLog(
-                    "identity-service",
-                    request.getEmail(),
-                    "Activate account",
-                    "Failed",
-                    Map.of("reason", "Token expired"), LogLevel.WARN));
-            return ActivateAccountResponse.builder()
-                    .isSuccess(false)
-                    .message("Activation token has expired")
-                    .build();
-        }
-        userAccountRepository.activateUser(email);
-        kafkaService.sendLog(buildLog("identity-service", request.getEmail(), "Activate account", "Success", Map.of("status", true), LogLevel.AUDIT));
-        return ActivateAccountResponse.builder()
-                .isSuccess(true)
-                .message("Account activation successful")
-                .build();
-    }
 
     public boolean deleteAccountWithoutCheck(UUID accountId) {
         try {
@@ -303,6 +270,42 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         return UpdateAccountResponse.builder()
                 .email(foundObject.getEmail())
                 .username(foundObject.getUsername())
+                .build();
+    }
+
+    @Transactional
+    @CachePut(key = "#request.accountId", value = "account")
+    public ActivateAccountResponse activateAccount(ActivateAccountRequest request) {
+        String email = request.getEmail();
+        String activateToken = request.getToken();
+
+        if (userAccountRepository.existsByEmailAndIsActivatedTrue(email)) {
+            throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
+        }
+        if (!userAccountRepository.existsByEmail(email)) {
+            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
+        }
+        var foundObject = activateRepository
+                .findByToken(activateToken)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ACTIVATION_FAILED));
+
+        if (foundObject.getExpires().before(new Date())) {
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    request.getEmail(),
+                    "Activate account",
+                    "Failed",
+                    Map.of("reason", "Token expired"), LogLevel.WARN));
+            return ActivateAccountResponse.builder()
+                    .isSuccess(false)
+                    .message("Activation token has expired")
+                    .build();
+        }
+        userAccountRepository.activateUser(email);
+        kafkaService.sendLog(buildLog("identity-service", request.getEmail(), "Activate account", "Success", Map.of("status", true), LogLevel.AUDIT));
+        return ActivateAccountResponse.builder()
+                .isSuccess(true)
+                .message("Account activation successful")
                 .build();
     }
 

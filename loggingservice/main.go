@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -84,13 +83,11 @@ func main() {
 	listenOnKafkaHandler()
 }
 func writeToLog(message string) error {
-	// Parse message thành map
 	var event map[string]interface{}
 	if err := json.Unmarshal([]byte(message), &event); err != nil {
 		return err
 	}
 
-	// Tạo logger như cũ
 	logWriter := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   "./logs/app.log",
 		MaxSize:    15,
@@ -106,7 +103,14 @@ func writeToLog(message string) error {
 		EncodeTime:  zapcore.ISO8601TimeEncoder,
 		EncodeLevel: zapcore.CapitalLevelEncoder,
 	}
-
+	logError := zap.New(zapcore.NewCore(
+		zapcore.NewJSONEncoder(encoderConfig),
+		zapcore.AddSync(&lumberjack.Logger{
+			Filename: "./logs/error.log",
+			MaxSize:  10, MaxBackups: 5, MaxAge: 30, Compress: true,
+		}),
+		zapcore.ErrorLevel,
+	))
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),
 		logWriter,
@@ -123,8 +127,15 @@ func writeToLog(message string) error {
 		}
 		return ""
 	}
-	log.Printf("Log level %s", get("level"))
-	if get("level") == "LOG" || get("level") == "AUDIT" {
+	consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
+	core = zapcore.NewTee(
+		zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig), logWriter, zapcore.InfoLevel),
+		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
+	)
+
+	level := get("level")
+	switch level {
+	case "LOG", "AUDIT":
 		logger.Info("LogEvent",
 			zap.String("service", get("service")),
 			zap.String("action", get("action")),
@@ -133,8 +144,17 @@ func writeToLog(message string) error {
 			zap.String("timestamp", get("timestamp")),
 			zap.Any("metadata", event["metadata"]),
 			zap.String("message", get("message")))
-	} else if get("level") == "ERROR" || get("level") == "WARN" {
-		logger.Error("LogEvent",
+	case "ERROR", "WARN":
+		logError.Error("LogEvent",
+			zap.String("service", get("service")),
+			zap.String("action", get("action")),
+			zap.String("userId", get("userId")),
+			zap.String("traceId", get("traceId")),
+			zap.String("timestamp", get("timestamp")),
+			zap.Any("metadata", event["metadata"]),
+			zap.String("message", get("message")))
+	default:
+		logger.Info("LogEvent (default level)",
 			zap.String("service", get("service")),
 			zap.String("action", get("action")),
 			zap.String("userId", get("userId")),

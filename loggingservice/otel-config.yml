@@ -1,0 +1,26 @@
+receivers:
+  filelog:
+    include: [/var/log/myapp/*.log]
+    start_at: beginning
+    operators:
+      - type: json_parser
+        id: parse_logs
+        timestamp:
+          parse_from: attributes.timestamp
+          layout_type: gotime
+          layout: "2006-01-02T15:04:05.000Z07:00"
+
+exporters:
+  loki:
+    endpoint: http://loki:3100/loki/api/v1/push
+    labels:
+      attributes:
+        - service
+        - level
+        - userId
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [loki]
