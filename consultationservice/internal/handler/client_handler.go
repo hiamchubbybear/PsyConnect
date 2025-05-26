@@ -35,7 +35,7 @@ func InitClientHandler(env *bootstrap.Env) {
 }
 
 // External Rest API -- GET /consultation/client
-func (r ClientHandler) GetClientHandler(c *gin.Context) {
+func (r *ClientHandler) GetClientHandler(c *gin.Context) {
 	profileID := c.Request.Header["X-Profile-Id"][0]
 	if profileID == "" {
 		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
@@ -50,7 +50,7 @@ func (r ClientHandler) GetClientHandler(c *gin.Context) {
 }
 
 // External Rest API -- POST /consultation/client
-func (r ClientHandler) PostClientHandler(c *gin.Context) {
+func (r *ClientHandler) PostClientHandler(c *gin.Context) {
 	var client model.Client
 	profileId := c.Request.Header["X-Profile-Id"][0]
 	if profileId == "" {
@@ -80,7 +80,7 @@ func (r ClientHandler) PostClientHandler(c *gin.Context) {
 }
 
 // External Rest API -- POST /consultation/client
-func (r ClientHandler) PutClientHandler(c *gin.Context) {
+func (r *ClientHandler) PutClientHandler(c *gin.Context) {
 	var client *model.Client
 	profileId := c.GetHeader("X-Profile-Id")
 	if profileId == "" {

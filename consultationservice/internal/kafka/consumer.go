@@ -6,9 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/segmentio/kafka-go"
 	"log"
 	"time"
+
+	"github.com/segmentio/kafka-go"
 )
 
 type Consumer struct {
@@ -16,49 +17,59 @@ type Consumer struct {
 	conn      *kafka.Conn
 }
 
-func NewConsumer(env *bootstrap.Env) (*Producer, error) {
-	p := &Producer{}
-	err := p.InitKafkaProducer(env)
-	return p, err
+func NewConsumer(env *bootstrap.Env) (*Consumer, error) {
+	c := &Consumer{
+		converter: &utils.Converter{},
+	}
+	err := c.initKafkaConsumer(env)
+	return c, err
 }
-func (r *Consumer) InitKafkaConsumer(env *bootstrap.Env) error {
+
+func (c *Consumer) initKafkaConsumer(env *bootstrap.Env) error {
 	address := env.KafkaAddr
 	topic := env.KafkaTopic
 	partitionStr := env.KafkaPart
+
 	if address == "" || topic == "" || partitionStr == "" {
-		return errors.New("missing environment variables for kafka")
+		return errors.New("missing Kafka environment variables")
 	}
-	partition, err := r.converter.StringToInt(partitionStr)
+
+	partition, err := c.converter.StringToInt(partitionStr)
 	if err != nil {
 		return err
 	}
+
 	conn, err := kafka.DialLeader(context.Background(), "tcp", address, topic, partition)
 	if err != nil {
-		return errors.New("failed to connect to kafka leader: " + err.Error())
+		return fmt.Errorf("failed to connect to Kafka leader: %v", err)
 	}
-	r.conn = conn
-	log.Println("Kafka producer initialized successfully")
+
+	c.conn = conn
+	log.Println("Kafka consumer initialized successfully")
 	return nil
 }
-func (r *Consumer) ConsumerMessage() error {
-	if r.conn == nil {
-		return errors.New("kafka connection is not initialized")
+
+func (c *Consumer) ConsumeMessages() error {
+	if c.conn == nil {
+		return errors.New("Kafka connection is not initialized")
 	}
-	r.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-	batch := r.conn.ReadBatch(10e3, 1e6)
-	b := make([]byte, 10e3)
+
+	c.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+	batch := c.conn.ReadBatch(10e3, 1e6)
+	defer func() {
+		batch.Close()
+		c.conn.Close()
+	}()
+
+	buffer := make([]byte, 10e3)
+
 	for {
-		n, err := batch.Read(b)
+		n, err := batch.Read(buffer)
 		if err != nil {
 			break
 		}
-		fmt.Println(string(b[:n]))
+		fmt.Println(string(buffer[:n]))
 	}
-	if err := batch.Close(); err != nil {
-		log.Fatal("failed to close batch:", err)
-	}
-	if err := r.conn.Close(); err != nil {
-		log.Fatal("failed to close connection:", err)
-	}
+
 	return nil
 }

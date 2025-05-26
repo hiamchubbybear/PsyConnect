@@ -2,56 +2,65 @@ package kafka
 
 import (
 	"consultationservice/bootstrap"
-	"consultationservice/internal/utils"
 	"context"
 	"errors"
-	"github.com/segmentio/kafka-go"
 	"log"
-	"time"
+
+	"github.com/segmentio/kafka-go"
 )
 
 type Producer struct {
-	converter *utils.Converter
-	conn      *kafka.Conn
+	defaultTopic string
+	writer       *kafka.Writer
 }
 
 func NewProducer(env *bootstrap.Env) (*Producer, error) {
-	p := &Producer{}
-	err := p.InitKafkaProducer(env)
-	return p, err
-}
-func (r *Producer) InitKafkaProducer(env *bootstrap.Env) error {
-	address := env.KafkaAddr
-	topic := env.KafkaTopic
-	partitionStr := env.KafkaPart
-	if address == "" || topic == "" || partitionStr == "" {
-		return errors.New("missing environment variables for kafka")
+	if env.KafkaAddr == "" || env.KafkaTopic == "" {
+		return nil, errors.New("missing Kafka configuration in environment")
 	}
-	partition, err := r.converter.StringToInt(partitionStr)
-	if err != nil {
-		return err
-	}
-	conn, err := kafka.DialLeader(context.Background(), "tcp", address, topic, partition)
-	if err != nil {
-		return errors.New("failed to connect to kafka leader: " + err.Error())
-	}
-	r.conn = conn
-	log.Println("Kafka producer initialized successfully")
-	return nil
+	writer := kafka.NewWriter(kafka.WriterConfig{
+		Brokers:  []string{env.KafkaAddr},
+		Topic:    env.KafkaTopic,
+		Balancer: &kafka.LeastBytes{},
+	})
+
+	log.Println("Kafka producer initialized with topic:", env.KafkaTopic)
+
+	return &Producer{
+		writer:       writer,
+		defaultTopic: env.KafkaTopic,
+	}, nil
 }
 
-func (r *Producer) ProducerSendMessage(message string) error {
-	if r.conn == nil {
-		return errors.New("kafka connection is not initialized")
+func (p *Producer) SendMessage(message string) error {
+	return p.sendToTopic(p.defaultTopic, message)
+}
+
+func (p *Producer) SendLogs(message string) error {
+	return p.sendToTopic("logging-service", message)
+}
+
+func (p *Producer) sendToTopic(topic, message string) error {
+	if p.writer == nil {
+		return errors.New("Kafka writer is not initialized")
 	}
-	r.conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	_, err := r.conn.WriteMessages(kafka.Message{
+
+	err := p.writer.WriteMessages(context.Background(), kafka.Message{
+		Topic: topic,
 		Value: []byte(message),
 	})
 	if err != nil {
-		log.Println("Failed to send kafka message:", err)
+		log.Printf("Failed to send Kafka message to topic %s: %v", topic, err)
 		return err
 	}
-	log.Println("Message sent to Kafka successfully")
+
+	log.Printf("Message sent to Kafka topic '%s' successfully", topic)
+	return nil
+}
+
+func (p *Producer) Close() error {
+	if p.writer != nil {
+		return p.writer.Close()
+	}
 	return nil
 }

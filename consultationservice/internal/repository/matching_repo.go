@@ -2,11 +2,13 @@ package repository
 
 import (
 	"consultationservice/internal/dto"
+	"consultationservice/internal/enum"
 	grpc "consultationservice/internal/grpc/handler"
 	"consultationservice/internal/model"
 	"context"
 	"errors"
 	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,14 +20,16 @@ type MatchingRepository struct {
 	clientRepo        *ClientRepository
 	therapistRepo     *TherapistRepository
 	grpcProfile       *grpc.ProfileGrpc
+	sessionRepo       *SessionRepository
 }
 
-func NewMatchingRepository(collection *mongo.Collection, clientRepo *ClientRepository, grpcProfile *grpc.ProfileGrpc, therapistRepo *TherapistRepository) *MatchingRepository {
+func NewMatchingRepository(collection *mongo.Collection, clientRepo *ClientRepository, grpcProfile *grpc.ProfileGrpc, therapistRepo *TherapistRepository, sessionRepo *SessionRepository) *MatchingRepository {
 	return &MatchingRepository{
 		MongoDBCollection: collection,
 		clientRepo:        clientRepo,
 		grpcProfile:       grpcProfile,
 		therapistRepo:     therapistRepo,
+		sessionRepo:       sessionRepo,
 	}
 }
 
@@ -167,4 +171,66 @@ func (r *MatchingRepository) AddMatchedClient(profileId string, clientId string)
 	}
 
 	return true, nil
+}
+func (r *MatchingRepository) CheckValidSessionTimeAndDays(time dto.SessionTime, clientId string, therapistId string) (bool, error) {
+	ctx := context.Background()
+	if !IsValidDay(time.Day) {
+		return false, errors.New("Invalid day of week")
+	}
+	if time.StartTime == "" || time.EndTime == "" {
+		return false, errors.New("Invalid time")
+	}
+	var clientDoc struct {
+		CurrentSession []string `bson:"current_session"`
+	}
+	if err := r.clientRepo.MongoDBCollection.FindOne(ctx,
+		bson.M{"profileId": clientId},
+	).Decode(&clientDoc); err != nil {
+		return false, errors.New("cannot find client")
+	}
+	var therapistDoc struct {
+		CurrentSession []string `bson:"current_session"`
+	}
+	if err := r.therapistRepo.MongoDBCollection.FindOne(ctx,
+		bson.M{"profileId": therapistId},
+	).Decode(&therapistDoc); err != nil {
+		return false, errors.New("cannot find therapist")
+	}
+	allSessionIDs := append(clientDoc.CurrentSession, therapistDoc.CurrentSession...)
+	cursor, err := r.sessionRepo.MongoDBCollection.Find(ctx, bson.M{
+		"_id": bson.M{"$in": allSessionIDs},
+	})
+	if err != nil {
+		return false, errors.New("failed to query sessions")
+	}
+
+	var sessions []model.Session
+	if err := cursor.All(ctx, &sessions); err != nil {
+		return false, errors.New("failed to decode sessions")
+	}
+
+	newStart, err1 := parseTime(time.StartTime)
+	newEnd, err2 := parseTime(time.EndTime)
+	if err1 != nil || err2 != nil {
+		return false, errors.New("invalid input time format (expected HH:MM)")
+	}
+
+	for _, s := range sessions {
+		if s.StartTime.Weekday().String() == time.Day.String() {
+			if isOverlapping(s.StartTime, s.EndTime, newStart, newEnd) {
+				return false, errors.New("conflict with existing session")
+			}
+		}
+	}
+	return true, nil
+}
+func IsValidDay(d enum.DayOfWeek) bool {
+	return d >= enum.Monday && d <= enum.Sunday
+}
+func parseTime(t string) (time.Time, error) {
+	return time.Parse("15:04", t)
+}
+
+func isOverlapping(start1, end1, start2, end2 time.Time) bool {
+	return start1.Before(end2) && start2.Before(end1)
 }

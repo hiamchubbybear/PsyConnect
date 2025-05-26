@@ -65,6 +65,10 @@ func GetClientCollection() *mongo.Collection {
 	client := InitDB()
 	return client.Database(dbName).Collection("clients")
 }
+func GetSessionCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("sessions")
+}
 func CloseDB() {
 	if mongoClient != nil {
 		if err := mongoClient.Disconnect(context.TODO()); err != nil {

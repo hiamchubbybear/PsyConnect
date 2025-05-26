@@ -52,7 +52,6 @@ func (r *ClientRepository) FindClientMatchingProfile(clientId string) (*model.Cl
 func (r *ClientRepository) FindAllClientMatchingProfiles(client *model.Client) ([]model.Client, error) {
 	result, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
 	if err != nil {
-
 		return nil, errors.New("Failed to find all client")
 	}
 	var results []model.Client

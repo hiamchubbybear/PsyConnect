@@ -8,8 +8,9 @@ import (
 	"consultationservice/internal/repository"
 	"consultationservice/internal/utils"
 	"consultationservice/pkg/apiresponse"
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -22,6 +23,7 @@ type MatchHandler struct{}
 func InitMatchHandler(env *bootstrap.Env) {
 	clientRepo := repository.NewClientRepository(db.GetClientCollection())
 	therapistRepo := repository.NewTherapistRepository(db.GetClientCollection())
+
 	grpcAddress := env.GrpcAdd
 	if grpcAddress == "" {
 		log.Fatal("Failed to read from env file")
@@ -31,7 +33,7 @@ func InitMatchHandler(env *bootstrap.Env) {
 	if err != nil {
 		log.Printf("Error while create grpcConnection %v", err)
 	}
-	matchingRepo = repository.NewMatchingRepository(db.GetTherapistCollection(), clientRepo, grpcProfile, therapistRepo)
+	matchingRepo = repository.NewMatchingRepository(db.GetTherapistCollection(), clientRepo, grpcProfile, therapistRepo, nil)
 }
 
 // GET /consultation/therapist/match?page=1
