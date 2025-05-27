@@ -39,15 +39,23 @@ func (r *ClientRepository) CreateClientMatchingProfile(client *model.Client) (in
 }
 
 func (r *ClientRepository) FindClientMatchingProfile(clientId string) (*model.Client, error) {
-	data := new(model.Client)
-	err := r.MongoDBCollection.FindOne(context.Background(), bson.D{{Key: "profile_id", Value: clientId}}).Decode(&data)
+	log.Printf("ClientRepository collection name: %v", r.MongoDBCollection.Name())
+	log.Printf("Type of clientId: %T, value: %v", clientId, clientId)
+
+	data := model.Client{}
+	err := r.MongoDBCollection.FindOne(context.Background(), bson.M{"profile_id": clientId}).Decode(&data)
 	if err != nil {
+		log.Printf("Không tìm thấy client với profile_id=%v. Lỗi: %v", clientId, err.Error())
 		return nil, err
 	}
-	if data == nil {
-		return nil, errors.New("No client found")
-	}
-	return data, nil
+
+	log.Printf("Tìm thấy client: %+v", data)
+	log.Printf("DEBUG - ProfileId value: '%s'", data.ProfileId)
+	log.Printf("DEBUG - ProfileId length: %d", len(data.ProfileId))
+	log.Printf("DEBUG - ProfileId is empty: %t", data.ProfileId == "")
+	log.Printf("DEBUG - ProfileId bytes: %v", []byte(data.ProfileId))
+
+	return &data, nil
 }
 func (r *ClientRepository) FindAllClientMatchingProfiles(client *model.Client) ([]model.Client, error) {
 	result, err := r.MongoDBCollection.Find(context.Background(), bson.D{})

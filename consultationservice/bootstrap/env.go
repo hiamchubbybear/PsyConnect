@@ -11,7 +11,7 @@ type Env struct {
 	Addr       string `mapstructure:"SERVICE_HOST"`
 	KafkaAddr  string `mapstructure:"KAFKA_ADDRESS"`
 	KafkaTopic string `mapstructure:"KAFKA_TOPIC"`
-	KafkaPart  string `mapstructure:"KAFKA_TOPIC"`
+	KafkaPart  string `mapstructure:"KAFKA_PARTITION"`
 	GrpcAdd    string `mapstructure:"GRPC_ADDRESS"`
 }
 

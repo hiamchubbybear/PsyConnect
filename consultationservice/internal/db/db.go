@@ -28,11 +28,11 @@ func InitDB() *mongo.Client {
 		dbHost := os.Getenv("DB_HOST")
 		dbPort := os.Getenv("DB_PORT")
 		dbName = os.Getenv("DB_NAME")
-		if (dbUser == " " ||
-			dbPass == " " ||
-			dbHost == " " ||
-			dbPort == " " ||
-			dbName == " ") && err != nil {
+		if (dbUser == "" ||
+			dbPass == "" ||
+			dbHost == "" ||
+			dbPort == "" ||
+			dbName == "") && err != nil {
 			log.Fatal("Error loading .env file")
 		}
 

@@ -2,13 +2,10 @@ package handlers
 
 import (
 	"consultationservice/bootstrap"
-	"consultationservice/internal/db"
 	"consultationservice/internal/dto"
-	grpc "consultationservice/internal/grpc/handler"
 	"consultationservice/internal/repository"
 	"consultationservice/internal/utils"
 	"consultationservice/pkg/apiresponse"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,22 +15,14 @@ var (
 	converter    utils.Converter
 )
 
-type MatchHandler struct{}
+type MatchHandler struct {
+	RepoManager *repository.RepositoryManager
+}
 
-func InitMatchHandler(env *bootstrap.Env) {
-	clientRepo := repository.NewClientRepository(db.GetClientCollection())
-	therapistRepo := repository.NewTherapistRepository(db.GetClientCollection())
-
-	grpcAddress := env.GrpcAdd
-	if grpcAddress == "" {
-		log.Fatal("Failed to read from env file")
+func NewMatchHandler(env *bootstrap.Env, repoManager *repository.RepositoryManager) *MatchHandler {
+	return &MatchHandler{
+		RepoManager: repoManager,
 	}
-	grpcProfile, err := grpc.NewProfileGrpc(grpcAddress)
-
-	if err != nil {
-		log.Printf("Error while create grpcConnection %v", err)
-	}
-	matchingRepo = repository.NewMatchingRepository(db.GetTherapistCollection(), clientRepo, grpcProfile, therapistRepo, nil)
 }
 
 // GET /consultation/therapist/match?page=1
@@ -67,12 +56,12 @@ func (r *MatchHandler) MatchRequest(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 404, "Invalid input")
 		return
 	}
-	_, err = therapistRepo.FindTherapistMatchingProfile(request.ThearpistId)
+	_, err = r.RepoManager.TherapistRepo.FindTherapistMatchingProfile(request.ThearpistId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 404, "Therapist not found "+err.Error())
 		return
 	}
-	_, err = clientRepo.FindClientMatchingProfile(profileId)
+	_, err = r.RepoManager.ClientRepo.FindClientMatchingProfile(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 404, "Client not found "+err.Error())
 		return
@@ -97,7 +86,7 @@ func (r *MatchHandler) ResponseMatchingRequest(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 404, "Profile id not found")
 		return
 	}
-	responseStatus, err := grpcProfile.ResponseMatchingRequest(request, therapistId)
+	responseStatus, err := r.RepoManager.GrpcProfile.ResponseMatchingRequest(request, therapistId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 504, err.Error())
 		return

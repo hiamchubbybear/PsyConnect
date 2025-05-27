@@ -32,6 +32,7 @@ func (r *TherapistRepository) CreateTherapistMatchingProfile(therapist *model.Th
 		return nil, errors.New("Failed to check if therapist exists")
 	}
 	therapist.MatchedClients = []string{}
+	therapist.CurrentSession = []string{}
 	res, err := r.MongoDBCollection.InsertOne(context.Background(), therapist)
 	if err != nil {
 		log.Println("TherapistRepository CreateTherapistMatchingProfile err:", err)

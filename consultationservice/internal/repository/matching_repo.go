@@ -11,25 +11,22 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MatchingRepository struct {
-	MongoDBCollection *mongo.Collection
-	clientRepo        *ClientRepository
-	therapistRepo     *TherapistRepository
-	grpcProfile       *grpc.ProfileGrpc
-	sessionRepo       *SessionRepository
+	clientRepo    *ClientRepository
+	therapistRepo *TherapistRepository
+	grpcProfile   *grpc.ProfileGrpc
+	sessionRepo   *SessionRepository
 }
 
-func NewMatchingRepository(collection *mongo.Collection, clientRepo *ClientRepository, grpcProfile *grpc.ProfileGrpc, therapistRepo *TherapistRepository, sessionRepo *SessionRepository) *MatchingRepository {
+func NewMatchingRepository(clientRepo *ClientRepository, grpcProfile *grpc.ProfileGrpc, therapistRepo *TherapistRepository, sessionRepo *SessionRepository) *MatchingRepository {
 	return &MatchingRepository{
-		MongoDBCollection: collection,
-		clientRepo:        clientRepo,
-		grpcProfile:       grpcProfile,
-		therapistRepo:     therapistRepo,
-		sessionRepo:       sessionRepo,
+		clientRepo:    clientRepo,
+		grpcProfile:   grpcProfile,
+		therapistRepo: therapistRepo,
+		sessionRepo:   sessionRepo,
 	}
 }
 
@@ -76,7 +73,7 @@ func (r *MatchingRepository) FilterAllMatching(matchProfileId string, page int64
 	findOptions.SetLimit(limit)
 	findOptions.SetSkip((page - 1) * limit)
 
-	cursor, err := r.MongoDBCollection.Find(ctx, filter, findOptions)
+	cursor, err := r.therapistRepo.MongoDBCollection.Find(ctx, filter, findOptions)
 
 	if err != nil {
 		return nil, err
@@ -184,7 +181,7 @@ func (r *MatchingRepository) CheckValidSessionTimeAndDays(time dto.SessionTime, 
 		CurrentSession []string `bson:"current_session"`
 	}
 	if err := r.clientRepo.MongoDBCollection.FindOne(ctx,
-		bson.M{"profileId": clientId},
+		bson.M{"profile_id": clientId},
 	).Decode(&clientDoc); err != nil {
 		return false, errors.New("cannot find client")
 	}
@@ -192,7 +189,7 @@ func (r *MatchingRepository) CheckValidSessionTimeAndDays(time dto.SessionTime, 
 		CurrentSession []string `bson:"current_session"`
 	}
 	if err := r.therapistRepo.MongoDBCollection.FindOne(ctx,
-		bson.M{"profileId": therapistId},
+		bson.M{"profile_id": therapistId},
 	).Decode(&therapistDoc); err != nil {
 		return false, errors.New("cannot find therapist")
 	}

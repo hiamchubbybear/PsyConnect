@@ -17,3 +17,7 @@ type SessionTime struct {
 	StartTime string         `json:"start_time" bson:"start_time"`
 	EndTime   string         `json:"end_time" bson:"end_time"`
 }
+
+type DeleteSessionRequest struct {
+	SessionID string `json:"session_id" bson:"_id"`
+}
