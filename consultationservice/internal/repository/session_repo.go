@@ -2,9 +2,12 @@ package repository
 
 import (
 	"consultationservice/internal/dto"
+	"consultationservice/internal/model"
 	"context"
 	"errors"
 	"log"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -61,28 +64,80 @@ func (r *SessionRepository) CreateNewSession(session dto.SessionRequest) (interf
 
 	sessionID := res.InsertedID
 	log.Printf("Session %v", sessionID)
-	update := bson.D{{"$push", bson.D{{"current_session", sessionID}}}}
+	update := bson.D{{Key: "$push", Value: bson.D{{Key: "current_session", Value: sessionID}}}}
 
 	_, _ = r.clientRepo.MongoDBCollection.UpdateOne(
 		context.Background(),
-		bson.D{{"profile_id", clientId}},
+		bson.D{{Key: "profile_id", Value: clientId}},
 		update,
 	)
 
 	_, _ = r.therapistRepo.MongoDBCollection.UpdateOne(
 		context.Background(),
-		bson.D{{"profile_id", therapistId}},
+		bson.D{{Key: "profile_id", Value: therapistId}},
 		update,
 	)
 
 	return res, nil
 }
 func (r *SessionRepository) DeleteCurrentSession(session dto.DeleteSessionRequest) (bool, error) {
+	ctx := context.Background()
+
 	if session.SessionID == "" {
-		return true, errors.New("Session id couldn't be empty")
+		return false, errors.New("session id couldn't be empty")
 	}
-	return false, nil
+	objectID, err := primitive.ObjectIDFromHex(session.SessionID)
+	if err != nil {
+		return false, errors.New("invalid session id format")
+	}
+
+	res, err := r.MongoDBCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: objectID}})
+	if err != nil {
+		log.Printf("Failed to delete session: %v", err)
+		return false, err
+	}
+
+	if res.DeletedCount == 0 {
+		log.Println("Session not found")
+		return false, errors.New("session not found")
+	}
+
+	therapistUpdate := bson.D{{Key: "$pull", Value: bson.D{{Key: "current_session", Value: objectID}}}}
+	_, err = r.therapistRepo.MongoDBCollection.UpdateMany(ctx, bson.D{}, therapistUpdate)
+	if err != nil {
+		log.Printf("Failed to update therapist: %v", err)
+		return false, err
+	}
+
+	clientUpdate := bson.D{{Key: "$pull", Value: bson.D{{Key: "current_session", Value: objectID}}}}
+	_, err = r.clientRepo.MongoDBCollection.UpdateMany(ctx, bson.D{}, clientUpdate)
+	if err != nil {
+		log.Printf("Failed to update client: %v", err)
+		return false, err
+	}
+	return true, nil
 }
+func (r *SessionRepository) GetAllSessions() ([]model.Session, error) {
+	var sessions []model.Session
+	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	if err := cursor.All(context.Background(), &sessions); err != nil {
+		return nil, err
+	}
+	return sessions, nil
+}
+
+func (r *SessionRepository) GetSessionByID(id string) (*model.Session, error) {
+	var session model.Session
+	err := r.MongoDBCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&session)
+	if err != nil {
+		return nil, err
+	}
+	return &session, nil
+}
+
 func (s *SessionRepository) SetMatchingRepository(matchingRepo *MatchingRepository) {
 	s.matchingRepo = matchingRepo
 }

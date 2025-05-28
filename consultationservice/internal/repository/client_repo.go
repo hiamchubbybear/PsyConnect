@@ -21,6 +21,7 @@ func NewClientRepository(collection *mongo.Collection) *ClientRepository {
 func (r *ClientRepository) CreateClientMatchingProfile(client *model.Client) (interface{}, error) {
 	filter := bson.D{{Key: "profile_id", Value: client.ProfileId}}
 	var existingClient model.Client
+
 	err := r.MongoDBCollection.FindOne(context.Background(), filter).Decode(&existingClient)
 	if err == nil {
 		log.Println("Client already exists with profile_id:", client.ProfileId)
@@ -30,6 +31,7 @@ func (r *ClientRepository) CreateClientMatchingProfile(client *model.Client) (in
 		log.Println("Error checking if client exists:", err)
 		return nil, errors.New("Failed to check if client exists")
 	}
+	client.CurrentSession = []string{}
 	res, err := r.MongoDBCollection.InsertOne(context.Background(), client)
 	if err != nil {
 		log.Println("ClientRepository CreateClientMatchingProfile err:", err)
@@ -39,21 +41,12 @@ func (r *ClientRepository) CreateClientMatchingProfile(client *model.Client) (in
 }
 
 func (r *ClientRepository) FindClientMatchingProfile(clientId string) (*model.Client, error) {
-	log.Printf("ClientRepository collection name: %v", r.MongoDBCollection.Name())
-	log.Printf("Type of clientId: %T, value: %v", clientId, clientId)
-
 	data := model.Client{}
 	err := r.MongoDBCollection.FindOne(context.Background(), bson.M{"profile_id": clientId}).Decode(&data)
 	if err != nil {
 		log.Printf("Không tìm thấy client với profile_id=%v. Lỗi: %v", clientId, err.Error())
 		return nil, err
 	}
-
-	log.Printf("Tìm thấy client: %+v", data)
-	log.Printf("DEBUG - ProfileId value: '%s'", data.ProfileId)
-	log.Printf("DEBUG - ProfileId length: %d", len(data.ProfileId))
-	log.Printf("DEBUG - ProfileId is empty: %t", data.ProfileId == "")
-	log.Printf("DEBUG - ProfileId bytes: %v", []byte(data.ProfileId))
 
 	return &data, nil
 }

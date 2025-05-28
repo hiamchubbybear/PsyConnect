@@ -58,3 +58,56 @@ func (h *SessionHandler) CreateNewSessionHandler(c *gin.Context) {
 	log.Printf("Session created successfully: %+v", result)
 	apiresponse.NewApiResponse(c, request)
 }
+func (h *SessionHandler) DeleteCurrentSessionHandler(c *gin.Context) {
+	var request dto.DeleteSessionRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("Invalid delete request body: %v", err)
+		apiresponse.ErrorHandler(c, 400, "Invalid input format")
+		return
+	}
+
+	if h.RepoManager == nil || h.RepoManager.SessionRepo == nil {
+		log.Println("Session repository not initialized")
+		apiresponse.ErrorHandler(c, 500, "Internal server error")
+		return
+	}
+
+	success, err := h.RepoManager.SessionRepo.DeleteCurrentSession(request)
+	if err != nil {
+		log.Printf("Failed to delete session: %v", err)
+		if h.RepoManager.Kafka != nil {
+			h.RepoManager.Kafka.SendLogs("Delete session failed: " + err.Error())
+		}
+		apiresponse.ErrorHandler(c, 400, err.Error())
+		return
+	}
+
+	if !success {
+		log.Println("Session deletion unsuccessful")
+		apiresponse.ErrorHandler(c, 400, "Session deletion failed")
+		return
+	}
+	apiresponse.NewApiResponse(c, gin.H{
+		"message":    "Session deleted successfully",
+		"session_id": request.SessionID,
+	})
+}
+func (h *SessionHandler) GetAllSessions(c *gin.Context) {
+	sessions, err := h.RepoManager.SessionRepo.GetAllSessions()
+	if err != nil {
+		apiresponse.ErrorHandler(c, 500, "Error fetching sessions")
+		return
+	}
+	apiresponse.NewApiResponse(c, sessions)
+}
+
+func (h *SessionHandler) GetSessionByID(c *gin.Context) {
+	id := c.Param("id")
+	session, err := h.RepoManager.SessionRepo.GetSessionByID(id)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 404, "Session not found")
+		return
+	}
+	apiresponse.NewApiResponse(c, session)
+}

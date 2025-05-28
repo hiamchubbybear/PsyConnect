@@ -193,19 +193,22 @@ func (r *MatchingRepository) CheckValidSessionTimeAndDays(time dto.SessionTime, 
 	).Decode(&therapistDoc); err != nil {
 		return false, errors.New("cannot find therapist")
 	}
-	allSessionIDs := append(clientDoc.CurrentSession, therapistDoc.CurrentSession...)
-	cursor, err := r.sessionRepo.MongoDBCollection.Find(ctx, bson.M{
-		"_id": bson.M{"$in": allSessionIDs},
-	})
-	if err != nil {
-		return false, errors.New("failed to query sessions")
-	}
-
 	var sessions []model.Session
-	if err := cursor.All(ctx, &sessions); err != nil {
-		return false, errors.New("failed to decode sessions")
-	}
 
+	allSessionIDs := append(clientDoc.CurrentSession, therapistDoc.CurrentSession...)
+	if len(allSessionIDs) != 0 {
+		cursor, err := r.sessionRepo.MongoDBCollection.Find(ctx, bson.M{
+			"_id": bson.M{"$in": allSessionIDs},
+		})
+		if err != nil {
+			log.Printf(err.Error())
+			return false, errors.New("failed to query sessions")
+		}
+		if err := cursor.All(ctx, &sessions); err != nil {
+			return false, errors.New("failed to decode sessions")
+		}
+
+	}
 	newStart, err1 := parseTime(time.StartTime)
 	newEnd, err2 := parseTime(time.EndTime)
 	if err1 != nil || err2 != nil {

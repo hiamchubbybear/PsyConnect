@@ -10,9 +10,10 @@ import (
 )
 
 type Producer struct {
-	defaultTopic  string
-	writer        *kafka.Writer
-	loggingWriter *kafka.Writer
+	defaultTopic       string
+	writer             *kafka.Writer
+	loggingWriter      *kafka.Writer
+	notificationWriter *kafka.Writer
 }
 
 func NewProducer(env *bootstrap.Env) (*Producer, error) {
@@ -20,14 +21,19 @@ func NewProducer(env *bootstrap.Env) (*Producer, error) {
 		return nil, errors.New("missing Kafka configuration in environment")
 	}
 
-	// Writer cho topic mặc định (ví dụ: consultation.test)
+	// Default consultation.test
 	defaultWriter := kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  []string{env.KafkaAddr},
 		Topic:    env.KafkaTopic,
 		Balancer: &kafka.LeastBytes{},
 	})
-
-	// Writer cho topic logging-service
+	notificationWriter := kafka.NewWriter(
+		kafka.WriterConfig{
+			Brokers:  []string{env.KafkaAddr},
+			Topic:    env.NotificationTopic,
+			Balancer: &kafka.LeastBytes{},
+		},
+	)
 	loggingWriter := kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  []string{env.KafkaAddr},
 		Topic:    "logging-service",
@@ -37,9 +43,10 @@ func NewProducer(env *bootstrap.Env) (*Producer, error) {
 	log.Println("Kafka producers initialized with topics:", env.KafkaTopic, "and logging-service")
 
 	return &Producer{
-		writer:        defaultWriter,
-		defaultTopic:  env.KafkaTopic,
-		loggingWriter: loggingWriter,
+		writer:             defaultWriter,
+		defaultTopic:       env.KafkaTopic,
+		loggingWriter:      loggingWriter,
+		notificationWriter: notificationWriter,
 	}, nil
 }
 
@@ -59,7 +66,22 @@ func (p *Producer) SendMessage(message string) error {
 	log.Printf("Message sent to Kafka topic '%s' successfully", p.defaultTopic)
 	return nil
 }
+func (p *Producer) SendNotification(message string) error {
+	if p.notificationWriter == nil {
+		return errors.New("default Kafka writer is not initialized")
+	}
 
+	err := p.notificationWriter.WriteMessages(context.Background(), kafka.Message{
+		Value: []byte(message),
+	})
+	if err != nil {
+		log.Printf("Failed to send Kafka message to topic %s: %v", p.notificationWriter.Topic, err)
+		return err
+	}
+
+	log.Printf("Message sent to Kafka topic '%s' successfully", p.notificationWriter.Topic)
+	return nil
+}
 func (p *Producer) SendLogs(message string) error {
 	if p.loggingWriter == nil {
 		return errors.New("logging Kafka writer is not initialized")

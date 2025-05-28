@@ -19,5 +19,7 @@ type SessionTime struct {
 }
 
 type DeleteSessionRequest struct {
-	SessionID string `json:"session_id" bson:"_id"`
+	TherapistID string `json:"therapist_id" bson:"therapist_id"`
+	ClientID    string `json:"client_id" bson:"client_id"`
+	SessionID   string `json:"session_id" bson:"_id"`
 }

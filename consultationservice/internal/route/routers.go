@@ -38,15 +38,22 @@ func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler, thera
 		clientGroup.PUT("/", clientHandler.PutClientHandler)
 	}
 
-	publicGroup := router.Group("/consultation/therapist")
+	publicGroup := router.Group("/consultation/therapist/match")
 	{
-		publicGroup.GET("/match", matchingHandler.GetAllMatchTherapist)
-		publicGroup.POST("/match", matchingHandler.MatchRequest)
+		publicGroup.GET("/", matchingHandler.GetAllMatchTherapist)
+		publicGroup.POST("/", matchingHandler.MatchRequest)
 	}
 
-	userPublicGroup := router.Group("/consultation")
+	adminSessionGroup := router.Group("/consultation/admin/session")
+	adminSessionGroup.Use(middleware.RoleRequire("admin"))
 	{
-		userPublicGroup.POST("/session/add", sessionHandler.CreateNewSessionHandler)
+		adminSessionGroup.GET("/", sessionHandler.GetAllSessions)
+	}
+	userPublicGroup := router.Group("/consultation/session")
+	{
+		userPublicGroup.POST("/", sessionHandler.CreateNewSessionHandler)
+		userPublicGroup.DELETE("/", sessionHandler.DeleteCurrentSessionHandler)
+		userPublicGroup.GET("/", sessionHandler.GetSessionByID)
 	}
 
 	router.Run(urI)
