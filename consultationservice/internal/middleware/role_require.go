@@ -3,15 +3,14 @@ package middleware
 import (
 	"consultationservice/pkg/apiresponse"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"log"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RoleRequire(required string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		expectedRole := fmt.Sprintf("role.%s:permission", required)
-
 		headerRoles := c.GetHeader("X-Roles")
 		if headerRoles == "" {
 			apiresponse.ErrorHandler(c, 401, "Missing roles header")
@@ -19,14 +18,19 @@ func RoleRequire(required string) gin.HandlerFunc {
 			return
 		}
 		roles := strings.Split(headerRoles, " ")
-		if roles[0] == "role.admin:permission" {
+		role := roles[0]
+		c.Set("roles", role)
+		log.Printf("Print all roles %v", role)
+		if required == "" {
 			c.Next()
-		}
-		if len(roles) == 0 || roles[0] != expectedRole {
-			apiresponse.ErrorHandler(c, 401, "Unauthenticated")
-			c.Abort()
 			return
 		}
-		c.Next()
+		expectedRole := fmt.Sprintf("role.%s:permission", required)
+		if role == "role.admin:permission" || role == expectedRole {
+			c.Next()
+			return
+		}
+		apiresponse.ErrorHandler(c, 401, "Unauthenticated")
+		c.Abort()
 	}
 }

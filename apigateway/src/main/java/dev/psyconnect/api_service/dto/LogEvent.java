@@ -20,4 +20,4 @@ public class LogEvent {
     private String timestamp;
     private Map<String, ?> metadata;
     private String message;
-}   
+}

@@ -49,12 +49,18 @@ func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler, thera
 	{
 		adminSessionGroup.GET("/", sessionHandler.GetAllSessions)
 	}
+	// Get role from header to define request
 	userPublicGroup := router.Group("/consultation/session")
+	userPublicGroup.Use(middleware.RoleRequire(""))
+	{
+
+		userPublicGroup.GET("/all", sessionHandler.GetAllSessionByID)
+	}
+	userPublicGroup = router.Group("/consultation/session")
 	{
 		userPublicGroup.POST("/", sessionHandler.CreateNewSessionHandler)
 		userPublicGroup.DELETE("/", sessionHandler.DeleteCurrentSessionHandler)
-		userPublicGroup.GET("/", sessionHandler.GetSessionByID)
+		userPublicGroup.GET("/:id", sessionHandler.GetSessionByID)
 	}
-
 	router.Run(urI)
 }

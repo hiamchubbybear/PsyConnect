@@ -6,6 +6,7 @@ import (
 	"consultationservice/internal/repository"
 	"consultationservice/pkg/apiresponse"
 	"log"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -110,4 +111,20 @@ func (h *SessionHandler) GetSessionByID(c *gin.Context) {
 		return
 	}
 	apiresponse.NewApiResponse(c, session)
+}
+func (h *SessionHandler) GetAllSessionByID(c *gin.Context) {
+	roleRaw, exists := c.Get("roles")
+	profileId := c.GetHeader("X-Profile-Id")
+	if !exists {
+		log.Printf("Requester role is empty, profileId: %s", profileId)
+		apiresponse.ErrorHandler(c, 401, "Unauthorized")
+		return
+	}
+	role := strings.Split(roleRaw.(string), ":")[0]
+	res, err := h.RepoManager.SessionRepo.FindAllSessionByProfileId(profileId, role)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 500, "Database error")
+		return
+	}
+	apiresponse.NewApiResponse(c, res)
 }

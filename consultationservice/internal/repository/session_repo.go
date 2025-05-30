@@ -7,9 +7,8 @@ import (
 	"errors"
 	"log"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -129,15 +128,47 @@ func (r *SessionRepository) GetAllSessions() ([]model.Session, error) {
 	return sessions, nil
 }
 
-func (r *SessionRepository) GetSessionByID(id string) (*model.Session, error) {
-	var session model.Session
-	err := r.MongoDBCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&session)
+func (r *SessionRepository) GetSessionByID(id string) (*dto.SessionRequest, error) {
+	var session dto.SessionRequest
+	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
+		log.Printf("Failed to convert id to hex")
+		return nil, err
+	}
+	err = r.MongoDBCollection.FindOne(context.Background(), bson.M{"_id": oid}).Decode(&session)
+	if err != nil {
+		log.Printf("Failed to find session : %v", err)
 		return nil, err
 	}
 	return &session, nil
 }
-
+func (r *SessionRepository) FindAllSessionByProfileId(profileId string, requester string) (*[]dto.SessionResponse, error) {
+	var sessions []dto.SessionResponse
+	if requester == "role.client" {
+		requester = "client_id"
+	} else {
+		requester = "therapist_id"
+	}
+	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.M{requester: profileId})
+	if err != nil {
+		log.Printf("Failed find ")
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+	for cursor.Next(context.Background()) {
+		var session dto.SessionResponse
+		if err := cursor.Decode(&session); err != nil {
+			log.Printf("Decode error: %v", err)
+			continue
+		}
+		sessions = append(sessions, session)
+	}
+	if err := cursor.Err(); err != nil {
+		log.Printf("Cursor error: %v", err)
+		return nil, err
+	}
+	return &sessions, nil
+}
 func (s *SessionRepository) SetMatchingRepository(matchingRepo *MatchingRepository) {
 	s.matchingRepo = matchingRepo
 }

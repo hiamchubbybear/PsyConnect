@@ -21,6 +21,5 @@ func main() {
 
 	kafka.NewConsumer(env)
 	kafka.NewProducer(env)
-
 	route.RouterInit(env, clientHandler, therapistHandler, matchHandler, sessionHandler)
 }
