@@ -37,7 +37,6 @@ public class BeanConfiguration {
     @Transactional
     ApplicationRunner runner(UserAccountRepository userAccountRepository) {
         return args -> {
-            // Tạo các Permission từ PermissionEnum
             List<Permission> permissionsToSave = new ArrayList<>();
             for (PermissionEnum permissionEnum : PermissionEnum.values()) {
                 if (!permissionRepository.existsByName(permissionEnum.getName())) {
@@ -52,7 +51,6 @@ public class BeanConfiguration {
             }
             permissionRepository.saveAll(permissionsToSave);
 
-            // Tạo các RoleEntity từ RoleEnum và liên kết với Permission
             Set<RoleEntity> rolesToSave = new HashSet<>();
             for (RoleEnum roleEnum : RoleEnum.values()) {
                 if (!roleRepository.existsByRoleId(roleEnum.getId())) {
@@ -78,12 +76,11 @@ public class BeanConfiguration {
             }
             roleRepository.saveAll(rolesToSave);
 
-            // Cập nhật quan hệ giữa Permission và RoleEntity
             for (PermissionEnum permissionEnum : PermissionEnum.values()) {
                 Permission permission = permissionRepository.findByName(permissionEnum.getName());
                 if (permission != null
                         && (permission.getRoles() == null
-                                || permission.getRoles().isEmpty())) {
+                        || permission.getRoles().isEmpty())) {
                     Set<RoleEntity> roleEntities = roleRepository.findAllByPermissionsContaining(permission);
                     if (!roleEntities.isEmpty()) {
                         permission.setRoles(roleEntities);
@@ -94,7 +91,6 @@ public class BeanConfiguration {
                     }
                 }
             }
-            // Create admin account for dev env
 
             Account account = new Account()
                     .createAdminAccount(roleRepository

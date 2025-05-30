@@ -15,13 +15,9 @@ public class LoggingInterceptor implements HandlerInterceptor {
         String uri = requestWrapper.getRequestURI();
         String method = requestWrapper.getMethod();
         String headers = requestWrapper.getHeader("User-Agent");
-
-        // Logging info of the request
         System.out.println("Request Method: " + method);
         System.out.println("Request URI: " + uri);
         System.out.println("Request Headers: " + headers);
-
-        // If there are some request print it ->
         if (requestWrapper.getContentLength() > 0) {
             String body = new String(requestWrapper.getContentAsByteArray());
             System.out.println("Request Body: " + body);
