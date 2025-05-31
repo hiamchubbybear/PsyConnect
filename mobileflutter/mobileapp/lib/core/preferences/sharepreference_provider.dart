@@ -19,6 +19,7 @@ class SharedPreferencesProvider {
   static const String _roleKey = "role";
   static const String _themeModeKey = "isDarkMode";
   static const String _userProfile = "userProfile";
+
   Future<void> setJwt(String token) async =>
       (await SharedPreferences.getInstance()).setString(_accessTokenKey, token);
   Future<void> setUserProfile(UserProfile userProfile) async {
@@ -67,4 +68,3 @@ class SharedPreferencesProvider {
   Future<void> clearAll() async =>
       (await SharedPreferences.getInstance()).clear();
 }
-    

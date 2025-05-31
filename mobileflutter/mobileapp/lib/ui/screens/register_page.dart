@@ -1,14 +1,14 @@
 import 'dart:core';
 import 'dart:io';
 
-import 'package:PsyConnect/provider/user_provider.dart';
-import 'package:PsyConnect/services/account_service/image.dart';
-import 'package:PsyConnect/services/account_service/register.dart';
-import 'package:PsyConnect/services/account_service/cloudinary_service.dart';
-import 'package:PsyConnect/services/logic.dart';
-import 'package:PsyConnect/ui/screens/forgot_page.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
+import 'package:PsyConnect/provider/user_provider.dart';
+import 'package:PsyConnect/services/account_service/cloudinary_service.dart';
+import 'package:PsyConnect/services/account_service/image.dart';
+import 'package:PsyConnect/services/account_service/register.dart';
+import 'package:PsyConnect/services/logic.dart';
+import 'package:PsyConnect/ui/screens/forgot_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -308,7 +308,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   RegExp passReg = RegExp(
                       // Regex have
                       r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
-                  if (password == null || passReg.hasMatch(password!)) {
+                  if (password == null || passReg.hasMatch(password)) {
                     return "Password include lowercase letter , uppercase letter ,  number, and special character";
                   } else if (password.length < 8) {
                     return "Password have to at least 8 characters";
@@ -441,7 +441,7 @@ class _RegisterPageState extends State<RegisterPage> {
           "gender": genderController.text,
           "email": emailController.text,
           "role": roleController.text,
-          "avatarUri": cloudinaryUrlImage.toString() ?? "",
+          "avatarUri": cloudinaryUrlImage.toString(),
           "dob": dobController.text
         };
         await registerService.registerHandle(

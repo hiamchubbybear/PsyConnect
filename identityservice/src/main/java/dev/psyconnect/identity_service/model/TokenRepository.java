@@ -8,7 +8,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TokenRepository extends JpaRepository<Token, UUID> {
-    Optional<Token> findByUsername(String username);
-
-    boolean existsByUsername(String username);
 }

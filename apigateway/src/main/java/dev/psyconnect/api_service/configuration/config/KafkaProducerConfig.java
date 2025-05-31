@@ -40,7 +40,6 @@ public class KafkaProducerConfig {
         errorHandler.setRetryListeners((record, ex, deliveryAttempt) -> {
             log.error("Failed to consume record: {}, attempt {}, error: {}", record, deliveryAttempt, ex.getMessage());
         });
-
         return errorHandler;
     }
 

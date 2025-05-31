@@ -61,6 +61,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                         .header("X-Profile-Id", profileId)
                         .header("X-Roles", scopes)
                         .build();
+                log.info("Header Profile Id {}" , profileId);
                 return chain.filter(exchange.mutate().request(mutatedRequest).build());
             } catch (SignatureException e) {
                 kafkaService.sendLog(buildLog(

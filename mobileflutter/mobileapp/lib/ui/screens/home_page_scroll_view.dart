@@ -10,7 +10,9 @@ class HomePageScrollView extends StatefulWidget {
   @override
   State<HomePageScrollView> createState() => _HomePageScrollViewState();
 }
-  Utils utils = Utils();
+
+Utils utils = Utils();
+
 class _HomePageScrollViewState extends State<HomePageScrollView> {
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,9 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
                         comment: ["Dễ thương vậy", "Haha"],
                         nol: 100,
                         noc: 30,
-                        content: 'Xin chào thế giới', postId: '', userId: '',
+                        content: 'Xin chào thế giới',
+                        postId: '',
+                        userId: '',
                       );
                     },
                     childCount: 4,
@@ -126,5 +130,4 @@ class StoriesWidget extends StatelessWidget {
       ),
     );
   }
-
 }
