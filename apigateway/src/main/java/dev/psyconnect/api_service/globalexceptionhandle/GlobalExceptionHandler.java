@@ -7,6 +7,7 @@ import dev.psyconnect.api_service.dto.LogLevel;
 import io.netty.buffer.UnpooledUnsafeDirectByteBuf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    @Autowired
     KafkaService kafkaService;
 
     @ExceptionHandler(Exception.class)
@@ -29,7 +31,6 @@ public class GlobalExceptionHandler {
         log.warn("General Exception: ", ex);
         ApiResponse<String> response =
                 new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server Error", null);
-        // Catch server error only
         kafkaService.sendLog(LogEvent.builder()
                 .service("api-gateway")
                 .level(LogLevel.ERROR)

@@ -19,15 +19,8 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserSettingController {
-    UserSettingService userSettingService;
+    private final UserSettingService userSettingService;
     private final KafkaService kafkaService;
-
-    @PostMapping("/add")
-    public ApiResponse<UserSettingResponse> addUserSetting(
-            @RequestHeader(value = "X-Profile-Id", required = true) String id,
-            @RequestBody UserSettingRequest request) {
-        return new ApiResponse<>(userSettingService.createUserSetting(id, request));
-    }
 
     @GetMapping()
     public ApiResponse<Setting> getUserSetting(@RequestHeader(value = "X-Profile-Id", required = true) String id) {
@@ -41,13 +34,6 @@ public class UserSettingController {
         request.setProfileId(id);
         kafkaService.send("profile.user-update-setting", request);
         return new ApiResponse<>(userSettingService.updateUserSetting(id, request));
-    }
-
-    @DeleteMapping()
-    @AllowedRoles({"ADMIN"})
-    public ApiResponse<DeleteResponse> deleteUserSetting(
-            @RequestHeader(value = "X-Profile-Id", required = true) String id) {
-        return new ApiResponse<>(userSettingService.deleteUserSetting(id));
     }
 
     @PostMapping("/default")

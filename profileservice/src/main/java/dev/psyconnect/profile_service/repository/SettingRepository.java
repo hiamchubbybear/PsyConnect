@@ -13,34 +13,34 @@ import dev.psyconnect.profile_service.model.Setting;
 public interface SettingRepository extends Neo4jRepository<Setting, String> {
 
     @Query("""
-			MATCH (u:user_profile {profileId: $profileId})-[:HAS_SETTING]->(s:user_setting)
-			RETURN s
-			""")
+            MATCH (u:user_profile {profileId: $profileId})-[:HAS_SETTING]->(s:user_setting)
+            RETURN s
+            """)
     Optional<Setting> getUserSetting(@Param("profileId") String profileId);
 
     @Query(
             """
-					MATCH (u:user_profile {profileId: $profileId})
-					CREATE (s:user_setting {
-						profileId: $profileId,
-						privacyLevel: $privacyLevel,
-						showLastSeen: $showLastSeen,
-						showProfilePicture: $showProfilePicture,
-						showMood: $showMood,
-						notificationsEnabled: $notificationsEnabled,
-						emailNotifications: $emailNotifications,
-						pushNotifications: $pushNotifications,
-						smsNotifications: $smsNotifications,
-						twoFactorAuth: $twoFactorAuth,
-						allowLoginAlerts: $allowLoginAlerts,
-						trustedDevices: $trustedDevices,
-						language: $language,
-						theme: $theme,
-						autoDeleteOldMoods: $autoDeleteOldMoods
-					})
-					CREATE (u)-[:HAS_SETTING]->(s)
-					RETURN s
-					""")
+                    MATCH (u:user_profile {profileId: $profileId})
+                    CREATE (s:user_setting {
+                    	profileId: $profileId,
+                    	privacyLevel: $privacyLevel,
+                    	showLastSeen: $showLastSeen,
+                    	showProfilePicture: $showProfilePicture,
+                    	showMood: $showMood,
+                    	notificationsEnabled: $notificationsEnabled,
+                    	emailNotifications: $emailNotifications,
+                    	pushNotifications: $pushNotifications,
+                    	smsNotifications: $smsNotifications,
+                    	twoFactorAuth: $twoFactorAuth,
+                    	allowLoginAlerts: $allowLoginAlerts,
+                    	trustedDevices: $trustedDevices,
+                    	language: $language,
+                    	theme: $theme,
+                    	autoDeleteOldMoods: $autoDeleteOldMoods
+                    })
+                    CREATE (u)-[:HAS_SETTING]->(s)
+                    RETURN s
+                    """)
     Optional<Setting> createUserSetting(
             @Param("profileId") String profileId,
             @Param("privacyLevel") String privacyLevel,
@@ -60,23 +60,25 @@ public interface SettingRepository extends Neo4jRepository<Setting, String> {
 
     @Query(
             """
-					MATCH (u:user_profile {profileId: $profileId})-[:HAS_SETTING]->(s:user_setting)
-					SET s.privacyLevel = $privacyLevel,
-						s.showLastSeen = $showLastSeen,
-						s.showProfilePicture = $showProfilePicture,
-						s.showMood = $showMood,
-						s.notificationsEnabled = $notificationsEnabled,
-						s.emailNotifications = $emailNotifications,
-						s.pushNotifications = $pushNotifications,
-						s.smsNotifications = $smsNotifications,
-						s.twoFactorAuth = $twoFactorAuth,
-						s.allowLoginAlerts = $allowLoginAlerts,
-						s.trustedDevices = $trustedDevices,
-						s.language = $language,
-						s.theme = $theme,
-						s.autoDeleteOldMoods = $autoDeleteOldMoods
-					RETURN s
-					""")
+                    MATCH (u:user_profile {profileId: $profileId})
+                    MERGE (u)-[:HAS_SETTING]->(s:user_setting {profileId: $profileId})
+                    SET s.privacyLevel = $privacyLevel,
+                        s.showLastSeen = $showLastSeen,
+                        s.showProfilePicture = $showProfilePicture,
+                        s.showMood = $showMood,
+                        s.notificationsEnabled = $notificationsEnabled,
+                        s.emailNotifications = $emailNotifications,
+                        s.pushNotifications = $pushNotifications,
+                        s.smsNotifications = $smsNotifications,
+                        s.twoFactorAuth = $twoFactorAuth,
+                        s.allowLoginAlerts = $allowLoginAlerts,
+                        s.trustedDevices = $trustedDevices,
+                        s.language = $language,
+                        s.theme = $theme,
+                        s.autoDeleteOldMoods = $autoDeleteOldMoods
+                    RETURN s
+                    """
+    )
     Optional<Setting> updateUserSetting(
             @Param("profileId") String profileId,
             @Param("privacyLevel") String privacyLevel,
@@ -96,8 +98,8 @@ public interface SettingRepository extends Neo4jRepository<Setting, String> {
 
     @Query(
             """
-				MATCH (u:user_profile {profileId: $profileId})-[:HAS_SETTING]->(s:user_setting)
-				DETACH DELETE s
-			""")
+                    	MATCH (u:user_profile {profileId: $profileId})-[:HAS_SETTING]->(s:user_setting)
+                    	DETACH DELETE s
+                    """)
     void deleteUserSetting(@Param("profileId") String profileId);
 }

@@ -19,6 +19,14 @@ class SharedPreferencesProvider {
   static const String _roleKey = "role";
   static const String _themeModeKey = "isDarkMode";
   static const String _userProfile = "userProfile";
+  static const String _friendsProfile = "friendsProfile";
+
+  Future<void> setFriendsProfile(List<UserProfile> friendsProfile) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> encodedFriends =
+        friendsProfile.map((profile) => jsonEncode(profile.toJson())).toList();
+    await prefs.setStringList(_friendsProfile, encodedFriends);
+  }
 
   Future<void> setJwt(String token) async =>
       (await SharedPreferences.getInstance()).setString(_accessTokenKey, token);
@@ -61,6 +69,15 @@ class SharedPreferencesProvider {
   Future<bool> isDarkMode() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_themeModeKey) ?? false;
+  }
+
+  Future<List<UserProfile>> getFriendsProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String>? encodedFriends = prefs.getStringList(_friendsProfile);
+    if (encodedFriends == null) return [];
+    return encodedFriends
+        .map((encoded) => UserProfile.fromJson(jsonDecode(encoded)))
+        .toList();
   }
 
   Future<String?> getUserProfile() async =>

@@ -24,37 +24,6 @@ public class UserSettingService {
     private final ProfileRepository profileRepository;
 
     @CacheEvict(key = "#profileId", value = "setting")
-    public UserSettingResponse createUserSetting(String profileId, UserSettingRequest request) {
-        if (!profileRepository.existsById(profileId)
-                || userSettingRepository.getUserSetting(profileId).isPresent()) {
-            throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
-        }
-        var response = userSettingRepository
-                .createUserSetting(
-                        profileId,
-                        request.getPrivacyLevel(),
-                        request.isShowLastSeen(),
-                        request.isShowProfilePicture(),
-                        request.isShowMood(),
-                        request.isNotificationsEnabled(),
-                        request.isEmailNotifications(),
-                        request.isPushNotifications(),
-                        request.isSmsNotifications(),
-                        request.isTwoFactorAuth(),
-                        request.isAllowLoginAlerts(),
-                        request.getTrustedDevices(),
-                        request.getLanguage(),
-                        request.getTheme(),
-                        request.isAutoDeleteOldMoods())
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
-
-        return UserSettingResponse.builder()
-                .profileId(profileId)
-                .isSuccess(true)
-                .build();
-    }
-
-    @CacheEvict(key = "#profileId", value = "setting")
     @KafkaListener(topics = "profile.user-update-setting")
     public UserSettingResponse updateUserSetting(String profileId, UserSettingRequest request) {
         if (!profileRepository.existsById(profileId)) throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
@@ -91,16 +60,9 @@ public class UserSettingService {
     }
 
     @CacheEvict(key = "#profileId", value = "setting")
-    public DeleteResponse deleteUserSetting(String profileId) {
-        if (!profileRepository.existsById(profileId)) throw new CustomExceptionHandler(ErrorCode.QUERY_FAILED);
-        userSettingRepository.deleteUserSetting(profileId);
-        return new DeleteResponse(true, "Deleted successfully");
-    }
-
-    @CacheEvict(key = "#profileId", value = "setting")
     public Setting resetSettings(String profileId) {
         return userSettingRepository
-                .createUserSetting(
+                .updateUserSetting(
                         profileId, "PRIVATE", true, true, false, false, false, false, false, false, false, "", "en",
                         "light", true)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));

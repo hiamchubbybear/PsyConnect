@@ -62,11 +62,11 @@ class ApiService {
     required String token,
     required Map<String, dynamic> body,
   }) async {
-    final Uri uri = Uri.parse("$_baseUrl/$endpoint");
+    final Uri uri = Uri.parse("$_baseUrl$endpoint");
     try {
       return await http.post(
         uri,
-        body: body,
+        body: jsonEncode(body),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

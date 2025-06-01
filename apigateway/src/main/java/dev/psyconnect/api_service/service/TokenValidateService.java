@@ -23,8 +23,8 @@ public class TokenValidateService {
         this.identityServicePort = identityServicePort;
     }
 
-    public boolean isTokenInvalid(String token) {
-        String url = identityServiceUrl+ ":"+identityServicePort  + "/auth/internal/invalid/" + token;
+    public boolean isTokenValid(String token) {
+        String url = identityServiceUrl+ ":"+identityServicePort  + "/auth/internal/valid/" + token;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(token, headers);

@@ -250,8 +250,8 @@ public class AuthenticationService {
         return authentication.getName();
     }
 
-    public boolean isTokenInvalid(String token) {
-        return blackListTokenRepository.existsByToken(token);
+    public boolean isTokenValid(String token) {
+        return !blackListTokenRepository.existsByToken(token);
     }
 
     public static String extractUUIDClaim(Authentication authentication) {

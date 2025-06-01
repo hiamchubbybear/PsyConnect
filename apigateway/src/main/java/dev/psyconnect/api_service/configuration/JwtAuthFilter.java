@@ -18,7 +18,6 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -44,7 +43,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         log.info("Security filters: {}", authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            if (service.isTokenInvalid(token)) throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
+            if (!service.isTokenValid(token)) throw new CustomExceptionHandler(ErrorCode.UNAUTHORIZED);
             try {
                 Claims claims = getClaimsFromToken(token);
                 String username = claims.getSubject();
@@ -61,7 +60,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                         .header("X-Profile-Id", profileId)
                         .header("X-Roles", scopes)
                         .build();
-                log.info("Header Profile Id {}" , profileId);
+                log.info("Header Profile Id {}" , userId);
                 return chain.filter(exchange.mutate().request(mutatedRequest).build());
             } catch (SignatureException e) {
                 kafkaService.sendLog(buildLog(

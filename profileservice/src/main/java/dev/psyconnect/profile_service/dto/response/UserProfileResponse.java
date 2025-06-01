@@ -20,11 +20,9 @@ public class UserProfileResponse implements Serializable {
     String profileId;
     String firstName;
     String lastName;
-
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     String dob;
-
     String address;
     String gender;
     String role;

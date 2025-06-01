@@ -3,9 +3,10 @@ package dev.psyconnect.profile_service.service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import dev.psyconnect.profile_service.dto.request.LogLevel;
-import org.joda.time.Minutes;
+import dev.psyconnect.profile_service.dto.request.*;
+import dev.psyconnect.profile_service.dto.response.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import dev.psyconnect.profile_service.dto.request.LogEvent;
-import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
-import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
-import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
-import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
-import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
-import dev.psyconnect.profile_service.dto.response.UserProfileUpdateResponse;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.profile_service.kafka.service.KafkaService;
@@ -105,7 +99,7 @@ public class UserProfileService {
 
             response = userProfileMapper.toUserProfileUpdateResponse(savedUser);
 
-            kafkaService.sendLog(buildLog("profile-service", profileId, "Update profile", "Success", Map.of("data" , response), LogLevel.LOG));
+            kafkaService.sendLog(buildLog("profile-service", profileId, "Update profile", "Success", Map.of("data", response), LogLevel.LOG));
         } catch (Exception e) {
             kafkaService.sendLog(buildLog(
                     "profile-service", profileId, "Update profile", "Failed", Map.of("error", e.getMessage()), LogLevel.ERROR));
@@ -126,20 +120,25 @@ public class UserProfileService {
         return result;
     }
 
-    @Cacheable(key = "#profileId", value = "profile_mood")
-    public ProfileWithRelationShipResponse getProfileWithMood(String profileId) {
-        ProfileWithRelationShipResponse response;
+    public List<ProfileWithMoodSummaryDto> getProfileWithMood(String profileId) {
         try {
-            response = userProfileRepository
-                    .getProfileWithAllRelations(profileId)
-                    .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
+            return userProfileRepository.getProfileWithAllRelations(profileId).stream()
+                    .map(p -> ProfileWithMoodSummaryDto.builder()
+                            .profile(ProfileSummaryDto.builder()
+                                    .profileId(p.getProfile().getProfileId())
+                                    .username(p.getProfile().getUsername())
+                                    .avatarUri(p.getProfile().getAvatarUri())
+                                    .build())
+                            .mood(p.getMood())
+                            .build())
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             kafkaService.sendLog(buildLog(
                     "profile-service", profileId, "Get profile with mood", "Failed", Map.of("error", e.getMessage()), LogLevel.ERROR));
             throw e;
         }
-        return response;
     }
+
 
     @KafkaListener(topics = "profile.user-create-setting")
     public void handleOnCreateProfile(@Payload String raw) {

@@ -17,26 +17,25 @@ public interface ProfileRepository extends Neo4jRepository<Profile, String> {
     // Find all profile
     @Query(
             """
-					MATCH (userProfile:`user_profile`)
-					RETURN userProfile, elementId(userProfile)
-					AS __elementId__ SKIP $skip LIMIT $limit""")
+                    MATCH (userProfile:`user_profile`)
+                    RETURN userProfile, elementId(userProfile)
+                    AS __elementId__ SKIP $skip LIMIT $limit""")
     List<Profile> findAllProfilesPaged(@Param("skip") int skip, @Param("limit") int limit);
 
-    @Query(
-            """
-						MATCH (u:user_profile {profileId: $profileId})
-						OPTIONAL MATCH (u)-[:HAS_MOOD]->(m:mood)
-						OPTIONAL MATCH (u)-[:HAS_SETTING]->(s:user_setting)
-						RETURN u as profile, m AS mood, s AS setting
-					""")
-    Optional<ProfileWithRelationShipResponse> getProfileWithAllRelations(@Param("profileId") String profileId);
+    @Query("""
+                MATCH (u:user_profile {profileId: $profileId})-[:HAS_FRIEND]-(other:user_profile)
+                OPTIONAL MATCH (other)-[:HAS_MOOD]->(m:mood)
+                RETURN DISTINCT other AS profile, m AS mood
+            """)
+    List<ProfileWithRelationShipResponse> getProfileWithAllRelations(@Param("profileId") String profileId);
+
 
     @Query(
             """
-				MATCH (u:user_profile {profileId: $profileId})
-					-[:HAS_FRIEND]->(p:user_profile)
-					-[:HAS_MOOD]-> (m:mood)
-				RETURN p as profile, m as mood
-			""")
+                    	MATCH (u:user_profile {profileId: $profileId})
+                    		-[:HAS_FRIEND]->(p:user_profile)
+                    		-[:HAS_MOOD]-> (m:mood)
+                    	RETURN p as profile, m as mood
+                    """)
     List<ProfileWithMood> findFriendsWithMoodsByProfileId(String profileId);
 }

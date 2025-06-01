@@ -1,4 +1,5 @@
 class UserProfile {
+  String? userId;
   String? username;
   String? firstName;
   String? lastName;
@@ -7,7 +8,8 @@ class UserProfile {
   String? avatarUri;
   String? description;
   UserProfile(
-      {this.username,
+      {this.userId,
+      this.username,
       this.firstName,
       this.lastName,
       this.address,
@@ -16,6 +18,7 @@ class UserProfile {
       this.description});
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
+      userId: json["userId"] as String?,
       username: json["username"] as String,
       firstName: json["firstName"] as String,
       lastName: json["lastName"] as String,
@@ -27,6 +30,7 @@ class UserProfile {
   }
   Map<String, dynamic> toJson() {
     return {
+      "userId": userId,
       "username": username,
       "firstName": firstName,
       "lastName": lastName,
@@ -37,6 +41,7 @@ class UserProfile {
     };
   }
 
+  String get getUserId => userId ?? "";
   String get getUsername => username ?? "";
   String get getFirstName => firstName ?? "";
   String get getLastName => lastName ?? "";
@@ -47,6 +52,7 @@ class UserProfile {
 
   int countMissingFields() {
     int count = 0;
+    if (userId == null || userId!.isEmpty) count++;
     if (username == null || username!.isEmpty) count++;
     if (firstName == null || firstName!.isEmpty) count++;
     if (lastName == null || lastName!.isEmpty) count++;

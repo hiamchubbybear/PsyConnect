@@ -137,7 +137,7 @@ public class FriendsService {
             String tarId = undoUserId;
             if (request.getTarget().equals(undoUserId)) throw new CustomExceptionHandler(ErrorCode.CAN_NOT_REQUEST);
             if (!friendShipUtils.existByUser(reqId, tarId)) throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
-            if (!(friendRepository.exists(tarId, reqId, FriendShipStatus.PENDING)
+            if ((friendRepository.exists(tarId, reqId, FriendShipStatus.PENDING)
                     ^ friendRepository.exists(reqId, tarId, FriendShipStatus.PENDING)))
                 throw new CustomExceptionHandler(ErrorCode.USER_DONT_HAVE_FRIEND_REQUEST);
             friendRepository.delete(reqId, tarId, FriendShipStatus.PENDING);

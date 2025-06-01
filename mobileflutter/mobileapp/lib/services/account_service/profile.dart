@@ -8,7 +8,6 @@ class ProfileService {
   Future<UserProfile> getUserProfile() async {
     String? token = await SharedPreferencesProvider().getUserProfile();
     if (token == null || token.isEmpty) throw Exception("Invalid access token");
-    // If already have profile -> do not need to send request
     var response =
         await ApiService.getWithAccessToken(endpoint: "profile", token: token);
     if (response.statusCode == 200) {

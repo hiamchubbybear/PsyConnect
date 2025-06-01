@@ -46,6 +46,8 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: const MyHomePage(title: '',));
+        home: const MyHomePage(
+          title: '',
+        ));
   }
 }

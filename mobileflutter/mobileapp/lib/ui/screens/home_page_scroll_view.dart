@@ -1,5 +1,6 @@
 import 'package:PsyConnect/core/utils/utils.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
+import 'package:PsyConnect/models/user_profile.dart';
 import 'package:PsyConnect/ui/widgets/posts/mood.dart';
 import 'package:PsyConnect/ui/widgets/posts/post.dart';
 import 'package:flutter/material.dart';
@@ -68,19 +69,31 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
 }
 
 class StoriesWidget extends StatelessWidget {
-  final List<String> storyImages = [
-    'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg',
-    'https://th.bing.com/th/id/OIP.TvwRR9fnAiYIBm4zkGdxAwHaIM?w=926&h=1024&rs=1&pid=ImgDetMain',
-    'https://th.bing.com/th/id/OIP.VhMZO57QYlGxH9AQM9-FxAHaHa?pid=ImgDet&w=196&h=196&c=7&dpr=1.8',
-    'https://th.bing.com/th/id/OIP.EpUD2PGp7HmIA3a0UnKl6AAAAA?pid=ImgDet&w=196&h=196&c=7&dpr=1.8',
-    'https://pbs.twimg.com/profile_images/1306417770356113408/1GLl3v0u_400x400.jpg',
-  ];
-  final List<String> username = [
-    'Trần Meo',
-    'Nguyễn Thị Thu Meo',
-    'Phan Công Meo',
-    'Phùng Đình Quang Meo',
-    'Nguyễn Thị Thu Meo',
+  final List<UserProfile> storyImages = [
+    UserProfile(
+      userId: "1",
+      username: "chessy1603",
+      avatarUri:
+          "https://upload.wikimedia.org/wikipedia/commons/9/9b/Photo_of_a_kitten.jpg",
+    ),
+    UserProfile(
+      userId: "2",
+      username: "huytran",
+      avatarUri:
+          "https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png",
+    ),
+    UserProfile(
+      userId: "3",
+      username: "congdanhhihi",
+      avatarUri:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Flag_of_Vietnam.svg/1920px-Flag_of_Vietnam.svg.png",
+    ),
+    UserProfile(
+      userId: "4",
+      username: "thuhaaa",
+      avatarUri:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_of_the_People%27s_Republic_of_China.svg/1920px-Flag_of_the_People%27s_Republic_of_China.svg.png",
+    ),
   ];
   StoriesWidget({super.key});
 
@@ -109,7 +122,16 @@ class StoriesWidget extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: Image.network(
-                          storyImages[index],
+                          storyImages[index].avatarUri ?? '',
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.error, size: 60);
+                          },
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -120,7 +142,7 @@ class StoriesWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  utils.namesplite(name: username[index]),
+                  utils.namesplite(name: storyImages[index].username ?? ''),
                   style: quickSand12Font,
                 ),
               ],

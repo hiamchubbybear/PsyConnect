@@ -43,8 +43,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             log.info("JWT token: {}", token);
-            if (authenticationService.isTokenInvalid(token))
-                throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
+//            if (authenticationService.isTokenValid(token))
+//                throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
             try {
                 username = authenticationService.extractUsername(token);
             } catch (ParseException e) {
