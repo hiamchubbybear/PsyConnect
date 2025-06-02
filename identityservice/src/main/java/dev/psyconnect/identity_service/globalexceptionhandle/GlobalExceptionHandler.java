@@ -3,10 +3,6 @@ package dev.psyconnect.identity_service.globalexceptionhandle;
 import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
-import dev.psyconnect.identity_service.dto.LogEvent;
-import dev.psyconnect.identity_service.dto.LogLevel;
-import dev.psyconnect.identity_service.kafka.producer.KafkaService;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +17,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
+import dev.psyconnect.identity_service.dto.LogEvent;
+import dev.psyconnect.identity_service.dto.LogLevel;
+import dev.psyconnect.identity_service.kafka.producer.KafkaService;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @Autowired
     KafkaService kafkaService;
 
@@ -39,11 +39,9 @@ public class GlobalExceptionHandler {
                 .level(LogLevel.ERROR)
                 .action("")
                 .traceId(UUID.randomUUID().toString())
-                .build()
-        );
+                .build());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
-
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ApiResponse<String>> handleNullPointerException(NullPointerException ex) {
@@ -53,14 +51,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("IllegalArgumentException: ", ex);
         ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Illegal Argument", null);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<String>> handleValidationException(MethodArgumentNotValidException ex) {
@@ -74,7 +70,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiResponse<String>> handleMethodNotSupportedException(
             HttpRequestMethodNotSupportedException ex) {
@@ -83,7 +78,6 @@ public class GlobalExceptionHandler {
                 new ApiResponse<>(HttpStatus.METHOD_NOT_ALLOWED.value(), "Method Not Allowed", null);
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
     }
-
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiResponse<String>> handleMissingParamsException(
@@ -94,7 +88,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ApiResponse<String>> handleDataAccessException(DataAccessException ex) {
         log.warn("DataAccessException: ", ex);
@@ -103,7 +96,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
-
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
         log.warn("NoHandlerFoundException: ", ex);
@@ -111,14 +103,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<String>> handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("AccessDeniedException: ", ex);
         ApiResponse<String> response = new ApiResponse<>(HttpStatus.FORBIDDEN.value(), "Access denied", null);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
-
 
     @ExceptionHandler(CustomExceptionHandler.class)
     public ResponseEntity<ApiResponse<?>> handleCustomException(CustomExceptionHandler customExceptionHandler) {

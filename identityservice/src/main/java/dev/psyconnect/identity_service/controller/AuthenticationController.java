@@ -40,7 +40,7 @@ public class AuthenticationController {
 
     // For access token validate
     @PostMapping("internal/valid/{token}")
-    public Boolean introspectRequest( @PathVariable String token) throws ParseException, JOSEException {
+    public Boolean introspectRequest(@PathVariable String token) throws ParseException, JOSEException {
         return (authenticationService.isTokenValid(token));
     }
 }

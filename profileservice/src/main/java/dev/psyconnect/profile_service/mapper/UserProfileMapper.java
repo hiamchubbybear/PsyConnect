@@ -11,6 +11,7 @@ import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileUpdateResponse;
 import dev.psyconnect.profile_service.model.Profile;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
 public interface UserProfileMapper {
@@ -31,7 +32,16 @@ public interface UserProfileMapper {
 
     UserProfileUpdateResponse toUserProfileUpdateResponse(UserProfileUpdateResponse updatedUser);
 
-    @Mapping(ignore = true, target = "dob")
+    @Mappings({
+            @Mapping(source = "accountId", target = "accountId"),
+            @Mapping(source = "profileId", target = "profileId"),
+            @Mapping(source = "firstName", target = "firstName"),
+            @Mapping(source = "lastName", target = "lastName"),
+            @Mapping(source = "dob", target = "dob", dateFormat = "yyyy-MM-dd"),
+            @Mapping(source = "address", target = "address"),
+            @Mapping(source = "gender", target = "gender"),
+            @Mapping(source = "avatarUri", target = "avatarUri"),
+    })
     UserProfileResponse toUserProfileRequest(Profile profile);
 
     UserProfileCreationRequest toUserProfileRequest(ProfileCreationRequest profile);

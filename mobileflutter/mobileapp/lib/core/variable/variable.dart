@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final String androidBaseUrl = "http://100.90.115.27:8888";
-final String iosBaseUrl = "http://100.90.115.27:8888";
+final String androidBaseUrl = "http://localhost:8888";
+final String iosBaseUrl = "http://localhost:8888";
 final String androidBaseUrlIdentityService =
-    "http://100.90.115.27:8888/identity/create";
+    "http://localhost:8888/identity/create";
 final String iosBaseUrlIdentityService =
-    "http://100.90.115.27:8888/identity/create";
-final String loginUriAndroidString = "http://100.90.115.27:8888/auth/login";
-final String loginUriIosString = "http://100.90.115.27:8888/auth/login";
-final String profileService = "http://100.90.115.27:8888";
+    "http://localhost:8888/identity/create";
+final String loginUriAndroidString = "http://localhost:8888/auth/login";
+final String loginUriIosString = "http://localhost:8888/auth/login";
+final String profileService = "http://localhost:8888";
 final Color warningError = Colors.red.shade200;
 const Color blackColor = Colors.black;
 const Color whiteColor = Colors.white;

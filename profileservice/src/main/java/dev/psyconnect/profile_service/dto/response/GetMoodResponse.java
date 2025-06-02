@@ -12,9 +12,10 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class GetMoodResponse implements Serializable {
-    @Id
+    private String profileId;
+    private String fullName;
+    private String avatarUrl;
     private String moodId;
-
     private String mood;
     private String description;
     private String visibility;

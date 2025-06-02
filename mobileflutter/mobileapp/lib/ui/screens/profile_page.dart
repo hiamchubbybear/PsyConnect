@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
@@ -25,13 +27,58 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void loadUserData() async {
     try {
-      userProfile = await profileService.getUserProfile();
-    } catch (e) {
+      final data = await SharedPreferencesProvider().getUserProfile();
+      debugPrint("Raw data from SharedPreferences: $data");
+
+      if (data == null) {
+        await _fetchAndSetUserProfileFromApi();
+        return;
+      }
+
+      final Map<String, dynamic> jsonMap = jsonDecode(data);
+      debugPrint("Decoded JSON Map: $jsonMap");
+
+      final user = UserProfile.fromJson(jsonMap);
+      debugPrint("UserProfile object created: $user");
+
+      if (user.accountId == null || user.username == null) {
+        debugPrint("UserProfile invalid, fetching from API...");
+        await _fetchAndSetUserProfileFromApi();
+        return;
+      }
+
+      setState(() {
+        userProfile = user;
+        debugPrint("UserProfile assigned to state");
+      });
+    } catch (e, stacktrace) {
+      debugPrint("Error in loadUserData: $e");
+      debugPrint("$stacktrace");
+
       ToastService.showToast(
-          context: context,
-          message: "Your current session is expired please login again!",
-          title: "Failed",
-          type: ToastType.error);
+        context: context,
+        message: "Your current session is expired. Please login again! $e",
+        title: "Failed",
+        type: ToastType.error,
+      );
+    }
+  }
+
+  Future<void> _fetchAndSetUserProfileFromApi() async {
+    try {
+      final userFromApi = await profileService.getUserProfile();
+      setState(() {
+        userProfile = userFromApi;
+        print(jsonEncode(userProfile.toJson()));
+      });
+    } catch (e) {
+      debugPrint("Failed to fetch user profile from API: $e");
+      ToastService.showToast(
+        context: context,
+        message: "Failed to load profile. Please try again later.",
+        title: "Error",
+        type: ToastType.error,
+      );
     }
   }
 
@@ -104,7 +151,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           Text(
-                            "($value/7)",
+                            "($value/8)",
                             style: TextStyle(
                               color: successStatus,
                             ),

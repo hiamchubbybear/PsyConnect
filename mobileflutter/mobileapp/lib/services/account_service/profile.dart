@@ -6,24 +6,27 @@ import 'package:PsyConnect/services/api/api_service.dart';
 
 class ProfileService {
   Future<UserProfile> getUserProfile() async {
-    String? token = await SharedPreferencesProvider().getUserProfile();
-    if (token == null || token.isEmpty) throw Exception("Invalid access token");
-    var response =
-        await ApiService.getWithAccessToken(endpoint: "profile", token: token);
+    String? userProfileRaw = await SharedPreferencesProvider().getUserProfile();
+    if (userProfileRaw != null && userProfileRaw.isNotEmpty) {
+      return UserProfile.fromJson(jsonDecode(userProfileRaw));
+    }
+    String? token = await SharedPreferencesProvider().getJwt();
+    if (token == null || token.isEmpty) {
+      throw Exception("Invalid access token");
+    }
+    final response = await ApiService.getWithAccessToken(
+      endpoint: "profile",
+      token: token,
+    );
     if (response.statusCode == 200) {
-      final responseDecoded = jsonDecode(response.body);
-      SharedPreferencesProvider().setUserProfile(responseDecoded["data"]);
+      final responseDecoded = jsonDecode(response.body)["data"];
+      UserProfile userProfile = UserProfile.fromJson(responseDecoded);
+      await SharedPreferencesProvider().setUserProfile(userProfile);
+      return userProfile;
     } else {
       final error = jsonDecode(response.body);
       throw Exception(
           "Error ${response.statusCode}: ${error['message'] ?? 'Unknown error'}");
     }
-    final String? profileString =
-        await SharedPreferencesProvider().getUserProfile();
-    if (profileString == null || profileString.isEmpty) {
-      throw new Exception("Failed to create get user profile");
-    }
-    final userProfile = UserProfile.fromJson(jsonDecode(profileString));
-    return userProfile;
   }
 }

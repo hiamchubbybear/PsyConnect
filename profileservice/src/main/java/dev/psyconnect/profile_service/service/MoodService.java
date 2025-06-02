@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import dev.psyconnect.profile_service.model.Profile;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,10 @@ public class MoodService {
 
     @CacheEvict(key = "#profileId", value = "mood")
     public MoodCreateResponse createMoodByProfileId(String profileId, MoodCreateRequest request) {
-        if (!profileRepository.existsById(profileId) || moodRepository.existsById(profileId))
+        if (!profileRepository.existsById(profileId))
             throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
-        log.info("Profile Id {}", profileId);
+        if (!moodRepository.existsById(profileId))
+            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         // Ho_Chi_Minh TimeZones
         final int TIME_ZONE = +7;
         Map<String, Long> dateTime = Time.MOOD_EXPIRES;
@@ -50,7 +52,6 @@ public class MoodService {
                         currentTime,
                         expiresTime)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
-        log.info("Creating mood for profile {}", response.getMood());
         return MoodCreateResponse.builder()
                 .profileId(profileId)
                 .isSuccess(true)
@@ -66,7 +67,6 @@ public class MoodService {
         var response = moodRepository
                 .updateMood(profileId, request.getMood(), request.getMoodDescription(), request.getVisibility())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
-        log.info("Updating mood for profile {}", response.getMood());
         return MoodCreateResponse.builder()
                 .isSuccess(true)
                 .moodDescription(response.getDescription())
@@ -76,15 +76,18 @@ public class MoodService {
 
     @Cacheable(key = "#profileId", value = "mood")
     public GetMoodResponse getMoodById(String profileId) {
-        Mood mood =
-                moodRepository.getMood(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
+        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        String fullName = profile.getFirstName() + profile.getLastName();
         return GetMoodResponse.builder()
-                .moodId(mood.getMoodId())
-                .mood(mood.getMood())
-                .description(mood.getDescription())
-                .expiresAt(mood.getExpiresAt())
-                .createdAt(mood.getCreatedAt())
-                .visibility(mood.getVisibility())
+                .profileId(profileId)
+                .avatarUrl(profile.getAvatarUri())
+                .fullName(fullName)
+                .moodId(profile.getMoodList().getMoodId())
+                .mood(profile.getMoodList().getMood())
+                .description(profile.getMoodList().getDescription())
+                .expiresAt(profile.getMoodList().getExpiresAt())
+                .createdAt(profile.getMoodList().getCreatedAt())
+                .visibility(profile.getMoodList().getVisibility())
                 .build();
     }
 

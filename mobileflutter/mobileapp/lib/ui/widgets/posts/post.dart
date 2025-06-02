@@ -17,11 +17,9 @@ class PostWidget extends StatefulWidget {
   final List<String> comment;
   final int nol;
   final int noc;
-  // For post interaction
-  final String userId;
+  final String profileId;
   final String? postedUser;
   final String postId;
-// Đi ?
   const PostWidget({
     super.key,
     required this.avatarUri,
@@ -36,7 +34,7 @@ class PostWidget extends StatefulWidget {
     required this.nol,
     required this.noc,
     required this.postId,
-    required this.userId,
+    required this.profileId,
     this.postedUser,
   });
 
@@ -161,13 +159,4 @@ class _PostWidgetState extends State<PostWidget> {
       ),
     );
   }
-
-  // _handleOnPostOptions({required BuildContext context}) {
-  //   return Center(
-  //     child: DropdownButton<String>(
-  //       value :  ,
-  //       items: [],
-  //     ),
-  //   );
-  // }
 }

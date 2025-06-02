@@ -31,6 +31,7 @@ public class UserInfoResponse {
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     Set<RoleEntity> role;
+
     @JsonIgnore
     UUID session;
 }

@@ -31,9 +31,9 @@ public class UserProfileController {
         return new ApiResponse<>(userProfileService.create(body));
     }
 
-    @PostMapping()
+    @PutMapping()
     ApiResponse<UserProfileUpdateResponse> updateUserProfile(
-            @RequestBody UserProfileUpdateRequest body, @RequestHeader(name = "X-User-Id") String userId) {
+            @RequestBody UserProfileUpdateRequest body, @RequestHeader(name = "X-Profile-Id") String userId) {
         return new ApiResponse<>(userProfileService.update(body, userId));
     }
 

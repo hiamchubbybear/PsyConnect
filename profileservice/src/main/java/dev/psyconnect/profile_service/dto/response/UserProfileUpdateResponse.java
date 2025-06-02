@@ -1,5 +1,6 @@
 package dev.psyconnect.profile_service.dto.response;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,15 +15,15 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserProfileUpdateResponse {
-    UUID userId;
+public class UserProfileUpdateResponse  {
+    String profileId;
     String username;
     String firstName;
     String lastName;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    DateTime dob;
+    LocalDate dob;
 
     String address;
     String gender;

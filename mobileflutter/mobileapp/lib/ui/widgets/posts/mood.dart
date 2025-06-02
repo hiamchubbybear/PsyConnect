@@ -48,7 +48,7 @@ void showPostDialog(BuildContext context) {
     context: context,
     barrierDismissible: true,
     barrierLabel: "Post Dialog",
-    transitionDuration: const Duration(milliseconds: 200),
+    transitionDuration: const Duration(milliseconds: 100),
     pageBuilder: (context, animation, secondaryAnimation) {
       return Center(
         child: Material(
@@ -91,7 +91,7 @@ void showPostDialog(BuildContext context) {
                       maxLines: 3,
                       maxLength: 200,
                       decoration: InputDecoration(
-                        hintText: "What are you thinking about?",
+                        hintText: "What are you thinking about? (200 characters)",
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                       ),
@@ -124,6 +124,7 @@ void showPostDialog(BuildContext context) {
                                   type: ToastType.warning);
                             } else {
                               MoodModel moodModel = MoodModel(
+
                                   mood: mood,
                                   moodDescription: moodDescription,
                                   visibility: visibility);

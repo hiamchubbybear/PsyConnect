@@ -25,6 +25,5 @@ public class UserProfileResponse implements Serializable {
     String dob;
     String address;
     String gender;
-    String role;
     String avatarUri;
 }

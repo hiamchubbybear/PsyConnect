@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,12 +21,26 @@ class SharedPreferencesProvider {
   static const String _themeModeKey = "isDarkMode";
   static const String _userProfile = "userProfile";
   static const String _friendsProfile = "friendsProfile";
-
+  static const String _moodKey = "profile_moods";
   Future<void> setFriendsProfile(List<UserProfile> friendsProfile) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> encodedFriends =
         friendsProfile.map((profile) => jsonEncode(profile.toJson())).toList();
     await prefs.setStringList(_friendsProfile, encodedFriends);
+  }
+
+  Future<void> setProfileMood(List<ProfileMoodModel> moodProfile) async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = moodProfile.map((e) => jsonEncode(e.toJson())).toList();
+    await prefs.setStringList(_moodKey, encoded);
+  }
+
+  Future<List<ProfileMoodModel>> getProfileMood() async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = prefs.getStringList(_moodKey) ?? [];
+    return encoded
+        .map((e) => ProfileMoodModel.fromJson(jsonDecode(e)))
+        .toList();
   }
 
   Future<void> setJwt(String token) async =>

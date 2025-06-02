@@ -18,8 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.nimbusds.jose.JOSEException;
 
 import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
-import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
-import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.interfaces.IUserAccountService;
 import dev.psyconnect.identity_service.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +41,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             log.info("JWT token: {}", token);
-//            if (authenticationService.isTokenValid(token))
-//                throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
+            //            if (authenticationService.isTokenValid(token))
+            //                throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
             try {
                 username = authenticationService.extractUsername(token);
             } catch (ParseException e) {

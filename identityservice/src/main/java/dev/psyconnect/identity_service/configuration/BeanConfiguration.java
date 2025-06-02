@@ -80,7 +80,7 @@ public class BeanConfiguration {
                 Permission permission = permissionRepository.findByName(permissionEnum.getName());
                 if (permission != null
                         && (permission.getRoles() == null
-                        || permission.getRoles().isEmpty())) {
+                                || permission.getRoles().isEmpty())) {
                     Set<RoleEntity> roleEntities = roleRepository.findAllByPermissionsContaining(permission);
                     if (!roleEntities.isEmpty()) {
                         permission.setRoles(roleEntities);

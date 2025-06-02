@@ -16,6 +16,7 @@ import lombok.*;
 public class Token {
     @Id
     private String username;
+
     private String token;
     private Timestamp issuedAt;
     private Timestamp expires;

@@ -56,10 +56,6 @@ public class UserProfileService {
         Profile profile = userProfileMapper.toUserProfileMapper(request);
         profile.setDob(Time.parseFromString(request.getDob()));
         var temp = userProfileRepository.save(profile);
-
-        log.info("Created profile: {}", temp.getProfileId());
-
-        //         Push setting default event
         eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
         kafkaService.send("profile.user-create-setting", request.getProfileId());
         kafkaService.sendLog(
@@ -69,7 +65,6 @@ public class UserProfileService {
         return response;
     }
 
-    @Cacheable(key = "#profileId", value = "profile")
     public UserProfileResponse get(String profileId) {
         UserProfileResponse response;
         try {
@@ -85,7 +80,6 @@ public class UserProfileService {
         return response;
     }
 
-    @CacheEvict(value = "profile", key = "#profileId")
     public UserProfileUpdateResponse update(UserProfileUpdateRequest userProfileUpdateRequest, String profileId) {
         UserProfileUpdateResponse response;
         try {
@@ -96,9 +90,7 @@ public class UserProfileService {
             updatedUser.setProfileId(existingUser.getProfileId());
             updatedUser.setAccountId(existingUser.getAccountId());
             Profile savedUser = userProfileRepository.save(updatedUser);
-
             response = userProfileMapper.toUserProfileUpdateResponse(savedUser);
-
             kafkaService.sendLog(buildLog("profile-service", profileId, "Update profile", "Success", Map.of("data", response), LogLevel.LOG));
         } catch (Exception e) {
             kafkaService.sendLog(buildLog(

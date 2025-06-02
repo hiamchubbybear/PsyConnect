@@ -104,13 +104,14 @@ public class Configuration {
                     });
                     oAuth2Login.failureHandler(
                             (HttpServletRequest request,
-                             HttpServletResponse response,
-                             AuthenticationException exception) -> {
+                                    HttpServletResponse response,
+                                    AuthenticationException exception) -> {
                                 log.error("OAuth2 login failed: {}", exception.getMessage());
                                 response.setContentType("application/json");
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                 response.getWriter()
-                                        .write("{\"error\": \"Authentication failed: " + exception.getMessage() + "\"}");
+                                        .write("{\"error\": \"Authentication failed: " + exception.getMessage()
+                                                + "\"}");
                             });
                     oAuth2Login
                             .authorizationEndpoint(authorizationEndpointConfig ->
@@ -119,10 +120,7 @@ public class Configuration {
                                     redirectionEndpointConfig.baseUri("/oauth2/callback/google"));
                 })
                 .formLogin(formLogin -> {
-                    formLogin
-                            .loginPage("/login")
-                            .defaultSuccessUrl("/home")
-                            .failureUrl("/login");
+                    formLogin.loginPage("/login").defaultSuccessUrl("/home").failureUrl("/login");
                 })
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
