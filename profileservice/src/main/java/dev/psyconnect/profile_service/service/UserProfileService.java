@@ -59,7 +59,7 @@ public class UserProfileService {
         eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
         kafkaService.send("profile.user-create-setting", request.getProfileId());
         kafkaService.sendLog(
-                buildLog("profile-service", request.getProfileId(), "Create profile", "Success", Map.of("metadata", temp), LogLevel.LOG));
+                buildLog("profile-service", request.getProfileId(), "Create profile", "Success", Map.of("metadata", temp.toString()), LogLevel.LOG));
         var response = userProfileMapper.toUserProfile(temp);
         response.setDob(request.getDob());
         return response;

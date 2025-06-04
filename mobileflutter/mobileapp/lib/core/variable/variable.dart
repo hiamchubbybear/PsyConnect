@@ -66,3 +66,8 @@ const TextStyle kSubHeadingStyle = TextStyle(
   fontWeight: FontWeight.w500,
   color: Colors.grey,
 );
+const TextStyle kSubHintStyle = TextStyle(
+  fontSize: 13,
+  fontWeight: FontWeight.w300,
+  color: Colors.grey,
+);

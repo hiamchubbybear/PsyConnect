@@ -104,7 +104,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     "identity-service",
                     request.getUsername(),
                     "Create account",
-                    "Failed",
+                    e.getMessage(),
                     Map.of("error", e.getMessage()),
                     LogLevel.ERROR));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);

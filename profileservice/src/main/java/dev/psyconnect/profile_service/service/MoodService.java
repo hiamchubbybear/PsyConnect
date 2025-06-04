@@ -33,10 +33,15 @@ public class MoodService {
 
     @CacheEvict(key = "#profileId", value = "mood")
     public MoodCreateResponse createMoodByProfileId(String profileId, MoodCreateRequest request) {
+        log.info("Create mood for user with profile id  {} ", profileId);
+        log.info("Mood description {}", request.getMood());
+        log.info("Mood description {}", request.getMoodDescription());
+        log.info("Mood visibility {}", request.getVisibility());
         if (!profileRepository.existsById(profileId))
             throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
-        if (!moodRepository.existsById(profileId))
-            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        if (profileRepository.hasMood(profileId)) {
+            throw new CustomExceptionHandler(ErrorCode.MOOD_ALREADY_EXISTS);
+        }
         // Ho_Chi_Minh TimeZones
         final int TIME_ZONE = +7;
         Map<String, Long> dateTime = Time.MOOD_EXPIRES;
@@ -74,11 +79,11 @@ public class MoodService {
                 .build();
     }
 
-    @Cacheable(key = "#profileId", value = "mood")
+    //    @Cacheable(key = "#profileId", value = "mood")
     public GetMoodResponse getMoodById(String profileId) {
         Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         String fullName = profile.getFirstName() + profile.getLastName();
-        return GetMoodResponse.builder()
+        var res = GetMoodResponse.builder()
                 .profileId(profileId)
                 .avatarUrl(profile.getAvatarUri())
                 .fullName(fullName)
@@ -89,6 +94,8 @@ public class MoodService {
                 .createdAt(profile.getMoodList().getCreatedAt())
                 .visibility(profile.getMoodList().getVisibility())
                 .build();
+        log.info(res.toString());
+        return res;
     }
 
     @CacheEvict(key = "#profileId", value = "mood")

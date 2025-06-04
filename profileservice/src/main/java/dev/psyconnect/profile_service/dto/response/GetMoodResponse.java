@@ -11,6 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class GetMoodResponse implements Serializable {
     private String profileId;
     private String fullName;

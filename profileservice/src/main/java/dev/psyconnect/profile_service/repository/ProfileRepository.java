@@ -14,7 +14,12 @@ import dev.psyconnect.profile_service.model.Profile;
 
 @Repository
 public interface ProfileRepository extends Neo4jRepository<Profile, String> {
-    // Find all profile
+    @Query("""
+                MATCH (u:user_profile {profileId: $profileId})-[:HAS_MOOD]->(m:Mood)
+                RETURN COUNT(m) > 0
+            """)
+    boolean hasMood(@Param("profileId") String profileId);
+
     @Query(
             """
                     MATCH (userProfile:`user_profile`)

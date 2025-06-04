@@ -1,9 +1,11 @@
+import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/utils/utils.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
+import 'package:PsyConnect/models/mood.dart';
 import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/user_profile.dart';
 import 'package:PsyConnect/services/account_service/profile.dart';
-import 'package:PsyConnect/ui/widgets/posts/mood.dart';
+import 'package:PsyConnect/services/profile_service/mood.dart';
 import 'package:PsyConnect/ui/widgets/posts/post.dart';
 import 'package:flutter/material.dart';
 
@@ -15,14 +17,28 @@ class HomePageScrollView extends StatefulWidget {
 }
 
 class _HomePageScrollViewState extends State<HomePageScrollView> {
-  Future<List<ProfileMoodModel>>? moodFuture;
+  void handleMoodCreated() {
+    _fetchMoods();
+  }
+
+  late Future<List<ProfileMoodModel>> moodFuture;
   late Future<UserProfile> userProfile;
-  ProfileService profileService = ProfileService();
+
   @override
   void initState() {
     super.initState();
+    _fetchMoods();
+  }
+
+  void _fetchMoods() {
     moodFuture = moodService.getProfileWithMood(context: context);
-    userProfile = profileService.getUserProfile();
+    userProfile = ProfileService().getUserProfile();
+  }
+
+  void _onMoodCreated() {
+    setState(() {
+      _fetchMoods();
+    });
   }
 
   @override
@@ -30,92 +46,74 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Stack(
-          children: [
-            CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: FutureBuilder<List<ProfileMoodModel>>(
-                      future: moodFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return const Center(
-                              child: Text("Lỗi khi tải dữ liệu mood"));
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.isEmpty) {
-                          return FutureBuilder<UserProfile>(
-                            future: userProfile,
-                            builder: (context, userSnapshot) {
-                              if (userSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              } else if (userSnapshot.hasError ||
-                                  !userSnapshot.hasData) {
-                                return const Center(
-                                    child: Text(
-                                        "Không thể tải thông tin người dùng"));
-                              }
-
-                              final user = userSnapshot.data!;
-                              final selfMood = ProfileMoodModel(
-                                profileId: user.getProfileId,
-                                fullName: user.getFirstName,
-                                avatarUri: user.getAvatarUri,
-                                mood: mood,
-                                moodId: '',
-                                moodDescription: '',
-                                visibility: '',
-                                createdAt: 0,
-                                expiresAt: 0,
-                              );
-
-                              return StoriesWidget(profilesMood: [selfMood]);
-                            },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: FutureBuilder<List<ProfileMoodModel>>(
+                  future: moodFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return const Center(child: Text("Failed to load data"));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return FutureBuilder<UserProfile>(
+                        future: userProfile,
+                        builder: (context, userSnap) {
+                          if (!userSnap.hasData) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          final user = userSnap.data!;
+                          final selfMood = ProfileMoodModel(
+                            profileId: user.getProfileId,
+                            fullName: user.getFirstName,
+                            avatarUri: user.getAvatarUri,
+                            mood: "",
+                            moodId: '',
+                            moodDescription: '',
+                            visibility: '',
+                            createdAt: 0,
+                            expiresAt: 0,
                           );
-                        }
-
-                        return StoriesWidget(profilesMood: snapshot.data!);
-                      },
-                    ),
-                  ),
-                ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return PostWidget(
-                        profileId: "1",
-                        avatarUri:
-                            "https://upload.wikimedia.org/wikipedia/commons/9/9b/Photo_of_a_kitten.jpg",
-                        username: "chessy1603",
-                        name: "Phong Khê",
-                        postedTime: 1740478871,
-                        privacy: "PUBLIC",
-                        postImageUri:
-                            "https://i.pinimg.com/236x/7c/89/df/7c89dfc7f3be5c1df083b01864cfb3a3.jpg",
-                        liked: [
-                          "huytran",
-                          "congdanhhihi",
-                          "thuhaaa",
-                          "hphunggg"
-                        ],
-                        comment: ["Dễ thương vậy", "Haha"],
-                        nol: 100,
-                        noc: 30,
-                        content: 'Xin chào thế giới',
-                        postId: '',
+                          return StoriesWidget(
+                            profilesMood: [selfMood],
+                            onMoodCreated: _onMoodCreated,
+                          );
+                        },
                       );
-                    },
-                    childCount: 4,
-                  ),
+                    }
+                    return StoriesWidget(
+                      profilesMood: snapshot.data!,
+                      onMoodCreated: _onMoodCreated,
+                    );
+                  },
                 ),
-              ],
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                childCount: 4,
+                (context, index) => const PostWidget(
+                  profileId: "1",
+                  avatarUri:
+                      "https://upload.wikimedia.org/wikipedia/commons/9/9b/Photo_of_a_kitten.jpg",
+                  username: "chessy1603",
+                  name: "Phong Khê",
+                  postedTime: 1740478871,
+                  privacy: "PUBLIC",
+                  postImageUri:
+                      "https://i.pinimg.com/236x/7c/89/df/7c89dfc7f3be5c1df083b01864cfb3a3.jpg",
+                  liked: ["huytran", "congdanhhihi", "thuhaaa", "hphunggg"],
+                  comment: ["Dễ thương vậy", "Haha"],
+                  nol: 37,
+                  noc: 30,
+                  content: 'Xin chào thế giới',
+                  postId: '',
+                ),
+              ),
             ),
           ],
         ),
@@ -126,8 +124,13 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
 
 class StoriesWidget extends StatelessWidget {
   final List<ProfileMoodModel> profilesMood;
+  final VoidCallback? onMoodCreated;
 
-  const StoriesWidget({super.key, required this.profilesMood});
+  const StoriesWidget({
+    super.key,
+    required this.profilesMood,
+    this.onMoodCreated,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -155,15 +158,15 @@ class StoriesWidget extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: Image.network(
-                          mood.avatarUri ?? '',
+                          mood.avatarUri,
+                          fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error, size: 60),
+                              const Icon(Icons.error),
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
                             return const Center(
                                 child: CircularProgressIndicator());
                           },
-                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -171,15 +174,15 @@ class StoriesWidget extends StatelessWidget {
                       Positioned(
                         bottom: 0,
                         right: 0,
-                        child: MoodWidget(),
+                        child: CreateMoodWidget(
+                          onMoodCreated: onMoodCreated,
+                        ),
                       ),
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  Utils().namesplite(name: mood.fullName ?? ''),
-                  style: quickSand12Font,
-                ),
+                Text(Utils().namesplite(name: mood.fullName),
+                    style: quickSand12Font),
               ],
             ),
           );
@@ -187,4 +190,165 @@ class StoriesWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class CreateMoodWidget extends StatefulWidget {
+  final VoidCallback? onMoodCreated;
+  const CreateMoodWidget({super.key, required this.onMoodCreated});
+
+  @override
+  State<CreateMoodWidget> createState() => _CreateMoodWidgetState();
+}
+
+String mood = "testing";
+String moodDescription = "";
+String visibility = "";
+String selectedItem = items[0];
+List<String> items = [
+  "Private",
+  "Public",
+  "Friends only",
+];
+MoodService moodService = MoodService();
+
+class _CreateMoodWidgetState extends State<CreateMoodWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => showPostDialog(context, widget.onMoodCreated),
+      child: Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.green[300],
+          border: Border.all(color: Colors.white, width: 2),
+        ),
+        child: const Icon(
+          Icons.add,
+          size: 14,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+
+void showPostDialog(BuildContext context, VoidCallback? onMoodCreated) {
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: "Post Dialog",
+    transitionDuration: const Duration(milliseconds: 100),
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return Center(
+        child: Material(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Container(
+                width: MediaQuery.of(context).size.width * 1.3,
+                height: 270,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Share your mind", style: quickSand12Font),
+                        Container(
+                          child: DropdownButton<String>(
+                            value: selectedItem,
+                            items: items
+                                .map((item) => DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Text(item, style: quickSand12Font)))
+                                .toList(),
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedItem = value!;
+                                visibility = value!;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      maxLines: 3,
+                      maxLength: 200,
+                      decoration: InputDecoration(
+                        hintText: "What are you thinking about??",
+                        hintStyle: kSubHintStyle,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      onChanged: (value) => {
+                        moodDescription = value,
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          child: const Text("Cancel"),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          child: const Text("Post"),
+                          onPressed: () {
+                            if (mood.isEmpty || mood == "") {
+                              ToastService.showToast(
+                                  context: context,
+                                  message: "Please type what you are thinking",
+                                  title: "Warning",
+                                  type: ToastType.warning);
+                            } else if (visibility.isEmpty) {
+                              ToastService.showToast(
+                                  context: context,
+                                  message: "Please choose post privacy",
+                                  title: "Warning",
+                                  type: ToastType.warning);
+                            } else {
+                              MoodModel moodModel = MoodModel(
+                                  mood: mood,
+                                  moodDescription: moodDescription,
+                                  visibility: visibility);
+                              moodService.createMoodPost(
+                                  mood: moodModel, context: context);
+                              if (onMoodCreated != null) {
+                                onMoodCreated();
+                              } else {
+                                ToastService.showToast(
+                                    context: context,
+                                    message: "Error while render",
+                                    title: "Uncatogerize exception",
+                                    type: ToastType.warning);
+                              }
+                              Navigator.of(context).pop();
+                            }
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    },
+    transitionBuilder: (context, anim1, anim2, child) {
+      return FadeTransition(
+        opacity: anim1,
+        child: ScaleTransition(scale: anim1, child: child),
+      );
+    },
+  );
 }

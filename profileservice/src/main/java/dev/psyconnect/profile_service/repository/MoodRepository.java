@@ -16,7 +16,7 @@ public interface MoodRepository extends Neo4jRepository<Mood, String> {
     @Query(
             """
 					MATCH (u:user_profile {profileId: $profileId})
-					CREATE (m:mood {
+					CREATE (m:Mood {
 						moodId: $profileId,
 						mood: $mood,
 						description: $description,

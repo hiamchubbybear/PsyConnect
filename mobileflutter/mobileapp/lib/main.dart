@@ -1,3 +1,4 @@
+import 'package:PsyConnect/core/notifier/mood_notifier.dart';
 import 'package:PsyConnect/core/theme/app_theme.dart';
 import 'package:PsyConnect/provider/auth_token_provider.dart';
 import 'package:PsyConnect/provider/theme_provider.dart';
@@ -16,10 +17,11 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => UserProvider()),
-      ChangeNotifierProvider(create: (context) => UserProfileProvider()),
-      ChangeNotifierProvider(create: (context) => AuthTokenProvider()),
+      ChangeNotifierProvider(create: (_) => UserProvider()),
+      ChangeNotifierProvider(create: (_) => UserProfileProvider()),
+      ChangeNotifierProvider(create: (_) => AuthTokenProvider()),
       ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ChangeNotifierProvider(create: (_) => MoodNotifier())
     ],
     child: MyApp(),
   ));

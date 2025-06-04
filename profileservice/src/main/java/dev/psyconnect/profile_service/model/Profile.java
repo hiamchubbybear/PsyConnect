@@ -24,6 +24,7 @@ import lombok.*;
 @AllArgsConstructor
 @Setter
 @Getter
+@ToString
 @Node("user_profile")
 public class Profile implements Serializable {
     private static final long serialVersionUID = 1L;
