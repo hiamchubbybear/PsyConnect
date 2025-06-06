@@ -138,19 +138,18 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String loginType)
-            throws AuthenticationException {
+    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String loginType) {
         var user = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.debug("User request token is {}", authenticationRequest.getUsername());
         var password = authenticationRequest.getPassword();
 
-        if (password == null) {
-            throw new IllegalArgumentException("Username and password are required");
-        } else if (!passwordEncoder().matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("Password does not match");
-        } else {
+        if (password == null)
+            throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
+        else if (!passwordEncoder().matches(password, user.getPassword()))
+            throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
+        else {
             var response = AuthenticationResponse.builder()
                     .isSuccessful(true)
                     .token(generateToken(authenticationRequest, loginType))
@@ -162,7 +161,6 @@ public class AuthenticationService {
 
     private String buildScope(String role) {
         StringBuilder builder = new StringBuilder();
-
         builder.append("role.").append(role).append(" ");
 
         roleRepository
@@ -177,9 +175,6 @@ public class AuthenticationService {
                         () -> {
                             throw new IllegalArgumentException("Invalid role: " + role);
                         });
-
-        log.debug("Built scope for role {}: {}", role, builder.toString().trim());
-
         return builder.toString().trim();
     }
 
@@ -231,41 +226,13 @@ public class AuthenticationService {
     }
 
     // Validate the token against user details and expiration
-    public Boolean validateToken(String token, String username) throws ParseException, JOSEException {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
-    }
-
-    // Validate the token against user details and expiration
     public Boolean validateToken(String token, AuthenticationFilterRequest authenticationRequest)
             throws ParseException, JOSEException {
         final String username = extractUsername(token);
         return (username.equals(authenticationRequest.getUsername()) && !isTokenExpired(token));
     }
 
-    public static String extractUsernameAuthenticationObject(Authentication authentication) {
-        if (authentication == null) {
-            throw new CustomExceptionHandler(ErrorCode.UNAUTHORIZED);
-        }
-        return authentication.getName();
-    }
-
     public boolean isTokenValid(String token) {
         return !blackListTokenRepository.existsByToken(token);
-    }
-
-    public static String extractUUIDClaim(Authentication authentication) {
-        if (authentication == null) {
-            throw new CustomExceptionHandler(ErrorCode.UNAUTHORIZED);
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof org.springframework.security.oauth2.jwt.Jwt) {
-            org.springframework.security.oauth2.jwt.Jwt jwt = (Jwt) principal;
-            Map<String, Object> returnValue = (jwt.getClaims());
-            String uuid = returnValue.get("uuid").toString();
-            log.debug("UUID is {}", uuid);
-            return uuid;
-        }
-        throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
     }
 }

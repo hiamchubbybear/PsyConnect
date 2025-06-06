@@ -22,10 +22,13 @@ class ToastService {
         ),
       ),
     );
-    Overlay.of(context).insert(overlayEntry);
-    Future.delayed(Duration(seconds: duration), () {
-      overlayEntry.remove();
-    });
+    final overlay = Overlay.maybeOf(context);
+    if (overlay != null) {
+      overlay.insert(overlayEntry);
+      Future.delayed(Duration(seconds: duration), () {
+        overlayEntry.remove();
+      });
+    }
   }
 }
 

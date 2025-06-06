@@ -12,7 +12,7 @@ class MoodService {
       {required MoodModel mood, required BuildContext context}) async {
     SharedPreferencesProvider sharedPreferencesProvider =
         SharedPreferencesProvider();
-        print("Mood data "+ mood.mood);
+        print("Mood data "+ mood.moodDescription);
     if (mood.mood == "" || mood.mood.isEmpty) {
       ToastService.showToast(
           context: context,

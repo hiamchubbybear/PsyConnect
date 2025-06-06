@@ -6,6 +6,7 @@ import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/user_profile.dart';
 import 'package:PsyConnect/services/account_service/profile.dart';
 import 'package:PsyConnect/services/profile_service/mood.dart';
+import 'package:PsyConnect/ui/widgets/posts/mood.dart';
 import 'package:PsyConnect/ui/widgets/posts/post.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +28,7 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
   @override
   void initState() {
     super.initState();
+
     _fetchMoods();
   }
 
@@ -148,6 +150,7 @@ class StoriesWidget extends StatelessWidget {
             child: Column(
               children: [
                 Stack(
+                  clipBehavior: Clip.none,
                   children: [
                     Container(
                       width: 60,
@@ -170,13 +173,19 @@ class StoriesWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (isOwner)
+
+                    if (mood.moodDescription.trim().isNotEmpty)
                       Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CreateMoodWidget(
-                          onMoodCreated: onMoodCreated,
-                        ),
+                        bottom: 45,
+                        right: -10,
+                        child:
+                            MoodNoteBubbleWithSmoke(text: mood.moodDescription),
+                      ),
+                    if (isOwner && mood.moodDescription.trim().isEmpty)
+                      Positioned(
+                        bottom: 45,
+                        right: -10,
+                        child: CreateMoodWidget(onMoodCreated: onMoodCreated),
                       ),
                   ],
                 ),
@@ -195,7 +204,6 @@ class StoriesWidget extends StatelessWidget {
 class CreateMoodWidget extends StatefulWidget {
   final VoidCallback? onMoodCreated;
   const CreateMoodWidget({super.key, required this.onMoodCreated});
-
   @override
   State<CreateMoodWidget> createState() => _CreateMoodWidgetState();
 }
@@ -280,7 +288,7 @@ void showPostDialog(BuildContext context, VoidCallback? onMoodCreated) {
                     const SizedBox(height: 10),
                     TextField(
                       maxLines: 3,
-                      maxLength: 200,
+                      maxLength: 15,
                       decoration: InputDecoration(
                         hintText: "What are you thinking about??",
                         hintStyle: kSubHintStyle,
@@ -302,13 +310,13 @@ void showPostDialog(BuildContext context, VoidCallback? onMoodCreated) {
                         ElevatedButton(
                           child: const Text("Post"),
                           onPressed: () {
-                            if (mood.isEmpty || mood == "") {
+                            if (mood.isEmpty) {
                               ToastService.showToast(
                                   context: context,
                                   message: "Please type what you are thinking",
                                   title: "Warning",
                                   type: ToastType.warning);
-                            } else if (visibility.isEmpty) {
+                            } else if (visibility == "") {
                               ToastService.showToast(
                                   context: context,
                                   message: "Please choose post privacy",

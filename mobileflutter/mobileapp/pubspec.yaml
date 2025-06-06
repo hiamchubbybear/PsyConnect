@@ -17,7 +17,8 @@ dependencies:
   # Rename
   rename: ^2.1.1
   shared_preferences: ^2.5.3
-
+  # Idicator
+  smooth_page_indicator: ^1.2.1
 
   get: ^4.7.2
   # Change app icon

@@ -39,8 +39,12 @@ public interface ProfileRepository extends Neo4jRepository<Profile, String> {
             """
                     	MATCH (u:user_profile {profileId: $profileId})
                     		-[:HAS_FRIEND]->(p:user_profile)
-                    		-[:HAS_MOOD]-> (m:mood)
+                    		-[:HAS_MOOD]-> (m:Mood)
                     	RETURN p as profile, m as mood
                     """)
     List<ProfileWithMood> findFriendsWithMoodsByProfileId(String profileId);
+
+    @Query("MATCH (p:user_profile {profileId: $profileId})<-[:HAS_MOOD]-(m:Mood) RETURN p, collect(m) as moodList")
+    Optional<Profile> findProfileWithMoodById(@Param("profileId") String profileId);
+
 }

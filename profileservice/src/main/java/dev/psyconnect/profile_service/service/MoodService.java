@@ -79,24 +79,33 @@ public class MoodService {
                 .build();
     }
 
-    //    @Cacheable(key = "#profileId", value = "mood")
+    @Cacheable(key = "#profileId", value = "mood")
     public GetMoodResponse getMoodById(String profileId) {
-        Profile profile = profileRepository.findById(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        log.info("Profile {}", profile);
         String fullName = profile.getFirstName() + profile.getLastName();
-        var res = GetMoodResponse.builder()
+        Mood mood = profile.getMoodList();
+
+        if (mood == null) {
+            throw new CustomExceptionHandler(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+        GetMoodResponse res = GetMoodResponse.builder()
                 .profileId(profileId)
                 .avatarUrl(profile.getAvatarUri())
                 .fullName(fullName)
-                .moodId(profile.getMoodList().getMoodId())
-                .mood(profile.getMoodList().getMood())
-                .description(profile.getMoodList().getDescription())
-                .expiresAt(profile.getMoodList().getExpiresAt())
-                .createdAt(profile.getMoodList().getCreatedAt())
-                .visibility(profile.getMoodList().getVisibility())
+                .moodId(mood.getMoodId())
+                .mood(mood.getMood())
+                .description(mood.getDescription())
+                .expiresAt(mood.getExpiresAt())
+                .createdAt(mood.getCreatedAt())
+                .visibility(mood.getVisibility())
                 .build();
+
         log.info(res.toString());
         return res;
     }
+
 
     @CacheEvict(key = "#profileId", value = "mood")
     public DeleteMoodResponse deleteMood(String profileId) {
@@ -108,6 +117,7 @@ public class MoodService {
                 .build();
     }
 
+    @Cacheable(key = "#profileId", value = "moodListFriends")
     public List<FriendMoodDTO> getFriendsMood(String profileId) {
         List<ProfileWithMood> foundObject = profileRepository.findFriendsWithMoodsByProfileId(profileId);
         List<FriendMoodDTO> response = new ArrayList<>();

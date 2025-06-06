@@ -7,7 +7,7 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class LoginTypeValidator implements ConstraintValidator<ValidateLoginType, String> {
 
-    private final List<String> allowedLoginTypes = List.of("GOOGLE", "FACEBOOK", "NORMAL");
+    private final List<String> allowedLoginTypes = List.of("GOOGLE", "FACEBOOK", "NORMAL" ,"MOBILE");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {

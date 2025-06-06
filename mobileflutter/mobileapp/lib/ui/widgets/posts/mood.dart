@@ -91,7 +91,8 @@ void showPostDialog(BuildContext context) {
                       maxLines: 3,
                       maxLength: 200,
                       decoration: InputDecoration(
-                        hintText: "What are you thinking about? (200 characters)",
+                        hintText:
+                            "What are you thinking about? (200 characters)",
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
                       ),
@@ -124,7 +125,6 @@ void showPostDialog(BuildContext context) {
                                   type: ToastType.warning);
                             } else {
                               MoodModel moodModel = MoodModel(
-
                                   mood: mood,
                                   moodDescription: moodDescription,
                                   visibility: visibility);
@@ -150,4 +150,49 @@ void showPostDialog(BuildContext context) {
       );
     },
   );
+}
+
+class MoodNoteBubbleWithSmoke extends StatelessWidget {
+  final String text;
+
+  const MoodNoteBubbleWithSmoke({super.key, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Smoke effect
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(radius: 2, backgroundColor: Colors.white),
+            const SizedBox(width: 4),
+            CircleAvatar(radius: 4, backgroundColor: Colors.white),
+            const SizedBox(width: 4),
+            CircleAvatar(radius: 6, backgroundColor: Colors.white),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 12, color: Colors.black),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
 }

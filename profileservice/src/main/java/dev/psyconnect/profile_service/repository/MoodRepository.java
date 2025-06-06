@@ -60,7 +60,7 @@ public interface MoodRepository extends Neo4jRepository<Mood, String> {
             """
 			MATCH (n:user_profile {profileId: $profileId})
 				-[:HAS_FRIEND]-> (u:user_profile)
-				-[:HAS_MOOD]-> (mo:mood)
+				-[:HAS_MOOD]-> (mo:Mood)
 			RETURN u AS profile, mo AS mood
 			""")
     List<Record> getFriendsMoodRaw(@Param("profileId") String profileId);
