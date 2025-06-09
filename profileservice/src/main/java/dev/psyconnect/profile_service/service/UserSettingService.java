@@ -24,7 +24,6 @@ public class UserSettingService {
     private final ProfileRepository profileRepository;
 
     @CacheEvict(key = "#profileId", value = "setting")
-    @KafkaListener(topics = "profile.user-update-setting")
     public UserSettingResponse updateUserSetting(String profileId, UserSettingRequest request) {
         if (!profileRepository.existsById(profileId)) throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
         var response = userSettingRepository

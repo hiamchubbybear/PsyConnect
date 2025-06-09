@@ -1,6 +1,6 @@
 class Utils {
   String namesplite({required String name}) {
-    if (name.length <= 14)
+    if (name.length <= 16)
       return name;
     else {
       List<String> splited = name.split(" ");

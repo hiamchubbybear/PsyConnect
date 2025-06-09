@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:PsyConnect/models/profile_mood.dart';
+import 'package:PsyConnect/models/setting.dart';
 import 'package:PsyConnect/models/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,6 +23,14 @@ class SharedPreferencesProvider {
   static const String _userProfile = "userProfile";
   static const String _friendsProfile = "friendsProfile";
   static const String _moodKey = "profile_moods";
+  static const String _settingKey = "setting";
+
+  Future<void> setSetting(Setting setting) async {
+    final prefs = await SharedPreferences.getInstance();
+    String settingJson = jsonEncode(setting.toJson());
+    await prefs.setString(_settingKey, settingJson);
+  }
+
   Future<void> setFriendsProfile(List<UserProfile> friendsProfile) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> encodedFriends =
@@ -93,6 +102,14 @@ class SharedPreferencesProvider {
     return encodedFriends
         .map((encoded) => UserProfile.fromJson(jsonDecode(encoded)))
         .toList();
+  }
+
+  Future<Setting?> getSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_settingKey);
+    if (jsonString == null) return null;
+    final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+    return Setting.fromJson(jsonMap);
   }
 
   Future<String?> getUserProfile() async =>

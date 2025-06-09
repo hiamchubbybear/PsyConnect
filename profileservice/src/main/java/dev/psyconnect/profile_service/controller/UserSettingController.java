@@ -29,10 +29,9 @@ public class UserSettingController {
 
     @PutMapping()
     public ApiResponse<UserSettingResponse> updateUserSetting(
-            @RequestHeader(value = "X-Profile-Id", required = true) String id,
+            @RequestHeader(value = "X-Profile-Id") String id,
             @RequestBody UserSettingRequest request) {
         request.setProfileId(id);
-        kafkaService.send("profile.user-update-setting", request);
         return new ApiResponse<>(userSettingService.updateUserSetting(id, request));
     }
 

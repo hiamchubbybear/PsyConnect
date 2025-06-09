@@ -4,11 +4,12 @@ import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/mood.dart';
 import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/user_profile.dart';
-import 'package:PsyConnect/services/account_service/profile.dart';
+import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/services/profile_service/mood.dart';
 import 'package:PsyConnect/ui/widgets/posts/mood.dart';
 import 'package:PsyConnect/ui/widgets/posts/post.dart';
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
 class HomePageScrollView extends StatefulWidget {
   const HomePageScrollView({super.key});
@@ -25,15 +26,59 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
   late Future<List<ProfileMoodModel>> moodFuture;
   late Future<UserProfile> userProfile;
 
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  void _onRefresh() async {
+    _fetchMoods();
+    if (mounted) setState(() {});
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    await Future.delayed(Duration(milliseconds: 1000));
+    if (mounted)
+      setState(() {
+        _onMoodCreated();
+      });
+    _refreshController.loadComplete();
+  }
+
   @override
   void initState() {
     super.initState();
-
     _fetchMoods();
   }
 
-  void _fetchMoods() {
-    moodFuture = moodService.getProfileWithMood(context: context);
+  void _fetchMoods() async {
+    moodFuture = (() async {
+      final moods = await moodService.getProfileWithMood(context: context);
+      final user = await ProfileService().getUserProfile();
+
+      final hasSelfMood = moods.any((m) => m.profileId == user.getProfileId);
+      for (var toElement in moods) {
+        print("Tên người dùng: ${toElement.fullName}");
+      }
+
+      if (!hasSelfMood) {
+        moods.insert(
+          0,
+          ProfileMoodModel(
+            profileId: user.getProfileId,
+            fullName: user.getFirstName,
+            avatarUri: user.getAvatarUri,
+            mood: "",
+            moodId: '',
+            moodDescription: '',
+            visibility: '',
+            createdAt: 0,
+            expiresAt: 0,
+          ),
+        );
+      }
+
+      return moods;
+    })();
+
     userProfile = ProfileService().getUserProfile();
   }
 
@@ -48,76 +93,83 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: FutureBuilder<List<ProfileMoodModel>>(
-                  future: moodFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return const Center(child: Text("Failed to load data"));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return FutureBuilder<UserProfile>(
-                        future: userProfile,
-                        builder: (context, userSnap) {
-                          if (!userSnap.hasData) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          final user = userSnap.data!;
-                          final selfMood = ProfileMoodModel(
-                            profileId: user.getProfileId,
-                            fullName: user.getFirstName,
-                            avatarUri: user.getAvatarUri,
-                            mood: "",
-                            moodId: '',
-                            moodDescription: '',
-                            visibility: '',
-                            createdAt: 0,
-                            expiresAt: 0,
-                          );
-                          return StoriesWidget(
-                            profilesMood: [selfMood],
-                            onMoodCreated: _onMoodCreated,
-                          );
-                        },
+        child: SmartRefresher(
+          controller: _refreshController,
+          enablePullDown: true,
+          enablePullUp: true,
+          onRefresh: _onRefresh,
+          onLoading: _onLoading,
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: FutureBuilder<List<ProfileMoodModel>>(
+                    future: moodFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return const Center(child: Text("Failed to load data"));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return FutureBuilder<UserProfile>(
+                          future: userProfile,
+                          builder: (context, userSnap) {
+                            if (!userSnap.hasData) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                            final user = userSnap.data!;
+                            final selfMood = ProfileMoodModel(
+                              profileId: user.getProfileId,
+                              fullName: user.getFirstName,
+                              avatarUri: user.getAvatarUri,
+                              mood: "",
+                              moodId: '',
+                              moodDescription: '',
+                              visibility: '',
+                              createdAt: 0,
+                              expiresAt: 0,
+                            );
+                            return StoriesWidget(
+                              profilesMood: [selfMood],
+                              onMoodCreated: _onMoodCreated,
+                            );
+                          },
+                        );
+                      }
+                      return StoriesWidget(
+                        profilesMood: snapshot.data!,
+                        onMoodCreated: _onMoodCreated,
                       );
-                    }
-                    return StoriesWidget(
-                      profilesMood: snapshot.data!,
-                      onMoodCreated: _onMoodCreated,
-                    );
-                  },
+                    },
+                  ),
                 ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                childCount: 4,
-                (context, index) => const PostWidget(
-                  profileId: "1",
-                  avatarUri:
-                      "https://upload.wikimedia.org/wikipedia/commons/9/9b/Photo_of_a_kitten.jpg",
-                  username: "chessy1603",
-                  name: "Phong Khê",
-                  postedTime: 1740478871,
-                  privacy: "PUBLIC",
-                  postImageUri:
-                      "https://i.pinimg.com/236x/7c/89/df/7c89dfc7f3be5c1df083b01864cfb3a3.jpg",
-                  liked: ["huytran", "congdanhhihi", "thuhaaa", "hphunggg"],
-                  comment: ["Dễ thương vậy", "Haha"],
-                  nol: 37,
-                  noc: 30,
-                  content: 'Xin chào thế giới',
-                  postId: '',
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  childCount: 4,
+                  (context, index) => const PostWidget(
+                    profileId: "1",
+                    avatarUri:
+                        "https://upload.wikimedia.org/wikipedia/commons/9/9b/Photo_of_a_kitten.jpg",
+                    username: "chessy1603",
+                    name: "Phong Khê",
+                    postedTime: 1740478871,
+                    privacy: "PUBLIC",
+                    postImageUri:
+                        "https://i.pinimg.com/236x/7c/89/df/7c89dfc7f3be5c1df083b01864cfb3a3.jpg",
+                    liked: ["huytran", "congdanhhihi", "thuhaaa", "hphunggg"],
+                    comment: ["Dễ thương vậy", "Haha"],
+                    nol: 37,
+                    noc: 30,
+                    content: 'Xin chào thế giới',
+                    postId: '',
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -173,7 +225,6 @@ class StoriesWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     if (mood.moodDescription.trim().isNotEmpty)
                       Positioned(
                         bottom: 45,
@@ -190,8 +241,12 @@ class StoriesWidget extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(Utils().namesplite(name: mood.fullName),
-                    style: quickSand12Font),
+                Text(
+                  mood.fullName.isNotEmpty
+                      ? Utils().namesplite(name: mood.fullName)
+                      : "Unknown name",
+                  style: quickSand12Font,
+                ),
               ],
             ),
           );
@@ -267,21 +322,19 @@ void showPostDialog(BuildContext context, VoidCallback? onMoodCreated) {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("Share your mind", style: quickSand12Font),
-                        Container(
-                          child: DropdownButton<String>(
-                            value: selectedItem,
-                            items: items
-                                .map((item) => DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Text(item, style: quickSand12Font)))
-                                .toList(),
-                            onChanged: (String? value) {
-                              setState(() {
-                                selectedItem = value!;
-                                visibility = value!;
-                              });
-                            },
-                          ),
+                        DropdownButton<String>(
+                          value: selectedItem,
+                          items: items
+                              .map((item) => DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item, style: quickSand12Font)))
+                              .toList(),
+                          onChanged: (String? value) {
+                            setState(() {
+                              selectedItem = value!;
+                              visibility = value!;
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -290,7 +343,7 @@ void showPostDialog(BuildContext context, VoidCallback? onMoodCreated) {
                       maxLines: 3,
                       maxLength: 15,
                       decoration: InputDecoration(
-                        hintText: "What are you thinking about??",
+                        hintText: "Drop a thought",
                         hintStyle: kSubHintStyle,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),

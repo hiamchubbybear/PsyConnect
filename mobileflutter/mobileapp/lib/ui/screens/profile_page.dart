@@ -4,8 +4,9 @@ import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/user_profile.dart';
-import 'package:PsyConnect/services/account_service/profile.dart';
+import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
+import 'package:PsyConnect/ui/screens/setting_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -96,7 +97,12 @@ class _ProfilePageState extends State<ProfilePage> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
             icon: const Icon(Icons.settings_rounded),
           )
         ],
