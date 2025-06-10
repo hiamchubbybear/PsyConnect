@@ -76,4 +76,24 @@ class ApiService {
       throw Exception("Failed to connect to backend: $e");
     }
   }
+
+  static Future<http.Response> putWithTokenAndBody({
+    required String? token,
+    required String? endpoint,
+    required Map<String, dynamic> body,
+  }) async {
+    final Uri uri = Uri.parse("$_baseUrl/$endpoint");
+    try {
+      return await http.put(
+        uri,
+        body: jsonEncode(body),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } catch (e) {
+      throw Exception("Failed to connect to backend: $e");
+    }
+  }
 }

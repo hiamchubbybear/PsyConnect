@@ -1,14 +1,13 @@
-import 'dart:convert';
-
+import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
+import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/setting.dart';
 import 'package:PsyConnect/services/profile_service/setting.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
-
+  final String usersetting = 'user_settings';
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
@@ -34,6 +33,21 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     _loadSettings();
+  }
+
+  Future<void> _resetDefault() async {
+    setState(() {
+      showLastSeen = false;
+      showProfilePicture = false;
+      showMood = false;
+      notificationsEnabled = false;
+      emailNotifications = false;
+      pushNotifications = false;
+      smsNotifications = false;
+      twoFactorAuth = false;
+      allowLoginAlerts = false;
+      autoDeleteOldMoods = false;
+    });
   }
 
   Future<void> _loadSettings() async {
@@ -83,16 +97,23 @@ class _SettingsPageState extends State<SettingsPage> {
         autoDeleteOldMoods: autoDeleteOldMoods,
       );
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('user_settings', json.encode(newSetting.toJson()));
+      final prefs = SharedPreferencesProvider();
+      await prefs.setSetting(newSetting);
+      SettingService settingService = SettingService();
+      final response = await settingService.updateSetting();
+      if (response != null && response) {
+        if (mounted) {
+          setState(() {
+            setting = newSetting;
+          });
 
-      if (mounted) {
-        setState(() {
-          setting = newSetting;
-        });
-
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Settings saved')),
+          );
+        }
+      } else if (!response) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Settings saved')),
+          const SnackBar(content: Text('Failed to save setting')),
         );
       }
     } catch (e) {
@@ -105,7 +126,8 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Widget buildCompactToggle(String title, bool value, Function(bool) onChanged) {
+  Widget buildCompactToggle(
+      String title, bool value, Function(bool) onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
@@ -129,7 +151,8 @@ class _SettingsPageState extends State<SettingsPage> {
             borderWidth: 0,
             customStyleBuilder: (context, local, global) {
               return ToggleStyle(
-                backgroundColor: value ? Colors.green.shade300 : Colors.grey.shade300,
+                backgroundColor:
+                    value ? Colors.green.shade300 : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(12),
                 indicatorColor: Colors.white,
               );
@@ -169,12 +192,6 @@ class _SettingsPageState extends State<SettingsPage> {
         elevation: 1,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveSettings,
-          ),
-        ],
       ),
       backgroundColor: Colors.grey.shade100,
       body: ListView(
@@ -183,7 +200,8 @@ class _SettingsPageState extends State<SettingsPage> {
             buildCompactToggle("Show Last Seen", showLastSeen, (val) {
               setState(() => showLastSeen = val);
             }),
-            buildCompactToggle("Show Profile Picture", showProfilePicture, (val) {
+            buildCompactToggle("Show Profile Picture", showProfilePicture,
+                (val) {
               setState(() => showProfilePicture = val);
             }),
             buildCompactToggle("Show Mood", showMood, (val) {
@@ -191,10 +209,12 @@ class _SettingsPageState extends State<SettingsPage> {
             }),
           ]),
           buildSection("Notifications", [
-            buildCompactToggle("Enable Notifications", notificationsEnabled, (val) {
+            buildCompactToggle("Enable Notifications", notificationsEnabled,
+                (val) {
               setState(() => notificationsEnabled = val);
             }),
-            buildCompactToggle("Email Notifications", emailNotifications, (val) {
+            buildCompactToggle("Email Notifications", emailNotifications,
+                (val) {
               setState(() => emailNotifications = val);
             }),
             buildCompactToggle("Push Notifications", pushNotifications, (val) {
@@ -205,7 +225,8 @@ class _SettingsPageState extends State<SettingsPage> {
             }),
           ]),
           buildSection("Security", [
-            buildCompactToggle("Two-Factor Authentication", twoFactorAuth, (val) {
+            buildCompactToggle("Two-Factor Authentication", twoFactorAuth,
+                (val) {
               setState(() => twoFactorAuth = val);
             }),
             buildCompactToggle("Allow Login Alerts", allowLoginAlerts, (val) {
@@ -251,11 +272,32 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
             ),
-            buildCompactToggle("Auto Delete Old Moods", autoDeleteOldMoods, (val) {
+            buildCompactToggle("Auto Delete Old Moods", autoDeleteOldMoods,
+                (val) {
               setState(() => autoDeleteOldMoods = val);
             }),
           ]),
           const SizedBox(height: 20),
+          Container(
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () => _resetDefault(),
+                    child: Text(
+                      "Reset Default",
+                      style: quickSand15Font,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => _saveSettings(),
+                    child: Text("Save", style: quickSand15Font),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );

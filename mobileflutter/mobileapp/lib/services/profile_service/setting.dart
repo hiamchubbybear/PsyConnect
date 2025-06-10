@@ -6,15 +6,17 @@ import 'package:PsyConnect/services/api/api_service.dart';
 import 'package:http/http.dart' as http;
 
 class SettingService {
+  final provider = SharedPreferencesProvider();
+  final service = ApiService();
+  final String _usersetting = "user-setting";
   Future<Setting> getSetting() async {
-    final provider = SharedPreferencesProvider();
     final jwtTokenData = await provider.getJwt();
     if (jwtTokenData == null || jwtTokenData.isEmpty) {
       throw Exception("Access token is missing.");
     }
 
     final http.Response res = await ApiService.getWithAccessToken(
-      endpoint: "user-setting",
+      endpoint: _usersetting,
       token: jwtTokenData,
     );
 
@@ -29,5 +31,22 @@ class SettingService {
     } else {
       throw Exception("Unexpected error: ${res.statusCode}");
     }
+  }
+
+  Future<bool> updateSetting() async {
+    String? jwtToken = await provider.getJwt();
+    if (jwtToken == null || jwtToken.isEmpty) {
+      throw Exception("Invalid access token");
+    }
+    final settingObject = await provider.getSetting();
+    if (settingObject == null) {
+      throw Exception("Invalid setting");
+    }
+    final http.Response response = await ApiService.putWithTokenAndBody(
+        endpoint: _usersetting, token: jwtToken, body: settingObject.toJson());
+    if (response.statusCode >= 400) {
+      return false;
+    }
+    return true;
   }
 }
