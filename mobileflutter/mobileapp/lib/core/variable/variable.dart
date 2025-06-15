@@ -1,5 +1,5 @@
+import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final String androidBaseUrl = "http://localhost:8888";
@@ -22,37 +22,38 @@ final Color secondaryColor = Colors.grey.shade400;
 final Map<String, String> headers = {
   'Content-Type': 'application/json; charset=UTF-8',
 };
+ThemeProvider themeProvider = ThemeProvider();
 TextStyle textStyle = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.bold,
-  color: Get.isDarkMode ? Colors.white : Colors.black,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 TextStyle quickSand15Font = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.w600,
-  color: Get.isDarkMode ? Colors.white : Colors.black,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 
 TextStyle quickSand12Font = GoogleFonts.quicksand(
   fontSize: 11,
   fontWeight: FontWeight.w400,
-  color: Get.isDarkMode ? Colors.white : Colors.black,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 
 TextStyle textFieldStyle = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.w600,
-  color: Get.isDarkMode ? Colors.white : Colors.black,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 TextStyle headingStyle = GoogleFonts.quicksand(
   fontSize: 30,
   fontWeight: FontWeight.bold,
-  color: Get.isDarkMode ? Colors.white : Colors.black,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 TextStyle subHeadingStyle = GoogleFonts.quicksand(
   fontSize: 25,
   fontWeight: FontWeight.bold,
-  color: Get.isDarkMode ? Colors.white : Colors.black,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 const double kDefault = 16.0;
 const double kCircle = 20;

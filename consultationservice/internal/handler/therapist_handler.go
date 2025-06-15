@@ -21,7 +21,6 @@ func NewTherapistHandler(env *bootstrap.Env, repoManager *repository.RepositoryM
 	}
 }
 
-// GET /consultation/therapist
 func (h *TherapistHandler) GetTherapistHandler(c *gin.Context) {
 	profileID := c.GetHeader("X-Profile-Id")
 	if profileID == "" {
@@ -37,7 +36,6 @@ func (h *TherapistHandler) GetTherapistHandler(c *gin.Context) {
 	apiresponse.NewApiResponse(c, res)
 }
 
-// POST /consultation/therapist
 func (h *TherapistHandler) PostTherapistHandler(c *gin.Context) {
 	var therapist model.Therapist
 	profileId := c.GetHeader("X-Profile-Id")
@@ -51,7 +49,6 @@ func (h *TherapistHandler) PostTherapistHandler(c *gin.Context) {
 		return
 	}
 
-	// Sử dụng h.RepoManager thay vì global variable
 	res, err := h.RepoManager.GrpcProfile.CheckProfileExists(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
@@ -73,7 +70,6 @@ func (h *TherapistHandler) PostTherapistHandler(c *gin.Context) {
 	apiresponse.NewApiResponse(c, therapist)
 }
 
-// PUT /consultation/therapist
 func (h *TherapistHandler) PutTherapistHandler(c *gin.Context) {
 	var therapist *model.Therapist
 	profileId := c.GetHeader("X-Profile-Id")

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:PsyConnect/models/consultation_profile.dart';
 import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/setting.dart';
 import 'package:PsyConnect/models/user_profile.dart';
@@ -24,11 +25,18 @@ class SharedPreferencesProvider {
   static const String _friendsProfile = "friendsProfile";
   static const String _moodKey = "profile_moods";
   static const String _settingKey = "setting";
-
+  static const String _consultationProfileKey = "consultationProfile";
   Future<void> setSetting(Setting setting) async {
     final prefs = await SharedPreferences.getInstance();
     String settingJson = jsonEncode(setting.toJson());
     await prefs.setString(_settingKey, settingJson);
+  }
+
+  Future<void> setConsultaionProfile(
+      ConsultationProfile consultationProfile) async {
+    final prefs = await SharedPreferences.getInstance();
+    String stringConsultationProfile = jsonEncode(consultationProfile.toJson());
+    await prefs.setString(_consultationProfileKey, stringConsultationProfile);
   }
 
   Future<void> setFriendsProfile(List<UserProfile> friendsProfile) async {
@@ -110,6 +118,13 @@ class SharedPreferencesProvider {
     if (jsonString == null) return null;
     final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
     return Setting.fromJson(jsonMap);
+  }
+  Future<ConsultationProfile?> getConProfile() async {
+      final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_consultationProfileKey);
+    if (jsonString == null) return null;
+    final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+    return ConsultationProfile.fromJson(jsonMap);
   }
 
   Future<String?> getUserProfile() async =>

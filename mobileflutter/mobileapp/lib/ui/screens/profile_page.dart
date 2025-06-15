@@ -4,8 +4,10 @@ import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/user_profile.dart';
+import 'package:PsyConnect/route/route_animation.dart';
 import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
+import 'package:PsyConnect/ui/screens/consultation_profile_page.dart';
 import 'package:PsyConnect/ui/screens/setting_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,47 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   ProfileService profileService = ProfileService();
   UserProfile userProfile = UserProfile();
+
+  // Tạo các handler functions riêng biệt cho từng button
+  void handleSetProfileDetails(BuildContext context) {
+    print("Handle Set Profile Details");
+    // TODO: Navigate to profile details page
+    handleOnProfile(context); // Tạm thời dùng handleOnProfile
+  }
+
+  void handleUploadResume(BuildContext context) {
+    print("Handle Upload Resume");
+    // TODO: Navigate to upload resume page
+    handleOnProfile(context); // Tạm thời dùng handleOnProfile
+  }
+
+  void handleAddSkills(BuildContext context) {
+    print("Handle Add Skills");
+    // TODO: Navigate to add skills page
+    handleOnProfile(context); // Tạm thời dùng handleOnProfile
+  }
+
+  // profileCompletionCards với các handler riêng biệt
+  List<ProfileCompletionCard> get profileCompletionCards => [
+    ProfileCompletionCard(
+      title: "Set Your Profile Details",
+      icon: CupertinoIcons.person_circle,
+      buttonText: "Continue",
+      onTap: handleSetProfileDetails,
+    ),
+    ProfileCompletionCard(
+      title: "Upload your resume",
+      icon: CupertinoIcons.doc,
+      buttonText: "Upload",
+      onTap: handleUploadResume,
+    ),
+    ProfileCompletionCard(
+      title: "Add your skills",
+      icon: CupertinoIcons.square_list,
+      buttonText: "Add",
+      onTap: handleAddSkills,
+    ),
+  ];
   @override
   void initState() {
     super.initState();
@@ -29,7 +72,6 @@ class _ProfilePageState extends State<ProfilePage> {
   void loadUserData() async {
     try {
       final data = await SharedPreferencesProvider().getUserProfile();
-      debugPrint("Raw data from SharedPreferences: $data");
 
       if (data == null) {
         await _fetchAndSetUserProfileFromApi();
@@ -37,25 +79,18 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       final Map<String, dynamic> jsonMap = jsonDecode(data);
-      debugPrint("Decoded JSON Map: $jsonMap");
 
       final user = UserProfile.fromJson(jsonMap);
-      debugPrint("UserProfile object created: $user");
 
       if (user.accountId == null || user.username == null) {
-        debugPrint("UserProfile invalid, fetching from API...");
         await _fetchAndSetUserProfileFromApi();
         return;
       }
 
       setState(() {
         userProfile = user;
-        debugPrint("UserProfile assigned to state");
       });
     } catch (e, stacktrace) {
-      debugPrint("Error in loadUserData: $e");
-      debugPrint("$stacktrace");
-
       ToastService.showToast(
         context: context,
         message: "Your current session is expired. Please login again! $e",
@@ -73,7 +108,6 @@ class _ProfilePageState extends State<ProfilePage> {
         print(jsonEncode(userProfile.toJson()));
       });
     } catch (e) {
-      debugPrint("Failed to fetch user profile from API: $e");
       ToastService.showToast(
         context: context,
         message: "Failed to load profile. Please try again later.",
@@ -112,12 +146,15 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Column(
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(userProfile
-                        .getAvatarUri.isNotEmpty
-                    ? userProfile.getAvatarUri
-                    : 'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg'),
+              GestureDetector(
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: NetworkImage(userProfile
+                          .getAvatarUri.isNotEmpty
+                      ? userProfile.getAvatarUri
+                      : 'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg'),
+                ),
+                onTap: () => handleOnProfile(context),
               ),
               const SizedBox(height: 10),
               Text(
@@ -219,7 +256,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           const Spacer(),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              print("Button pressed for: ${card.title}");
+                              if (card.onTap != null) {
+                                print("Executing onTap function");
+                                card.onTap!(context);
+                              } else {
+                                print("onTap is null for: ${card.title}");
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
                               shape: RoundedRectangleBorder(
@@ -292,34 +337,26 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+void handleOnProfile(BuildContext context) {
+  print("handleOnProfile called - navigating to ConsultationProfilePage");
+  Navigator.push(
+      context, createSlideFromBottomRoute(ConsultationProfilePage()));
+}
+
 class ProfileCompletionCard {
   final String title;
   final String buttonText;
   final IconData icon;
+  final void Function(BuildContext context)? onTap;
   ProfileCompletionCard({
     required this.title,
     required this.buttonText,
     required this.icon,
+    required this.onTap,
   });
 }
 
-List<ProfileCompletionCard> profileCompletionCards = [
-  ProfileCompletionCard(
-    title: "Set Your Profile Details",
-    icon: CupertinoIcons.person_circle,
-    buttonText: "Continue",
-  ),
-  ProfileCompletionCard(
-    title: "Upload your resume",
-    icon: CupertinoIcons.doc,
-    buttonText: "Upload",
-  ),
-  ProfileCompletionCard(
-    title: "Add your skills",
-    icon: CupertinoIcons.square_list,
-    buttonText: "Add",
-  ),
-];
+// profileCompletionCards đã được di chuyển vào trong class _ProfilePageState
 
 class CustomListTile {
   final IconData icon;
@@ -336,23 +373,17 @@ List<CustomListTile> customListTiles = [
   CustomListTile(
     icon: Icons.insights,
     title: "Activity",
-    onTap: (context) {
-      print("Activity tabs");
-    },
+    onTap: (context) {},
   ),
   CustomListTile(
     icon: Icons.history,
     title: "History",
-    onTap: (context) {
-      print("History tabs");
-    },
+    onTap: (context) {},
   ),
   CustomListTile(
     title: "Notifications",
     icon: CupertinoIcons.bell,
-    onTap: (context) {
-      print("Notifications tabs");
-    },
+    onTap: (context) {},
   ),
   CustomListTile(
     title: "Logout",
