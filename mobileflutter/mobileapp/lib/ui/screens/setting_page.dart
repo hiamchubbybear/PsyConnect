@@ -1,13 +1,17 @@
 import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
+import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/setting.dart';
 import 'package:PsyConnect/services/profile_service/setting.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 
+final bool isOnDartMode = themeProvider.isDarkMode;
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
   final String usersetting = 'user_settings';
+
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
@@ -73,9 +77,11 @@ class _SettingsPageState extends State<SettingsPage> {
     } catch (e) {
       print("Error loading settings: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading settings: $e')),
-        );
+        ToastService.showToast(
+            context: context,
+            message: "Failed to load setting",
+            title: "Server error",
+            type: ToastType.error);
       }
     }
   }
@@ -101,20 +107,24 @@ class _SettingsPageState extends State<SettingsPage> {
       await prefs.setSetting(newSetting);
       SettingService settingService = SettingService();
       final response = await settingService.updateSetting();
-      if (response != null && response) {
+      if (response) {
         if (mounted) {
           setState(() {
             setting = newSetting;
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Settings saved')),
-          );
+          ToastService.showToast(
+              context: context,
+              message: "Setting saved",
+              title: "Success",
+              type: ToastType.success);
         }
       } else if (!response) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save setting')),
-        );
+        ToastService.showToast(
+            context: context,
+            message: "Fail to save setting",
+            title: "Failed",
+            type: ToastType.error);
       }
     } catch (e) {
       print("Error saving settings: $e");
@@ -267,6 +277,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   if (val != null) {
                     setState(() {
                       setting = setting!.copyWith(theme: val);
+                      themeProvider.toggleTheme(!isOnDartMode);
                     });
                   }
                 },
@@ -277,25 +288,24 @@ class _SettingsPageState extends State<SettingsPage> {
               setState(() => autoDeleteOldMoods = val);
             }),
           ]),
-          const SizedBox(height: 20),
-          Container(
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () => _resetDefault(),
-                    child: Text(
-                      "Reset Default",
-                      style: quickSand15Font,
-                    ),
+          // Text("Testing button"),
+          const SizedBox(height: 30),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () => _resetDefault(),
+                  child: Text(
+                    "Reset Default",
+                    style: quickSand15Font,
                   ),
-                  TextButton(
-                    onPressed: () => _saveSettings(),
-                    child: Text("Save", style: quickSand15Font),
-                  ),
-                ],
-              ),
+                ),
+                TextButton(
+                  onPressed: () => _saveSettings(),
+                  child: Text("Save", style: quickSand15Font),
+                ),
+              ],
             ),
           )
         ],

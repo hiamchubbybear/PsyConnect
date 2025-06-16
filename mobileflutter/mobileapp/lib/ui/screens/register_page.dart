@@ -2,64 +2,39 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
-import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
 import 'package:PsyConnect/services/account_service/cloudinary_service.dart';
 import 'package:PsyConnect/services/account_service/image.dart';
 import 'package:PsyConnect/services/account_service/register.dart';
 import 'package:PsyConnect/services/logic.dart';
-import 'package:PsyConnect/ui/screens/forgot_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+class MultiStepRegisterPage extends StatefulWidget {
+  const MultiStepRegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<MultiStepRegisterPage> createState() => _MultiStepRegisterPageState();
 }
 
-final _accountFormKey = GlobalKey<FormState>();
-
-class _RegisterPageState extends State<RegisterPage> {
+class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
+  final PageController _pageController = PageController();
+  int _currentStep = 0;
+  final int _totalSteps = 7;
   bool _isLoading = false;
   RegisterService registerService = RegisterService();
-  File? _image;
-  final ImagePicker _picker = ImagePicker();
-  bool showProfileFields = false;
-  _setStartLoading() {
-    setState(() {
-      _isLoading = true;
-    });
-    Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    } else {
-      ToastService.showToast(
-          message: "No image selected!",
-          context: context,
-          title: 'Image!!',
-          type: ToastType.error);
-    }
-  }
-
   final CloudinaryApiService cloudinaryApiService = CloudinaryApiService();
   final ImageService imageService = ImageService();
   BusinessLogic businessLogic = BusinessLogic();
+
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController retypePasswordController =
@@ -71,396 +46,927 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
   final TextEditingController roleController = TextEditingController();
-  final TextEditingController imageController = TextEditingController();
+
+  final List<GlobalKey<FormState>> _formKeys =
+      List.generate(7, (index) => GlobalKey<FormState>());
+
+  void _nextStep() {
+    if (_currentStep < _totalSteps - 1) {
+      if (_formKeys[_currentStep].currentState?.validate() ?? true) {
+        setState(() {
+          _currentStep++;
+        });
+        _pageController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+  }
+
+  void _previousStep() {
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep--;
+      });
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      PermissionStatus status;
+      if (source == ImageSource.camera) {
+        status = await Permission.camera.request();
+      } else {
+        status = await Permission.photos.request();
+      }
+
+      if (status.isDenied) {
+        ToastService.showToast(
+          message:
+              "Permission denied. Please allow access to ${source == ImageSource.camera ? 'camera' : 'photos'}.",
+          context: context,
+          title: 'Permission Error',
+          type: ToastType.error,
+        );
+        return;
+      }
+
+      if (status.isPermanentlyDenied) {
+        ToastService.showToast(
+          message:
+              "Permission permanently denied. Please enable it in Settings.",
+          context: context,
+          title: 'Permission Error',
+          type: ToastType.error,
+        );
+        // Hướng dẫn người dùng mở Settings
+        await openAppSettings();
+        return;
+      }
+
+      print("Đang chọn ảnh từ $source");
+      final pickedFile = await _picker.pickImage(
+        source: source,
+        maxHeight: 800,
+        maxWidth: 800,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+        });
+        print("Đã chọn ảnh: ${pickedFile.path}");
+      } else {
+        ToastService.showToast(
+          message: "No image selected!",
+          context: context,
+          title: 'Image Error',
+          type: ToastType.error,
+        );
+      }
+    } catch (e) {
+      print("Lỗi khi chọn ảnh: $e");
+      ToastService.showToast(
+        message: "Error picking image: $e",
+        context: context,
+        title: 'Image Error',
+        type: ToastType.error,
+      );
+    }
+  }
+
+  void _setStartLoading() {
+    setState(() {
+      _isLoading = true;
+    });
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = context.read<UserProvider>();
+
     return Scaffold(
-      body: Form(
-        key: _accountFormKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) => Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListTile(
-                            leading: const Icon(Icons.photo_library),
-                            title: Text(
-                              'Choose from gallery',
-                              style: quickSand12Font,
-                            ),
-                            onTap: () {
-                              _pickImage(ImageSource.gallery);
-                              Navigator.pop(context);
-                            },
-                          ),
-                          ListTile(
-                            contentPadding: EdgeInsets.all(10),
-                            leading: const Icon(Icons.camera_alt),
-                            title: Text('Take a photo', style: quickSand12Font),
-                            onTap: () {
-                              _pickImage(ImageSource.camera);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: _image != null
-                        ? FileImage(_image!)
-                        : const NetworkImage(
-                            'https://static.vecteezy.com/system/resource/previews/014/194/215/original/avatar-icon-human-a-person-s-badge-social-media-profile-symbol-the-symbol-of-a-person-vector.jpg',
-                          ) as ImageProvider,
-                    backgroundColor: Colors.transparent,
-                  )),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                style: ButtonStyle(
-                  elevation: MaterialStateProperty.all(
-                      showProfileFields ? 10 : 2), // Increase shadow
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20), // Border Radius
-                    ),
-                  ),
-                  padding: MaterialStateProperty.all(
-                    EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 15), // Distances in button
-                  ),
-                ),
-                onPressed: () {
-                  setState(() {
-                    showProfileFields = !showProfileFields;
-                  });
-                },
-                child: Text(showProfileFields ? 'Profile' : 'Profile',
-                    style: (showProfileFields)
-                        ? GoogleFonts.quicksand(
-                            fontSize: 18, fontWeight: FontWeight.bold)
-                        : const TextStyle(
-                            fontSize: 17,
-                          )),
-              ),
-              if (showProfileFields)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                            child: TextFormField(
-                          style: quickSand12Font,
-                          textCapitalization: TextCapitalization.sentences,
-                          validator: (value) =>
-                              value == null ? "Missing first name field" : null,
-                          controller: firstNameController,
-                          decoration:
-                              const InputDecoration(labelText: 'First name'),
-                          onChanged: (value) => setState(() {
-                            firstNameController.text = value;
-                          }),
-                        )),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextFormField(
-                            style: quickSand12Font,
-                            textCapitalization: TextCapitalization.sentences,
-                            validator: (value) => value == null
-                                ? "Missing last name field"
-                                : null,
-                            controller: lastNameController,
-                            decoration:
-                                const InputDecoration(labelText: 'Last name'),
-                            onChanged: (value) => setState(() {
-                              lastNameController.text = value;
-                            }),
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    InkWell(
-                        onTap: () {
-                          DatePicker.showDatePicker(
-                            context,
-                            showTitleActions: true,
-                            minTime: DateTime(1900, 1, 1),
-                            maxTime: DateTime.now(),
-                            onConfirm: (date) {
-                              setState(() {
-                                setState(() {
-                                  dobController.text =
-                                      DateFormat('yyyy-MM-dd').format(date);
-                                  print(dobController.text);
-                                });
-                              });
-                            },
-                            currentTime: DateTime.now(),
-                            locale: LocaleType.vi,
-                          );
-                        },
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            labelText: 'Date of birth',
-                            hintText: 'Choose date',
-                          ),
-                          child: Text(
-                            dobController.text.isEmpty
-                                ? "Choose date"
-                                : dobController.text,
-                            style: quickSand12Font,
-                          ),
-                        )),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            style: quickSand12Font,
-                            validator: (value) =>
-                                value == null ? "Wanna be" : null,
-                            decoration: const InputDecoration(
-                                labelText: 'Select your role'),
-                            value: roleController.text.isEmpty
-                                ? null
-                                : roleController.text,
-                            items: const [
-                              DropdownMenuItem(
-                                  value: "Client",
-                                  child: Text("Ordinary user")),
-                              DropdownMenuItem(
-                                  value: "Therapist", child: Text("Thrapist ")),
-                            ],
-                            onChanged: (value) =>
-                                setState(() => roleController.text = value!),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            style: quickSand12Font,
-                            decoration:
-                                const InputDecoration(labelText: 'Gender'),
-                            value: genderController.text.isEmpty
-                                ? null
-                                : genderController.text,
-                            items: const [
-                              DropdownMenuItem(
-                                  value: "Male", child: Text("Male")),
-                              DropdownMenuItem(
-                                  value: "Female", child: Text("Female")),
-                              DropdownMenuItem(
-                                  value: "None", child: Text("Keep it secret")),
-                            ],
-                            onChanged: (value) =>
-                                setState(() => genderController.text = value!),
-                            validator: (value) => value == null
-                                ? "Please choose your gender"
-                                : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                        validator: (value) {
-                          (value == null || value.isEmpty)
-                              ? 'Address is required'
-                              : null;
-                        },
-                        style: quickSand12Font,
-                        controller: addressController,
-                        textInputAction: TextInputAction.route,
-                        decoration: const InputDecoration(labelText: 'Address'),
-                        onChanged: (value) => setState(() {
-                              addressController.text = value;
-                            })),
-                  ],
-                ),
-              const SizedBox(height: 16),
-              TextFormField(
-                validator: (username) {
-                  (username == null || username.length <= 3)
-                      ? "Username must be greater than 3 characters"
-                      : null;
-                },
-                style: quickSand12Font,
-                controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                style: quickSand12Font,
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
-                validator: (password) {
-                  RegExp passReg = RegExp(
-                      // Regex have
-                      r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
-                  if (password == null || passReg.hasMatch(password)) {
-                    return "Password include lowercase letter , uppercase letter ,  number, and special character";
-                  } else if (password.length < 8) {
-                    return "Password have to at least 8 characters";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                style: quickSand12Font,
-                onChanged: (value) => {retypePasswordController.text = value},
-                controller: retypePasswordController,
-                obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: 'Confirm password'),
-                validator: (retypePass) {
-                  if (retypePass != passwordController.text ||
-                      retypePass == null) {
-                    return "Password and confirm password doesn't match";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                  style: quickSand12Font,
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (email) {
-                    RegExp mailRegex = RegExp(
-                        r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-                    if (email == null || email.isEmpty) {
-                      return "Email cannot be empty";
-                    }
-                    if (!mailRegex.hasMatch(email)) {
-                      return "Invalid email format";
-                    }
-                    return null;
-                  }),
-              const SizedBox(height: 8),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  if (_accountFormKey.currentState!.validate()) {
-                    _setStartLoading();
-                    _handleOnRegisterButton(
-                        userProvider: userProvider, context: context);
-                  }
-                },
-                child: (!_isLoading)
-                    ? Text('Register', style: quickSand12Font)
-                    : const CircularProgressIndicator(),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: () => _handleOnAppleIdRegister(),
-                    icon: Image.asset("assets/images/login_appleid_icon.png",
-                        width: 30),
-                  ),
-                  IconButton(
-                    onPressed: () => _handleOnGoogleRegister(),
-                    icon: Image.asset("assets/images/login_google_icon.jpeg",
-                        width: 30),
-                  ),
-                  IconButton(
-                    onPressed: () => _handleOnFacebookRegister(),
-                    icon: Image.asset("assets/images/login_facebook_icon.jpeg",
-                        width: 30),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Forgot your password?",
-                    style: quickSand12Font,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ForgotPage()),
-                      );
-                    },
-                    child: Text(
-                      'Reset it',
-                      style: quickSand12Font,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: _currentStep > 0
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
+                onPressed: _previousStep,
+              )
+            : null,
+        title: Text(
+          'Create Account',
+          style: GoogleFonts.quicksand(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
           ),
+        ),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          // Progress indicator
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: LinearProgressIndicator(
+              value: (_currentStep + 1) / _totalSteps,
+              backgroundColor: Colors.grey[300],
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+              minHeight: 4,
+            ),
+          ),
+          Text(
+            'Step ${_currentStep + 1} of $_totalSteps',
+            style: GoogleFonts.quicksand(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildAvatarStep(),
+                _buildNameStep(),
+                _buildBirthGenderStep(),
+                _buildAddressStep(),
+                _buildEmailStep(),
+                _buildRoleStep(),
+                _buildCredentialsStep(),
+              ],
+            ),
+          ),
+
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                if (_currentStep > 0)
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _previousStep,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Back',
+                        style: GoogleFonts.quicksand(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (_currentStep > 0) const SizedBox(width: 15),
+                Expanded(
+                  flex: _currentStep == 0 ? 1 : 1,
+                  child: ElevatedButton(
+                    onPressed: _currentStep == _totalSteps - 1
+                        ? () => _handleFinalSubmit(userProvider, context)
+                        : _nextStep,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: _isLoading && _currentStep == _totalSteps - 1
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Text(
+                            _currentStep == _totalSteps - 1
+                                ? 'Create Account'
+                                : 'Continue',
+                            style: GoogleFonts.quicksand(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvatarStep() {
+    return Form(
+      key: _formKeys[0],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Choose Your Profile Picture',
+              style: GoogleFonts.quicksand(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'This helps others recognize you',
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  builder: (context) => Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Select Photo',
+                          style: GoogleFonts.quicksand(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ListTile(
+                          leading: const Icon(Icons.photo_library,
+                              color: Colors.blue),
+                          title: Text(
+                            'Choose from gallery',
+                            style: GoogleFonts.quicksand(fontSize: 16),
+                          ),
+                          onTap: () {
+                            _pickImage(ImageSource.gallery);
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ListTile(
+                          leading:
+                              const Icon(Icons.camera_alt, color: Colors.blue),
+                          title: Text(
+                            'Take a photo',
+                            style: GoogleFonts.quicksand(fontSize: 16),
+                          ),
+                          onTap: () {
+                            _pickImage(ImageSource.camera);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: _image != null ? Colors.blue : Colors.grey[300]!,
+                    width: 3,
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 80,
+                  backgroundImage: _image != null
+                      ? FileImage(_image!)
+                      : const NetworkImage(
+                          'assets/images/avatar.jpg',
+                        ) as ImageProvider,
+                  backgroundColor: Colors.grey[100],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (_image == null)
+              Text(
+                'Tap to add photo',
+                style: GoogleFonts.quicksand(
+                  fontSize: 14,
+                  color: Colors.grey[500],
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
 
-  _handleOnAppleIdRegister() {}
-  _handleOnGoogleRegister() {}
+  Widget _buildNameStep() {
+    return Form(
+      key: _formKeys[1],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'What\'s Your Name?',
+              style: GoogleFonts.quicksand(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Let us know how to address you',
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            TextFormField(
+              controller: firstNameController,
+              textCapitalization: TextCapitalization.words,
+              style: GoogleFonts.quicksand(fontSize: 16),
+              decoration: InputDecoration(
+                labelText: 'First Name',
+                labelStyle: GoogleFonts.quicksand(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your first name';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: lastNameController,
+              textCapitalization: TextCapitalization.words,
+              style: GoogleFonts.quicksand(fontSize: 16),
+              decoration: InputDecoration(
+                labelText: 'Last Name',
+                labelStyle: GoogleFonts.quicksand(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your last name';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  _handleOnFacebookRegister() {}
+  Widget _buildBirthGenderStep() {
+    return Form(
+      key: _formKeys[2],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Personal Information',
+              style: GoogleFonts.quicksand(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Tell us your date of birth and gender',
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            InkWell(
+              onTap: () {
+                DatePicker.showDatePicker(
+                  context,
+                  showTitleActions: true,
+                  minTime: DateTime(1900, 1, 1),
+                  maxTime: DateTime.now(),
+                  onConfirm: (date) {
+                    setState(() {
+                      dobController.text =
+                          DateFormat('yyyy-MM-dd').format(date);
+                    });
+                  },
+                  currentTime: DateTime.now(),
+                  locale: LocaleType.vi,
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      dobController.text.isEmpty
+                          ? 'Select Date of Birth'
+                          : dobController.text,
+                      style: GoogleFonts.quicksand(
+                        fontSize: 16,
+                        color: dobController.text.isEmpty
+                            ? Colors.grey[600]
+                            : Colors.black87,
+                      ),
+                    ),
+                    const Icon(Icons.calendar_today, color: Colors.blue),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              value:
+                  genderController.text.isEmpty ? null : genderController.text,
+              style: GoogleFonts.quicksand(fontSize: 16, color: Colors.black87),
+              decoration: InputDecoration(
+                labelText: 'Gender',
+                labelStyle: GoogleFonts.quicksand(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+              ),
+              items: const [
+                DropdownMenuItem(value: "Male", child: Text("Male")),
+                DropdownMenuItem(value: "Female", child: Text("Female")),
+                DropdownMenuItem(
+                    value: "None", child: Text("Prefer not to say")),
+              ],
+              onChanged: (value) =>
+                  setState(() => genderController.text = value!),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select your gender';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  Future<void> _handleOnRegisterButton(
-      {required dynamic userProvider, required BuildContext context}) async {
-    if (_image != null) {
-      try {
-        String? cloudinaryUrlImage = await cloudinaryApiService.uploadImage(
-            imageFile: _image as File, username: usernameController.text);
-        print(cloudinaryUrlImage);
+  Widget _buildAddressStep() {
+    return Form(
+      key: _formKeys[3],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Where Are You Located?',
+              style: GoogleFonts.quicksand(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'This helps us provide better services',
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            TextFormField(
+              controller: addressController,
+              style: GoogleFonts.quicksand(fontSize: 16),
+              maxLines: 3,
+              decoration: InputDecoration(
+                labelText: 'Address',
+                labelStyle: GoogleFonts.quicksand(),
+                hintText: 'Enter your full address',
+                hintStyle: GoogleFonts.quicksand(color: Colors.grey[500]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your address';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmailStep() {
+    return Form(
+      key: _formKeys[4],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Email Address',
+              style: GoogleFonts.quicksand(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'We\'ll use this to send you important updates',
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            TextFormField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              style: GoogleFonts.quicksand(fontSize: 16),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                labelStyle: GoogleFonts.quicksand(),
+                hintText: 'your.email@example.com',
+                hintStyle: GoogleFonts.quicksand(color: Colors.grey[500]),
+                prefixIcon:
+                    const Icon(Icons.email_outlined, color: Colors.blue),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email';
+                }
+                RegExp emailRegex =
+                    RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+                if (!emailRegex.hasMatch(value)) {
+                  return 'Please enter a valid email address';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoleStep() {
+    return Form(
+      key: _formKeys[5],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Choose Your Role',
+              style: GoogleFonts.quicksand(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'How would you like to use PsyConnect?',
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                children: [
+                  RadioListTile<String>(
+                    title: Text(
+                      'Client',
+                      style: GoogleFonts.quicksand(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Looking for mental health support',
+                      style: GoogleFonts.quicksand(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    value: 'Client',
+                    groupValue: roleController.text.isEmpty
+                        ? null
+                        : roleController.text,
+                    onChanged: (value) =>
+                        setState(() => roleController.text = value!),
+                    activeColor: Colors.blue,
+                  ),
+                  Divider(height: 1, color: Colors.grey[300]),
+                  RadioListTile<String>(
+                    title: Text(
+                      'Therapist',
+                      style: GoogleFonts.quicksand(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Providing mental health services',
+                      style: GoogleFonts.quicksand(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    value: 'Therapist',
+                    groupValue: roleController.text.isEmpty
+                        ? null
+                        : roleController.text,
+                    onChanged: (value) =>
+                        setState(() => roleController.text = value!),
+                    activeColor: Colors.blue,
+                  ),
+                ],
+              ),
+            ),
+            if (roleController.text.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  'Please select a role',
+                  style: GoogleFonts.quicksand(
+                    fontSize: 12,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCredentialsStep() {
+    return Form(
+      key: _formKeys[6],
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Create Your Account',
+              style: GoogleFonts.quicksand(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Choose a username and secure password',
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            TextFormField(
+              controller: usernameController,
+              style: GoogleFonts.quicksand(fontSize: 16),
+              decoration: InputDecoration(
+                labelText: 'Username',
+                labelStyle: GoogleFonts.quicksand(),
+                prefixIcon:
+                    const Icon(Icons.person_outline, color: Colors.blue),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.length <= 3) {
+                  return 'Username must be greater than 3 characters';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: passwordController,
+              obscureText: true,
+              style: GoogleFonts.quicksand(fontSize: 16),
+              decoration: InputDecoration(
+                labelText: 'Password',
+                labelStyle: GoogleFonts.quicksand(),
+                prefixIcon: const Icon(Icons.lock_outline, color: Colors.blue),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.length < 8) {
+                  return 'Password must be at least 8 characters';
+                }
+                RegExp passReg =
+                    RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
+
+                if (!passReg.hasMatch(value)) {
+                  return 'Password must include characters , number and special character';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: retypePasswordController,
+              obscureText: true,
+              style: GoogleFonts.quicksand(fontSize: 16),
+              decoration: InputDecoration(
+                labelText: 'Confirm Password',
+                labelStyle: GoogleFonts.quicksand(),
+                prefixIcon: const Icon(Icons.lock_outline, color: Colors.blue),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.blue, width: 2),
+                ),
+              ),
+              validator: (value) {
+                if (value != passwordController.text || value == null) {
+                  return 'Passwords do not match';
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleFinalSubmit(
+      dynamic userProvider, BuildContext context) async {
+    if (!_formKeys[6].currentState!.validate()) return;
+    if (roleController.text.isEmpty) {
+      ToastService.showToast(
+        message: "Please select your role!",
+        context: context,
+        title: 'Role Required!',
+        type: ToastType.error,
+      );
+      return;
+    }
+
+    _setStartLoading();
+
+    try {
+      String? cloudinaryUrlImage;
+
+      if (_image != null) {
+        cloudinaryUrlImage = await cloudinaryApiService.uploadImage(
+          imageFile: _image as File,
+          username: usernameController.text,
+        );
+
         if (cloudinaryUrlImage == null) {
           ToastService.showToast(
-              message: "Image doesn't exceptable!",
-              context: context,
-              title: 'Image!!',
-              type: ToastType.error);
-        }
-        Map<String, String> jsonData = {
-          "username": usernameController.text.toLowerCase(),
-          "password": passwordController.text,
-          "firstName": firstNameController.text,
-          "lastName": lastNameController.text,
-          "address": addressController.text,
-          "gender": genderController.text,
-          "email": emailController.text,
-          "role": roleController.text,
-          "avatarUri": cloudinaryUrlImage.toString(),
-          "dob": dobController.text
-        };
-        await registerService.registerHandle(
-            requestBody: jsonData,
-            userProvider: userProvider,
-            context: context);
-      } catch (e) {
-        ToastService.showToast(
-            message: "Some unknown error occurred",
+            message: "Image upload failed!",
             context: context,
-            title: 'Error!!',
-            type: ToastType.error);
+            title: 'Image Error!',
+            type: ToastType.error,
+          );
+          return;
+        }
       }
-    } else {
+
+      Map<String, String> jsonData = {
+        "username": usernameController.text.toLowerCase(),
+        "password": passwordController.text,
+        "firstName": firstNameController.text,
+        "lastName": lastNameController.text,
+        "address": addressController.text,
+        "gender": genderController.text,
+        "email": emailController.text,
+        "role": roleController.text,
+        "avatarUri": cloudinaryUrlImage ?? "",
+        "dob": dobController.text,
+      };
+
+      await registerService.registerHandle(
+        requestBody: jsonData,
+        userProvider: userProvider,
+        context: context,
+      );
+    } catch (e) {
       ToastService.showToast(
-          message: "Please choose your image!",
-          context: context,
-          title: 'Image!!',
-          type: ToastType.error);
+        message: "Registration failed. Please try again.",
+        context: context,
+        title: 'Error!',
+        type: ToastType.error,
+      );
     }
   }
 }

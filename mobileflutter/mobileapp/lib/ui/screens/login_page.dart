@@ -1,14 +1,17 @@
+import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/provider/auth_token_provider.dart';
 import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/provider/user_profile_provider.dart';
 import 'package:PsyConnect/services/account_service/login.dart';
 import 'package:PsyConnect/ui/screens/forgot_page.dart';
+import 'package:PsyConnect/ui/screens/register_page.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -69,7 +72,8 @@ class _LoginPageState extends State<LoginPage> {
         Provider.of<AuthTokenProvider>(context, listen: false);
 
     final textColor = themeProvider.isDarkMode ? Colors.white : Colors.black;
-    final subtitleColor = themeProvider.isDarkMode ? Colors.grey[400] : Colors.grey[600];
+    final subtitleColor =
+        themeProvider.isDarkMode ? Colors.grey[400] : Colors.grey[600];
 
     return SingleChildScrollView(
       child: Padding(
@@ -78,8 +82,6 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 60),
-
-            // Welcome Text
             Text(
               'Welcome',
               style: TextStyle(
@@ -90,55 +92,56 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Sign in to continue',
-              style: TextStyle(
-                fontSize: 16,
-                color: subtitleColor,
-                fontWeight: FontWeight.w400,
+            RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: 16,
+                  color: subtitleColor,
+                  fontWeight: FontWeight.w400,
+                ),
+                children: [
+                  const TextSpan(text: 'Sign in to continue '), 
+                  TextSpan(
+                    text: 'or sign up',
+                    style: const TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: blackColor,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MultiStepRegisterPage()),
+                        );
+                      },
+                  ),
+                ],
               ),
             ),
-
             const SizedBox(height: 80),
-
-            // Username Field
             _buildTextField(
               controller: nameController,
               label: 'Username',
               maxLength: 20,
               isDark: themeProvider.isDarkMode,
             ),
-
             const SizedBox(height: 32),
-
-            // Password Field
             _buildTextField(
               controller: passwordController,
               label: 'Password',
               isPassword: true,
               isDark: themeProvider.isDarkMode,
             ),
-
             const SizedBox(height: 48),
-
-            // Login Button
-            _buildLoginButton(context, tokenProvider, userProfileProvider, themeProvider.isDarkMode),
-
+            _buildLoginButton(context, tokenProvider, userProfileProvider,
+                themeProvider.isDarkMode),
             const SizedBox(height: 40),
-
-            // Divider
             _buildDivider(themeProvider.isDarkMode),
-
             const SizedBox(height: 40),
-
-            // Social Login
             _buildSocialLoginSection(themeProvider.isDarkMode),
-
             const SizedBox(height: 40),
-
-            // Forgot Password
             _buildForgotPasswordSection(context, themeProvider.isDarkMode),
-
             const SizedBox(height: 40),
           ],
         ),
@@ -194,7 +197,9 @@ class _LoginPageState extends State<LoginPage> {
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
-                        isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        isPasswordVisible
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         color: labelColor,
                         size: 20,
                       ),
@@ -212,8 +217,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildLoginButton(BuildContext context, AuthTokenProvider tokenProvider,
-      UserProfileProvider userProfileProvider, bool isDark) {
+  Widget _buildLoginButton(
+      BuildContext context,
+      AuthTokenProvider tokenProvider,
+      UserProfileProvider userProfileProvider,
+      bool isDark) {
     return SizedBox(
       width: double.infinity,
       height: 48,

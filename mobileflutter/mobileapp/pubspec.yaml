@@ -37,7 +37,7 @@ dependencies:
   # OTP Text Field
   flutter_otp_text_field: ^1.1.0+2
   # Permission Handler
-  permission_handler: ^10.2.0
+  permission_handler: ^12.0.0+1
   loading_animation_widget: ^1.3.0
   # Toaster
   fluttertoast: ^8.2.10

@@ -4,8 +4,8 @@ import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/mood.dart';
 import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/user_profile.dart';
-import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/services/profile_service/mood.dart';
+import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/widgets/posts/mood.dart';
 import 'package:PsyConnect/ui/widgets/posts/post.dart';
 import 'package:flutter/material.dart';
@@ -213,7 +213,7 @@ class StoriesWidget extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: Image.network(
-                          mood.avatarUri,
+                          (mood.avatarUri.isEmpty) ? "https://i.pinimg.com/736x/8e/4c/d1/8e4cd15170685b5cef2ae84488a491b9.jpg":mood.avatarUri ,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) =>
                               const Icon(Icons.error),
@@ -284,13 +284,13 @@ class _CreateMoodWidgetState extends State<CreateMoodWidget> {
         height: 20,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.green[300],
+          color: themeProvider.isDarkMode ?Colors.green[300] : Colors.white,
           border: Border.all(color: Colors.white, width: 2),
         ),
-        child: const Icon(
+        child:  Icon(
           Icons.add,
           size: 14,
-          color: Colors.white,
+          color: themeProvider.isDarkMode ? Colors.white : Colors.black,
         ),
       ),
     );

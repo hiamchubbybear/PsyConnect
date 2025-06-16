@@ -4,10 +4,11 @@ import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/user_profile.dart';
+import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/route/route_animation.dart';
 import 'package:PsyConnect/services/profile_service/profile.dart';
-import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:PsyConnect/ui/screens/consultation_profile_page.dart';
+import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:PsyConnect/ui/screens/setting_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,52 +21,54 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late ThemeProvider themeProvider = ThemeProvider();
+  late bool isDarkMode;
+
   ProfileService profileService = ProfileService();
   UserProfile userProfile = UserProfile();
 
-  // Tạo các handler functions riêng biệt cho từng button
   void handleSetProfileDetails(BuildContext context) {
     print("Handle Set Profile Details");
-    // TODO: Navigate to profile details page
-    handleOnProfile(context); // Tạm thời dùng handleOnProfile
+
+    handleOnProfile(context);
   }
 
   void handleUploadResume(BuildContext context) {
     print("Handle Upload Resume");
-    // TODO: Navigate to upload resume page
-    handleOnProfile(context); // Tạm thời dùng handleOnProfile
+
+    handleOnProfile(context);
   }
 
   void handleAddSkills(BuildContext context) {
     print("Handle Add Skills");
-    // TODO: Navigate to add skills page
-    handleOnProfile(context); // Tạm thời dùng handleOnProfile
+
+    handleOnProfile(context);
   }
 
-  // profileCompletionCards với các handler riêng biệt
   List<ProfileCompletionCard> get profileCompletionCards => [
-    ProfileCompletionCard(
-      title: "Set Your Profile Details",
-      icon: CupertinoIcons.person_circle,
-      buttonText: "Continue",
-      onTap: handleSetProfileDetails,
-    ),
-    ProfileCompletionCard(
-      title: "Upload your resume",
-      icon: CupertinoIcons.doc,
-      buttonText: "Upload",
-      onTap: handleUploadResume,
-    ),
-    ProfileCompletionCard(
-      title: "Add your skills",
-      icon: CupertinoIcons.square_list,
-      buttonText: "Add",
-      onTap: handleAddSkills,
-    ),
-  ];
+        ProfileCompletionCard(
+          title: "Set Your Profile Details",
+          icon: CupertinoIcons.person_circle,
+          buttonText: "Continue",
+          onTap: handleSetProfileDetails,
+        ),
+        ProfileCompletionCard(
+          title: "Upload your resume",
+          icon: CupertinoIcons.doc,
+          buttonText: "Upload",
+          onTap: handleUploadResume,
+        ),
+        ProfileCompletionCard(
+          title: "Add your skills",
+          icon: CupertinoIcons.square_list,
+          buttonText: "Add",
+          onTap: handleAddSkills,
+        ),
+      ];
   @override
   void initState() {
     super.initState();
+    isDarkMode = themeProvider.isDarkMode;
     loadUserData();
   }
 
@@ -119,6 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    ThemeProvider themeProvider = ThemeProvider();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -137,7 +141,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 MaterialPageRoute(builder: (context) => const SettingsPage()),
               );
             },
-            icon: const Icon(Icons.settings_rounded),
+            icon: Icon(Icons.settings_rounded,
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black),
           )
         ],
       ),
@@ -340,7 +345,7 @@ class _ProfilePageState extends State<ProfilePage> {
 void handleOnProfile(BuildContext context) {
   print("handleOnProfile called - navigating to ConsultationProfilePage");
   Navigator.push(
-      context, createSlideFromBottomRoute(ConsultationProfilePage()));
+      context, createSlideFromBottomRoute(const ConsultationProfilePage()));
 }
 
 class ProfileCompletionCard {
@@ -355,8 +360,6 @@ class ProfileCompletionCard {
     required this.onTap,
   });
 }
-
-// profileCompletionCards đã được di chuyển vào trong class _ProfilePageState
 
 class CustomListTile {
   final IconData icon;

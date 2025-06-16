@@ -15,7 +15,7 @@ final Color warningError = Colors.red.shade200;
 const Color blackColor = Colors.black;
 const Color whiteColor = Colors.white;
 final Color error = Colors.red.shade300;
-final Color acceptColor=Colors.green.shade300;
+final Color acceptColor = Colors.green.shade300;
 final Color declineColor = Colors.green.shade300;
 final Color successStatus = Colors.blue.shade200;
 final Color secondaryColor = Colors.grey.shade400;
@@ -31,7 +31,7 @@ TextStyle textStyle = GoogleFonts.quicksand(
 TextStyle quickSand15Font = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.w600,
-  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
+  color: themeProvider.isDarkMode ? Colors.grey : Colors.black,
 );
 
 TextStyle quickSand12Font = GoogleFonts.quicksand(
@@ -58,19 +58,19 @@ TextStyle subHeadingStyle = GoogleFonts.quicksand(
 const double kDefault = 16.0;
 const double kCircle = 20;
 
-const TextStyle kHeadingStyle = TextStyle(
+TextStyle kHeadingStyle = TextStyle(
   fontSize: 24,
   fontWeight: FontWeight.bold,
-  color: Colors.black,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 
-const TextStyle kSubHeadingStyle = TextStyle(
+TextStyle kSubHeadingStyle = TextStyle(
   fontSize: 16,
   fontWeight: FontWeight.w500,
-  color: Colors.grey,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.grey,
 );
-const TextStyle kSubHintStyle = TextStyle(
+TextStyle kSubHintStyle = TextStyle(
   fontSize: 13,
   fontWeight: FontWeight.w300,
-  color: Colors.grey,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.grey,
 );
