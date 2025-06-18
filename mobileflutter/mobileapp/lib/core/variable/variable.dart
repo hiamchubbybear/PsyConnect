@@ -31,7 +31,7 @@ TextStyle textStyle = GoogleFonts.quicksand(
 TextStyle quickSand15Font = GoogleFonts.quicksand(
   fontSize: 17,
   fontWeight: FontWeight.w600,
-  color: themeProvider.isDarkMode ? Colors.grey : Colors.black,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 
 TextStyle quickSand12Font = GoogleFonts.quicksand(
@@ -73,4 +73,14 @@ TextStyle kSubHintStyle = TextStyle(
   fontSize: 13,
   fontWeight: FontWeight.w300,
   color: themeProvider.isDarkMode ? Colors.white : Colors.grey,
+);
+TextStyle kSubHeadingRegisterPage = GoogleFonts.quicksand(
+  fontSize: 24,
+  fontWeight: FontWeight.bold,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.black87,
+);
+
+TextStyle kSecondarirySubHeadingRegisterPage = GoogleFonts.quicksand(
+  fontSize: 16,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.grey[600],
 );

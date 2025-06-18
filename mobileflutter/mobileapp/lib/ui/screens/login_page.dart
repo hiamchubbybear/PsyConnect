@@ -1,4 +1,3 @@
-import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/provider/auth_token_provider.dart';
 import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/provider/user_profile_provider.dart';
@@ -100,12 +99,12 @@ class _LoginPageState extends State<LoginPage> {
                   fontWeight: FontWeight.w400,
                 ),
                 children: [
-                  const TextSpan(text: 'Sign in to continue '), 
+                  const TextSpan(text: 'Sign in to continue '),
                   TextSpan(
                     text: 'or sign up',
-                    style: const TextStyle(
+                    style:  TextStyle(
                       decoration: TextDecoration.underline,
-                      color: blackColor,
+                      color: subtitleColor,
                     ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {

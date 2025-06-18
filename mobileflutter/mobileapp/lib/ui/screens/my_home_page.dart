@@ -1,5 +1,4 @@
 import 'package:PsyConnect/core/variable/variable.dart';
-import 'package:PsyConnect/ui/screens/chat_page.dart';
 import 'package:PsyConnect/ui/screens/home_page_scroll_view.dart';
 import 'package:PsyConnect/ui/screens/profile_page.dart';
 import 'package:PsyConnect/ui/screens/schedule_home_page.dart';
@@ -54,15 +53,13 @@ class _MyHomePageState extends State<MyHomePage>
         children: [
           const HomePageScrollView(),
           ScheduleHomePage(size: size),
-          const ChatPage(),
-          ChatPage(),
-          ProfilePage()
+          const ProfilePage(),
+          const ProfilePage(),
+          const ProfilePage()
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          
-        },
+        onPressed: () {},
         backgroundColor: theme.primaryColor,
         child: const Icon(Icons.add, color: Colors.white, size: 28),
         elevation: 2,

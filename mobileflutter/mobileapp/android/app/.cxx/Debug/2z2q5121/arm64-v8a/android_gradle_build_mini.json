@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/chessy/dev-environment-files/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/chessy/Dev/android-sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/chessy/CodeSpace/PsyConnect/mobileflutter/mobileapp/android/app/.cxx/Debug/2z2q5121/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/chessy/Dev/android-sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/chessy/CodeSpace/PsyConnect/mobileflutter/mobileapp/android/app/.cxx/Debug/2z2q5121/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
