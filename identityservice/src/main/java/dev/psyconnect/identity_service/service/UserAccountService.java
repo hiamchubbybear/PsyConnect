@@ -58,45 +58,59 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
     @Transactional
     @Cacheable(key = "#request.accountId", value = "account")
-    public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
-        if (userAccountRepository.existsByUsername(request.getUsername()))
+    public UserAccountCreationResponse createAccount(UserAccountCreationRequest request, Provider provider) {
+        String encodedPassword = null;
+        if (userAccountRepository.existsByUsername(request.getUsername())) {
             throw new CustomExceptionHandler(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
 
-        if (userAccountRepository.existsByEmail(request.getEmail()))
+        if (userAccountRepository.existsByEmail(request.getEmail())) {
             throw new CustomExceptionHandler(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (provider != Provider.ORDINARY) {
+            request.setUsername(request.getEmail());
+        } else {
+            encodedPassword = PasswordEncodingService.encoder(request.getPassword());
+        }
 
-        String token = generateActivationCode();
-        Token activateTokenEntity = sendNotification(ActivateAccountNotificationRequest.builder()
-                .code(token)
-                .email(request.getEmail())
-                .fullname(request.getFirstName() + " " + request.getLastName())
-                .username(request.getUsername())
-                .build());
+        String activationCode = generateActivationCode();
+        Token activateToken = saveActivationModel(request.getUsername(), activationCode, provider);
+
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
         UUID profileId = UUID.randomUUID();
+
         Account account = Account.builder()
                 .username(request.getUsername())
                 .isActivated(false)
                 .createdAt(Timestamp.from(Instant.now()))
-                .provider(Provider.ORDINARY)
+                .provider(provider)
                 .email(request.getEmail())
-                .password(PasswordEncodingService.encoder(request.getPassword()))
+                .password(encodedPassword)
                 .role(roles)
-                .token(activateTokenEntity)
+                .token(activateToken)
                 .profileId(profileId)
                 .build();
 
         var savedAccount = accountRepository.save(account);
 
-        UserProfileCreationRequest temp = mapper.toAccountResponse(request);
-        temp.setAccountId(account.getAccountId().toString());
-        temp.setProfileId(profileId.toString());
-        temp.setRole(request.getRole());
-
+        UserProfileCreationRequest profileRequest = mapper.toAccountResponse(request);
+        profileRequest.setAccountId(savedAccount.getAccountId().toString());
+        profileRequest.setProfileId(profileId.toString());
+        profileRequest.setRole(request.getRole());
+        log.info("Sending profile creation request with data:");
+        log.info("  accountId: {}", profileRequest.getAccountId());
+        log.info("  profileId: {}", profileRequest.getProfileId());
+        log.info("  username: {}", profileRequest.getUsername());
+        log.info("  firstName: {}", profileRequest.getFirstName());
+        log.info("  lastName: {}", profileRequest.getLastName());
+        log.info("  dob: {}", profileRequest.getDob());
+        log.info("  gender: {}", profileRequest.getGender());
+        log.info("  avatarUri: {}", profileRequest.getAvatarUri());
+        log.info("  address: {}", profileRequest.getAddress());
+        log.info("  role: {}", profileRequest.getRole());
         try {
-            var profileResponse = profileGRPCClient.createProfile(temp);
-            if (UUID.fromString(profileResponse.getProfileId())
-                    .equals(savedAccount.getProfileId().toString())) {
+            var profileResponse = profileGRPCClient.createProfile(profileRequest);
+            if (!profileResponse.getProfileId().equals(savedAccount.getProfileId().toString())) {
                 throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
             }
         } catch (Exception e) {
@@ -106,25 +120,30 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     "Create account",
                     e.getMessage(),
                     Map.of("error", e.getMessage()),
-                    LogLevel.ERROR));
+                    LogLevel.ERROR
+            ));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+
         String fullName = request.getFirstName() + " " + request.getLastName();
-        kafkaService.send(
-                (NOTIFICATION_CREATE_TOPIC),
-                CreateAccountNotificationRequest.builder()
-                        .code(token)
-                        .username(request.getUsername())
-                        .email(savedAccount.getEmail())
-                        .fullname(fullName)
-                        .build());
+        if (provider == Provider.ORDINARY) {
+            kafkaService.send(NOTIFICATION_CREATE_TOPIC,
+                    CreateAccountNotificationRequest.builder()
+                            .code(activationCode)
+                            .username(request.getUsername())
+                            .email(savedAccount.getEmail())
+                            .fullname(fullName)
+                            .build());
+
+        }
         kafkaService.sendLog(buildLog(
                 "identity-service",
                 request.getUsername(),
                 "Create account",
                 "Success",
                 Map.of("fullname", fullName, "email", savedAccount.getEmail()),
-                LogLevel.LOG));
+                LogLevel.LOG
+        ));
 
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
@@ -133,6 +152,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .role(roles)
                 .build();
     }
+
 
     @Transactional
     @CachePut(key = "#request.accountId", value = "account")
@@ -167,7 +187,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         if (!userObject.getToken().getToken().equals(deleteAccountRequest.getToken()))
             throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
@@ -354,7 +374,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         sendNotification(ActivateAccountNotificationRequest.builder()
                 .username(requestActivationAccount.getUsername())
                 .email(requestActivationAccount.getEmail())
-                .build());
+                .build(), Provider.ORDINARY);
         kafkaService.sendLog(buildLog(
                 "identity-service",
                 requestActivationAccount.getUsername(),
@@ -382,25 +402,27 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         return String.valueOf(new Random().nextInt(90000) + 10000);
     }
 
-    public Token sendNotification(ActivateAccountNotificationRequest request) {
-        return saveActivationModel(request.getUsername(), request.getCode());
+    public Token sendNotification(ActivateAccountNotificationRequest request, Provider provider) {
+        return saveActivationModel(request.getUsername(), request.getCode(), provider);
     }
 
-    public Token saveActivationModel(String username, String activateCode) {
-        var foundObject = userAccountRepository.findByUsername(username).orElse(null);
-        if (foundObject == null) {
-            return tokenRepository.save(Token.builder()
-                    .username(username)
-                    .expires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)))
-                    .issuedAt(Timestamp.from(Instant.now()))
-                    .token(activateCode)
-                    .revoked(false)
-                    .build());
-        } else {
-            Token token = foundObject.getToken();
-            token.setToken(activateCode);
-            token.setExpires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
-            return tokenRepository.save(token);
+    public Token saveActivationModel(String username, String activationCode, Provider provider) {
+        if (username == null || username.isBlank()) {
+            throw new CustomExceptionHandler(ErrorCode.NULL_EXCEPTION);
         }
+
+        Token token = tokenRepository.findById(username).orElse(
+                Token.builder()
+                        .username(username)
+                        .issuedAt(Timestamp.from(Instant.now()))
+                        .revoked(false).build()
+        );
+
+        token.setToken(activationCode);
+        token.setRevoked(false);
+        token.setExpires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
+
+        return tokenRepository.save(token);
     }
+
 }

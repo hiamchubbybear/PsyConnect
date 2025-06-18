@@ -24,10 +24,13 @@ public class FriendRelationship implements Serializable {
     @Id
     @GeneratedValue
     private String id;
+
     @TargetNode
     private Profile target;
+
     @Enumerated(EnumType.STRING)
     private FriendShipStatus status;
+
     private String message;
     private OffsetDateTime createdAt;
 }

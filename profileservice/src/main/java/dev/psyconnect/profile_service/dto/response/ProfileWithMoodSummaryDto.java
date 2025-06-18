@@ -1,10 +1,10 @@
 package dev.psyconnect.profile_service.dto.response;
 
+import java.io.Serializable;
+
 import dev.psyconnect.profile_service.dto.request.ProfileSummaryDto;
 import dev.psyconnect.profile_service.model.Mood;
 import lombok.*;
-
-import java.io.Serializable;
 
 @Data
 @Builder

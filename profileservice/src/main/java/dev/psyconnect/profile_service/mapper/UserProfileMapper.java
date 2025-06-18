@@ -2,6 +2,7 @@ package dev.psyconnect.profile_service.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 import dev.psyconnect.grpc.ProfileCreationRequest;
 import dev.psyconnect.grpc.ProfileCreationResponse;
@@ -11,7 +12,6 @@ import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileUpdateResponse;
 import dev.psyconnect.profile_service.model.Profile;
-import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
 public interface UserProfileMapper {
@@ -33,14 +33,14 @@ public interface UserProfileMapper {
     UserProfileUpdateResponse toUserProfileUpdateResponse(UserProfileUpdateResponse updatedUser);
 
     @Mappings({
-            @Mapping(source = "accountId", target = "accountId"),
-            @Mapping(source = "profileId", target = "profileId"),
-            @Mapping(source = "firstName", target = "firstName"),
-            @Mapping(source = "lastName", target = "lastName"),
-            @Mapping(source = "dob", target = "dob", dateFormat = "yyyy-MM-dd"),
-            @Mapping(source = "address", target = "address"),
-            @Mapping(source = "gender", target = "gender"),
-            @Mapping(source = "avatarUri", target = "avatarUri"),
+        @Mapping(source = "accountId", target = "accountId"),
+        @Mapping(source = "profileId", target = "profileId"),
+        @Mapping(source = "firstName", target = "firstName"),
+        @Mapping(source = "lastName", target = "lastName"),
+        @Mapping(source = "dob", target = "dob", dateFormat = "yyyy-MM-dd"),
+        @Mapping(source = "address", target = "address"),
+        @Mapping(source = "gender", target = "gender"),
+        @Mapping(source = "avatarUri", target = "avatarUri"),
     })
     UserProfileResponse toUserProfileRequest(Profile profile);
 

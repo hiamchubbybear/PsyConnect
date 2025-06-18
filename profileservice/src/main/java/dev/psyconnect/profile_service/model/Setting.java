@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class Setting implements Serializable {
     @Id
     private String profileId;
+
     private String privacyLevel;
     private boolean showLastSeen;
     private boolean showProfilePicture;

@@ -1,5 +1,6 @@
 package dev.psyconnect.identity_service.controller;
 
+import dev.psyconnect.identity_service.enumeration.Provider;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
@@ -22,7 +23,7 @@ public class UserAccountController {
 
     @PostMapping(value = "/create")
     public ApiResponse<UserAccountCreationResponse> register(@RequestBody UserAccountCreationRequest accountRequest) {
-        return new ApiResponse<>(userAccountService.createAccount(accountRequest));
+        return new ApiResponse<>(userAccountService.createAccount(accountRequest, Provider.ORDINARY));
     }
 
     @PostMapping(value = "/activate")

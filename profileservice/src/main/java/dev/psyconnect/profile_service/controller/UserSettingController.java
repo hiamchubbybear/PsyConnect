@@ -3,9 +3,7 @@ package dev.psyconnect.profile_service.controller;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
-import dev.psyconnect.profile_service.configuration.filter.AllowedRoles;
 import dev.psyconnect.profile_service.dto.request.UserSettingRequest;
-import dev.psyconnect.profile_service.dto.response.DeleteResponse;
 import dev.psyconnect.profile_service.dto.response.UserSettingResponse;
 import dev.psyconnect.profile_service.kafka.service.KafkaService;
 import dev.psyconnect.profile_service.model.Setting;
@@ -29,8 +27,7 @@ public class UserSettingController {
 
     @PutMapping()
     public ApiResponse<UserSettingResponse> updateUserSetting(
-            @RequestHeader(value = "X-Profile-Id") String id,
-            @RequestBody UserSettingRequest request) {
+            @RequestHeader(value = "X-Profile-Id") String id, @RequestBody UserSettingRequest request) {
         request.setProfileId(id);
         return new ApiResponse<>(userSettingService.updateUserSetting(id, request));
     }

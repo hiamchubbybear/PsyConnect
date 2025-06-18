@@ -1,5 +1,7 @@
 package dev.psyconnect.identity_service.configuration;
 
+import dev.psyconnect.identity_service.model.TokenRepository;
+import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -20,6 +22,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,6 +34,9 @@ import dev.psyconnect.identity_service.service.OAuth2Service;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @org.springframework.context.annotation.Configuration
 @EnableWebSecurity
@@ -53,77 +60,69 @@ public class Configuration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.authorizeRequests(requests -> {
-                    requests.requestMatchers(
-                                    "/",
-                                    "/oauth2/register/google",
-                                    "/oauth2/userInfo/google",
-                                    "/login",
-                                    "/oauth2/authorization/google",
-                                    "/identity/**",
-                                    "/identity/create",
-                                    "auth/login/**")
-                            .permitAll()
-                            .requestMatchers("/auth/therapist/**")
-                            .hasAuthority("ROLE_THERAPIST")
-                            .requestMatchers("/auth/admin/**")
-                            .hasAuthority("ROLE_ADMIN")
-                            .requestMatchers("/account/**")
-                            .authenticated();
-                })
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, TokenRepository tokenRepository, UserAccountRepository userAccountRepository) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider(userAccountService))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oAuth2Login -> {
-                    oAuth2Login.loginPage("/custom-login").successHandler((request, response, authentication) -> {
-                        try {
-                            DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-                            String email = user.getAttribute("email");
-                            String avatarUri = user.getAttribute("picture");
-                            if (email == null) {
-                                log.error("Email attribute not found in OIDC user information");
-                                response.sendError(
-                                        HttpServletResponse.SC_BAD_REQUEST, "Email not found in user information");
-                                return;
+                .authorizeRequests(requests -> requests
+                        .requestMatchers(
+                                "/login",
+                                "/oauth2/authorization/google",
+                                "/oauth2/callback/google",
+                                "/login/oauth2/code/google",
+                                "/identity/**",
+                                "/identity/create",
+                                "/auth/login/**",
+                                "/oauth2/userInfo/google",
+                                "/favicon.ico"
+                        ).permitAll()
+                        .requestMatchers("/auth/therapist/**").hasAuthority("ROLE_THERAPIST")
+                        .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(((request, response, authException) -> {
+                    response.sendRedirect("/oauth2/authorization/google");
+                })))
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization")
+                        .authorizationEndpoint(config -> config.baseUri("/oauth2/authorization"))
+                        .redirectionEndpoint(config -> config.baseUri("/oauth2/callback/*"))
+                        .successHandler((request, response, authentication) -> {
+                            try {
+                                DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
+                                String email = user.getAttribute("email");
+                                String avatarUri = user.getAttribute("picture");
+                                if (email == null) {
+                                    log.error("Email attribute not found");
+                                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Email not found");
+                                    return;
+                                }
+                                oAuth2Service.processOAuthPostLoginGoogle(email, avatarUri,authentication);
+                                String redirectUrl = String.format("/oauth2/userInfo/google?email=%s&avatar=%s",
+                                        URLEncoder.encode(email, StandardCharsets.UTF_8),
+                                        URLEncoder.encode(avatarUri, StandardCharsets.UTF_8));
+                                response.sendRedirect(redirectUrl);
+
+
+                            } catch (Exception e) {
+                                log.error("OAuth2 success handler error", e);
+                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                             }
-                            log.info("OAuth2 Login successful. Email: {}", email);
-                            var trans = oAuth2Service.processOAuthPostLoginGoogle(
-                                    new CreateProfileOauth2GoogleRequest(email, Provider.GOOGLE.toString(), avatarUri));
-                            log.info("OAuth2 Create account successful. Email: {}", trans.getEmail());
-                            String redirectUrl =
-                                    (String) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-                            if (redirectUrl == null || redirectUrl.isEmpty()) {
-                                redirectUrl = "/oauth2/userInfo/google";
-                            }
-                            response.sendRedirect(redirectUrl);
-                        } catch (Exception ex) {
-                            log.error("Error handling successful authentication", ex);
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
-                        }
-                    });
-                    oAuth2Login.failureHandler(
-                            (HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    AuthenticationException exception) -> {
-                                log.error("OAuth2 login failed: {}", exception.getMessage());
-                                response.setContentType("application/json");
-                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                                response.getWriter()
-                                        .write("{\"error\": \"Authentication failed: " + exception.getMessage()
-                                                + "\"}");
-                            });
-                    oAuth2Login
-                            .authorizationEndpoint(authorizationEndpointConfig ->
-                                    authorizationEndpointConfig.baseUri("/oauth2/authorization/google"))
-                            .redirectionEndpoint(redirectionEndpointConfig ->
-                                    redirectionEndpointConfig.baseUri("/oauth2/callback/google"));
-                })
-                .formLogin(formLogin -> {
-                    formLogin.loginPage("/login").defaultSuccessUrl("/home").failureUrl("/login");
-                })
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            log.error("OAuth2 login failed: {}", exception.getMessage());
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"error\": \"OAuth2 login failed\"}");
+                        })
+                )
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/home")
+                        .failureUrl("/login")
+                )
                 .httpBasic(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
                 .build();
     }
 

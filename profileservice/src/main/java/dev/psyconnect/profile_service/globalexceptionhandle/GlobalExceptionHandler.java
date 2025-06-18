@@ -3,9 +3,6 @@ package dev.psyconnect.profile_service.globalexceptionhandle;
 import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
-import dev.psyconnect.profile_service.dto.request.LogEvent;
-import dev.psyconnect.profile_service.dto.request.LogLevel;
-import dev.psyconnect.profile_service.kafka.service.KafkaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +17,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
+import dev.psyconnect.profile_service.dto.request.LogEvent;
+import dev.psyconnect.profile_service.dto.request.LogLevel;
+import dev.psyconnect.profile_service.kafka.service.KafkaService;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @Autowired
     KafkaService kafkaService;
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<String>> handleGeneralException(Exception ex) {
         log.warn("General Exception: ", ex);
@@ -37,8 +39,7 @@ public class GlobalExceptionHandler {
                 .level(LogLevel.ERROR)
                 .action("")
                 .traceId(UUID.randomUUID().toString())
-                .build()
-        );
+                .build());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 

@@ -26,5 +26,4 @@ public class ProfileWithRelationShipResponse implements Serializable {
                 .mood(mood)
                 .build();
     }
-
 }

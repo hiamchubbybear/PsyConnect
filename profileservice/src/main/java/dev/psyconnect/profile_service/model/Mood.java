@@ -16,6 +16,7 @@ import lombok.*;
 public class Mood implements Serializable {
     @Id
     private String moodId;
+
     private String mood;
     private String description;
     private String visibility;

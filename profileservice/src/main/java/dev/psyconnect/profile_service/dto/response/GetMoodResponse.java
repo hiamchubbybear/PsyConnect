@@ -2,8 +2,6 @@ package dev.psyconnect.profile_service.dto.response;
 
 import java.io.Serializable;
 
-import org.springframework.data.neo4j.core.schema.Id;
-
 import lombok.*;
 
 @Setter

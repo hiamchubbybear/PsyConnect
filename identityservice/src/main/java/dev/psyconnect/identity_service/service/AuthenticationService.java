@@ -2,17 +2,13 @@ package dev.psyconnect.identity_service.service;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.*;
@@ -83,7 +79,7 @@ public class AuthenticationService {
                 loginType);
     }
 
-    public String generateGoogleAuthToken(GoogleAuthenticationRequest request, String loginType) {
+    public AuthenticationResponse generateGoogleAuthToken(GoogleAuthenticationRequest request, String loginType) {
         Account account = userAccountRepository
                 .findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
@@ -94,12 +90,13 @@ public class AuthenticationService {
         } else {
             throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
         }
-        return createJwtToken(
+        String jwtToken = createJwtToken(
                 request.getEmail(),
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
                 loginType);
+        return AuthenticationResponse.builder().token(jwtToken).isSuccessful(true).build();
     }
 
     private String createJwtToken(String subject, String accountId, String profileId, String role, String loginType) {
@@ -110,7 +107,7 @@ public class AuthenticationService {
                 .expirationTime(new Date(System.currentTimeMillis() + expiration))
                 .issueTime(new Date())
                 .jwtID(UUID.randomUUID().toString())
-                .issuer("PsyConnect Authentication Service")
+                .issuer("PsyConnect Authentication")
                 .claim("scope", buildScope(role))
                 .claim("type", loginType)
                 .claim("accountId", accountId)
@@ -145,8 +142,7 @@ public class AuthenticationService {
         log.debug("User request token is {}", authenticationRequest.getUsername());
         var password = authenticationRequest.getPassword();
 
-        if (password == null)
-            throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
+        if (password == null) throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
         else if (!passwordEncoder().matches(password, user.getPassword()))
             throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
         else {

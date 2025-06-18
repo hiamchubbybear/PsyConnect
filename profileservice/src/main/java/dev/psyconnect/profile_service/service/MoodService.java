@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import dev.psyconnect.profile_service.model.Profile;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,7 @@ import dev.psyconnect.profile_service.dto.response.*;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.profile_service.model.Mood;
+import dev.psyconnect.profile_service.model.Profile;
 import dev.psyconnect.profile_service.repository.MoodRepository;
 import dev.psyconnect.profile_service.repository.ProfileRepository;
 import lombok.AccessLevel;
@@ -37,8 +37,7 @@ public class MoodService {
         log.info("Mood description {}", request.getMood());
         log.info("Mood description {}", request.getMoodDescription());
         log.info("Mood visibility {}", request.getVisibility());
-        if (!profileRepository.existsById(profileId))
-            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
+        if (!profileRepository.existsById(profileId)) throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
         if (profileRepository.hasMood(profileId)) {
             throw new CustomExceptionHandler(ErrorCode.MOOD_ALREADY_EXISTS);
         }
@@ -81,7 +80,8 @@ public class MoodService {
 
     @Cacheable(key = "#profileId", value = "mood")
     public GetMoodResponse getMoodById(String profileId) {
-        Profile profile = profileRepository.findById(profileId)
+        Profile profile = profileRepository
+                .findById(profileId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.info("Profile {}", profile);
         String fullName = profile.getFirstName() + profile.getLastName();
@@ -105,7 +105,6 @@ public class MoodService {
         log.info(res.toString());
         return res;
     }
-
 
     @CacheEvict(key = "#profileId", value = "mood")
     public DeleteMoodResponse deleteMood(String profileId) {
