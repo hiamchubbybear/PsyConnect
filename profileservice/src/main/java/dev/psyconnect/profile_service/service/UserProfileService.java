@@ -52,7 +52,8 @@ public class UserProfileService {
 
     public UserProfileCreationResponse create(UserProfileCreationRequest request) {
         Profile profile = userProfileMapper.toUserProfileMapper(request);
-        profile.setDob(Time.parseFromString(request.getDob()));
+        String dobStr = request.getDob();
+        profile.setDob((dobStr != null && !dobStr.isEmpty()) ? Time.parseFromString(dobStr) : null);
         var temp = userProfileRepository.save(profile);
         eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
         kafkaService.send("profile.user-create-setting", request.getProfileId());

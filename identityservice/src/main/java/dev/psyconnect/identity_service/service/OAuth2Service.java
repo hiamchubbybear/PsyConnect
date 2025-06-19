@@ -1,17 +1,13 @@
 package dev.psyconnect.identity_service.service;
 
 import java.util.Set;
-import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.psyconnect.identity_service.configuration.CallRestApi;
-import dev.psyconnect.identity_service.configuration.LoginTypeValidator;
 import dev.psyconnect.identity_service.dto.request.*;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
-import dev.psyconnect.identity_service.grpc.client.ProfileGRPCClient;
-import io.grpc.CompressorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -19,14 +15,12 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import dev.psyconnect.identity_service.dto.response.CreateProfileOauth2GoogleResponse;
 import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
-import dev.psyconnect.identity_service.mapper.CreateProfileOauth2GoogleMapper;
-import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.Account;
 import dev.psyconnect.identity_service.model.RoleEntity;
 import dev.psyconnect.identity_service.repository.RoleRepository;
@@ -44,45 +38,59 @@ public class OAuth2Service {
     OAuth2AuthorizedClientService authorizedClientService;
     CallRestApi callRestApi;
     RoleRepository roleRepository;
-    ProfileGRPCClient profileGRPCClient;
-    private final CreateProfileOauth2GoogleMapper createProfileOauth2GoogleMapper;
     private final AuthenticationService authenticationService;
     private final UserAccountService userAccountService;
 
-    public AuthenticationResponse processOAuthPostLoginGoogle(String email, String avatarUri, Authentication authentication) {
-        CreateProfileOauth2GoogleRequest createProfileOauth2GoogleRequest = extractDataFromJson(authentication);
-        String firstName = createProfileOauth2GoogleRequest.getFirstName();
-        String lastName = createProfileOauth2GoogleRequest.getLastName();
-        String dob = createProfileOauth2GoogleRequest.getDob();
-        String gender = createProfileOauth2GoogleRequest.getGender();
-        try {
-            Account existingUser = userAccountRepository.findByEmail(email).orElse(null);
-            Set<RoleEntity> clientRoles = roleRepository.findAllByRoleId("Client");
+    public AuthenticationResponse processOAuth2PostLogin(String email, String avatarUri, Authentication authentication, String loginProvider) {
+        if (!userAccountRepository.existsByEmail(email)) {
+            CreateProfileOauth2Request createProfileOauth2Request = null;
+            String firstName = "", lastName = "", dob = "", gender = "";
+            Provider provider = null;
+            if (loginProvider.toUpperCase().equals(Provider.GOOGLE.toString())) {
+                createProfileOauth2Request = extractDataFromJson(authentication);
+                firstName = createProfileOauth2Request.getFirstName();
+                lastName = createProfileOauth2Request.getLastName();
+                dob = createProfileOauth2Request.getDob();
+                gender = createProfileOauth2Request.getGender();
+                provider = Provider.GOOGLE;
+            } else if (loginProvider.toUpperCase().equals(Provider.FACEBOOK.toString())) {
+                OAuth2User user = (OAuth2User) authentication.getPrincipal();
+                firstName = user.getAttribute("firstName");
+                lastName = user.getAttribute("lastName");
+                provider = Provider.FACEBOOK;
 
-            if (clientRoles.isEmpty()) {
-                log.error("Client role not found in database");
-                throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
             }
-            if (existingUser == null) {
-                userAccountService.createAccount(UserAccountCreationRequest.builder()
-                        .email(email)
-                        .dob(dob)
-                        .gender(gender)
-                        .firstName(firstName)
-                        .lastName(lastName)
-                        .role("Client")
-                        .address("")
-                        .avatarUri(avatarUri)
-                        .build(), Provider.GOOGLE);
+            try {
+                Account existingUser = null;
+                Set<RoleEntity> clientRoles = roleRepository.findAllByRoleId("Client");
+
+                if (clientRoles.isEmpty()) {
+                    log.error("Client role not found in database");
+                    throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
+                }
+                if (existingUser == null) {
+                    userAccountService.createAccount(UserAccountCreationRequest.builder()
+                            .email(email)
+                            .dob(dob)
+                            .gender(gender)
+                            .firstName(firstName)
+                            .lastName(lastName)
+                            .role("Client")
+
+                            .address("")
+                            .avatarUri(avatarUri)
+                            .build(), provider);
+                }
+                return authenticationService.generateOAuth2LoginToken(GoogleAuthenticationRequest.builder().email(email).build(), Provider.GOOGLE.toString());
+            } catch (Exception ex) {
+                log.error("Error during OAuth2 Google login: {}", ex.getMessage(), ex);
+                throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
             }
-            return authenticationService.generateGoogleAuthToken(GoogleAuthenticationRequest.builder().email(email).build(), Provider.GOOGLE.toString());
-        } catch (Exception ex) {
-            log.error("Error during OAuth2 Google login: {}", ex.getMessage(), ex);
-            throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+        return authenticationService.generateOAuth2LoginToken(GoogleAuthenticationRequest.builder().email(email).build(), Provider.GOOGLE.toString());
     }
 
-    public CreateProfileOauth2GoogleRequest extractDataFromJson(Authentication authentication) {
+    public CreateProfileOauth2Request extractDataFromJson(Authentication authentication) {
         DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
         String email = user.getAttribute("email");
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
@@ -121,7 +129,7 @@ public class OAuth2Service {
         int day = birthdayObj != null && birthdayObj.has("day") ? birthdayObj.get("day").getAsInt() : 0;
         String dob = String.format("%04d-%02d-%02d", year, month, day);
 
-        return CreateProfileOauth2GoogleRequest.builder().dob(dob).gender(gender).firstName((firstName)).lastName(lastName).build();
+        return CreateProfileOauth2Request.builder().dob(dob).gender(gender).firstName((firstName)).lastName(lastName).build();
 
     }
 }

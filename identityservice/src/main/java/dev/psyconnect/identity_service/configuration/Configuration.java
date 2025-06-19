@@ -2,7 +2,6 @@ package dev.psyconnect.identity_service.configuration;
 
 import dev.psyconnect.identity_service.model.TokenRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -18,25 +17,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import dev.psyconnect.identity_service.dto.request.CreateProfileOauth2GoogleRequest;
-import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.service.OAuth2Service;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @org.springframework.context.annotation.Configuration
 @EnableWebSecurity
@@ -76,6 +71,10 @@ public class Configuration {
                                 "/identity/create",
                                 "/auth/login/**",
                                 "/oauth2/userInfo/google",
+                                "/oauth2/authorization/facebook",
+                                "/oauth2/callback/facebook",
+                                "/login/oauth2/code/facebook",
+                                "/oauth2/userInfo/facebook",
                                 "/favicon.ico"
                         ).permitAll()
                         .requestMatchers("/auth/therapist/**").hasAuthority("ROLE_THERAPIST")
@@ -91,18 +90,24 @@ public class Configuration {
                         .redirectionEndpoint(config -> config.baseUri("/oauth2/callback/*"))
                         .successHandler((request, response, authentication) -> {
                             try {
-                                DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-                                String email = user.getAttribute("email");
-                                String avatarUri = user.getAttribute("picture");
-                                if (email == null) {
-                                    log.error("Email attribute not found");
-                                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Email not found");
-                                    return;
+                                OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
+                                String registrationId = token.getAuthorizedClientRegistrationId();
+                                String email = "";
+                                String avatarUri = "";
+                                String redirectUrl = "";
+                                if ("google".equals(registrationId)) {
+                                    DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
+                                    log.info(((OAuth2User) authentication.getPrincipal()).getAttributes().toString());
+                                    email = user.getAttribute("email");
+                                    avatarUri = user.getAttribute("picture");
+                                    redirectUrl = String.format("/oauth2/userInfo?provider=%s&email=%s&avatar=%s", registrationId, email, avatarUri);
+                                } else if ("facebook".equals(registrationId)) {
+                                    OAuth2User user = (OAuth2User) authentication.getPrincipal();
+                                    log.info(((OAuth2User) authentication.getPrincipal()).getAttributes().toString());
+                                    avatarUri = (String) user.getAttribute("picture");
+                                    email = (String) user.getAttribute("email");
+                                    redirectUrl = String.format("/oauth2/userInfo?provider=%s&email=%s&avatar=%s", registrationId, email, avatarUri);
                                 }
-                                oAuth2Service.processOAuthPostLoginGoogle(email, avatarUri,authentication);
-                                String redirectUrl = String.format("/oauth2/userInfo/google?email=%s&avatar=%s",
-                                        URLEncoder.encode(email, StandardCharsets.UTF_8),
-                                        URLEncoder.encode(avatarUri, StandardCharsets.UTF_8));
                                 response.sendRedirect(redirectUrl);
 
 

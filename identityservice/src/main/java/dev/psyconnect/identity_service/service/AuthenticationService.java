@@ -79,7 +79,7 @@ public class AuthenticationService {
                 loginType);
     }
 
-    public AuthenticationResponse generateGoogleAuthToken(GoogleAuthenticationRequest request, String loginType) {
+    public AuthenticationResponse generateOAuth2LoginToken(GoogleAuthenticationRequest request, String loginType) {
         Account account = userAccountRepository
                 .findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));

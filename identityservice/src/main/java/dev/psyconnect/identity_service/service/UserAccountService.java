@@ -86,6 +86,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .provider(provider)
                 .email(request.getEmail())
                 .password(encodedPassword)
+                .isActivated((provider != Provider.ORDINARY))
                 .role(roles)
                 .token(activateToken)
                 .profileId(profileId)
@@ -97,17 +98,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         profileRequest.setAccountId(savedAccount.getAccountId().toString());
         profileRequest.setProfileId(profileId.toString());
         profileRequest.setRole(request.getRole());
-        log.info("Sending profile creation request with data:");
-        log.info("  accountId: {}", profileRequest.getAccountId());
-        log.info("  profileId: {}", profileRequest.getProfileId());
-        log.info("  username: {}", profileRequest.getUsername());
-        log.info("  firstName: {}", profileRequest.getFirstName());
-        log.info("  lastName: {}", profileRequest.getLastName());
-        log.info("  dob: {}", profileRequest.getDob());
-        log.info("  gender: {}", profileRequest.getGender());
-        log.info("  avatarUri: {}", profileRequest.getAvatarUri());
-        log.info("  address: {}", profileRequest.getAddress());
-        log.info("  role: {}", profileRequest.getRole());
         try {
             var profileResponse = profileGRPCClient.createProfile(profileRequest);
             if (!profileResponse.getProfileId().equals(savedAccount.getProfileId().toString())) {

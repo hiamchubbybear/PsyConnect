@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateProfileOauth2GoogleRequest {
+public class CreateProfileOauth2Request {
     String accountId;
     String profileId;
     String firstName;
