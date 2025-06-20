@@ -3,6 +3,7 @@ import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/provider/user_profile_provider.dart';
 import 'package:PsyConnect/services/account_service/login.dart';
 import 'package:PsyConnect/ui/screens/forgot_page.dart';
+import 'package:PsyConnect/ui/screens/my_home_page.dart';
 import 'package:PsyConnect/ui/screens/register_page.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,49 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
   bool isPasswordVisible = false;
   LoginService loginService = LoginService();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loginService.initDeepLinkListener(context, () {
+        _navigateToHome();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    passwordController.dispose();
+    loginService.dispose();
+    super.dispose();
+  }
+
+  void _navigateToHome() {
+    final navigator = navigatorKey.currentState ?? Navigator.of(context);
+    navigator.pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => const MyHomePage(title: 'Home Page'),
+      ),
+    );
+  }
+
+  void _handleLoginSuccess() {
+    if (mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const MyHomePage(title: 'Home Page'),
+            ),
+          );
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                   const TextSpan(text: 'Sign in to continue '),
                   TextSpan(
                     text: 'or sign up',
-                    style:  TextStyle(
+                    style: TextStyle(
                       decoration: TextDecoration.underline,
                       color: subtitleColor,
                     ),
@@ -111,7 +155,8 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const MultiStepRegisterPage()),
+                              builder: (context) =>
+                                  const MultiStepRegisterPage()),
                         );
                       },
                   ),
@@ -138,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 40),
             _buildDivider(themeProvider.isDarkMode),
             const SizedBox(height: 40),
-            _buildSocialLoginSection(themeProvider.isDarkMode),
+            _buildSocialLoginSection(themeProvider.isDarkMode, context),
             const SizedBox(height: 40),
             _buildForgotPasswordSection(context, themeProvider.isDarkMode),
             const SizedBox(height: 40),
@@ -286,25 +331,25 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildSocialLoginSection(bool isDark) {
+  Widget _buildSocialLoginSection(bool isDark, BuildContext ctx) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildSocialButton(
           icon: FontAwesomeIcons.google,
-          onPressed: _handleOnGoogleLogin,
+          onPressed: () => _handleOnGoogleLogin(context: ctx),
           isDark: isDark,
         ),
         const SizedBox(width: 24),
         _buildSocialButton(
           icon: FontAwesomeIcons.apple,
-          onPressed: _handleOnAppleIdLogin,
+          onPressed: () => _handleOnAppleLogin(context: ctx),
           isDark: isDark,
         ),
         const SizedBox(width: 24),
         _buildSocialButton(
           icon: FontAwesomeIcons.facebook,
-          onPressed: _handleOnFacebookLogin,
+          onPressed: () => _handleOnFacebookLogin(context: ctx),
           isDark: isDark,
         ),
       ],
@@ -378,9 +423,23 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-_handleOnGoogleLogin() {}
-_handleOnFacebookLogin() {}
-_handleOnAppleIdLogin() {}
+_handleOnGoogleLogin({required BuildContext context}) {
+  String provider = "google";
+  LoginService loginService = LoginService();
+  loginService.oauth2LoginHandle(provider);
+}
+
+_handleOnAppleLogin({required BuildContext context}) {
+  String provider = "apple";
+  LoginService loginService = LoginService();
+  loginService.oauth2LoginHandle(provider);
+}
+
+_handleOnFacebookLogin({required BuildContext context}) {
+  String provider = "facebook";
+  LoginService loginService = LoginService();
+  loginService.oauth2LoginHandle(provider);
+}
 
 _handleOnResetPassword({
   required BuildContext context,

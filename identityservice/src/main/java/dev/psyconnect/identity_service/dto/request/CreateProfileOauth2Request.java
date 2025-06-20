@@ -14,8 +14,10 @@ public class CreateProfileOauth2Request {
     String firstName;
     String lastName;
     String email;
+
     @ValidateLoginType
     String creationType;
+
     String avatarUri;
     String dob;
     String gender;

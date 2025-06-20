@@ -19,7 +19,7 @@ import com.nimbusds.jwt.SignedJWT;
 
 import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
 import dev.psyconnect.identity_service.dto.request.AuthenticationRequest;
-import dev.psyconnect.identity_service.dto.request.GoogleAuthenticationRequest;
+import dev.psyconnect.identity_service.dto.request.Oauth2AuthenticationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
 import dev.psyconnect.identity_service.dto.response.LogoutRequest;
 import dev.psyconnect.identity_service.dto.response.LogoutResponse;
@@ -79,11 +79,13 @@ public class AuthenticationService {
                 loginType);
     }
 
-    public AuthenticationResponse generateOAuth2LoginToken(GoogleAuthenticationRequest request, String loginType) {
+    public AuthenticationResponse generateOAuth2LoginToken(Oauth2AuthenticationRequest request, String loginType) {
         Account account = userAccountRepository
                 .findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-
+        log.info("Found session token {}, ", account.getSession().toString());
+        if (!request.getSessionToken().trim().equals(account.getSession().trim()))
+            throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
         String role = null;
         if (account.getRole() != null && !account.getRole().isEmpty()) {
             role = account.getRole().iterator().next().getName();
@@ -96,7 +98,10 @@ public class AuthenticationService {
                 account.getProfileId().toString(),
                 role,
                 loginType);
-        return AuthenticationResponse.builder().token(jwtToken).isSuccessful(true).build();
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .isSuccessful(true)
+                .build();
     }
 
     private String createJwtToken(String subject, String accountId, String profileId, String role, String loginType) {
@@ -107,7 +112,7 @@ public class AuthenticationService {
                 .expirationTime(new Date(System.currentTimeMillis() + expiration))
                 .issueTime(new Date())
                 .jwtID(UUID.randomUUID().toString())
-                .issuer("PsyConnect Authentication")
+                .issuer("PsyConnect Authentication Service")
                 .claim("scope", buildScope(role))
                 .claim("type", loginType)
                 .claim("accountId", accountId)

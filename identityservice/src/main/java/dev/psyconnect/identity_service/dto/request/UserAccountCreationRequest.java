@@ -18,9 +18,12 @@ public class UserAccountCreationRequest {
     String password;
     String firstName;
     String lastName;
+    String oauth2Session;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     String dob;
+
     String address;
     String gender;
     String email;

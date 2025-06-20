@@ -1,7 +1,7 @@
 package dev.psyconnect.identity_service.configuration;
 
-import dev.psyconnect.identity_service.model.TokenRepository;
-import dev.psyconnect.identity_service.repository.UserAccountRepository;
+import java.util.UUID;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -31,8 +31,6 @@ import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Map;
-
 @org.springframework.context.annotation.Configuration
 @EnableWebSecurity
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -55,14 +53,12 @@ public class Configuration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, TokenRepository tokenRepository, UserAccountRepository userAccountRepository) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider(userAccountService))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests(requests -> requests
-                        .requestMatchers(
+                .authorizeRequests(requests -> requests.requestMatchers(
                                 "/login",
                                 "/oauth2/authorization/google",
                                 "/oauth2/callback/google",
@@ -72,20 +68,24 @@ public class Configuration {
                                 "/auth/login/**",
                                 "/oauth2/userInfo/google",
                                 "/oauth2/authorization/facebook",
+                                "/auth/oauth2/callback/exchange-code",
                                 "/oauth2/callback/facebook",
                                 "/login/oauth2/code/facebook",
+                                "/auth/internal/valid",
                                 "/oauth2/userInfo/facebook",
-                                "/favicon.ico"
-                        ).permitAll()
-                        .requestMatchers("/auth/therapist/**").hasAuthority("ROLE_THERAPIST")
-                        .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(((request, response, authException) -> {
-                    response.sendRedirect("/oauth2/authorization/google");
-                })))
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/oauth2/authorization")
+                                "/favicon.ico")
+                        .permitAll()
+                        .requestMatchers("/auth/therapist/**")
+                        .hasAuthority("ROLE_THERAPIST")
+                        .requestMatchers("/auth/admin/**")
+                        .hasAuthority("ROLE_ADMIN")
+                        .anyRequest()
+                        .authenticated())
+                .exceptionHandling(
+                        exception -> exception.authenticationEntryPoint(((request, response, authException) -> {
+                            response.sendRedirect("/oauth2/authorization/google");
+                        })))
+                .oauth2Login(oauth2 -> oauth2.loginPage("/oauth2/authorization")
                         .authorizationEndpoint(config -> config.baseUri("/oauth2/authorization"))
                         .redirectionEndpoint(config -> config.baseUri("/oauth2/callback/*"))
                         .successHandler((request, response, authentication) -> {
@@ -97,20 +97,27 @@ public class Configuration {
                                 String redirectUrl = "";
                                 if ("google".equals(registrationId)) {
                                     DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-                                    log.info(((OAuth2User) authentication.getPrincipal()).getAttributes().toString());
+                                    UUID postOauth2Code = UUID.randomUUID();
+                                    log.info(((OAuth2User) authentication.getPrincipal())
+                                            .getAttributes()
+                                            .toString());
                                     email = user.getAttribute("email");
                                     avatarUri = user.getAttribute("picture");
-                                    redirectUrl = String.format("/oauth2/userInfo?provider=%s&email=%s&avatar=%s", registrationId, email, avatarUri);
+                                    redirectUrl = String.format(
+                                            "/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
+                                            registrationId, email, avatarUri);
                                 } else if ("facebook".equals(registrationId)) {
                                     OAuth2User user = (OAuth2User) authentication.getPrincipal();
-                                    log.info(((OAuth2User) authentication.getPrincipal()).getAttributes().toString());
+                                    log.info(((OAuth2User) authentication.getPrincipal())
+                                            .getAttributes()
+                                            .toString());
                                     avatarUri = (String) user.getAttribute("picture");
                                     email = (String) user.getAttribute("email");
-                                    redirectUrl = String.format("/oauth2/userInfo?provider=%s&email=%s&avatar=%s", registrationId, email, avatarUri);
+                                    redirectUrl = String.format(
+                                            "/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
+                                            registrationId, email, avatarUri);
                                 }
                                 response.sendRedirect(redirectUrl);
-
-
                             } catch (Exception e) {
                                 log.error("OAuth2 success handler error", e);
                                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -120,13 +127,9 @@ public class Configuration {
                             log.error("OAuth2 login failed: {}", exception.getMessage());
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("{\"error\": \"OAuth2 login failed\"}");
-                        })
-                )
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/home")
-                        .failureUrl("/login")
-                )
+                        }))
+                .formLogin(formLogin ->
+                        formLogin.loginPage("/login").defaultSuccessUrl("/home").failureUrl("/login"))
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }

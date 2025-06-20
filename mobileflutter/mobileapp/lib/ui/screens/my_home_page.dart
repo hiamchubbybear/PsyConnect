@@ -44,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
-
     return Scaffold(
       extendBody: true,
       body: TabBarView(

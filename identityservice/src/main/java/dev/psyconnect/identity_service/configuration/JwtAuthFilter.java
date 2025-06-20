@@ -9,8 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -23,7 +21,6 @@ import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
 import dev.psyconnect.identity_service.interfaces.IUserAccountService;
 import dev.psyconnect.identity_service.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Component
 @Slf4j
@@ -72,6 +69,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
-
-
 }

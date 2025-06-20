@@ -21,4 +21,5 @@ public class Token {
     private Timestamp issuedAt;
     private Timestamp expires;
     private boolean revoked;
+    private String provider;
 }

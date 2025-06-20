@@ -38,9 +38,8 @@ public class AuthenticationController {
         return new ApiResponse<>(authenticationService.logout(introspectRequest));
     }
 
-    // For access token validate
-    @PostMapping("internal/valid/{token}")
-    public Boolean introspectRequest(@PathVariable String token) throws ParseException, JOSEException {
-        return (authenticationService.isTokenValid(token));
+    @PostMapping("/internal/valid")
+    public Boolean introspectRequest(@RequestBody String token) {
+        return authenticationService.isTokenValid(token);
     }
 }

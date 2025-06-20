@@ -59,7 +59,8 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     @Transactional
     @Cacheable(key = "#request.accountId", value = "account")
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request, Provider provider) {
-        String encodedPassword = null;
+        log.info("Oauth2 Session code trước khi lưu vào db ");
+        String encodedPassword = null, session = "";
         if (userAccountRepository.existsByUsername(request.getUsername())) {
             throw new CustomExceptionHandler(ErrorCode.USERNAME_ALREADY_EXISTS);
         }
@@ -69,8 +70,10 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         }
         if (provider != Provider.ORDINARY) {
             request.setUsername(request.getEmail());
+            session = request.getOauth2Session();
         } else {
             encodedPassword = PasswordEncodingService.encoder(request.getPassword());
+
         }
 
         String activationCode = generateActivationCode();
@@ -78,7 +81,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
         UUID profileId = UUID.randomUUID();
-
+        log.info("Oauth2 Session code trước khi lưu vào db 1 1  {}" ,session );
         Account account = Account.builder()
                 .username(request.getUsername())
                 .isActivated(false)
@@ -88,6 +91,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .password(encodedPassword)
                 .isActivated((provider != Provider.ORDINARY))
                 .role(roles)
+                .session(session)
                 .token(activateToken)
                 .profileId(profileId)
                 .build();
@@ -100,7 +104,9 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         profileRequest.setRole(request.getRole());
         try {
             var profileResponse = profileGRPCClient.createProfile(profileRequest);
-            if (!profileResponse.getProfileId().equals(savedAccount.getProfileId().toString())) {
+            if (!profileResponse
+                    .getProfileId()
+                    .equals(savedAccount.getProfileId().toString())) {
                 throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
             }
         } catch (Exception e) {
@@ -110,21 +116,20 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     "Create account",
                     e.getMessage(),
                     Map.of("error", e.getMessage()),
-                    LogLevel.ERROR
-            ));
+                    LogLevel.ERROR));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
 
         String fullName = request.getFirstName() + " " + request.getLastName();
         if (provider == Provider.ORDINARY) {
-            kafkaService.send(NOTIFICATION_CREATE_TOPIC,
+            kafkaService.send(
+                    NOTIFICATION_CREATE_TOPIC,
                     CreateAccountNotificationRequest.builder()
                             .code(activationCode)
                             .username(request.getUsername())
                             .email(savedAccount.getEmail())
                             .fullname(fullName)
                             .build());
-
         }
         kafkaService.sendLog(buildLog(
                 "identity-service",
@@ -132,8 +137,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 "Create account",
                 "Success",
                 Map.of("fullname", fullName, "email", savedAccount.getEmail()),
-                LogLevel.LOG
-        ));
+                LogLevel.LOG));
 
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
@@ -142,7 +146,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .role(roles)
                 .build();
     }
-
 
     @Transactional
     @CachePut(key = "#request.accountId", value = "account")
@@ -361,10 +364,12 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .username(requestActivationAccount.getUsername())
                 .build();
         kafkaService.send((NOTIFICATION_CREATE_TOPIC), req);
-        sendNotification(ActivateAccountNotificationRequest.builder()
-                .username(requestActivationAccount.getUsername())
-                .email(requestActivationAccount.getEmail())
-                .build(), Provider.ORDINARY);
+        sendNotification(
+                ActivateAccountNotificationRequest.builder()
+                        .username(requestActivationAccount.getUsername())
+                        .email(requestActivationAccount.getEmail())
+                        .build(),
+                Provider.ORDINARY);
         kafkaService.sendLog(buildLog(
                 "identity-service",
                 requestActivationAccount.getUsername(),
@@ -401,12 +406,14 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
             throw new CustomExceptionHandler(ErrorCode.NULL_EXCEPTION);
         }
 
-        Token token = tokenRepository.findById(username).orElse(
-                Token.builder()
+        Token token = tokenRepository
+                .findById(username)
+                .orElse(Token.builder()
                         .username(username)
                         .issuedAt(Timestamp.from(Instant.now()))
-                        .revoked(false).build()
-        );
+                        .provider(provider.toString())
+                        .revoked(false)
+                        .build());
 
         token.setToken(activationCode);
         token.setRevoked(false);
@@ -414,5 +421,4 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
         return tokenRepository.save(token);
     }
-
 }

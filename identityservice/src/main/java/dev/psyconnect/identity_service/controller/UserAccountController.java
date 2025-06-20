@@ -1,12 +1,12 @@
 package dev.psyconnect.identity_service.controller;
 
-import dev.psyconnect.identity_service.enumeration.Provider;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
 import dev.psyconnect.identity_service.dto.request.*;
 import dev.psyconnect.identity_service.dto.response.ActivateAccountResponse;
 import dev.psyconnect.identity_service.dto.response.UserAccountCreationResponse;
+import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.kafka.producer.KafkaService;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;

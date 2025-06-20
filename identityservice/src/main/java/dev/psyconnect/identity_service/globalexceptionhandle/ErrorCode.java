@@ -15,13 +15,17 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(104, "Resource not found", HttpStatus.NOT_FOUND),
     ROLE_NOT_FOUND(105, "Role does not exist or cannot be found", HttpStatus.NOT_FOUND),
     ACCOUNT_INACTIVE(304, "Account is inactive or doesn't exists", HttpStatus.NOT_FOUND),
+
     // ALREADY EXISTS - 409
     EMAIL_ALREADY_EXISTS(201, "Email already exists", HttpStatus.CONFLICT),
+
     USERNAME_ALREADY_EXISTS(202, "Username already exists", HttpStatus.CONFLICT),
 
     // INVALID REQUEST - 401
     USERNAME_INVALID(301, "Username must be between 4 and 20 characters", HttpStatus.BAD_REQUEST),
+    EXPIRED_SESSION(305, "Session token is not match or expired", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(302, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
+
     TOKEN_INVALID(303, "Token is used or has expired", HttpStatus.BAD_REQUEST),
 
     // NOT MATCH - 404
@@ -40,10 +44,12 @@ public enum ErrorCode {
     PRODUCT_ALREADY_IN_CART(602, "Product already added to cart", HttpStatus.NOT_ACCEPTABLE),
 
     ACCOUNT_NOT_MATCH(603, "Account does not match the system", HttpStatus.NOT_ACCEPTABLE),
+
     ACTIVATED(604, "Account already active", HttpStatus.CONFLICT),
 
     // SERVER ERROR - 500
     SERVER_INTERNAL_ERROR(701, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
+
     SEND_FAILED(702, "Notification failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // GENERAL EXCEPTIONS - 500
@@ -53,8 +59,11 @@ public enum ErrorCode {
 
     // NULL INPUT - 410
     NULL_EXCEPTION(901, "Your input data is null", HttpStatus.GONE),
+
     JSON_MAPPING_ERROR(902, "Json mapping error", HttpStatus.NOT_EXTENDED),
+
     KAFKA_SERVER_ERROR(703, "Kafka error", HttpStatus.INTERNAL_SERVER_ERROR),
+
     JSON_PROCESSING_ERROR(903, "Json process error", HttpStatus.NOT_EXTENDED);
 
     private final int code;

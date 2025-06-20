@@ -1,5 +1,8 @@
 package dev.psyconnect.identity_service.service;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -8,11 +11,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import dev.psyconnect.identity_service.model.CustomOAuth2User;
-
-import java.util.Collections;
-import java.util.Map;
 
 @Service
 public class CustomerOauth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -32,7 +30,9 @@ public class CustomerOauth2UserService implements OAuth2UserService<OAuth2UserRe
             firstName = (String) attributes.get("given_name");
             lastName = (String) attributes.get("family_name");
         } else if ("facebook".equals(registrationId)) {
-            picture = ((Map<String, Object>) ((Map<String, Object>) attributes.get("picture")).get("data")).get("url").toString();
+            picture = ((Map<String, Object>) ((Map<String, Object>) attributes.get("picture")).get("data"))
+                    .get("url")
+                    .toString();
             String name = (String) attributes.get("name");
             firstName = name.split(" ")[0];
             lastName = name.contains(" ") ? name.substring(name.indexOf(" ") + 1) : "";
@@ -44,9 +44,7 @@ public class CustomerOauth2UserService implements OAuth2UserService<OAuth2UserRe
                         "picture", picture,
                         "firstName", firstName,
                         "lastName", lastName,
-                        "provider", registrationId
-                ),
-                "email"
-        );
+                        "provider", registrationId),
+                "email");
     }
 }

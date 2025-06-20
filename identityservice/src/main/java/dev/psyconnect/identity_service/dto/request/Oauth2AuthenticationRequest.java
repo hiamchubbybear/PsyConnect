@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GoogleAuthenticationRequest {
+public class Oauth2AuthenticationRequest {
     private String email;
+    private String sessionToken;
 }
