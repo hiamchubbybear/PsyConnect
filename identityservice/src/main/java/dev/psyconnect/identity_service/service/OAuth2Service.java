@@ -47,7 +47,7 @@ public class OAuth2Service {
     public AuthenticationResponse processOAuth2PreLogin(
             String email, String avatarUri, Authentication authentication, String loginProvider) {
         String generatedOauth2Code = "";
-        log.info("Generated  code post create account {}", generatedOauth2Code);
+
         if (!userAccountRepository.existsByEmail(email)) {
 
 
@@ -68,8 +68,9 @@ public class OAuth2Service {
                 lastName = user.getAttribute("lastName");
                 generatedOauth2Code = generateActivationSessionCode();
                 provider = Provider.FACEBOOK;
+                // Bc of validate of hash 
+                avatarUri = "";
             }
-            log.info("Code gen ra sau khi taọ tài khoản bằng oauth2 {}", generatedOauth2Code);
             try {
                 Account existingUser = null;
                 Set<RoleEntity> clientRoles = roleRepository.findAllByRoleId("Client");

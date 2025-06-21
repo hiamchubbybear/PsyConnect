@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
-        height: 102,
+        height: 100,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
@@ -146,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage>
             color: color,
             size: 23,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(label, style: quickSand12Font),
         ],
       ),

@@ -10,9 +10,9 @@ import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/screens/consultation_profile_page.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:PsyConnect/ui/screens/setting_page.dart';
+import 'package:PsyConnect/validate/validate.dart' ;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -92,8 +92,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
       setState(() {
         userProfile = user;
+        print("User data $userProfile");
       });
-    } catch (e, stacktrace) {
+    } catch (e) {
       ToastService.showToast(
         context: context,
         message: "Your current session is expired. Please login again! $e",
@@ -153,12 +154,22 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               GestureDetector(
                 child: CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(userProfile
-                          .getAvatarUri.isNotEmpty
-                      ? userProfile.getAvatarUri
-                      : 'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg'),
-                ),
+                    radius: 50,
+                    backgroundColor: Colors.grey,
+                    child: FutureBuilder<bool>(
+                      future: checkImageExists(userProfile.getAvatarUri),
+                      builder: (context, snapshot) {
+                        String imageUrl = snapshot.hasData &&
+                                snapshot.data == true
+                            ? userProfile.getAvatarUri
+                            : 'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg';
+
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage(imageUrl),
+                        );
+                      },
+                    )),
                 onTap: () => handleOnProfile(context),
               ),
               const SizedBox(height: 10),

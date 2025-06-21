@@ -6,8 +6,10 @@ import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/user_profile.dart';
 import 'package:PsyConnect/services/profile_service/mood.dart';
 import 'package:PsyConnect/services/profile_service/profile.dart';
+import 'package:PsyConnect/ui/screens/profile_page.dart';
 import 'package:PsyConnect/ui/widgets/posts/mood.dart';
 import 'package:PsyConnect/ui/widgets/posts/post.dart';
+import 'package:PsyConnect/validate/validate.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
@@ -35,7 +37,7 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
   }
 
   void _onLoading() async {
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 100));
     if (mounted)
       setState(() {
         _onMoodCreated();
@@ -53,12 +55,7 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
     moodFuture = (() async {
       final moods = await moodService.getProfileWithMood(context: context);
       final user = await ProfileService().getUserProfile();
-
       final hasSelfMood = moods.any((m) => m.profileId == user.getProfileId);
-      for (var toElement in moods) {
-        print("Tên người dùng: ${toElement.fullName}");
-      }
-
       if (!hasSelfMood) {
         moods.insert(
           0,
@@ -75,10 +72,8 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
           ),
         );
       }
-
       return moods;
     })();
-
     userProfile = ProfileService().getUserProfile();
   }
 
@@ -205,30 +200,33 @@ class StoriesWidget extends StatelessWidget {
                   clipBehavior: Clip.none,
                   children: [
                     Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: secondaryColor, width: 3),
-                      ),
-                      child: ClipOval(
-                        child: Image.network(
-                          (mood.avatarUri.isEmpty) ? "https://i.pinimg.com/736x/8e/4c/d1/8e4cd15170685b5cef2ae84488a491b9.jpg":mood.avatarUri ,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error),
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          },
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: secondaryColor, width: 3),
                         ),
-                      ),
-                    ),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey,
+                          child: FutureBuilder<bool>(
+                              future:
+                                  checkImageExists(mood.avatarUri),
+                              builder: (context, snapshot) {
+                                String imageUrl = snapshot.hasData &&
+                                        snapshot.data == true
+                                    ? mood.avatarUri
+                                    : 'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg';
+                                return CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: NetworkImage(imageUrl),
+                                );
+                              }),
+                        )),
                     if (mood.moodDescription.trim().isNotEmpty)
                       Positioned(
                         bottom: 45,
-                        right: -10,
+                      right: -10,
                         child:
                             MoodNoteBubbleWithSmoke(text: mood.moodDescription),
                       ),
@@ -284,10 +282,10 @@ class _CreateMoodWidgetState extends State<CreateMoodWidget> {
         height: 20,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: themeProvider.isDarkMode ?Colors.green[300] : Colors.white,
+          color: themeProvider.isDarkMode ? Colors.green[300] : Colors.white,
           border: Border.all(color: Colors.white, width: 2),
         ),
-        child:  Icon(
+        child: Icon(
           Icons.add,
           size: 14,
           color: themeProvider.isDarkMode ? Colors.white : Colors.black,
@@ -332,7 +330,7 @@ void showPostDialog(BuildContext context, VoidCallback? onMoodCreated) {
                           onChanged: (String? value) {
                             setState(() {
                               selectedItem = value!;
-                              visibility = value!;
+                              visibility = value;
                             });
                           },
                         ),
