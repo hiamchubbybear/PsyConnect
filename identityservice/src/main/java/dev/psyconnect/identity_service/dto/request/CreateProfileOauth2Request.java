@@ -1,6 +1,6 @@
 package dev.psyconnect.identity_service.dto.request;
 
-import dev.psyconnect.identity_service.configuration.ValidateLoginType;
+import dev.psyconnect.identity_service.configuration.ValidateProviderType;
 import lombok.*;
 
 @Getter
@@ -15,7 +15,7 @@ public class CreateProfileOauth2Request {
     String lastName;
     String email;
 
-    @ValidateLoginType
+    @ValidateProviderType
     String creationType;
 
     String avatarUri;

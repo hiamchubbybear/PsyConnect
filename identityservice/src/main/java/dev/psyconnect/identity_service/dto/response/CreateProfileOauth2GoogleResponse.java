@@ -2,7 +2,7 @@ package dev.psyconnect.identity_service.dto.response;
 
 import java.util.Set;
 
-import dev.psyconnect.identity_service.configuration.ValidateLoginType;
+import dev.psyconnect.identity_service.configuration.ValidateProviderType;
 import dev.psyconnect.identity_service.model.RoleEntity;
 import lombok.*;
 
@@ -16,7 +16,7 @@ public class CreateProfileOauth2GoogleResponse {
     Boolean status;
     Set<RoleEntity> roles;
 
-    @ValidateLoginType
+    @ValidateProviderType
     String creationType;
 
     String avatarUri;

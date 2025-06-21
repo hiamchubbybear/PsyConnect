@@ -68,7 +68,7 @@ public class OAuth2Service {
                 lastName = user.getAttribute("lastName");
                 generatedOauth2Code = generateActivationSessionCode();
                 provider = Provider.FACEBOOK;
-                // Bc of validate of hash 
+                // Bc of validate of hash
                 avatarUri = "";
             }
             try {
@@ -111,17 +111,16 @@ public class OAuth2Service {
                 .build();
     }
 
-    public AuthenticationResponse processOAuth2Login(Oauth2AuthenticationRequest request, String provider) {
+    public AuthenticationResponse processOAuth2Login(Oauth2AuthenticationRequest request, String platform) {
         String token = request.getSessionToken();
         if (token == null || token.isEmpty()) {
             throw new CustomExceptionHandler(ErrorCode.EXPIRED_SESSION);
         }
-        return authenticationService.generateOAuth2LoginToken(request, provider);
+        return authenticationService.generateOAuth2LoginToken(request, request.getProvider(), platform);
     }
 
     public CreateProfileOauth2Request extractDataFromJson(Authentication authentication) {
         DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-        String email = user.getAttribute("email");
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
 
         OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(

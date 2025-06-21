@@ -9,11 +9,11 @@ import jakarta.validation.Constraint;
 
 import com.nimbusds.jose.Payload;
 
-@Constraint(validatedBy = LoginTypeValidator.class)
+@Constraint(validatedBy = ProviderTypeValidator.class)
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidateLoginType {
-    String message() default "Invalid Login Type : Only Contain  { GOOGLE , FACEBOOK , NORMAL }";
+public @interface ValidateProviderType {
+    String message() default "Invalid Login Type : Only Contain  { GOOGLE , FACEBOOK , NORMAL , APPLEID }";
 
     Class<?>[] groups() default {};
 

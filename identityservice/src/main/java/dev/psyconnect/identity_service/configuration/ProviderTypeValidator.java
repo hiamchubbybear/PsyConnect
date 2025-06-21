@@ -5,9 +5,9 @@ import java.util.List;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class LoginTypeValidator implements ConstraintValidator<ValidateLoginType, String> {
+public class ProviderTypeValidator implements ConstraintValidator<ValidateProviderType, String> {
 
-    private final List<String> allowedLoginTypes = List.of("GOOGLE", "FACEBOOK", "NORMAL", "MOBILE");
+    private final List<String> allowedLoginTypes = List.of("GOOGLE", "FACEBOOK", "NORMAL", "APPLEID");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {

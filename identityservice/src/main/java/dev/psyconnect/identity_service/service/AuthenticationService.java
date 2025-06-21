@@ -60,7 +60,7 @@ public class AuthenticationService {
         return new BCryptPasswordEncoder(10);
     }
 
-    public String generateToken(AuthenticationRequest authenticationRequest, String loginType) {
+    public String generateToken(AuthenticationRequest authenticationRequest, String provider , String platForm) {
         Account account = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
@@ -76,16 +76,18 @@ public class AuthenticationService {
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
-                loginType);
+                provider , platForm);
     }
 
-    public AuthenticationResponse generateOAuth2LoginToken(Oauth2AuthenticationRequest request, String loginType) {
+    public AuthenticationResponse generateOAuth2LoginToken(Oauth2AuthenticationRequest request, String provider , String platForm) {
         Account account = userAccountRepository
                 .findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.info("Found session token {}, ", account.getSession().toString());
         if (!request.getSessionToken().trim().equals(account.getSession().trim()))
             throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
+        if (!request.getProvider().toUpperCase().equals(account.getProvider().toString()))
+            throw new CustomExceptionHandler(ErrorCode.AUTHENTICATE_REQUIRED_DENY);
         String role = null;
         if (account.getRole() != null && !account.getRole().isEmpty()) {
             role = account.getRole().iterator().next().getName();
@@ -97,15 +99,17 @@ public class AuthenticationService {
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
-                loginType);
+                provider ,platForm );
+        int effectRow = userAccountRepository.updateSessionIdPostLogin(account.getEmail(), request.getSessionToken());
+        if (effectRow <= 0) throw new CustomExceptionHandler(ErrorCode.DELETE_SESSION_FAILED);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .isSuccessful(true)
                 .build();
     }
 
-    private String createJwtToken(String subject, String accountId, String profileId, String role, String loginType) {
-        long expiration = loginType.equalsIgnoreCase("mobile") ? TIME_EXPIRED * 2 * 24 * 30L : TIME_EXPIRED;
+    private String createJwtToken(String subject, String accountId, String profileId, String role, String provider , String platForm) {
+        long expiration = platForm.toLowerCase().equalsIgnoreCase("mobile") ? TIME_EXPIRED * 2 * 24 * 30L : TIME_EXPIRED;
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(subject)
@@ -114,9 +118,10 @@ public class AuthenticationService {
                 .jwtID(UUID.randomUUID().toString())
                 .issuer("PsyConnect Authentication Service")
                 .claim("scope", buildScope(role))
-                .claim("type", loginType)
+                .claim("type", provider)
                 .claim("accountId", accountId)
                 .claim("profileId", profileId)
+                .claim("platform" , platForm)
                 .build();
 
         JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS512), new Payload(claimsSet.toJSONObject()));
@@ -140,7 +145,8 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String loginType) {
+    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String provider, String clientPlatform  ) {
+
         var user = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
@@ -153,7 +159,7 @@ public class AuthenticationService {
         else {
             var response = AuthenticationResponse.builder()
                     .isSuccessful(true)
-                    .token(generateToken(authenticationRequest, loginType))
+                    .token(generateToken(authenticationRequest, provider,clientPlatform))
                     .build();
             log.debug("Token is {}", response.getToken());
             return response;

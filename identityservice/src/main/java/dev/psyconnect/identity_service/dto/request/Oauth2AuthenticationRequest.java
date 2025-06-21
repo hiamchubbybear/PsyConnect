@@ -10,4 +10,5 @@ import lombok.*;
 public class Oauth2AuthenticationRequest {
     private String email;
     private String sessionToken;
+    private String provider;
 }

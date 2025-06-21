@@ -92,9 +92,10 @@ class LoginService {
         SharedPreferencesProvider();
 
     try {
+      String platform = "MOBILE";
       final uri = Uri.parse(androidBaseUrl +
           "/auth/oauth2/callback/exchange-code"
-              "?code=$sessionCode&email=$email&provider=$provider");
+              "?code=$sessionCode&email=$email&provider=$provider&platform=$platform");
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
@@ -144,14 +145,18 @@ class LoginService {
       UserProfileProvider profileProvider) async {}
 }
 
-Future<http.Response> loginHandleIdentityService(String username,
-    String password, String loginType, BuildContext context) async {
+Future<http.Response> loginHandleIdentityService(
+    String username,
+    String password,
+    String loginType,
+    String platForm,
+    BuildContext context) async {
   try {
     Map<String, String> requestBody = {
       "username": username,
       "password": password,
     };
-    final parameter = {"loginType": "MOBILE"};
+    final parameter = {"loginType": "NORMAL", "platform ": "MOBILE"};
 
     Uri requestUri =
         Uri.parse(Platform.isIOS ? iosBaseUrl : loginUriAndroidString)

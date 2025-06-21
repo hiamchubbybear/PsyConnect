@@ -30,6 +30,7 @@ public enum ErrorCode {
 
     // NOT MATCH - 404
     UUID_NOT_MATCH(401, "UUID provided does not match any user", HttpStatus.NOT_FOUND),
+    AUTHENTICATE_REQUIRED_DENY(402, "Your Oauth2 method do not matches with account ignore ", HttpStatus.FORBIDDEN),
 
     // AUTHENTICATION FAILURE - 401
     USER_UNAUTHENTICATED(501, "User authentication failed", HttpStatus.UNAUTHORIZED),
@@ -37,6 +38,8 @@ public enum ErrorCode {
     UNAUTHORIZED(502, "You don't have permission to access this resource", HttpStatus.UNAUTHORIZED),
 
     ACTIVATION_FAILED(503, "Activation failed", HttpStatus.UNAUTHORIZED),
+
+    DELETE_SESSION_FAILED(504, "Failed to delete session toke", HttpStatus.BAD_REQUEST),
 
     // SYSTEM ERROR - 429 / 406
     RUNTIME_ERROR(601, "Runtime error", HttpStatus.INTERNAL_SERVER_ERROR),
