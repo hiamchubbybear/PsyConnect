@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static final String _baseUrl =
-      Platform.isAndroid ? androidBaseUrl : iosBaseUrl;
+  static final String _baseUrl = baseUrl;
 
   static Future<http.Response> post({
     required String endpoint,

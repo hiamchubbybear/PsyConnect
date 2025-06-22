@@ -2,15 +2,15 @@ import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final String androidBaseUrl = "http://localhost:8888";
-final String iosBaseUrl = "http://localhost:8888";
+final String baseUrl = "http://api.chessy.dev";
+final String iosBaseUrl = "http://api.chessy.dev";
 final String androidBaseUrlIdentityService =
-    "http://localhost:8888/identity/create";
+    "http://api.chessy.dev/identity/create";
 final String iosBaseUrlIdentityService =
-    "http://localhost:8888/identity/create";
-final String loginUriAndroidString = "http://localhost:8888/auth/login";
-final String loginUriIosString = "http://localhost:8888/auth/login";
-final String profileService = "http://localhost:8888";
+    "http://api.chessy.dev/identity/create";
+final String loginUriAndroidString = "http://api.chessy.dev/auth/login";
+final String loginUriIosString = "http://api.chessy.dev/auth/login";
+final String profileService = "http://api.chessy.dev";
 final Color warningError = Colors.red.shade200;
 const Color blackColor = Colors.black;
 const Color whiteColor = Colors.white;

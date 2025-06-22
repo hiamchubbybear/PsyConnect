@@ -273,7 +273,7 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () => _handleOnLoginButton(
           username: nameController.text,
           password: passwordController.text,
-          loginType: "NORMAL",
+          provider: "NORMAL",
           context: context,
           tokenProvider: tokenProvider,
           userProfileProvider: userProfileProvider,
@@ -413,12 +413,14 @@ class _LoginPageState extends State<LoginPage> {
   _handleOnLoginButton({
     required String username,
     required String password,
-    required String loginType,
+    required String provider,
     required BuildContext context,
     required AuthTokenProvider tokenProvider,
     required UserProfileProvider userProfileProvider,
   }) {
-    loginService.loginHandle(username, password, loginType, context, loginType,
+    String platform = "MOBILE";
+    print("handler on press login");
+    loginService.loginHandle(username, password, provider, context, platform,
         tokenProvider, userProfileProvider);
   }
 }

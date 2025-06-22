@@ -18,6 +18,9 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=16032004
+      - GF_SERVER_ROOT_URL=https://admin.chessy.dev
+      - GF_SERVER_SERVE_FROM_SUB_PATH=false
+
     volumes:
       - grafana-storage:/var/lib/grafana
 
