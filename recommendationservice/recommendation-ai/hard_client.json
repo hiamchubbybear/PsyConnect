@@ -1,0 +1,25 @@
+{
+  "profile_id": "C_HARD",
+  "address": "Hue",
+  "languages": [
+    "Japanese"
+  ],
+  "issue_detail": "career crisis",
+  "consultation_modes": [
+    "offline"
+  ],
+  "range_price": 300000,
+  "availability": [
+    "Evening_Weekend"
+  ],
+  "preferred_therapist_gender": "female",
+  "experience_level": "senior",
+  "specialization": [
+    "career",
+    "marriage"
+  ],
+  "urgency_level": "high",
+  "session_duration": 90,
+  "preferred_therapist_language": "Japanese",
+  "is_flexible_with_schedule": false
+}

@@ -1,0 +1,27 @@
+{
+  "profile_id": "C999",
+  "address": "Hanoi",
+  "languages": [
+    "Vietnamese",
+    "English"
+  ],
+  "issue_detail": "stress",
+  "consultation_modes": [
+    "online"
+  ],
+  "range_price": 500000,
+  "availability": [
+    "Morning_Weekday",
+    "Afternoon_Weekday"
+  ],
+  "preferred_therapist_gender": null,
+  "experience_level": "mid",
+  "specialization": [
+    "stress",
+    "anxiety"
+  ],
+  "urgency_level": "medium",
+  "session_duration": 60,
+  "preferred_therapist_language": "Vietnamese",
+  "is_flexible_with_schedule": true
+}
