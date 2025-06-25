@@ -18,7 +18,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dev.psyconnect.identity_service.configuration.CallRestApi;
-import dev.psyconnect.identity_service.dto.request.*;
+import dev.psyconnect.identity_service.dto.request.CreateProfileOauth2Request;
+import dev.psyconnect.identity_service.dto.request.Oauth2AuthenticationRequest;
+import dev.psyconnect.identity_service.dto.request.UserAccountCreationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
 import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
@@ -48,7 +50,6 @@ public class OAuth2Service {
         String generatedOauth2Code = "";
 
         if (!userAccountRepository.existsByEmail(email)) {
-
             CreateProfileOauth2Request createProfileOauth2Request = null;
             String firstName = "", lastName = "", dob = "", gender = "";
             Provider provider = null;
@@ -66,7 +67,6 @@ public class OAuth2Service {
                 lastName = user.getAttribute("lastName");
                 generatedOauth2Code = generateActivationSessionCode();
                 provider = Provider.FACEBOOK;
-                // Bc of validate of hash
                 avatarUri = "";
             }
             try {
@@ -102,6 +102,11 @@ public class OAuth2Service {
             }
         }
         generatedOauth2Code = userAccountRepository.findByEmail(email).get().getSession();
+        String newReplaceSession = generateActivationSessionCode();
+        if (generatedOauth2Code.isBlank()) {
+            userAccountRepository.updateSessionIdPostLogin(email, "", newReplaceSession);
+            generatedOauth2Code = newReplaceSession;
+        }
         log.info("Generated code pre create account {}", generatedOauth2Code);
         return AuthenticationResponse.builder()
                 .token(generatedOauth2Code)

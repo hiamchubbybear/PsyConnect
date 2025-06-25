@@ -1,7 +1,5 @@
 package dev.psyconnect.identity_service.configuration;
 
-import java.util.UUID;
-
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -104,7 +102,6 @@ public class Configuration {
                                 String redirectUrl = "";
                                 if ("google".equals(registrationId)) {
                                     DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-                                    UUID postOauth2Code = UUID.randomUUID();
                                     log.info(((OAuth2User) authentication.getPrincipal())
                                             .getAttributes()
                                             .toString());
