@@ -2,7 +2,6 @@ package dev.psyconnect.identity_service.service;
 
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,6 @@ public class OAuth2Service {
         String generatedOauth2Code = "";
 
         if (!userAccountRepository.existsByEmail(email)) {
-
 
             CreateProfileOauth2Request createProfileOauth2Request = null;
             String firstName = "", lastName = "", dob = "", gender = "";

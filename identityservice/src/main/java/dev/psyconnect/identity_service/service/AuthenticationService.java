@@ -60,7 +60,7 @@ public class AuthenticationService {
         return new BCryptPasswordEncoder(10);
     }
 
-    public String generateToken(AuthenticationRequest authenticationRequest, String provider , String platForm) {
+    public String generateToken(AuthenticationRequest authenticationRequest, String provider, String platForm) {
         Account account = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
@@ -76,10 +76,12 @@ public class AuthenticationService {
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
-                provider , platForm);
+                provider,
+                platForm);
     }
 
-    public AuthenticationResponse generateOAuth2LoginToken(Oauth2AuthenticationRequest request, String provider , String platForm) {
+    public AuthenticationResponse generateOAuth2LoginToken(
+            Oauth2AuthenticationRequest request, String provider, String platForm) {
         Account account = userAccountRepository
                 .findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
@@ -99,7 +101,8 @@ public class AuthenticationService {
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
-                provider ,platForm );
+                provider,
+                platForm);
         int effectRow = userAccountRepository.updateSessionIdPostLogin(account.getEmail(), request.getSessionToken());
         if (effectRow <= 0) throw new CustomExceptionHandler(ErrorCode.DELETE_SESSION_FAILED);
         return AuthenticationResponse.builder()
@@ -108,8 +111,10 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String createJwtToken(String subject, String accountId, String profileId, String role, String provider , String platForm) {
-        long expiration = platForm.toLowerCase().equalsIgnoreCase("mobile") ? TIME_EXPIRED * 2 * 24 * 30L : TIME_EXPIRED;
+    private String createJwtToken(
+            String subject, String accountId, String profileId, String role, String provider, String platForm) {
+        long expiration =
+                platForm.toLowerCase().equalsIgnoreCase("mobile") ? TIME_EXPIRED * 2 * 24 * 30L : TIME_EXPIRED;
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(subject)
@@ -121,7 +126,7 @@ public class AuthenticationService {
                 .claim("type", provider)
                 .claim("accountId", accountId)
                 .claim("profileId", profileId)
-                .claim("platform" , platForm)
+                .claim("platform", platForm)
                 .build();
 
         JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS512), new Payload(claimsSet.toJSONObject()));
@@ -145,7 +150,8 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String provider, String clientPlatform  ) {
+    public AuthenticationResponse authenticate(
+            AuthenticationRequest authenticationRequest, String provider, String clientPlatform) {
 
         var user = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
@@ -159,7 +165,7 @@ public class AuthenticationService {
         else {
             var response = AuthenticationResponse.builder()
                     .isSuccessful(true)
-                    .token(generateToken(authenticationRequest, provider,clientPlatform))
+                    .token(generateToken(authenticationRequest, provider, clientPlatform))
                     .build();
             log.debug("Token is {}", response.getToken());
             return response;

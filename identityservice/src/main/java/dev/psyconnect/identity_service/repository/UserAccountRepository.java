@@ -38,8 +38,8 @@ public interface UserAccountRepository extends JpaRepository<Account, UUID> {
     boolean isActiveByEmail(String email);
 
     @Query("""
-            UPDATE Account m SET m.session = ""  WHERE m.email = :email and m.session=:session
-               """)
+			UPDATE Account m SET m.session = ""  WHERE m.email = :email and m.session=:session
+			""")
     @Transactional
     @Modifying
     int updateSessionIdPostLogin(@Param("email") String email, @Param("session") String session);

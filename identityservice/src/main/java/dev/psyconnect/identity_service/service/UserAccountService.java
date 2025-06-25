@@ -73,7 +73,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
             session = request.getOauth2Session();
         } else {
             encodedPassword = PasswordEncodingService.encoder(request.getPassword());
-
         }
 
         String activationCode = generateActivationCode();
@@ -81,7 +80,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
         UUID profileId = UUID.randomUUID();
-        log.info("Oauth2 Session code trước khi lưu vào db 1 1  {}" ,session );
+        log.info("Oauth2 Session code trước khi lưu vào db 1 1  {}", session);
         Account account = Account.builder()
                 .username(request.getUsername())
                 .isActivated(false)
@@ -180,7 +179,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
-                .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
+                        .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         if (!userObject.getToken().getToken().equals(deleteAccountRequest.getToken()))
             throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);

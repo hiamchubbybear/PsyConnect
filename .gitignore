@@ -51,6 +51,9 @@ go/pkg/
 *.env
 
 # Spring Boot config files
+
+application.properties
+application.yml
 application-dev.properties
 application-dev.yml
 application-test.properties

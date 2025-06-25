@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -39,12 +40,18 @@ public class Configuration {
     OAuth2Service oAuth2Service;
     JwtAuthFilter authFilter;
     UserAccountService userAccountService;
+    private final String oauth2RedirectBase;
 
     @Autowired
-    public Configuration(OAuth2Service oAuth2Service, JwtAuthFilter authFilter, UserAccountService userAccountService) {
+    public Configuration(
+            OAuth2Service oAuth2Service,
+            JwtAuthFilter authFilter,
+            UserAccountService userAccountService,
+            @Value("${app.oauth2.redirect-base}") String oauth2RedirectBase) {
         this.oAuth2Service = oAuth2Service;
         this.authFilter = authFilter;
         this.userAccountService = userAccountService;
+        this.oauth2RedirectBase = oauth2RedirectBase;
     }
 
     @Bean
@@ -104,8 +111,8 @@ public class Configuration {
                                     email = user.getAttribute("email");
                                     avatarUri = user.getAttribute("picture");
                                     redirectUrl = String.format(
-                                            "/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
-                                            registrationId, email, avatarUri);
+                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
+                                            oauth2RedirectBase, registrationId, email, avatarUri);
                                 } else if ("facebook".equals(registrationId)) {
                                     OAuth2User user = (OAuth2User) authentication.getPrincipal();
                                     log.info(((OAuth2User) authentication.getPrincipal())
@@ -114,8 +121,8 @@ public class Configuration {
                                     avatarUri = (String) user.getAttribute("picture");
                                     email = (String) user.getAttribute("email");
                                     redirectUrl = String.format(
-                                            "/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
-                                            registrationId, email, avatarUri);
+                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
+                                            oauth2RedirectBase, registrationId, email, avatarUri);
                                 }
                                 response.sendRedirect(redirectUrl);
                             } catch (Exception e) {

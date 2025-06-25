@@ -30,4 +30,4 @@ scrape_configs:
           level:
           service:
           userId:
-          action
+          action:

@@ -43,6 +43,7 @@ public class Account {
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     Set<RoleEntity> role;
+
     @Column(name = "session", columnDefinition = "VARCHAR(255)")
     String session;
 

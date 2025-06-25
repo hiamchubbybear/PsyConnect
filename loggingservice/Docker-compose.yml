@@ -22,7 +22,8 @@ services:
       - GF_SERVER_SERVE_FROM_SUB_PATH=false
 
     volumes:
-      - grafana-storage:/var/lib/grafana
+      - /home/chessy/grafana/config/grafana.ini:/etc/grafana/grafana.ini
 
 volumes:
   grafana-storage:
+

@@ -26,7 +26,9 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ApiResponse<AuthenticationResponse> loginRequest(
-            @RequestBody AuthenticationRequest authenticationRequest, @RequestParam("platform")  String platform,@ValidateProviderType @RequestParam String provider) {
+            @RequestBody AuthenticationRequest authenticationRequest,
+            @RequestParam("platform") String platform,
+            @ValidateProviderType @RequestParam String provider) {
         return new ApiResponse<>(authenticationService.authenticate(authenticationRequest, provider, platform));
     }
 
