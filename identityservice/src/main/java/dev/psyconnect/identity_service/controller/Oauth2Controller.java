@@ -1,7 +1,11 @@
 package dev.psyconnect.identity_service.controller;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
+import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
+import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -35,48 +39,58 @@ public class Oauth2Controller {
             Authentication authentication,
             HttpServletResponse response)
             throws IOException {
+
         var res = oAuth2Service.processOAuth2PreLogin(email, avatar, authentication, provider);
-        String accessToken = res.getToken();
-        System.out.println("DEBUG - email: " + email + ", avatarUri: " + avatar);
+
         if (res.isSuccessful()) {
-            String deepLinkUrl = String.format(
-                    "psyconnect://oauth2/callback/code?code=%s&email=%s&provider=%s",
-                    // URLEncoder.encode(accessToken, StandardCharsets.UTF_8),
-                    // URLEncoder.encode(email, StandardCharsets.UTF_8),
-                    // URLEncoder.encode(provider, StandardCharsets.UTF_8)
-                    accessToken, email, provider);
-            String redirectHtml = String.format(
-                    """
-					<!DOCTYPE html>
-					<html>
-					<head>
-						<title>Redirecting to PsyConnect...</title>
-						<meta charset="UTF-8">
-					</head>
-					<body>
-						<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-							<h2>Login Successful!</h2>
-							<p>Redirecting you back to PsyConnect app...</p>
-							<p>If you're not redirected automatically, <a href="%s">click here</a></p>
-						</div>
-						<script>
+            String accessToken = res.getToken();
 
-							window.location.href = '%s';
-							setTimeout(function() {
-								window.close();
-							}, 3000);
-						</script>
-					</body>
-					</html>
-					""",
-                    deepLinkUrl, deepLinkUrl);
+            if (accessToken != null && !accessToken.isBlank()
+                    && email != null && !email.isBlank()
+                    && provider != null && !provider.isBlank()) {
 
-            response.setContentType("text/html; charset=UTF-8");
-            response.getWriter().write(redirectHtml);
+                String deepLinkUrl = String.format(
+                        "psyconnect://oauth2/callback/code?code=%s&email=%s&provider=%s",
+                        URLEncoder.encode(accessToken, StandardCharsets.UTF_8),
+                        URLEncoder.encode(email, StandardCharsets.UTF_8),
+                        URLEncoder.encode(provider, StandardCharsets.UTF_8)
+                );
+
+                String redirectHtml = String.format(
+                        """
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <title>Redirecting to PsyConnect...</title>
+                                    <meta charset="UTF-8">
+                                </head>
+                                <body>
+                                    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+                                        <h2>Login Successful!</h2>
+                                        <p>Redirecting you back to PsyConnect app...</p>
+                                        <p>If you're not redirected automatically, <a href="%s">click here</a></p>
+                                    </div>
+                                    <script>
+                                        window.location.href = '%s';
+                                        setTimeout(function() {
+                                            window.close();
+                                        }, 3000);
+                                    </script>
+                                </body>
+                                </html>
+                                """, deepLinkUrl, deepLinkUrl
+                );
+
+                response.setContentType("text/html; charset=UTF-8");
+                response.getWriter().write(redirectHtml);
+            } else {
+                throw new CustomExceptionHandler(ErrorCode.NULL_EXCEPTION);
+            }
         } else {
             response.sendRedirect("/oauth2/callback/error");
         }
     }
+
 
     @GetMapping("/oauth2/callback/error")
     public ApiResponse<Boolean> oAuth2CallBackFailed() {
