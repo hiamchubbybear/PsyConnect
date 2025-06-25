@@ -53,7 +53,7 @@ class LoginService {
       final String? code = uri.queryParameters['code'];
       final String? email = uri.queryParameters['email'];
       final String? provider = uri.queryParameters['provider'];
-
+      print("Queried Session code $code");
       if (code != null && email != null && provider != null) {
         loginHandleWithSessionCode(
           sessionCode: code,
