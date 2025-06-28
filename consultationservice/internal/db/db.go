@@ -69,6 +69,10 @@ func GetSessionCollection() *mongo.Collection {
 	client := InitDB()
 	return client.Database(dbName).Collection("sessions")
 }
+func GetSwipedCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("swipes")
+}
 func CloseDB() {
 	if mongoClient != nil {
 		if err := mongoClient.Disconnect(context.TODO()); err != nil {

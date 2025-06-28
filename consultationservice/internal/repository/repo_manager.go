@@ -42,7 +42,10 @@ func NewRepositoryManager(env *bootstrap.Env) *RepositoryManager {
 	if sessionRepo == nil {
 		log.Fatal("sessionRepo is nil")
 	}
-
+	swipesRepo := NewSwipeRepository(clientRepo,therapistRepo ,sessionRepo, db.GetSwipedCollection())
+	if swipesRepo != nil {
+		log.Fatalf("swipesRepo is nil")
+	}
 	matchingRepo := NewMatchingRepository(clientRepo, grpcProfile, therapistRepo, sessionRepo)
 	if matchingRepo == nil {
 		log.Fatal("matchingRepo is nil")
