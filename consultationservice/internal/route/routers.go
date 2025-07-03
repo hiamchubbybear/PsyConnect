@@ -10,7 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler, therapistHandler *handlers.TherapistHandler, matchingHandler *handlers.MatchHandler, sessionHandler *handlers.SessionHandler) {
+func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler,
+	therapistHandler *handlers.TherapistHandler,
+	matchingHandler *handlers.MatchHandler,
+	sessionHandler *handlers.SessionHandler,
+	swipeHandler *handlers.SwipeHandler) {
 	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 	router := gin.Default()
 
@@ -36,6 +40,7 @@ func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler, thera
 		clientGroup.GET("/", clientHandler.GetClientHandler)
 		clientGroup.POST("/", clientHandler.PostClientHandler)
 		clientGroup.PUT("/", clientHandler.PutClientHandler)
+		clientGroup.POST("/recommend", swipeHandler.TriggerUpdate)
 	}
 
 	publicGroup := router.Group("/consultation/therapist/match")

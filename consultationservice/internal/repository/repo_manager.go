@@ -9,6 +9,7 @@ import (
 )
 
 type RepositoryManager struct {
+	SwipeRepo     *SwipeRepository
 	ClientRepo    *ClientRepository
 	TherapistRepo *TherapistRepository
 	MatchingRepo  *MatchingRepository
@@ -42,8 +43,8 @@ func NewRepositoryManager(env *bootstrap.Env) *RepositoryManager {
 	if sessionRepo == nil {
 		log.Fatal("sessionRepo is nil")
 	}
-	swipesRepo := NewSwipeRepository(clientRepo,therapistRepo ,sessionRepo, db.GetSwipedCollection())
-	if swipesRepo != nil {
+	swipesRepo := NewSwipeRepository(clientRepo, therapistRepo, sessionRepo, db.GetSwipedCollection())
+	if swipesRepo == nil {
 		log.Fatalf("swipesRepo is nil")
 	}
 	matchingRepo := NewMatchingRepository(clientRepo, grpcProfile, therapistRepo, sessionRepo)
@@ -60,5 +61,6 @@ func NewRepositoryManager(env *bootstrap.Env) *RepositoryManager {
 		SessionRepo:   sessionRepo,
 		GrpcProfile:   grpcProfile,
 		Kafka:         kafkaProducer,
+		SwipeRepo:     swipesRepo,
 	}
 }

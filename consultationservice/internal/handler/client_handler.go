@@ -5,6 +5,7 @@ import (
 	"consultationservice/internal/model"
 	"consultationservice/internal/repository"
 	"consultationservice/pkg/apiresponse"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,9 +21,8 @@ func NewClientHandler(env *bootstrap.Env, repoManager *repository.RepositoryMana
 	}
 }
 
-// External Rest API -- GET /consultation/client
 func (h *ClientHandler) GetClientHandler(c *gin.Context) {
-profileID := c.GetHeader("X-Profile-Id")
+	profileID := c.GetHeader("X-Profile-Id")
 	if profileID == "" {
 		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
 		return
@@ -36,7 +36,6 @@ profileID := c.GetHeader("X-Profile-Id")
 	return
 }
 
-// External Rest API -- POST /consultation/client
 func (h *ClientHandler) PostClientHandler(c *gin.Context) {
 	var client model.Client
 	profileId := c.GetHeader("X-Profile-Id")
@@ -48,7 +47,7 @@ func (h *ClientHandler) PostClientHandler(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 400, "Invalid input")
 		return
 	}
-	// check profile exists using gRPC
+
 	res, err := h.RepoManager.GrpcProfile.CheckProfileExists(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
@@ -68,7 +67,6 @@ func (h *ClientHandler) PostClientHandler(c *gin.Context) {
 	return
 }
 
-// External Rest API -- PUT /consultation/client
 func (h *ClientHandler) PutClientHandler(c *gin.Context) {
 	var client *model.Client
 	profileId := c.GetHeader("X-Profile-Id")
@@ -84,6 +82,11 @@ func (h *ClientHandler) PutClientHandler(c *gin.Context) {
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return
+	}
+	_, error := h.RepoManager.SwipeRepo.FilterAllTherapist(profileId)
+	if error != nil {
+		log.Printf(err.Error())
+		apiresponse.ErrorHandler(c, 400, "Failed to update therapist recommendataion field")
 	}
 	apiresponse.NewApiResponse(c, res)
 	return

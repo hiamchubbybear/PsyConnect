@@ -45,7 +45,7 @@ def generate_client():
     }
 hard_client = {
     "profile_id": "C_HARD",
-    "address": "Hue",  
+    "address": "Hue",
     "languages": ["Japanese"],
     "issue_detail": "career crisis",
     "consultation_modes": ["offline"],
@@ -63,8 +63,6 @@ hard_client = {
 with open("hard_client.json", "w") as f:
     json.dump(hard_client, f, indent=2, ensure_ascii=False)
 
-print("✅ Đã tạo client C_HARD có yêu cầu rất khó match.")
-
 if __name__ == "__main__":
     n = 1000
     therapists = [generate_random_therapist(i) for i in range(n)]
@@ -75,5 +73,3 @@ if __name__ == "__main__":
         json.dump(therapists, f, indent=2, ensure_ascii=False)
     with open("generated_client.json", "w") as f:
         json.dump(client, f, indent=2, ensure_ascii=False)
-
-    print(f"✅ Đã tạo {n} therapists và 1 client để test.")

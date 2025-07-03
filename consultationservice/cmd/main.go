@@ -18,8 +18,8 @@ func main() {
 	therapistHandler := handlers.NewTherapistHandler(env, repomanager)
 	clientHandler := handlers.NewClientHandler(env, repomanager)
 	matchHandler := handlers.NewMatchHandler(env, repomanager)
-
+	swipeHandler := handlers.NewSwipeHandler(env, repomanager)
 	kafka.NewConsumer(env)
 	kafka.NewProducer(env)
-	route.RouterInit(env, clientHandler, therapistHandler, matchHandler, sessionHandler)
+	route.RouterInit(env, clientHandler, therapistHandler, matchHandler, sessionHandler, swipeHandler)
 }
