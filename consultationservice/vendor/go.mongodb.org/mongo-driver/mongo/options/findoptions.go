@@ -420,10 +420,6 @@ type FindOneOptions struct {
 	Sort interface{}
 }
 
-func (f *FindOneOptions) Decode(s *[]string) *FindOneOptions {
-	panic("unimplemented")
-}
-
 // FindOne creates a new FindOneOptions instance.
 func FindOne() *FindOneOptions {
 	return &FindOneOptions{}

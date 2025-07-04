@@ -112,7 +112,7 @@ func (h *TherapistHandler) ChangeTherapistProfileStatus(c *gin.Context) {
 		return
 	}
 
-	if object.CurrentSession != nil {
+	if object.CurrentSession != nil && len(object.CurrentSession) > 0 {
 		apiresponse.ErrorHandler(c, 400, "You cannot disable account, please complete all your current schedules")
 		return
 	}

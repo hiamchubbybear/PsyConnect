@@ -203,6 +203,9 @@ github.com/sourcegraph/conc
 github.com/sourcegraph/conc/internal/multierror
 github.com/sourcegraph/conc/iter
 github.com/sourcegraph/conc/panics
+# github.com/spaolacci/murmur3 v1.1.0
+## explicit
+github.com/spaolacci/murmur3
 # github.com/spf13/afero v1.12.0
 ## explicit; go 1.21
 github.com/spf13/afero
@@ -247,6 +250,12 @@ github.com/twitchyliquid64/golang-asm/unsafeheader
 # github.com/ugorji/go/codec v1.2.12
 ## explicit; go 1.11
 github.com/ugorji/go/codec
+# github.com/willf/bitset v1.1.11
+## explicit; go 1.14
+github.com/willf/bitset
+# github.com/willf/bloom v2.0.3+incompatible
+## explicit
+github.com/willf/bloom
 # github.com/xdg-go/pbkdf2 v1.0.0
 ## explicit; go 1.9
 github.com/xdg-go/pbkdf2
@@ -259,7 +268,7 @@ github.com/xdg-go/stringprep
 # github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78
 ## explicit; go 1.17
 github.com/youmark/pkcs8
-# go.mongodb.org/mongo-driver v1.17.3
+# go.mongodb.org/mongo-driver v1.17.4
 ## explicit; go 1.18
 go.mongodb.org/mongo-driver/bson
 go.mongodb.org/mongo-driver/bson/bsoncodec
@@ -310,53 +319,6 @@ go.mongodb.org/mongo-driver/x/mongo/driver/topology
 go.mongodb.org/mongo-driver/x/mongo/driver/wiremessage
 # go.mongodb.org/mongo-driver/v2 v2.1.0
 ## explicit; go 1.18
-go.mongodb.org/mongo-driver/v2/bson
-go.mongodb.org/mongo-driver/v2/event
-go.mongodb.org/mongo-driver/v2/internal/aws
-go.mongodb.org/mongo-driver/v2/internal/aws/awserr
-go.mongodb.org/mongo-driver/v2/internal/aws/credentials
-go.mongodb.org/mongo-driver/v2/internal/aws/signer/v4
-go.mongodb.org/mongo-driver/v2/internal/bsoncoreutil
-go.mongodb.org/mongo-driver/v2/internal/bsonutil
-go.mongodb.org/mongo-driver/v2/internal/codecutil
-go.mongodb.org/mongo-driver/v2/internal/credproviders
-go.mongodb.org/mongo-driver/v2/internal/csfle
-go.mongodb.org/mongo-driver/v2/internal/csot
-go.mongodb.org/mongo-driver/v2/internal/decimal128
-go.mongodb.org/mongo-driver/v2/internal/driverutil
-go.mongodb.org/mongo-driver/v2/internal/handshake
-go.mongodb.org/mongo-driver/v2/internal/httputil
-go.mongodb.org/mongo-driver/v2/internal/logger
-go.mongodb.org/mongo-driver/v2/internal/mongoutil
-go.mongodb.org/mongo-driver/v2/internal/ptrutil
-go.mongodb.org/mongo-driver/v2/internal/rand
-go.mongodb.org/mongo-driver/v2/internal/randutil
-go.mongodb.org/mongo-driver/v2/internal/serverselector
-go.mongodb.org/mongo-driver/v2/internal/uuid
-go.mongodb.org/mongo-driver/v2/mongo
-go.mongodb.org/mongo-driver/v2/mongo/address
-go.mongodb.org/mongo-driver/v2/mongo/options
-go.mongodb.org/mongo-driver/v2/mongo/readconcern
-go.mongodb.org/mongo-driver/v2/mongo/readpref
-go.mongodb.org/mongo-driver/v2/mongo/writeconcern
-go.mongodb.org/mongo-driver/v2/tag
-go.mongodb.org/mongo-driver/v2/version
-go.mongodb.org/mongo-driver/v2/x/bsonx/bsoncore
-go.mongodb.org/mongo-driver/v2/x/mongo/driver
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/auth
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/auth/creds
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/auth/internal/gssapi
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/connstring
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/description
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/dns
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/mnet
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/mongocrypt
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/mongocrypt/options
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/ocsp
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/operation
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/session
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/topology
-go.mongodb.org/mongo-driver/v2/x/mongo/driver/wiremessage
 # go.uber.org/atomic v1.9.0
 ## explicit; go 1.13
 go.uber.org/atomic

@@ -3,6 +3,7 @@ package model
 type ClientSwipes struct {
 	ClientId string           `json:"client_id,omitempty" bson:"client_id"`
 	Swipes   []TherapistSwipe `json:"swipes,omitempty" bson:"swipes"`
+	Swiped   []TherapistSwipe `json:"swiped,omitempty" bson:"swiped"`
 }
 
 type TherapistSwipe struct {
