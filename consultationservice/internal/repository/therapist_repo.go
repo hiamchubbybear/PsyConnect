@@ -50,12 +50,12 @@ func (r *TherapistRepository) FindTherapistMatchingProfile(therapistId string) (
 	return &data, nil
 }
 
-func (r *TherapistRepository) FindAllTherapistMatchingProfiles() ([]*model.Therapist, error) {
+func (r *TherapistRepository) FindAllTherapistMatchingProfiles() ([]model.Therapist, error) {
 	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, errors.New("Failed to find all therapist")
 	}
-	var results []*model.Therapist
+	var results []model.Therapist
 	err = cursor.All(context.Background(), &results)
 	if err != nil {
 		return nil, errors.New("Failed to decode therapist data")

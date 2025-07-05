@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics.pairwise import cosine_similarity
 import pandas as pd
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -74,19 +75,21 @@ def recommend():
         df["is_available"] = df["is_available"].fillna(False)
 
         swipes = []
+        now = datetime.utcnow().isoformat() + "Z"
+
 
         for _, row in df.iterrows():
             therapist_id = row["profile_id"]
-
-            
             if not row.get("is_available", True):
                 swipes.append({
+                    "client_id": client["profile_id"],
                     "therapist_id": therapist_id,
                     "points": 0.0,
-                    "reasons": ["Therapist not available"]
+                    "reasons": ["Therapist not available"],
+                    "status": "pending",
+                    "created_at": now
                 })
                 continue
-
 
             score = sum(row.get(k, 0.0) * w for k, w in weights.items()) * 100
 
@@ -99,18 +102,21 @@ def recommend():
                 reasons.append("Matched availability")
 
             swipes.append({
+                "client_id": client["profile_id"],
                 "therapist_id": therapist_id,
                 "points": round(score, 2),
-                "reasons": reasons
+                "reasons": reasons,
+                "status": "pending",
+                "created_at": now
             })
 
+        # Sắp xếp theo điểm cao nhất
         swipes.sort(key=lambda x: x["points"], reverse=True)
 
         result = {
-            "client_id": client["profile_id"],
+            "client_id": client["profile_id"],  # 🔧 Thêm dòng này để Go decode được
             "swipes": swipes
         }
-
         print(" Response:", result)
         return jsonify(result)
 

@@ -41,6 +41,8 @@ func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler,
 		clientGroup.POST("/", clientHandler.PostClientHandler)
 		clientGroup.PUT("/", clientHandler.PutClientHandler)
 		clientGroup.POST("/recommend", swipeHandler.TriggerUpdate)
+		clientGroup.GET("/recommend/top", swipeHandler.PopTop5)
+
 	}
 
 	publicGroup := router.Group("/consultation/therapist/match")

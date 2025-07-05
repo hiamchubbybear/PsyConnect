@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func RecommendationApi(data dto.FilterRawData) (*model.ClientSwipes, error) {
+func RecommendationApi(data dto.FilterRawData) ([]model.ClientSwipe, error) {
 	url := "http://127.0.0.1:5000/recommend"
 	jsonData, err := json.Marshal(data)
 	log.Printf(string(jsonData))
@@ -32,9 +32,12 @@ func RecommendationApi(data dto.FilterRawData) (*model.ClientSwipes, error) {
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("recommendation API error: %s", res.Status)
 	}
-	var user model.ClientSwipes
-	if err := json.NewDecoder(res.Body).Decode(&user); err != nil {
+	var response struct {
+		ClientId string              `json:"client_id"`
+		Swipes   []model.ClientSwipe `json:"swipes"`
+	}
+	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
-	return &user, nil
+	return response.Swipes, nil
 }

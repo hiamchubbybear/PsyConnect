@@ -30,98 +30,145 @@ func NewSwipeRepository(clientRepo *ClientRepository, therapistRepo *TherapistRe
 	}
 }
 
-func (r *SwipeRepository) FilterAllTherapist(clientId string) (*model.ClientSwipes, error) {
-	// B1: Tìm thông tin client
+func (r *SwipeRepository) InsertSwipes(clientId string, swipes []model.ClientSwipe) error {
+	ctx := context.Background()
+	if len(swipes) == 0 {
+		return nil
+	}
+	var docs []interface{}
+	for _, s := range swipes {
+		docs = append(docs, s)
+	}
+	_, err := r.swipeRepo.InsertMany(ctx, docs)
+	if err != nil {
+		log.Println("Failed to insert swipes:", err)
+		return errors.New("failed to insert swipes")
+	}
+	return nil
+}
+
+func (r *SwipeRepository) PopTop5Swipes(clientId string) ([]model.Therapist, error) {
+	ctx := context.Background()
+
+	cursor, err := r.swipeRepo.Find(ctx,
+		bson.M{"client_id": clientId, "status": "pending"},
+		optsFindTop5(),
+	)
+	if err != nil {
+		log.Println("Failed to find top 5 swipes:", err)
+		return nil, errors.New("failed to find swipes")
+	}
+
+	var swipes []model.ClientSwipe
+	if err := cursor.All(ctx, &swipes); err != nil {
+		return nil, err
+	}
+	if len(swipes) == 0 {
+		return nil, nil
+	}
+
+	for _, s := range swipes {
+		_, err := r.swipeRepo.UpdateOne(ctx,
+			bson.M{"client_id": s.ClientId, "therapist_id": s.TherapistId},
+			bson.M{"$set": bson.M{"status": "swiped"}},
+		)
+		if err != nil {
+			log.Println("Failed to update swipe to swiped for", s.ClientId, s.TherapistId, err)
+			return nil, errors.New("failed to update swipe status")
+		}
+	}
+
+	var therapistResponse []model.Therapist
+	for _, s := range swipes {
+		profile, err := r.therapistRepo.FindTherapistMatchingProfile(s.TherapistId)
+		if err != nil {
+			log.Printf("Failed to find therapist %s: %v", s.TherapistId, err)
+			continue
+		}
+		therapistResponse = append(therapistResponse, *profile)
+	}
+
+	return therapistResponse, nil
+}
+
+func (r *SwipeRepository) GetSwipedTherapistIds(clientId string) ([]string, error) {
+	ctx := context.Background()
+	cursor, err := r.swipeRepo.Find(ctx,
+		bson.M{"client_id": clientId, "status": "swiped"},
+		options.Find().SetProjection(bson.M{"therapist_id": 1}),
+	)
+	if err != nil {
+		log.Println("Failed to get swiped therapist ids:", err)
+		return nil, errors.New("failed to get swiped therapist ids")
+	}
+
+	var ids []string
+	for cursor.Next(ctx) {
+		var swipe model.ClientSwipe
+		if err := cursor.Decode(&swipe); err == nil {
+			ids = append(ids, swipe.TherapistId)
+		}
+	}
+	return ids, nil
+}
+
+func (r *SwipeRepository) FilterAllTherapist(clientId string) ([]model.ClientSwipe, error) {
+
 	client, err := r.clientRepo.FindClientMatchingProfile(clientId)
 	if err != nil {
 		log.Println("Failed to find client profile", err)
 		return nil, errors.New("failed to find client profile")
 	}
 
-	// B2: Tìm toàn bộ therapist matching
 	therapists, err := r.therapistRepo.FindAllTherapistMatchingProfiles()
 	if err != nil {
 		log.Println("Failed to find therapist profile", err)
 		return nil, errors.New("failed to find therapist profile")
 	}
 
-	// B3: Gộp data
 	raw, err := AppendDataIntoSwipe(client, therapists)
 	if err != nil {
 		log.Println("Failed to append swipe data", err)
 		return nil, errors.New("failed to append swipe data")
 	}
 
-	// B4: Gọi API gợi ý
-	response, err := external.RecommendationApi(raw)
+	swipes, err := external.RecommendationApi(raw)
 	if err != nil {
-		log.Println(err)
+		log.Println("Recommendation API error:", err)
 		return nil, errors.New("failed to fetch recommendation")
 	}
 
-	// B5: Tạo Bloom filter từ therapist đã swipe
-	existingSwipe := &model.ClientSwipes{}
-	_ = r.swipeRepo.FindOne(
-		context.Background(),
-		bson.D{{Key: "client_id", Value: clientId}},
-	).Decode(existingSwipe)
-
-	swipedTherapistIds := make([]string, 0)
-	for _, swipe := range existingSwipe.Swiped {
-		swipedTherapistIds = append(swipedTherapistIds, swipe.TherapistId)
+	swipedIds, err := r.GetSwipedTherapistIds(clientId)
+	if err != nil {
+		log.Println("Failed to get swiped therapist IDs", err)
+		return nil, errors.New("failed to get swiped therapist IDs")
 	}
 
-	// B6: Khởi tạo Bloom Filter và add therapist đã swipe
-	bf := bloom.NewWithEstimates(uint(len(swipedTherapistIds)), 0.001)
-	for _, id := range swipedTherapistIds {
+	bf := bloom.NewWithEstimates(uint(len(swipedIds)), 0.001)
+	for _, id := range swipedIds {
 		bf.Add([]byte(id))
 	}
 
-	// B7: Lọc danh sách therapist được recommend nếu đã swipe
-	var filteredSwipes []model.TherapistSwipe
-	for _, s := range response.Swipes {
+	var filtered []model.ClientSwipe
+	for _, s := range swipes {
 		if !bf.Test([]byte(s.TherapistId)) {
-			filteredSwipes = append(filteredSwipes, s)
+			filtered = append(filtered, s)
 		}
 	}
 
-	// Gán lại danh sách đã lọc
-	response.ClientId = clientId
-	response.Swipes = filteredSwipes
-	response.Swiped = swipedTherapistIdsToStruct(swipedTherapistIds) // preserve swiped
-
-	// B8: Lưu vào MongoDB
-	ok, err := r.SaveFetchedClient(response)
-	if ok {
-		return response, nil
-	}
-	return nil, err
-}
-
-func (r *SwipeRepository) SaveFetchedClient(swipesData *model.ClientSwipes) (bool, error) {
-	clientId := swipesData.ClientId
-	ctx := context.Background()
-
-	// Replace document by client_id
-	filter := bson.M{"client_id": clientId}
-	_, err := r.swipeRepo.ReplaceOne(
-		ctx,
-		filter,
-		swipesData,
-		options.Replace().SetUpsert(true),
-	)
+	err = r.InsertSwipes(clientId, filtered)
 	if err != nil {
-		log.Println("Failed to replace swipe data:", err)
-		return false, errors.New("failed to replace swipe data")
+		log.Println("Failed to save swipes", err)
+		return nil, err
 	}
-	return true, nil
+
+	return filtered, nil
 }
 
-// Gộp client và therapist thành DTO gọi recommendation API
-func AppendDataIntoSwipe(client *model.Client, therapist []*model.Therapist) (dto.FilterRawData, error) {
+func AppendDataIntoSwipe(client *model.Client, therapist []model.Therapist) (dto.FilterRawData, error) {
 	var therapists []model.Therapist
 	for _, t := range therapist {
-		therapists = append(therapists, *t)
+		therapists = append(therapists, t)
 	}
 	return dto.FilterRawData{
 		ClientRaw:    *client,
@@ -129,13 +176,6 @@ func AppendDataIntoSwipe(client *model.Client, therapist []*model.Therapist) (dt
 	}, nil
 }
 
-// Chuyển list therapistId thành []TherapistSwipe dummy để lưu field "swiped"
-func swipedTherapistIdsToStruct(ids []string) []model.TherapistSwipe {
-	var result []model.TherapistSwipe
-	for _, id := range ids {
-		result = append(result, model.TherapistSwipe{
-			TherapistId: id,
-		})
-	}
-	return result
+func optsFindTop5() *options.FindOptions {
+	return options.Find().SetSort(bson.M{"points": -1}).SetLimit(5)
 }
