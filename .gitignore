@@ -56,6 +56,34 @@ coverage/
 lib/generated_plugin_registrant.dart
 .fvm/flutter_sdk
 # pubspec.lock # (bỏ comment nếu là package thư viện)
+# C/C++ & CMake files (not used in pure Flutter projects)
+**/*.c
+**/*.cc
+**/*.cpp
+**/*.cxx
+**/*.h
+**/*.hh
+**/*.hpp
+**/*.hxx
+**/CMakeLists.txt
+**/CMakeCache.txt
+**/Makefile
+**/Makefile.*
+**/*.cmake
+**/build/
+
+# Native C/C++ build files
+**/*.[ch]    # .c, .h
+**/*.[ch]h   # .cc, .hh
+**/*.[ch]pp  # .cpp, .hpp
+**/*.[ch]xx  # .cxx, .hxx
+**/*.cmake
+**/CMakeLists.txt
+**/CMakeCache.txt
+**/Makefile
+**/Makefile.*
+**/build/
+
 
 # Android
 **/android/**/gradle-wrapper.jar
