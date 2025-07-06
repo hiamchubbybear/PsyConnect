@@ -21,12 +21,13 @@ structured and secure way.
 
 ### Therapist Management
 
-| Method | Endpoint                         | Description              |
-|--------|----------------------------------|--------------------------|
-| GET    | `/consultation/therapist`        | Get therapist info       |
-| POST   | `/consultation/therapist`        | Create therapist profile |
-| PUT    | `/consultation/therapist`        | Update therapist profile |
-| PUT    | `/consultation/therapist:status` | Change therapist status  |
+| Method | Endpoint                             | Description              |
+|--------|--------------------------------------|--------------------------|
+| GET    | `/consultation/therapist`            | Get therapist info       |
+| POST   | `/consultation/therapist`            | Create therapist profile |
+| PUT    | `/consultation/therapist`            | Update therapist profile |
+| POST   | `/consultation/therapist/match/response` | Respond to match request |
+| PUT    | `/consultation/therapist/status/{status}` | Change therapist status |
 
 ### Client Management
 
@@ -35,6 +36,23 @@ structured and secure way.
 | GET    | `/consultation/client` | Get client info       |
 | POST   | `/consultation/client` | Create client profile |
 | PUT    | `/consultation/client` | Update client profile |
+
+### Matching System
+
+| Method | Endpoint                           | Description                    |
+|--------|------------------------------------|--------------------------------|
+| GET    | `/consultation/therapist/match`    | Get all available therapists   |
+| POST   | `/consultation/therapist/match`    | Create match request           |
+
+### Session Management
+
+| Method | Endpoint                           | Description                    |
+|--------|------------------------------------|--------------------------------|
+| GET    | `/consultation/admin/session`      | Get all sessions (Admin only)  |
+| GET    | `/consultation/session/all`        | Get all sessions by user ID    |
+| POST   | `/consultation/session`            | Create new session             |
+| DELETE | `/consultation/session`            | Delete current session         |
+| GET    | `/consultation/session/{id}`       | Get session by ID              |
 
 ---
 

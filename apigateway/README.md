@@ -11,6 +11,34 @@ The **API Gateway Service** is responsible for routing requests to different mic
 - Request to [identity service](../identityservice[architecture pattern](..%2Fdocuments%2Farchitecture%20pattern)/Readme.md) do validate black listed token
 ## Auth Token Flow
 ![img.png](../documents/architectur pattern/img.png)
+## API Endpoints
+
+### Legal and Policy Pages
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/privacy-policy` | Serve privacy policy page |
+| GET | `/delete-data-page` | Serve data deletion request page |
+
+### Routed Services
+The API Gateway routes requests to the following microservices:
+
+#### Identity Service Routes
+- `/identity/**` - User account management
+- `/auth/**` - Authentication endpoints
+- `/oauth2/**` - OAuth2 authentication
+- `/account/**` - Account settings
+
+#### Profile Service Routes  
+- `/profile/**` - User profile management
+- `/mood/**` - Mood tracking
+- `/user-setting/**` - User settings
+
+#### Notification Service Routes
+- `/noti/**` - Email notifications
+
+#### Consultation Service Routes
+- `/consultation/**` - Therapist and client management, sessions
+
 ## Configuration
 
 ### Environment Variables
