@@ -16,10 +16,10 @@ type SessionRepository struct {
 	MongoDBCollection *mongo.Collection
 	clientRepo        *ClientRepository
 	therapistRepo     *TherapistRepository
-	matchingRepo      *MatchingRepository
+	matchingRepo      *MatchRepository
 }
 
-func NewSessionRepository(collection *mongo.Collection, clientRepo *ClientRepository, therapistRepo *TherapistRepository, matchingRepo *MatchingRepository) *SessionRepository {
+func NewSessionRepository(collection *mongo.Collection, clientRepo *ClientRepository, therapistRepo *TherapistRepository, matchingRepo *MatchRepository) *SessionRepository {
 	return &SessionRepository{
 		clientRepo:        clientRepo,
 		therapistRepo:     therapistRepo,
@@ -28,57 +28,70 @@ func NewSessionRepository(collection *mongo.Collection, clientRepo *ClientReposi
 	}
 }
 func (r *SessionRepository) CreateNewSession(session dto.SessionRequest) (interface{}, error) {
-	var (
-		clientId    = session.ClientID
-		therapistId = session.TherapistID
-	)
+	ctx := context.Background()
+	clientId := session.ClientID
+	therapistId := session.TherapistID
 
 	_, terr := r.therapistRepo.FindTherapistMatchingProfile(therapistId)
 	if terr != nil {
 		log.Printf("Failed to find therapist profile : %v", terr)
 		return nil, terr
 	}
-	log.Printf("Find client have client id %v", clientId)
-	client, cerr := r.clientRepo.FindClientMatchingProfile("c001")
-	if cerr != nil {
-		log.Printf("Failed to find client profile: %v", cerr)
-		return nil, cerr
-	}
-	if client == nil || client.ProfileId == "" {
+
+	client, cerr := r.clientRepo.FindClientMatchingProfile(clientId)
+	if cerr != nil || client == nil || client.ProfileId == "" {
 		log.Println("Client not found or invalid")
 		return nil, errors.New("cannot find client")
 	}
-	validTime, err := r.matchingRepo.CheckValidSessionTimeAndDays(session.SessionTime, clientId, therapistId)
-	if err != nil {
-		return nil, err
+
+	var clientDoc struct {
+		CurrentSession []string `bson:"current_session"`
 	}
-	if !validTime {
-		return nil, errors.New("Invalid time")
-	}
-	log.Printf("Session 1 ")
-	res, err := r.MongoDBCollection.InsertOne(context.Background(), session)
-	if err != nil {
-		return nil, err
+	if err := r.clientRepo.MongoDBCollection.FindOne(ctx, bson.M{"profile_id": clientId}).Decode(&clientDoc); err != nil {
+		return nil, errors.New("cannot find client sessions")
 	}
 
+	var therapistDoc struct {
+		CurrentSession []string `bson:"current_session"`
+	}
+	if err := r.therapistRepo.MongoDBCollection.FindOne(ctx, bson.M{"profile_id": therapistId}).Decode(&therapistDoc); err != nil {
+		return nil, errors.New("cannot find therapist sessions")
+	}
+
+	allSessionIDs := append(clientDoc.CurrentSession, therapistDoc.CurrentSession...)
+	var sessions []model.Session
+	if len(allSessionIDs) > 0 {
+		cursor, err := r.MongoDBCollection.Find(ctx, bson.M{"_id": bson.M{"$in": allSessionIDs}})
+		if err != nil {
+			return nil, errors.New("failed to find sessions")
+		}
+		if err := cursor.All(ctx, &sessions); err != nil {
+			return nil, errors.New("failed to decode sessions")
+		}
+	}
+
+	overlap, err := r.matchingRepo.CheckTimeOverlap(session.SessionTime.Day.String(), session.SessionTime.StartTime, session.SessionTime.EndTime, sessions)
+	if err != nil {
+		return nil, err
+	}
+	if overlap {
+		return nil, errors.New("session time overlaps with existing sessions")
+	}
+
+	res, err := r.MongoDBCollection.InsertOne(ctx, session)
+	if err != nil {
+		return nil, err
+	}
 	sessionID := res.InsertedID
-	log.Printf("Session %v", sessionID)
+
 	update := bson.D{{Key: "$push", Value: bson.D{{Key: "current_session", Value: sessionID}}}}
 
-	_, _ = r.clientRepo.MongoDBCollection.UpdateOne(
-		context.Background(),
-		bson.D{{Key: "profile_id", Value: clientId}},
-		update,
-	)
-
-	_, _ = r.therapistRepo.MongoDBCollection.UpdateOne(
-		context.Background(),
-		bson.D{{Key: "profile_id", Value: therapistId}},
-		update,
-	)
+	_, _ = r.clientRepo.MongoDBCollection.UpdateOne(ctx, bson.M{"profile_id": clientId}, update)
+	_, _ = r.therapistRepo.MongoDBCollection.UpdateOne(ctx, bson.M{"profile_id": therapistId}, update)
 
 	return res, nil
 }
+
 func (r *SessionRepository) DeleteCurrentSession(session dto.DeleteSessionRequest) (bool, error) {
 	ctx := context.Background()
 
@@ -169,6 +182,6 @@ func (r *SessionRepository) FindAllSessionByProfileId(profileId string, requeste
 	}
 	return &sessions, nil
 }
-func (s *SessionRepository) SetMatchingRepository(matchingRepo *MatchingRepository) {
+func (s *SessionRepository) SetMatchingRepository(matchingRepo *MatchRepository) {
 	s.matchingRepo = matchingRepo
 }

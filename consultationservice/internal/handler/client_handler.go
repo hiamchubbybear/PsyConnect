@@ -33,7 +33,6 @@ func (h *ClientHandler) GetClientHandler(c *gin.Context) {
 		return
 	}
 	apiresponse.NewApiResponse(c, res)
-	return
 }
 
 func (h *ClientHandler) PostClientHandler(c *gin.Context) {
@@ -64,7 +63,6 @@ func (h *ClientHandler) PostClientHandler(c *gin.Context) {
 		return
 	}
 	apiresponse.NewApiResponse(c, client)
-	return
 }
 
 func (h *ClientHandler) PutClientHandler(c *gin.Context) {
@@ -85,9 +83,8 @@ func (h *ClientHandler) PutClientHandler(c *gin.Context) {
 	}
 	_, error := h.RepoManager.SwipeRepo.FilterAllTherapist(profileId)
 	if error != nil {
-		log.Printf(err.Error())
+		log.Println(err)
 		apiresponse.ErrorHandler(c, 400, "Failed to update therapist recommendataion field")
 	}
 	apiresponse.NewApiResponse(c, res)
-	return
 }

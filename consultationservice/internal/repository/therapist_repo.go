@@ -25,18 +25,18 @@ func (r *TherapistRepository) CreateTherapistMatchingProfile(therapist *model.Th
 	err := r.MongoDBCollection.FindOne(context.Background(), filter).Decode(&existingTherapist)
 	if err == nil {
 		log.Println("Therapist already exists with profile_id:", therapist.ProfileId)
-		return nil, errors.New("Therapist with this profile already exists")
+		return nil, errors.New("therapist with this profile already exists")
 	}
 	if err != mongo.ErrNoDocuments {
 		log.Println("Error checking if therapist exists:", err)
-		return nil, errors.New("Failed to check if therapist exists")
+		return nil, errors.New("failed to check if therapist exists")
 	}
 	therapist.MatchedClients = []string{}
 	therapist.CurrentSession = []string{}
 	res, err := r.MongoDBCollection.InsertOne(context.Background(), therapist)
 	if err != nil {
 		log.Println("TherapistRepository CreateTherapistMatchingProfile err:", err)
-		return nil, errors.New("Failed to insert into therapist")
+		return nil, errors.New("failed to insert into therapist")
 	}
 	return res.InsertedID, nil
 }
@@ -53,12 +53,12 @@ func (r *TherapistRepository) FindTherapistMatchingProfile(therapistId string) (
 func (r *TherapistRepository) FindAllTherapistMatchingProfiles() ([]model.Therapist, error) {
 	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
 	if err != nil {
-		return nil, errors.New("Failed to find all therapist")
+		return nil, errors.New("failed to find all therapist")
 	}
 	var results []model.Therapist
 	err = cursor.All(context.Background(), &results)
 	if err != nil {
-		return nil, errors.New("Failed to decode therapist data")
+		return nil, errors.New("failed to decode therapist data")
 	}
 	return results, nil
 }
@@ -66,7 +66,7 @@ func (r *TherapistRepository) FindAllTherapistMatchingProfiles() ([]model.Therap
 func (r *TherapistRepository) DeleteMatchingProfile(profileId string) (int64, error) {
 	res, err := r.MongoDBCollection.DeleteOne(context.Background(), bson.D{{Key: "profile_id", Value: profileId}})
 	if err != nil {
-		return 0, errors.New("Failed to delete therapist")
+		return 0, errors.New("failed to delete therapist")
 	}
 	return res.DeletedCount, nil
 }
@@ -83,7 +83,7 @@ func (r *TherapistRepository) UpdateMatchingProfile(profileId string, therapist 
 		options.FindOneAndUpdate().SetReturnDocument(options.After),
 	).Decode(&result)
 	if err != nil {
-		return nil, errors.New("Failed to update therapist")
+		return nil, errors.New("failed to update therapist")
 	}
 	return result, nil
 }
@@ -96,7 +96,7 @@ func (r *TherapistRepository) DisableTherapistMatchingProfile(profileId string, 
 
 	res, err := r.MongoDBCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		return false, errors.New("Failed to update therapist availability")
+		return false, errors.New("failed to update therapist availability")
 	}
 	return res.MatchedCount > 0, nil
 }

@@ -10,11 +10,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler,
+func RouterInit(
+	env *bootstrap.Env,
+	clientHandler *handlers.ClientHandler,
 	therapistHandler *handlers.TherapistHandler,
 	matchingHandler *handlers.MatchHandler,
 	sessionHandler *handlers.SessionHandler,
-	swipeHandler *handlers.SwipeHandler) {
+	swipeHandler *handlers.SwipeHandler,
+) {
+
 	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 	router := gin.Default()
 
@@ -30,7 +34,8 @@ func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler,
 		therapistGroup.GET("/", therapistHandler.GetTherapistHandler)
 		therapistGroup.POST("/", therapistHandler.PostTherapistHandler)
 		therapistGroup.PUT("/", therapistHandler.PutTherapistHandler)
-		therapistGroup.POST("/match/response", matchingHandler.ResponseMatchingRequest)
+		//Deprecated : Reason : Scale -> Change last commit : 4fc7730
+		// therapistGroup.POST("/match/response", matchingHandler.ResponseMatchingRequest)
 		therapistGroup.PUT("/status/:status", therapistHandler.ChangeTherapistProfileStatus)
 	}
 
@@ -42,6 +47,7 @@ func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler,
 		clientGroup.PUT("/", clientHandler.PutClientHandler)
 		clientGroup.POST("/recommend", swipeHandler.TriggerUpdate)
 		clientGroup.GET("/recommend/top", swipeHandler.PopTop5)
+		clientGroup.POST("/match", matchingHandler.MatchRequest)
 
 	}
 
@@ -56,18 +62,15 @@ func RouterInit(env *bootstrap.Env, clientHandler *handlers.ClientHandler,
 	{
 		adminSessionGroup.GET("/", sessionHandler.GetAllSessions)
 	}
-	// Get role from header to define request
-	userPublicGroup := router.Group("/consultation/session")
-	userPublicGroup.Use(middleware.RoleRequire(""))
-	{
 
-		userPublicGroup.GET("/all", sessionHandler.GetAllSessionByID)
-	}
-	userPublicGroup = router.Group("/consultation/session")
+	userSessionGroup := router.Group("/consultation/session")
+	userSessionGroup.Use(middleware.RoleRequire(""))
 	{
-		userPublicGroup.POST("/", sessionHandler.CreateNewSessionHandler)
-		userPublicGroup.DELETE("/", sessionHandler.DeleteCurrentSessionHandler)
-		userPublicGroup.GET("/:id", sessionHandler.GetSessionByID)
+		userSessionGroup.GET("/all", sessionHandler.GetAllSessionByID)
+		userSessionGroup.POST("/", sessionHandler.CreateNewSessionHandler)
+		userSessionGroup.DELETE("/", sessionHandler.DeleteCurrentSessionHandler)
+		userSessionGroup.GET("/:id", sessionHandler.GetSessionByID)
 	}
+
 	router.Run(urI)
 }

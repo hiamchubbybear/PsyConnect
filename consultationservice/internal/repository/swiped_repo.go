@@ -29,7 +29,6 @@ func NewSwipeRepository(clientRepo *ClientRepository, therapistRepo *TherapistRe
 		swipeRepo:     swipeRepo,
 	}
 }
-
 func (r *SwipeRepository) InsertSwipes(clientId string, swipes []model.ClientSwipe) error {
 	ctx := context.Background()
 	if len(swipes) == 0 {
@@ -50,21 +49,28 @@ func (r *SwipeRepository) InsertSwipes(clientId string, swipes []model.ClientSwi
 func (r *SwipeRepository) PopTop5Swipes(clientId string) ([]model.Therapist, error) {
 	ctx := context.Background()
 
-	cursor, err := r.swipeRepo.Find(ctx,
-		bson.M{"client_id": clientId, "status": "pending"},
-		optsFindTop5(),
-	)
+	swipes, err := r.getTop5PendingSwipes(clientId)
 	if err != nil {
-		log.Println("Failed to find top 5 swipes:", err)
-		return nil, errors.New("failed to find swipes")
-	}
-
-	var swipes []model.ClientSwipe
-	if err := cursor.All(ctx, &swipes); err != nil {
 		return nil, err
 	}
+
 	if len(swipes) == 0 {
-		return nil, nil
+		log.Println("No pending swipes found, resetting and retrying...")
+
+		if err := r.UpdateAllPendingTherapistSwipeProfile(clientId); err != nil {
+			log.Println("Failed to reset swipe statuses:", err)
+			return nil, err
+		}
+
+		swipes, err = r.getTop5PendingSwipes(clientId)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(swipes) == 0 {
+			log.Println("No swipes found even after resetting.")
+			return nil, nil
+		}
 	}
 
 	for _, s := range swipes {
@@ -89,6 +95,47 @@ func (r *SwipeRepository) PopTop5Swipes(clientId string) ([]model.Therapist, err
 	}
 
 	return therapistResponse, nil
+}
+
+func (r *SwipeRepository) getTop5PendingSwipes(clientId string) ([]model.ClientSwipe, error) {
+	ctx := context.Background()
+
+	cursor, err := r.swipeRepo.Find(ctx,
+		bson.M{"client_id": clientId, "status": "pending"},
+		optsFindTop5(),
+	)
+	if err != nil {
+		log.Println("Failed to find top 5 swipes:", err)
+		return nil, errors.New("failed to find swipes")
+	}
+
+	var swipes []model.ClientSwipe
+	if err := cursor.All(ctx, &swipes); err != nil {
+		return nil, err
+	}
+	return swipes, nil
+}
+
+func (r *SwipeRepository) UpdateAllPendingTherapistSwipeProfile(clientId string) error {
+	ctx := context.Background()
+
+	if clientId == "" {
+		return errors.New("clientId is empty")
+	}
+
+	filter := bson.D{{Key: "client_id", Value: clientId}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "status", Value: "pending"}}}}
+
+	result, err := r.swipeRepo.UpdateMany(ctx, filter, update)
+	if err != nil {
+		log.Println("Failed to update therapist status:", err)
+		return err
+	}
+	if result.ModifiedCount == 0 {
+		log.Println("No swipe documents updated")
+	}
+
+	return nil
 }
 
 func (r *SwipeRepository) GetSwipedTherapistIds(clientId string) ([]string, error) {
