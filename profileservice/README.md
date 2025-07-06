@@ -22,18 +22,24 @@ The **Profile Service** is a core microservice in the PsyConnect platform, respo
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/profile/internal/user` | Create a new user profile (Internal use) |
-| POST | `/profile` | Update an existing user profile |
+| PUT | `/profile` | Update an existing user profile |
 | GET | `/profile` | Retrieve user profile details |
 | GET | `/profile/all` | Get paginated list of user profiles |
-| GET | `/profile/friends` | Retrieve user friends and their moods |
+
+### Social Features (Friends)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/profile/friend/request` | Send friend request |
+| POST | `/profile/friend/accept` | Accept friend request |
+| POST | `/profile/friend/unfriend` | Remove friend |
+| POST | `/profile/friend/undo` | Undo friend request |
+| DELETE | `/profile/friend/request` | Decline friend request |
 
 ### User Settings
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/user-setting/add` | Add new user settings |
 | GET | `/user-setting` | Retrieve user settings |
 | PUT | `/user-setting` | Update user settings |
-| DELETE | `/user-setting` | Delete user settings |
 | POST | `/user-setting/default` | Reset user settings to default |
 
 ### Activity Logs
@@ -50,6 +56,7 @@ The **Profile Service** is a core microservice in the PsyConnect platform, respo
 | GET | `/mood` | Get current mood status |
 | PUT | `/mood` | Update mood status |
 | DELETE | `/mood` | Delete mood status |
+| GET | `/mood/friends` | Get friends' mood status |
 
 ## Setup & Configuration
 

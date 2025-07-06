@@ -25,6 +25,7 @@ The **Identity Service** is responsible for user authentication, account managem
 |--------|----------|-------------|
 | POST | `/auth/login` | Authenticate user and generate JWT token |
 | POST | `/auth/introspect` | Logout user and invalidate token |
+| POST | `/auth/internal/valid` | Internal token validation |
 
 ### User Account Management
 | Method | Endpoint | Description |
@@ -40,13 +41,14 @@ The **Identity Service** is responsible for user authentication, account managem
 | POST | `/account/delete` | Request account deletion |
 | DELETE | `/account/delete` | Confirm account deletion |
 | GET | `/account/info` | Retrieve account details |
-| PUT | `/account/update/{uuid}` | Update account information |
+| GET | `/account/all/{page}` | Get all accounts (Admin only) |
+| PUT | `/account/update` | Update account information |
 
 ### OAuth2 Authentication
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/oauth2/userInfo/google` | Authenticate user via Google OAuth2 |
-| GET | `/oauth2/callback/google` | Google OAuth2 callback handler |
+| GET | `/oauth2/userInfo` | Authenticate user via OAuth2 providers |
+| GET | `/oauth2/callback/error` | OAuth2 error callback handler |
 
 ## Setup & Configuration
 ### Environment Variables
