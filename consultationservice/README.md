@@ -3,8 +3,7 @@
 ## Overview
 
 The **Consultative Service** manages therapist and client information related to mental health consultations in the
-PsyConnect ecosystem. It is designed to handle profile registration, updates, and therapist status management in a
-structured and secure way.
+PsyConnect ecosystem. It is designed to handle profile registration, updates, therapist status management, matching, and session management.
 
 ---
 
@@ -12,8 +11,9 @@ structured and secure way.
 
 - Register, update, and retrieve **Therapist** and **Client** profiles
 - Change therapist status (e.g., available/unavailable)
-- JWT-based authorization
-- Works with API Gateway and user identity headers
+- Manage consultation sessions
+- Handle therapist-client matching
+- Recommendation system for therapist matching
 
 ---
 
@@ -21,82 +21,46 @@ structured and secure way.
 
 ### Therapist Management
 
-| Method | Endpoint                             | Description              |
-|--------|--------------------------------------|--------------------------|
-| GET    | `/consultation/therapist`            | Get therapist info       |
-| POST   | `/consultation/therapist`            | Create therapist profile |
-| PUT    | `/consultation/therapist`            | Update therapist profile |
-| POST   | `/consultation/therapist/match/response` | Respond to match request |
-| PUT    | `/consultation/therapist/status/{status}` | Change therapist status |
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| GET    | `/consultation/therapist`               | Get therapist info               | role.therapist:permission   | X-Roles          |
+| POST   | `/consultation/therapist`               | Create therapist profile         | role.therapist:permission   | X-Roles          |
+| PUT    | `/consultation/therapist`               | Update therapist profile         | role.therapist:permission   | X-Roles          |
+| PUT    | `/consultation/therapist/status/{status}` | Change therapist status          | role.therapist:permission   | X-Roles          |
 
 ### Client Management
 
-| Method | Endpoint               | Description           |
-|--------|------------------------|-----------------------|
-| GET    | `/consultation/client` | Get client info       |
-| POST   | `/consultation/client` | Create client profile |
-| PUT    | `/consultation/client` | Update client profile |
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| GET    | `/consultation/client`                  | Get client info                  | role.client:permission      | X-Roles          |
+| POST   | `/consultation/client`                  | Create client profile            | role.client:permission      | X-Roles          |
+| PUT    | `/consultation/client`                  | Update client profile            | role.client:permission      | X-Roles          |
+| POST   | `/consultation/client/recommend`        | Trigger recommendation update    | role.client:permission      | X-Roles          |
+| GET    | `/consultation/client/recommend/top`    | Get top 5 recommended therapists | role.client:permission      | X-Roles          |
+| POST   | `/consultation/client/match`            | Request therapist match          | role.client:permission      | X-Roles          |
 
-### Matching System
+### Matching Management
 
-| Method | Endpoint                           | Description                    |
-|--------|------------------------------------|--------------------------------|
-| GET    | `/consultation/therapist/match`    | Get all available therapists   |
-| POST   | `/consultation/therapist/match`    | Create match request           |
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| GET    | `/consultation/therapist/match`         | Get all matching therapists      | None                        | None             |
+| POST   | `/consultation/therapist/match`         | Request therapist match          | None                        | None             |
 
 ### Session Management
 
-| Method | Endpoint                           | Description                    |
-|--------|------------------------------------|--------------------------------|
-| GET    | `/consultation/admin/session`      | Get all sessions (Admin only)  |
-| GET    | `/consultation/session/all`        | Get all sessions by user ID    |
-| POST   | `/consultation/session`            | Create new session             |
-| DELETE | `/consultation/session`            | Delete current session         |
-| GET    | `/consultation/session/{id}`       | Get session by ID              |
-
----
-
-## Authentication
-
-All endpoints require a valid **JWT token** in the request header.
-
-### Request Format
-
-**Header:**
-
-```http
-Authorization: Bearer <your_jwt_token>
-```
-
-### Example with `curl`
-
-```bash
-curl -X GET http://localhost:8080/consultation/therapist \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
-  -H "Content-Type: application/json"
-```
-
-### Example with Postman
-
-1. Go to the **Authorization** tab.
-2. Select **Bearer Token**.
-3. Paste your token in the token field.
-
-### Headers Added by API Gateway
-
-| Header         | Description                   |
-|----------------|-------------------------------|
-| `X-User-Id`    | User account ID               |
-| `X-Profile-Id` | Profile ID linked to the user |
-
-These headers are automatically extracted and injected from the JWT by the API Gateway.
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| GET    | `/consultation/admin/session`           | Get all sessions (admin)         | role.admin:permission       | X-Roles          |
+| GET    | `/consultation/session/all`             | Get all sessions by user ID      | None (any authenticated)    | X-Roles          |
+| POST   | `/consultation/session`                 | Create new session               | None (any authenticated)    | X-Roles          |
+| DELETE | `/consultation/session`                 | Delete current session           | None (any authenticated)    | X-Roles          |
+| GET    | `/consultation/session/{id}`            | Get session by ID                | None (any authenticated)    | X-Roles          |
 
 ---
 
 ## Technology Stack
 
 - **Language**: Go (Gin Framework)
-- **Auth**: JWT via API Gateway
 - **Communication**: RESTful API
 - **Runtime**: Docker / Kubernetes-ready
 
@@ -107,8 +71,8 @@ These headers are automatically extracted and injected from the JWT by the API G
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/hiamchubbybear/PsyConnect.git
-cd PsyConnect/consultative-service
+git clone https://github.com/hiamchubbybear/psyconnect-dev.git
+cd psyconnect-dev/consultationservice
 ```
 
 2. Build & Run the service:
@@ -133,7 +97,7 @@ For questions or contributions, contact:
 
 - **Project Lead**: Chessy
 - **Email**: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)
-- **GitHub**: [PsyConnect](https://github.com/hiamchubbybear/PsyConnect)
+- **GitHub**: [PsyConnect](https://github.com/hiamchubbybear/psyconnect-dev)
 
 ---
 

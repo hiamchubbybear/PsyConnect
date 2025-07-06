@@ -70,6 +70,5 @@ func (c *Consumer) ConsumeMessages() error {
 		}
 		fmt.Println(string(buffer[:n]))
 	}
-
 	return nil
 }

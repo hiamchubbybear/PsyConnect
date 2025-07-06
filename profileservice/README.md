@@ -14,49 +14,38 @@ The **Profile Service** is a core microservice in the PsyConnect platform, respo
 - **Backend**: Java Spring Boot
 - **Database**: Neo4j, MySQL
 - **API Communication**: RESTful APIs
-- **Security**: OAuth 2.0, JWT Authentication
 
 ## API Endpoints
 
 ### User Profile Management
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/profile/internal/user` | Create a new user profile (Internal use) |
-| PUT | `/profile` | Update an existing user profile |
-| GET | `/profile` | Retrieve user profile details |
-| GET | `/profile/all` | Get paginated list of user profiles |
 
-### Social Features (Friends)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/profile/friend/request` | Send friend request |
-| POST | `/profile/friend/accept` | Accept friend request |
-| POST | `/profile/friend/unfriend` | Remove friend |
-| POST | `/profile/friend/undo` | Undo friend request |
-| DELETE | `/profile/friend/request` | Decline friend request |
+| Method | Endpoint                | Description                      | Role Required               | Headers Required |
+|--------|-------------------------|----------------------------------|-----------------------------|------------------|
+| POST   | `/profile/internal/user`| Create a new user profile (Internal) | None                     | None             |
+| PUT    | `/profile`              | Update an existing user profile  | None                        | X-Profile-Id     |
+| GET    | `/profile`              | Retrieve user profile details    | None                        | X-Profile-Id     |
+| GET    | `/profile/all`          | Get paginated list of user profiles | role.admin:permission    | X-Roles          |
+| GET    | `/profile/friends`      | Retrieve user friends and their moods | None                   | X-Profile-Id     |
 
 ### User Settings
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/user-setting` | Retrieve user settings |
-| PUT | `/user-setting` | Update user settings |
-| POST | `/user-setting/default` | Reset user settings to default |
 
-### Activity Logs
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/activity-log/{profileId}` | Add an activity log |
-| GET | `/activity-log/{profileId}` | Retrieve activity logs for a profile |
-| DELETE | `/activity-log/{logId}` | Delete an activity log |
+| Method | Endpoint                | Description                      | Role Required               | Headers Required |
+|--------|-------------------------|----------------------------------|-----------------------------|------------------|
+| GET    | `/user-setting`         | Retrieve user settings           | None                        | X-Profile-Id     |
+| PUT    | `/user-setting`         | Update user settings             | None                        | X-Profile-Id     |
+| POST   | `/user-setting/default` | Reset user settings to default   | None                        | X-Profile-Id     |
 
 ### Mood Management
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/mood/add` | Add mood status |
-| GET | `/mood` | Get current mood status |
-| PUT | `/mood` | Update mood status |
-| DELETE | `/mood` | Delete mood status |
-| GET | `/mood/friends` | Get friends' mood status |
+
+| Method | Endpoint                | Description                      | Role Required               | Headers Required |
+|--------|-------------------------|----------------------------------|-----------------------------|------------------|
+| POST   | `/mood/add`             | Add mood status                  | None                        | X-Profile-Id     |
+| GET    | `/mood`                 | Get current mood status          | None                        | X-Profile-Id     |
+| PUT    | `/mood`                 | Update mood status               | None                        | X-Profile-Id     |
+| DELETE | `/mood`                 | Delete mood status               | None                        | X-Profile-Id     |
+| GET    | `/mood/friends`         | Get friends' mood statuses       | None                        | X-Profile-Id     |
+
+---
 
 ## Setup & Configuration
 
@@ -73,8 +62,8 @@ SERVER_PORT={your-variable}
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/hiamchubbybear/PsyConnect.git
-   cd PsyConnect/profile-service
+   git clone https://github.com/hiamchubbybear/psyconnect-dev.git
+   cd psyconnect-dev/profileservice
    ```
 2. Build and run the service:
    ```bash
@@ -94,5 +83,4 @@ We welcome contributions! Please follow the standard Git workflow:
 For inquiries, reach out via:
 - **Project Lead**: Chessy
 - **Email**: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)
-- **GitHub Repository**: [PsyConnect](https://github.com/hiamchubbybear/PsyConnect)
-
+- **GitHub Repository**: [psyconnect-dev](https://github.com/hiamchubbybear/psyconnect-dev)

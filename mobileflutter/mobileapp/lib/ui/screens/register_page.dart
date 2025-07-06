@@ -63,7 +63,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
     setState(() => isLoading = true);
 
     final result = await AddressAutoComplete().getAddressSuggestions(query);
-    print(result);
     setState(() {
       suggestions = result;
       isLoading = false;
@@ -731,7 +730,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                 );
               },
               onSuggestionSelected: (suggestion) {
-                print('Selected suggestion: $suggestion'); // Debug
                 addressController.text = suggestion;
               },
               suggestionsBoxDecoration: SuggestionsBoxDecoration(

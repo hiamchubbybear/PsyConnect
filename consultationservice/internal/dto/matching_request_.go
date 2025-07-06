@@ -1,6 +1,9 @@
 package dto
 
+import "time"
+
 type MatchingRequest struct {
-	ThearpistId string `json:"therapistId" `
-	Message     string `json:"message"`
+	TherapistId string    `json:"therapistId" `
+	Message     string    `json:"message"`
+	RequestedAt time.Time `json:"requested_at,omitempty"`
 }

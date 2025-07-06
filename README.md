@@ -53,70 +53,22 @@ Our platform utilizes a distributed system design with the following key feature
 
 - **Containerization**: Docker
 - **CI/CD**: GitHub Actions
-- **Security**: OAuth 2.0, JWT Authentication
 
 ## 🔧 Core Services
 
-### Backend Services
-- **[Identity Service](identityservice/README.md)** - User authentication, account management, OAuth2 integration
-- **[Profile Service](profileservice/README.md)** - User profiles, social features, mood tracking, settings
-- **[Consultation Service](consultationservice/README.md)** - Therapist-client matching, session management
-- **[Notification Service](notificationservice/README.md)** - Email notifications, messaging system
+### Active Services
+- **[Identity Service](identityservice/README.md)** - User authentication and account management
+- **[Profile Service](profileservice/README.md)** - User profiles, settings, and mood management
+- **[Consultation Service](consultationservice/README.md)** - Therapist/client matching and session management
+- **[API Gateway](apigateway/README.md)** - Request routing and service coordination
+
+### Services in Development
+- **[Blog Service](blogservice/README.md)** - Content management and blogging platform
 - **[Chat Service](chatservice/README.md)** - Real-time messaging and communication
-- **[Blog Service](blogservice/README.md)** - Content management, articles, resources
-- **[Search Service](searchservice/README.md)** - Platform-wide search, filtering, recommendations
-- **[Recommendation Service](recommendationservice/README.md)** - AI-powered therapist-client matching
-- **[User Profile Service](userprofile/README.md)** - Extended profile management and customization
-
-### Frontend Applications
-- **[Web Application](webapp/README.md)** - Angular-based Progressive Web App
-- **[Mobile Application](mobileflutter/README.md)** - Flutter cross-platform mobile app
-
-### Infrastructure Services
-- **[API Gateway](apigateway/README.md)** - Request routing, authentication, security
-- **[Logging Service](loggingservice/)** - Centralized logging and monitoring
-- **[Kafka](kafka/)** - Message queue and event streaming
-
-## 📚 API Documentation Overview
-
-### Core API Endpoints
-All API requests go through the API Gateway at `http://localhost:8888`
-
-#### Authentication & Identity
-- `POST /auth/login` - User authentication
-- `POST /identity/create` - User registration
-- `GET /account/info` - Account information
-- `GET /oauth2/userInfo` - OAuth2 authentication
-
-#### User Profiles & Social
-- `GET /profile` - User profile details
-- `POST /profile/friend/request` - Send friend request
-- `GET /mood` - Current mood status
-- `PUT /user-setting` - Update user settings
-
-#### Consultation & Matching
-- `GET /consultation/therapist` - Therapist information
-- `POST /consultation/client` - Create client profile
-- `POST /consultation/therapist/match` - Request therapist matching
-- `GET /consultation/session/all` - User sessions
-
-#### Notifications & Communication
-- `POST /noti/activate` - Send activation email
-- `POST /chat/create` - Create chat session
-- `GET /chat/{id}/messages` - Chat message history
-
-#### Content & Search
-- `GET /blog` - Blog posts and articles
-- `GET /search/therapists` - Search therapists
-- `POST /recommend/therapist` - Get AI recommendations
-
-### Authentication
-All protected endpoints require JWT token in Authorization header:
-```
-Authorization: Bearer <your_jwt_token>
-```
-
-For detailed API documentation, see individual service README files.
+- **[Search Service](searchservice/README.md)** - Search functionality across the platform
+- **Payment Service** - Payment processing and billing
+- **Review & Feedback** - Rating and review system
+- **Booking & Scheduling** - Appointment scheduling system
 
 ![Image](https://private-user-images.githubusercontent.com/51482452/403526354-a5116da7-6296-4387-9599-62641acd6993.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDUwNzYzNzksIm5iZiI6MTc0NTA3NjA3OSwicGF0aCI6Ii81MTQ4MjQ1Mi80MDM1MjYzNTQtYTUxMTZkYTctNjI5Ni00Mzg3LTk1OTktNjI2NDFhY2Q2OTkzLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA0MTklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNDE5VDE1MjExOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTA4Yzk2ZjkwYmQ2NWIxZWUyMmMwN2ZlNmJhY2M4OWVhYTYwYWNjZjY2Yjc0NGQ4MTI2ZjMzNWIwOTQ5YzJkNWMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.XaZux9tZfHm5XNoYGEhj32HYGg6zPkeVB2P7o8ruNgQ)
 

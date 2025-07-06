@@ -1,50 +1,20 @@
 # API Gateway Service
 
 ## Overview
-The **API Gateway Service** is responsible for routing requests to different microservices and handling authentication using JWT tokens. It uses **Spring Cloud Gateway** to define routes and filters, ensuring secure and efficient communication between clients and backend services.
+The **API Gateway Service** is responsible for routing requests to different microservices within the PsyConnect platform. It uses **Spring Cloud Gateway** to define routes and filters, ensuring efficient communication between clients and backend services.
 
 ## Features
-- Routes incoming requests to appropriate microservices.
-- Authentication via JWT tokens.
-- Adds user-related headers for downstream services.
-- Logs security events for debugging and monitoring.
-- Request to [identity service](../identityservice[architecture pattern](..%2Fdocuments%2Farchitecture%20pattern)/Readme.md) do validate black listed token
-## Auth Token Flow
-![img.png](../documents/architectur pattern/img.png)
-## API Endpoints
-
-### Legal and Policy Pages
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/privacy-policy` | Serve privacy policy page |
-| GET | `/delete-data-page` | Serve data deletion request page |
-
-### Routed Services
-The API Gateway routes requests to the following microservices:
-
-#### Identity Service Routes
-- `/identity/**` - User account management
-- `/auth/**` - Authentication endpoints
-- `/oauth2/**` - OAuth2 authentication
-- `/account/**` - Account settings
-
-#### Profile Service Routes  
-- `/profile/**` - User profile management
-- `/mood/**` - Mood tracking
-- `/user-setting/**` - User settings
-
-#### Notification Service Routes
-- `/noti/**` - Email notifications
-
-#### Consultation Service Routes
-- `/consultation/**` - Therapist and client management, sessions
+- Routes incoming requests to appropriate microservices
+- Adds user-related headers for downstream services
+- Logs events for debugging and monitoring
+- Request routing to identity, profile, notification, and consultation services
 
 ## Configuration
 
 ### Environment Variables
 | Variable       | Description                         |
 |---------------|-------------------------------------|
-| `SIGNER_KEY`  | Secret key used for JWT validation |
+| `SIGNER_KEY`  | Secret key used for token validation |
 | `server.port` | Port on which the API Gateway runs |
 
 ### Application Properties
@@ -86,30 +56,30 @@ logging.level.org.springframework.web=DEBUG
 logging.level.org.springframework.cloud.gateway=TRACE
 ```
 
-## JWT Authentication Filter
-The `JwtAuthFilter` intercepts requests and processes JWT authentication. If a valid token is found, it extracts user information and adds relevant headers for downstream services.
+## Request Processing
+The gateway processes requests and forwards them to the appropriate microservice based on the configured routes.
 
-### Headers Added by `JwtAuthFilter`
+### Headers Added by Gateway
 | Header Name    | Description                                    |
 |----------------|------------------------------------------------|
-| `X-User-Id`    | User ID extracted from JWT token               |
-| `X-Profile-Id` | Profile ID extracted from JWT token            |
-| `X-Roles-Id`   | Roles and permissions extracted from JWT token |
+| `X-User-Id`    | User ID extracted from request context         |
+| `X-Profile-Id` | Profile ID extracted from request context      |
+| `X-Roles`      | Roles and permissions for authorization         |
 
-### Example Request
+### Example Request Flow
 #### Request:
 ```http
 GET /profile HTTP/1.1
 Host: localhost:8888
-Authorization: Bearer <jwt_token>
 ```
 
-#### Forwarded Request (after filtering):
+#### Forwarded Request (after processing):
 ```http
 GET /profile HTTP/1.1
 Host: localhost:8081
 X-User-Id: 12345
 X-Profile-Id: 67890
+X-Roles: role.client:permission
 ```
 
 ## Running the Service
@@ -124,7 +94,7 @@ mvn spring-boot:run
   logging.level.org.springframework.web=DEBUG
   logging.level.org.springframework.cloud.gateway=TRACE
   ```
-- Logs will show JWT validation details and security filter actions.
+- Logs will show routing details and filter actions
 
 ## Contributing
 Feel free to contribute by submitting issues or pull requests!

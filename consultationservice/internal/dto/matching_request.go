@@ -1,6 +1,6 @@
 package dto
 
-type Match struct {
+type Session struct {
 	Gender      string   `json:"gender" bson:"gender"`
 	Address     string   `json:"address" bson:"address"`
 	Languages   []string `json:"languages" bson:"languages"`

@@ -3,6 +3,8 @@ package model
 import (
 	"consultationservice/internal/enum"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Session struct {
@@ -15,4 +17,18 @@ type Session struct {
 	Status      string                `json:"status" bson:"status"`
 	Price       float64               `json:"price" bson:"price"`
 	CreatedAt   time.Time             `json:"created_at" bson:"created_at"`
+}
+
+func NewSession(clientID, therapistID string, price float64, startTime, endTime time.Time, mode enum.ConsultationMode) *Session {
+	return &Session{
+		SessionId:   uuid.New().String(),
+		ClientID:    clientID,
+		TherapistID: therapistID,
+		Status:      MatchStatusActive,
+		StartTime:   startTime,
+		EndTime:     endTime,
+		Mode:        mode,
+		Price:       price,
+		CreatedAt:   time.Now().UTC(),
+	}
 }
