@@ -53,18 +53,22 @@ Our platform utilizes a distributed system design with the following key feature
 
 - **Containerization**: Docker
 - **CI/CD**: GitHub Actions
-- **Security**: OAuth 2.0, JWT Authentication
 
 ## 🔧 Core Services
 
-#### - [Identity Service](identityservice/README.md)
-#### - [Profile Service](profileservice/README.md)
-#### - Payment Service
-#### - [Matching Service](consultationservice/README.md)
-#### - Messaging Service
-#### - Review & Feedback
-#### - Booking & Scheduling
-#### - [Api Gateway](apigateway/README.md)
+### Active Services
+- **[Identity Service](identityservice/README.md)** - User authentication and account management
+- **[Profile Service](profileservice/README.md)** - User profiles, settings, and mood management
+- **[Consultation Service](consultationservice/README.md)** - Therapist/client matching and session management
+- **[API Gateway](apigateway/README.md)** - Request routing and service coordination
+
+### Services in Development
+- **[Blog Service](blogservice/README.md)** - Content management and blogging platform
+- **[Chat Service](chatservice/README.md)** - Real-time messaging and communication
+- **[Search Service](searchservice/README.md)** - Search functionality across the platform
+- **Payment Service** - Payment processing and billing
+- **Review & Feedback** - Rating and review system
+- **Booking & Scheduling** - Appointment scheduling system
 
 ![Image](https://private-user-images.githubusercontent.com/51482452/403526354-a5116da7-6296-4387-9599-62641acd6993.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDUwNzYzNzksIm5iZiI6MTc0NTA3NjA3OSwicGF0aCI6Ii81MTQ4MjQ1Mi80MDM1MjYzNTQtYTUxMTZkYTctNjI5Ni00Mzg3LTk1OTktNjI2NDFhY2Q2OTkzLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA0MTklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNDE5VDE1MjExOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTA4Yzk2ZjkwYmQ2NWIxZWUyMmMwN2ZlNmJhY2M4OWVhYTYwYWNjZjY2Yjc0NGQ4MTI2ZjMzNWIwOTQ5YzJkNWMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.XaZux9tZfHm5XNoYGEhj32HYGg6zPkeVB2P7o8ruNgQ)
 
