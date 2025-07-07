@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsyConnect API Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a1a;
+        }
+        .container {
+            max-width: 600px;
+            text-align: center;
+            padding: 40px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+        p {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #4b5563;
+            margin-bottom: 24px;
+        }
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: #1a1a1a;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+        .github-link:hover {
+            background: #374151;
+        }
+        .github-icon {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+        }
+        footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>PsyConnect API Gateway</h1>
+    <p>Integrate with the PsyConnect platform using our API. Check out the documentation on GitHub.</p>
+    <a href="https://github.com/hiamchubbybear/psyconnect-dev" class="github-link">
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Icon" class="github-icon">
+        Documentation
+    </a>
+</div>
+</body>
+</html>

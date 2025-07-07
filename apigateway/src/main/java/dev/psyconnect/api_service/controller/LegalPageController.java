@@ -27,4 +27,12 @@ public class LegalPageController {
                 .contentType(MediaType.TEXT_HTML)
                 .body(html);
     }
+
+    @GetMapping("/")
+    public ResponseEntity<Resource> indexPage() throws IOException {
+        Resource html = new ClassPathResource("static/index.html");
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_HTML)
+                .body(html);
+    }
 }
