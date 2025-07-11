@@ -1,4 +1,7 @@
+
 class UserProfile {
+  String? accountId;
+  String? profileId;
   String? username;
   String? firstName;
   String? lastName;
@@ -6,27 +9,37 @@ class UserProfile {
   String? gender;
   String? avatarUri;
   String? description;
-  UserProfile(
-      {this.username,
-      this.firstName,
-      this.lastName,
-      this.address,
-      this.gender,
-      this.avatarUri,
-      this.description});
+
+  UserProfile({
+    this.accountId,
+    this.profileId,
+    this.username,
+    this.firstName,
+    this.lastName,
+    this.address,
+    this.gender,
+    this.avatarUri,
+    this.description,
+  });
+
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      username: json["username"] as String,
-      firstName: json["firstName"] as String,
-      lastName: json["lastName"] as String,
-      address: json["address"] as String,
-      gender: json["gender"] as String,
-      avatarUri: json["avatarUri"] as String,
-      description: json["description"] as String,
+      accountId: json["accountId"]?.toString(),
+      profileId: json["profileId"]?.toString(),
+      username: json["username"]?.toString(),
+      firstName: json["firstName"]?.toString(),
+      lastName: json["lastName"]?.toString(),
+      address: json["address"]?.toString(),
+      gender: json["gender"]?.toString(),
+      avatarUri: json["avatarUri"]?.toString(),
+      description: json["description"]?.toString(),
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
+      "accountId": accountId,
+      "profileId": profileId,
       "username": username,
       "firstName": firstName,
       "lastName": lastName,
@@ -37,6 +50,8 @@ class UserProfile {
     };
   }
 
+  String get getaccountId => accountId ?? "";
+  String get getProfileId => profileId ?? "";
   String get getUsername => username ?? "";
   String get getFirstName => firstName ?? "";
   String get getLastName => lastName ?? "";
@@ -47,6 +62,7 @@ class UserProfile {
 
   int countMissingFields() {
     int count = 0;
+    if (accountId == null || accountId!.isEmpty) count++;
     if (username == null || username!.isEmpty) count++;
     if (firstName == null || firstName!.isEmpty) count++;
     if (lastName == null || lastName!.isEmpty) count++;

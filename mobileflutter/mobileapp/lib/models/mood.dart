@@ -15,7 +15,7 @@ class MoodModel {
     );
   }
   Map<String, dynamic> toJson() {
-  return {
+    return {
       'mood': mood,
       'moodDescription': moodDescription,
       'visibility': visibility,

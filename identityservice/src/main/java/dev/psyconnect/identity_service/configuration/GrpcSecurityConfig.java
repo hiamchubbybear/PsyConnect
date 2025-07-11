@@ -9,7 +9,6 @@ import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import net.devh.boot.grpc.server.security.authentication.GrpcAuthenticationReader;
 
-// Đánh dấu class cấu hình Spring Boot
 @Configuration
 public class GrpcSecurityConfig {
 
@@ -18,12 +17,10 @@ public class GrpcSecurityConfig {
         return new CustomGrpcAuthenticationReader();
     }
 
-    // Class riêng biệt để tránh lỗi Java 21
     private static class CustomGrpcAuthenticationReader implements GrpcAuthenticationReader {
         @Override
         public Authentication readAuthentication(ServerCall<?, ?> call, Metadata headers)
                 throws AuthenticationException {
-            // Tạm thời trả về null để bỏ qua xác thực
             return null;
         }
     }

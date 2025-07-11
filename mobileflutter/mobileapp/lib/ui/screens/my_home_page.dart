@@ -1,5 +1,4 @@
 import 'package:PsyConnect/core/variable/variable.dart';
-import 'package:PsyConnect/ui/screens/chat_page.dart';
 import 'package:PsyConnect/ui/screens/home_page_scroll_view.dart';
 import 'package:PsyConnect/ui/screens/profile_page.dart';
 import 'package:PsyConnect/ui/screens/schedule_home_page.dart';
@@ -45,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage>
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
-
     return Scaffold(
       extendBody: true,
       body: TabBarView(
@@ -54,22 +52,20 @@ class _MyHomePageState extends State<MyHomePage>
         children: [
           const HomePageScrollView(),
           ScheduleHomePage(size: size),
-          const ChatPage(),
-          ChatPage(),
-          ProfilePage()
+          const ProfilePage(),
+          const ProfilePage(),
+          const ProfilePage()
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Handle center button action
-        },
+        onPressed: () {},
         backgroundColor: theme.primaryColor,
         child: const Icon(Icons.add, color: Colors.white, size: 28),
         elevation: 2,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
-        height: 102,
+        height: 100,
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
@@ -150,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage>
             color: color,
             size: 23,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(label, style: quickSand12Font),
         ],
       ),

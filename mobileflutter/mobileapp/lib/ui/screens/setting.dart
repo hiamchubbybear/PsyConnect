@@ -41,32 +41,32 @@ class _SettingState extends State<Setting> {
           ),
         ]),
         ListTile(
-          leading: Icon(Icons.person),
+          leading: const Icon(Icons.person),
           title: CustomTextButton(text: "Persional Infomation"),
           onTap: () {},
         ),
         ListTile(
-          leading: Icon(Icons.lock),
+          leading: const Icon(Icons.lock),
           title: CustomTextButton(text: "Security & Login"),
           onTap: () {},
         ),
         ListTile(
-          leading: Icon(Icons.notifications),
+          leading: const Icon(Icons.notifications),
           title: CustomTextButton(text: "Notifications"),
           onTap: () {},
         ),
         ListTile(
-          leading: Icon(Icons.palette),
+          leading: const Icon(Icons.palette),
           title: CustomTextButton(text: "Appearance & Theme "),
           onTap: () {},
         ),
         ListTile(
-          leading: Icon(Icons.help),
+          leading: const Icon(Icons.help),
           title: CustomTextButton(text: "Help & Feedback"),
           onTap: () {},
         ),
         ListTile(
-            leading: Icon(Icons.logout, color: Colors.red),
+            leading:const Icon(Icons.logout, color: Colors.red),
             title: CustomTextButton(text: "Logout"),
             onTap: () => _handleSignOutPress()),
       ],

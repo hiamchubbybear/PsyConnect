@@ -35,10 +35,8 @@ public class KafkaProducerConfig {
 
     @Bean
     public DefaultErrorHandler errorHandler() {
-        // Retry 3 lần, cách nhau 1 giây
         FixedBackOff backOff = new FixedBackOff(1000L, 3);
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(backOff);
-
         errorHandler.setRetryListeners((record, ex, deliveryAttempt) -> {
             log.error("Failed to consume record: {}, attempt {}, error: {}", record, deliveryAttempt, ex.getMessage());
         });

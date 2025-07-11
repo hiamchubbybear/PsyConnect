@@ -1,6 +1,5 @@
 package dev.psyconnect.profile_service.grpc;
 
-import io.grpc.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import dev.psyconnect.profile_service.dto.request.FriendRRequest;
 import dev.psyconnect.profile_service.dto.response.DeclineFriendRequestResponse;
 import dev.psyconnect.profile_service.dto.response.FriendAcceptResponse;
 import dev.psyconnect.profile_service.service.FriendsService;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import profile.CreateMatchingRequestGrpc;
@@ -37,7 +37,8 @@ public class MatchingServer extends CreateMatchingRequestGrpc.CreateMatchingRequ
 
         } catch (Exception e) {
             log.info("Error while {}", e.getMessage());
-            responseObserver.onError(Status.INTERNAL.withDescription(e.getMessage()).withCause(e).asException());
+            responseObserver.onError(
+                    Status.INTERNAL.withDescription(e.getMessage()).withCause(e).asException());
         }
         MatchingCreatation.MatchingResponse response = MatchingCreatation.MatchingResponse.newBuilder()
                 .setStatus("Create friend request success")
@@ -77,7 +78,10 @@ public class MatchingServer extends CreateMatchingRequestGrpc.CreateMatchingRequ
             responseObserver.onCompleted();
         } catch (Exception e) {
             log.error("Failed to process the request: {}", e.getMessage(), e);
-            responseObserver.onError(Status.ALREADY_EXISTS.withDescription(e.getMessage()).withCause(e).asRuntimeException());
+            responseObserver.onError(Status.ALREADY_EXISTS
+                    .withDescription(e.getMessage())
+                    .withCause(e)
+                    .asRuntimeException());
         }
     }
 }

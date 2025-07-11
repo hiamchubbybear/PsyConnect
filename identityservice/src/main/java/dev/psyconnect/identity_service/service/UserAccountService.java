@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import dev.psyconnect.identity_service.dto.LogEvent;
+import dev.psyconnect.identity_service.dto.LogLevel;
 import dev.psyconnect.identity_service.dto.request.*;
 import dev.psyconnect.identity_service.dto.response.*;
 import dev.psyconnect.identity_service.enumeration.Provider;
@@ -51,72 +53,91 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     final UserAccountMapper mapper;
     final UserAccountRepository accountRepository;
     final ActivateRepository activateRepository;
-    final PasswordEncodingService passwordEncodingService;
     final TokenRepository tokenRepository;
     final ProfileGRPCClient profileGRPCClient;
 
     @Transactional
     @Cacheable(key = "#request.accountId", value = "account")
-    public UserAccountCreationResponse createAccount(UserAccountCreationRequest request) {
-        if (userAccountRepository.existsByUsername(request.getUsername()))
+    public UserAccountCreationResponse createAccount(UserAccountCreationRequest request, Provider provider) {
+        log.info("Oauth2 Session code trước khi lưu vào db ");
+        String encodedPassword = null, session = "";
+        if (userAccountRepository.existsByUsername(request.getUsername())) {
             throw new CustomExceptionHandler(ErrorCode.USERNAME_ALREADY_EXISTS);
+        }
 
-        if (userAccountRepository.existsByEmail(request.getEmail()))
+        if (userAccountRepository.existsByEmail(request.getEmail())) {
             throw new CustomExceptionHandler(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+        if (provider != Provider.ORDINARY) {
+            request.setUsername(request.getEmail());
+            session = request.getOauth2Session();
+        } else {
+            encodedPassword = PasswordEncodingService.encoder(request.getPassword());
+        }
 
-        String token = generateActivationCode();
-        log.info("Generated activation code: {}", token);
-        var activateTokenEntity = sendNotification(ActivateAccountNotificationRequest.builder()
-                .code(token)
-                .email(request.getEmail())
-                .fullname(request.getFirstName() + " " + request.getLastName())
-                .username(request.getUsername())
-                .build());
-        var savedToken = tokenRepository.save(activateTokenEntity);
-        log.info("Activate account entity for: {} ", activateTokenEntity.getUsername());
+        String activationCode = generateActivationCode();
+        Token activateToken = saveActivationModel(request.getUsername(), activationCode, provider);
+
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
         UUID profileId = UUID.randomUUID();
+        log.info("Oauth2 Session code trước khi lưu vào db 1 1  {}", session);
         Account account = Account.builder()
                 .username(request.getUsername())
                 .isActivated(false)
                 .createdAt(Timestamp.from(Instant.now()))
-                .provider(Provider.ORDINARY)
+                .provider(provider)
                 .email(request.getEmail())
-                .password(PasswordEncodingService.encoder(request.getPassword()))
+                .password(encodedPassword)
+                .isActivated((provider != Provider.ORDINARY))
                 .role(roles)
-                .token(savedToken)
+                .session(session)
+                .token(activateToken)
                 .profileId(profileId)
                 .build();
 
         var savedAccount = accountRepository.save(account);
-        log.info("Created account: {}", savedAccount.getAccountId());
 
-        UserProfileCreationRequest temp = mapper.toAccountResponse(request);
-        temp.setAccountId(account.getAccountId().toString());
-        temp.setProfileId(profileId.toString());
-        temp.setRole(request.getRole());
-
+        UserProfileCreationRequest profileRequest = mapper.toAccountResponse(request);
+        profileRequest.setAccountId(savedAccount.getAccountId().toString());
+        profileRequest.setProfileId(profileId.toString());
+        profileRequest.setRole(request.getRole());
         try {
-            var profileResponse = profileGRPCClient.createProfile(temp);
-            if (UUID.fromString(profileResponse.getProfileId())
+            var profileResponse = profileGRPCClient.createProfile(profileRequest);
+            if (!profileResponse
+                    .getProfileId()
                     .equals(savedAccount.getProfileId().toString())) {
                 throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
             }
         } catch (Exception e) {
-            log.error("Error creating profile: {}", e);
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    request.getUsername(),
+                    "Create account",
+                    e.getMessage(),
+                    Map.of("error", e.getMessage()),
+                    LogLevel.ERROR));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+
         String fullName = request.getFirstName() + " " + request.getLastName();
-        String username = request.getUsername();
-        String email = savedAccount.getEmail();
-        kafkaService.send(
-                (NOTIFICATION_CREATE_TOPIC),
-                CreateAccountNotificationRequest.builder()
-                        .code(token)
-                        .username(username)
-                        .email(email)
-                        .fullname(fullName)
-                        .build());
+        if (provider == Provider.ORDINARY) {
+            kafkaService.send(
+                    NOTIFICATION_CREATE_TOPIC,
+                    CreateAccountNotificationRequest.builder()
+                            .code(activationCode)
+                            .username(request.getUsername())
+                            .email(savedAccount.getEmail())
+                            .fullname(fullName)
+                            .build());
+        }
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                request.getUsername(),
+                "Create account",
+                "Success",
+                Map.of("fullname", fullName, "email", savedAccount.getEmail()),
+                LogLevel.LOG));
+
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
                 .email(account.getEmail())
@@ -127,44 +148,25 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
     @Transactional
     @CachePut(key = "#request.accountId", value = "account")
-    public ActivateAccountResponse activateAccount(ActivateAccountRequest request) {
-        String email = request.getEmail();
-        String activateToken = request.getToken();
-        log.info("Activate account entity for: {} ", activateToken);
-        if (userAccountRepository.existsByEmailAndIsActivatedTrue(email)) {
-            throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
-        }
-        log.info("Activation Model account for user email {}", email);
-        if (!userAccountRepository.existsByEmail(email)) {
-            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
-        }
-        var foundObject = activateRepository
-                .findByToken(activateToken)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ACTIVATION_FAILED));
-        if (foundObject == null) {
-            return ActivateAccountResponse.builder()
-                    .isSuccess(false)
-                    .message("Invalid or expired activation token")
-                    .build();
-        }
-        if (foundObject.getExpires().before(new Date())) {
-            return ActivateAccountResponse.builder()
-                    .isSuccess(false)
-                    .message("Activation token has expired")
-                    .build();
-        }
-        userAccountRepository.activateUser(email);
-        return ActivateAccountResponse.builder()
-                .isSuccess(true)
-                .message("Account activation successful")
-                .build();
-    }
-
     public boolean deleteAccountWithoutCheck(UUID accountId) {
         try {
             userAccountRepository.deleteById(accountId);
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    accountId.toString(),
+                    "Delete account (force)",
+                    "Success",
+                    Map.of("status", true),
+                    LogLevel.AUDIT));
             return true;
         } catch (Exception e) {
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    accountId.toString(),
+                    "Delete account (force)",
+                    "Failed",
+                    Map.of("error", e.getMessage()),
+                    LogLevel.ERROR));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
@@ -174,22 +176,25 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         Account userObject = userAccountRepository
                 .findById(uuid)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        log.info("Deleting account {}", userObject.getUsername());
+
         if (!userObject.getUsername().equals(deleteAccountRequest.getUsername())
                 || PasswordEncodingService.getBCryptPasswordEncoder()
                         .matches(userObject.getPassword(), deleteAccountRequest.getPassword()))
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         if (!userObject.getToken().getToken().equals(deleteAccountRequest.getToken()))
             throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
-        var sendObject = DeleteNotificationRequest.builder()
-                .email(deleteAccountRequest.getEmail())
-                .secret(SecretEnum.getRandomMessage())
-                .token(userObject.getToken().getToken())
-                .build();
+
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                userObject.getUsername(),
+                "Delete account",
+                "Requested",
+                Map.of("email", deleteAccountRequest.getEmail()),
+                LogLevel.LOG));
+
         return DeleteAccountResponse.builder()
                 .isSuccess(true)
-                .secret(sendObject.getSecret())
-                .session(UUID.randomUUID())
+                .secret(SecretEnum.getRandomMessage())
                 .session(userObject.getSession())
                 .timestamp(deleteAccountRequest.getTimestamp())
                 .build();
@@ -204,9 +209,21 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         try {
             userAccountRepository.deleteById(uuid);
-            log.warn("User account {} deleted", userObject.getUsername());
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    userObject.getUsername(),
+                    "Delete account",
+                    "Success",
+                    Map.of("metadata", true),
+                    LogLevel.LOG));
         } catch (Exception e) {
-            e.printStackTrace();
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    userObject.getUsername(),
+                    "Delete account",
+                    "Failed",
+                    Map.of("error", e.getMessage()),
+                    LogLevel.ERROR));
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
         return true;
@@ -217,7 +234,14 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         var userResponse = userAccountRepository
                 .findById((accountId))
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        if (userAccountRepository.existsByUsernameAndIsActivatedTrue(userResponse.getUsername()))
+        if (userAccountRepository.existsByUsernameAndIsActivatedTrue(userResponse.getUsername())) {
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    userResponse.getUsername(),
+                    "Get user account",
+                    "Success",
+                    Map.of("status", true),
+                    LogLevel.LOG));
             return UserInfoResponse.builder()
                     .username(userResponse.getUsername())
                     .accountId(userResponse.getAccountId())
@@ -227,7 +251,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     .isActivated(userResponse.isActivated())
                     .provider(userResponse.getProvider())
                     .build();
-        else throw new CustomExceptionHandler(ErrorCode.ACCOUNT_INACTIVE);
+        } else throw new CustomExceptionHandler(ErrorCode.ACCOUNT_INACTIVE);
     }
 
     @Override
@@ -244,77 +268,156 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     @Override
     public Page<Account> getAllAccount(int page) {
         Pageable pageable = PageRequest.of(page, 10);
-        log.info("User account {} ", pageable.first().toString());
         return userAccountRepository.findAll(pageable);
     }
 
     @Transactional
-    @CacheEvict(key = "#request.accountId", value = "account")
+    @CacheEvict(key = "#accountId", value = "account")
     public UpdateAccountResponse updateAccount(UpdateAccountRequest updateAccountRequest, UUID accountId) {
         Account foundObject = userAccountRepository
                 .findById(accountId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-        if (foundObject.getUsername() != updateAccountRequest.getUsername())
-            foundObject.setUsername(foundObject.getUsername());
-        if (foundObject.getEmail() != updateAccountRequest.getEmail()) {
+        boolean updated = false;
+        if (!Objects.equals(foundObject.getEmail(), updateAccountRequest.getEmail())) {
+            boolean emailExists = userAccountRepository.existsByEmail(updateAccountRequest.getEmail());
+            if (emailExists) throw new CustomExceptionHandler(ErrorCode.EMAIL_ALREADY_EXISTS);
             foundObject.setEmail(updateAccountRequest.getEmail());
+            updated = true;
         }
-        userAccountRepository.save(foundObject);
-        kafkaService.send(
-                ("notification.account-change"),
-                UpdateAccountNotificatorRequest.builder()
-                        .email(foundObject.getEmail())
-                        .username(foundObject.getUsername())
-                        .build());
+        if (updated) {
+            userAccountRepository.save(foundObject);
+            kafkaService.send(
+                    "notification.account-change",
+                    UpdateAccountNotificatorRequest.builder()
+                            .email(foundObject.getEmail())
+                            .username(foundObject.getUsername())
+                            .build());
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    foundObject.getUsername(),
+                    "Update account",
+                    "Success",
+                    Map.of("newEmail", foundObject.getEmail()),
+                    LogLevel.LOG));
+        }
         return UpdateAccountResponse.builder()
                 .email(foundObject.getEmail())
                 .username(foundObject.getUsername())
                 .build();
     }
 
+    @Transactional
+    @CachePut(key = "#request.accountId", value = "account")
+    public ActivateAccountResponse activateAccount(ActivateAccountRequest request) {
+        String email = request.getEmail();
+        String activateToken = request.getToken();
+
+        if (userAccountRepository.existsByEmailAndIsActivatedTrue(email)) {
+            throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
+        }
+        if (!userAccountRepository.existsByEmail(email)) {
+            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
+        }
+        var foundObject = activateRepository
+                .findByToken(activateToken)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ACTIVATION_FAILED));
+
+        if (foundObject.getExpires().before(new Date())) {
+            kafkaService.sendLog(buildLog(
+                    "identity-service",
+                    request.getEmail(),
+                    "Activate account",
+                    "Failed",
+                    Map.of("reason", "Token expired"),
+                    LogLevel.WARN));
+
+            return ActivateAccountResponse.builder()
+                    .isSuccess(false)
+                    .message("Activation token has expired")
+                    .build();
+        }
+        userAccountRepository.activateUser(email);
+        foundObject.setToken("");
+        foundObject.setExpires(null);
+        activateRepository.save(foundObject);
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                request.getEmail(),
+                "Activate account",
+                "Success",
+                Map.of("status", true),
+                LogLevel.AUDIT));
+        return ActivateAccountResponse.builder()
+                .isSuccess(true)
+                .message("Account activation successful")
+                .build();
+    }
+
     public Boolean requestActivateAccount(RequestActivationAccount requestActivationAccount) {
         if (accountRepository.existsByUsernameAndIsActivatedTrue(requestActivationAccount.getUsername()))
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
-        kafkaService.send(
-                (NOTIFICATION_CREATE_TOPIC),
-                ActivateAccountNotificationRequest.builder()
-                        .email(requestActivationAccount.getEmail())
-                        .fullname(requestActivationAccount.getFullname())
-                        .code(generateActivationCode())
-                        .username(requestActivationAccount.getUsername())
-                        .build());
-        sendNotification(ActivateAccountNotificationRequest.builder()
-                .username(requestActivationAccount.getUsername())
+        ActivateAccountNotificationRequest req = ActivateAccountNotificationRequest.builder()
                 .email(requestActivationAccount.getEmail())
-                .build());
+                .fullname(requestActivationAccount.getFullname())
+                .code(generateActivationCode())
+                .username(requestActivationAccount.getUsername())
+                .build();
+        kafkaService.send((NOTIFICATION_CREATE_TOPIC), req);
+        sendNotification(
+                ActivateAccountNotificationRequest.builder()
+                        .username(requestActivationAccount.getUsername())
+                        .email(requestActivationAccount.getEmail())
+                        .build(),
+                Provider.ORDINARY);
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                requestActivationAccount.getUsername(),
+                "Request account activation",
+                "Success",
+                Map.of("metadata", req),
+                LogLevel.LOG));
         return true;
+    }
+
+    private LogEvent buildLog(
+            String service, String userId, String action, String message, Map<String, ?> metadata, LogLevel level) {
+        return LogEvent.builder()
+                .service(service)
+                .level(level)
+                .timestamp(Instant.now().toString())
+                .userId(userId)
+                .action(action)
+                .message(message)
+                .metadata(metadata)
+                .build();
     }
 
     public String generateActivationCode() {
         return String.valueOf(new Random().nextInt(90000) + 10000);
     }
 
-    public Token sendNotification(ActivateAccountNotificationRequest request) {
-        log.info("Sending activation notification {}", request.getCode());
-        return saveActivationModel(request.getUsername(), request.getCode());
+    public Token sendNotification(ActivateAccountNotificationRequest request, Provider provider) {
+        return saveActivationModel(request.getUsername(), request.getCode(), provider);
     }
 
-    public Token saveActivationModel(String username, String activateCode) {
-        log.info("Activate account {}", activateCode);
-        var foundObject = userAccountRepository.findByUsername(username).orElse(null);
-        if (foundObject == null) {
-            return tokenRepository.save(Token.builder()
-                    .username(username)
-                    .expires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)))
-                    .issuedAt(Timestamp.from(Instant.now()))
-                    .token(generateActivationCode())
-                    .revoked(false)
-                    .build());
-        } else {
-            Token token = foundObject.getToken();
-            token.setToken(activateCode);
-            token.setExpires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
-            return tokenRepository.save(token);
+    public Token saveActivationModel(String username, String activationCode, Provider provider) {
+        if (username == null || username.isBlank()) {
+            throw new CustomExceptionHandler(ErrorCode.NULL_EXCEPTION);
         }
+
+        Token token = tokenRepository
+                .findById(username)
+                .orElse(Token.builder()
+                        .username(username)
+                        .issuedAt(Timestamp.from(Instant.now()))
+                        .provider(provider.toString())
+                        .revoked(false)
+                        .build());
+
+        token.setToken(activationCode);
+        token.setRevoked(false);
+        token.setExpires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
+
+        return tokenRepository.save(token);
     }
 }

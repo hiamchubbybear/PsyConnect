@@ -6,6 +6,7 @@ import dev.psyconnect.identity_service.apiresponse.ApiResponse;
 import dev.psyconnect.identity_service.dto.request.*;
 import dev.psyconnect.identity_service.dto.response.ActivateAccountResponse;
 import dev.psyconnect.identity_service.dto.response.UserAccountCreationResponse;
+import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.kafka.producer.KafkaService;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
@@ -22,10 +23,10 @@ public class UserAccountController {
 
     @PostMapping(value = "/create")
     public ApiResponse<UserAccountCreationResponse> register(@RequestBody UserAccountCreationRequest accountRequest) {
-        return new ApiResponse<>(userAccountService.createAccount(accountRequest));
+        return new ApiResponse<>(userAccountService.createAccount(accountRequest, Provider.ORDINARY));
     }
 
-    @PostMapping(value = "/acticd vate")
+    @PostMapping(value = "/activate")
     public ApiResponse<ActivateAccountResponse> activateAccount(
             @RequestBody ActivateAccountRequest activateAccountRequest) {
         return new ApiResponse<>(userAccountService.activateAccount(activateAccountRequest));

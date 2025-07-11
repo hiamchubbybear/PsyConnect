@@ -9,6 +9,7 @@ import lombok.*;
 public class UserProfileCreationRequest {
     String accountId;
     String profileId;
+    String username;
     String firstName;
     String lastName;
     String dob;

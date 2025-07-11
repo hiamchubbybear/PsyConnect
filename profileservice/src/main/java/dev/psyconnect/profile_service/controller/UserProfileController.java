@@ -9,7 +9,7 @@ import dev.psyconnect.profile_service.apiresponse.ApiResponse;
 import dev.psyconnect.profile_service.configuration.filter.AllowedRoles;
 import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
-import dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse;
+import dev.psyconnect.profile_service.dto.response.ProfileWithMoodSummaryDto;
 import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileUpdateResponse;
 import dev.psyconnect.profile_service.service.UserProfileService;
@@ -24,20 +24,15 @@ import lombok.experimental.FieldDefaults;
 public class UserProfileController {
     UserProfileService userProfileService;
 
-    // Create user profile
-    /*
-    Only trigger with openfeign to listen http request
-     */
     @PostMapping("/internal/user")
     ApiResponse<UserProfileCreationResponse> createUserProfile(@RequestBody UserProfileCreationRequest body)
             throws IOException {
         return new ApiResponse<>(userProfileService.create(body));
     }
 
-    // Update user profile by user id
-    @PostMapping()
+    @PutMapping()
     ApiResponse<UserProfileUpdateResponse> updateUserProfile(
-            @RequestBody UserProfileUpdateRequest body, @RequestHeader(name = "X-User-Id") String userId) {
+            @RequestBody UserProfileUpdateRequest body, @RequestHeader(name = "X-Profile-Id") String userId) {
         return new ApiResponse<>(userProfileService.update(body, userId));
     }
 
@@ -49,7 +44,6 @@ public class UserProfileController {
         return new ApiResponse<>(userProfileService.get(profileId));
     }
 
-    // Get all user profiles with page and size of page
     @GetMapping("/all")
     @AllowedRoles({"ADMIN"})
     ApiResponse<List<?>> getAllUserProfiles(@RequestParam int page, @RequestParam int size) {
@@ -57,7 +51,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/friends")
-    ApiResponse<ProfileWithRelationShipResponse> getFriends(@RequestHeader(value = "X-Profile-Id") String profileId) {
+    ApiResponse<List<ProfileWithMoodSummaryDto>> getFriends(@RequestHeader(value = "X-Profile-Id") String profileId) {
         return new ApiResponse<>(userProfileService.getProfileWithMood(profileId));
     }
 }

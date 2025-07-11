@@ -7,7 +7,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 
 import lombok.*;
 
-@Node("mood")
+@Node("Mood")
 @Getter
 @Builder
 @Setter

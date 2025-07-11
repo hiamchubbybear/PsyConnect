@@ -6,12 +6,14 @@ class ToastService {
     required String message,
     required String title,
     required ToastType type,
-    int duration = 5,
+    int duration = 4,
   }) {
+    final mediaQueryData = MediaQuery.of(context);
+
     late OverlayEntry overlayEntry;
     overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        bottom: 50,
+        bottom: mediaQueryData.size.height*0.155,
         left: 20,
         right: 20,
         child: _ToastWidget(
@@ -22,11 +24,13 @@ class ToastService {
         ),
       ),
     );
-
-    Overlay.of(context).insert(overlayEntry);
-    Future.delayed(Duration(seconds: duration), () {
-      overlayEntry.remove();
-    });
+    final overlay = Overlay.maybeOf(context);
+    if (overlay != null) {
+      overlay.insert(overlayEntry);
+      Future.delayed(Duration(seconds: duration), () {
+        if (overlayEntry.mounted) overlayEntry.remove();
+      });
+    }
   }
 }
 
@@ -50,52 +54,43 @@ class _ToastWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Color bgColor;
     IconData icon;
-    Color iconColor;
+    Color accentColor;
 
     switch (type) {
       case ToastType.success:
-        bgColor = Colors.green.shade100;
-        icon = Icons.check_circle;
-        iconColor = Colors.green;
+        bgColor = Colors.green.shade50;
+        icon = Icons.check;
+        accentColor = Colors.green.shade600;
         break;
       case ToastType.info:
-        bgColor = Colors.blue.shade100;
-        icon = Icons.info;
-        iconColor = Colors.blue;
+        bgColor = Colors.blue.shade50;
+        icon = Icons.info_outline;
+        accentColor = Colors.blue.shade600;
         break;
       case ToastType.warning:
-        bgColor = Colors.amber.shade100;
-        icon = Icons.warning_amber_rounded;
-        iconColor = Colors.amber;
+        bgColor = Colors.amber.shade50;
+        icon = Icons.warning_amber_outlined;
+        accentColor = Colors.amber.shade700;
         break;
       case ToastType.error:
-        bgColor = Colors.red.shade100;
-        icon = Icons.error;
-        iconColor = Colors.red;
+        bgColor = Colors.red.shade50;
+        icon = Icons.error_outline;
+        accentColor = Colors.red.shade600;
         break;
     }
 
     return Material(
       color: Colors.transparent,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: iconColor, width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: accentColor.withOpacity(0.4)),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, color: iconColor, size: 30),
+            Icon(icon, color: accentColor, size: 20),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -105,21 +100,25 @@ class _ToastWidget extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: iconColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: accentColor,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     message,
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87,
+                    ),
                   ),
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.close, size: 20, color: Colors.black54),
-              onPressed: onClose,
+            GestureDetector(
+              onTap: onClose,
+              child: const Icon(Icons.close, size: 18, color: Colors.black45),
             ),
           ],
         ),

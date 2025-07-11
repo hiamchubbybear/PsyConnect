@@ -10,6 +10,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserAccountCreationRequest {
     String accountId;
     String profileId;
@@ -17,6 +18,7 @@ public class UserAccountCreationRequest {
     String password;
     String firstName;
     String lastName;
+    String oauth2Session;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

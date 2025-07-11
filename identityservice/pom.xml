@@ -34,6 +34,7 @@
                 <artifactId>spring-kafka</artifactId>
                 <version>3.0.7</version>
             </dependency>
+
             <!--Logging-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>

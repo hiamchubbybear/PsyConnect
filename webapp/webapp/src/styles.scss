@@ -1,0 +1,12 @@
+@use './styles/variables';
+
+body {
+  font-family: variables.$font-primary;
+  font-size: variables.$font-size-md;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
+}

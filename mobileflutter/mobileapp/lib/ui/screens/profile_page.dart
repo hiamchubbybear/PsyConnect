@@ -1,12 +1,18 @@
+import 'dart:convert';
+
 import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/user_profile.dart';
-import 'package:PsyConnect/services/account_service/profile.dart';
+import 'package:PsyConnect/provider/theme_provider.dart';
+import 'package:PsyConnect/route/route_animation.dart';
+import 'package:PsyConnect/services/profile_service/profile.dart';
+import 'package:PsyConnect/ui/screens/consultation_profile_page.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
+import 'package:PsyConnect/ui/screens/setting_page.dart';
+import 'package:PsyConnect/validate/validate.dart' ;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -15,28 +21,109 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late ThemeProvider themeProvider = ThemeProvider();
+  late bool isDarkMode;
+
   ProfileService profileService = ProfileService();
   UserProfile userProfile = UserProfile();
+
+  void handleSetProfileDetails(BuildContext context) {
+    print("Handle Set Profile Details");
+
+    handleOnProfile(context);
+  }
+
+  void handleUploadResume(BuildContext context) {
+    print("Handle Upload Resume");
+
+    handleOnProfile(context);
+  }
+
+  void handleAddSkills(BuildContext context) {
+    print("Handle Add Skills");
+
+    handleOnProfile(context);
+  }
+
+  List<ProfileCompletionCard> get profileCompletionCards => [
+        ProfileCompletionCard(
+          title: "Set Your Profile Details",
+          icon: CupertinoIcons.person_circle,
+          buttonText: "Continue",
+          onTap: handleSetProfileDetails,
+        ),
+        ProfileCompletionCard(
+          title: "Upload your resume",
+          icon: CupertinoIcons.doc,
+          buttonText: "Upload",
+          onTap: handleUploadResume,
+        ),
+        ProfileCompletionCard(
+          title: "Add your skills",
+          icon: CupertinoIcons.square_list,
+          buttonText: "Add",
+          onTap: handleAddSkills,
+        ),
+      ];
   @override
   void initState() {
     super.initState();
+    isDarkMode = themeProvider.isDarkMode;
     loadUserData();
   }
 
   void loadUserData() async {
     try {
-      userProfile = await profileService.getUserProfile();
+      final data = await SharedPreferencesProvider().getUserProfile();
+
+      if (data == null) {
+        await _fetchAndSetUserProfileFromApi();
+        return;
+      }
+
+      final Map<String, dynamic> jsonMap = jsonDecode(data);
+
+      final user = UserProfile.fromJson(jsonMap);
+
+      if (user.accountId == null || user.username == null) {
+        await _fetchAndSetUserProfileFromApi();
+        return;
+      }
+
+      setState(() {
+        userProfile = user;
+        print("User data $userProfile");
+      });
     } catch (e) {
       ToastService.showToast(
-          context: context,
-          message: "Your current session is expired please login again!",
-          title: "Failed",
-          type: ToastType.error);
+        context: context,
+        message: "Your current session is expired. Please login again! $e",
+        title: "Failed",
+        type: ToastType.error,
+      );
+    }
+  }
+
+  Future<void> _fetchAndSetUserProfileFromApi() async {
+    try {
+      final userFromApi = await profileService.getUserProfile();
+      setState(() {
+        userProfile = userFromApi;
+        print(jsonEncode(userProfile.toJson()));
+      });
+    } catch (e) {
+      ToastService.showToast(
+        context: context,
+        message: "Failed to load profile. Please try again later.",
+        title: "Error",
+        type: ToastType.error,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ThemeProvider themeProvider = ThemeProvider();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -49,8 +136,14 @@ class _ProfilePageState extends State<ProfilePage> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings_rounded),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+            icon: Icon(Icons.settings_rounded,
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black),
           )
         ],
       ),
@@ -59,12 +152,25 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Column(
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage(userProfile
-                        .getAvatarUri.isNotEmpty
-                    ? userProfile.getAvatarUri
-                    : 'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg'),
+              GestureDetector(
+                child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey,
+                    child: FutureBuilder<bool>(
+                      future: checkImageExists(userProfile.getAvatarUri),
+                      builder: (context, snapshot) {
+                        String imageUrl = snapshot.hasData &&
+                                snapshot.data == true
+                            ? userProfile.getAvatarUri
+                            : 'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg';
+
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage(imageUrl),
+                        );
+                      },
+                    )),
+                onTap: () => handleOnProfile(context),
               ),
               const SizedBox(height: 10),
               Text(
@@ -104,7 +210,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           Text(
-                            "($value/7)",
+                            "($value/8)",
                             style: TextStyle(
                               color: successStatus,
                             ),
@@ -166,7 +272,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           const Spacer(),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              print("Button pressed for: ${card.title}");
+                              if (card.onTap != null) {
+                                print("Executing onTap function");
+                                card.onTap!(context);
+                              } else {
+                                print("onTap is null for: ${card.title}");
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
                               shape: RoundedRectangleBorder(
@@ -239,34 +353,24 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+void handleOnProfile(BuildContext context) {
+  print("handleOnProfile called - navigating to ConsultationProfilePage");
+  Navigator.push(
+      context, createSlideFromBottomRoute(const ConsultationProfilePage()));
+}
+
 class ProfileCompletionCard {
   final String title;
   final String buttonText;
   final IconData icon;
+  final void Function(BuildContext context)? onTap;
   ProfileCompletionCard({
     required this.title,
     required this.buttonText,
     required this.icon,
+    required this.onTap,
   });
 }
-
-List<ProfileCompletionCard> profileCompletionCards = [
-  ProfileCompletionCard(
-    title: "Set Your Profile Details",
-    icon: CupertinoIcons.person_circle,
-    buttonText: "Continue",
-  ),
-  ProfileCompletionCard(
-    title: "Upload your resume",
-    icon: CupertinoIcons.doc,
-    buttonText: "Upload",
-  ),
-  ProfileCompletionCard(
-    title: "Add your skills",
-    icon: CupertinoIcons.square_list,
-    buttonText: "Add",
-  ),
-];
 
 class CustomListTile {
   final IconData icon;
@@ -283,23 +387,17 @@ List<CustomListTile> customListTiles = [
   CustomListTile(
     icon: Icons.insights,
     title: "Activity",
-    onTap: (context) {
-      print("Activity tabs");
-    },
+    onTap: (context) {},
   ),
   CustomListTile(
     icon: Icons.history,
     title: "History",
-    onTap: (context) {
-      print("History tabs");
-    },
+    onTap: (context) {},
   ),
   CustomListTile(
     title: "Notifications",
     icon: CupertinoIcons.bell,
-    onTap: (context) {
-      print("Notifications tabs");
-    },
+    onTap: (context) {},
   ),
   CustomListTile(
     title: "Logout",

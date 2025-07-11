@@ -1,0 +1,163 @@
+@use "../../../styles/variables" as v;
+
+.container {
+  padding: 0 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 0;
+
+  .hero-content {
+    flex: 1;
+    h1 {
+      font-size: v.$font-size-xl;
+      margin-bottom: 1rem;
+      color: v.$color-text;
+    }
+    p {
+      font-size: v.$font-size-md;
+      margin-bottom: 2rem;
+      color: v.$color-text;
+    }
+    .hero-buttons {
+      cursor: v.$cursor-pointer;
+      display: flex;
+      gap: 1rem;
+    }
+  }
+
+  .hero-image {
+    flex: 1;
+    text-align: center;
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+  }
+}
+
+.features {
+  text-align: center;
+  padding: 4rem 0;
+
+  h2 {
+    font-size: v.$font-size-xl;
+    color: v.$color-text;
+  }
+
+  p {
+    margin-top: 0.5rem;
+    color: v.$color-text;
+  }
+
+  .feature-cards {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+
+    .card {
+      flex: 1;
+      min-width: 280px;
+      background: v.$color-bg;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      text-align: left;
+    }
+  }
+}
+
+.app-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+  padding: 4rem 0;
+
+  .preview-image {
+    flex: 1;
+    img {
+      width: 100%;
+      border-radius: 10px;
+    }
+  }
+
+  .preview-content {
+    flex: 1;
+
+    h2 {
+      color: v.$color-text;
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      list-style: disc;
+      padding-left: 1.5rem;
+
+      li {
+        margin-bottom: 0.5rem;
+        color: v.$color-text;
+        font-size: v.$font-size-md;
+      }
+    }
+  }
+}
+
+.cta {
+  text-align: center;
+  padding: 4rem 0;
+  background-color: v.$color-background-hume;
+
+  h2 {
+    color: v.$color-white;
+    font-size: v.$font-size-xl;
+  }
+
+  p {
+    color: v.$color-white;
+    margin-top: 0.5rem;
+  }
+
+  .cta-buttons {
+    cursor: v.$cursor-pointer;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &.primary {
+    background: v.$color-white;
+    color: v.$color-primary;
+
+    &:hover {
+      background: v.$color-primary-hover;
+      color: v.$color-text;
+    }
+  }
+
+  &.secondary {
+    border: 1px solid v.$color-white;
+    color: v.$color-white;
+    background: transparent;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}

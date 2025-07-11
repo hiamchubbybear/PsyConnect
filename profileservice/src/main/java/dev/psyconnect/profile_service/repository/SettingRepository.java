@@ -60,7 +60,8 @@ public interface SettingRepository extends Neo4jRepository<Setting, String> {
 
     @Query(
             """
-					MATCH (u:user_profile {profileId: $profileId})-[:HAS_SETTING]->(s:user_setting)
+					MATCH (u:user_profile {profileId: $profileId})
+					MERGE (u)-[:HAS_SETTING]->(s:user_setting {profileId: $profileId})
 					SET s.privacyLevel = $privacyLevel,
 						s.showLastSeen = $showLastSeen,
 						s.showProfilePicture = $showProfilePicture,
@@ -96,8 +97,8 @@ public interface SettingRepository extends Neo4jRepository<Setting, String> {
 
     @Query(
             """
-				MATCH (u:user_profile {profileId: $profileId})-[:HAS_SETTING]->(s:user_setting)
-				DETACH DELETE s
-			""")
+						MATCH (u:user_profile {profileId: $profileId})-[:HAS_SETTING]->(s:user_setting)
+						DETACH DELETE s
+					""")
     void deleteUserSetting(@Param("profileId") String profileId);
 }

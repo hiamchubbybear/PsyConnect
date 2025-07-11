@@ -28,11 +28,11 @@ func InitDB() *mongo.Client {
 		dbHost := os.Getenv("DB_HOST")
 		dbPort := os.Getenv("DB_PORT")
 		dbName = os.Getenv("DB_NAME")
-		if (dbUser == " " ||
-			dbPass == " " ||
-			dbHost == " " ||
-			dbPort == " " ||
-			dbName == " ") && err != nil {
+		if (dbUser == "" ||
+			dbPass == "" ||
+			dbHost == "" ||
+			dbPort == "" ||
+			dbName == "") && err != nil {
 			log.Fatal("Error loading .env file")
 		}
 
@@ -49,7 +49,7 @@ func InitDB() *mongo.Client {
 		if err != nil {
 			log.Fatal("MongoDB connection error:", err)
 		}
-
+		log.Println("DB_NAME =", dbName)
 		mongoClient = client
 		log.Println("Successfully connected to MongoDB!")
 	})
@@ -65,6 +65,19 @@ func GetClientCollection() *mongo.Collection {
 	client := InitDB()
 	return client.Database(dbName).Collection("clients")
 }
+func GetSessionCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("sessions")
+}
+func GetSwipedCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("swipes")
+}
+func GetMatchedCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("match")
+}
+
 func CloseDB() {
 	if mongoClient != nil {
 		if err := mongoClient.Disconnect(context.TODO()); err != nil {

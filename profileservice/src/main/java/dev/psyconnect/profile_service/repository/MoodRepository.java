@@ -16,7 +16,7 @@ public interface MoodRepository extends Neo4jRepository<Mood, String> {
     @Query(
             """
 					MATCH (u:user_profile {profileId: $profileId})
-					CREATE (m:mood {
+					CREATE (m:Mood {
 						moodId: $profileId,
 						mood: $mood,
 						description: $description,
@@ -60,7 +60,7 @@ public interface MoodRepository extends Neo4jRepository<Mood, String> {
             """
 			MATCH (n:user_profile {profileId: $profileId})
 				-[:HAS_FRIEND]-> (u:user_profile)
-				-[:HAS_MOOD]-> (mo:mood)
+				-[:HAS_MOOD]-> (mo:Mood)
 			RETURN u AS profile, mo AS mood
 			""")
     List<Record> getFriendsMoodRaw(@Param("profileId") String profileId);

@@ -1,0 +1,76 @@
+{
+  "title": "System Activity Overview",
+  "uid": "sys-activity",
+  "timezone": "browser",
+  "schemaVersion": 37,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Log Volume (rate)",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate({job=\"app-log\"}[5m])",
+          "refId": "A",
+          "datasource": { "type": "loki", "uid": "loki" }
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Errors over time (by service)",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by(service) (rate({job=\"app-log\", level=\"error\"}[5m]))",
+          "refId": "B",
+          "datasource": { "type": "loki", "uid": "loki" }
+        }
+      ]
+    },
+    {
+      "type": "bargauge",
+      "title": "Top Logging Services (5m)",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum by(service) (rate({job=\"app-log\"}[5m]))",
+          "refId": "C",
+          "datasource": { "type": "loki", "uid": "loki" }
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Total Logs / 5m",
+      "gridPos": { "x": 12, "y": 8, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate({job=\"app-log\"}[5m]))",
+          "refId": "D",
+          "datasource": { "type": "loki", "uid": "loki" }
+        }
+      ]
+    },
+    {
+      "type": "logs",
+      "title": "Recent Logs (app-log)",
+      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 10 },
+      "targets": [
+        {
+          "expr": "{job=\"app-log\"}",
+          "refId": "E",
+          "datasource": { "type": "loki", "uid": "loki" }
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "wrapLogMessage": true
+      }
+    }
+  ]
+}
+

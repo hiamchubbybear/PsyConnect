@@ -8,6 +8,7 @@ type Therapist struct {
 	ConsultationModes []string `json:"consultation_modes,omitempty" bson:"consultation_modes"`
 	Experience        int      `json:"experience,omitempty" bson:"experience"`
 	Rating            float64  `json:"rating,omitempty" bson:"rating"`
+	Currency          string   `json:"currency" bson:"currency"`
 	RagePrice         int      `json:"rage_price,omitempty" bson:"rage-price"`
 	IsAvailable       bool     `json:"is_available,omitempty" bson:"is_available"`
 	Availability      struct {

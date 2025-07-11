@@ -1,102 +1,91 @@
-# IntelliJ IDEA
+# ===============================
+# 🔧 IDEs & Editors
+# ===============================
+.idea/
 *.iml
 *.iws
 *.ipr
-.idea/
-
-# VS Code
 .vscode/
 *.code-workspace
 
-# Node.js
-node_modules/
-npm-debug.log
-yarn-error.log
-
-# Flutter
-build/
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-android/.gradle/
-android/app/build/
-
-# Spring Boot
+# ===============================
+# 🐘 Java / Spring Boot
+# ===============================
 target/
 *.jar
 *.war
 *.ear
 .mvn/
+application.properties
+application.yml
+application-*.properties
+application-*.yml
 
-# Ignore các file binary Go
+# ===============================
+# 🐹 Go
+# ===============================
 *.exe
 *.out
 *.test
-
-# Ignore thư viện bên ngoài
 /vendor/
 go.sum
 go.work
 go.work.sum
-
-# Ignore thư viện Go mod cache (nếu dùng GOPATH)
 $GOPATH/pkg/
 go/pkg/
 
-# Environment files (bảo mật)
-.env
-*.env
+# ===============================
+# 🧶 Node.js
+# ===============================
+node_modules/
+npm-debug.log
+yarn-error.log
+.yarn/
 
-# Spring Boot config files
-application-dev.properties
-application-dev.yml
-application-test.properties
-application-test.yml
-
-# Miscellaneous
-.DS_Store
-Thumbs.db
-*.log
-logs/
-cache/
-out/
-*.swp
-*.swo
-*.bak
-*.tmp
-*.orig
-
-* text=auto
-*.sh text eol=lf
-*.cmd text eol=crlf
-
-
-
-# Created by https://www.toptal.com/developers/gitignore/api/flutter
-# Edit at https://www.toptal.com/developers/gitignore?templates=flutter
-
-### Flutter ###
-# Flutter/Dart/Pub related
-**/doc/api/
+# ===============================
+# 📱 Flutter / Dart
+# ===============================
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
-.fvm/flutter_sdk
 .packages
 .pub-cache/
 .pub/
 build/
 coverage/
 lib/generated_plugin_registrant.dart
-# For library packages, don’t commit the pubspec.lock file.
-# Regenerating the pubspec.lock file lets you test your package against the latest compatible versions of its dependencies.
-# See https://dart.dev/guides/libraries/private-files#pubspeclock
-#pubspec.lock
+.fvm/flutter_sdk
+# pubspec.lock # (bỏ comment nếu là package thư viện)
+# C/C++ & CMake files (not used in pure Flutter projects)
+**/*.c
+**/*.cc
+**/*.cpp
+**/*.cxx
+**/*.h
+**/*.hh
+**/*.hpp
+**/*.hxx
+**/CMakeLists.txt
+**/CMakeCache.txt
+**/Makefile
+**/Makefile.*
+**/*.cmake
+**/build/
 
-# Android related
+# Native C/C++ build files
+**/*.[ch]    # .c, .h
+**/*.[ch]h   # .cc, .hh
+**/*.[ch]pp  # .cpp, .hpp
+**/*.[ch]xx  # .cxx, .hxx
+**/*.cmake
+**/CMakeLists.txt
+**/CMakeCache.txt
+**/Makefile
+**/Makefile.*
+**/build/
+
+
+# Android
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
 **/android/captures/
@@ -106,7 +95,7 @@ lib/generated_plugin_registrant.dart
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 
-# iOS/XCode related
+# iOS
 **/ios/**/*.mode1v3
 **/ios/**/*.mode2v3
 **/ios/**/*.moved-aside
@@ -135,11 +124,57 @@ lib/generated_plugin_registrant.dart
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 
-# Exceptions to above rules.
+# Exceptions for Flutter iOS
 !**/ios/**/default.mode1v3
 !**/ios/**/default.mode2v3
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
-# End of https://www.toptal.com/developers/gitignore/api/flutter
+# ===============================
+# 🌐 Angular
+# ===============================
+.angular/
+dist/
+tmp/
+out-tsc/
+coverage/
+*.js.map
+*.ngfactory.ts
+*.ngstyle.ts
+*.tsbuildinfo
+*.js
+*.d.ts
+
+# ===============================
+# 🔒 Environment & Logs
+# ===============================
+.env
+.env.*.local
+*.env
+*.log
+logs/
+cache/
+out/
+
+# ===============================
+# 🖥️ System
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# ✏️ Temp / Swap / Backup
+# ===============================
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+
+# ===============================
+# ⚙️ Git settings
+# ===============================
+* text=auto
+*.sh text eol=lf
+*.cmd text eol=crlf

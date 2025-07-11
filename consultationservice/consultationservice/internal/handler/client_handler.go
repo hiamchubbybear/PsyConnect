@@ -1,41 +1,33 @@
 package handlers
 
 import (
-	"consultationservice/internal/db"
-	"consultationservice/internal/grpc/handler"
-	grpc "consultationservice/internal/grpc/handler"
+	"consultationservice/bootstrap"
 	"consultationservice/internal/model"
 	"consultationservice/internal/repository"
 	"consultationservice/pkg/apiresponse"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
-)
-
-var (
-	clientDB    *mongo.Collection
-	clientRepo  *repository.ClientRepository
-	grpcProfile *grpc.ProfileGrpc
 )
 
 type ClientHandler struct {
+	RepoManager *repository.RepositoryManager
 }
 
-func InitClientHandler() {
-	clientDB = db.GetClientCollection()
-	clientRepo = repository.NewClientRepository(clientDB)
-	grpcProfile, _ = handler.NewProfileGrpc("127.0.0.1:9091")
+func NewClientHandler(env *bootstrap.Env, repoManager *repository.RepositoryManager) *ClientHandler {
+	return &ClientHandler{
+		RepoManager: repoManager,
+	}
 }
 
-// External Rest API -- GET /consultation/client
-func (r ClientHandler) GetClientHandler(c *gin.Context) {
-	profileID := c.Request.Header["X-Profile-Id"][0]
+func (h *ClientHandler) GetClientHandler(c *gin.Context) {
+	profileID := c.GetHeader("X-Profile-Id")
 	if profileID == "" {
 		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
 		return
 	}
-	res, err := clientRepo.FindClientMatchingProfile(profileID)
+	res, err := h.RepoManager.ClientRepo.FindClientMatchingProfile(profileID)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 404, err.Error())
 		return
@@ -43,19 +35,19 @@ func (r ClientHandler) GetClientHandler(c *gin.Context) {
 	apiresponse.NewApiResponse(c, res)
 }
 
-// External Rest API -- POST /consultation/client
-func (r ClientHandler) PostClientHandler(c *gin.Context) {
+func (h *ClientHandler) PostClientHandler(c *gin.Context) {
 	var client model.Client
-	profileId := c.Request.Header["X-Profile-Id"][0]
+	profileId := c.GetHeader("X-Profile-Id")
 	if profileId == "" {
 		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
 		return
 	}
 	if err := c.ShouldBindJSON(&client); err != nil {
-		apiresponse.ErrorHandler(c, 500, "Invalid input")
+		apiresponse.ErrorHandler(c, 400, "Invalid input")
 		return
 	}
-	res, err := grpcProfile.CheckProfileExists(profileId)
+
+	res, err := h.RepoManager.GrpcProfile.CheckProfileExists(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return
@@ -65,7 +57,7 @@ func (r ClientHandler) PostClientHandler(c *gin.Context) {
 		return
 	}
 	client.ProfileId = profileId
-	_, err = clientRepo.CreateClientMatchingProfile(&client)
+	_, err = h.RepoManager.ClientRepo.CreateClientMatchingProfile(&client)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return
@@ -73,8 +65,7 @@ func (r ClientHandler) PostClientHandler(c *gin.Context) {
 	apiresponse.NewApiResponse(c, client)
 }
 
-// External Rest API -- POST /consultation/client
-func (r ClientHandler) PutClientHandler(c *gin.Context) {
+func (h *ClientHandler) PutClientHandler(c *gin.Context) {
 	var client *model.Client
 	profileId := c.GetHeader("X-Profile-Id")
 	if profileId == "" {
@@ -85,10 +76,15 @@ func (r ClientHandler) PutClientHandler(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 400, "Invalid input")
 		return
 	}
-	res, err := clientRepo.UpdateMatchingProfile(profileId, client)
+	res, err := h.RepoManager.ClientRepo.UpdateMatchingProfile(profileId, client)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return
+	}
+	_, error := h.RepoManager.SwipeRepo.FilterAllTherapist(profileId)
+	if error != nil {
+		log.Println(err)
+		apiresponse.ErrorHandler(c, 400, "Failed to update therapist recommendataion field")
 	}
 	apiresponse.NewApiResponse(c, res)
 }

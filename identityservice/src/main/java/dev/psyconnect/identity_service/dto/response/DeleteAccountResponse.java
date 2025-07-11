@@ -1,7 +1,6 @@
 package dev.psyconnect.identity_service.dto.response;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 
 import lombok.*;
 
@@ -12,7 +11,7 @@ import lombok.*;
 @Builder
 public class DeleteAccountResponse {
     boolean isSuccess;
-    UUID session;
+    String session;
     String secret;
     Timestamp timestamp;
 }

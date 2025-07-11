@@ -14,7 +14,7 @@ public class Time {
             "currentTimeMillis",
             Instant.now().toEpochMilli(),
             "expiresTimeMillis",
-            Instant.now().plus(24, ChronoUnit.HOURS).toEpochMilli());
+            Instant.now().plus(MOOD_TIME_EXPIRES, ChronoUnit.HOURS).toEpochMilli());
 
     public static LocalDate parseFromString(String stringDateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

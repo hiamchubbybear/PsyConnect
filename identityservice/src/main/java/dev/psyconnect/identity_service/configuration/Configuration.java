@@ -1,11 +1,11 @@
 package dev.psyconnect.identity_service.configuration;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,16 +16,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import dev.psyconnect.identity_service.dto.request.CreateProfileOauth2GoogleRequest;
-import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.service.OAuth2Service;
 import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
@@ -39,12 +38,18 @@ public class Configuration {
     OAuth2Service oAuth2Service;
     JwtAuthFilter authFilter;
     UserAccountService userAccountService;
+    private final String oauth2RedirectBase;
 
     @Autowired
-    public Configuration(OAuth2Service oAuth2Service, JwtAuthFilter authFilter, UserAccountService userAccountService) {
+    public Configuration(
+            OAuth2Service oAuth2Service,
+            JwtAuthFilter authFilter,
+            UserAccountService userAccountService,
+            @Value("${app.oauth2.redirect-base}") String oauth2RedirectBase) {
         this.oAuth2Service = oAuth2Service;
         this.authFilter = authFilter;
         this.userAccountService = userAccountService;
+        this.oauth2RedirectBase = oauth2RedirectBase;
     }
 
     @Bean
@@ -54,103 +59,88 @@ public class Configuration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.authorizeRequests(requests -> {
-                    // Publicly accessible routes (do not require authentication)
-                    requests.requestMatchers(
-                                    "/",
-                                    "/oauth2/register/google",
-                                    "/oauth2/userInfo/google",
-                                    "/login",
-                                    "/oauth2/authorization/google",
-                                    "/identity/**",
-                                    "/identity/create",
-                                    "auth/login/**")
-                            .permitAll()
-                            // Routes restricted to users with ROLE_THERAPIST
-                            .requestMatchers("/auth/therapist/**")
-                            .hasAuthority("ROLE_THERAPIST")
-                            // Routes restricted to users with ROLE_ADMIN
-                            .requestMatchers("/auth/admin/**")
-                            .hasAuthority("ROLE_ADMIN")
-                            // All other routes require authentication but do not trigger Google OAuth2 login
-                            .requestMatchers("/account/**")
-                            .authenticated();
-                })
-                // Configure session as STATELESS (since JWT is used)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Configure authentication provider
+        return http.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authenticationProvider(authenticationProvider(userAccountService))
-                // Add JWT authentication filter before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                // Configure OAuth2 login behavior
-                .oauth2Login(oAuth2Login -> {
-                    // Instead of automatically redirecting to Google OAuth2, use a custom login page
-                    oAuth2Login.loginPage("/custom-login").successHandler((request, response, authentication) -> {
-                        try {
-                            DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-                            String email = user.getAttribute("email");
-                            String avatarUri = user.getAttribute("picture");
-                            if (email == null) {
-                                log.error("Email attribute not found in OIDC user information");
-                                response.sendError(
-                                        HttpServletResponse.SC_BAD_REQUEST, "Email not found in user information");
-                                return;
+                .authorizeRequests(requests -> requests.requestMatchers(
+                                "/login",
+                                "/oauth2/authorization/google",
+                                "/oauth2/callback/google",
+                                "/login/oauth2/code/google",
+                                "/identity/**",
+                                "/identity/create",
+                                "/auth/login/**",
+                                "/oauth2/userInfo/google",
+                                "/oauth2/authorization/facebook",
+                                "/auth/oauth2/callback/exchange-code",
+                                "/oauth2/callback/facebook",
+                                "/login/oauth2/code/facebook",
+                                "/auth/internal/valid",
+                                "/oauth2/userInfo/facebook",
+                                "/favicon.ico")
+                        .permitAll()
+                        .requestMatchers("/auth/therapist/**")
+                        .hasAuthority("ROLE_THERAPIST")
+                        .requestMatchers("/auth/admin/**")
+                        .hasAuthority("ROLE_ADMIN")
+                        .anyRequest()
+                        .authenticated())
+                .exceptionHandling(
+                        exception -> exception.authenticationEntryPoint(((request, response, authException) -> {
+                            response.sendRedirect("/oauth2/authorization/google");
+                        })))
+                .oauth2Login(oauth2 -> oauth2.loginPage("/oauth2/authorization")
+                        .authorizationEndpoint(config -> config.baseUri("/oauth2/authorization"))
+                        .redirectionEndpoint(config -> config.baseUri("/oauth2/callback/*"))
+                        .successHandler((request, response, authentication) -> {
+                            try {
+                                OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
+                                String registrationId = token.getAuthorizedClientRegistrationId();
+                                String email = "";
+                                String avatarUri = "";
+                                String redirectUrl = "";
+                                if ("google".equals(registrationId)) {
+                                    DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
+                                    log.info(((OAuth2User) authentication.getPrincipal())
+                                            .getAttributes()
+                                            .toString());
+                                    email = user.getAttribute("email");
+                                    avatarUri = user.getAttribute("picture");
+                                    redirectUrl = String.format(
+                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
+                                            oauth2RedirectBase, registrationId, email, avatarUri);
+                                } else if ("facebook".equals(registrationId)) {
+                                    OAuth2User user = (OAuth2User) authentication.getPrincipal();
+                                    log.info(((OAuth2User) authentication.getPrincipal())
+                                            .getAttributes()
+                                            .toString());
+                                    avatarUri = (String) user.getAttribute("picture");
+                                    email = (String) user.getAttribute("email");
+                                    redirectUrl = String.format(
+                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
+                                            oauth2RedirectBase, registrationId, email, avatarUri);
+                                }
+                                response.sendRedirect(redirectUrl);
+                            } catch (Exception e) {
+                                log.error("OAuth2 success handler error", e);
+                                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                             }
-                            log.info("OAuth2 Login successful. Email: {}", email);
-                            var trans = oAuth2Service.processOAuthPostLoginGoogle(
-                                    new CreateProfileOauth2GoogleRequest(email, Provider.GOOGLE.toString(), avatarUri));
-                            log.info("OAuth2 Create account successful. Email: {}", trans.getEmail());
-                            // Retrieve the previously saved request URL
-                            String redirectUrl =
-                                    (String) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-                            // If no previous URL is saved, redirect to the default page
-                            if (redirectUrl == null || redirectUrl.isEmpty()) {
-                                redirectUrl = "/oauth2/userInfo/google";
-                            }
-                            response.sendRedirect(redirectUrl);
-                        } catch (Exception ex) {
-                            log.error("Error handling successful authentication", ex);
-                            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
-                        }
-                    });
-                    oAuth2Login.failureHandler(
-                            (HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    AuthenticationException exception) -> {
-                                // Log authentication failure
-                                log.error("OAuth2 login failed: {}", exception.getMessage());
-                                // Return an error response
-                                response.setContentType("application/json");
-                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                                response.getWriter()
-                                        .write("{\"error\": \"Authentication failed: " + exception.getMessage()
-                                                + "\"}");
-                            });
-                    // Configure OAuth2 authorization and redirection endpoints
-                    oAuth2Login
-                            .authorizationEndpoint(authorizationEndpointConfig ->
-                                    authorizationEndpointConfig.baseUri("/oauth2/authorization/google"))
-                            // Set redirection endpoint after login failure
-                            .redirectionEndpoint(redirectionEndpointConfig ->
-                                    redirectionEndpointConfig.baseUri("/oauth2/callback/google"));
-                })
-                // Configure form-based login behavior
-                .formLogin(formLogin -> {
-                    formLogin
-                            .loginPage("/login") // Custom login page
-                            .defaultSuccessUrl("/home") // Redirect after successful login
-                            .failureUrl("/login"); // Redirect to login page on failure
-                })
-                // Enable HTTP Basic authentication
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            log.error("OAuth2 login failed: {}", exception.getMessage());
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"error\": \"OAuth2 login failed\"}");
+                        }))
+                .formLogin(formLogin ->
+                        formLogin.loginPage("/login").defaultSuccessUrl("/home").failureUrl("/login"))
                 .httpBasic(Customizer.withDefaults())
-                // Disable CSRF protection (only recommended for JWT-based authentication)
-                .csrf(AbstractHttpConfigurer::disable)
                 .build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Password encoding
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

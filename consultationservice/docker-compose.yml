@@ -1,6 +1,7 @@
 version: '3.9'
 
 services:
+<<<<<<< HEAD
   consultation-service:
     build:
       context: ./consultationservice
@@ -22,6 +23,26 @@ services:
       - app-network
 
   mongodb:
+=======
+ consultation-service:
+   build:
+     context: .
+     dockerfile: Dockerfile
+   container_name: consultation_service
+   ports:
+     - "${SERVICE_PORT}:${SERVICE_PORT}"
+   environment:
+     SERVICE_ENV: ${SERVICE_ENV}
+     SERVICE_PORT: ${SERVICE_PORT}
+     DB_HOST: ${DB_HOST}
+     DB_PORT: ${DB_PORT}
+     DB_USER: ${DB_USER}
+     DB_PASS: ${DB_PASS}
+     DB_NAME: ${DB_NAME}
+   depends_on:
+     - mongodb
+mongodb:
+>>>>>>> dev_chessy
     image: mongo:latest
     container_name: mongodb
     ports:
@@ -36,7 +57,10 @@ services:
 
 volumes:
   mongo_data:
+<<<<<<< HEAD
 
 networks:
   app-network:
     driver: bridge
+=======
+>>>>>>> dev_chessy

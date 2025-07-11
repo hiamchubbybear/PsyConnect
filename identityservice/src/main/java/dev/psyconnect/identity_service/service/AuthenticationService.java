@@ -2,20 +2,21 @@ package dev.psyconnect.identity_service.service;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
-import com.nimbusds.jose.*;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -23,7 +24,7 @@ import com.nimbusds.jwt.SignedJWT;
 
 import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
 import dev.psyconnect.identity_service.dto.request.AuthenticationRequest;
-import dev.psyconnect.identity_service.dto.request.GoogleAuthenticationRequest;
+import dev.psyconnect.identity_service.dto.request.Oauth2AuthenticationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
 import dev.psyconnect.identity_service.dto.response.LogoutRequest;
 import dev.psyconnect.identity_service.dto.response.LogoutResponse;
@@ -64,7 +65,7 @@ public class AuthenticationService {
         return new BCryptPasswordEncoder(10);
     }
 
-    public String generateToken(AuthenticationRequest authenticationRequest, String loginType) {
+    public String generateToken(AuthenticationRequest authenticationRequest, String provider, String platForm) {
         Account account = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
@@ -80,30 +81,46 @@ public class AuthenticationService {
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
-                loginType);
+                provider,
+                platForm);
     }
 
-    public String generateGoogleAuthToken(GoogleAuthenticationRequest request, String loginType) {
+    public AuthenticationResponse generateOAuth2LoginToken(
+            Oauth2AuthenticationRequest request, String provider, String platForm) {
         Account account = userAccountRepository
                 .findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
-
+        log.info("Found session token {}, ", account.getSession().toString());
+        if (!request.getSessionToken().trim().equals(account.getSession().trim()))
+            throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
+        if (!request.getProvider().toUpperCase().equals(account.getProvider().toString()))
+            throw new CustomExceptionHandler(ErrorCode.AUTHENTICATE_REQUIRED_DENY);
         String role = null;
         if (account.getRole() != null && !account.getRole().isEmpty()) {
             role = account.getRole().iterator().next().getName();
         } else {
             throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
         }
-        return createJwtToken(
+        String jwtToken = createJwtToken(
                 request.getEmail(),
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
-                loginType);
+                provider,
+                platForm);
+        int effectRow =
+                userAccountRepository.updateSessionIdPostLogin(account.getEmail(), request.getSessionToken(), "");
+        if (effectRow <= 0) throw new CustomExceptionHandler(ErrorCode.DELETE_SESSION_FAILED);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .isSuccessful(true)
+                .build();
     }
 
-    private String createJwtToken(String subject, String accountId, String profileId, String role, String loginType) {
-        long expiration = loginType.equalsIgnoreCase("mobile") ? TIME_EXPIRED * 2 * 24 * 30L : TIME_EXPIRED;
+    private String createJwtToken(
+            String subject, String accountId, String profileId, String role, String provider, String platForm) {
+        long expiration =
+                platForm.toLowerCase().equalsIgnoreCase("mobile") ? TIME_EXPIRED * 2 * 24 * 30L : TIME_EXPIRED;
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(subject)
@@ -112,9 +129,10 @@ public class AuthenticationService {
                 .jwtID(UUID.randomUUID().toString())
                 .issuer("PsyConnect Authentication Service")
                 .claim("scope", buildScope(role))
-                .claim("type", loginType)
+                .claim("type", provider)
                 .claim("accountId", accountId)
                 .claim("profileId", profileId)
+                .claim("platform", platForm)
                 .build();
 
         JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS512), new Payload(claimsSet.toJSONObject()));
@@ -138,22 +156,22 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String loginType)
-            throws AuthenticationException {
+    public AuthenticationResponse authenticate(
+            AuthenticationRequest authenticationRequest, String provider, String clientPlatform) {
+
         var user = userAccountRepository
                 .findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         log.debug("User request token is {}", authenticationRequest.getUsername());
         var password = authenticationRequest.getPassword();
 
-        if (password == null) {
-            throw new IllegalArgumentException("Username and password are required");
-        } else if (!passwordEncoder().matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("Password does not match");
-        } else {
+        if (password == null) throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
+        else if (!passwordEncoder().matches(password, user.getPassword()))
+            throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
+        else {
             var response = AuthenticationResponse.builder()
                     .isSuccessful(true)
-                    .token(generateToken(authenticationRequest, loginType))
+                    .token(generateToken(authenticationRequest, provider, clientPlatform))
                     .build();
             log.debug("Token is {}", response.getToken());
             return response;
@@ -162,7 +180,6 @@ public class AuthenticationService {
 
     private String buildScope(String role) {
         StringBuilder builder = new StringBuilder();
-
         builder.append("role.").append(role).append(" ");
 
         roleRepository
@@ -177,9 +194,6 @@ public class AuthenticationService {
                         () -> {
                             throw new IllegalArgumentException("Invalid role: " + role);
                         });
-
-        log.debug("Built scope for role {}: {}", role, builder.toString().trim());
-
         return builder.toString().trim();
     }
 
@@ -221,7 +235,7 @@ public class AuthenticationService {
     }
 
     // Extract all claims from the token
-    private JWTClaimsSet extractAllClaims(String token) throws ParseException, JOSEException {
+    public JWTClaimsSet extractAllClaims(String token) throws ParseException, JOSEException {
         return verifyToken(token).getJWTClaimsSet();
     }
 
@@ -231,41 +245,13 @@ public class AuthenticationService {
     }
 
     // Validate the token against user details and expiration
-    public Boolean validateToken(String token, String username) throws ParseException, JOSEException {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
-    }
-
-    // Validate the token against user details and expiration
     public Boolean validateToken(String token, AuthenticationFilterRequest authenticationRequest)
             throws ParseException, JOSEException {
         final String username = extractUsername(token);
         return (username.equals(authenticationRequest.getUsername()) && !isTokenExpired(token));
     }
 
-    public static String extractUsernameAuthenticationObject(Authentication authentication) {
-        if (authentication == null) {
-            throw new CustomExceptionHandler(ErrorCode.UNAUTHORIZED);
-        }
-        return authentication.getName();
-    }
-
-    public boolean isTokenInvalid(String token) {
-        return blackListTokenRepository.existsByToken(token);
-    }
-
-    public static String extractUUIDClaim(Authentication authentication) {
-        if (authentication == null) {
-            throw new CustomExceptionHandler(ErrorCode.UNAUTHORIZED);
-        }
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof org.springframework.security.oauth2.jwt.Jwt) {
-            org.springframework.security.oauth2.jwt.Jwt jwt = (Jwt) principal;
-            Map<String, Object> returnValue = (jwt.getClaims());
-            String uuid = returnValue.get("uuid").toString();
-            log.debug("UUID is {}", uuid);
-            return uuid;
-        }
-        throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
+    public boolean isTokenValid(String token) {
+        return !blackListTokenRepository.existsByToken(token);
     }
 }

@@ -1,0 +1,63 @@
+@use '../../../styles/variables' as v;
+
+.footer {
+  background-color: v.$color-bg;
+  color: v.$color-text;
+  padding: 2rem;
+  font-family: v.$font-primary;
+  border-top: 1px solid #eaeaea;
+
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+
+    .footer-brand {
+      max-width: 300px;
+
+      h2 {
+        font-size: v.$font-size-xl;
+        color: v.$color-primary;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        font-size: v.$font-size-sm;
+        color: #666;
+      }
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 3rem;
+
+      .footer-column {
+        h4 {
+          font-size: v.$font-size-md;
+          margin-bottom: 0.5rem;
+          color: v.$color-text;
+        }
+
+        a {
+          display: block;
+          font-size: v.$font-size-sm;
+          color: #666;
+          text-decoration: none;
+          margin-bottom: 0.25rem;
+
+          &:hover {
+            color: v.$color-primary;
+          }
+        }
+      }
+    }
+  }
+
+  .footer-bottom {
+    text-align: center;
+    font-size: v.$font-size-sm;
+    color: #888;
+  }
+}

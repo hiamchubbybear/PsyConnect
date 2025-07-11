@@ -44,7 +44,8 @@ public class Account {
     @ManyToMany(fetch = FetchType.EAGER)
     Set<RoleEntity> role;
 
-    UUID session;
+    @Column(name = "session", columnDefinition = "VARCHAR(255)")
+    String session;
 
     @OneToOne
     private Token token;
@@ -60,7 +61,7 @@ public class Account {
         admin.isActivated = true;
         admin.createdAt = Timestamp.from(Instant.now());
         admin.role = Set.of(roleEntity);
-        admin.session = UUID.randomUUID();
+        admin.session = UUID.randomUUID().toString();
         admin.token = null;
         return admin;
     }

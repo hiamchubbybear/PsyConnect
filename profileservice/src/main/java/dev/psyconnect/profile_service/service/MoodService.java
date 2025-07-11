@@ -15,6 +15,7 @@ import dev.psyconnect.profile_service.dto.response.*;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.profile_service.model.Mood;
+import dev.psyconnect.profile_service.model.Profile;
 import dev.psyconnect.profile_service.repository.MoodRepository;
 import dev.psyconnect.profile_service.repository.ProfileRepository;
 import lombok.AccessLevel;
@@ -32,9 +33,14 @@ public class MoodService {
 
     @CacheEvict(key = "#profileId", value = "mood")
     public MoodCreateResponse createMoodByProfileId(String profileId, MoodCreateRequest request) {
-        if (!profileRepository.existsById(profileId) || moodRepository.existsById(profileId))
-            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
-        log.info("Profile Id {}", profileId);
+        log.info("Create mood for user with profile id  {} ", profileId);
+        log.info("Mood description {}", request.getMood());
+        log.info("Mood description {}", request.getMoodDescription());
+        log.info("Mood visibility {}", request.getVisibility());
+        if (!profileRepository.existsById(profileId)) throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
+        if (profileRepository.hasMood(profileId)) {
+            throw new CustomExceptionHandler(ErrorCode.MOOD_ALREADY_EXISTS);
+        }
         // Ho_Chi_Minh TimeZones
         final int TIME_ZONE = +7;
         Map<String, Long> dateTime = Time.MOOD_EXPIRES;
@@ -50,7 +56,6 @@ public class MoodService {
                         currentTime,
                         expiresTime)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
-        log.info("Creating mood for profile {}", response.getMood());
         return MoodCreateResponse.builder()
                 .profileId(profileId)
                 .isSuccess(true)
@@ -66,7 +71,6 @@ public class MoodService {
         var response = moodRepository
                 .updateMood(profileId, request.getMood(), request.getMoodDescription(), request.getVisibility())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
-        log.info("Updating mood for profile {}", response.getMood());
         return MoodCreateResponse.builder()
                 .isSuccess(true)
                 .moodDescription(response.getDescription())
@@ -76,9 +80,20 @@ public class MoodService {
 
     @Cacheable(key = "#profileId", value = "mood")
     public GetMoodResponse getMoodById(String profileId) {
-        Mood mood =
-                moodRepository.getMood(profileId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.QUERY_FAILED));
-        return GetMoodResponse.builder()
+        Profile profile = profileRepository
+                .findById(profileId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        log.info("Profile {}", profile);
+        String fullName = profile.getFirstName() + profile.getLastName();
+        Mood mood = profile.getMoodList();
+
+        if (mood == null) {
+            throw new CustomExceptionHandler(ErrorCode.RESOURCE_NOT_FOUND);
+        }
+        GetMoodResponse res = GetMoodResponse.builder()
+                .profileId(profileId)
+                .avatarUrl(profile.getAvatarUri())
+                .fullName(fullName)
                 .moodId(mood.getMoodId())
                 .mood(mood.getMood())
                 .description(mood.getDescription())
@@ -86,6 +101,9 @@ public class MoodService {
                 .createdAt(mood.getCreatedAt())
                 .visibility(mood.getVisibility())
                 .build();
+
+        log.info(res.toString());
+        return res;
     }
 
     @CacheEvict(key = "#profileId", value = "mood")
@@ -98,6 +116,7 @@ public class MoodService {
                 .build();
     }
 
+    @Cacheable(key = "#profileId", value = "moodListFriends")
     public List<FriendMoodDTO> getFriendsMood(String profileId) {
         List<ProfileWithMood> foundObject = profileRepository.findFriendsWithMoodsByProfileId(profileId);
         List<FriendMoodDTO> response = new ArrayList<>();

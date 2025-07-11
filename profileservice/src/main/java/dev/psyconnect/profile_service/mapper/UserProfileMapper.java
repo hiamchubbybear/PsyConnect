@@ -2,6 +2,7 @@ package dev.psyconnect.profile_service.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 import dev.psyconnect.grpc.ProfileCreationRequest;
 import dev.psyconnect.grpc.ProfileCreationResponse;
@@ -31,7 +32,16 @@ public interface UserProfileMapper {
 
     UserProfileUpdateResponse toUserProfileUpdateResponse(UserProfileUpdateResponse updatedUser);
 
-    @Mapping(ignore = true, target = "dob")
+    @Mappings({
+        @Mapping(source = "accountId", target = "accountId"),
+        @Mapping(source = "profileId", target = "profileId"),
+        @Mapping(source = "firstName", target = "firstName"),
+        @Mapping(source = "lastName", target = "lastName"),
+        @Mapping(source = "dob", target = "dob", dateFormat = "yyyy-MM-dd"),
+        @Mapping(source = "address", target = "address"),
+        @Mapping(source = "gender", target = "gender"),
+        @Mapping(source = "avatarUri", target = "avatarUri"),
+    })
     UserProfileResponse toUserProfileRequest(Profile profile);
 
     UserProfileCreationRequest toUserProfileRequest(ProfileCreationRequest profile);

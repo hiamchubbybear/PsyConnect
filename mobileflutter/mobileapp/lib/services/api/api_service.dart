@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static final String _baseUrl =
-      Platform.isAndroid ? androidBaseUrl : iosBaseUrl;
+  static final String _baseUrl = baseUrl;
 
   static Future<http.Response> post({
     required String endpoint,
@@ -62,11 +60,31 @@ class ApiService {
     required String token,
     required Map<String, dynamic> body,
   }) async {
-    final Uri uri = Uri.parse("$_baseUrl/$endpoint");
+    final Uri uri = Uri.parse("$_baseUrl$endpoint");
     try {
       return await http.post(
         uri,
-        body: body,
+        body: jsonEncode(body),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } catch (e) {
+      throw Exception("Failed to connect to backend: $e");
+    }
+  }
+
+  static Future<http.Response> putWithTokenAndBody({
+    required String? token,
+    required String? endpoint,
+    required Map<String, dynamic> body,
+  }) async {
+    final Uri uri = Uri.parse("$_baseUrl/$endpoint");
+    try {
+      return await http.put(
+        uri,
+        body: jsonEncode(body),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',

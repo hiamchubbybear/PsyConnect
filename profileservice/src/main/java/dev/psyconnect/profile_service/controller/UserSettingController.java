@@ -3,9 +3,7 @@ package dev.psyconnect.profile_service.controller;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.profile_service.apiresponse.ApiResponse;
-import dev.psyconnect.profile_service.configuration.filter.AllowedRoles;
 import dev.psyconnect.profile_service.dto.request.UserSettingRequest;
-import dev.psyconnect.profile_service.dto.response.DeleteResponse;
 import dev.psyconnect.profile_service.dto.response.UserSettingResponse;
 import dev.psyconnect.profile_service.kafka.service.KafkaService;
 import dev.psyconnect.profile_service.model.Setting;
@@ -19,15 +17,8 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserSettingController {
-    UserSettingService userSettingService;
+    private final UserSettingService userSettingService;
     private final KafkaService kafkaService;
-
-    @PostMapping("/add")
-    public ApiResponse<UserSettingResponse> addUserSetting(
-            @RequestHeader(value = "X-Profile-Id", required = true) String id,
-            @RequestBody UserSettingRequest request) {
-        return new ApiResponse<>(userSettingService.createUserSetting(id, request));
-    }
 
     @GetMapping()
     public ApiResponse<Setting> getUserSetting(@RequestHeader(value = "X-Profile-Id", required = true) String id) {
@@ -36,18 +27,9 @@ public class UserSettingController {
 
     @PutMapping()
     public ApiResponse<UserSettingResponse> updateUserSetting(
-            @RequestHeader(value = "X-Profile-Id", required = true) String id,
-            @RequestBody UserSettingRequest request) {
+            @RequestHeader(value = "X-Profile-Id") String id, @RequestBody UserSettingRequest request) {
         request.setProfileId(id);
-        kafkaService.send("profile.user-update-setting", request);
         return new ApiResponse<>(userSettingService.updateUserSetting(id, request));
-    }
-
-    @DeleteMapping()
-    @AllowedRoles({"ADMIN"})
-    public ApiResponse<DeleteResponse> deleteUserSetting(
-            @RequestHeader(value = "X-Profile-Id", required = true) String id) {
-        return new ApiResponse<>(userSettingService.deleteUserSetting(id));
     }
 
     @PostMapping("/default")

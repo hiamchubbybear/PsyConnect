@@ -37,5 +37,13 @@ public interface UserAccountRepository extends JpaRepository<Account, UUID> {
     @Query("SELECT u.isActivated AS boolean_value FROM Account  u where u.email=?1")
     boolean isActiveByEmail(String email);
 
+    @Query("""
+			UPDATE Account m SET m.session = :newsession  WHERE m.email = :email and m.session=:session
+			""")
+    @Transactional
+    @Modifying
+    int updateSessionIdPostLogin(
+            @Param("email") String email, @Param("session") String session, @Param("newsession") String newsession);
+
     Page<Account> findAll(Pageable pageable);
 }
