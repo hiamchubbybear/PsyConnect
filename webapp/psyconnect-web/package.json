@@ -8,6 +8,14 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
+    "assets": [
+    {
+        "glob": "**/*",
+        "input": "assets",
+        "output": "assets"
+    },
+    "favicon.ico"
+    ],
   "prettier": {
     "overrides": [
       {

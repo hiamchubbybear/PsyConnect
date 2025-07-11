@@ -1,0 +1,25 @@
+@use "sass:color" as c;
+
+// Fonts
+$font-primary: 'Quicksand', sans-serif;
+
+// Font Sizes
+$font-size-sm: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.25rem;
+$font-size-xl: 1.5rem;
+// Colors
+$color-primary: #111827;
+$color-primary-hover: c.adjust($color-primary, $lightness: 10%);
+$color-primary-hover: #222;
+$color-text: #333;
+$color-primary-text: #ffffff;
+$color-white: #fff;
+$color-bg: #ffffff;
+$color-gray: #D1D5DB;
+$color-bg-cta : #111827;
+// Button
+$btn-border-width: 1px;
+$btn-border-radius: 5px;
+$btn-border-color: $color-gray;
+$color-gray-light: #F3F4F6;

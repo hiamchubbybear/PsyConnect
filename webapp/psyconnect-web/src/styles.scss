@@ -1,1 +1,12 @@
-/* You can add global styles to this file, and also import other style files */
+@use './app/styles/_variable.scss' as v;
+
+body {
+  font-family: v.$font-primary;
+  font-size: v.$font-size-md;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
+}

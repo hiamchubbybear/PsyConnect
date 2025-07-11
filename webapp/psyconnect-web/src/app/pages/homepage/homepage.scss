@@ -1,0 +1,187 @@
+@use "sass:color" as c;
+@use "../../styles/variable" as v;
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 0;
+  flex-wrap: wrap;
+
+  .hero-content {
+    flex: 1;
+
+    h1 {
+      font-family: v.$font-primary;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: v.$color-text;
+    }
+
+    p {
+      font-family: v.$font-primary;
+      font-size: v.$font-size-lg;
+      margin-bottom: 2rem;
+      color: v.$color-text;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+
+  .hero-image {
+    flex: 1;
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+}
+
+.features {
+  text-align: center;
+  padding: 4rem 0;
+
+  h2 {
+    font-family: v.$font-primary;
+    font-size: v.$font-size-xl;
+    color: v.$color-text;
+  }
+
+  p {
+    font-family: v.$font-primary;
+    font-size: v.$font-size-md;
+    color: v.$color-text;
+  }
+
+  .feature-cards {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+
+    .card {
+      flex: 1;
+      min-width: 250px;
+      background: v.$color-bg;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      font-family: v.$font-primary;
+      color: v.$color-text;
+    }
+  }
+}
+
+.app-preview {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 4rem 0;
+  flex-wrap: wrap;
+
+  .preview-image {
+    flex: 1;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .preview-content {
+    flex: 1;
+
+    h2 {
+      font-family: v.$font-primary;
+      font-size: v.$font-size-xl;
+      margin-bottom: 1rem;
+      color: v.$color-text;
+    }
+
+    ul {
+      list-style: disc;
+      padding-left: 1.5rem;
+
+      li {
+        font-family: v.$font-primary;
+        font-size: v.$font-size-md;
+        color: v.$color-text;
+      }
+    }
+  }
+}
+
+.cta {
+  text-align: center;
+  padding: 4rem 0;
+  background-color: v.$color-bg-cta;
+  h2 {
+    font-family: v.$font-primary;
+    font-size: v.$font-size-xl;
+    color: v.$color-white;
+  }
+  p {
+    color: v.$color-white;
+  }
+  .cta-buttons {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: v.$btn-border-radius;
+  font-weight: 600;
+  text-decoration: none;
+  font-family: v.$font-primary;
+  font-size: v.$font-size-md;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+
+  &.primary {
+    color: v.$color-text;
+    background-color: v.$color-white;
+    border: v.$btn-border-width solid v.$btn-border-color;
+
+    &:hover {
+      background: v.$color-gray; // Chuyển thành xám nhạt nhẹ
+    }
+  }
+
+  &.secondary {
+    background: transparent;
+    color: v.$color-white;
+    border: v.$btn-border-width solid v.$color-white;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05); // Chỉ overlay nhạt
+    }
+  }
+
+  &.start {
+    color: v.$color-white;
+    background-color: v.$color-primary;
+    border: v.$btn-border-width solid v.$color-primary;
+
+    &:hover {
+      background: c.adjust(v.$color-primary, $lightness: -5%); // Tối hơn một chút
+    }
+  }
+
+  &.about {
+    color: v.$color-text;
+    background-color: v.$color-white;
+    border: v.$btn-border-width solid v.$color-gray;
+
+    &:hover {
+      background: v.$color-gray;
+      color: v.$color-text;
+    }
+  }
+}

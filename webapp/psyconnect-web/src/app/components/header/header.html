@@ -1,0 +1,28 @@
+<header class="header" [class.hidden]="isHidden">
+  <div class="header-left">
+    <a href="/" class="logo">Calme</a>
+  </div>
+
+  <nav class="header-center">
+    <a href="/feature">Feature</a>
+    <a href="/therapist">Therapist</a>
+    <a href="/community">Community</a>
+    <a href="/about">About</a>
+  </nav>
+
+  <div class="header-right">
+    <a href="/login" class="auth">Login</a>
+    <a href="/signup" class="auth signup">Sign Up</a>
+  </div>
+
+  <div class="menu-toggle" (click)="toggleMenu()">☰</div>
+
+  <div class="mobile-menu" [class.open]="isMenuOpen">
+    <a href="/feature">Feature</a>
+    <a href="/therapist">Therapist</a>
+    <a href="/community">Community</a>
+    <a href="/about">About</a>
+    <a href="/login">Login</a>
+    <a href="/signup" class="signup">Sign Up</a>
+  </div>
+</header>

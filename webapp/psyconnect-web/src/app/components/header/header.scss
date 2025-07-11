@@ -1,0 +1,118 @@
+@use "../../styles/variable" as v;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: v.$color-bg;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  font-family: v.$font-primary;
+
+  .logo {
+    font-size: v.$font-size-xl;
+    font-weight: bold;
+    color: v.$color-primary;
+    text-decoration: none;
+  }
+
+  nav.header-center {
+    display: flex;
+    gap: 2rem;
+
+    a {
+      text-decoration: none;
+      color: v.$color-text;
+      font-weight: 500;
+      font-size: v.$font-size-md;
+
+      &:hover {
+        color: v.$color-primary;
+      }
+    }
+  }
+
+  .header-right {
+    display: flex;
+    gap: 1rem;
+
+    .auth {
+      text-decoration: none;
+      font-weight: 500;
+      color: v.$color-text;
+      font-size: v.$font-size-md;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+
+      &:hover {
+        color: v.$color-primary;
+      }
+
+      &.signup {
+        background-color: v.$color-primary;
+        color: v.$color-white;
+        padding: 0.4rem 0.8rem;
+        border: 1px solid v.$color-primary;
+        border-radius: 5px;
+        &:hover {
+          background-color: v.$color-primary-hover;
+        }
+      }
+    }
+  }
+
+  .menu-toggle {
+    display: none;
+    font-size: v.$font-size-xl;
+    cursor: pointer;
+  }
+
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: v.$color-white;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+
+    a {
+      padding: 0.5rem 0;
+      text-decoration: none;
+      color: v.$color-text;
+      font-size: v.$font-size-md;
+
+      &.signup {
+        margin-top: 0.5rem;
+        background: v.$color-primary;
+        color: v.$color-white;
+        padding: 0.4rem 0.8rem;
+        border-radius: 5px;
+        display: inline-block;
+
+        &:hover {
+          background-color: v.$color-primary-hover;
+        }
+      }
+    }
+
+    &.open {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 768px) {
+    nav.header-center,
+    .header-right {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: block;
+    }
+  }
+}
