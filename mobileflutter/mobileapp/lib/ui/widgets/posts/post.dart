@@ -48,6 +48,7 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: themeProvider.isDarkMode ? blackColor : whiteColor,
       margin: const EdgeInsets.all(15),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -72,8 +73,7 @@ class _PostWidgetState extends State<PostWidget> {
                         children: [
                           Text(
                             widget.name,
-                            style: GoogleFonts.quicksand(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+                            style: kSubHeadingStyle,
                             overflow: TextOverflow.ellipsis,
                           ),
                           PostOptionsMenu(
@@ -90,7 +90,13 @@ class _PostWidgetState extends State<PostWidget> {
                         Text(
                             timeago.format(DateTime.fromMillisecondsSinceEpoch(
                                 widget.postedTime)),
-                            style: quickSand12Font),
+                            style: GoogleFonts.quicksand(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w400,
+                              color: themeProvider.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
+                            )),
                         const SizedBox(width: 5),
                         Icon(
                             widget.privacy == "public"
@@ -105,7 +111,14 @@ class _PostWidgetState extends State<PostWidget> {
               ],
             ),
             const SizedBox(height: 10),
-            Text("${widget.content}"),
+            Text(
+              "${widget.content}",
+              style: GoogleFonts.quicksand(
+                fontSize: 11,
+                fontWeight: FontWeight.w400,
+                color: themeProvider.isDarkMode ? Colors.white : Colors.black,
+              ),
+            ),
             const SizedBox(height: 5),
             (widget.postImageUri) != null
                 ? ClipRRect(

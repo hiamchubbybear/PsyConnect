@@ -55,21 +55,26 @@ TextStyle subHeadingStyle = GoogleFonts.quicksand(
   fontWeight: FontWeight.bold,
   color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
+TextStyle subHeadingBlackStyle = GoogleFonts.quicksand(
+  fontSize: 25,
+  fontWeight: FontWeight.bold,
+  color:  Colors.black,
+);
 const double kDefault = 16.0;
 const double kCircle = 20;
 
-TextStyle kHeadingStyle = TextStyle(
+TextStyle kHeadingStyle = GoogleFonts.quicksand(
   fontSize: 24,
   fontWeight: FontWeight.bold,
   color: themeProvider.isDarkMode ? Colors.white : Colors.black,
 );
 
-TextStyle kSubHeadingStyle = TextStyle(
+TextStyle kSubHeadingStyle = GoogleFonts.quicksand(
   fontSize: 16,
   fontWeight: FontWeight.w500,
   color: themeProvider.isDarkMode ? Colors.white : Colors.grey,
 );
-TextStyle kSubHintStyle = TextStyle(
+TextStyle kSubHintStyle = GoogleFonts.quicksand(
   fontSize: 13,
   fontWeight: FontWeight.w300,
   color: themeProvider.isDarkMode ? Colors.white : Colors.grey,
@@ -83,4 +88,20 @@ TextStyle kSubHeadingRegisterPage = GoogleFonts.quicksand(
 TextStyle kSecondarirySubHeadingRegisterPage = GoogleFonts.quicksand(
   fontSize: 16,
   color: themeProvider.isDarkMode ? Colors.white : Colors.grey[600],
+);
+TextStyle kSecondarirySubHeadingVerifiedPage = GoogleFonts.quicksand(
+  fontSize: 20,
+  fontWeight: FontWeight.bold,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.grey[600],
+);
+
+TextStyle quickSand12FontMoodCreate = GoogleFonts.quicksand(
+  fontSize: 11,
+  fontWeight: FontWeight.w400,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.grey[600],
+);
+TextStyle kSubHeadingButtonStyle = GoogleFonts.quicksand(
+  fontSize: 13,
+  fontWeight: FontWeight.bold,
+  color: themeProvider.isDarkMode ? Colors.white : Colors.grey,
 );

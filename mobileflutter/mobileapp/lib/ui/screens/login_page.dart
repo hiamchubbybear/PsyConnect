@@ -1,3 +1,4 @@
+import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/provider/auth_token_provider.dart';
 import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/provider/user_profile_provider.dart';
@@ -5,6 +6,7 @@ import 'package:PsyConnect/services/account_service/login.dart';
 import 'package:PsyConnect/ui/screens/forgot_page.dart';
 import 'package:PsyConnect/ui/screens/my_home_page.dart';
 import 'package:PsyConnect/ui/screens/register_page.dart';
+import 'package:PsyConnect/ui/screens/update_password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -68,7 +70,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       backgroundColor: themeProvider.isDarkMode ? Colors.black : Colors.white,
@@ -157,6 +158,35 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialPageRoute(
                               builder: (context) =>
                                   const MultiStepRegisterPage()),
+                        );
+                      },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 8),
+            RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: 16,
+                  color: subtitleColor,
+                  fontWeight: FontWeight.w400,
+                ),
+                children: [
+                  const TextSpan(text: 'Forgot password '),
+                  TextSpan(
+                    text: 'reset now',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: subtitleColor,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const ForgotPasswordPage()),
                         );
                       },
                   ),
