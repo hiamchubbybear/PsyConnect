@@ -1,19 +1,21 @@
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/profile_mood.dart';
-import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/services/profile_service/mood.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class MoodNoteBubbleWithSmoke extends StatelessWidget {
   final String text;
+  final bool isDark;
 
-  const MoodNoteBubbleWithSmoke({super.key, required this.text});
+  const MoodNoteBubbleWithSmoke({
+    super.key,
+    required this.text,
+    required this.isDark,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
     return Column(
       children: [
         Row(
@@ -21,67 +23,65 @@ class MoodNoteBubbleWithSmoke extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 2,
-              backgroundColor: themeProvider.isDarkMode
-                  ? Colors.grey.shade500
-                  : Colors.grey.shade300,
+              backgroundColor:
+                  isDark ? Colors.grey.shade500 : Colors.grey.shade300,
             ),
             const SizedBox(width: 4),
             CircleAvatar(
               radius: 4,
-              backgroundColor: themeProvider.isDarkMode
-                  ? Colors.grey.shade400
-                  : Colors.grey.shade400,
+              backgroundColor:
+                  isDark ? Colors.grey.shade400 : Colors.grey.shade400,
             ),
             const SizedBox(width: 4),
             CircleAvatar(
               radius: 6,
-              backgroundColor: themeProvider.isDarkMode
-                  ? Colors.grey.shade300
-                  : Colors.grey.shade500,
+              backgroundColor:
+                  isDark ? Colors.grey.shade300 : Colors.grey.shade500,
             ),
           ],
         ),
         const SizedBox(height: 6),
         Container(
+          constraints: const BoxConstraints(
+            minWidth: 60,
+            minHeight: 40,
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color:
-                themeProvider.isDarkMode ? Colors.grey.shade800 : Colors.white,
+            color: isDark ? Colors.grey.shade800 : Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: themeProvider.isDarkMode
-                  ? Colors.grey.shade600
-                  : Colors.grey.shade200,
+              color: isDark ? Colors.grey.shade600 : Colors.grey.shade200,
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black
-                    .withOpacity(themeProvider.isDarkMode ? 0.3 : 0.1),
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
             ],
           ),
+          alignment: Alignment.center,
           child: Text(
             text,
-            style: quickSand12FontMoodCreate,
+            style: quickSand12FontMoodCreate.copyWith(
+                color: isDark ? whiteColor : secondaryColor),
             overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
     );
-  }
+}
 }
 
-void _showDeleteConfirmation(
-    BuildContext context, ProfileMoodModel mood, VoidCallback? onMoodCreated) {
+void _showDeleteConfirmation(BuildContext context, ProfileMoodModel mood,
+    VoidCallback? onMoodCreated, bool isDark) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        backgroundColor:
-            themeProvider.isDarkMode ? Colors.grey.shade900 : Colors.white,
+        backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -96,9 +96,7 @@ void _showDeleteConfirmation(
           "Are you sure you want to delete this mood? This action cannot be undone.",
           style: kSubHeadingStyle.copyWith(
             fontSize: 14,
-            color: themeProvider.isDarkMode
-                ? Colors.white70
-                : Colors.grey.shade600,
+            color: isDark ? Colors.white70 : Colors.grey.shade600,
           ),
         ),
         actions: [
@@ -106,9 +104,7 @@ void _showDeleteConfirmation(
             child: Text(
               "Cancel",
               style: kSubHeadingStyle.copyWith(
-                color: themeProvider.isDarkMode
-                    ? Colors.white70
-                    : Colors.grey.shade600,
+                color: isDark ? Colors.white70 : Colors.grey.shade600,
                 fontWeight: FontWeight.w500,
               ),
             ),

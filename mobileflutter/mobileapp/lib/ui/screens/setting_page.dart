@@ -104,7 +104,6 @@ class _SettingsPageState extends State<SettingsPage> {
         allowLoginAlerts: allowLoginAlerts,
         autoDeleteOldMoods: autoDeleteOldMoods,
       );
-      // themeProvider.toggleTheme(!themeProvider.isDarkMode);
       final prefs = SharedPreferencesProvider();
       await prefs.setSetting(newSetting);
       SettingService settingService = SettingService();
@@ -246,50 +245,64 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildDropdownRow(String title, String value, List<String> items,
-      Function(String) onChanged,
-      {IconData? icon}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Row(
-        children: [
-          if (icon != null) ...[
-            Icon(
-              icon,
-              size: 20,
-              color: themeProvider.isDarkMode
-                  ? Colors.white70
-                  : Colors.grey.shade600,
-            ),
-            const SizedBox(width: 16),
-          ],
-          Expanded(
-            child: Text(
-              title,
-              style: kSubHeadingStyle.copyWith(
-                fontWeight: FontWeight.w500,
-                fontSize: 15,
-              ),
+  Widget _buildDropdownRow(
+  BuildContext context,
+  String title,
+  String value,
+  List<String> items,
+  Function(String) onChanged, {
+  IconData? icon,
+}) {
+  final isDark = themeProvider.isDarkMode;
+  final screenWidth = MediaQuery.of(context).size.width;
+
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    child: Row(
+      children: [
+        if (icon != null) ...[
+          Icon(
+            icon,
+            size: 20,
+            color: isDark ? Colors.white70 : Colors.grey.shade600,
+          ),
+          const SizedBox(width: 16),
+        ],
+        Expanded(
+          child: Text(
+            title,
+            style: kSubHeadingStyle.copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: 15,
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: themeProvider.isDarkMode
-                  ? Colors.grey.shade700
-                  : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-            ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: SizedBox(
+            width: screenWidth * 0.20,
             child: DropdownButton<String>(
+              isDense: true,
+              isExpanded: true,
               value: value,
               underline: const SizedBox(),
-              style: kSubHeadingStyle.copyWith(fontSize: 14),
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                size: 20,
+                color: isDark ? Colors.white70 : Colors.grey.shade600,
+              ),
+              style: kSubHeadingStyle.copyWith(fontSize: 13),
               items: items.map((item) {
                 return DropdownMenuItem(
                   value: item,
                   child: Text(
                     item.toUpperCase(),
-                    style: kSubHeadingStyle.copyWith(fontSize: 14),
+                    style: kSubHeadingStyle.copyWith(fontSize: 13),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 );
               }).toList(),
@@ -298,10 +311,11 @@ class _SettingsPageState extends State<SettingsPage> {
               },
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -399,13 +413,13 @@ class _SettingsPageState extends State<SettingsPage> {
           _buildSection(
             "Preferences",
             [
-              _buildDropdownRow("Language", setting!.language, languages,
+              _buildDropdownRow(context ,"Language", setting!.language, languages,
                   (val) {
                 setState(() {
                   setting = setting!.copyWith(language: val);
                 });
               }, icon: Icons.language_outlined),
-              _buildDropdownRow("Theme", setting!.theme, themes, (val) {
+              _buildDropdownRow(context ,"Theme", setting!.theme, themes, (val) {
                 setState(() {
                   setting = setting!.copyWith(theme: val);
                   themeProvider.toggleTheme(val == 'dark');

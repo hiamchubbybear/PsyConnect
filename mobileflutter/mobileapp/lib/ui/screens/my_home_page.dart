@@ -1,8 +1,11 @@
+import 'package:PsyConnect/core/colors/color.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
+import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/ui/screens/home_page_scroll_view.dart';
 import 'package:PsyConnect/ui/screens/profile_page.dart';
 import 'package:PsyConnect/ui/screens/schedule_home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -42,8 +45,8 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     Size size = MediaQuery.of(context).size;
-    final theme = Theme.of(context);
     return Scaffold(
       extendBody: true,
       body: TabBarView(
@@ -59,9 +62,10 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: theme.primaryColor,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
+        backgroundColor: isDark ? secondaryColor : primaryColor,
         elevation: 2,
+        child: Icon(Icons.add,
+            color: isDark ? blackColor : Colors.white, size: 28),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
@@ -70,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage>
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
               spreadRadius: 2,
@@ -91,12 +96,14 @@ class _MyHomePageState extends State<MyHomePage>
                     activeIcon: Icons.home,
                     label: 'Home',
                     index: 0,
+                    isDark: isDark
                   ),
                   _buildNavItem(
                     icon: Icons.calendar_today_outlined,
                     activeIcon: Icons.calendar_today,
                     label: 'Schedule',
                     index: 1,
+                    isDark: isDark
                   ),
                   const SizedBox(width: 40),
                   _buildNavItem(
@@ -104,12 +111,14 @@ class _MyHomePageState extends State<MyHomePage>
                     activeIcon: Icons.chat,
                     label: 'Chat',
                     index: 3,
+                    isDark: isDark
                   ),
                   _buildNavItem(
                     icon: Icons.person_outline,
                     activeIcon: Icons.person,
                     label: 'Profile',
                     index: 4,
+                    isDark: isDark
                   ),
                 ],
               ),
@@ -125,9 +134,10 @@ class _MyHomePageState extends State<MyHomePage>
     required IconData activeIcon,
     required String label,
     required int index,
+    required bool isDark,
   }) {
     final isActive = _currentIndex == index;
-    final color = isActive ? Theme.of(context).primaryColor : Colors.grey;
+    final color = isActive ? Colors.grey : Colors.grey;
 
     return InkWell(
       onTap: () {
@@ -147,7 +157,10 @@ class _MyHomePageState extends State<MyHomePage>
             size: 23,
           ),
           const SizedBox(height: 2),
-          Text(label, style: quickSand12Font),
+          Text(label,
+              style: quickSand12Font.copyWith(
+                color: isDark ? Colors.white : Colors.black,
+              )),
         ],
       ),
     );

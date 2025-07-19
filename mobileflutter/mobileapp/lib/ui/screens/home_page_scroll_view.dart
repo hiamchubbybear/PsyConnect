@@ -1,10 +1,10 @@
-
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/utils/utils.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/mood.dart';
 import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/user_profile.dart';
+import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/services/profile_service/mood.dart';
 import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/widgets/posts/create_mood.dart';
@@ -12,6 +12,7 @@ import 'package:PsyConnect/ui/widgets/posts/mood.dart';
 import 'package:PsyConnect/ui/widgets/posts/post.dart';
 import 'package:PsyConnect/validate/validate.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
 class HomePageScrollView extends StatefulWidget {
@@ -87,86 +88,97 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final bool isDark = themeProvider.isDarkMode;
+
+    final double topPadding = MediaQuery.of(context).padding.top + 25;
+
     return Scaffold(
-      backgroundColor: themeProvider.isDarkMode ? Colors.black : Colors.white,
-      body: SafeArea(
-        child: SmartRefresher(
-          controller: _refreshController,
-          enablePullDown: true,
-          enablePullUp: true,
-          onRefresh: _onRefresh,
-          onLoading: _onLoading,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: FutureBuilder<List<ProfileMoodModel>>(
-                    future: moodFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return const Center(child: Text("Failed to load data"));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return FutureBuilder<UserProfile>(
-                          future: userProfile,
-                          builder: (context, userSnap) {
-                            if (!userSnap.hasData) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            final user = userSnap.data!;
-                            final selfMood = ProfileMoodModel(
-                              profileId: user.getProfileId,
-                              fullName: user.getFirstName,
-                              avatarUri: user.getAvatarUri,
-                              mood: "",
-                              moodId: '',
-                              moodDescription: '',
-                              visibility: '',
-                              createdAt: 0,
-                              expiresAt: 0,
-                            );
-                            return StoriesWidget(
-                              profilesMood: [selfMood],
-                              onMoodCreated: _onMoodCreated,
-                            );
-                          },
-                        );
-                      }
-                      return StoriesWidget(
-                        profilesMood: snapshot.data!,
-                        onMoodCreated: _onMoodCreated,
+      backgroundColor: isDark ? Colors.black : Colors.white,
+      body: SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        enablePullUp: true,
+        onRefresh: _onRefresh,
+        onLoading: _onLoading,
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.only(top: topPadding, bottom: 10),
+              sliver: SliverToBoxAdapter(
+                child: FutureBuilder<List<ProfileMoodModel>>(
+                  future: moodFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return const Center(child: Text("Failed to load data"));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return FutureBuilder<UserProfile>(
+                        future: userProfile,
+                        builder: (context, userSnap) {
+                          if (!userSnap.hasData) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          final user = userSnap.data!;
+                          final selfMood = ProfileMoodModel(
+                            profileId: user.getProfileId,
+                            fullName: user.getFirstName,
+                            avatarUri: user.getAvatarUri,
+                            mood: "",
+                            moodId: '',
+                            moodDescription: '',
+                            visibility: '',
+                            createdAt: 0,
+                            expiresAt: 0,
+                          );
+                          return StoriesWidget(
+                            profilesMood: [selfMood],
+                            onMoodCreated: _onMoodCreated,
+                            isDark: isDark,
+                          );
+                        },
                       );
-                    },
-                  ),
+                    }
+                    return StoriesWidget(
+                      profilesMood: snapshot.data!,
+                      onMoodCreated: _onMoodCreated,
+                      isDark: isDark,
+                    );
+                  },
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  childCount: 4,
-                  (context, index) => const PostWidget(
-                    profileId: "1",
-                    avatarUri:
-                        "https://upload.wikimedia.org/wikipedia/commons/9/9b/Photo_of_a_kitten.jpg",
-                    username: "chessy1603",
-                    name: "Phong Khê",
-                    postedTime: 1740478871,
-                    privacy: "PUBLIC",
-                    postImageUri:
-                        "https://i.pinimg.com/236x/7c/89/df/7c89dfc7f3be5c1df083b01864cfb3a3.jpg",
-                    liked: ["huytran", "congdanhhihi", "thuhaaa", "hphunggg"],
-                    comment: ["Dễ thương vậy", "Haha"],
-                    nol: 37,
-                    noc: 30,
-                    content: 'Xin chào thế giới',
-                    postId: '',
-                  ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => PostWidget(
+                  profileId: "1",
+                  avatarUri:
+                      "https://upload.wikimedia.org/wikipedia/commons/9/9b/Photo_of_a_kitten.jpg",
+                  username: "chessy1603",
+                  name: "Phong Khê",
+                  postedTime: 1740478871,
+                  privacy: "PUBLIC",
+                  postImageUri:
+                      "https://i.pinimg.com/236x/7c/89/df/7c89dfc7f3be5c1df083b01864cfb3a3.jpg",
+                  liked: const [
+                    "huytran",
+                    "congdanhhihi",
+                    "thuhaaa",
+                    "hphunggg"
+                  ],
+                  comment: const ["Dễ thương vậy", "Haha"],
+                  nol: 37,
+                  noc: 30,
+                  content: 'Xin chào thế giới',
+                  postId: '',
+                  isDark: isDark,
                 ),
+                childCount: 4,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -176,11 +188,12 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
 class StoriesWidget extends StatelessWidget {
   final List<ProfileMoodModel> profilesMood;
   final VoidCallback? onMoodCreated;
-
+  final bool isDark;
   const StoriesWidget({
     super.key,
     required this.profilesMood,
     this.onMoodCreated,
+    required this.isDark,
   });
 
   @override
@@ -229,9 +242,20 @@ class StoriesWidget extends StatelessWidget {
                         bottom: 45,
                         right: -35,
                         child: GestureDetector(
-                          onTap: () =>
-                              _showMoodOptions(context, mood, onMoodCreated),
-                          child: MoodNoteBubbleWithSmoke(text: mood.mood),
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () => _showMoodOptions(
+                              context, mood, onMoodCreated, isDark),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            constraints: const BoxConstraints(
+                              minWidth: 80,
+                              minHeight: 40,
+                            ),
+                            child: MoodNoteBubbleWithSmoke(
+                              text: mood.mood,
+                              isDark: isDark,
+                            ),
+                          ),
                         ),
                       ),
                     if (isOwner && mood.mood.trim().isEmpty)
@@ -258,11 +282,11 @@ class StoriesWidget extends StatelessWidget {
   }
 
   void _showMoodOptions(BuildContext context, ProfileMoodModel mood,
-      VoidCallback? onMoodCreated) {
+      VoidCallback? onMoodCreated, bool isDarkMode) {
+    final isDark = isDarkMode;
     showModalBottomSheet(
       context: context,
-      backgroundColor:
-          themeProvider.isDarkMode ? Colors.grey.shade900 : Colors.white,
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -276,9 +300,7 @@ class StoriesWidget extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: themeProvider.isDarkMode
-                      ? Colors.grey.shade600
-                      : Colors.grey.shade300,
+                  color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -294,9 +316,7 @@ class StoriesWidget extends StatelessWidget {
               ListTile(
                 leading: Icon(
                   Icons.edit,
-                  color: themeProvider.isDarkMode
-                      ? Colors.blue.shade300
-                      : Colors.blue,
+                  color: isDark ? Colors.blue.shade300 : Colors.blue,
                 ),
                 title: Text(
                   "Edit Mood",
@@ -304,15 +324,13 @@ class StoriesWidget extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  _showEditMoodDialog(context, mood, onMoodCreated);
+                  _showEditMoodDialog(context, mood, onMoodCreated, isDark);
                 },
               ),
               ListTile(
                 leading: Icon(
                   Icons.delete,
-                  color: themeProvider.isDarkMode
-                      ? Colors.red.shade300
-                      : Colors.red,
+                  color: isDark ? Colors.red.shade300 : Colors.red,
                 ),
                 title: Text(
                   "Delete Mood",
@@ -320,7 +338,7 @@ class StoriesWidget extends StatelessWidget {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  _showDeleteConfirmation(context, mood, onMoodCreated);
+                  _showDeleteConfirmation(context, mood, onMoodCreated, isDark);
                 },
               ),
               const SizedBox(height: 10),
@@ -332,7 +350,7 @@ class StoriesWidget extends StatelessWidget {
   }
 
   void _showEditMoodDialog(BuildContext context, ProfileMoodModel mood,
-      VoidCallback? onMoodCreated) {
+      VoidCallback? onMoodCreated, bool isDark) {
     String editedMoodDescription = mood.moodDescription;
     String editedVisibility = mood.visibility;
 
@@ -345,8 +363,7 @@ class StoriesWidget extends StatelessWidget {
         return Center(
           child: Material(
             borderRadius: BorderRadius.circular(20),
-            color:
-                themeProvider.isDarkMode ? Colors.grey.shade900 : Colors.white,
+            color: isDark ? Colors.grey.shade900 : Colors.white,
             elevation: 8,
             child: StatefulBuilder(
               builder: (context, setState) {
@@ -371,7 +388,7 @@ class StoriesWidget extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 4),
                             decoration: BoxDecoration(
-                              color: themeProvider.isDarkMode
+                              color: isDark
                                   ? Colors.grey.shade700
                                   : Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(8),
@@ -383,7 +400,7 @@ class StoriesWidget extends StatelessWidget {
                               underline: const SizedBox(),
                               icon: Icon(
                                 Icons.keyboard_arrow_down,
-                                color: themeProvider.isDarkMode
+                                color: isDark
                                     ? Colors.white70
                                     : Colors.grey.shade600,
                               ),
@@ -425,7 +442,7 @@ class StoriesWidget extends StatelessWidget {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: themeProvider.isDarkMode
+                                color: isDark
                                     ? Colors.grey.shade600
                                     : Colors.grey.shade300,
                               ),
@@ -433,7 +450,7 @@ class StoriesWidget extends StatelessWidget {
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: themeProvider.isDarkMode
+                                color: isDark
                                     ? Colors.grey.shade600
                                     : Colors.grey.shade300,
                               ),
@@ -445,7 +462,7 @@ class StoriesWidget extends StatelessWidget {
                                 width: 2,
                               ),
                             ),
-                            fillColor: themeProvider.isDarkMode
+                            fillColor: isDark
                                 ? Colors.grey.shade800
                                 : Colors.grey.shade50,
                             filled: true,
@@ -471,7 +488,7 @@ class StoriesWidget extends StatelessWidget {
                             child: Text(
                               "Cancel",
                               style: kSubHeadingStyle.copyWith(
-                                color: themeProvider.isDarkMode
+                                color: isDark
                                     ? Colors.white70
                                     : Colors.grey.shade600,
                                 fontWeight: FontWeight.w500,
@@ -546,14 +563,13 @@ class StoriesWidget extends StatelessWidget {
   }
 }
 
-void _showDeleteConfirmation(
-    BuildContext context, ProfileMoodModel mood, VoidCallback? onMoodCreated) {
+void _showDeleteConfirmation(BuildContext context, ProfileMoodModel mood,
+    VoidCallback? onMoodCreated, bool isDark) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        backgroundColor:
-            themeProvider.isDarkMode ? Colors.grey.shade900 : Colors.white,
+        backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -568,9 +584,7 @@ void _showDeleteConfirmation(
           "Are you sure you want to delete this mood? This action cannot be undone.",
           style: kSubHeadingStyle.copyWith(
             fontSize: 14,
-            color: themeProvider.isDarkMode
-                ? Colors.white70
-                : Colors.grey.shade600,
+            color: isDark ? Colors.white70 : Colors.grey.shade600,
           ),
         ),
         actions: [
@@ -578,9 +592,7 @@ void _showDeleteConfirmation(
             child: Text(
               "Cancel",
               style: kSubHeadingStyle.copyWith(
-                color: themeProvider.isDarkMode
-                    ? Colors.white70
-                    : Colors.grey.shade600,
+                color: isDark ? Colors.white70 : Colors.grey.shade600,
                 fontWeight: FontWeight.w500,
               ),
             ),
