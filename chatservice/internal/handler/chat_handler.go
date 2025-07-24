@@ -4,6 +4,7 @@ import (
 	"chatservice/bootstrap"
 	"chatservice/internal/model"
 	"chatservice/internal/repository"
+	"chatservice/pkg/apiresponse"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,7 +36,7 @@ func (h *ChatHandler) CreateChat(c *gin.Context) {
 	chat.ID = model.NewUUID()
 	chat.CreatedAt = model.NowUTC()
 
-	id, err := h.RepoManager.ChatRepo.CreateChat(&chat)
+	id, err := h.RepoManager.MessageRepo.CreateChat(&chat)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return
@@ -51,7 +52,7 @@ func (h *ChatHandler) GetChatByID(c *gin.Context) {
 		return
 	}
 
-	chat, err := h.RepoManager.ChatRepo.FindChatByID(chatID)
+	chat, err := h.RepoManager.MessageRepo.FindChatByID(chatID)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return
@@ -71,7 +72,7 @@ func (h *ChatHandler) GetChatsByConversation(c *gin.Context) {
 		return
 	}
 
-	chats, err := h.RepoManager.ChatRepo.FindChatsByConversation(conversationID)
+	chats, err := h.RepoManager.MessageRepo.FindChatsByConversation(conversationID)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return
@@ -96,7 +97,7 @@ func (h *ChatHandler) UpdateChat(c *gin.Context) {
 		return
 	}
 
-	updated, err := h.RepoManager.ChatRepo.UpdateChatByID(chatID, req.Text)
+	updated, err := h.RepoManager.MessageRepo.UpdateChatByID(chatID, req.Text)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return
@@ -116,7 +117,7 @@ func (h *ChatHandler) DeleteChat(c *gin.Context) {
 		return
 	}
 
-	count, err := h.RepoManager.ChatRepo.DeleteChatByID(chatID)
+	count, err := h.RepoManager.MessageRepo.DeleteChatByID(chatID)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return

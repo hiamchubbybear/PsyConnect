@@ -7,7 +7,7 @@ import (
 )
 
 type RepositoryManager struct {
-	chatRepo *ChatRepository
+	MessageRepo *ChatRepository
 }
 
 func NewRepositoryManager(env *bootstrap.Env) *RepositoryManager {
@@ -16,7 +16,7 @@ func NewRepositoryManager(env *bootstrap.Env) *RepositoryManager {
 		log.Fatal("clientRepo is nil")
 	}
 	repoManager := RepositoryManager{
-		chatRepo: messageRepo,
+		MessageRepo: messageRepo,
 	}
 	return &repoManager
 }

@@ -1,6 +1,11 @@
 package model
 
-import "time"
+import (
+	"log"
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Chat struct {
 	ID             string    `json:"id" bson:"_id,omitempty"`
@@ -13,4 +18,11 @@ type Chat struct {
 
 func NowUTC() time.Time {
 	return time.Now().UTC()
+}
+func NewUUID() string {
+	uuid, err := uuid.NewUUID()
+	if err != nil {
+		log.Printf("Can generate new UUID ")
+	}
+	return uuid.String()
 }
