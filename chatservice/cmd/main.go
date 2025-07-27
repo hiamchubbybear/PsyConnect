@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	
+
 	db.InitDB()
 	env := bootstrap.LoadEnv()
 	repomanager := repository.NewRepositoryManager(env)

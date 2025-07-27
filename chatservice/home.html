@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebSocket Chat Test</title>
+  <style>
+    body { font-family: monospace; background: #121212; color: #00ff9f; padding: 1rem; }
+    input, button { padding: 0.5rem; font-size: 1rem; margin: 0.25rem 0; }
+    #log { border: 1px solid #00ff9f; padding: 1rem; height: 300px; overflow-y: scroll; background: #000; }
+    label { display: block; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>🔗 WebSocket Chat Debug Tool</h1>
+
+  <label>Server URL:</label>
+  <input id="wsUrl" value="ws://localhost:8085/ws" size="60" />
+
+  <label>User ID:</label>
+  <input id="userId" value="user1" />
+
+  <label>Conversation ID:</label>
+  <input id="conversationId" value="a1" />
+
+  <button onclick="connectWS()">Connect</button>
+  <button onclick="disconnectWS()">Disconnect</button>
+
+  <hr/>
+
+  <label>Message:</label>
+  <input id="messageInput" size="40" />
+  <button onclick="sendMessage()">Send</button>
+
+  <h2>📜 Log</h2>
+  <div id="log"></div>
+
+  <script>
+    let ws;
+
+    function log(msg) {
+      const logDiv = document.getElementById('log');
+      const now = new Date().toLocaleTimeString();
+      logDiv.innerHTML += `[${now}] ${msg}<br/>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function connectWS() {
+      const baseUrl = document.getElementById('wsUrl').value;
+      const userId = document.getElementById('userId').value;
+      const conversationId = document.getElementById('conversationId').value;
+
+      const url = `${baseUrl}?user_id=${encodeURIComponent(userId)}&conversation_id=${encodeURIComponent(conversationId)}`;
+
+      ws = new WebSocket(url);
+
+      ws.onopen = () => log(`✅ Connected to ${url}`);
+      ws.onmessage = (event) => log(`📥 Received: ${event.data}`);
+      ws.onclose = () => log(`❌ Disconnected`);
+      ws.onerror = (err) => log(`⚠️ Error: ${err}`);
+    }
+
+    function disconnectWS() {
+      if (ws) {
+        ws.close();
+        log("🔌 Closing connection...");
+      } else {
+        log("⚠️ No active connection to close.");
+      }
+    }
+
+    function sendMessage() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log("⚠️ WebSocket is not connected.");
+        return;
+      }
+
+      const msg = document.getElementById('messageInput').value;
+      const userId = document.getElementById('userId').value;
+      const conversationId = document.getElementById('conversationId').value;
+
+      const payload = {
+        conversation_id: conversationId,
+        user_id: userId,
+        text: msg
+      };
+
+      ws.send(JSON.stringify(payload));
+      log(`📤 Sent: ${JSON.stringify(payload)}`);
+    }
+  </script>
+</body>
+</html>
