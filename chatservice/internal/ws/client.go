@@ -21,6 +21,7 @@ type Client struct {
 	conn           *websocket.Conn
 	send           chan []byte
 	userID         string
+	profileId      string
 	conversationID string
 }
 

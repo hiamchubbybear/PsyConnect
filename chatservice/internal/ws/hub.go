@@ -15,12 +15,12 @@ type Hub struct {
 
 	broadcast chan Message
 }
-
+	
 type Message struct {
 	ConversationID string    `json:"conversation_id"`
 	UserID         string    `json:"user_id"`
 	Text           string    `json:"text"`
-	Timestamp      time.Time `json:"timestamp"'`
+	Timestamp      time.Time `json:"timestamp"`
 }
 
 func NewHub() *Hub {

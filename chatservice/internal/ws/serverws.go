@@ -15,10 +15,19 @@ var upgrader = websocket.Upgrader{
 
 func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	userID := query.Get("user_id")
+	userID := r.Header.Get("X-User-Id")
+	if userID == "" {
+		http.Error(w, "Unauthenticated ", http.StatusUnauthorized)
+		return
+	}
+	profileId := r.Header.Get("X-Profile-Id")
+	if profileId == "" {
+		http.Error(w, "Unauthenticated ", http.StatusUnauthorized)
+		return
+	}
 	conversationID := query.Get("conversation_id")
-	if userID == "" || conversationID == "" {
-		http.Error(w, "Missing user_id or conversation_id", http.StatusBadRequest)
+	if conversationID == "" {
+		http.Error(w, "Invalid conversation id  ", http.StatusBadRequest)
 		return
 	}
 
@@ -34,7 +43,7 @@ func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		send:           make(chan []byte, 256),
 		userID:         userID,
 		conversationID: conversationID,
-		
+		profileId:      profileId,
 	}
 
 	client.hub.register <- client
