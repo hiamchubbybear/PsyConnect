@@ -150,7 +150,7 @@
     border: v.$btn-border-width solid v.$btn-border-color;
 
     &:hover {
-      background: v.$color-gray; // Chuyển thành xám nhạt nhẹ
+      background: v.$color-gray;
     }
   }
 
@@ -160,7 +160,7 @@
     border: v.$btn-border-width solid v.$color-white;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.05); // Chỉ overlay nhạt
+      background: rgba(255, 255, 255, 0.05);
     }
   }
 
@@ -170,7 +170,7 @@
     border: v.$btn-border-width solid v.$color-primary;
 
     &:hover {
-      background: c.adjust(v.$color-primary, $lightness: -5%); // Tối hơn một chút
+      background: c.adjust(v.$color-primary, $lightness: -5%);
     }
   }
 
