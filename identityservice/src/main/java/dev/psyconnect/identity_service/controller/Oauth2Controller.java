@@ -36,14 +36,11 @@ public class Oauth2Controller {
             @RequestParam String provider,
             @RequestParam String email,
             @RequestParam String avatar,
+            @RequestParam String platform,
             Authentication authentication,
             HttpServletResponse response)
             throws IOException {
-
         var res = oAuth2Service.processOAuth2PreLogin(email, avatar, authentication, provider);
-        System.out.println("DEBUG accessToken: " + res.getToken());
-        System.out.println("DEBUG email: " + email);
-        System.out.println("DEBUG provider: " + provider);
         if (res.isSuccessful()) {
             String accessToken = res.getToken();
 
@@ -62,27 +59,27 @@ public class Oauth2Controller {
 
                 String redirectHtml = String.format(
                         """
-								<!DOCTYPE html>
-								<html>
-								<head>
-									<title>Redirecting to PsyConnect...</title>
-									<meta charset="UTF-8">
-								</head>
-								<body>
-									<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-										<h2>Login Successful!</h2>
-										<p>Redirecting you back to PsyConnect app...</p>
-										<p>If you're not redirected automatically, <a href="%s">click here</a></p>
-									</div>
-									<script>
-										window.location.href = '%s';
-										setTimeout(function() {
-											window.close();
-										}, 3000);
-									</script>
-								</body>
-								</html>
-								""",
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                	<title>Redirecting to PsyConnect...</title>
+                                	<meta charset="UTF-8">
+                                </head>
+                                <body>
+                                	<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+                                		<h2>Login Successful!</h2>
+                                		<p>Redirecting you back to PsyConnect app...</p>
+                                		<p>If you're not redirected automatically, <a href="%s">click here</a></p>
+                                	</div>
+                                	<script>
+                                		window.location.href = '%s';
+                                		setTimeout(function() {
+                                			window.close();
+                                		}, 3000);
+                                	</script>
+                                </body>
+                                </html>
+                                """,
                         deepLinkUrl, deepLinkUrl);
 
                 response.setContentType("text/html; charset=UTF-8");

@@ -64,21 +64,21 @@ public class Configuration {
                 .authenticationProvider(authenticationProvider(userAccountService))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests(requests -> requests.requestMatchers(
-                                "/login",
-                                "/oauth2/authorization/google",
-                                "/oauth2/callback/google",
-                                "/login/oauth2/code/google",
-                                "/identity/**",
-                                "/identity/create",
-                                "/auth/login/**",
-                                "/oauth2/userInfo/google",
-                                "/oauth2/authorization/facebook",
-                                "/auth/oauth2/callback/exchange-code",
-                                "/oauth2/callback/facebook",
-                                "/login/oauth2/code/facebook",
-                                "/auth/internal/valid",
-                                "/oauth2/userInfo/facebook",
-                                "/favicon.ico")
+                        "/login",
+                        "/oauth2/authorization/google",
+                        "/oauth2/callback/google",
+                        "/login/oauth2/code/google",
+                        "/identity/**",
+                        "/identity/create",
+                        "/auth/login/**",
+                        "/oauth2/userInfo/google",
+                        "/oauth2/authorization/facebook",
+                        "/auth/oauth2/callback/exchange-code",
+                        "/oauth2/callback/facebook",
+                        "/login/oauth2/code/facebook",
+                        "/auth/internal/valid",
+                        "/oauth2/userInfo/facebook",
+                        "/favicon.ico")
                         .permitAll()
                         .requestMatchers("/auth/therapist/**")
                         .hasAuthority("ROLE_THERAPIST")
@@ -107,9 +107,10 @@ public class Configuration {
                                             .toString());
                                     email = user.getAttribute("email");
                                     avatarUri = user.getAttribute("picture");
+                                    String platform = request.getParameter("platform");
                                     redirectUrl = String.format(
-                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
-                                            oauth2RedirectBase, registrationId, email, avatarUri);
+                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s&platform=%s",
+                                            oauth2RedirectBase, registrationId, email, avatarUri, platform);
                                 } else if ("facebook".equals(registrationId)) {
                                     OAuth2User user = (OAuth2User) authentication.getPrincipal();
                                     log.info(((OAuth2User) authentication.getPrincipal())
@@ -117,9 +118,10 @@ public class Configuration {
                                             .toString());
                                     avatarUri = (String) user.getAttribute("picture");
                                     email = (String) user.getAttribute("email");
+                                    String platform = request.getParameter("platform");
                                     redirectUrl = String.format(
-                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
-                                            oauth2RedirectBase, registrationId, email, avatarUri);
+                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s&platform=%s",
+                                            oauth2RedirectBase, registrationId, email, avatarUri, platform);
                                 }
                                 response.sendRedirect(redirectUrl);
                             } catch (Exception e) {
@@ -132,8 +134,7 @@ public class Configuration {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("{\"error\": \"OAuth2 login failed\"}");
                         }))
-                .formLogin(formLogin ->
-                        formLogin.loginPage("/login").defaultSuccessUrl("/home").failureUrl("/login"))
+                .formLogin(formLogin -> formLogin.loginPage("/login").defaultSuccessUrl("/home").failureUrl("/login"))
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
