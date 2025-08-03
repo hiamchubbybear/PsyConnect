@@ -8,6 +8,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { environment } from '../../environment';
 import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
 import { Profile, ProfileResponse } from '../../services/profile/profile';
@@ -28,7 +29,7 @@ export class Login {
   error: string | null = null;
   loading = false;
   avatarUri: string | null = null;
-
+  apiUrl = environment.apiUrl;
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
@@ -88,5 +89,31 @@ export class Login {
         this.loading = false;
       },
     });
+  }
+
+  handleOAuth2(provider: string) {
+    console.log(`${this.apiUrl}/oauth2/authorization/${provider}`);
+    window.location.href = `${this.apiUrl}/oauth2/authorization/${provider}`;
+  }
+  ngOnInit() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const email = params.get('email');
+    const provider = params.get('provider');
+
+    if (code && email && provider) {
+      this.auth.exchangeOAuth2Code(code, email, provider).subscribe({
+        next: (res) => {
+          console.log('OAuth2 exchange success:', res);
+          localStorage.setItem('token', res.data.token);
+          localStorage.setItem('profile', JSON.stringify(res.data));
+          this.userContext.setUser(res.data);
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          console.error('OAuth2 exchange failed', err);
+        },
+      });
+    }
   }
 }

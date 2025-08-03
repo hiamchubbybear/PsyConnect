@@ -49,8 +49,20 @@
         </div>
 
         <div class="social-login">
-          <button type="button" class="btn btn-google">Google</button>
-          <button type="button" class="btn btn-apple">Apple</button>
+          <button
+            type="button"
+            class="btn btn-google"
+            (click)="handleOAuth2('google')"
+          >
+            Google
+          </button>
+          <button
+            type="button"
+            class="btn btn-apple"
+            (click)="handleOAuth2('google')"
+          >
+            Facebook
+          </button>
         </div>
 
         <p class="signup-text">

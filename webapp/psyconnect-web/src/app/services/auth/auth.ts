@@ -7,7 +7,7 @@ import { environment } from '../../environment';
   providedIn: 'root',
 })
 export class Auth {
-  private apiUrl = `${environment.apiUrl}/auth`;
+  apiUrl = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) {}
 
@@ -39,5 +39,32 @@ export class Auth {
   }
   getToken(): string | null {
     return localStorage.getItem('access_token');
+  }
+
+  loginWithGoogle(token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/oauth2/authorization/google`, {
+      token,
+    });
+  }
+
+  loginWithFacebook(token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/oauth2/authorization/facebook`, {
+      token,
+    });
+  }
+  exchangeOAuth2Code(
+    code: string,
+    email: string,
+    provider: string
+  ): Observable<any> {
+    const params = {
+      code: code,
+      email: email,
+      provider: provider,
+      platform: 'WEB',
+    };
+    return this.http.get(`${this.apiUrl}/auth/oauth2/callback/exchange-code`, {
+      params,
+    });
   }
 }
