@@ -5,9 +5,11 @@ import 'package:PsyConnect/services/account_service/login.dart';
 import 'package:PsyConnect/ui/screens/forgot_page.dart';
 import 'package:PsyConnect/ui/screens/my_home_page.dart';
 import 'package:PsyConnect/ui/screens/register_page.dart';
+import 'package:PsyConnect/ui/screens/update_password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -23,7 +25,6 @@ class _LoginPageState extends State<LoginPage> {
   bool isPasswordVisible = false;
   LoginService loginService = LoginService();
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
   @override
   void initState() {
     super.initState();
@@ -69,7 +70,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
     return Scaffold(
       backgroundColor: themeProvider.isDarkMode ? Colors.black : Colors.white,
       body: SafeArea(
@@ -127,9 +127,9 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 60),
             Text(
               'Welcome',
-              style: TextStyle(
+              style: GoogleFonts.quicksand(
                 fontSize: 32,
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w400,
                 color: textColor,
                 letterSpacing: -0.5,
               ),
@@ -157,6 +157,34 @@ class _LoginPageState extends State<LoginPage> {
                           MaterialPageRoute(
                               builder: (context) =>
                                   const MultiStepRegisterPage()),
+                        );
+                      },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 8),
+            RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: 16,
+                  color: subtitleColor,
+                  fontWeight: FontWeight.w400,
+                ),
+                children: [
+                  const TextSpan(text: 'Forgot password '),
+                  TextSpan(
+                    text: 'reset now',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: subtitleColor,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ForgotPasswordPage()),
                         );
                       },
                   ),
@@ -209,8 +237,8 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
+          style: GoogleFonts.quicksand(
+            fontSize: 16,
             fontWeight: FontWeight.w500,
             color: labelColor,
           ),
@@ -286,11 +314,11 @@ class _LoginPageState extends State<LoginPage> {
             borderRadius: BorderRadius.circular(4),
           ),
         ),
-        child: const Text(
+        child: Text(
           'Sign In',
-          style: TextStyle(
+          style: GoogleFonts.quicksand(
             fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
           ),
         ),
@@ -398,9 +426,9 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: Text(
           'Forgot password?',
-          style: TextStyle(
+          style: GoogleFonts.quicksand(
             color: textColor,
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w400,
             decoration: TextDecoration.underline,
             decorationColor: textColor,

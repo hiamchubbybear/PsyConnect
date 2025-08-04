@@ -15,15 +15,29 @@ class VerifiedPage extends StatefulWidget {
 
 class _VerifiedPageState extends State<VerifiedPage> {
   final TextEditingController verifiedCodeController = TextEditingController();
-  ForgotService forgotService = ForgotService();
+  final ForgotService forgotService = ForgotService();
 
-  void _onVerifiedCode({required String token, required String email}) async {
-    var resource = await forgotService.registerHandle(
-        email: email, token: token, context: context);
-    print("Response from server $resource");
-    if (resource) {
-      Navigator.pushReplacement((context),
-          MaterialPageRoute(builder: (context) => const LoginPage()));
+  @override
+  void dispose() {
+    verifiedCodeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onVerifiedCode({
+    required String token,
+    required String email,
+  }) async {
+    final isSuccess = await forgotService.registerHandle(
+      email: email,
+      token: token,
+      context: context,
+    );
+
+    if (isSuccess && mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
     } else {
       verifiedCodeController.clear();
     }
@@ -32,52 +46,79 @@ class _VerifiedPageState extends State<VerifiedPage> {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    String? username = userProvider.user?["username"];
-    String? email = userProvider.user?["email"];
+    final username = userProvider.user?["username"] as String?;
+    final email = userProvider.user?["email"] as String?;
+
+    final theme = Theme.of(context);
 
     return Scaffold(
-      body: Align(
-        alignment: Alignment.center,
+      body: SafeArea(
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(60.0),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset("assets/gifs/forgot_password_animation.gif"),
-                const SizedBox(height: 10),
+                Text(
+                  "Verify your account",
+                  style: subHeadingStyle,
+                ),
+                const SizedBox(height: 8),
                 if (email != null)
-                  Text("Verification for: $username",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
+                  Text("We sent a code to $email",
+                      style: kSecondarirySubHeadingVerifiedPage),
+                const SizedBox(height: 32),
                 PinCodeTextField(
-                  onChanged: (String value) {
-                    setState(() {
-                      verifiedCodeController.text = value;
-                    });
-                  },
+                  controller: verifiedCodeController,
+                  onChanged: (_) {},
                   pinTheme: PinTheme(
                     shape: PinCodeFieldShape.underline,
-                    borderRadius: BorderRadius.circular(5),
-                    fieldHeight: 40,
-                    fieldWidth: 30,
-                    inactiveColor: blackColor,
-                    activeFillColor: whiteColor,
+                    fieldHeight: 50,
+                    fieldWidth: 40,
+                    activeFillColor: Colors.transparent,
+                    inactiveColor: Colors.grey.shade400,
+                    selectedColor: Colors.black,
                   ),
                   keyboardType: TextInputType.number,
                   appContext: context,
                   length: 5,
                 ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: email != null
-                      ? () {
-                          _onVerifiedCode(
-                              token: verifiedCodeController.text, email: email);
-                        }
-                      : null,
-                  child: const Text('Confirm Code'),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: (email != null &&
+                            verifiedCodeController.text.isNotEmpty)
+                        ? () {
+                            _onVerifiedCode(
+                              token: verifiedCodeController.text,
+                              email: email,
+                            );
+
+                          }
+                        : null,
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Confirm',
+                      style: kSecondarirySubHeadingRegisterPage,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "Resend code",
+                      style: kSecondarirySubHeadingRegisterPage,
+                    ),
+                  ),
                 ),
               ],
             ),

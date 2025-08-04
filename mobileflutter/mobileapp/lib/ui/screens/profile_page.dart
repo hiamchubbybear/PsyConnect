@@ -10,9 +10,12 @@ import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/screens/consultation_profile_page.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:PsyConnect/ui/screens/setting_page.dart';
-import 'package:PsyConnect/validate/validate.dart' ;
+import 'package:PsyConnect/validate/validate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -47,23 +50,23 @@ class _ProfilePageState extends State<ProfilePage> {
 
   List<ProfileCompletionCard> get profileCompletionCards => [
         ProfileCompletionCard(
-          title: "Set Your Profile Details",
-          icon: CupertinoIcons.person_circle,
-          buttonText: "Continue",
-          onTap: handleSetProfileDetails,
-        ),
+            title: "Set Your Profile Details",
+            icon: CupertinoIcons.person_circle,
+            buttonText: "Continue",
+            onTap: handleSetProfileDetails,
+            style: GoogleFonts.quicksand()),
         ProfileCompletionCard(
-          title: "Upload your resume",
-          icon: CupertinoIcons.doc,
-          buttonText: "Upload",
-          onTap: handleUploadResume,
-        ),
+            title: "Upload your resume",
+            icon: CupertinoIcons.doc,
+            buttonText: "Upload",
+            onTap: handleUploadResume,
+            style: GoogleFonts.quicksand()),
         ProfileCompletionCard(
-          title: "Add your skills",
-          icon: CupertinoIcons.square_list,
-          buttonText: "Add",
-          onTap: handleAddSkills,
-        ),
+            title: "Add your skills",
+            icon: CupertinoIcons.square_list,
+            buttonText: "Add",
+            onTap: handleAddSkills,
+            style: GoogleFonts.quicksand()),
       ];
   @override
   void initState() {
@@ -123,7 +126,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeProvider themeProvider = ThemeProvider();
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDarkMode;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -131,7 +135,8 @@ class _ProfilePageState extends State<ProfilePage> {
         foregroundColor: Colors.black,
         title: Text(
           "Profile",
-          style: quickSand15Font,
+          style: quickSand15Font.copyWith(
+              color: isDark ? whiteColor : secondaryColor),
         ),
         centerTitle: true,
         actions: [
@@ -143,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             },
             icon: Icon(Icons.settings_rounded,
-                color: themeProvider.isDarkMode ? Colors.white : Colors.black),
+                color: isDark ? Colors.white : Colors.black),
           )
         ],
       ),
@@ -177,7 +182,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 (userProfile.getFirstName.isNotEmpty)
                     ? userProfile.getFirstName
                     : "Meo",
-                style: subHeadingStyle,
+                style: subHeadingStyle.copyWith(
+                    color: isDark ? whiteColor : secondaryColor),
               ),
               Text((userProfile.getDescription.isNotEmpty)
                   ? userProfile.getDescription
@@ -200,13 +206,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       Row(
                         children: [
-                          const Padding(
+                          Padding(
                             padding: EdgeInsets.only(right: 5),
                             child: Text(
                               "Complete your profile",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: GoogleFonts.quicksand(
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                           Text(
@@ -269,6 +274,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Text(
                             card.title,
                             textAlign: TextAlign.center,
+                            style: GoogleFonts.quicksand(),
                           ),
                           const Spacer(),
                           ElevatedButton(
@@ -282,11 +288,15 @@ class _ProfilePageState extends State<ProfilePage> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              elevation: 0,
+                              elevation: 0.5,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
                             ),
-                            child: Text(card.buttonText),
+                            child: Text(card.buttonText,
+                                style: GoogleFonts.quicksand(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: isDark ? whiteColor : blackColor)),
                           )
                         ],
                       ),
@@ -317,7 +327,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: () => tile.onTap?.call(context),
                     child: ListTile(
                       leading: Icon(tile.icon),
-                      title: Text(tile.title),
+                      title: Text(
+                        tile.title,
+                        style:
+                            GoogleFonts.quicksand(fontWeight: FontWeight.w600),
+                      ),
                       trailing: const Icon(Icons.chevron_right),
                     ),
                   ),
@@ -363,12 +377,14 @@ class ProfileCompletionCard {
   final String title;
   final String buttonText;
   final IconData icon;
+  final TextStyle style;
   final void Function(BuildContext context)? onTap;
   ProfileCompletionCard({
     required this.title,
     required this.buttonText,
     required this.icon,
     required this.onTap,
+    required this.style,
   });
 }
 

@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PostWidget extends StatefulWidget {
+  final bool isDark;
   final String avatarUri;
   final String username;
   final String name;
@@ -21,6 +22,7 @@ class PostWidget extends StatefulWidget {
   final String? postedUser;
   final String postId;
   const PostWidget({
+    required this.isDark,
     super.key,
     required this.avatarUri,
     required this.username,
@@ -44,10 +46,10 @@ class PostWidget extends StatefulWidget {
 
 class _PostWidgetState extends State<PostWidget> {
   bool isLiked = false;
-
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: widget.isDark ? Colors.grey[1300] : whiteColor,
       margin: const EdgeInsets.all(15),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -72,8 +74,7 @@ class _PostWidgetState extends State<PostWidget> {
                         children: [
                           Text(
                             widget.name,
-                            style: GoogleFonts.quicksand(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+                            style: kSubHeadingStyle,
                             overflow: TextOverflow.ellipsis,
                           ),
                           PostOptionsMenu(
@@ -90,7 +91,12 @@ class _PostWidgetState extends State<PostWidget> {
                         Text(
                             timeago.format(DateTime.fromMillisecondsSinceEpoch(
                                 widget.postedTime)),
-                            style: quickSand12Font),
+                            style: GoogleFonts.quicksand(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w400,
+                              color:
+                                  widget.isDark ? Colors.white : Colors.black,
+                            )),
                         const SizedBox(width: 5),
                         Icon(
                             widget.privacy == "public"
@@ -105,7 +111,14 @@ class _PostWidgetState extends State<PostWidget> {
               ],
             ),
             const SizedBox(height: 10),
-            Text("${widget.content}"),
+            Text(
+              "${widget.content}",
+              style: GoogleFonts.quicksand(
+                fontSize: 11,
+                fontWeight: FontWeight.w400,
+                color: widget.isDark ? Colors.white : Colors.black,
+              ),
+            ),
             const SizedBox(height: 5),
             (widget.postImageUri) != null
                 ? ClipRRect(
@@ -133,7 +146,8 @@ class _PostWidgetState extends State<PostWidget> {
                       },
                     ),
                     Text("${widget.nol + (isLiked ? 1 : 0)} Likes",
-                        style: quickSand12Font),
+                        style: quickSand12Font.copyWith(
+                            color: widget.isDark ? whiteColor : blackColor)),
                     const SizedBox(
                       width: 10,
                     ),
@@ -145,7 +159,8 @@ class _PostWidgetState extends State<PostWidget> {
                     const SizedBox(width: 5),
                     Text(
                       "${widget.noc}",
-                      style: quickSand12Font,
+                      style: quickSand12Font.copyWith(
+                          color: widget.isDark ? whiteColor : blackColor),
                     ),
                   ],
                 ),

@@ -1,9 +1,35 @@
-@use './app/styles/_variable.scss' as v;
+@use "@angular/material" as mat;
+@use "sass:color";
+@use "./app/styles/_variable.scss" as v;
+
+// Kích hoạt core theme layer
+@include mat.core();
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+    )
+  );
+}
 
 body {
-  font-family: v.$font-primary;
+  font-family: "Quicksand", sans-serif;
   font-size: v.$font-size-md;
+  margin: 0;
+  color-scheme: light;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
 }
+
+html,
+body {
+  height: 100%;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;

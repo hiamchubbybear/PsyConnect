@@ -10,10 +10,23 @@
     <a href="/about">About</a>
   </nav>
 
-  <div class="header-right">
-    <a href="/login" class="auth">Login</a>
-    <a href="/signup" class="auth signup">Sign Up</a>
+  <div class="header-right" *ngIf="auth.isLoggedIn(); else guest">
+    <button mat-button [matMenuTriggerFor]="menu" class="avatar-btn">
+      <img [src]="userAvatarUrl" alt="Avatar" class="avatar" />
+      <span class="username">{{ userName }}</span>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item routerLink="/profile">Profile</button>
+      <button mat-menu-item (click)="logout()">Logout</button>
+    </mat-menu>
   </div>
+
+  <ng-template #guest>
+    <div class="header-right">
+      <a href="/auth/login" class="auth">Login</a>
+      <a href="/auth/signup" class="auth signup">Sign Up</a>
+    </div>
+  </ng-template>
 
   <div class="menu-toggle" (click)="toggleMenu()">☰</div>
 
@@ -22,7 +35,21 @@
     <a href="/therapist">Therapist</a>
     <a href="/community">Community</a>
     <a href="/about">About</a>
-    <a href="/login">Login</a>
-    <a href="/signup" class="signup">Sign Up</a>
+
+    <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
+      <button mat-button [matMenuTriggerFor]="menuMobile" class="avatar-btn">
+        <img [src]="userAvatarUrl" alt="Avatar" class="avatar" />
+        <span class="username">{{ userName }}</span>
+      </button>
+      <mat-menu #menuMobile="matMenu">
+        <button mat-menu-item routerLink="/profile">Profile</button>
+        <button mat-menu-item (click)="logout()">Logout</button>
+      </mat-menu>
+    </ng-container>
+
+    <ng-template #guestMobile>
+      <a href="/auth/login">Login</a>
+      <a href="/auth/signup" class="signup">Sign Up</a>
+    </ng-template>
   </div>
 </header>

@@ -1,198 +1,157 @@
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
-import 'package:PsyConnect/models/mood.dart';
+import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/services/profile_service/mood.dart';
 import 'package:flutter/material.dart';
 
-class MoodWidget extends StatefulWidget {
-  @override
-  State<MoodWidget> createState() => _MoodWidgetState();
-}
-
-String mood = "";
-String moodDescription = "";
-String visibility = "";
-String selectedItem = items[0];
-List<String> items = [
-  "Private",
-  "Public",
-  "Friends only",
-];
-MoodService moodService = MoodService();
-
-class _MoodWidgetState extends State<MoodWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => showPostDialog(context),
-      child: Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.green[300],
-          border: Border.all(color: Colors.white, width: 2),
-        ),
-        child: const Icon(
-          Icons.add,
-          size: 14,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-}
-
-void showPostDialog(BuildContext context) {
-  showGeneralDialog(
-    context: context,
-    barrierDismissible: true,
-    barrierLabel: "Post Dialog",
-    transitionDuration: const Duration(milliseconds: 100),
-    pageBuilder: (context, animation, secondaryAnimation) {
-      return Center(
-        child: Material(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              return Container(
-                width: MediaQuery.of(context).size.width * 1.3,
-                height: 270,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Share your mind", style: quickSand12Font),
-                        Container(
-                          child: DropdownButton<String>(
-                            value: selectedItem,
-                            items: items
-                                .map((item) => DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Text(item, style: quickSand12Font)))
-                                .toList(),
-                            onChanged: (String? value) {
-                              setState(() {
-                                selectedItem = value!;
-                                visibility = value!;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      maxLines: 3,
-                      maxLength: 200,
-                      decoration: InputDecoration(
-                        hintText:
-                            "What are you thinking about? (200 characters)",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onChanged: (value) => {
-                        mood = value,
-                      },
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          child: const Text("Cancel"),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          child: const Text("Post"),
-                          onPressed: () {
-                            if (mood.isEmpty) {
-                              ToastService.showToast(
-                                  context: context,
-                                  message: "Please type what you are thinking",
-                                  title: "Warning",
-                                  type: ToastType.warning);
-                            } else if (visibility.isEmpty) {
-                              ToastService.showToast(
-                                  context: context,
-                                  message: "Please choose post privacy",
-                                  title: "Warning",
-                                  type: ToastType.warning);
-                            } else {
-                              MoodModel moodModel = MoodModel(
-                                  mood: mood,
-                                  moodDescription: moodDescription,
-                                  visibility: visibility);
-                              moodService.createMoodPost(
-                                  mood: moodModel, context: context);
-                            }
-                          },
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      );
-    },
-    transitionBuilder: (context, anim1, anim2, child) {
-      return FadeTransition(
-        opacity: anim1,
-        child: ScaleTransition(scale: anim1, child: child),
-      );
-    },
-  );
-}
-
 class MoodNoteBubbleWithSmoke extends StatelessWidget {
   final String text;
+  final bool isDark;
 
-  const MoodNoteBubbleWithSmoke({super.key, required this.text});
+  const MoodNoteBubbleWithSmoke({
+    super.key,
+    required this.text,
+    required this.isDark,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Smoke effect
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(radius: 2, backgroundColor: Colors.white),
+            CircleAvatar(
+              radius: 2,
+              backgroundColor:
+                  isDark ? Colors.grey.shade500 : Colors.grey.shade300,
+            ),
             const SizedBox(width: 4),
-            CircleAvatar(radius: 4, backgroundColor: Colors.white),
+            CircleAvatar(
+              radius: 4,
+              backgroundColor:
+                  isDark ? Colors.grey.shade400 : Colors.grey.shade400,
+            ),
             const SizedBox(width: 4),
-            CircleAvatar(radius: 6, backgroundColor: Colors.white),
+            CircleAvatar(
+              radius: 6,
+              backgroundColor:
+                  isDark ? Colors.grey.shade300 : Colors.grey.shade500,
+            ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          constraints: const BoxConstraints(
+            minWidth: 60,
+            minHeight: 40,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            color: isDark ? Colors.grey.shade800 : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark ? Colors.grey.shade600 : Colors.grey.shade200,
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 4,
+                color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
             ],
           ),
+          alignment: Alignment.center,
           child: Text(
             text,
-            style: const TextStyle(fontSize: 12, color: Colors.black),
+            style: quickSand12FontMoodCreate.copyWith(
+                color: isDark ? whiteColor : secondaryColor),
             overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
     );
-  }
+}
+}
+
+void _showDeleteConfirmation(BuildContext context, ProfileMoodModel mood,
+    VoidCallback? onMoodCreated, bool isDark) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: Text(
+          "Delete Mood",
+          style: kSubHeadingStyle.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
+        content: Text(
+          "Are you sure you want to delete this mood? This action cannot be undone.",
+          style: kSubHeadingStyle.copyWith(
+            fontSize: 14,
+            color: isDark ? Colors.white70 : Colors.grey.shade600,
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text(
+              "Cancel",
+              style: kSubHeadingStyle.copyWith(
+                color: isDark ? Colors.white70 : Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey[300],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              "Delete",
+              style: kSubHeadingStyle.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              try {
+                await MoodService().deleteMoodPost(
+                  moodId: mood.moodId,
+                  context: context,
+                );
+
+                if (onMoodCreated != null) {
+                  onMoodCreated();
+                }
+
+                ToastService.showToast(
+                    context: context,
+                    message: "Mood deleted successfully",
+                    title: "Success",
+                    type: ToastType.success);
+              } catch (e) {
+                ToastService.showToast(
+                    context: context,
+                    message: "Failed to delete mood",
+                    title: "Error",
+                    type: ToastType.error);
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
