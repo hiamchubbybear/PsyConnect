@@ -1,0 +1,57 @@
+@use "../../styles/variable" as v;
+.toast-container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 9999;
+
+  .toast {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    border: 1px solid;
+    border-radius: 8px;
+    background: v.$color-white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    min-width: 280px;
+    max-width: 360px;
+    animation: toast-in 0.25s ease-out both;
+
+    .icon {
+      margin-right: 0.75rem;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .content {
+      flex: 1;
+
+      .title {
+        font-weight: 600;
+        font-size: v.$font-size-md;
+        margin-bottom: 0.25rem;
+      }
+
+      .message {
+        font-size: v.$font-size-sm;
+        color: v.$color-text;
+      }
+    }
+
+    .close {
+      cursor: pointer;
+      margin-left: 0.5rem;
+      font-size: 1.25rem;
+      color: v.$color-gray;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: v.$color-primary;
+      }
+    }
+  }
+}

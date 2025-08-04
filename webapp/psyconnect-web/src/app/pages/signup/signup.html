@@ -1,0 +1,479 @@
+<div class="register-container">
+  <!-- Header -->
+  <div class="header">
+    <button
+      *ngIf="currentStep > 0"
+      class="back-button"
+      (click)="previousStep()"
+    >
+      <i class="icon-back"></i>
+    </button>
+    <h1 class="title">Create Account</h1>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+    </div>
+    <p class="progress-text">Step {{ currentStep + 1 }} of {{ totalSteps }}</p>
+  </div>
+
+  <!-- Steps Content -->
+  <div class="steps-container">
+    <!-- Step 1: Avatar -->
+    <div *ngIf="currentStep === 0" class="step-content">
+      <form [formGroup]="avatarForm" class="step-form">
+        <div class="step-header">
+          <h2>Choose Your Profile Picture</h2>
+          <p>This helps others recognize you</p>
+        </div>
+
+        <div class="avatar-section">
+          <div class="avatar-container" (click)="imageInput.click()">
+            <div class="avatar-circle" [class.has-image]="imagePreview">
+              <img
+                *ngIf="imagePreview"
+                [src]="imagePreview"
+                alt="Profile preview"
+                class="avatar-image"
+              />
+              <div *ngIf="!imagePreview" class="avatar-placeholder">
+                <i class="icon-camera"></i>
+              </div>
+            </div>
+          </div>
+          <input
+            #imageInput
+            type="file"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            class="hidden-input"
+          />
+          <p *ngIf="!imagePreview" class="tap-text">Tap to add photo</p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 2: Name -->
+    <div *ngIf="currentStep === 1" class="step-content">
+      <form [formGroup]="nameForm" class="step-form">
+        <div class="step-header">
+          <h2>What's Your Name?</h2>
+          <p>Let us know how to address you</p>
+        </div>
+
+        <div class="form-fields">
+          <div class="form-group">
+            <input
+              type="text"
+              formControlName="firstName"
+              placeholder="First Name"
+              class="form-input"
+              [class.error]="
+                nameForm.get('firstName')?.invalid &&
+                nameForm.get('firstName')?.touched
+              "
+            />
+            <div
+              *ngIf="
+                nameForm.get('firstName')?.invalid &&
+                nameForm.get('firstName')?.touched
+              "
+              class="error-text"
+            >
+              <span *ngIf="nameForm.get('firstName')?.errors?.['required']"
+                >First name is required</span
+              >
+              <span *ngIf="nameForm.get('firstName')?.errors?.['minlength']"
+                >First name must be at least 2 characters</span
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <input
+              type="text"
+              formControlName="lastName"
+              placeholder="Last Name"
+              class="form-input"
+              [class.error]="
+                nameForm.get('lastName')?.invalid &&
+                nameForm.get('lastName')?.touched
+              "
+            />
+            <div
+              *ngIf="
+                nameForm.get('lastName')?.invalid &&
+                nameForm.get('lastName')?.touched
+              "
+              class="error-text"
+            >
+              <span *ngIf="nameForm.get('lastName')?.errors?.['required']"
+                >Last name is required</span
+              >
+              <span *ngIf="nameForm.get('lastName')?.errors?.['minlength']"
+                >Last name must be at least 2 characters</span
+              >
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 3: Birth & Gender -->
+    <div *ngIf="currentStep === 2" class="step-content">
+      <form [formGroup]="personalForm" class="step-form">
+        <div class="step-header">
+          <h2>Personal Information</h2>
+          <p>Tell us your date of birth and gender</p>
+        </div>
+
+        <div class="form-fields">
+          <div class="form-group">
+            <input
+              type="date"
+              formControlName="dateOfBirth"
+              class="form-input"
+              (change)="onDateChange($event)"
+              [class.error]="
+                personalForm.get('dateOfBirth')?.invalid &&
+                personalForm.get('dateOfBirth')?.touched
+              "
+            />
+            <div
+              *ngIf="
+                personalForm.get('dateOfBirth')?.invalid &&
+                personalForm.get('dateOfBirth')?.touched
+              "
+              class="error-text"
+            >
+              <span
+                *ngIf="personalForm.get('dateOfBirth')?.errors?.['required']"
+                >Date of birth is required</span
+              >
+              <span
+                *ngIf="personalForm.get('dateOfBirth')?.errors?.['underAge']"
+                >You must be 18 years or older</span
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="gender" class="form-label">Gender</label>
+            <div class="custom-select-wrapper">
+              <select
+                id="gender"
+                formControlName="gender"
+                class="form-select"
+                [class.error]="
+                  personalForm.get('gender')?.invalid &&
+                  personalForm.get('gender')?.touched
+                "
+              >
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="None">Prefer not to say</option>
+              </select>
+              <i class="fa fa-chevron-down"></i>
+            </div>
+
+            <div
+              *ngIf="
+                personalForm.get('gender')?.invalid &&
+                personalForm.get('gender')?.touched
+              "
+              class="error-text"
+            >
+              <span *ngIf="personalForm.get('gender')?.errors?.['required']">
+                Please select your gender
+              </span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 4: Address -->
+    <div *ngIf="currentStep === 3" class="step-content">
+      <form [formGroup]="addressForm" class="step-form">
+        <div class="step-header">
+          <h2>Where Are You Located?</h2>
+          <p>This helps us provide better services</p>
+        </div>
+
+        <div class="form-fields">
+          <div class="form-group address-group">
+            <input
+              type="text"
+              formControlName="address"
+              placeholder="Enter your full address"
+              class="form-input"
+              (input)="onAddressInput($event)"
+              [class.error]="
+                addressForm.get('address')?.invalid &&
+                addressForm.get('address')?.touched
+              "
+            />
+
+            <div
+              *ngIf="addressSuggestions.length > 0"
+              class="suggestions-dropdown"
+            >
+              <div
+                *ngFor="let suggestion of addressSuggestions"
+                class="suggestion-item"
+                (click)="selectAddress(suggestion)"
+              >
+                {{ suggestion }}
+              </div>
+            </div>
+
+            <div
+              *ngIf="
+                addressForm.get('address')?.invalid &&
+                addressForm.get('address')?.touched
+              "
+              class="error-text"
+            >
+              <span *ngIf="addressForm.get('address')?.errors?.['required']"
+                >Address is required</span
+              >
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 5: Email -->
+    <div *ngIf="currentStep === 4" class="step-content">
+      <form [formGroup]="emailForm" class="step-form">
+        <div class="step-header">
+          <h2>Email Address</h2>
+          <p>We'll use this to send you important updates</p>
+        </div>
+
+        <div class="form-fields">
+          <div class="form-group">
+            <div class="input-with-icon">
+              <i class="icon-email"></i>
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="your.email@example.com"
+                class="form-input with-icon"
+                [class.error]="
+                  emailForm.get('email')?.invalid &&
+                  emailForm.get('email')?.touched
+                "
+              />
+            </div>
+            <div
+              *ngIf="
+                emailForm.get('email')?.invalid &&
+                emailForm.get('email')?.touched
+              "
+              class="error-text"
+            >
+              <span *ngIf="emailForm.get('email')?.errors?.['required']"
+                >Email is required</span
+              >
+              <span *ngIf="emailForm.get('email')?.errors?.['email']"
+                >Please enter a valid email address</span
+              >
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 6: Role -->
+    <div *ngIf="currentStep === 5" class="step-content">
+      <form [formGroup]="roleForm" class="step-form">
+        <div class="step-header">
+          <h2>Choose Your Role</h2>
+          <p>How would you like to use PsyConnect?</p>
+        </div>
+
+        <div class="form-fields">
+          <div class="role-options">
+            <label class="role-option">
+              <input
+                type="radio"
+                formControlName="role"
+                value="Client"
+                class="radio-input"
+              />
+              <div class="role-card">
+                <h3>Client</h3>
+                <p>Looking for mental health support</p>
+              </div>
+            </label>
+
+            <label class="role-option">
+              <input
+                type="radio"
+                formControlName="role"
+                value="Therapist"
+                class="radio-input"
+              />
+              <div class="role-card">
+                <h3>Therapist</h3>
+                <p>Providing mental health services</p>
+              </div>
+            </label>
+          </div>
+
+          <div
+            *ngIf="
+              roleForm.get('role')?.invalid && roleForm.get('role')?.touched
+            "
+            class="error-text"
+          >
+            <span *ngIf="roleForm.get('role')?.errors?.['required']"
+              >Please select a role</span
+            >
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 7: Credentials -->
+    <div *ngIf="currentStep === 6" class="step-content">
+      <form [formGroup]="credentialsForm" class="step-form">
+        <div class="step-header">
+          <h2>Create Your Account</h2>
+          <p>Choose a username and secure password</p>
+        </div>
+
+        <div class="form-fields">
+          <div class="form-group">
+            <div class="input-with-icon">
+              <i class="icon-user"></i>
+              <input
+                type="text"
+                formControlName="username"
+                placeholder="Username"
+                class="form-input with-icon"
+                [class.error]="
+                  credentialsForm.get('username')?.invalid &&
+                  credentialsForm.get('username')?.touched
+                "
+              />
+            </div>
+            <div
+              *ngIf="
+                credentialsForm.get('username')?.invalid &&
+                credentialsForm.get('username')?.touched
+              "
+              class="error-text"
+            >
+              <span
+                *ngIf="credentialsForm.get('username')?.errors?.['required']"
+                >Username is required</span
+              >
+              <span
+                *ngIf="credentialsForm.get('username')?.errors?.['minlength']"
+                >Username must be at least 4 characters</span
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-with-icon">
+              <i class="icon-lock"></i>
+              <input
+                type="password"
+                formControlName="password"
+                placeholder="Password"
+                class="form-input with-icon"
+                [class.error]="
+                  credentialsForm.get('password')?.invalid &&
+                  credentialsForm.get('password')?.touched
+                "
+              />
+            </div>
+            <div
+              *ngIf="
+                credentialsForm.get('password')?.invalid &&
+                credentialsForm.get('password')?.touched
+              "
+              class="error-text"
+            >
+              <span
+                *ngIf="credentialsForm.get('password')?.errors?.['required']"
+                >Password is required</span
+              >
+              <span
+                *ngIf="credentialsForm.get('password')?.errors?.['minlength']"
+                >Password must be at least 8 characters</span
+              >
+              <span
+                *ngIf="credentialsForm.get('password')?.errors?.['passwordStrength']"
+                >Password must include letters, numbers and special
+                characters</span
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-with-icon">
+              <i class="icon-lock"></i>
+              <input
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Confirm Password"
+                class="form-input with-icon"
+                [class.error]="(credentialsForm.get('confirmPassword')?.invalid || credentialsForm.errors?.['passwordMismatch']) && credentialsForm.get('confirmPassword')?.touched"
+              />
+            </div>
+            <div
+              *ngIf="(credentialsForm.get('confirmPassword')?.invalid || credentialsForm.errors?.['passwordMismatch']) && credentialsForm.get('confirmPassword')?.touched"
+              class="error-text"
+            >
+              <span
+                *ngIf="credentialsForm.get('confirmPassword')?.errors?.['required']"
+                >Please confirm your password</span
+              >
+              <span *ngIf="credentialsForm.errors?.['passwordMismatch']"
+                >Passwords do not match</span
+              >
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="navigation-buttons">
+    <button
+      *ngIf="currentStep > 0"
+      type="button"
+      class="btn btn-secondary"
+      (click)="previousStep()"
+    >
+      Back
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      [class.full-width]="currentStep === 0"
+      (click)="
+        currentStep === totalSteps - 1 ? submitFinalRegister() : nextStep()
+      "
+      [disabled]="isLoading"
+    >
+      <span *ngIf="!isLoading">
+        {{ currentStep === totalSteps - 1 ? "Create Account" : "Continue" }}
+      </span>
+
+      <div
+        *ngIf="isLoading && currentStep === totalSteps - 1"
+        class="loading-spinner"
+      ></div>
+    </button>
+  </div>
+</div>

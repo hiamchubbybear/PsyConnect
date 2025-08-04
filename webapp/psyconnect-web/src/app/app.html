@@ -1,4 +1,6 @@
 <app-header></app-header>
 <app-loader></app-loader>
-<router-outlet />
+<main [@fadeAnimation]="o.isActivated && o.activatedRoute.routeConfig?.path">
+  <router-outlet #o="outlet"></router-outlet>
+</main>
 <app-footer></app-footer>

@@ -1,11 +1,20 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { LoaderService } from './loader';
-
 @Component({
   selector: 'app-loader',
   standalone: true,
   imports: [CommonModule],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-out', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [animate('200ms ease-in', style({ opacity: 0 }))]),
+    ]),
+  ],
   template: `
     <div class="loader-backdrop" *ngIf="loader.loading$ | async" [@fadeIn]>
       <div class="loader-container">
