@@ -93,6 +93,9 @@
       }
     }
   },
-  "defaultProject": "psyconnect"
+  "defaultProject": "psyconnect",
+  "cli": {
+    "analytics": "685eb425-bf4c-4d2d-819e-c187ff0b977f"
+  }
 }
 
