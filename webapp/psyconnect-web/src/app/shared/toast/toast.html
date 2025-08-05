@@ -1,0 +1,12 @@
+<div
+  class="toast"
+  [@fade]
+  [ngStyle]="{ backgroundColor: bgColor, borderColor: accentColor }"
+>
+  <span class="material-icons" [style.color]="accentColor">{{ icon }}</span>
+  <div class="content">
+    <div class="title" [style.color]="accentColor">{{ title }}</div>
+    <div class="message">{{ message }}</div>
+  </div>
+  <span class="material-icons close" (click)="onClose()">close</span>
+</div>

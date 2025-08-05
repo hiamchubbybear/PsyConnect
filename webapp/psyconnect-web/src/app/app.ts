@@ -1,19 +1,29 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterOutlet } from '@angular/router';
 import { Footer } from './components/footer/footer';
 import { Header } from './components/header/header';
+import { fadeRouteAnimation } from './route-animation';
 import { AuthService } from './services/auth/auth.service';
 import { LoaderComponent } from './services/loader/loader.component';
 import {
-  UserContextService,
-  UserProfile,
+    UserContextService,
+    UserProfile,
 } from './services/profile/profile-service.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, Header, Footer, LoaderComponent],
+  imports: [
+    RouterOutlet,
+    Header,
+    Footer,
+    LoaderComponent,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
+  animations: [fadeRouteAnimation],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

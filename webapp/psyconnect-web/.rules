@@ -109,6 +109,6 @@ scss// Mobile first approach
 }
 Prompt format khi cần SCSS:
 
-"Viết SCSS theo minimalism rules: subtle colors, 0.2s transitions, 6-8px border-radius, consistent spacing (4px system), hover states, mobile-first responsive"
+"Viết SCSS theo minimalism rules: subtle colors, 0.2s transitions, 6-8px border-radius, consistent spacing (4px system), hover states, mobile-first responsive focus need input if there are somefeild"
 
 Bạn copy rules này và paste vào đầu mỗi prompt về SCSS để đảm bảo output luôn professional và minimal! */

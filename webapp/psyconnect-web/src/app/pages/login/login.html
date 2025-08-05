@@ -49,13 +49,25 @@
         </div>
 
         <div class="social-login">
-          <button type="button" class="btn btn-google">Google</button>
-          <button type="button" class="btn btn-apple">Apple</button>
+          <button
+            type="button"
+            class="btn btn-google"
+            (click)="handleOAuth2('google')"
+          >
+            Google
+          </button>
+          <button
+            type="button"
+            class="btn btn-apple"
+            (click)="handleOAuth2('facebook')"
+          >
+            Facebook
+          </button>
         </div>
 
         <p class="signup-text">
           Don’t have an account?
-          <a routerLink="/signup">Create one</a>
+          <a routerLink="/auth/signup">Create one</a>
         </p>
       </form>
     </div>
