@@ -30,7 +30,7 @@ export class OAuth2CallbackComponent implements OnInit {
       this.auth.exchangeOAuth2Code(code, email, provider, platform).subscribe({
         next: (res) => {
           console.log('OAuth2 exchange success:', res);
-          localStorage.setItem('token', res.data.token);
+          localStorage.setItem('access_token', res.data.token);
           localStorage.setItem('profile', JSON.stringify(res.data));
           this.userContext.setUser(res.data);
           this.router.navigate(['/']);

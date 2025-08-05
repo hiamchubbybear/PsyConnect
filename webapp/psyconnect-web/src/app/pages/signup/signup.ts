@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
@@ -21,7 +28,41 @@ import { ToastService } from '../../shared/toast/toast.service';
   styleUrls: ['./signup.scss'],
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
 })
-export class MultiStepRegisterComponent implements OnInit {
+export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
+  @ViewChild('emailInput') emailInputRef!: ElementRef;
+  @ViewChild('usernameInput') usernameInputRef!: ElementRef;
+  @ViewChild('imageInput') imageInputRef!: ElementRef;
+  @ViewChild('dobInput') dobInputRef!: ElementRef;
+  @ViewChild('addressInput') addressInputRef!: ElementRef;
+  @ViewChild('firstnameInput') firstnameInput!: ElementRef;
+  ngAfterViewInit() {
+    this.focusCurrentStepInput();
+  }
+  focusCurrentStepInput() {
+    console.log(this.currentStep);
+    setTimeout(() => {
+      switch (this.currentStep) {
+        case 1:
+          this.imageInputRef?.nativeElement.focus();
+          break;
+        case 2:
+          this.firstnameInput.nativeElement.focus();
+          break;
+        case 3:
+          this.dobInputRef.nativeElement.focus();
+          break;
+        case 4:
+          this.addressInputRef.nativeElement.focus();
+          break;
+        case 5:
+          this.emailInputRef.nativeElement.focus();
+          break;
+        case 6:
+          this.usernameInputRef.nativeElement.focus();
+          break;
+      }
+    });
+  }
   currentStep = 0;
   totalSteps = 7;
   isLoading = false;
@@ -243,16 +284,26 @@ export class MultiStepRegisterComponent implements OnInit {
         const status = err.status;
         if (status === 409) {
           const errorMessage = err.error.message || 'Register failed';
-          const errorCode = err.error.message?.code;
+          const errorCode = err.error.code;
+          console.log('Error code ', errorCode);
           this.toastService.show(errorMessage, 'Error', ToastType.Error);
           if (errorCode === 202) {
-            this.currentStep = this.totalSteps - 1;
-            this.credentialsForm.get('username')?.setErrors({ exists: true });
-            this.credentialsForm.markAllAsTouched();
+            const control = this.credentialsForm.get('username');
+            const currentErrors = control?.errors || {};
+            control?.setErrors({
+              ...currentErrors,
+              exists: errorMessage || 'Username already exists',
+            });
+            this.emailForm.markAllAsTouched();
             this.cdr.detectChanges();
           } else if (errorCode === 201) {
-            this.currentStep = this.totalSteps - 3;
-            this.emailForm.get('email')?.setErrors({ exists: true });
+            this.currentStep -= 2;
+            const control = this.emailForm.get('email');
+            const currentErrors = control?.errors || {};
+            control?.setErrors({
+              ...currentErrors,
+              exists: errorMessage || 'Email already exists',
+            });
             this.emailForm.markAllAsTouched();
             this.cdr.detectChanges();
           }

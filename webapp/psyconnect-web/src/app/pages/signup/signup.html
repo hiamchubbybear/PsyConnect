@@ -66,6 +66,7 @@
         <div class="form-fields">
           <div class="form-group">
             <input
+              #firstnameInput
               type="text"
               formControlName="firstName"
               placeholder="First Name"
@@ -132,6 +133,7 @@
         <div class="form-fields">
           <div class="form-group">
             <input
+              #dobInput
               type="date"
               formControlName="dateOfBirth"
               class="form-input"
@@ -206,6 +208,7 @@
         <div class="form-fields">
           <div class="form-group address-group">
             <input
+              #addressInput
               type="text"
               formControlName="address"
               placeholder="Enter your full address"
@@ -259,6 +262,7 @@
             <div class="input-with-icon">
               <i class="icon-email"></i>
               <input
+                #emailInput
                 type="email"
                 formControlName="email"
                 placeholder="your.email@example.com"
@@ -282,6 +286,11 @@
               <span *ngIf="emailForm.get('email')?.errors?.['email']"
                 >Please enter a valid email address</span
               >
+              <div
+                *ngIf="emailForm.get('email')?.errors?.['exists'] as existsMsg"
+              >
+                {{ existsMsg === true ? "Email already exists." : existsMsg }}
+              </div>
             </div>
           </div>
         </div>
@@ -352,6 +361,7 @@
             <div class="input-with-icon">
               <i class="icon-user"></i>
               <input
+                #usernameInput
                 type="text"
                 formControlName="username"
                 placeholder="Username"
@@ -376,6 +386,9 @@
               <span
                 *ngIf="credentialsForm.get('username')?.errors?.['minlength']"
                 >Username must be at least 4 characters</span
+              >
+              <span *ngIf="credentialsForm.get('username')?.errors?.['exists']"
+                >Username already exists</span
               >
             </div>
           </div>

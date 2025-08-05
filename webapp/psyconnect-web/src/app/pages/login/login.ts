@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -13,8 +13,8 @@ import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
 import { Profile, ProfileResponse } from '../../services/profile/profile';
 import {
-    UserContextService,
-    UserProfile,
+  UserContextService,
+  UserProfile,
 } from '../../services/profile/profile-service.service';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
@@ -84,7 +84,8 @@ export class Login implements OnInit {
       this.setLoading(true);
       this.auth.exchangeOAuth2Code(code, email, provider, platform).subscribe({
         next: (res) => {
-          localStorage.setItem('token', res.data.token);
+          console.log(res);
+          localStorage.setItem('access_token', res.data.token);
           this.loadUserProfile();
         },
         error: (err) => {
@@ -109,7 +110,7 @@ export class Login implements OnInit {
           gender: profile.data.gender,
           avatarUri: profile.data.avatarUri,
         };
-
+        console.log(profile.data.avatarUri);
         this.userContext.setUser(userProfile);
         this.toastService.show('Login success', 'Success', ToastType.Success);
         this.setLoading(false);
