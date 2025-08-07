@@ -30,6 +30,5 @@ func LoadEnv() *Env {
 	if err := v.Unmarshal(&env); err != nil {
 		log.Fatal("Failed to unmarshal environment variables:", err)
 	}
-
 	return &env
 }

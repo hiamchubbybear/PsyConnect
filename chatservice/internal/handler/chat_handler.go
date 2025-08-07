@@ -28,7 +28,7 @@ func (h *ChatHandler) CreateChat(c *gin.Context) {
 		return
 	}
 
-	if chat.ConversationID == "" || chat.UserID == "" {
+	if chat.ConversationID == "" || chat.SenderID == "" {
 		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing ConversationID or UserID")
 		return
 	}
