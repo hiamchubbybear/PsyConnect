@@ -36,8 +36,11 @@ func InitDB() *mongo.Client {
 			log.Fatal("Error loading .env file")
 		}
 
-		uri := fmt.Sprintf("mongodb://%s:%s@%s:%s/", dbUser, dbPass, dbHost, dbPort)
+		uri := fmt.Sprintf("mongodb://%s:%s@%s:%s/?authSource=admin", dbUser, dbPass, dbHost, dbPort)
 
+		if dbUser == "" || dbPass == "" {
+			uri = fmt.Sprintf("mongodb://%s:%s/", dbHost, dbPort)
+		}
 		log.Printf("Connecting to MongoDB at %s", uri)
 
 		opts := options.Client().
