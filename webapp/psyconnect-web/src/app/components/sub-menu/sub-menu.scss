@@ -1,0 +1,108 @@
+/* src/app/submenu/sub-menu.component.scss */
+/* Minimalism rules: 4px spacing, 0.18-0.2s transitions, 6-8px radius */
+/* If you have a variables file, adapt the @use path */
+@use "sass:color";
+@use "../../styles/variable" as v; // adjust path to your project structure
+
+:root {
+  --sub-width: 220px;
+  --sub-padding: 0.75rem; // 12px
+  --gap: 0.5rem;
+}
+
+/* container card */
+.sub-menu {
+  width: var(--sub-width);
+  background: v.$color-white;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  /* ensure it doesn't overlay header if used at left: match --app-header-height in layout */
+}
+
+/* list */
+.sub-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* item */
+.sub-menu__item {
+  display: block;
+}
+
+/* link/button common style */
+.sub-menu__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  text-decoration: none;
+  color: v.$color-text;
+  font-family: v.$font-primary;
+  font-size: v.$font-size-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+/* icon */
+.sub-menu__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: v.$color-primary;
+  flex-shrink: 0;
+}
+
+/* label */
+.sub-menu__label {
+  flex: 1 1 auto;
+  text-align: left;
+  color: v.$color-text;
+}
+
+/* hover / focus */
+.sub-menu__link:hover,
+.sub-menu__link:focus {
+  background: rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+/* active state (selected) */
+.sub-menu__item--active .sub-menu__link {
+  background: v.$color-gray-light;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  color: v.$color-primary;
+}
+
+/* responsive: collapse to icon-only at small widths (optional) */
+@media (max-width: 768px) {
+  .sub-menu {
+    width: 72px;
+    padding: 0.5rem 0.25rem;
+  }
+  .sub-menu__label {
+    display: none;
+  }
+  .sub-menu__icon {
+    width: 40px;
+    height: 40px;
+  }
+}

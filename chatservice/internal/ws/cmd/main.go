@@ -1,13 +1,19 @@
 package main
 
 import (
+	"chatservice/bootstrap"
+	"chatservice/internal/db"
+	"chatservice/internal/repository"
 	"chatservice/internal/ws"
 	"log"
 	"net/http"
 )
 
 func main() {
-	hub := ws.NewHub()
+	db.InitDB()
+	env := bootstrap.LoadEnv()
+	repomanager := repository.NewRepositoryManager(env)
+	hub := ws.NewHub(repomanager.MessageRepo)
 	go hub.Run()
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
