@@ -1,0 +1,32 @@
+<!-- src/app/submenu/sub-menu.component.html -->
+<aside class="sub-menu" role="navigation" aria-label="Secondary menu">
+  <ul class="sub-menu__list" role="menu">
+    <li
+      class="sub-menu__item"
+      *ngFor="let it of items"
+      [class.sub-menu__item--active]="it.id === activeId"
+      role="none"
+    >
+      <a
+        *ngIf="it.route"
+        class="sub-menu__link"
+        [routerLink]="it.route"
+        (click)="onSelect(it)"
+        role="menuitem"
+      >
+        <span class="sub-menu__icon" aria-hidden="true">{{ it.icon }}</span>
+        <span class="sub-menu__label">{{ it.label }}</span>
+      </a>
+
+      <button
+        *ngIf="!it.route"
+        class="sub-menu__link"
+        (click)="onSelect(it)"
+        role="menuitem"
+      >
+        <span class="sub-menu__icon" aria-hidden="true">{{ it.icon }}</span>
+        <span class="sub-menu__label">{{ it.label }}</span>
+      </button>
+    </li>
+  </ul>
+</aside>
