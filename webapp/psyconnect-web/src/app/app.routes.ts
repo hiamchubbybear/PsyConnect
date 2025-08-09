@@ -28,6 +28,22 @@ export const routes: Routes = [
     path: '**',
     component: Notfound,
   },
+  {
+    path: 'feature/feed',
+    component: Notfound,
+  },
+  {
+    path: 'feature/schedules',
+    component: Notfound,
+  },
+  {
+    path: 'feature/chat',
+    component: Notfound,
+  },
+  {
+    path: 'feature/profile',
+    component: Notfound,
+  },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
