@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -31,19 +32,36 @@ public class Oauth2Controller {
     private static final Logger log = LoggerFactory.getLogger(Oauth2Controller.class);
     private final OAuth2Service oAuth2Service;
 
+    @GetMapping("/oauth2/authorization/google")
+    public void googleAuthorization(
+            @RequestParam(defaultValue = "web") String platform,
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        request.getSession().setAttribute("platform", platform);
+        response.sendRedirect("/oauth2/authorization/google");
+    }
+
+    @GetMapping("/oauth2/authorization/facebook")
+    public void facebookAuthorization(
+            @RequestParam(defaultValue = "web") String platform,
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        request.getSession().setAttribute("platform", platform);
+        response.sendRedirect("/oauth2/authorization/facebook");
+    }
+
     @GetMapping("/oauth2/userInfo")
-    public void oAuth2Google(
+    public void oAuth2UserInfo(
             @RequestParam String provider,
             @RequestParam String email,
             @RequestParam String avatar,
+            @RequestParam(defaultValue = "web") String platform,
             Authentication authentication,
-            HttpServletResponse response)
-            throws IOException {
+            HttpServletResponse response) throws IOException {
 
         var res = oAuth2Service.processOAuth2PreLogin(email, avatar, authentication, provider);
-        System.out.println("DEBUG accessToken: " + res.getToken());
-        System.out.println("DEBUG email: " + email);
-        System.out.println("DEBUG provider: " + provider);
+        log.info("OAuth2 userInfo | token: {}, email: {}, provider: {}, platform: {}", res.getToken(), email, provider, platform);
+
         if (res.isSuccessful()) {
             String accessToken = res.getToken();
 
@@ -55,34 +73,36 @@ public class Oauth2Controller {
                     && !provider.isBlank()) {
 
                 String deepLinkUrl = String.format(
-                        "psyconnect://oauth2/callback/code?code=%s&email=%s&provider=%s",
+                        "psyconnect://oauth2/callback/code?code=%s&email=%s&provider=%s&platform=%s",
                         URLEncoder.encode(accessToken, StandardCharsets.UTF_8),
                         URLEncoder.encode(email, StandardCharsets.UTF_8),
-                        URLEncoder.encode(provider, StandardCharsets.UTF_8));
+                        URLEncoder.encode(provider, StandardCharsets.UTF_8),
+                        URLEncoder.encode(platform, StandardCharsets.UTF_8)
+                );
 
                 String redirectHtml = String.format(
                         """
-								<!DOCTYPE html>
-								<html>
-								<head>
-									<title>Redirecting to PsyConnect...</title>
-									<meta charset="UTF-8">
-								</head>
-								<body>
-									<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-										<h2>Login Successful!</h2>
-										<p>Redirecting you back to PsyConnect app...</p>
-										<p>If you're not redirected automatically, <a href="%s">click here</a></p>
-									</div>
-									<script>
-										window.location.href = '%s';
-										setTimeout(function() {
-											window.close();
-										}, 3000);
-									</script>
-								</body>
-								</html>
-								""",
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                	<title>Redirecting to PsyConnect...</title>
+                                	<meta charset="UTF-8">
+                                </head>
+                                <body>
+                                	<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+                                		<h2>Login Successful!</h2>
+                                		<p>Redirecting you back to PsyConnect app...</p>
+                                		<p>If you're not redirected automatically, <a href="%s">click here</a></p>
+                                	</div>
+                                	<script>
+                                		window.location.href = '%s';
+                                		setTimeout(function() {
+                                			window.close();
+                                		}, 3000);
+                                	</script>
+                                </body>
+                                </html>
+                                """,
                         deepLinkUrl, deepLinkUrl);
 
                 response.setContentType("text/html; charset=UTF-8");

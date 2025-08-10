@@ -1,0 +1,43 @@
+<nav [class.collapsed]="isCollapsed" class="sidebar">
+  <div class="sidebar__menu">
+    <a
+      routerLink="/feature/feed"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+    >
+      <span class="material-icons sidebar__icon">home</span>
+      <span class="sidebar__label">Feed</span>
+    </a>
+
+    <a
+      routerLink="/feature/schedule"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+    >
+      <span class="material-icons sidebar__icon">event</span>
+      <span class="sidebar__label">Schedule</span>
+    </a>
+
+    <a
+      routerLink="/feature/chat"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+    >
+      <span class="material-icons sidebar__icon">chat</span>
+      <span class="sidebar__label">Chat</span>
+    </a>
+
+    <a
+      routerLink="/feature/profile"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+    >
+      <span class="material-icons sidebar__icon">person</span>
+      <span class="sidebar__label">Profile</span>
+    </a>
+  </div>
+</nav>

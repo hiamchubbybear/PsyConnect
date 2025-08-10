@@ -1,12 +1,83 @@
-@use './app/styles/_variable.scss' as v;
+@use "@angular/material" as mat;
+@use "sass:color";
+@use "./app/styles/_variable.scss" as v;
+
+@include mat.core();
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+    )
+  );
+}
 
 body {
+  font-family: "Quicksand", sans-serif;
+  font-size: v.$font-size-md;
+  margin: 0;
+  color-scheme: light;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+html,
+body {
+  height: 100%;
+}
+input,
+select,
+textarea,
+option {
   font-family: v.$font-primary;
   font-size: v.$font-size-md;
+  color: v.$color-text;
+}
+
+input::placeholder,
+textarea::placeholder {
+  font-family: v.$font-primary;
+  color: v.$color-gray;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
   width: 100%;
+}
+
+:root {
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.4s ease;
+}
+
+*,
+*::before,
+*::after {
+  transition: background-color var(--transition-fast),
+    color var(--transition-fast), border-color var(--transition-fast),
+    box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.button {
+  transition: background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }

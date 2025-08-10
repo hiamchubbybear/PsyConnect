@@ -1,0 +1,176 @@
+$spacing-unit: 4px;
+$color-bg: #fff;
+$color-text: #333;
+$color-hover: rgba(0, 0, 0, 0.04);
+$color-active: rgba(0, 0, 0, 0.08);
+$border-radius: 6px;
+$transition-time: 0.2s;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semi: 600;
+$transition-ease: ease-in-out;
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: $color-bg;
+  width: 240px;
+  padding: $spacing-unit * 4;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: width $transition-time $transition-ease,
+    padding $transition-time $transition-ease;
+  position: fixed;
+  top: 80px;
+  bottom: 50px;
+  left: 0;
+  overflow-y: auto;
+  overflow: visible;
+  background: transparent;
+
+  &.collapsed {
+    width: 60px;
+    padding: $spacing-unit * 2;
+
+    .sidebar__item {
+      justify-content: center;
+      padding: $spacing-unit * 3 $spacing-unit * 2;
+
+      .sidebar__label {
+        display: none;
+      }
+
+      /* Tooltip label on hover */
+      position: relative;
+      &:hover {
+        .sidebar__label {
+          display: block;
+          position: absolute;
+          left: calc(100% + #{$spacing-unit});
+          top: 50%;
+          transform: translateY(-50%);
+          background-color: $color-bg;
+          padding: $spacing-unit * 2 $spacing-unit * 3;
+          border-radius: $border-radius;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+          white-space: nowrap;
+          z-index: 10;
+          pointer-events: none;
+          opacity: 1;
+          transition: opacity $transition-time ease,
+            transform $transition-time ease;
+          color: $color-text;
+        }
+      }
+
+      .sidebar__icon {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .sidebar__menu {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-unit * 3;
+    flex: 1;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .sidebar__item {
+    display: flex;
+    align-items: center;
+    padding: $spacing-unit * 3 $spacing-unit * 4;
+    color: $color-text;
+    font-weight: $font-weight-medium;
+    border-radius: $border-radius;
+    text-decoration: none;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+    transition: background-color $transition-time $transition-ease,
+      transform $transition-time $transition-ease,
+      color $transition-time $transition-ease;
+
+    &:hover {
+      background-color: $color-hover;
+      transform: translateY(-2px);
+      color: darken($color-text, 20%);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(0, 0, 0, 0.5);
+      outline-offset: 2px;
+    }
+
+    &:active {
+      background-color: $color-active;
+      transform: translateY(0);
+    }
+
+    &.active {
+      background-color: $color-active;
+      font-weight: $font-weight-semi;
+    }
+  }
+
+  .sidebar__icon {
+    font-size: 24px;
+    margin-right: $spacing-unit * 4;
+    min-width: 24px;
+  }
+
+  .sidebar__label {
+    font-weight: $font-weight-normal;
+    opacity: 1;
+    transition: opacity $transition-time $transition-ease,
+      color $transition-time $transition-ease;
+  }
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: $spacing-unit * 3;
+    flex-direction: row;
+    justify-content: flex-start;
+    box-shadow: none;
+
+    &.collapsed {
+      width: 100%;
+    }
+
+    .sidebar__menu {
+      flex-direction: row;
+      gap: $spacing-unit * 2;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+    }
+
+    .sidebar__item {
+      flex-direction: column;
+      padding: $spacing-unit * 2;
+      justify-content: center;
+      text-align: center;
+
+      .sidebar__icon {
+        margin: 0 0 $spacing-unit 0;
+      }
+
+      .sidebar__label {
+        display: block !important;
+        opacity: 1 !important;
+        position: static !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        white-space: normal !important;
+      }
+    }
+  }
+}

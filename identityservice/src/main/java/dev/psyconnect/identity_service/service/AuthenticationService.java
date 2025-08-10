@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
 
+import dev.psyconnect.identity_service.dto.response.TokenClaimsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -249,6 +250,21 @@ public class AuthenticationService {
             throws ParseException, JOSEException {
         final String username = extractUsername(token);
         return (username.equals(authenticationRequest.getUsername()) && !isTokenExpired(token));
+    }
+
+    public TokenClaimsResponse extractClaims(String token) throws ParseException, JOSEException {
+        var claimsSet = verifyToken(token).getJWTClaimsSet();
+
+        return TokenClaimsResponse.builder()
+                .subject(claimsSet.getSubject())
+                .accountId((String) claimsSet.getClaim("accountId"))
+                .profileId((String) claimsSet.getClaim("profileId"))
+                .scope((String) claimsSet.getClaim("scope"))
+                .provider((String) claimsSet.getClaim("type"))
+                .platform((String) claimsSet.getClaim("platform"))
+                .issuedAt(claimsSet.getIssueTime().getTime())
+                .expiresAt(claimsSet.getExpirationTime().getTime())
+                .build();
     }
 
     public boolean isTokenValid(String token) {

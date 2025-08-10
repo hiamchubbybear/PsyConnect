@@ -4,10 +4,8 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-homepage',
   imports: [RouterModule],
-    standalone: true,
+  standalone: true,
   templateUrl: './homepage.html',
-  styleUrl: './homepage.scss'
+  styleUrl: './homepage.scss',
 })
-export class Homepage {
-
-}
+export class Homepage {}

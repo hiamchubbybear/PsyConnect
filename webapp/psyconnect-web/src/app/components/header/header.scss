@@ -5,14 +5,18 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  background-color: v.$color-bg;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: v.$color-bg;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   position: relative;
-  font-family: v.$font-primary;
+
+  &.hidden {
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+  }
 
   .logo {
     font-size: v.$font-size-xl;
-    font-weight: bold;
+    font-weight: 600;
     color: v.$color-primary;
     text-decoration: none;
   }
@@ -35,29 +39,50 @@
 
   .header-right {
     display: flex;
-    gap: 1rem;
+    align-items: center;
 
     .auth {
+      padding: 0.5rem 1rem;
       text-decoration: none;
       font-weight: 500;
       color: v.$color-text;
-      font-size: v.$font-size-md;
-      padding: 0.4rem 0.8rem;
-      border-radius: 5px;
 
       &:hover {
         color: v.$color-primary;
       }
 
       &.signup {
-        background-color: v.$color-primary;
+        background: v.$color-primary;
         color: v.$color-white;
-        padding: 0.4rem 0.8rem;
-        border: 1px solid v.$color-primary;
-        border-radius: 5px;
+        border-radius: 4px;
+        margin-left: 0.5rem;
+
         &:hover {
-          background-color: v.$color-primary-hover;
+          background: v.$color-primary-hover;
         }
+      }
+    }
+
+    .avatar-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .username {
+        font-size: v.$font-size-sm;
+        font-weight: 500;
+        color: v.$color-text;
       }
     }
   }
@@ -77,26 +102,44 @@
     left: 0;
     right: 0;
     padding: 1rem 2rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 999;
 
     a {
-      padding: 0.5rem 0;
+      padding: 0.75rem 0;
       text-decoration: none;
       color: v.$color-text;
-      font-size: v.$font-size-md;
+
+      &:hover {
+        color: v.$color-primary;
+      }
 
       &.signup {
-        margin-top: 0.5rem;
         background: v.$color-primary;
         color: v.$color-white;
-        padding: 0.4rem 0.8rem;
-        border-radius: 5px;
-        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
 
         &:hover {
-          background-color: v.$color-primary-hover;
+          background: v.$color-primary-hover;
         }
+      }
+    }
+
+    .avatar-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+      }
+
+      .username {
+        font-size: v.$font-size-sm;
       }
     }
 
@@ -115,4 +158,14 @@
       display: block;
     }
   }
+}
+
+.mat-mdc-menu-panel {
+  min-width: 160px !important;
+  border-radius: 8px !important;
+}
+
+.mat-mdc-menu-item {
+  font-family: v.$font-primary !important;
+  font-size: v.$font-size-sm !important;
 }
