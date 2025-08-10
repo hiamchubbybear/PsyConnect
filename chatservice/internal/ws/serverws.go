@@ -17,20 +17,18 @@ var upgrader = websocket.Upgrader{
 func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	receiver := query.Get("receiver")
-	userID := query.Get("user_id")
-	profileID := query.Get("profile_id")
 
-	// userID := r.Header.Get("X-User-Id")
-	// if userID == "" {
-	// 	http.Error(w, "Unauthenticated", http.StatusUnauthorized)
-	// 	return
-	// }
+	userID := r.Header.Get("X-User-Id")
+	if userID == "" {
+		http.Error(w, "Unauthenticated", http.StatusUnauthorized)
+		return
+	}
 
-	// profileID := r.Header.Get("X-Profile-Id")
-	// if profileID == "" {
-	// 	http.Error(w, "Unauthenticated", http.StatusUnauthorized)
-	// 	return
-	// }
+	profileID := r.Header.Get("X-Profile-Id")
+	if profileID == "" {
+		http.Error(w, "Unauthenticated", http.StatusUnauthorized)
+		return
+	}
 
 	conversationID, err := encoder.New().EncodeConversationId(userID, receiver)
 	if err != nil || conversationID == "" {
