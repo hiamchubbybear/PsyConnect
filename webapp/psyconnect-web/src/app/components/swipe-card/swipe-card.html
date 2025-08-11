@@ -1,0 +1,127 @@
+<!-- src/app/swipe-card/swipe-card.component.html -->
+<div class="card-wrapper" [style.zIndex]="100 - index">
+  <article
+    #card
+    class="card"
+    role="article"
+    [style.transform]="transform"
+    [style.transition]="transition"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+    tabindex="0"
+    [attr.aria-label]="'Therapist card for ' + (therapist.name || 'profile')"
+  >
+    <!-- overlays while dragging -->
+    <div class="overlay like" [style.opacity]="likeOpacity">LIKE</div>
+    <div class="overlay nope" [style.opacity]="nopeOpacity">NOPE</div>
+
+    <header class="card-header">
+      <img
+        *ngIf="therapist.avatarUrl; else placeholder"
+        [src]="therapist.avatarUrl"
+        [alt]="therapist.name"
+        class="avatar"
+      />
+      <ng-template #placeholder>
+        <div class="avatar">👩‍⚕️</div>
+      </ng-template>
+
+      <div class="meta">
+        <h3 class="name">{{ therapist.name }}</h3>
+        <div class="title">{{ therapist.title }}</div>
+        <div class="rating">
+          <span class="stars">★</span>
+          <span class="score">{{ therapist.rating ?? "—" }}</span>
+          <span class="reviews" *ngIf="therapist.reviews"
+            >({{ therapist.reviews }})</span
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- horizontal tabs -->
+    <nav class="tabs" role="tablist" aria-label="Therapist details tabs">
+      <button
+        *ngFor="let tab of tabs"
+        class="tab-btn"
+        [class.active]="activeTab === tab.key"
+        (click)="activeTab = tab.key"
+        role="tab"
+        [attr.aria-selected]="activeTab === tab.key"
+      >
+        {{ tab.label }}
+      </button>
+    </nav>
+
+    <!-- tab content area -->
+    <section class="tab-content" role="tabpanel">
+      <ng-container [ngSwitch]="activeTab">
+        <div *ngSwitchCase="'specialties'">
+          <div
+            class="line"
+            *ngFor="let s of therapist.specialties || [] | slice : 0 : 3"
+          >
+            {{ s }}
+          </div>
+        </div>
+
+        <div *ngSwitchCase="'pricing'">
+          <div class="line">
+            {{
+              (therapist.pricePerHour ?? therapist.pricing?.priceRange) || "N/A"
+            }}
+            {{ therapist.currency || therapist.pricing?.currency || "" }} / hour
+          </div>
+          <div class="line muted">Typical session length: 50 mins</div>
+        </div>
+
+        <div *ngSwitchCase="'availability'">
+          <div class="line muted" *ngIf="!therapist.availability?.days?.length">
+            No availability info
+          </div>
+          <div
+            class="line"
+            *ngFor="
+              let day of therapist.availability?.days || [] | slice : 0 : 3
+            "
+          >
+            {{ day }} •
+            {{ (therapist.availability?.timeSlots || []).join(", ") }}
+          </div>
+        </div>
+
+        <div *ngSwitchCase="'languages'">
+          <div
+            class="line"
+            *ngFor="let lang of therapist.languages || [] | slice : 0 : 4"
+          >
+            {{ lang }}
+          </div>
+        </div>
+
+        <div *ngSwitchCase="'modes'">
+          <div
+            class="line"
+            *ngFor="
+              let mode of therapist.consultationModes || [] | slice : 0 : 3
+            "
+          >
+            {{ mode }}
+          </div>
+          <div class="line muted">Remote + In-person where available</div>
+        </div>
+      </ng-container>
+    </section>
+
+    <footer class="card-actions">
+      <button class="btn pass" (click)="pass()" aria-label="Pass">
+        ✕ Pass
+      </button>
+      <button class="btn match" (click)="match()" aria-label="Match">
+        ❤ Match
+      </button>
+    </footer>
+  </article>
+</div>

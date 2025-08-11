@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { SecureStorageService } from '../../encrypt/secure';
 
 export interface UserProfile {
   accountId: string;
@@ -20,7 +21,7 @@ export class UserContextService {
   user$ = this.userSubject.asObservable();
   private isInitialized = false;
 
-  constructor() {
+  constructor(private secureStorage: SecureStorageService) {
     this.initializeUser();
   }
 
@@ -30,7 +31,7 @@ export class UserContextService {
     }
 
     try {
-      const userString = localStorage.getItem('profile');
+      const userString = this.secureStorage.getItem<string>('profile');
       if (userString) {
         const user = JSON.parse(userString);
 
@@ -39,7 +40,7 @@ export class UserContextService {
       } else {
       }
     } catch (error) {
-      localStorage.removeItem('profile');
+      this.secureStorage.removeItem('profile');
     }
   }
 
@@ -52,7 +53,7 @@ export class UserContextService {
         JSON.stringify(currentUser) !== JSON.stringify(user)
       ) {
         this.userSubject.next(user);
-        localStorage.setItem('profile', JSON.stringify(user));
+        this.secureStorage.setItem('profile', JSON.stringify(user));
         this.isInitialized = true;
       } else {
       }
@@ -65,7 +66,7 @@ export class UserContextService {
 
   clear() {
     this.userSubject.next(null);
-    localStorage.removeItem('profile');
+    this.secureStorage.removeItem('profile');
     this.isInitialized = false;
   }
 

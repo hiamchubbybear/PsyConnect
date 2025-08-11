@@ -1,0 +1,33 @@
+
+<div class="deck">
+  <ng-container *ngIf="therapists.length; else empty">
+    <ng-container *ngFor="let t of therapists; let i = index">
+      <app-swipe-card
+        [therapist]="t"
+        [index]="i"
+        (swiped)="onCardSwiped($event)"
+      ></app-swipe-card>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #empty>
+    <div class="empty">No more therapists — check back later 😊</div>
+  </ng-template>
+</div>
+
+<div class="deck">
+  <ng-container *ngIf="therapists.length; else empty">
+    <ng-container *ngFor="let t of therapists; let i = index">
+
+      <app-swipe-card
+        [therapist]="t"
+        [index]="i"
+        (swiped)="onCardSwiped($event)"
+      ></app-swipe-card>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #empty>
+    <div class="empty">No more therapists — check back later 😊</div>
+  </ng-template>
+</div>
