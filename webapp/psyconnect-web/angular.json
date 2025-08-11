@@ -23,7 +23,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           },
@@ -57,14 +57,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "psyconnect:build",
-            "host": "0.0.0.0",
+            "buildTarget": "psyconnect:build"
+	    "host": "0.0.0.0",
             "disableHostCheck": true
           },
           "configurations": {
             "production": {
-              "browserTarget": "psyconnect:build:production"
-            }
+            "buildTarget": "psyconnect:build:production"
+	    }
           }
         },
         "extract-i18n": {
@@ -85,7 +85,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }
@@ -95,7 +95,7 @@
   },
   "defaultProject": "psyconnect",
   "cli": {
-    "analytics": "685eb425-bf4c-4d2d-819e-c187ff0b977f"
+    "analytics": false
   }
 }
 

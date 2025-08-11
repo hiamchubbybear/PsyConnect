@@ -56,6 +56,20 @@ services:
       - "7687:7687"
     networks:
       - mynetwork
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    platform: linux/amd64
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: consultationservice
+      MONGO_INITDB_ROOT_PASSWORD: "123456"
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - mynetwork
 
   cache:
     image: redis:6.2-alpine
