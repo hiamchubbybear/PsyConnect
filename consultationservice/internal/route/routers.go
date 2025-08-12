@@ -42,12 +42,15 @@ func RouterInit(
 	clientGroup := router.Group("/consultation/client")
 	clientGroup.Use(middleware.RoleRequire("client"))
 	{
+		// Client Handler
 		clientGroup.GET("/", clientHandler.GetClientHandler)
 		clientGroup.POST("/", clientHandler.PostClientHandler)
 		clientGroup.PUT("/", clientHandler.PutClientHandler)
+		// Swipe
 		clientGroup.POST("/recommend", swipeHandler.TriggerUpdate)
 		clientGroup.GET("/recommend/top", swipeHandler.PopTop5)
 		clientGroup.POST("/match", matchingHandler.MatchRequest)
+		clientGroup.POST("/swipe", swipeHandler.SwipeTherapist)
 
 	}
 

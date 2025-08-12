@@ -1,9 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { Footer } from './components/footer/footer';
 import { Header } from './components/header/header';
+import { SidebarComponent } from './components/sidebar/sidebar';
 import { fadeRouteAnimation } from './route-animation';
 import { AuthService } from './services/auth/auth.service';
 import { LoaderComponent } from './services/loader/loader.component';
@@ -21,7 +23,10 @@ import {
     Footer,
     LoaderComponent,
     FormsModule,
+    SidebarComponent,
     ReactiveFormsModule,
+    CommonModule,
+    RouterModule,
   ],
   animations: [fadeRouteAnimation],
   templateUrl: './app.html',
@@ -33,7 +38,7 @@ export class App implements OnInit {
     private auth: AuthService,
     private userContext: UserContextService
   ) {}
-
+  showSidebar = true;
   ngOnInit() {
     const token = this.auth.getToken();
     if (token) {

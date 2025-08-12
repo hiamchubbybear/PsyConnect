@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"consultationservice/bootstrap"
+	"consultationservice/internal/model"
 	"consultationservice/internal/repository"
 	"consultationservice/pkg/apiresponse"
 	"log"
@@ -50,4 +51,21 @@ func (r *SwipeHandler) PopTop5(c *gin.Context) {
 	}
 
 	apiresponse.NewApiResponse(c, therapists)
+}
+
+func (r *SwipeHandler) SwipeTherapist(c *gin.Context) {
+	var clientSwipe model.ClientSwipe
+	err := c.ShouldBindJSON(&clientSwipe)
+	if err != nil {
+		log.Print("failed to bind data")
+		apiresponse.ErrorHandler(c, 404, "Invalid input")
+		return
+	}
+	err = r.RepoManager.SwipeRepo.InsertSwipe(clientSwipe)
+	if err != nil {
+		log.Print("failed to bind data")
+		apiresponse.ErrorHandler(c, 404, "Invalid input")
+		return
+	}
+	apiresponse.NewApiResponse(c, true)
 }

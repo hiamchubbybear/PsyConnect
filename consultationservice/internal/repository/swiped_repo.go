@@ -222,7 +222,13 @@ func AppendDataIntoSwipe(client *model.Client, therapist []model.Therapist) (dto
 		TherapistRaw: therapists,
 	}, nil
 }
-
+func (r *SwipeRepository) swipeTherapist(profileId string) (status bool, err error) {
+	if profileId == "" {
+		return false, errors.New("profile id. can not be nil ")
+	}
+	
+	return false, errors.New("failed to swipe therapist")
+}
 func optsFindTop5() *options.FindOptions {
 	return options.Find().SetSort(bson.M{"points": -1}).SetLimit(5)
 }

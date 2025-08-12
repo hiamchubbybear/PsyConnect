@@ -1,72 +1,72 @@
 package ws
 
 import (
-	"log"
+	"chatservice/internal/model"
+	"chatservice/internal/repository"
+	"fmt"
 	"time"
 )
 
-type Hub struct {
-	clients map[*Client]bool
-
-	rooms map[string]map[*Client]bool
-
-	register   chan *Client
-	unregister chan *Client
-
-	broadcast chan Message
-}
-	
 type Message struct {
-	ConversationID string    `json:"conversation_id"`
-	UserID         string    `json:"user_id"`
-	Text           string    `json:"text"`
-	Timestamp      time.Time `json:"timestamp"`
+	ConversationID string
+	SenderID       string
+	Content        []byte
 }
 
-func NewHub() *Hub {
+type Hub struct {
+	Clients    map[string][]*Client
+	Register   chan *Client
+	Unregister chan *Client
+	Broadcast  chan Message
+	ChatRepo   *repository.ChatRepository
+}
+
+func NewHub(repo *repository.ChatRepository) *Hub {
 	return &Hub{
-		clients:    make(map[*Client]bool),
-		rooms:      make(map[string]map[*Client]bool),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		broadcast:  make(chan Message),
+		Clients:    make(map[string][]*Client),
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		Broadcast:  make(chan Message),
+		ChatRepo:   repo,
 	}
 }
 
 func (h *Hub) Run() {
 	for {
 		select {
-		case client := <-h.register:
-			h.clients[client] = true
-			if _, ok := h.rooms[client.conversationID]; !ok {
-				h.rooms[client.conversationID] = make(map[*Client]bool)
-			}
-			h.rooms[client.conversationID][client] = true
-			log.Printf("Client %s joined room %s", client.userID, client.conversationID)
+		case client := <-h.Register:
+			h.Clients[client.ConversationID] = append(h.Clients[client.ConversationID], client)
 
-		case client := <-h.unregister:
-			if _, ok := h.clients[client]; ok {
-				delete(h.clients, client)
-				close(client.send)
-				if room, ok := h.rooms[client.conversationID]; ok {
-					delete(room, client)
-					if len(room) == 0 {
-						delete(h.rooms, client.conversationID)
-					}
+		case client := <-h.Unregister:
+			clients := h.Clients[client.ConversationID]
+			for i, c := range clients {
+				if c == client {
+					h.Clients[client.ConversationID] = append(clients[:i], clients[i+1:]...)
+					break
 				}
 			}
 
-		case msg := <-h.broadcast:
-			if room, ok := h.rooms[msg.ConversationID]; ok {
-				for client := range room {
-					select {
-					case client.send <- []byte(msg.Text):
-					default:
-						close(client.send)
-						delete(room, client)
-					}
-				}
-			}
+		case message := <-h.Broadcast:
+			h.handleMessage(message)
+		}
+	}
+}
+func (h *Hub) handleMessage(message Message) {
+	var newChat = &model.Chat{
+		SenderID:       message.SenderID,
+		ConversationID: message.ConversationID,
+		Text:           string(message.Content),
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+	res, err := h.ChatRepo.CreateChat(newChat)
+	if err != nil || res == nil {
+		fmt.Println("Save error:", err)
+	}
+	fmt.Println(newChat)
+	for _, client := range h.Clients[message.ConversationID] {
+		if client.ID != message.SenderID {
+			client.Send <- message.Content
 		}
 	}
 }
