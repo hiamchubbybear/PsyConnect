@@ -1,0 +1,182 @@
+/* src/app/swipe-card/swipe-card.component.scss */
+:host {
+  display: block;
+  pointer-events: auto;
+}
+
+.card-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 14px 0;
+}
+
+.card {
+  width: min(540px, 94vw); /* to hơn nhưng responsive */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(12, 20, 30, 0.14);
+  padding: clamp(16px, 4vw, 24px); /* responsive padding */
+  user-select: none;
+  touch-action: pan-x pan-y;
+  position: relative;
+  overflow: visible;
+}
+
+/* overlays swipe hint */
+.overlay {
+  position: absolute;
+  top: clamp(14px, 3vw, 20px);
+  left: clamp(14px, 3vw, 20px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transform: rotate(-12deg);
+  pointer-events: none;
+  opacity: 0;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+}
+.overlay.like {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.18);
+}
+.overlay.nope {
+  right: clamp(14px, 3vw, 20px);
+  left: auto;
+  transform: rotate(12deg);
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.12);
+}
+
+/* header */
+.card-header {
+  display: flex;
+  gap: clamp(10px, 2.5vw, 14px);
+  align-items: center;
+}
+.avatar {
+  width: clamp(64px, 18vw, 80px);
+  height: clamp(64px, 18vw, 80px);
+  border-radius: 14px;
+  object-fit: cover;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(26px, 6vw, 32px);
+}
+.meta {
+  flex: 1;
+}
+.name {
+  margin: 0;
+  font-size: clamp(1.05rem, 3vw, 1.25rem);
+  font-weight: 600;
+}
+.title {
+  color: #6b7280;
+  font-size: clamp(0.85rem, 2.4vw, 1rem);
+  margin-top: 4px;
+}
+.rating {
+  margin-top: 6px;
+  font-size: clamp(0.85rem, 2.4vw, 1rem);
+  color: #111827;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* tabs row */
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-top: clamp(14px, 3.5vw, 18px);
+  border-bottom: 1px solid #eceff1;
+}
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: clamp(8px, 2.5vw, 12px) 6px;
+  font-size: clamp(0.82rem, 2.5vw, 0.95rem);
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.16s, border-bottom-color 0.16s;
+}
+.tab-btn.active {
+  color: #0f172a;
+  border-bottom-color: #0f172a;
+}
+
+/* content area */
+.tab-content {
+  margin-top: 12px;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  animation: fadeIn 0.18s ease-in;
+}
+.line {
+  font-size: clamp(0.9rem, 2.6vw, 1rem);
+  color: #111827;
+  line-height: 1.25;
+  max-height: 2.6em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.muted {
+  color: #6b7280;
+  font-size: clamp(0.85rem, 2.4vw, 0.95rem);
+}
+
+/* actions */
+.card-actions {
+  display: flex;
+  gap: clamp(10px, 2.5vw, 14px);
+  margin-top: 16px;
+}
+.btn {
+  flex: 1;
+  padding: clamp(10px, 2.5vw, 14px) clamp(12px, 3vw, 16px);
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: clamp(0.9rem, 2.6vw, 1rem);
+}
+.btn.pass {
+  background: #fff;
+  border: 1px solid #e6e7eb;
+  color: #111827;
+}
+.btn.match {
+  background: #0f172a;
+  color: #fff;
+}
+
+/* subtle responsive */
+@media (max-width: 480px) {
+  .tab-btn {
+    font-size: 0.8rem;
+  }
+}
+
+/* animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
