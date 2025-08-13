@@ -17,7 +17,7 @@ export const routes: Routes = [
   { path: 'chat-page', component: ChatComponent, canActivate: [authGuard] },
   { path: 'feature/feed', component: Notfound, canActivate: [authGuard] },
   {
-    path: 'feature/schedules',
+    path: 'feature/schedule',
     component: SwipeDeckComponent,
     canActivate: [authGuard],
   },

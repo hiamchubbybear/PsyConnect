@@ -78,17 +78,21 @@
         </div>
 
         <div *ngSwitchCase="'availability'">
-          <div class="line muted" *ngIf="!therapist.availability?.days?.length">
+          <div
+            class="line muted"
+            *ngIf="
+              !therapist.nextAvailable || therapist.nextAvailable.trim() === ''
+            "
+          >
             No availability info
           </div>
           <div
             class="line"
-            *ngFor="
-              let day of therapist.availability?.days || [] | slice : 0 : 3
+            *ngIf="
+              therapist.nextAvailable && therapist.nextAvailable.trim() !== ''
             "
           >
-            {{ day }} •
-            {{ (therapist.availability?.timeSlots || []).join(", ") }}
+            {{ therapist.nextAvailable }}
           </div>
         </div>
 

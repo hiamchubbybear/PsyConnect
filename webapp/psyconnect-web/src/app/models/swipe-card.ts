@@ -5,7 +5,9 @@ export interface Therapist {
   rating: number;
   reviews: number;
   specialties: string[];
-  nextAvailable: string;
+  availability?: string;
   pricePerHour: string;
   avatarUrl?: string;
+  languages?: string[];
+  modes: string[];
 }
