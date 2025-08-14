@@ -1,5 +1,6 @@
 package model
 
+// Deprecated: Replace TherapistV1 instead
 type Therapist struct {
 	ProfileId         string   `json:"profile_id,omitempty" bson:"profile_id"`
 	Address           string   `json:"address,omitempty" bson:"address"`
@@ -17,4 +18,50 @@ type Therapist struct {
 	} `json:"availability,omitempty" bson:"availability"`
 	CurrentSession []string `json:"current_session,omitempty" bson:"current_session"`
 	MatchedClients []string `json:"matched_clients,omitempty" bson:"matched_clients"`
+}
+
+type TherapistV1 struct {
+	ProfileId         string   `json:"profile_id,omitempty" bson:"profile_id"`
+	Address           string   `json:"address,omitempty" bson:"address"`
+	Languages         []string `json:"languages,omitempty" bson:"languages"`
+	Specialization    []string `json:"specialization,omitempty" bson:"specialization"`
+	ConsultationModes []string `json:"consultation_modes,omitempty" bson:"consultation_modes"`
+	Experience        int      `json:"experience,omitempty" bson:"experience"`
+	Rating            float64  `json:"rating,omitempty" bson:"rating"`
+	Currency          string   `json:"currency" bson:"currency"`
+	RagePrice         int      `json:"rage_price,omitempty" bson:"rage-price"`
+	IsAvailable       bool     `json:"is_available,omitempty" bson:"is_available"`
+	Availability      struct {
+		Days      []string `json:"days,omitempty" bson:"days"`
+		TimeSlots []string `json:"time_slots,omitempty" bson:"time_slots"`
+	} `json:"availability,omitempty" bson:"availability"`
+	CurrentSession   []string         `json:"current_session,omitempty" bson:"current_session"`
+	MatchedClients   []string         `json:"matched_clients,omitempty" bson:"matched_clients"`
+	AvatarOverride   string           `json:"avatar_override" bson:"avatar_override"`
+	Name             string           `json:"name" bson:"name"`
+	ProfessionalInfo ProfessionalInfo `json:"professional_info,omitempty" bson:"professional_info"`
+}
+type ProfessionalTitle struct {
+	Code    string `json:"code"`
+	Display string `json:"display"`
+}
+
+type Degree struct {
+	Type        string `json:"type" bson:"type"`
+	Field       string `json:"field" bson:"field"`
+	Institution string `json:"institution" bson:"institution"`
+	Year        int    `json:"year" bson:"year"`
+}
+
+type Certification struct {
+	Name   string `json:"name" bson:"name"`
+	Issuer string `json:"issuer" bson:"issuer"`
+	Year   int    `json:"year" bson:"year"`
+}
+
+type ProfessionalInfo struct {
+	Title           ProfessionalTitle `json:"title" bson:"title"`
+	Degrees         []Degree          `json:"degrees" bson:"degrees"`
+	Certifications  []Certification   `json:"certifications" bson:"certifications"`
+	ExperienceYears int               `json:"experience_years" bson:"experience_years"`
 }

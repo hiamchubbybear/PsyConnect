@@ -104,6 +104,7 @@ func (r *SwipeRepository) getTop5PendingSwipes(clientId string) ([]model.ClientS
 		bson.M{"client_id": clientId, "status": "pending"},
 		optsFindTop5(),
 	)
+
 	if err != nil {
 		log.Println("Failed to find top 5 swipes:", err)
 		return nil, errors.New("failed to find swipes")
@@ -212,8 +213,8 @@ func (r *SwipeRepository) FilterAllTherapist(clientId string) ([]model.ClientSwi
 	return filtered, nil
 }
 
-func AppendDataIntoSwipe(client *model.Client, therapist []model.Therapist) (dto.FilterRawData, error) {
-	var therapists []model.Therapist
+func AppendDataIntoSwipe(client *model.Client, therapist []model.TherapistV1) (dto.FilterRawData, error) {
+	var therapists []model.TherapistV1
 	for _, t := range therapist {
 		therapists = append(therapists, t)
 	}
@@ -226,9 +227,59 @@ func (r *SwipeRepository) swipeTherapist(profileId string) (status bool, err err
 	if profileId == "" {
 		return false, errors.New("profile id. can not be nil ")
 	}
-	
+
 	return false, errors.New("failed to swipe therapist")
 }
 func optsFindTop5() *options.FindOptions {
 	return options.Find().SetSort(bson.M{"points": -1}).SetLimit(5)
+}
+func (r *SwipeRepository) PopTop5SwipesV1(clientId string) ([]model.TherapistV1, error) {
+	ctx := context.Background()
+
+	swipes, err := r.getTop5PendingSwipes(clientId)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(swipes) == 0 {
+		log.Println("No pending swipes found, resetting and retrying...")
+
+		if err := r.UpdateAllPendingTherapistSwipeProfile(clientId); err != nil {
+			log.Println("Failed to reset swipe statuses:", err)
+			return nil, err
+		}
+
+		swipes, err = r.getTop5PendingSwipes(clientId)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(swipes) == 0 {
+			log.Println("No swipes found even after resetting.")
+			return nil, nil
+		}
+	}
+
+	for _, s := range swipes {
+		_, err := r.swipeRepo.UpdateOne(ctx,
+			bson.M{"client_id": s.ClientId, "therapist_id": s.TherapistId},
+			bson.M{"$set": bson.M{"status": "swiped"}},
+		)
+		if err != nil {
+			log.Println("Failed to update swipe to swiped for", s.ClientId, s.TherapistId, err)
+			return nil, errors.New("failed to update swipe status")
+		}
+	}
+
+	var therapistResponse []model.TherapistV1
+	for _, s := range swipes {
+		profile, err := r.therapistRepo.FindTherapistMatchingProfileV1(s.TherapistId)
+		if err != nil {
+			log.Printf("Failed to find therapist %s: %v", s.TherapistId, err)
+			continue
+		}
+		therapistResponse = append(therapistResponse, *profile)
+	}
+
+	return therapistResponse, nil
 }

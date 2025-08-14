@@ -36,6 +36,7 @@ func (h *TherapistHandler) GetTherapistHandler(c *gin.Context) {
 	apiresponse.NewApiResponse(c, res)
 }
 
+// Deprecated : replace PostTherapistHandlerV1
 func (h *TherapistHandler) PostTherapistHandler(c *gin.Context) {
 	var therapist model.Therapist
 	profileId := c.GetHeader("X-Profile-Id")
@@ -70,6 +71,7 @@ func (h *TherapistHandler) PostTherapistHandler(c *gin.Context) {
 	apiresponse.NewApiResponse(c, therapist)
 }
 
+// Deprecated : replace PutTherapistHandlerV1
 func (h *TherapistHandler) PutTherapistHandler(c *gin.Context) {
 	var therapist *model.Therapist
 	profileId := c.GetHeader("X-Profile-Id")
@@ -129,4 +131,62 @@ func (h *TherapistHandler) ChangeTherapistProfileStatus(c *gin.Context) {
 	}
 
 	apiresponse.NewApiResponse(c, status)
+}
+
+
+// V1
+func (h *TherapistHandler) PutTherapistHandlerV1(c *gin.Context) {
+	var therapist *model.TherapistV1
+	profileId := c.GetHeader("X-Profile-Id")
+	if profileId == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
+
+	if err := c.ShouldBindJSON(&therapist); err != nil {
+		apiresponse.ErrorHandler(c, 400, "Invalid input")
+		return
+	}
+
+	res, err := h.RepoManager.TherapistRepo.UpdateMatchingProfileV1(profileId, therapist)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 500, err.Error())
+		return
+	}
+
+	apiresponse.NewApiResponse(c, res)
+}
+
+func (h *TherapistHandler) PostTherapistHandlerV1(c *gin.Context) {
+	var therapist model.TherapistV1
+	profileId := c.GetHeader("X-Profile-Id")
+	if profileId == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
+
+	if err := c.ShouldBindJSON(&therapist); err != nil {
+		apiresponse.ErrorHandler(c, 400, "Invalid input")
+		return
+	}
+
+	res, err := h.RepoManager.GrpcProfile.CheckProfileExists(profileId)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 500, err.Error())
+		return
+	}
+
+	if !res {
+		apiresponse.ErrorHandler(c, 404, "Profile not found")
+		return
+	}
+
+	therapist.ProfileId = profileId
+	_, err = h.RepoManager.TherapistRepo.CreateTherapistMatchingProfileV1(&therapist)
+	if err != nil {
+		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	apiresponse.NewApiResponse(c, therapist)
 }
