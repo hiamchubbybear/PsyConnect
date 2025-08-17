@@ -19,6 +19,33 @@ class ProfileConsultationServer extends CheckProfileServiceGrpc.CheckProfileServ
         this.userProfileService = userProfileService;
     }
 
+    @Override
+    public void checkProfileExistsV1(
+            CheckExistedProfile.ProfileRequestV1 request,
+            StreamObserver<CheckExistedProfile.ProfileResponseV1> responseObserver) {
+        try {
+            var res = userProfileService.get(request.getProfileId());
+
+            var response = CheckExistedProfile.ProfileResponseV1.newBuilder()
+                    .setExists(true)
+                    .setAddress(res.getAddress())
+                    .setAvatarUri(res.getAvatarUri())
+                    .setGender(res.getGender())
+                    .setName(res.getFirstName() + " " + res.getLastName())
+                    .build();
+            log.info("Response {}", response);
+            responseObserver.onNext(response);
+        } catch (Exception e) {
+            var response = CheckExistedProfile.ProfileResponseV1.newBuilder()
+                    .setExists(false)
+                    .build();
+            responseObserver.onNext(response);
+        } finally {
+            responseObserver.onCompleted();
+        }
+    }
+
+
     // Check whether profile exists in profile service before create a new therapist profile ______
     @Override
     public void checkProfileExists(

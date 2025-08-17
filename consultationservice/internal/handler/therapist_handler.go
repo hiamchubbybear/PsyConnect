@@ -174,8 +174,12 @@ func (h *TherapistHandler) PostTherapistHandlerV1(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return
 	}
+	if res == nil {
+		apiresponse.ErrorHandler(c, 500, "nil response from profile service")
+		return
+	}
 
-	if res.Exists {
+	if !res.Exists {
 		apiresponse.ErrorHandler(c, 404, "Profile not found")
 		return
 	}

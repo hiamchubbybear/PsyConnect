@@ -89,7 +89,7 @@ func (r *ProfileGrpc) RetriveProfileInfo(profileId string) (*pb.ProfileResponseV
 	}
 	defer cancel()
 	res, err := r.checkClient.CheckProfileExistsV1(ctx, profileRequest)
-	if err != nil || res.Exists {
+	if err != nil || !res.Exists {
 		res = nil
 		return res, err
 	}
