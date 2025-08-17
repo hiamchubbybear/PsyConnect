@@ -213,8 +213,8 @@ func (r *SwipeRepository) FilterAllTherapist(clientId string) ([]model.ClientSwi
 	return filtered, nil
 }
 
-func AppendDataIntoSwipe(client *model.Client, therapist []model.TherapistV1) (dto.FilterRawData, error) {
-	var therapists []model.TherapistV1
+func AppendDataIntoSwipe(client *model.Client, therapist []model.Therapist) (dto.FilterRawData, error) {
+	var therapists []model.Therapist
 	for _, t := range therapist {
 		therapists = append(therapists, t)
 	}
@@ -282,4 +282,85 @@ func (r *SwipeRepository) PopTop5SwipesV1(clientId string) ([]model.TherapistV1,
 	}
 
 	return therapistResponse, nil
+}
+
+// V1
+func AppendDataIntoSwipeV1(client *model.Client, therapist []model.TherapistV1) (dto.FilterRawDataV1, error) {
+	var therapists []model.TherapistV1
+	for _, t := range therapist {
+		therapists = append(therapists, t)
+	}
+	return dto.FilterRawDataV1{
+		ClientRaw:    *client,
+		TherapistRaw: therapists,
+	}, nil
+}
+
+func (r *SwipeRepository) FilterAllTherapistV1(clientId string) ([]model.ClientSwipeV1, error) {
+
+	client, err := r.clientRepo.FindClientMatchingProfile(clientId)
+	if err != nil {
+		log.Println("Failed to find client profile", err)
+		return nil, errors.New("failed to find client profile")
+	}
+
+	therapists, err := r.therapistRepo.FindAllTherapistMatchingProfilesV1()
+	if err != nil {
+		log.Println("Failed to find therapist profile", err)
+		return nil, errors.New("failed to find therapist profile")
+	}
+
+	raw, err := AppendDataIntoSwipeV1(client, therapists)
+	if err != nil {
+		log.Println("Failed to append swipe data", err)
+		return nil, errors.New("failed to append swipe data")
+	}
+
+	swipes, err := external.RecommendationApiV1(raw)
+	if err != nil {
+		log.Println("Recommendation API error:", err)
+		return nil, errors.New("failed to fetch recommendation")
+	}
+
+	swipedIds, err := r.GetSwipedTherapistIds(clientId)
+	if err != nil {
+		log.Println("Failed to get swiped therapist IDs", err)
+		return nil, errors.New("failed to get swiped therapist IDs")
+	}
+
+	bf := bloom.NewWithEstimates(uint(len(swipedIds)), 0.001)
+	for _, id := range swipedIds {
+		bf.Add([]byte(id))
+	}
+
+	var filtered []model.ClientSwipeV1
+	for _, s := range swipes {
+		if !bf.Test([]byte(s.TherapistId)) {
+			filtered = append(filtered, s)
+		}
+	}
+
+	err = r.InsertSwipesV1(clientId, filtered)
+	if err != nil {
+		log.Println("Failed to save swipes", err)
+		return nil, err
+	}
+
+	return filtered, nil
+}
+func (r *SwipeRepository) InsertSwipesV1(clientId string, swipes []model.ClientSwipeV1) error {
+	ctx := context.Background()
+	if len(swipes) == 0 {
+		return nil
+	}
+	var docs []interface{}
+	for _, s := range swipes {
+		docs = append(docs, s)
+	}
+	_, err := r.swipeRepo.InsertMany(ctx, docs)
+	if err != nil {
+		log.Println("Failed to insert swipes:", err)
+		return errors.New("failed to insert swipes")
+	}
+	return nil
 }

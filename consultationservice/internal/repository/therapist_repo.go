@@ -50,12 +50,12 @@ func (r *TherapistRepository) FindTherapistMatchingProfile(therapistId string) (
 	return &data, nil
 }
 
-func (r *TherapistRepository) FindAllTherapistMatchingProfiles() ([]model.TherapistV1, error) {
+func (r *TherapistRepository) FindAllTherapistMatchingProfiles() ([]model.Therapist, error) {
 	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, errors.New("failed to find all therapist")
 	}
-	var results []model.TherapistV1
+	var results []model.Therapist
 	err = cursor.All(context.Background(), &results)
 	if err != nil {
 		return nil, errors.New("failed to decode therapist data")
@@ -148,4 +148,17 @@ func (r *TherapistRepository) FindTherapistMatchingProfileV1(therapistId string)
 		return nil, err
 	}
 	return &data, nil
+}
+
+func (r *TherapistRepository) FindAllTherapistMatchingProfilesV1() ([]model.TherapistV1, error) {
+	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
+	if err != nil {
+		return nil, errors.New("failed to find all therapist")
+	}
+	var results []model.TherapistV1
+	err = cursor.All(context.Background(), &results)
+	if err != nil {
+		return nil, errors.New("failed to decode therapist data")
+	}
+	return results, nil
 }

@@ -36,7 +36,7 @@ func (h *TherapistHandler) GetTherapistHandler(c *gin.Context) {
 	apiresponse.NewApiResponse(c, res)
 }
 
-// Deprecated : replace PostTherapistHandlerV1
+// Deprecated: replace PostTherapistHandlerV1
 func (h *TherapistHandler) PostTherapistHandler(c *gin.Context) {
 	var therapist model.Therapist
 	profileId := c.GetHeader("X-Profile-Id")
@@ -49,7 +49,7 @@ func (h *TherapistHandler) PostTherapistHandler(c *gin.Context) {
 		apiresponse.ErrorHandler(c, 400, "Invalid input")
 		return
 	}
-
+	// Deprecated: Replace CheckProfileExists into RetriveProfileInfo
 	res, err := h.RepoManager.GrpcProfile.CheckProfileExists(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
@@ -71,7 +71,7 @@ func (h *TherapistHandler) PostTherapistHandler(c *gin.Context) {
 	apiresponse.NewApiResponse(c, therapist)
 }
 
-// Deprecated : replace PutTherapistHandlerV1
+// Deprecated: replace PutTherapistHandlerV1
 func (h *TherapistHandler) PutTherapistHandler(c *gin.Context) {
 	var therapist *model.Therapist
 	profileId := c.GetHeader("X-Profile-Id")
@@ -133,7 +133,6 @@ func (h *TherapistHandler) ChangeTherapistProfileStatus(c *gin.Context) {
 	apiresponse.NewApiResponse(c, status)
 }
 
-
 // V1
 func (h *TherapistHandler) PutTherapistHandlerV1(c *gin.Context) {
 	var therapist *model.TherapistV1
@@ -170,18 +169,21 @@ func (h *TherapistHandler) PostTherapistHandlerV1(c *gin.Context) {
 		return
 	}
 
-	res, err := h.RepoManager.GrpcProfile.CheckProfileExists(profileId)
+	res, err := h.RepoManager.GrpcProfile.RetriveProfileInfo(profileId)
 	if err != nil {
 		apiresponse.ErrorHandler(c, 500, err.Error())
 		return
 	}
 
-	if !res {
+	if res.Exists {
 		apiresponse.ErrorHandler(c, 404, "Profile not found")
 		return
 	}
 
 	therapist.ProfileId = profileId
+	therapist.AvatarOverride = res.AvatarUri
+	therapist.Address = res.Address
+	therapist.Name = res.Name
 	_, err = h.RepoManager.TherapistRepo.CreateTherapistMatchingProfileV1(&therapist)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())

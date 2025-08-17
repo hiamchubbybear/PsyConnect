@@ -38,6 +38,13 @@ func RouterInit(
 		// therapistGroup.POST("/match/response", matchingHandler.ResponseMatchingRequest)
 		therapistGroup.PUT("/status/:status", therapistHandler.ChangeTherapistProfileStatus)
 	}
+	therapistGroupV1 := router.Group("/v1/consultation/therapist")
+	therapistGroupV1.Use(middleware.RoleRequire("therapist"))
+	{
+		therapistGroupV1.POST("/", therapistHandler.PostTherapistHandlerV1)
+		therapistGroupV1.PUT("/", therapistHandler.PutTherapistHandlerV1)
+
+	}
 
 	clientGroup := router.Group("/consultation/client")
 	clientGroup.Use(middleware.RoleRequire("client"))

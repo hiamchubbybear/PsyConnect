@@ -14,6 +14,17 @@ PsyConnect ecosystem. It is designed to handle profile registration, updates, th
 - Manage consultation sessions
 - Handle therapist-client matching
 - Recommendation system for therapist matching
+---
+
+## 📌 Version History
+
+| Version | Date       | Changes |
+|---------|-----------|---------|
+| **v1.2.0** | 2025-08-15 | - Add new field response from Profile with Grpc `avatarUri , address , name , gender`|
+| **v1.2.0** | 2025-08-15 | - Update output field for therapist matching request `/`|
+| **v1.2.0** | 2025-08-15 | - Added `/v1/consultation/therapist` API <br> - Deprecated old `/consultation/therapist` endpoints |
+| **v1.1.0** | 2025-08-15 | - Added client recommendation API <br> - Improved session management |
+| **v1.0.0** | 2025-08-14 | - Initial release |
 
 ---
 
@@ -21,12 +32,15 @@ PsyConnect ecosystem. It is designed to handle profile registration, updates, th
 
 ### Therapist Management
 
-| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required | 
 |--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
 | GET    | `/consultation/therapist`               | Get therapist info               | role.therapist:permission   | X-Roles          |
+| POST   | ~~`/consultation/therapist`~~               | Create therapist profile         | role.therapist:permission   | X-Roles          |
+| PUT    | ~~`/consultation/therapist`~~               | Update therapist profile         | role.therapist:permission   | X-Roles          |
+| PUT    | `/consultation/therapist/status/{status}` | Change therapist status          | role.therapist:permission   | X-Roles          |
 | POST   | `/consultation/therapist`               | Create therapist profile         | role.therapist:permission   | X-Roles          |
 | PUT    | `/consultation/therapist`               | Update therapist profile         | role.therapist:permission   | X-Roles          |
-| PUT    | `/consultation/therapist/status/{status}` | Change therapist status          | role.therapist:permission   | X-Roles          |
+
 
 ### Client Management
 
