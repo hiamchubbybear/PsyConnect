@@ -21,6 +21,7 @@ func NewTherapistHandler(env *bootstrap.Env, repoManager *repository.RepositoryM
 	}
 }
 
+// Deprecated: replace GetTherapistHandlerV1
 func (h *TherapistHandler) GetTherapistHandler(c *gin.Context) {
 	profileID := c.GetHeader("X-Profile-Id")
 	if profileID == "" {
@@ -195,4 +196,34 @@ func (h *TherapistHandler) PostTherapistHandlerV1(c *gin.Context) {
 	}
 
 	apiresponse.NewApiResponse(c, therapist)
+}
+
+func (h *TherapistHandler) GetTherapistHandlerV1(c *gin.Context) {
+	profileID := c.GetHeader("X-Profile-Id")
+	if profileID == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
+
+	res, err := h.RepoManager.TherapistRepo.FindTherapistMatchingProfileV1(profileID)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 404, err.Error())
+		return
+	}
+	apiresponse.NewApiResponse(c, res)
+}
+
+func (h *TherapistHandler) GetTherapistByIdHandlerV1(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
+
+	res, err := h.RepoManager.TherapistRepo.FindTherapistMatchingProfileV1(id)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 404, err.Error())
+		return
+	}
+	apiresponse.NewApiResponse(c, res)
 }

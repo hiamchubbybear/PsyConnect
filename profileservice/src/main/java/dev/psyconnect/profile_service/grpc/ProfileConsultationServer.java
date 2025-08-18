@@ -45,7 +45,6 @@ class ProfileConsultationServer extends CheckProfileServiceGrpc.CheckProfileServ
         }
     }
 
-
     // Check whether profile exists in profile service before create a new therapist profile ______
     @Override
     public void checkProfileExists(
