@@ -2,8 +2,10 @@ package repository
 
 import (
 	"consultationservice/internal/model"
+	"consultationservice/internal/redis"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -14,13 +16,23 @@ import (
 
 type MatchRepository struct {
 	MatchCollection *mongo.Collection
+	Redis           redis.RedisStore
 }
 
-func NewMatchRepository(MatchCollection *mongo.Collection) *MatchRepository {
+func NewMatchRepository(MatchCollection *mongo.Collection, rds redis.RedisStore) *MatchRepository {
 	repo := &MatchRepository{
 		MatchCollection: MatchCollection,
+		Redis:           rds,
 	}
 	return repo
+}
+
+func (r *MatchRepository) keyMatchesByClient(clientId string) string {
+	return redis.NewKeyBuilder("psyconnect").Build("consultation", "match", "by_client", clientId)
+}
+
+func (r *MatchRepository) keyMatchesByClientPage(clientId string, page int64) string {
+	return redis.NewKeyBuilder("psyconnect").Build("consultation", "match", "by_client", clientId, "page", fmt.Sprint(page))
 }
 
 func (r *MatchRepository) CreateMatch(match model.Match) error {
@@ -46,11 +58,23 @@ func (r *MatchRepository) CreateMatch(match model.Match) error {
 		return errors.New("failed to insert match")
 	}
 
+	_ = r.Redis.Delete(ctx, r.keyMatchesByClient(match.ClientID))
+
+	_ = r.Redis.Delete(ctx, r.keyMatchesByClientPage(match.ClientID, 1))
+
 	log.Println("Match inserted successfully")
 	return nil
 }
+
 func (r *MatchRepository) GetMatchesByClientId(clientId string) ([]model.Match, error) {
 	ctx := context.Background()
+	cacheKey := r.keyMatchesByClient(clientId)
+
+	var cached []model.Match
+	if err := r.Redis.Get(ctx, cacheKey, &cached); err == nil {
+		return cached, nil
+	}
+
 	cursor, err := r.MatchCollection.Find(ctx, bson.M{"client_id": clientId})
 	if err != nil {
 		log.Println("Failed to find matches:", err)
@@ -61,6 +85,9 @@ func (r *MatchRepository) GetMatchesByClientId(clientId string) ([]model.Match, 
 		log.Println("Failed to decode matches:", err)
 		return nil, err
 	}
+
+	_ = r.Redis.Set(ctx, cacheKey, matches)
+
 	return matches, nil
 }
 
@@ -122,6 +149,7 @@ func (r *MatchRepository) CheckTimeOverlap(day string, newStart, newEnd string, 
 	}
 	return false, nil
 }
+
 func (r *MatchRepository) FilterAllTherapist(clientId string, page int64) ([]model.Match, error) {
 	ctx := context.Background()
 
@@ -137,6 +165,12 @@ func (r *MatchRepository) FilterAllTherapist(clientId string, page int64) ([]mod
 
 	filter := bson.M{"client_id": clientId}
 
+	cacheKey := r.keyMatchesByClientPage(clientId, page)
+	var cached []model.Match
+	if err := r.Redis.Get(ctx, cacheKey, &cached); err == nil {
+		return cached, nil
+	}
+
 	cursor, err := r.MatchCollection.Find(ctx, filter, opts)
 	if err != nil {
 		log.Println("Failed to query match:", err)
@@ -148,6 +182,8 @@ func (r *MatchRepository) FilterAllTherapist(clientId string, page int64) ([]mod
 		log.Println("Failed to decode matches:", err)
 		return nil, err
 	}
+
+	_ = r.Redis.Set(ctx, cacheKey, matches)
 
 	return matches, nil
 }
@@ -161,7 +197,6 @@ func isOverlap(start1, end1, start2, end2 time.Time) bool {
 }
 
 /*
-// Deprecated : Unable to use . Reason : Scale -> Change last commit : 4fc7730 -- Remove
 
 	func (r *MatchRepository) FilterAllMatching(matchProfileId string, page int64) (interface{}, error) {
 		ctx := context.TODO()

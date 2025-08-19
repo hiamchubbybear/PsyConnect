@@ -3,6 +3,7 @@ package repository
 import (
 	"consultationservice/internal/dto"
 	"consultationservice/internal/model"
+	"consultationservice/internal/redis"
 	"context"
 	"errors"
 	"log"
@@ -17,16 +18,25 @@ type SessionRepository struct {
 	clientRepo        *ClientRepository
 	therapistRepo     *TherapistRepository
 	matchingRepo      *MatchRepository
+	redis             redis.RedisStore
 }
 
-func NewSessionRepository(collection *mongo.Collection, clientRepo *ClientRepository, therapistRepo *TherapistRepository, matchingRepo *MatchRepository) *SessionRepository {
+func NewSessionRepository(
+	collection *mongo.Collection,
+	clientRepo *ClientRepository,
+	therapistRepo *TherapistRepository,
+	matchingRepo *MatchRepository,
+	redisStore redis.RedisStore,
+) *SessionRepository {
 	return &SessionRepository{
 		clientRepo:        clientRepo,
 		therapistRepo:     therapistRepo,
 		MongoDBCollection: collection,
 		matchingRepo:      matchingRepo,
+		redis:             redisStore,
 	}
 }
+
 func (r *SessionRepository) CreateNewSession(session dto.SessionRequest) (interface{}, error) {
 	ctx := context.Background()
 	clientId := session.ClientID
@@ -82,12 +92,13 @@ func (r *SessionRepository) CreateNewSession(session dto.SessionRequest) (interf
 	if err != nil {
 		return nil, err
 	}
-	sessionID := res.InsertedID
+	sessionID := res.InsertedID.(primitive.ObjectID).Hex()
 
-	update := bson.D{{Key: "$push", Value: bson.D{{Key: "current_session", Value: sessionID}}}}
-
+	update := bson.D{{Key: "$push", Value: bson.D{{Key: "current_session", Value: res.InsertedID}}}}
 	_, _ = r.clientRepo.MongoDBCollection.UpdateOne(ctx, bson.M{"profile_id": clientId}, update)
 	_, _ = r.therapistRepo.MongoDBCollection.UpdateOne(ctx, bson.M{"profile_id": therapistId}, update)
+
+	_ = r.redis.Set(ctx, "session:"+sessionID, session)
 
 	return res, nil
 }
@@ -127,8 +138,12 @@ func (r *SessionRepository) DeleteCurrentSession(session dto.DeleteSessionReques
 		log.Printf("Failed to update client: %v", err)
 		return false, err
 	}
+
+	_ = r.redis.Delete(ctx, "session:"+session.SessionID)
+
 	return true, nil
 }
+
 func (r *SessionRepository) GetAllSessions() ([]model.Session, error) {
 	var sessions []model.Session
 	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
@@ -142,19 +157,31 @@ func (r *SessionRepository) GetAllSessions() ([]model.Session, error) {
 }
 
 func (r *SessionRepository) GetSessionByID(id string) (*dto.SessionRequest, error) {
+	ctx := context.Background()
+	cacheKey := "session:" + id
+
+	var cached dto.SessionRequest
+	if err := r.redis.Get(ctx, cacheKey, &cached); err == nil {
+		return &cached, nil
+	}
+
 	var session dto.SessionRequest
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		log.Printf("Failed to convert id to hex")
 		return nil, err
 	}
-	err = r.MongoDBCollection.FindOne(context.Background(), bson.M{"_id": oid}).Decode(&session)
+	err = r.MongoDBCollection.FindOne(ctx, bson.M{"_id": oid}).Decode(&session)
 	if err != nil {
 		log.Printf("Failed to find session : %v", err)
 		return nil, err
 	}
+
+	_ = r.redis.Set(ctx, cacheKey, session)
+
 	return &session, nil
 }
+
 func (r *SessionRepository) FindAllSessionByProfileId(profileId string, requester string) (*[]dto.SessionResponse, error) {
 	var sessions []dto.SessionResponse
 	if requester == "role.client" {
@@ -182,6 +209,7 @@ func (r *SessionRepository) FindAllSessionByProfileId(profileId string, requeste
 	}
 	return &sessions, nil
 }
+
 func (s *SessionRepository) SetMatchingRepository(matchingRepo *MatchRepository) {
 	s.matchingRepo = matchingRepo
 }

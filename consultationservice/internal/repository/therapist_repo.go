@@ -2,8 +2,10 @@ package repository
 
 import (
 	"consultationservice/internal/model"
+	"consultationservice/internal/redis"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,10 +15,14 @@ import (
 
 type TherapistRepository struct {
 	MongoDBCollection *mongo.Collection
+	redis             redis.RedisStore
 }
 
-func NewTherapistRepository(collection *mongo.Collection) *TherapistRepository {
-	return &TherapistRepository{MongoDBCollection: collection}
+func NewTherapistRepository(collection *mongo.Collection, redis redis.RedisStore) *TherapistRepository {
+	return &TherapistRepository{
+		MongoDBCollection: collection,
+		redis:             redis,
+	}
 }
 
 func (r *TherapistRepository) CreateTherapistMatchingProfile(therapist *model.Therapist) (interface{}, error) {
@@ -87,9 +93,7 @@ func (r *TherapistRepository) UpdateMatchingProfile(profileId string, therapist 
 	}
 	return result, nil
 }
-func (r *TherapistRepository) AddMatchedClient() {
 
-}
 func (r *TherapistRepository) DisableTherapistMatchingProfile(profileId string, isAvailable bool) (bool, error) {
 	filter := bson.D{{Key: "profile_id", Value: profileId}}
 	update := bson.D{{Key: "$set", Value: bson.D{{Key: "is_available", Value: isAvailable}}}}
@@ -101,24 +105,9 @@ func (r *TherapistRepository) DisableTherapistMatchingProfile(profileId string, 
 	return res.MatchedCount > 0, nil
 }
 
-// V1
-func (r *TherapistRepository) UpdateMatchingProfileV1(profileId string, therapist *model.TherapistV1) (interface{}, error) {
-	therapist.ProfileId = profileId
-	update := bson.D{{Key: "$set", Value: therapist}}
-	var result model.TherapistV1
-
-	err := r.MongoDBCollection.FindOneAndUpdate(
-		context.Background(),
-		bson.D{{Key: "profile_id", Value: profileId}},
-		update,
-		options.FindOneAndUpdate().SetReturnDocument(options.After),
-	).Decode(&result)
-	if err != nil {
-		return nil, errors.New("failed to update therapist")
-	}
-	return result, nil
-}
 func (r *TherapistRepository) CreateTherapistMatchingProfileV1(therapist *model.TherapistV1) (interface{}, error) {
+	cacheKey := fmt.Sprintf("psyconnect:therapist:profile:%s", therapist.ProfileId)
+
 	filter := bson.D{{Key: "profile_id", Value: therapist.ProfileId}}
 	var existingTherapist model.TherapistV1
 	err := r.MongoDBCollection.FindOne(context.Background(), filter).Decode(&existingTherapist)
@@ -134,31 +123,70 @@ func (r *TherapistRepository) CreateTherapistMatchingProfileV1(therapist *model.
 	therapist.CurrentSession = []string{}
 	res, err := r.MongoDBCollection.InsertOne(context.Background(), therapist)
 	if err != nil {
-		log.Println("TherapistRepository CreateTherapistMatchingProfile err:", err)
+		log.Println("TherapistRepository CreateTherapistMatchingProfileV1 err:", err)
 		return nil, errors.New("failed to insert into therapist")
 	}
+
+	_ = r.redis.Set(context.Background(), cacheKey, therapist)
 	return res.InsertedID, nil
 }
 
-// V1
 func (r *TherapistRepository) FindTherapistMatchingProfileV1(therapistId string) (*model.TherapistV1, error) {
+	cacheKey := fmt.Sprintf("psyconnect:therapist:profile:%s", therapistId)
+	var cached model.TherapistV1
+
+	if err := r.redis.Get(context.Background(), cacheKey, &cached); err == nil && cached.ProfileId != "" {
+		return &cached, nil
+	}
+
 	var data model.TherapistV1
 	err := r.MongoDBCollection.FindOne(context.Background(), bson.D{{Key: "profile_id", Value: therapistId}}).Decode(&data)
 	if err != nil {
 		return nil, err
 	}
+
+	_ = r.redis.Set(context.Background(), cacheKey, data)
 	return &data, nil
 }
 
 func (r *TherapistRepository) FindAllTherapistMatchingProfilesV1() ([]model.TherapistV1, error) {
+	cacheKey := "psyconnect:therapist:all"
+	var cached []model.TherapistV1
+
+	if err := r.redis.Get(context.Background(), cacheKey, &cached); err == nil && len(cached) > 0 {
+		return cached, nil
+	}
+
 	cursor, err := r.MongoDBCollection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, errors.New("failed to find all therapist")
 	}
 	var results []model.TherapistV1
-	err = cursor.All(context.Background(), &results)
-	if err != nil {
+	if err := cursor.All(context.Background(), &results); err != nil {
 		return nil, errors.New("failed to decode therapist data")
 	}
+
+	_ = r.redis.Set(context.Background(), cacheKey, results)
 	return results, nil
+}
+
+func (r *TherapistRepository) UpdateMatchingProfileV1(profileId string, therapist *model.TherapistV1) (interface{}, error) {
+	cacheKey := fmt.Sprintf("psyconnect:therapist:profile:%s", profileId)
+
+	therapist.ProfileId = profileId
+	update := bson.D{{Key: "$set", Value: therapist}}
+	var result model.TherapistV1
+
+	err := r.MongoDBCollection.FindOneAndUpdate(
+		context.Background(),
+		bson.D{{Key: "profile_id", Value: profileId}},
+		update,
+		options.FindOneAndUpdate().SetReturnDocument(options.After),
+	).Decode(&result)
+	if err != nil {
+		return nil, errors.New("failed to update therapist")
+	}
+
+	_ = r.redis.Set(context.Background(), cacheKey, result)
+	return result, nil
 }
