@@ -1,4 +1,4 @@
-package dev.psyconnect.profile_service.controller;
+package dev.psyconnect.profile_service.controller.v1;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -12,28 +12,28 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-@RestController
-@RequestMapping("/user-setting")
+@RestController("settingControllerV1")
+@RequestMapping("/v1/user-setting")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserSettingController {
+public class UserSettingControllerV1{
     private final UserSettingService userSettingService;
     private final KafkaService kafkaService;
 
-    @GetMapping()
-    public ApiResponse<Setting> getUserSetting(@RequestHeader(value = "X-Profile-Id", required = true) String id) {
+    @GetMapping("/me")
+    public ApiResponse<Setting> getUserSetting(@RequestHeader(value = "X-Profile-Id") String id) {
         return new ApiResponse<>(userSettingService.getUserSettingById(id));
     }
 
-    @PutMapping()
+    @PutMapping("/me")
     public ApiResponse<UserSettingResponse> updateUserSetting(
             @RequestHeader(value = "X-Profile-Id") String id, @RequestBody UserSettingRequest request) {
         request.setProfileId(id);
         return new ApiResponse<>(userSettingService.updateUserSetting(id, request));
     }
 
-    @PostMapping("/default")
-    public ApiResponse<Setting> setDefaultSetting(@RequestHeader(value = "X-Profile-Id", required = true) String id) {
+    @PostMapping("/me/default")
+    public ApiResponse<Setting> setDefaultSetting(@RequestHeader(value = "X-Profile-Id") String id) {
         return new ApiResponse<>(userSettingService.resetSettings(id));
     }
 }

@@ -1,4 +1,4 @@
-package dev.psyconnect.profile_service.controller;
+package dev.psyconnect.profile_service.controller.v0;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,18 +24,21 @@ import lombok.experimental.FieldDefaults;
 public class UserProfileController {
     UserProfileService userProfileService;
 
+    @Deprecated
     @PostMapping("/internal/user")
     ApiResponse<UserProfileCreationResponse> createUserProfile(@RequestBody UserProfileCreationRequest body)
             throws IOException {
         return new ApiResponse<>(userProfileService.create(body));
     }
 
+    @Deprecated
     @PutMapping()
     ApiResponse<UserProfileUpdateResponse> updateUserProfile(
             @RequestBody UserProfileUpdateRequest body, @RequestHeader(name = "X-Profile-Id") String userId) {
         return new ApiResponse<>(userProfileService.update(body, userId));
     }
 
+    @Deprecated
     @GetMapping()
     ApiResponse<?> getUserProfile(@RequestHeader(value = "X-Profile-Id") String profileId) {
         if (profileId == null || profileId.isEmpty()) {
@@ -44,12 +47,14 @@ public class UserProfileController {
         return new ApiResponse<>(userProfileService.get(profileId));
     }
 
+    @Deprecated
     @GetMapping("/all")
     @AllowedRoles({"ADMIN"})
     ApiResponse<List<?>> getAllUserProfiles(@RequestParam int page, @RequestParam int size) {
         return new ApiResponse<>(userProfileService.getAll(page, size));
     }
 
+    @Deprecated
     @GetMapping("/friends")
     ApiResponse<List<ProfileWithMoodSummaryDto>> getFriends(@RequestHeader(value = "X-Profile-Id") String profileId) {
         return new ApiResponse<>(userProfileService.getProfileWithMood(profileId));

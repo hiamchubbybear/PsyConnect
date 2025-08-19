@@ -1,4 +1,4 @@
-package dev.psyconnect.profile_service.controller;
+package dev.psyconnect.profile_service.controller.v0;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,30 +20,35 @@ public class SocialController {
         this.friendsService = friendsService;
     }
 
+    @Deprecated
     @PostMapping("/friend/request")
     public ApiResponse<FriendRequestResponse> friendRequest(
             @RequestBody FriendRRequest receiver, @RequestHeader("X-Profile-Id") String sender) {
         return new ApiResponse<>(friendsService.createFriend(receiver, sender));
     }
 
+    @Deprecated
     @PostMapping("/friend/accept")
     public ApiResponse<FriendAcceptResponse> friendAccept(
             @RequestBody FriendAcceptationRequest receiver, @RequestHeader("X-Profile-Id") String sender) {
         return new ApiResponse<>(friendsService.acceptFriend(receiver, sender));
     }
 
+    @Deprecated
     @PostMapping("/friend/unfriend")
     public ApiResponse<UnFriendResponse> friendAccept(
             @RequestBody UnfriendRequest receiver, @RequestHeader("X-Profile-Id") String sender) {
         return new ApiResponse<>(friendsService.unFriend(receiver, sender));
     }
 
+    @Deprecated
     @PostMapping("/friend/undo")
     public ApiResponse<UndoFriendRequestResponse> friendAccept(
             @RequestBody UndoFriendRRequest receiver, @RequestHeader("X-Profile-Id") String sender) {
         return new ApiResponse<>(friendsService.undoRequest(receiver, sender));
     }
 
+    @Deprecated
     @DeleteMapping("/friend/request")
     public ApiResponse<DeclineFriendRequestResponse> friendAccept(
             @RequestBody DeclineFriendRRequest receiver, @RequestHeader("X-Profile-Id") String sender) {
