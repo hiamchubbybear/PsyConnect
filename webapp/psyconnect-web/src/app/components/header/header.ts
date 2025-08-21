@@ -15,11 +15,12 @@ import {
     UserContextService,
     UserProfile,
 } from '../../services/profile/profile-service';
+import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatMenuModule],
+  imports: [CommonModule, MatMenuModule, AvatarMenuComponent],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

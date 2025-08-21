@@ -5,7 +5,7 @@ import CryptoJS from 'crypto-js';
   providedIn: 'root',
 })
 export class SecureStorageService {
-  private secretKey = 'MY_SUPER_SECRET_KEY_123'; // Đổi thành key bí mật của bạn
+  private secretKey = 'SOI_KEY_AN_CUC_A`_123_XYZ_36_NEVODIE';
 
   setItem(key: string, value: any): void {
     try {

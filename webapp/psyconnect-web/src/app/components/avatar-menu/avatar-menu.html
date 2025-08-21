@@ -1,0 +1,47 @@
+<div class="avatar-menu">
+  <!-- Avatar button -->
+  <div class="avatar-trigger" (click)="toggleMenu()">
+    <img [src]="userAvatarUrl" alt="Avatar" class="avatar-img" />
+    <span class="user-name">{{ userName }}</span>
+  </div>
+
+  <!-- Dropdown -->
+  <div class="dropdown-panel" *ngIf="isOpen">
+    <!-- Header -->
+    <div class="dropdown-header">
+      <img [src]="userAvatarUrl" alt="Avatar" class="avatar-lg" />
+      <div class="user-info">
+        <div class="name">{{ userName }}</div>
+        <div class="email">{{ userEmail }}</div>
+      </div>
+    </div>
+    <hr />
+
+    <!-- Account -->
+    <div class="dropdown-section">
+      <a routerLink="/profile"> Profile</a>
+      <a routerLink="/activity"> Activity</a>
+      <a routerLink="/history"> History</a>
+    </div>
+    <hr />
+
+    <!-- Notifications -->
+    <div class="dropdown-section">
+      <a routerLink="/notifications"> Notifications</a>
+    </div>
+    <hr />
+
+    <!-- Settings -->
+    <div class="dropdown-section">
+      <a routerLink="/settings"> Settings</a>
+      <a routerLink="/help"> Help & Support</a>
+      <a routerLink="/privacy"> Privacy & Security</a>
+    </div>
+    <hr />
+
+    <!-- Logout -->
+    <div class="dropdown-section">
+      <a (click)="logout()"> Logout</a>
+    </div>
+  </div>
+</div>

@@ -13,7 +13,7 @@ $transition-ease: ease-in-out;
 .sidebar {
   display: flex;
   flex-direction: column;
-  background-color: $color-bg;
+  background-color: var(--color-bg);
   width: 240px;
   padding: $spacing-unit * 4;
   box-sizing: border-box;
