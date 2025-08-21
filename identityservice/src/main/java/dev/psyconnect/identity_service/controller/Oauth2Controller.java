@@ -36,7 +36,8 @@ public class Oauth2Controller {
     public void googleAuthorization(
             @RequestParam(defaultValue = "web") String platform,
             HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+            HttpServletResponse response)
+            throws IOException {
         request.getSession().setAttribute("platform", platform);
         response.sendRedirect("/oauth2/authorization/google");
     }
@@ -45,7 +46,8 @@ public class Oauth2Controller {
     public void facebookAuthorization(
             @RequestParam(defaultValue = "web") String platform,
             HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+            HttpServletResponse response)
+            throws IOException {
         request.getSession().setAttribute("platform", platform);
         response.sendRedirect("/oauth2/authorization/facebook");
     }
@@ -57,10 +59,16 @@ public class Oauth2Controller {
             @RequestParam String avatar,
             @RequestParam(defaultValue = "web") String platform,
             Authentication authentication,
-            HttpServletResponse response) throws IOException {
+            HttpServletResponse response)
+            throws IOException {
 
         var res = oAuth2Service.processOAuth2PreLogin(email, avatar, authentication, provider);
-        log.info("OAuth2 userInfo | token: {}, email: {}, provider: {}, platform: {}", res.getToken(), email, provider, platform);
+        log.info(
+                "OAuth2 userInfo | token: {}, email: {}, provider: {}, platform: {}",
+                res.getToken(),
+                email,
+                provider,
+                platform);
 
         if (res.isSuccessful()) {
             String accessToken = res.getToken();
@@ -77,32 +85,31 @@ public class Oauth2Controller {
                         URLEncoder.encode(accessToken, StandardCharsets.UTF_8),
                         URLEncoder.encode(email, StandardCharsets.UTF_8),
                         URLEncoder.encode(provider, StandardCharsets.UTF_8),
-                        URLEncoder.encode(platform, StandardCharsets.UTF_8)
-                );
+                        URLEncoder.encode(platform, StandardCharsets.UTF_8));
 
                 String redirectHtml = String.format(
                         """
-                                <!DOCTYPE html>
-                                <html>
-                                <head>
-                                	<title>Redirecting to PsyConnect...</title>
-                                	<meta charset="UTF-8">
-                                </head>
-                                <body>
-                                	<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-                                		<h2>Login Successful!</h2>
-                                		<p>Redirecting you back to PsyConnect app...</p>
-                                		<p>If you're not redirected automatically, <a href="%s">click here</a></p>
-                                	</div>
-                                	<script>
-                                		window.location.href = '%s';
-                                		setTimeout(function() {
-                                			window.close();
-                                		}, 3000);
-                                	</script>
-                                </body>
-                                </html>
-                                """,
+								<!DOCTYPE html>
+								<html>
+								<head>
+									<title>Redirecting to PsyConnect...</title>
+									<meta charset="UTF-8">
+								</head>
+								<body>
+									<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+										<h2>Login Successful!</h2>
+										<p>Redirecting you back to PsyConnect app...</p>
+										<p>If you're not redirected automatically, <a href="%s">click here</a></p>
+									</div>
+									<script>
+										window.location.href = '%s';
+										setTimeout(function() {
+											window.close();
+										}, 3000);
+									</script>
+								</body>
+								</html>
+								""",
                         deepLinkUrl, deepLinkUrl);
 
                 response.setContentType("text/html; charset=UTF-8");

@@ -1,50 +1,32 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { authGuard } from './guards/auth-guard';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
 import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
 import { Notfound } from './pages/notfound/notfound';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
+import { SwipeDeckComponent } from './pages/swipe/swipe-deck';
 
 export const routes: Routes = [
-  {
-    path: '',
-    component: Homepage,
-  },
-  {
-    path: 'auth/signup',
-    component: MultiStepRegisterComponent,
-  },
-  {
-    path: 'auth/login',
-    component: Login,
-  },
+  { path: '', component: Homepage },
+  { path: 'auth/signup', component: MultiStepRegisterComponent },
+  { path: 'auth/login', component: Login },
   { path: 'oauth2/callback', component: Login },
+
+  { path: 'chat-page', component: ChatComponent, canActivate: [authGuard] },
+  { path: 'feature/feed', component: Notfound, canActivate: [authGuard] },
   {
-    path: 'chat-page',
-    component: ChatComponent,
+    path: 'feature/schedule',
+    component: SwipeDeckComponent,
+    canActivate: [authGuard],
   },
-  {
-    path: '**',
-    component: Notfound,
-  },
-  {
-    path: 'feature/feed',
-    component: Notfound,
-  },
-  {
-    path: 'feature/schedules',
-    component: Notfound,
-  },
-  {
-    path: 'feature/chat',
-    component: Notfound,
-  },
-  {
-    path: 'feature/profile',
-    component: Notfound,
-  },
+  { path: 'feature/chat', component: Notfound, canActivate: [authGuard] },
+  { path: 'feature/profile', component: Notfound, canActivate: [authGuard] },
+
+  { path: '**', component: Notfound },
 ];
+
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],

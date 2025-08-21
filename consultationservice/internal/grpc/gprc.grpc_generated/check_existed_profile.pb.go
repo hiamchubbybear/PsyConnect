@@ -109,6 +109,126 @@ func (x *ProfileResponse) GetExists() bool {
 	return false
 }
 
+type ProfileRequestV1 struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProfileId     string                 `protobuf:"bytes,1,opt,name=profile_id,json=profileId,proto3" json:"profile_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProfileRequestV1) Reset() {
+	*x = ProfileRequestV1{}
+	mi := &file_check_existed_profile_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileRequestV1) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileRequestV1) ProtoMessage() {}
+
+func (x *ProfileRequestV1) ProtoReflect() protoreflect.Message {
+	mi := &file_check_existed_profile_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProfileRequestV1.ProtoReflect.Descriptor instead.
+func (*ProfileRequestV1) Descriptor() ([]byte, []int) {
+	return file_check_existed_profile_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ProfileRequestV1) GetProfileId() string {
+	if x != nil {
+		return x.ProfileId
+	}
+	return ""
+}
+
+type ProfileResponseV1 struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Exists        bool                   `protobuf:"varint,1,opt,name=exists,proto3" json:"exists,omitempty"`
+	AvatarUri     string                 `protobuf:"bytes,2,opt,name=avatarUri,proto3" json:"avatarUri,omitempty"`
+	Address       string                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
+	Gender        string                 `protobuf:"bytes,4,opt,name=gender,proto3" json:"gender,omitempty"`
+	Name          string                 `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProfileResponseV1) Reset() {
+	*x = ProfileResponseV1{}
+	mi := &file_check_existed_profile_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProfileResponseV1) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProfileResponseV1) ProtoMessage() {}
+
+func (x *ProfileResponseV1) ProtoReflect() protoreflect.Message {
+	mi := &file_check_existed_profile_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProfileResponseV1.ProtoReflect.Descriptor instead.
+func (*ProfileResponseV1) Descriptor() ([]byte, []int) {
+	return file_check_existed_profile_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ProfileResponseV1) GetExists() bool {
+	if x != nil {
+		return x.Exists
+	}
+	return false
+}
+
+func (x *ProfileResponseV1) GetAvatarUri() string {
+	if x != nil {
+		return x.AvatarUri
+	}
+	return ""
+}
+
+func (x *ProfileResponseV1) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *ProfileResponseV1) GetGender() string {
+	if x != nil {
+		return x.Gender
+	}
+	return ""
+}
+
+func (x *ProfileResponseV1) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 var File_check_existed_profile_proto protoreflect.FileDescriptor
 
 const file_check_existed_profile_proto_rawDesc = "" +
@@ -118,9 +238,19 @@ const file_check_existed_profile_proto_rawDesc = "" +
 	"\n" +
 	"profile_id\x18\x01 \x01(\tR\tprofileId\")\n" +
 	"\x0fProfileResponse\x12\x16\n" +
-	"\x06exists\x18\x01 \x01(\bR\x06exists2^\n" +
+	"\x06exists\x18\x01 \x01(\bR\x06exists\"1\n" +
+	"\x10ProfileRequestV1\x12\x1d\n" +
+	"\n" +
+	"profile_id\x18\x01 \x01(\tR\tprofileId\"\x8f\x01\n" +
+	"\x11ProfileResponseV1\x12\x16\n" +
+	"\x06exists\x18\x01 \x01(\bR\x06exists\x12\x1c\n" +
+	"\tavatarUri\x18\x02 \x01(\tR\tavatarUri\x12\x18\n" +
+	"\aaddress\x18\x03 \x01(\tR\aaddress\x12\x16\n" +
+	"\x06gender\x18\x04 \x01(\tR\x06gender\x12\x12\n" +
+	"\x04name\x18\x05 \x01(\tR\x04name2\xad\x01\n" +
 	"\x13CheckProfileService\x12G\n" +
-	"\x12CheckProfileExists\x12\x17.profile.ProfileRequest\x1a\x18.profile.ProfileResponseB\x15Z\x13gprc.grpc_generatedb\x06proto3"
+	"\x12CheckProfileExists\x12\x17.profile.ProfileRequest\x1a\x18.profile.ProfileResponse\x12M\n" +
+	"\x14CheckProfileExistsV1\x12\x19.profile.ProfileRequestV1\x1a\x1a.profile.ProfileResponseV1B\x15Z\x13gprc.grpc_generatedb\x06proto3"
 
 var (
 	file_check_existed_profile_proto_rawDescOnce sync.Once
@@ -134,16 +264,20 @@ func file_check_existed_profile_proto_rawDescGZIP() []byte {
 	return file_check_existed_profile_proto_rawDescData
 }
 
-var file_check_existed_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_check_existed_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_check_existed_profile_proto_goTypes = []any{
-	(*ProfileRequest)(nil),  // 0: profile.ProfileRequest
-	(*ProfileResponse)(nil), // 1: profile.ProfileResponse
+	(*ProfileRequest)(nil),    // 0: profile.ProfileRequest
+	(*ProfileResponse)(nil),   // 1: profile.ProfileResponse
+	(*ProfileRequestV1)(nil),  // 2: profile.ProfileRequestV1
+	(*ProfileResponseV1)(nil), // 3: profile.ProfileResponseV1
 }
 var file_check_existed_profile_proto_depIdxs = []int32{
 	0, // 0: profile.CheckProfileService.CheckProfileExists:input_type -> profile.ProfileRequest
-	1, // 1: profile.CheckProfileService.CheckProfileExists:output_type -> profile.ProfileResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: profile.CheckProfileService.CheckProfileExistsV1:input_type -> profile.ProfileRequestV1
+	1, // 2: profile.CheckProfileService.CheckProfileExists:output_type -> profile.ProfileResponse
+	3, // 3: profile.CheckProfileService.CheckProfileExistsV1:output_type -> profile.ProfileResponseV1
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -160,7 +294,7 @@ func file_check_existed_profile_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_check_existed_profile_proto_rawDesc), len(file_check_existed_profile_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

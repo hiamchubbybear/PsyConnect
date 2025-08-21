@@ -98,6 +98,8 @@ public class UserProfileService {
             Profile updatedUser = userProfileMapper.toUserProfile(userProfileUpdateRequest);
             updatedUser.setProfileId(existingUser.getProfileId());
             updatedUser.setAccountId(existingUser.getAccountId());
+            updatedUser.setDob(userProfileUpdateRequest.getDob());
+            log.info("Updated user {}", updatedUser.getDob());
             Profile savedUser = userProfileRepository.save(updatedUser);
             response = userProfileMapper.toUserProfileUpdateResponse(savedUser);
             kafkaService.sendLog(buildLog(

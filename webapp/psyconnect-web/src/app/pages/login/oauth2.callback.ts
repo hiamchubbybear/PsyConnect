@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth } from '../../services/auth/auth';
-import { UserContextService } from '../../services/profile/profile-service.service';
+import { UserContextService } from '../../services/profile/profile-service';
 
 @Component({
   selector: 'app-oauth2-callback',

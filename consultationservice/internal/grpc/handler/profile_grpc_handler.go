@@ -4,6 +4,7 @@ import (
 	dto "consultationservice/internal/dto"
 	pb "consultationservice/internal/grpc/gprc.grpc_generated"
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -29,6 +30,7 @@ func NewProfileGrpc(addr string) (*ProfileGrpc, error) {
 	}, nil
 }
 
+// Deprecated: Replace  RetriveProfileInfo
 func (r *ProfileGrpc) CheckProfileExists(profileId string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -74,4 +76,22 @@ func (r *ProfileGrpc) Close() {
 	if r.conn != nil {
 		_ = r.conn.Close()
 	}
+}
+
+func (r *ProfileGrpc) RetriveProfileInfo(profileId string) (*pb.ProfileResponseV1, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	res := &pb.ProfileResponseV1{}
+	if profileId == "" {
+		return res, errors.New("profile id can not be nil ")
+	}
+	profileRequest := &pb.ProfileRequestV1{
+		ProfileId: profileId,
+	}
+	defer cancel()
+	res, err := r.checkClient.CheckProfileExistsV1(ctx, profileRequest)
+	if err != nil || !res.Exists {
+		res = nil
+		return res, err
+	}
+	return res, nil
 }

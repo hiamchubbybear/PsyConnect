@@ -1,0 +1,13 @@
+<div class="deck">
+  <ng-container *ngIf="currentTherapist; else empty">
+    <app-swipe-card
+      [therapist]="currentTherapist"
+      [index]="0"
+      (swiped)="onCardSwiped($event)"
+    ></app-swipe-card>
+  </ng-container>
+
+  <ng-template #empty>
+    <div class="empty">No more therapists — check back later</div>
+  </ng-template>
+</div>

@@ -3,9 +3,11 @@ package repository
 import (
 	"consultationservice/internal/dto"
 	"consultationservice/internal/model"
+	"consultationservice/internal/redis"
 	"consultationservice/internal/repository/infrastructure/external"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/willf/bloom"
@@ -19,16 +21,25 @@ type SwipeRepository struct {
 	therapistRepo *TherapistRepository
 	sessionRepo   *SessionRepository
 	swipeRepo     *mongo.Collection
+	redis         redis.RedisStore
 }
 
-func NewSwipeRepository(clientRepo *ClientRepository, therapistRepo *TherapistRepository, sessionRepo *SessionRepository, swipeRepo *mongo.Collection) *SwipeRepository {
+func NewSwipeRepository(
+	clientRepo *ClientRepository,
+	therapistRepo *TherapistRepository,
+	sessionRepo *SessionRepository,
+	swipeRepo *mongo.Collection,
+	redis redis.RedisStore,
+) *SwipeRepository {
 	return &SwipeRepository{
 		clientRepo:    clientRepo,
 		therapistRepo: therapistRepo,
 		sessionRepo:   sessionRepo,
 		swipeRepo:     swipeRepo,
+		redis:         redis,
 	}
 }
+
 func (r *SwipeRepository) InsertSwipes(clientId string, swipes []model.ClientSwipe) error {
 	ctx := context.Background()
 	if len(swipes) == 0 {
@@ -118,7 +129,6 @@ func (r *SwipeRepository) getTop5PendingSwipes(clientId string) ([]model.ClientS
 
 func (r *SwipeRepository) UpdateAllPendingTherapistSwipeProfile(clientId string) error {
 	ctx := context.Background()
-
 	if clientId == "" {
 		return errors.New("clientId is empty")
 	}
@@ -134,7 +144,6 @@ func (r *SwipeRepository) UpdateAllPendingTherapistSwipeProfile(clientId string)
 	if result.ModifiedCount == 0 {
 		log.Println("No swipe documents updated")
 	}
-
 	return nil
 }
 
@@ -160,7 +169,6 @@ func (r *SwipeRepository) GetSwipedTherapistIds(clientId string) ([]string, erro
 }
 
 func (r *SwipeRepository) FilterAllTherapist(clientId string) ([]model.ClientSwipe, error) {
-
 	client, err := r.clientRepo.FindClientMatchingProfile(clientId)
 	if err != nil {
 		log.Println("Failed to find client profile", err)
@@ -213,22 +221,130 @@ func (r *SwipeRepository) FilterAllTherapist(clientId string) ([]model.ClientSwi
 }
 
 func AppendDataIntoSwipe(client *model.Client, therapist []model.Therapist) (dto.FilterRawData, error) {
-	var therapists []model.Therapist
-	for _, t := range therapist {
-		therapists = append(therapists, t)
-	}
 	return dto.FilterRawData{
 		ClientRaw:    *client,
-		TherapistRaw: therapists,
+		TherapistRaw: therapist,
 	}, nil
 }
-func (r *SwipeRepository) swipeTherapist(profileId string) (status bool, err error) {
-	if profileId == "" {
-		return false, errors.New("profile id. can not be nil ")
-	}
-	
-	return false, errors.New("failed to swipe therapist")
-}
+
 func optsFindTop5() *options.FindOptions {
 	return options.Find().SetSort(bson.M{"points": -1}).SetLimit(5)
+}
+
+func (r *SwipeRepository) PopTop5SwipesV1(clientId string) ([]model.TherapistV1, error) {
+	ctx := context.Background()
+	cacheKey := fmt.Sprintf("psyconnect:swipe:top5:%s", clientId)
+
+	var cached []model.TherapistV1
+	if err := r.redis.Get(ctx, cacheKey, &cached); err == nil && len(cached) > 0 {
+		log.Println("PopTop5SwipesV1: cache hit")
+		return cached, nil
+	}
+
+	swipes, err := r.getTop5PendingSwipes(clientId)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(swipes) == 0 {
+		if err := r.UpdateAllPendingTherapistSwipeProfile(clientId); err != nil {
+			return nil, err
+		}
+		swipes, err = r.getTop5PendingSwipes(clientId)
+		if err != nil {
+			return nil, err
+		}
+		if len(swipes) == 0 {
+			return nil, nil
+		}
+	}
+
+	for _, s := range swipes {
+		_, _ = r.swipeRepo.UpdateOne(ctx,
+			bson.M{"client_id": s.ClientId, "therapist_id": s.TherapistId},
+			bson.M{"$set": bson.M{"status": "swiped"}},
+		)
+	}
+
+	var therapistResponse []model.TherapistV1
+	for _, s := range swipes {
+		profile, err := r.therapistRepo.FindTherapistMatchingProfileV1(s.TherapistId)
+		if err != nil {
+			continue
+		}
+		therapistResponse = append(therapistResponse, *profile)
+	}
+
+	_ = r.redis.Set(ctx, cacheKey, therapistResponse)
+	return therapistResponse, nil
+}
+
+func (r *SwipeRepository) FilterAllTherapistV1(clientId string) ([]model.ClientSwipeV1, error) {
+	ctx := context.Background()
+	cacheKey := fmt.Sprintf("psyconnect:swipe:filter:%s", clientId)
+
+	var cached []model.ClientSwipeV1
+	if err := r.redis.Get(ctx, cacheKey, &cached); err == nil && len(cached) > 0 {
+		log.Println("FilterAllTherapistV1: cache hit")
+		return cached, nil
+	}
+
+	client, err := r.clientRepo.FindClientMatchingProfile(clientId)
+	if err != nil {
+		return nil, err
+	}
+
+	therapists, err := r.therapistRepo.FindAllTherapistMatchingProfilesV1()
+	if err != nil {
+		return nil, err
+	}
+
+	raw, _ := AppendDataIntoSwipeV1(client, therapists)
+	swipes, err := external.RecommendationApiV1(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	swipedIds, _ := r.GetSwipedTherapistIds(clientId)
+	bf := bloom.NewWithEstimates(uint(len(swipedIds)), 0.001)
+	for _, id := range swipedIds {
+		bf.Add([]byte(id))
+	}
+
+	var filtered []model.ClientSwipeV1
+	for _, s := range swipes {
+		if !bf.Test([]byte(s.TherapistId)) {
+			filtered = append(filtered, s)
+		}
+	}
+
+	_ = r.InsertSwipesV1(clientId, filtered)
+	_ = r.redis.Set(ctx, cacheKey, filtered)
+	return filtered, nil
+}
+
+func (r *SwipeRepository) InsertSwipesV1(clientId string, swipes []model.ClientSwipeV1) error {
+	ctx := context.Background()
+	if len(swipes) == 0 {
+		return nil
+	}
+	var docs []interface{}
+	for _, s := range swipes {
+		docs = append(docs, s)
+	}
+	_, err := r.swipeRepo.InsertMany(ctx, docs)
+	if err != nil {
+		return err
+	}
+
+	cacheKey := fmt.Sprintf("psyconnect:swipe:filter:%s", clientId)
+	_ = r.redis.Delete(ctx, cacheKey)
+	return nil
+}
+
+func AppendDataIntoSwipeV1(client *model.Client, therapist []model.TherapistV1) (dto.FilterRawDataV1, error) {
+	return dto.FilterRawDataV1{
+		ClientRaw:    *client,
+		TherapistRaw: therapist,
+	}, nil
 }

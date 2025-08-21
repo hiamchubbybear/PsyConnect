@@ -14,7 +14,7 @@ import { LoaderService } from '../../services/loader/loader';
 import {
     UserContextService,
     UserProfile,
-} from '../../services/profile/profile-service.service';
+} from '../../services/profile/profile-service';
 
 @Component({
   selector: 'app-header',
