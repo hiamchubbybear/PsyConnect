@@ -26,7 +26,7 @@
 
       p {
         font-size: v.$font-size-sm;
-        color: #666;
+        color: var(--footer-text);
       }
     }
 
@@ -44,7 +44,7 @@
         a {
           display: block;
           font-size: v.$font-size-sm;
-          color: #666;
+          color: var(--footer-text);
           text-decoration: none;
           margin-bottom: 0.25rem;
 
@@ -59,7 +59,7 @@
   .footer-bottom {
     text-align: center;
     font-size: v.$font-size-sm;
-    color: #888;
+    color: var(--footer-text);
   }
 }
 @media (max-width: 768px) {

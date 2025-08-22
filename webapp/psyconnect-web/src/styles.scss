@@ -67,9 +67,13 @@ html {
   --dropdown-badge-bg: #{v.$color-accent};
   --dropdown-badge-bg-hover: #{v.$color-accent-hover};
   --dropdown-badge-text: #{v.$color-white};
+  --color-text-hover: #b7b7ba;
+  --color-bg-contrast: #000;
+  --login-container: #{v.$color-gray-200};
 }
 
 [data-theme="dark"] {
+  --color-bg-contrast: #fff;
   --color-bg: #151515;
   --color-bg-secondary: #111111;
   --color-text: #fafafa;
@@ -80,7 +84,7 @@ html {
   --color-accent-hover: #3b82f6;
   --color-border: rgba(255, 255, 255, 0.08);
   --color-surface: #111111;
-
+  --color-text-hover: #292930;
   // Header & Navbar - Dark
   --header-bg: #27272a;
   --header-text: #fafafa;

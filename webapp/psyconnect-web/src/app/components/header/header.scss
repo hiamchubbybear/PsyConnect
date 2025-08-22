@@ -53,13 +53,12 @@
       }
 
       &.signup {
-        background: v.$color-primary;
-        color: v.$color-white;
+        background: var(--header-bg);
+        color: var(--header-text);
         border-radius: 4px;
         margin-left: 0.5rem;
-
         &:hover {
-          background: v.$color-primary-hover;
+        color: var(--header-link-hover);
         }
       }
     }
