@@ -15,14 +15,14 @@
       font-family: v.$font-primary;
       font-size: 2.5rem;
       margin-bottom: 1rem;
-      color: v.$color-text;
+      color: var(--color-text);
     }
 
     p {
       font-family: v.$font-primary;
       font-size: v.$font-size-lg;
       margin-bottom: 2rem;
-      color: v.$color-text;
+      color: var(--color-text);
     }
 
     .hero-buttons {
@@ -48,13 +48,13 @@
   h2 {
     font-family: v.$font-primary;
     font-size: v.$font-size-xl;
-    color: v.$color-text;
+    color: var(--color-text);
   }
 
   p {
     font-family: v.$font-primary;
     font-size: v.$font-size-md;
-    color: v.$color-text;
+    color: var(--color-text);
   }
 
   .feature-cards {
@@ -67,12 +67,13 @@
     .card {
       flex: 1;
       min-width: 250px;
-      background: v.$color-bg;
+      background: var(--header-bg);
       padding: 1.5rem;
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      border-color: var(--header-border);
+      box-shadow: 0 2px 6px var(--color-border);
       font-family: v.$font-primary;
-      color: v.$color-text;
+      color: var(--color-text);
     }
   }
 }
@@ -99,7 +100,7 @@
       font-family: v.$font-primary;
       font-size: v.$font-size-xl;
       margin-bottom: 1rem;
-      color: v.$color-text;
+      color: var(--color-text);
     }
 
     ul {
@@ -109,7 +110,7 @@
       li {
         font-family: v.$font-primary;
         font-size: v.$font-size-md;
-        color: v.$color-text;
+        color: var(--color-text);
       }
     }
   }
@@ -122,10 +123,10 @@
   h2 {
     font-family: v.$font-primary;
     font-size: v.$font-size-xl;
-    color: v.$color-white;
+    color: var(--color-text);
   }
   p {
-    color: v.$color-white;
+    color: var(--color-text);
   }
   .cta-buttons {
     margin-top: 2rem;

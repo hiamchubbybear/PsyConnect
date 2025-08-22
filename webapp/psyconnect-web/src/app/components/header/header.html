@@ -11,14 +11,14 @@
   </nav>
 
   <div class="header-right" *ngIf="auth.isLoggedIn(); else guest">
-    <button mat-button [matMenuTriggerFor]="menu" class="avatar-btn">
-      <img [src]="userAvatarUrl" alt="Avatar" class="avatar" />
-      <span class="username">{{ userName }}</span>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item routerLink="/profile">Profile</button>
-      <button mat-menu-item (click)="logout()">Logout</button>
-    </mat-menu>
+    <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
+      <app-avatar-menu
+        [userAvatarUrl]="userAvatarUrl"
+        [userName]="userName"
+        (logoutClicked)="logout()"
+      >
+      </app-avatar-menu>
+    </ng-container>
   </div>
 
   <ng-template #guest>
@@ -37,14 +37,12 @@
     <a href="/about">About</a>
 
     <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
-      <button mat-button [matMenuTriggerFor]="menuMobile" class="avatar-btn">
-        <img [src]="userAvatarUrl" alt="Avatar" class="avatar" />
-        <span class="username">{{ userName }}</span>
-      </button>
-      <mat-menu #menuMobile="matMenu">
-        <button mat-menu-item routerLink="/profile">Profile</button>
-        <button mat-menu-item (click)="logout()">Logout</button>
-      </mat-menu>
+      <app-avatar-menu
+        [userAvatarUrl]="userAvatarUrl"
+        [userName]="userName"
+        (logoutClicked)="logout()"
+      >
+      </app-avatar-menu>
     </ng-container>
 
     <ng-template #guestMobile>

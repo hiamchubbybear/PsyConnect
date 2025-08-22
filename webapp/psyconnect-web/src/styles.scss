@@ -1,46 +1,179 @@
 @use "@angular/material" as mat;
-@use "sass:color";
-@use "./app/styles/_variable.scss" as v;
+@use "./app/styles/variable" as v;
 
 @include mat.core();
 
+// Material theme - Optional, comment out if not using Material components
+/*
 html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        primary: mat.$blue-palette,
+        tertiary: mat.$grey-palette,
       ),
     )
   );
 }
+*/
+:root {
+  // Light theme - Minimalist palette
+  --color-bg: #{v.$color-white};
+  --color-bg-secondary: #{v.$color-gray-50};
+  --color-text: #{v.$color-text};
+  --color-text-muted: #{v.$color-text-muted};
+  --color-primary: #{v.$color-primary};
+  --color-primary-hover: #{v.$color-primary-hover};
+  --color-accent: #{v.$color-accent};
+  --color-accent-hover: #{v.$color-accent-hover};
+  --color-border: #{v.$border-color};
+  --color-surface: #{v.$color-white};
 
-body {
-  font-family: "Quicksand", sans-serif;
-  font-size: v.$font-size-md;
-  margin: 0;
-  color-scheme: light;
-  background: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
+  // Spacing
+  --spacing-xs: #{v.$spacing-xs};
+  --spacing-sm: #{v.$spacing-sm};
+  --spacing-md: #{v.$spacing-md};
+  --spacing-lg: #{v.$spacing-lg};
+  --spacing-xl: #{v.$spacing-xl};
+  --spacing-2xl: #{v.$spacing-2xl};
+
+  // Shadows
+  --shadow-sm: #{v.$shadow-sm};
+  --shadow-md: #{v.$shadow-md};
+
+  // Transitions
+  --transition-fast: #{v.$transition-fast};
+  --transition-medium: #{v.$transition-medium};
+
+  // ===============================
+  // Header & Navbar - Light
+  // ===============================
+  --header-bg: #{v.$color-gray-100};
+  --header-text: #{v.$color-gray-900};
+  --header-border: #{v.$color-gray-200};
+  --header-link-text: #{v.$color-gray-700};
+  --header-link-hover: #{v.$color-primary};
+  --header-link-arrow: #{v.$color-gray-400};
+  --header-shadow: #{v.$shadow-sm};
+  --footer-a: #{v.$footer-a};
+  --footer-line: #d4d4d8;
+  // Dropdown - Light
+  --dropdown-bg: #{v.$color-white};
+  --dropdown-border: #{v.$color-gray-200};
+  --dropdown-text: #{v.$color-gray-900};
+  --dropdown-item-hover-bg: #{v.$color-gray-50};
+  --dropdown-item-hover-text: #{v.$color-primary};
+  --dropdown-shadow: #{v.$shadow-md};
+  --dropdown-badge-bg: #{v.$color-accent};
+  --dropdown-badge-bg-hover: #{v.$color-accent-hover};
+  --dropdown-badge-text: #{v.$color-white};
+  --color-text-hover: #b7b7ba;
+  --color-bg-contrast: #000;
+  --login-container: #{v.$color-gray-200};
+}
+
+[data-theme="dark"] {
+  --color-bg-contrast: #fff;
+  --color-bg: #151515;
+  --color-bg-secondary: #111111;
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-primary: #fafafa;
+  --color-primary-hover: #f4f4f5;
+  --color-accent: #60a5fa;
+  --color-accent-hover: #3b82f6;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-surface: #111111;
+  --color-text-hover: #292930;
+  // Header & Navbar - Dark
+  --header-bg: #27272a;
+  --header-text: #fafafa;
+  --header-border: #3f3f46;
+  --header-link-text: #d4d4d8;
+  --header-link-hover: #e5e5f7;
+  --header-link-arrow: #71717a;
+  --header-shadow: #{v.$shadow-sm};
+  --footer-a: #d4d4d8;
+  --footer-line: #3d3d43;
+
+  // Dropdown - Dark
+  --dropdown-bg: #111111;
+  --dropdown-border: #3f3f46;
+  --dropdown-text: #fafafa;
+  --dropdown-item-hover-bg: #27272a;
+  --dropdown-item-hover-text: #f4f4f5;
+  --dropdown-shadow: #{v.$shadow-md};
+  --dropdown-badge-bg: #3b82f6;
+  --dropdown-badge-bg-hover: #2563eb;
+  --dropdown-badge-text: #ffffff;
+}
+
+// ===========================================
+// 🏗️ BASE STYLES
+// ===========================================
+
+*,
+*::before,
+*::after {
+  transition: background-color var(--transition-fast),
+    color var(--transition-fast), border-color var(--transition-fast),
+    opacity var(--transition-fast), transform var(--transition-fast);
 }
 
 html,
 body {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
+
+body {
+  font-family: v.$font-primary;
+  font-size: v.$font-size-md;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: var(--color-accent);
+    text-shadow: 0 0 6px var(--color-accent);
+    transform: scale(1.02);
+  }
+}
+// ===========================================
+// 🎯 FORM ELEMENTS
+// ===========================================
+
 input,
 select,
 textarea,
 option {
   font-family: v.$font-primary;
   font-size: v.$font-size-md;
-  color: v.$color-text;
-}
+  font-weight: 400;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: v.$border-radius-md;
+  transition: all var(--transition-fast);
 
-input::placeholder,
-textarea::placeholder {
-  font-family: v.$font-primary;
-  color: v.$color-gray;
+  &::placeholder {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-color: var(--color-accent);
+  }
 }
 
 input[type="date"],
@@ -51,33 +184,263 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
 }
+
+// ===========================================
+// 📦 LAYOUT COMPONENTS
+// ===========================================
+
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 var(--spacing-lg);
   width: 100%;
+
+  @media (min-width: v.$breakpoint-md) {
+    padding: 0 var(--spacing-xl);
+  }
 }
 
-:root {
-  --transition-fast: 0.2s ease;
-  --transition-medium: 0.3s ease;
-  --transition-slow: 0.4s ease;
-}
-
-*,
-*::before,
-*::after {
-  transition: background-color var(--transition-fast),
-    color var(--transition-fast), border-color var(--transition-fast),
-    box-shadow var(--transition-fast), transform var(--transition-fast);
-}
+// ===========================================
+// 🎨 COMPONENT CLASSES
+// ===========================================
 
 .button {
-  transition: background-color var(--transition-fast),
-    color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-family: v.$font-primary;
+  font-size: v.$font-size-sm;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: v.$border-radius-md;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+
+  // Primary button
+  &--primary {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-primary);
+
+    &:hover {
+      background: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  // Secondary button
+  &--secondary {
+    background: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-border);
+
+    &:hover {
+      background: var(--color-bg-secondary);
+      border-color: var(--color-primary);
+    }
+  }
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: v.$border-radius-lg;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-medium);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+// ===========================================
+// 📱 RESPONSIVE UTILITIES
+// ===========================================
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+// ===========================================
+// 🎨 MINIMALIST LINK SYSTEM
+// ===========================================
+
+a {
+  color: #3f3f46; // Dark gray (main)
+  text-decoration: none;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+
+  &:hover {
+    color: #27272a; // Slightly darker
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  &:focus {
+    outline: 2px solid #71717a; // Muted gray focus
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  &:visited {
+    color: #52525b; // Medium gray
+  }
+
+  [data-theme="dark"] & {
+    color: #e4e4e7; // Light gray
+
+    &:hover {
+      color: #f4f4f5;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.1);
+    }
+
+    &:visited {
+      color: #a1a1aa;
+    }
+  }
+}
+
+// ===========================================
+// 🎯 LINK VARIANTS
+// ===========================================
+
+.link {
+  color: #3f3f46;
+  text-decoration: none;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+
+  &:hover {
+    color: #27272a;
+    text-decoration: underline;
+  }
+
+  &--subtle {
+    color: #71717a;
+
+    &:hover {
+      color: #52525b;
+      text-decoration: none;
+    }
+  }
+
+  &--accent {
+    color: #6d28d9; // Subtle purple for accent
+
+    &:hover {
+      color: #5b21b6; // Darker purple
+      text-decoration: underline;
+    }
+  }
+
+  &--external {
+    &::after {
+      content: "↗";
+      margin-left: 3px;
+      font-size: 0.75em;
+      opacity: 0.5;
+      transition: opacity 0.15s ease;
+    }
+
+    &:hover::after {
+      opacity: 0.8;
+    }
+  }
+
+  &--button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #f4f4f5;
+    color: #3f3f46;
+    border: 1px solid #d4d4d8;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #e4e4e7;
+      color: #27272a;
+      transform: translateY(-1px);
+      border-color: #a1a1aa;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &--dark {
+      background: #27272a;
+      color: #f4f4f5;
+      border-color: #52525b;
+
+      &:hover {
+        background: #3f3f46;
+        color: #ffffff;
+        border-color: #71717a;
+      }
+    }
+  }
+
+  &--ghost {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: #3f3f46;
+    border: 1px solid #d4d4d8;
+    border-radius: 6px;
+    font-weight: 400;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #f4f4f5;
+      color: #27272a;
+      border-color: #a1a1aa;
+    }
+  }
+}
+
+// ===========================================
+// 📦 CSS VARIABLES - Minimalist Palette
+// ===========================================
+
+:root {
+  --link-primary: #3f3f46;
+  --link-primary-hover: #27272a;
+  --link-secondary: #71717a;
+  --link-secondary-hover: #52525b;
+  --link-accent: #6d28d9;
+  --link-accent-hover: #5b21b6;
+  --link-visited: #52525b;
+}
+
+[data-theme="dark"] {
+  --link-primary: #e4e4e7;
+  --link-primary-hover: #f4f4f5;
+  --link-secondary: #a1a1aa;
+  --link-secondary-hover: #71717a;
+  --link-accent: #c4b5fd;
+  --link-accent-hover: #a78bfa;
+  --link-visited: #a1a1aa;
 }

@@ -1,25 +1,256 @@
+// @use "sass:color" as c;
+
+$font-primary: "Quicksand", sans-serif;
+
+// $font-size-sm: 0.875rem;
+// $font-size-md: 1rem;
+// $font-size-lg: 1.25rem;
+// $font-size-xl: 1.5rem;
+
+// $color-primary: #111827;
+// $color-primary-hover: c.adjust($color-primary, $lightness: 10%);
+// $color-primary-hover: #222;
+// $color-text: #333;
+// $color-primary-text: #ffffff;
+$color-white: #fff;
+// $color-bg: #ffffff;
+// $color-gray: #d1d5db;
+// $color-bg-cta: #111827;
+
+// $btn-border-width: 1px;
+// $btn-border-radius: 5px;
+// $btn-border-color: $color-gray;
+// $color-gray-light: #f3f4f6;
+
+// $font-size-xs: 0.75rem;
+// $font-size-sm: 0.875rem;
+// $font-size-md: 1rem;
+// $font-size-lg: 1.125rem;
+// $font-size-xl: 1.25rem;
+
+// $spacing-xs: 0.25rem;
+// $spacing-sm: 0.5rem;
+// $spacing-md: 0.75rem;
+// $spacing-lg: 1rem;
+// $spacing-xl: 1.5rem;
+// $spacing-2xl: 2rem;
+// $spacing-3xl: 2.5rem;
+// $spacing-4xl: 3rem;
+
+// $space-1: 0.25rem;
+// $space-2: 0.5rem;
+// $space-3: 0.75rem;
+// $space-4: 1rem;
+// $space-5: 1.25rem;
+// $space-6: 1.5rem;
+// $space-7: 1.75rem;
+// $space-8: 2rem;
+// $space-xl: 1.5rem;
+// $space-xxl: 2rem;
+
+// $color-primary: #18181b;
+// $color-primary-hover: #27272a;
+// $color-text: #09090b;
+// $color-text-muted: #71717a;
+
+// $color-white: #ffffff;
+// $color-gray-50: #fafafa;
+// $color-gray-100: #f4f4f5;
+// $color-gray-200: #e4e4e7;
+// $color-gray-300: #d4d4d8;
+// $color-gray-400: #a1a1aa;
+// $color-gray-500: #71717a;
+// $color-gray-600: #52525b;
+// $color-gray-700: #3f3f46;
+// $color-gray-800: #27272a;
+// $color-gray-900: #18181b;
+
+// $color-gray: $color-gray-300;
+// $color-bg: $color-white;
+// $color-bg-cta: $color-primary;
+// $color-primary-text: $color-white;
+
+// $color-accent: #3b82f6;
+// $color-accent-hover: #2563eb;
+
+// $border-radius-sm: 4px;
+// $border-radius-md: 6px;
+// $border-radius-lg: 8px;
+
+// $border-width: 1px;
+// $border-color: rgba(0, 0, 0, 0.08);
+// $border-color-dark: rgba(255, 255, 255, 0.08);
+
+// $btn-border-width: $border-width;
+// $btn-border-radius: $border-radius-md;
+// $btn-border-color: $border-color;
+
+// $color-gray-light: $color-gray-100;
+
+// $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+// $shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+// $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+// $shadow: $shadow-md;
+
+// $transition-fast: 0.15s ease;
+// $transition-medium: 0.2s ease;
+
+// $breakpoint-sm: 640px;
+// $breakpoint-md: 768px;
+// $breakpoint-lg: 1024px;
+// $breakpoint-xl: 1280px;
+
 @use "sass:color" as c;
 
-// Fonts
-$font-primary: 'Quicksand', sans-serif;
+// ===========================================
+// 🎨 MINIMALIST DESIGN SYSTEM
+// ===========================================
 
-// Font Sizes
-$font-size-sm: 0.875rem;
-$font-size-md: 1rem;
-$font-size-lg: 1.25rem;
-$font-size-xl: 1.5rem;
-// Colors
-$color-primary: #111827;
-$color-primary-hover: c.adjust($color-primary, $lightness: 10%);
-$color-primary-hover: #222;
-$color-text: #333;
-$color-primary-text: #ffffff;
-$color-white: #fff;
-$color-bg: #ffffff;
-$color-gray: #D1D5DB;
-$color-bg-cta : #111827;
-// Button
-$btn-border-width: 1px;
-$btn-border-radius: 5px;
-$btn-border-color: $color-gray;
-$color-gray-light: #F3F4F6;
+// Typography - Chỉ 3 font weights
+// $font-primary: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+// Font sizes theo 4px system
+$font-size-xs: 0.75rem; // 12px
+$font-size-sm: 0.875rem; // 14px
+$font-size-md: 1rem; // 16px
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.25rem; // 20px
+
+// Spacing system - 4px base (compatible với old naming)
+$spacing-xs: 0.25rem; // 4px
+$spacing-sm: 0.5rem; // 8px
+$spacing-md: 0.75rem; // 12px
+$spacing-lg: 1rem; // 16px
+$spacing-xl: 1.5rem; // 24px
+$spacing-2xl: 2rem; // 32px
+$spacing-3xl: 2.5rem; // 40px
+$spacing-4xl: 3rem; // 48px
+
+// Legacy spacing aliases (for backward compatibility)
+$space-1: 0.25rem; // 4px
+$space-2: 0.5rem; // 8px
+$space-3: 0.75rem; // 12px
+$space-4: 1rem; // 16px
+$space-5: 1.25rem; // 20px
+$space-6: 1.5rem; // 24px
+$space-7: 1.75rem; // 28px
+$space-8: 2rem; // 32px
+$space-xl: 1.5rem; // 24px
+$space-xxl: 2rem; // 32px
+
+// ===========================================
+// 🎯 MINIMALIST COLOR PALETTE
+// ===========================================
+
+// Primary colors - Chỉ 3 màu chính
+$color-primary: #18181b; // Soft black thay vì #111827
+$color-primary-hover: #27272a; // Subtle hover
+$color-text: #09090b; // Near black
+$color-text-muted: #71717a; // Muted gray
+
+// Neutrals - Refined grays (full spectrum)
+$color-white: #ffffff;
+$color-gray-50: #fafafa;
+$color-gray-100: #f4f4f5;
+$color-gray-200: #e4e4e7;
+$color-gray-300: #d4d4d8;
+$color-gray-400: #a1a1aa;
+$color-gray-500: #71717a;
+$color-gray-600: #52525b;
+$color-gray-700: #3f3f46;
+$color-gray-800: #27272a;
+$color-gray-900: #18181b;
+
+// Legacy color aliases (backward compatibility)
+$color-gray: $color-gray-300;
+$color-bg: $color-white;
+$color-bg-cta: $color-primary;
+$color-primary-text: $color-white;
+
+// Accent - Single accent color
+$color-accent: #3b82f6; // Clean blue
+$color-accent-hover: #2563eb;
+
+// ===========================================
+// 🎭 COMPONENT VARIABLES
+// ===========================================
+
+// Border radius - Subtle, không quá 8px
+$border-radius-sm: 4px;
+$border-radius-md: 6px;
+$border-radius-lg: 8px;
+
+// Borders - Minimal
+$border-width: 1px;
+$border-color: rgba(0, 0, 0, 0.08);
+$border-color-dark: rgba(255, 255, 255, 0.08);
+
+// Button variables
+$btn-border-width: $border-width;
+$btn-border-radius: $border-radius-md;
+$btn-border-color: $border-color;
+
+// Legacy variables
+$color-gray-light: $color-gray-100;
+
+// Shadows - Subtle chỉ 3 levels
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+
+// Legacy shadow aliases
+$shadow: $shadow-md;
+
+// Transitions - Fast & smooth
+$transition-fast: 0.15s ease;
+$transition-medium: 0.2s ease;
+
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+
+$header-bg-light: $color-gray-50; // header background - light mode
+$header-bg-dark: $color-gray-800; // header background - dark mode
+$header-text-light: $color-gray-900; // header text - light mode
+$header-text-dark: $color-white; // header text - dark mode
+$header-border-light: $color-gray-200; // bottom border separator - light
+$header-border-dark: $color-gray-700; // bottom border separator - dark
+
+// Nav items
+$header-link-text-light: $color-gray-700;
+$header-link-text-dark: $color-gray-100;
+$header-link-hover-light: $color-primary;
+$header-link-hover-dark: $color-primary-hover;
+$header-link-arrow-light: $color-gray-400;
+$header-link-arrow-dark: $color-gray-500;
+
+// ===========================================
+// 🏗 Dropdown Menu
+// ===========================================
+$dropdown-bg-light: $color-white;
+$dropdown-bg-dark: $color-gray-800;
+$dropdown-border-light: $color-gray-200;
+$dropdown-border-dark: $color-gray-700;
+$dropdown-shadow: $shadow-md;
+
+$dropdown-text-light: $color-gray-900;
+$dropdown-text-dark: $color-white;
+$dropdown-item-hover-bg-light: $color-gray-50;
+$dropdown-item-hover-bg-dark: $color-gray-700;
+$dropdown-item-hover-text-light: $color-primary;
+$dropdown-item-hover-text-dark: $color-primary-hover;
+
+// Optional badges / labels inside dropdown
+$dropdown-badge-bg: $color-accent;
+$dropdown-badge-bg-hover: $color-accent-hover;
+$dropdown-badge-text: $color-white;
+
+// ===========================================
+// 🏗 Utility / Layer Depth
+// ===========================================
+$header-shadow: $shadow-sm; // subtle header shadow
+$dropdown-layer-shadow: $shadow-md; // elevate dropdown above header
+
+$footer-a: #666;

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { Footer } from './components/footer/footer';
@@ -11,9 +11,10 @@ import { AuthStateService } from './services/auth/auth-state.service';
 import { AuthService } from './services/auth/auth.service';
 import { LoaderComponent } from './services/loader/loader.component';
 import {
-  UserContextService,
-  UserProfile,
+    UserContextService,
+    UserProfile,
 } from './services/profile/profile-service';
+import { ThemeService } from './services/theme/theme-service';
 
 @Component({
   selector: 'app-root',
@@ -36,6 +37,8 @@ import {
 export class App implements OnInit {
   showSidebar: boolean = false;
   constructor(
+    private renderer: Renderer2,
+    private themeService: ThemeService,
     private http: HttpClient,
     private auth: AuthService,
     private userContext: UserContextService,
@@ -43,10 +46,10 @@ export class App implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.setInitialTheme();
     this.authState.sidebarVisible$.subscribe((visible) => {
       this.showSidebar = visible;
     });
-
     const token = this.auth.getToken();
     if (token) {
       this.authState.showSidebar();
@@ -55,7 +58,14 @@ export class App implements OnInit {
       this.authState.hideSidebar();
     }
   }
-
+  setInitialTheme() {
+    const savedTheme = localStorage.getItem('app-theme');
+    if (savedTheme === 'dark') {
+      this.themeService.setTheme('dark');
+    } else {
+      this.themeService.setTheme('light');
+    }
+  }
   private fetchUserProfile() {
     this.http.get<UserProfile>('/api/profile').subscribe({
       next: (profile) => {
@@ -70,5 +80,4 @@ export class App implements OnInit {
       },
     });
   }
-  
 }
