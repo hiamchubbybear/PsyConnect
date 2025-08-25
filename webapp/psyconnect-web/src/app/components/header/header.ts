@@ -16,6 +16,7 @@ import {
     UserContextService,
     UserProfile,
 } from '../../services/profile/profile-service';
+import { ThemeService } from '../../services/theme/theme-service';
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
 import { HeaderStateService } from './header-state';
 
@@ -36,6 +37,8 @@ export class Header implements OnInit, OnDestroy {
   isHidden = false;
   lastScrollTop = 30;
   loading$!: Observable<boolean>;
+  isDark = false;
+
   private userSubscription?: Subscription;
 
   constructor(
@@ -44,7 +47,8 @@ export class Header implements OnInit, OnDestroy {
     private userContext: UserContextService,
     public loaderService: LoaderService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit() {
@@ -104,8 +108,10 @@ export class Header implements OnInit, OnDestroy {
     this.isMenuOpen = !this.isMenuOpen;
     this.cdr.markForCheck();
   }
-
-  @HostListener('window:scroll', [])
+  toggleTheme() {
+    this.themeService.toggleTheme();
+    this.isDark = !this.isDark;
+  }
   @HostListener('window:scroll', [])
   onScroll() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;

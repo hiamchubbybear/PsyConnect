@@ -78,6 +78,7 @@
 }
 
 .footer {
+  z-index: 2;
   background-color: v.$color-bg;
   color: var(--header-text);
   padding: 2rem;

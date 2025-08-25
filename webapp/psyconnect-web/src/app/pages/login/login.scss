@@ -33,6 +33,52 @@
     margin: 16px;
   }
 }
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  .icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--color-bg-contrast);
+    pointer-events: none;
+  }
+
+  .form-input {
+    padding-left: 2.5rem;
+  }
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-sm;
+
+  .form-label {
+    font-size: v.$font-size-sm;
+    font-weight: 500;
+    color: var(--color-text);
+    margin-bottom: 2px;
+  }
+
+  .error-text {
+    font-size: v.$font-size-xs;
+    color: var(--color-error-text);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &::before {
+      content: "⚠";
+      font-size: 12px;
+    }
+  }
+}
 
 .form-header {
   text-align: center;
@@ -70,9 +116,22 @@
       margin-top: 20px;
     }
   }
+  //   .error {
+  //     color: var(--color-error-bg);
+  //     border-color: var(--color-error-border);
+  //     box-shadow: 0 0 0 2px var(--bg-color-constrast);
+  //   }
 
+  &::placeholder {
+    color: var(--color-text-muted);
+    font-family: v.$font-primary;
+    display: flex;
+  }
   input {
+    padding-left: 2.5rem;
     padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
     border: 1px solid #525252;
     border-radius: 4px;
     font-size: 15px;
@@ -84,7 +143,7 @@
     margin-bottom: 4px;
 
     &::placeholder {
-      color: var(--color-text-muted);
+      color: var(--bg-color-constrast);
       font-family: v.$font-primary;
       font-size: 14px;
       font-weight: 400;
@@ -93,7 +152,7 @@
     &:focus {
       outline: none;
       border-color: var(--color-accent);
-      box-shadow: 0 0 0 1px #525252;
+      box-shadow: 0 0 0 1px var(--color-text-hover);
     }
 
     &[type="password"] {
@@ -262,4 +321,26 @@
       }
     }
   }
+}
+@keyframes shake-once {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake-errors {
+  display: inline-block;
+  animation: shake-once 0.25s ease;
 }

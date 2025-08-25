@@ -15,10 +15,9 @@ export class Homepage {
   ngOnInit(): void {
     if (this.themeService.getTheme() == 'light') {
       console.log('Light banner');
-
       this.bannerUrl = './assets/icon/banner-psyconnect-dark-meme.svg';
     } else {
-      this.bannerUrl = './assets/icon/banner-psyconnect-lightmeme.svg';
+      this.bannerUrl = './assets/icon/banner-psyconnect-light-meme.svg';
     }
   }
 }

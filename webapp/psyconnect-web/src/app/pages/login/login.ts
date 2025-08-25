@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
@@ -32,7 +32,7 @@ export class Login implements OnInit {
   error: string | null = null;
   loading = false;
   apiUrl = environment.apiUrl;
-
+  shakeErrors = false;
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
@@ -56,6 +56,7 @@ export class Login implements OnInit {
   onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      this.triggerShake();
       return;
     }
 
@@ -134,5 +135,18 @@ export class Login implements OnInit {
 
   private setError(message: string): void {
     this.error = message;
+  }
+  private triggerShake() {
+    this.shakeErrors = false;
+    requestAnimationFrame(() => {
+      this.shakeErrors = true;
+      setTimeout(() => (this.shakeErrors = false), 320);
+    });
+  }
+  @HostListener('document:keydown', ['$event'])
+  onEsc(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onSubmit();
+    }
   }
 }

@@ -89,6 +89,7 @@
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
   --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --icon-theme-color: none;
 }
 
 [data-theme="dark"] {
@@ -152,6 +153,8 @@
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.4);
   --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.6);
+
+  --icon-theme-color: brightness(0) invert(1);
 }
 
 *,
@@ -466,6 +469,7 @@ a {
 
 .content {
   flex: 1;
+  box-sizing: border-box;
 }
 @mixin button-base {
   display: inline-flex;

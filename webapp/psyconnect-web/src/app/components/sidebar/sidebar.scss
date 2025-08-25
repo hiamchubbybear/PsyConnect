@@ -13,40 +13,55 @@ $transition-ease: ease-in-out;
 .sidebar {
   display: flex;
   flex-direction: column;
+  border-right: none;
+
   background-color: var(--color-bg);
   width: 240px;
   padding: $spacing-unit * 4;
   box-sizing: border-box;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: width $transition-time $transition-ease,
-    padding $transition-time $transition-ease;
   position: fixed;
   top: 80px;
-  bottom: 50px;
+  bottom: 90px;
   left: 0;
   overflow-y: auto;
   overflow: visible;
   background: transparent;
-
+  bottom: 50px;
+  height: auto;
   &.collapsed {
-    width: 60px;
-    padding: $spacing-unit * 2;
+    width: auto;
+    opacity: auto;
+    // overflow: hidden;
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0.5rem;
+      height: 70%;
+      width: 2px;
+      bottom: 2rem;
+      background: var(--color-border);
+    }
 
     .sidebar__item {
       justify-content: center;
       padding: $spacing-unit * 3 $spacing-unit * 2;
-
+      color: var(--color-text);
+      svg {
+        width: 23px;
+        height: 23px;
+        flex-shrink: 0;
+        color: inherit;
+      }
       .sidebar__label {
         display: none;
       }
-
-      /* Tooltip label on hover */
       position: relative;
       &:hover {
         .sidebar__label {
           display: block;
           position: absolute;
-          left: calc(100% + #{$spacing-unit});
+          left: calc(150% + #{$spacing-unit});
           top: 50%;
           transform: translateY(-50%);
           background-color: $color-bg;
@@ -74,7 +89,7 @@ $transition-ease: ease-in-out;
     flex-direction: column;
     gap: $spacing-unit * 3;
     flex: 1;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-start;
   }
 
@@ -84,7 +99,7 @@ $transition-ease: ease-in-out;
     padding: $spacing-unit * 3 $spacing-unit * 4;
     color: $color-text;
     font-weight: $font-weight-medium;
-    border-radius: $border-radius;
+    // border-radius: $border-radius;
     text-decoration: none;
     width: 100%;
     box-sizing: border-box;
@@ -130,47 +145,59 @@ $transition-ease: ease-in-out;
   }
 }
 
-/* Responsive mobile */
-@media (max-width: 768px) {
-  .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    padding: $spacing-unit * 3;
-    flex-direction: row;
-    justify-content: flex-start;
-    box-shadow: none;
+// @media (max-width: 768px) {
+//   .sidebar {
+//     border-right: 1px solid rgba(255, 255, 255, 0.1);
+//     top: 0;
+//     left: 0;
+//     position: fixed;
+//     width: auto;
+//     height: auto;
+//     padding: $spacing-unit * 3;
+//     flex-direction: row;
+//     justify-content: flex-start;
+//     box-shadow: none;
+//     z-index: 100;
+//     &.collapsed {
+//       width: auto;
+//     }
 
-    &.collapsed {
-      width: 100%;
-    }
+//     .sidebar__menu {
+//       flex-direction: row;
+//       gap: $spacing-unit * 2;
+//       justify-content: space-around;
+//       align-items: center;
+//       width: auto;
+//     }
 
-    .sidebar__menu {
-      flex-direction: row;
-      gap: $spacing-unit * 2;
-      justify-content: space-around;
-      align-items: center;
-      width: 100%;
-    }
+//     .sidebar__item {
+//       flex-direction: column;
+//       padding: $spacing-unit * 2;
+//       justify-content: center;
+//       text-align: center;
 
-    .sidebar__item {
-      flex-direction: column;
-      padding: $spacing-unit * 2;
-      justify-content: center;
-      text-align: center;
+//       .sidebar__icon {
+//         margin: 0 0 $spacing-unit 0;
+//       }
 
-      .sidebar__icon {
-        margin: 0 0 $spacing-unit 0;
-      }
-
-      .sidebar__label {
-        display: block !important;
-        opacity: 1 !important;
-        position: static !important;
-        transform: none !important;
-        pointer-events: auto !important;
-        white-space: normal !important;
-      }
-    }
-  }
+//       .sidebar__label {
+//         display: block !important;
+//         opacity: 1 !important;
+//         position: static !important;
+//         transform: none !important;
+//         pointer-events: auto !important;
+//         white-space: normal !important;
+//       }
+//     }
+//   }
+// }
+.sidebar__item img {
+  width: 26px;
+  height: 26px;
+  filter: var(--icon-theme-color);
+  color: #333;
 }
+// .sidebar {
+//   transition: width $transition-time $transition-ease,
+//     opacity $transition-time $transition-ease;
+// }

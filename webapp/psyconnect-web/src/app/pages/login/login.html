@@ -6,25 +6,72 @@
         <p>Sign in to your account</p>
       </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <label for="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          formControlName="username"
-          placeholder="Enter your username"
-          required
-        />
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="onSubmit()"
+        [class.shake-errors]="shakeErrors"
+      >
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-with-error" [class.shake-errors]="shakeErrors">
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              placeholder="Enter your username"
+              required
+              [class.error]="
+                loginForm.get('username')?.touched &&
+                loginForm.get('username')?.invalid
+              "
+            />
+            <div
+              class="error-text"
+              *ngIf="
+                loginForm.get('username')?.touched &&
+                loginForm.get('username')?.invalid
+              "
+            >
+              <span *ngIf="loginForm.get('username')?.errors?.['required']">
+                Username is required
+              </span>
+              <span *ngIf="loginForm.get('username')?.errors?.['minlength']">
+                Username must be at least 6 characters
+              </span>
+            </div>
+          </div>
+        </div>
 
-        <label for="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          formControlName="password"
-          placeholder="Enter your password"
-          required
-        />
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-with-error" [class.shake-errors]="shakeErrors">
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              placeholder="Enter your password"
+              required
+              [class.error]="
+                loginForm.get('password')?.touched &&
+                loginForm.get('password')?.invalid
+              "
+            />
+            <div
+              class="error-text"
+              *ngIf="
+                loginForm.get('password')?.touched &&
+                loginForm.get('password')?.invalid
+              "
+            >
+              <span *ngIf="loginForm.get('password')?.errors?.['required']">
+                Password is required
+              </span>
+            </div>
+          </div>
+        </div>
 
+        <!-- Options -->
         <div class="form-options">
           <label> <input type="checkbox" /> Remember me </label>
           <a routerLink="/forgot-password">Forgot password?</a>
