@@ -1,5 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    HostListener,
+    Input,
+    Output,
+} from '@angular/core';
 import { ThemeService } from '../../services/theme/theme-service';
 
 @Component({
@@ -11,9 +17,7 @@ import { ThemeService } from '../../services/theme/theme-service';
 })
 export class AvatarMenuComponent {
   isOpen = false;
-  constructor(private themeService: ThemeService) {
-
-  }
+  constructor(private themeService: ThemeService) {}
   toggleMenu() {
     this.isOpen = !this.isOpen;
   }
@@ -28,5 +32,11 @@ export class AvatarMenuComponent {
   }
   logout() {
     this.logoutClicked.emit();
+  }
+  @HostListener('document:keydown', ['$event'])
+  onEsc(event: KeyboardEvent) {
+    if (event.key === 'Escape' && this.isOpen) {
+      this.isOpen = false;
+    }
   }
 }

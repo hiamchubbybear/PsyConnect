@@ -7,12 +7,17 @@ import { Login } from './pages/login/login';
 import { Notfound } from './pages/notfound/notfound';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
 import { SwipeDeckComponent } from './pages/swipe/swipe-deck';
+import { guestGuard } from './guards/guest-guard';
 
 export const routes: Routes = [
   { path: '', component: Homepage },
-  { path: 'auth/signup', component: MultiStepRegisterComponent },
-  { path: 'auth/login', component: Login },
-  { path: 'oauth2/callback', component: Login },
+  {
+    path: 'auth/signup',
+    component: MultiStepRegisterComponent,
+    canActivate: [guestGuard],
+  },
+  { path: 'auth/login', component: Login, canActivate: [guestGuard] },
+  { path: 'oauth2/callback', component: Login, canActivate: [guestGuard] },
 
   { path: 'chat-page', component: ChatComponent, canActivate: [authGuard] },
   { path: 'feature/feed', component: Notfound, canActivate: [authGuard] },

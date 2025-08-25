@@ -1,5 +1,81 @@
 @use "../../styles/variable" as v;
 
+// .footer {
+//   background-color: v.$color-bg;
+//   color: var(--header-text);
+//   padding: 2rem;
+//   font-family: v.$font-primary;
+//   border-top: 1px solid var(--footer-line);
+//   background: var(--header-bg);
+//   .footer-top {
+//     display: flex;
+//     justify-content: space-between;
+//     flex-wrap: wrap;
+//     gap: 2rem;
+//     margin-bottom: 1.5rem;
+
+//     .footer-brand {
+//       max-width: 300px;
+
+//       h2 {
+//         font-size: v.$font-size-xl;
+//         color: var(--header-text);
+//         margin-bottom: 0.5rem;
+//       }
+
+//       p {
+//         font-size: v.$font-size-sm;
+//         color: var(--footer-text);
+//       }
+//     }
+
+//     .footer-links {
+//       display: flex;
+//       gap: 3rem;
+
+//       .footer-column {
+//         h4 {
+//           font-size: v.$font-size-md;
+//           margin-bottom: 0.5rem;
+//           color: var(--header-text);
+//         }
+
+//         a {
+//           display: block;
+//           font-size: v.$font-size-sm;
+//           color: var(--footer-text);
+//           text-decoration: none;
+//           margin-bottom: 0.25rem;
+
+//           &:hover {
+//             color: var(--header-text);
+//           }
+//         }
+//       }
+//     }
+//   }
+
+//   .footer-bottom {
+//     text-align: center;
+//     font-size: v.$font-size-sm;
+//     color: var(--footer-text);
+//   }
+// }
+// @media (max-width: 768px) {
+//   .footer-top {
+//     flex-direction: column;
+//     align-items: flex-start;
+//   }
+
+//   .footer-links {
+//     flex-direction: column;
+//     gap: 1.5rem;
+//   }
+// }
+
+:host {
+  display: block;
+}
 
 .footer {
   background-color: v.$color-bg;
@@ -8,6 +84,10 @@
   font-family: v.$font-primary;
   border-top: 1px solid var(--footer-line);
   background: var(--header-bg);
+
+  display: flex;
+  flex-direction: column;
+
   .footer-top {
     display: flex;
     justify-content: space-between;
@@ -60,8 +140,11 @@
     text-align: center;
     font-size: v.$font-size-sm;
     color: var(--footer-text);
+    margin-top: auto; // 💡 đẩy footer-bottom xuống cuối nếu footer cao hơn nội dung
   }
 }
+
+/* Responsive */
 @media (max-width: 768px) {
   .footer-top {
     flex-direction: column;

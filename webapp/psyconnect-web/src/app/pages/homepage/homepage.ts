@@ -11,14 +11,14 @@ import { ThemeService } from '../../services/theme/theme-service';
 })
 export class Homepage {
   constructor(private themeService: ThemeService) {}
-  bannerUrl = 'assets/images/ndbanner-light.png';
+  bannerUrl = './assets/icon/banner-psyconnect-light.svg';
   ngOnInit(): void {
     if (this.themeService.getTheme() == 'light') {
-        console.log("Light banner");
+      console.log('Light banner');
 
-      this.bannerUrl = 'assets/images/white-second-poster.avif';
+      this.bannerUrl = './assets/icon/banner-psyconnect-dark-meme.svg';
     } else {
-      this.bannerUrl = 'assets/images/black-second-poster.avif';
+      this.bannerUrl = './assets/icon/banner-psyconnect-lightmeme.svg';
     }
   }
 }

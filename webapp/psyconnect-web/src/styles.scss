@@ -3,33 +3,32 @@
 
 @include mat.core();
 
-// Material theme - Optional, comment out if not using Material components
-/*
-html {
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$blue-palette,
-        tertiary: mat.$grey-palette,
-      ),
-    )
-  );
-}
-*/
 :root {
-  // Light theme - Minimalist palette
+  --color-surface-hover: #{rgba(0, 0, 0, 0.04)};
+  --color-accent-bg: #{rgba(59, 130, 246, 0.1)};
+  --shadow-card: #{v.$shadow-card};
+  --shadow-card-hover: #{v.$shadow-card-hover};
+  --shadow-dropdown: #{v.$shadow-dropdown};
+  --shadow-button-hover: #{v.$shadow-button-hover};
   --color-bg: #{v.$color-white};
   --color-bg-secondary: #{v.$color-gray-50};
+  --color-surface-low: #{v.$color-gray-100};
+  --color-surface-mid: #{v.$color-gray-200};
+  --color-surface-high: #{v.$color-gray-300};
+  --color-surface-overlay: #{v.$color-gray-400};
+
   --color-text: #{v.$color-text};
   --color-text-muted: #{v.$color-text-muted};
+  --color-text-hover: #b7b7ba;
+
   --color-primary: #{v.$color-primary};
   --color-primary-hover: #{v.$color-primary-hover};
   --color-accent: #{v.$color-accent};
   --color-accent-hover: #{v.$color-accent-hover};
+
   --color-border: #{v.$border-color};
   --color-surface: #{v.$color-white};
 
-  // Spacing
   --spacing-xs: #{v.$spacing-xs};
   --spacing-sm: #{v.$spacing-sm};
   --spacing-md: #{v.$spacing-md};
@@ -37,17 +36,12 @@ html {
   --spacing-xl: #{v.$spacing-xl};
   --spacing-2xl: #{v.$spacing-2xl};
 
-  // Shadows
   --shadow-sm: #{v.$shadow-sm};
   --shadow-md: #{v.$shadow-md};
 
-  // Transitions
   --transition-fast: #{v.$transition-fast};
   --transition-medium: #{v.$transition-medium};
 
-  // ===============================
-  // Header & Navbar - Light
-  // ===============================
   --header-bg: #{v.$color-gray-100};
   --header-text: #{v.$color-gray-900};
   --header-border: #{v.$color-gray-200};
@@ -57,7 +51,7 @@ html {
   --header-shadow: #{v.$shadow-sm};
   --footer-a: #{v.$footer-a};
   --footer-line: #d4d4d8;
-  // Dropdown - Light
+
   --dropdown-bg: #{v.$color-white};
   --dropdown-border: #{v.$color-gray-200};
   --dropdown-text: #{v.$color-gray-900};
@@ -67,26 +61,59 @@ html {
   --dropdown-badge-bg: #{v.$color-accent};
   --dropdown-badge-bg-hover: #{v.$color-accent-hover};
   --dropdown-badge-text: #{v.$color-white};
-  --color-text-hover: #b7b7ba;
+
   --color-bg-contrast: #000;
   --login-container: #{v.$color-gray-200};
+
+  --color-primary: #{v.$color-primary};
+  --color-primary-hover: #{v.$color-primary-hover};
+  --color-accent: #{v.$color-accent};
+  --color-accent-hover: #{v.$color-accent-hover};
+  --color-accent-bg: #{rgba(23, 23, 23, 0.05)};
+
+  --color-border: #{v.$border-color};
+
+  --color-success-bg: #f0fdf4;
+  --color-success-text: #{v.$color-success};
+  --color-success-border: #bbf7d0;
+
+  --color-error-bg: #fef2f2;
+  --color-error-text: #{v.$color-error};
+  --color-error-border: #fecaca;
+
+  --color-warning-bg: #fffbeb;
+  --color-warning-text: #{v.$color-warning};
+  --color-warning-border: #fed7aa;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="dark"] {
   --color-bg-contrast: #fff;
-  --color-bg: #151515;
-  --color-bg-secondary: #111111;
+  --color-bg: #1a1a1b;
+  --color-bg-secondary: #151515;
+  --color-surface-low: #151515;
+  --color-surface-mid: #1e1e20;
+  --color-surface-high: #27272a;
+  --color-surface-overlay: #2f2f33;
+
   --color-text: #fafafa;
   --color-text-muted: #a1a1aa;
+  --color-text-hover: #292930;
+
   --color-primary: #fafafa;
-  --color-primary-hover: #f4f4f5;
-  --color-accent: #60a5fa;
-  --color-accent-hover: #3b82f6;
+  --color-primary-hover: #f5f5f5;
+  --color-accent: #d4d4d4;
+  --color-accent-hover: #e5e5e5;
+  --color-accent-bg: #{rgba(255, 255, 255, 0.05)};
+
   --color-border: rgba(255, 255, 255, 0.08);
   --color-surface: #111111;
-  --color-text-hover: #292930;
-  // Header & Navbar - Dark
-  --header-bg: #27272a;
+
+  --header-bg: #1e1e20;
   --header-text: #fafafa;
   --header-border: #3f3f46;
   --header-link-text: #d4d4d8;
@@ -96,8 +123,7 @@ html {
   --footer-a: #d4d4d8;
   --footer-line: #3d3d43;
 
-  // Dropdown - Dark
-  --dropdown-bg: #111111;
+  --dropdown-bg: #1e1e20;
   --dropdown-border: #3f3f46;
   --dropdown-text: #fafafa;
   --dropdown-item-hover-bg: #27272a;
@@ -106,11 +132,27 @@ html {
   --dropdown-badge-bg: #3b82f6;
   --dropdown-badge-bg-hover: #2563eb;
   --dropdown-badge-text: #ffffff;
-}
 
-// ===========================================
-// 🏗️ BASE STYLES
-// ===========================================
+  --color-border: #{rgba(255, 255, 255, 0.08)};
+
+  --color-success-bg: #0f1419;
+  --color-success-text: #4ade80;
+  --color-success-border: #166534;
+
+  --color-error-bg: #1c0b0b;
+  --color-error-text: #f87171;
+  --color-error-border: #7f1d1d;
+
+  --color-warning-bg: #1a1206;
+  --color-warning-text: #fbbf24;
+  --color-warning-border: #92400e;
+
+  // Darker shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
 
 *,
 *::before,
@@ -148,9 +190,6 @@ a {
     transform: scale(1.02);
   }
 }
-// ===========================================
-// 🎯 FORM ELEMENTS
-// ===========================================
 
 input,
 select,
@@ -185,10 +224,6 @@ select {
   -moz-appearance: none;
 }
 
-// ===========================================
-// 📦 LAYOUT COMPONENTS
-// ===========================================
-
 .container {
   max-width: 1280px;
   margin: 0 auto;
@@ -199,10 +234,6 @@ select {
     padding: 0 var(--spacing-xl);
   }
 }
-
-// ===========================================
-// 🎨 COMPONENT CLASSES
-// ===========================================
 
 .button {
   display: inline-flex;
@@ -219,7 +250,6 @@ select {
   cursor: pointer;
   transition: all var(--transition-fast);
 
-  // Primary button
   &--primary {
     background: var(--color-primary);
     color: var(--color-bg);
@@ -236,7 +266,6 @@ select {
     }
   }
 
-  // Secondary button
   &--secondary {
     background: transparent;
     color: var(--color-primary);
@@ -262,11 +291,7 @@ select {
   }
 }
 
-// ===========================================
-// 📱 RESPONSIVE UTILITIES
-// ===========================================
-
-.visually-hidden {
+.visually- {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
@@ -278,17 +303,13 @@ select {
   border: 0 !important;
 }
 
-// ===========================================
-// 🎨 MINIMALIST LINK SYSTEM
-// ===========================================
-
 a {
-  color: #3f3f46; // Dark gray (main)
+  color: #3f3f46;
   text-decoration: none;
   transition: color 0.2s ease, text-shadow 0.2s ease;
 
   &:hover {
-    color: #27272a; // Slightly darker
+    color: #27272a;
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 2px;
@@ -296,17 +317,17 @@ a {
   }
 
   &:focus {
-    outline: 2px solid #71717a; // Muted gray focus
+    outline: 2px solid #71717a;
     outline-offset: 2px;
     border-radius: 2px;
   }
 
   &:visited {
-    color: #52525b; // Medium gray
+    color: #52525b;
   }
 
   [data-theme="dark"] & {
-    color: #e4e4e7; // Light gray
+    color: #e4e4e7;
 
     &:hover {
       color: #f4f4f5;
@@ -318,10 +339,6 @@ a {
     }
   }
 }
-
-// ===========================================
-// 🎯 LINK VARIANTS
-// ===========================================
 
 .link {
   color: #3f3f46;
@@ -343,10 +360,10 @@ a {
   }
 
   &--accent {
-    color: #6d28d9; // Subtle purple for accent
+    color: #6d28d9;
 
     &:hover {
-      color: #5b21b6; // Darker purple
+      color: #5b21b6;
       text-decoration: underline;
     }
   }
@@ -421,10 +438,6 @@ a {
   }
 }
 
-// ===========================================
-// 📦 CSS VARIABLES - Minimalist Palette
-// ===========================================
-
 :root {
   --link-primary: #3f3f46;
   --link-primary-hover: #27272a;
@@ -443,4 +456,51 @@ a {
   --link-accent: #c4b5fd;
   --link-accent-hover: #a78bfa;
   --link-visited: #a1a1aa;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+}
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: v.$font-primary;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+}
+.btn {
+  @include button-base;
+  padding: v.$spacing-md v.$spacing-xl;
+  font-size: v.$font-size-md;
+  font-weight: 500;
+  border-radius: v.$border-radius-md;
+  transition: all v.$transition-medium;
+  cursor: pointer;
+  border: 1px solid var(--color-accent);
+
+  &:focus {
+    outline: 1px solid #525252;
+    outline-offset: 2px;
+  }
+  &.btn-primary {
+    background: var(--color-bg);
+    color: var(--color-white);
+    border: 2px solid var(--color-border);
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-hover);
+      border-color: var(--color-accent-hover);
+      color: var(--color-text-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-button-hover);
+    }
+  }
 }

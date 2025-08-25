@@ -1,53 +1,57 @@
-<header class="header" [class.hidden]="isHidden">
-  <div class="header-left">
-    <a href="/" class="logo">Calme</a>
-  </div>
-
-  <nav class="header-center">
-    <a href="/feature">Feature</a>
-    <a href="/therapist">Therapist</a>
-    <a href="/community">Community</a>
-    <a href="/about">About</a>
-  </nav>
-
-  <div class="header-right" *ngIf="auth.isLoggedIn(); else guest">
-    <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
-      <app-avatar-menu
-        [userAvatarUrl]="userAvatarUrl"
-        [userName]="userName"
-        (logoutClicked)="logout()"
-      >
-      </app-avatar-menu>
-    </ng-container>
-  </div>
-
-  <ng-template #guest>
-    <div class="header-right">
-      <a href="/auth/login" class="auth">Login</a>
-      <a href="/auth/signup" class="auth signup">Sign Up</a>
+<header [class.mini]="isMini">
+  <header class="header" [ngClass]="{ mini: isMini, full: !isMini }">
+    <div class="loader-bar" *ngIf="loaderService.loading$ | async"></div>
+    <div class="header-left">
+      <a href="/" class="logo">Psyconnect</a>
     </div>
-  </ng-template>
 
-  <div class="menu-toggle" (click)="toggleMenu()">☰</div>
+    <nav class="header-center">
+      <a href="/feature">Feature</a>
+      <a href="/therapist">Therapist</a>
+      <a href="/community">Community</a>
+      <a href="/about">About</a>
+    </nav>
 
-  <div class="mobile-menu" [class.open]="isMenuOpen">
-    <a href="/feature">Feature</a>
-    <a href="/therapist">Therapist</a>
-    <a href="/community">Community</a>
-    <a href="/about">About</a>
+    <div class="header-right" *ngIf="auth.isLoggedIn(); else guest">
+      <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
+        <app-avatar-menu
+          [userAvatarUrl]="userAvatarUrl"
+          [userName]="userName"
+          (logoutClicked)="logout()"
+        >
+        </app-avatar-menu>
+      </ng-container>
+    </div>
 
-    <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
-      <app-avatar-menu
-        [userAvatarUrl]="userAvatarUrl"
-        [userName]="userName"
-        (logoutClicked)="logout()"
-      >
-      </app-avatar-menu>
-    </ng-container>
-
-    <ng-template #guestMobile>
-      <a href="/auth/login">Login</a>
-      <a href="/auth/signup" class="signup">Sign Up</a>
+    <ng-template #guest>
+      <div class="header-right">
+        <a href="/auth/login" class="auth">Login</a>
+        <a href="/auth/signup" class="auth signup">Sign Up</a>
+      </div>
     </ng-template>
-  </div>
+
+    <div class="menu-toggle" (click)="toggleMenu()">☰</div>
+
+    <div class="mobile-menu" [class.open]="isMenuOpen">
+      <a href="/feature">Feature</a>
+      <a href="/therapist">Therapist</a>
+      <a href="/community">Community</a>
+      <a href="/about">About</a>
+
+      <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
+        <app-avatar-menu
+          [userAvatarUrl]="userAvatarUrl"
+          [userName]="userName"
+          (logoutClicked)="logout()"
+        >
+        </app-avatar-menu>
+      </ng-container>
+
+      <ng-template #guestMobile>
+        <a href="/auth/login">Login</a>
+        <a href="/auth/signup" class="signup">Sign Up</a>
+      </ng-template>
+    </div>
+    <div class="route-loader" *ngIf="loading$ | async"></div>
+  </header>
 </header>

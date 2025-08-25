@@ -8,7 +8,8 @@ import {
     OnInit,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
-import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
 import {
@@ -16,6 +17,7 @@ import {
     UserProfile,
 } from '../../services/profile/profile-service';
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
+import { HeaderStateService } from './header-state';
 
 @Component({
   selector: 'app-header',
@@ -26,26 +28,34 @@ import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit, OnDestroy {
+  isMini = false;
+
   userAvatarUrl = 'assets/images/avatar.jpeg';
   userName = 'Anonymous';
   isMenuOpen = false;
   isHidden = false;
   lastScrollTop = 30;
-
+  loading$!: Observable<boolean>;
   private userSubscription?: Subscription;
 
   constructor(
+    public headerState: HeaderStateService,
     public auth: Auth,
     private userContext: UserContextService,
-    private loaderService: LoaderService,
-    private cdr: ChangeDetectorRef
+    public loaderService: LoaderService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit() {
+    this.userSubscription = this.headerState.isMini$.subscribe((value) => {
+      this.isMini = value;
+      this.cdr.markForCheck();
+    });
+    this.loading$ = this.loaderService.loading$;
     this.userSubscription = this.userContext.user$.subscribe(
       (user: UserProfile | null) => {
         this.updateUserInfo(user);
-
         this.cdr.detectChanges();
       }
     );
@@ -96,15 +106,14 @@ export class Header implements OnInit, OnDestroy {
   }
 
   @HostListener('window:scroll', [])
-  onScroll(): void {
+  @HostListener('window:scroll', [])
+  onScroll() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
-
-    if (scrollTop > this.lastScrollTop && scrollTop > 80) {
-      this.isHidden = true;
-    } else {
-      this.isHidden = false;
+    if (scrollTop > this.lastScrollTop + 1) {
+      this.headerState.setMini(true);
+    } else if (scrollTop < this.lastScrollTop - 10) {
+      this.headerState.setMini(false);
     }
-
     this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
     this.cdr.markForCheck();
   }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth/auth.service';
+import { Auth } from '../../services/auth/auth';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth/auth.service';
 export class SidebarComponent {
   isCollapsed = true;
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: Auth) {}
 
   get showSidebar(): boolean {
     return this.authService.isLoggedIn();

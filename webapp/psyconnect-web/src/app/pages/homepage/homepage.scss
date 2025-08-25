@@ -37,8 +37,20 @@
     img {
       max-width: 100%;
       height: auto;
+      filter: invert(1);
     }
   }
+}
+.hero-image {
+  background-color: var(--bg-color);
+  -webkit-mask-image: url("/assets/hero.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url("/assets/hero.svg");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
 
 .features {
@@ -87,7 +99,6 @@
 
   .preview-image {
     flex: 1;
-
     img {
       width: 100%;
     }
@@ -123,10 +134,10 @@
   h2 {
     font-family: v.$font-primary;
     font-size: v.$font-size-xl;
-    color: var(--color-text);
+    color: v.$color-white;
   }
   p {
-    color: var(--color-text);
+    color: v.$color-white;
   }
   .cta-buttons {
     margin-top: 2rem;
