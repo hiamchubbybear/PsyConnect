@@ -1,11 +1,13 @@
 package dev.psyconnect.identity_service.service;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.RequiredArgsConstructor;
+import java.text.ParseException;
+
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jwt.JWTClaimsSet;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

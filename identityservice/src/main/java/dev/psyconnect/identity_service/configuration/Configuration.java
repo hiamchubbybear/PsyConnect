@@ -118,12 +118,7 @@ public class Configuration {
 
                                 redirectUrl = String.format(
                                         "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s&platform=%s",
-                                        oauth2RedirectBase,
-                                        registrationId,
-                                        email,
-                                        avatarUri,
-                                        platform
-                                );
+                                        oauth2RedirectBase, registrationId, email, avatarUri, platform);
 
                                 response.sendRedirect(redirectUrl);
                             } catch (Exception e) {
