@@ -6,13 +6,12 @@ import {
     Event,
     NavigationCancel,
     NavigationEnd,
-    NavigationError,
     NavigationStart,
     Router,
     RouterModule,
     RouterOutlet
 } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { Footer } from './components/footer/footer';
 import { Header } from './components/header/header';
 import { SidebarComponent } from './components/sidebar/sidebar';
@@ -40,7 +39,6 @@ import { ThemeService } from './services/theme/theme-service';
     ReactiveFormsModule,
     CommonModule,
     RouterModule,
-
   ],
   animations: [fadeRouteAnimation],
   templateUrl: './app.html',
@@ -48,6 +46,8 @@ import { ThemeService } from './services/theme/theme-service';
 })
 export class App implements OnInit {
   showSidebar: boolean = false;
+  showFooter = true;
+
   constructor(
     private renderer: Renderer2,
     private themeService: ThemeService,
@@ -57,7 +57,15 @@ export class App implements OnInit {
     private authState: AuthStateService,
     private router: Router,
     private loader: LoaderService
-  ) {}
+  ) {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        const url = event.urlAfterRedirects;
+        this.showFooter =
+          url === '/' || url.startsWith('/about') || url.startsWith('/contact');
+      });
+  }
   private routerSub?: Subscription;
   isLoading = false;
 
@@ -81,7 +89,7 @@ export class App implements OnInit {
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
-        event instanceof NavigationError
+        event instanceof NavigationEnd
       ) {
         this.loader.hide();
       }

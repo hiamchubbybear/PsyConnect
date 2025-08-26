@@ -6,12 +6,13 @@ import {
     Input,
     Output,
 } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { ThemeService } from '../../services/theme/theme-service';
 
 @Component({
   selector: 'app-avatar-menu',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './avatar-menu.html',
   styleUrl: './avatar-menu.scss',
 })
