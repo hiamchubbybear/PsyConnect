@@ -1,0 +1,137 @@
+@use "../../styles/variable" as v;
+
+/* ===============================
+   Avatar Dropdown Menu
+================================= */
+
+.avatar-menu {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger button */
+.avatar-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; // 8px
+  cursor: pointer;
+  padding: 0.5rem 0.75rem; // 8px 12px
+  border-radius: v.$btn-border-radius;
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+    transform: translateY(-1px);
+    cursor: pointer;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .user-name {
+    font-weight: 500;
+    font-size: v.$font-size-sm;
+    color: var(--color-text);
+    font-family: v.$font-primary;
+  }
+}
+
+/* Dropdown Panel */
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 240px;
+  background: var(--dropdown-bg);
+  border: v.$btn-border-width solid var(--dropdown-border);
+  border-radius: v.$btn-border-radius;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+
+  .dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+
+    .avatar-lg {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-info {
+      .name {
+        font-weight: 600;
+        font-size: v.$font-size-sm;
+        color: var(--color-text);
+      }
+      .email {
+        font-weight: 400;
+        font-size: v.$font-size-sm;
+        color: var(--color-text-light);
+      }
+    }
+  }
+
+  hr {
+    margin: 0;
+    border: none;
+    border-top: 1px solid var(--color-gray);
+  }
+
+  .dropdown-section {
+    display: flex;
+    flex-direction: column;
+
+    a {
+      padding: 0.75rem 1rem;
+      font-size: v.$font-size-sm;
+      font-weight: 400;
+      color: var(--color-text);
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.04);
+        color: var(--color-primary);
+        cursor: pointer;
+      }
+
+      &:focus {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+      }
+    }
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .dropdown-panel {
+    width: 280px;
+  }
+}

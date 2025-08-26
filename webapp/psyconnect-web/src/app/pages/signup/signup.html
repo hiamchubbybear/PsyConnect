@@ -22,7 +22,11 @@
   <!-- Steps Content -->
   <div class="steps-container">
     <!-- Step 1: Avatar -->
-    <div *ngIf="currentStep === 0" class="step-content">
+    <div
+      *ngIf="currentStep === 0"
+      class="step-content"
+      [class.shake-errors]="shakeErrors"
+    >
       <form [formGroup]="avatarForm" class="step-form">
         <div class="step-header">
           <h2>Choose Your Profile Picture</h2>
@@ -56,7 +60,11 @@
     </div>
 
     <!-- Step 2: Name -->
-    <div *ngIf="currentStep === 1" class="step-content">
+    <div
+      *ngIf="currentStep === 1"
+      class="step-content"
+      [class.shake-errors]="shakeErrors"
+    >
       <form [formGroup]="nameForm" class="step-form">
         <div class="step-header">
           <h2>What's Your Name?</h2>
@@ -65,17 +73,33 @@
 
         <div class="form-fields">
           <div class="form-group">
-            <input
-              #firstnameInput
-              type="text"
-              formControlName="firstName"
-              placeholder="First Name"
-              class="form-input"
-              [class.error]="
-                nameForm.get('firstName')?.invalid &&
-                nameForm.get('firstName')?.touched
-              "
-            />
+            <div class="input-with-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="icon"
+              >
+                <path d="M20 21a8 8 0 0 0-16 0" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+
+              <input
+                #firstnameInput
+                type="text"
+                formControlName="firstName"
+                placeholder="First Name"
+                class="form-input with-icon"
+                [class.error]="
+                  nameForm.get('firstName')?.invalid &&
+                  nameForm.get('firstName')?.touched
+                "
+              />
+            </div>
             <div
               *ngIf="
                 nameForm.get('firstName')?.invalid &&
@@ -93,16 +117,32 @@
           </div>
 
           <div class="form-group">
-            <input
-              type="text"
-              formControlName="lastName"
-              placeholder="Last Name"
-              class="form-input"
-              [class.error]="
-                nameForm.get('lastName')?.invalid &&
-                nameForm.get('lastName')?.touched
-              "
-            />
+            <div class="input-with-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="icon"
+              >
+                <path d="M3 17c3.6-3 7.2 3 10.8 0s7.2-6 10.8-3" />
+                <path d="M3 12c1.6-1.2 3.2-2.4 4.8 0s3.2 1.2 4.8 0" />
+              </svg>
+
+              <input
+                type="text"
+                formControlName="lastName"
+                placeholder="Last Name"
+                class="form-input with-icon"
+                [class.error]="
+                  nameForm.get('lastName')?.invalid &&
+                  nameForm.get('lastName')?.touched
+                "
+              />
+            </div>
             <div
               *ngIf="
                 nameForm.get('lastName')?.invalid &&
@@ -123,7 +163,11 @@
     </div>
 
     <!-- Step 3: Birth & Gender -->
-    <div *ngIf="currentStep === 2" class="step-content">
+    <div
+      *ngIf="currentStep === 2"
+      class="step-content"
+      [class.shake-errors]="shakeErrors"
+    >
       <form [formGroup]="personalForm" class="step-form">
         <div class="step-header">
           <h2>Personal Information</h2>
@@ -132,17 +176,38 @@
 
         <div class="form-fields">
           <div class="form-group">
-            <input
-              #dobInput
-              type="date"
-              formControlName="dateOfBirth"
-              class="form-input"
-              (change)="onDateChange($event)"
-              [class.error]="
-                personalForm.get('dateOfBirth')?.invalid &&
-                personalForm.get('dateOfBirth')?.touched
-              "
-            />
+            <div class="input-with-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-cake-slice-icon lucide-cake-slice icon"
+              >
+                <path d="M16 13H3" />
+                <path d="M16 17H3" />
+                <path
+                  d="m7.2 7.9-3.388 2.5A2 2 0 0 0 3 12.01V20a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8.654c0-2-2.44-6.026-6.44-8.026a1 1 0 0 0-1.082.057L10.4 5.6"
+                />
+                <circle cx="9" cy="7" r="2" />
+              </svg>
+              <input
+                #dobInput
+                type="date"
+                formControlName="dateOfBirth"
+                class="form-input with-icon"
+                (change)="onDateChange($event)"
+                [class.error]="
+                  personalForm.get('dateOfBirth')?.invalid &&
+                  personalForm.get('dateOfBirth')?.touched
+                "
+              />
+            </div>
             <div
               *ngIf="
                 personalForm.get('dateOfBirth')?.invalid &&
@@ -160,7 +225,6 @@
               >
             </div>
           </div>
-
           <div class="form-group">
             <label for="gender" class="form-label">Gender</label>
             <div class="custom-select-wrapper">
@@ -198,7 +262,11 @@
     </div>
 
     <!-- Step 4: Address -->
-    <div *ngIf="currentStep === 3" class="step-content">
+    <div
+      *ngIf="currentStep === 3"
+      class="step-content"
+      [class.shake-errors]="shakeErrors"
+    >
       <form [formGroup]="addressForm" class="step-form">
         <div class="step-header">
           <h2>Where Are You Located?</h2>
@@ -207,19 +275,35 @@
 
         <div class="form-fields">
           <div class="form-group address-group">
-            <input
-              #addressInput
-              type="text"
-              formControlName="address"
-              placeholder="Enter your full address"
-              class="form-input"
-              (input)="onAddressInput($event)"
-              [class.error]="
-                addressForm.get('address')?.invalid &&
-                addressForm.get('address')?.touched
-              "
-            />
-
+            <div class="input-with-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather feather-map-pin icon"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <input
+                #addressInput
+                type="text"
+                formControlName="address"
+                placeholder="Enter your full address"
+                class="form-input"
+                (input)="onAddressInput($event)"
+                [class.error]="
+                  addressForm.get('address')?.invalid &&
+                  addressForm.get('address')?.touched
+                "
+              />
+            </div>
             <div
               *ngIf="addressSuggestions.length > 0"
               class="suggestions-dropdown"
@@ -250,7 +334,11 @@
     </div>
 
     <!-- Step 5: Email -->
-    <div *ngIf="currentStep === 4" class="step-content">
+    <div
+      *ngIf="currentStep === 4"
+      class="step-content"
+      [class.shake-errors]="shakeErrors"
+    >
       <form [formGroup]="emailForm" class="step-form">
         <div class="step-header">
           <h2>Email Address</h2>
@@ -260,7 +348,21 @@
         <div class="form-fields">
           <div class="form-group">
             <div class="input-with-icon">
-              <i class="icon-email"></i>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather feather-at-sign icon"
+              >
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path>
+              </svg>
               <input
                 #emailInput
                 type="email"
@@ -298,7 +400,11 @@
     </div>
 
     <!-- Step 6: Role -->
-    <div *ngIf="currentStep === 5" class="step-content">
+    <div
+      *ngIf="currentStep === 5"
+      class="step-content"
+      [class.shake-errors]="shakeErrors"
+    >
       <form [formGroup]="roleForm" class="step-form">
         <div class="step-header">
           <h2>Choose Your Role</h2>
@@ -349,7 +455,11 @@
     </div>
 
     <!-- Step 7: Credentials -->
-    <div *ngIf="currentStep === 6" class="step-content">
+    <div
+      *ngIf="currentStep === 6"
+      class="step-content"
+      [class.shake-errors]="shakeErrors"
+    >
       <form [formGroup]="credentialsForm" class="step-form">
         <div class="step-header">
           <h2>Create Your Account</h2>
@@ -359,7 +469,21 @@
         <div class="form-fields">
           <div class="form-group">
             <div class="input-with-icon">
-              <i class="icon-user"></i>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather feather-user icon"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
               <input
                 #usernameInput
                 type="text"
@@ -395,7 +519,22 @@
 
           <div class="form-group">
             <div class="input-with-icon">
-              <i class="icon-lock"></i>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-lock-icon lucide-lock icon"
+              >
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <i class="icon-lock icon"></i>
               <input
                 type="password"
                 formControlName="password"
@@ -432,7 +571,23 @@
 
           <div class="form-group">
             <div class="input-with-icon">
-              <i class="icon-lock"></i>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-lock-keyhole-icon lucide-lock-keyhole icon"
+              >
+                <circle cx="12" cy="16" r="1" />
+                <rect x="3" y="10" width="18" height="12" rx="2" />
+                <path d="M7 10V7a5 5 0 0 1 10 0v3" />
+              </svg>
+              <i class="icon"></i>
               <input
                 type="password"
                 formControlName="confirmPassword"
@@ -452,6 +607,24 @@
               <span *ngIf="credentialsForm.errors?.['passwordMismatch']"
                 >Passwords do not match</span
               >
+            </div>
+          </div>
+          <div class="form-group terms">
+            <label class="checkbox">
+              <input type="checkbox" formControlName="acceptTerms" />
+              <span
+                >I agree to the
+                <a href="/terms" target="_blank">Terms & Conditions</a></span
+              >
+            </label>
+            <div
+              *ngIf="
+                credentialsForm.get('acceptTerms')?.invalid &&
+                credentialsForm.get('acceptTerms')?.touched
+              "
+              class="error-text"
+            >
+              You must accept the terms to continue
             </div>
           </div>
         </div>

@@ -20,7 +20,6 @@ public class UserProfileUpdateResponse {
     String lastName;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate dob;
 
     String address;

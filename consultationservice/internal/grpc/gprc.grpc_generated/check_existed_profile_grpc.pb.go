@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CheckProfileService_CheckProfileExists_FullMethodName = "/profile.CheckProfileService/CheckProfileExists"
+	CheckProfileService_CheckProfileExists_FullMethodName   = "/profile.CheckProfileService/CheckProfileExists"
+	CheckProfileService_CheckProfileExistsV1_FullMethodName = "/profile.CheckProfileService/CheckProfileExistsV1"
 )
 
 // CheckProfileServiceClient is the client API for CheckProfileService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CheckProfileServiceClient interface {
 	CheckProfileExists(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileResponse, error)
+	CheckProfileExistsV1(ctx context.Context, in *ProfileRequestV1, opts ...grpc.CallOption) (*ProfileResponseV1, error)
 }
 
 type checkProfileServiceClient struct {
@@ -47,11 +49,22 @@ func (c *checkProfileServiceClient) CheckProfileExists(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *checkProfileServiceClient) CheckProfileExistsV1(ctx context.Context, in *ProfileRequestV1, opts ...grpc.CallOption) (*ProfileResponseV1, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProfileResponseV1)
+	err := c.cc.Invoke(ctx, CheckProfileService_CheckProfileExistsV1_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CheckProfileServiceServer is the server API for CheckProfileService service.
 // All implementations must embed UnimplementedCheckProfileServiceServer
 // for forward compatibility.
 type CheckProfileServiceServer interface {
 	CheckProfileExists(context.Context, *ProfileRequest) (*ProfileResponse, error)
+	CheckProfileExistsV1(context.Context, *ProfileRequestV1) (*ProfileResponseV1, error)
 	mustEmbedUnimplementedCheckProfileServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedCheckProfileServiceServer struct{}
 
 func (UnimplementedCheckProfileServiceServer) CheckProfileExists(context.Context, *ProfileRequest) (*ProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckProfileExists not implemented")
+}
+func (UnimplementedCheckProfileServiceServer) CheckProfileExistsV1(context.Context, *ProfileRequestV1) (*ProfileResponseV1, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckProfileExistsV1 not implemented")
 }
 func (UnimplementedCheckProfileServiceServer) mustEmbedUnimplementedCheckProfileServiceServer() {}
 func (UnimplementedCheckProfileServiceServer) testEmbeddedByValue()                             {}
@@ -104,6 +120,24 @@ func _CheckProfileService_CheckProfileExists_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CheckProfileService_CheckProfileExistsV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProfileRequestV1)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CheckProfileServiceServer).CheckProfileExistsV1(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CheckProfileService_CheckProfileExistsV1_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CheckProfileServiceServer).CheckProfileExistsV1(ctx, req.(*ProfileRequestV1))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CheckProfileService_ServiceDesc is the grpc.ServiceDesc for CheckProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var CheckProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckProfileExists",
 			Handler:    _CheckProfileService_CheckProfileExists_Handler,
+		},
+		{
+			MethodName: "CheckProfileExistsV1",
+			Handler:    _CheckProfileService_CheckProfileExistsV1_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

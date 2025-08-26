@@ -5,14 +5,21 @@ import (
 	"consultationservice/internal/db"
 	handlers "consultationservice/internal/handler"
 	"consultationservice/internal/kafka"
+	"consultationservice/internal/redis"
 	"consultationservice/internal/repository"
 	"consultationservice/internal/route"
+	"log"
 )
 
 func main() {
 	db.InitDB()
 	env := bootstrap.LoadEnv()
-	repomanager := repository.NewRepositoryManager(env)
+	redisClient, err := redis.NewRedisStore(env)
+	if err != nil {
+		log.Println(err)
+		panic(err)
+	}
+	repomanager := repository.NewRepositoryManager(env, redisClient)
 
 	sessionHandler := handlers.NewSessionHandler(env, repomanager)
 	therapistHandler := handlers.NewTherapistHandler(env, repomanager)

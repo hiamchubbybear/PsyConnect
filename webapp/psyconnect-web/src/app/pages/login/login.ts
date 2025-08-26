@@ -1,21 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { Auth } from '../../services/auth/auth';
+import { AuthStateService } from '../../services/auth/auth-state.service';
 import { LoaderService } from '../../services/loader/loader';
 import { Profile, ProfileResponse } from '../../services/profile/profile';
 import {
-  UserContextService,
-  UserProfile,
-} from '../../services/profile/profile-service.service';
+    UserContextService,
+    UserProfile,
+} from '../../services/profile/profile-service';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
 
@@ -31,7 +32,7 @@ export class Login implements OnInit {
   error: string | null = null;
   loading = false;
   apiUrl = environment.apiUrl;
-
+  shakeErrors = false;
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
@@ -39,7 +40,8 @@ export class Login implements OnInit {
     private router: Router,
     private userContext: UserContextService,
     private loaderService: LoaderService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private authState: AuthStateService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(6)]],
@@ -54,6 +56,7 @@ export class Login implements OnInit {
   onSubmit(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      this.triggerShake();
       return;
     }
 
@@ -62,6 +65,7 @@ export class Login implements OnInit {
     this.auth.login(this.loginForm.value).subscribe({
       next: () => this.loadUserProfile(),
       error: () => {
+        this.authState.showSidebar();
         this.setError('Invalid email or password.');
         this.setLoading(false);
         this.toastService.show(`${this.error}`, 'Failed', ToastType.Error);
@@ -131,5 +135,18 @@ export class Login implements OnInit {
 
   private setError(message: string): void {
     this.error = message;
+  }
+  private triggerShake() {
+    this.shakeErrors = false;
+    requestAnimationFrame(() => {
+      this.shakeErrors = true;
+      setTimeout(() => (this.shakeErrors = false), 320);
+    });
+  }
+  @HostListener('document:keydown', ['$event'])
+  onEsc(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onSubmit();
+    }
   }
 }

@@ -84,7 +84,21 @@ func (h *ClientHandler) PutClientHandler(c *gin.Context) {
 	_, error := h.RepoManager.SwipeRepo.FilterAllTherapist(profileId)
 	if error != nil {
 		log.Println(err)
-		apiresponse.ErrorHandler(c, 400, "Failed to update therapist recommendataion field")
+		// apiresponse.ErrorHandler(c, 400, "Failed to update therapist recommendataion field")
+		// return
+	}
+	apiresponse.NewApiResponse(c, res)
+}
+func (h *ClientHandler) GetClientByIdHandler(c *gin.Context) {
+	profileID := c.Param("id")
+	if profileID == "" {
+		apiresponse.ErrorHandler(c, 404, "Your token is unavailable or profile id not found")
+		return
+	}
+	res, err := h.RepoManager.ClientRepo.FindClientMatchingProfile(profileID)
+	if err != nil {
+		apiresponse.ErrorHandler(c, 404, err.Error())
+		return
 	}
 	apiresponse.NewApiResponse(c, res)
 }

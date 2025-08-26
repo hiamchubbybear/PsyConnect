@@ -89,7 +89,15 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.initializeForms();
   }
+  shakeErrors = false;
 
+  private triggerShake() {
+    this.shakeErrors = false;
+    requestAnimationFrame(() => {
+      this.shakeErrors = true;
+      setTimeout(() => (this.shakeErrors = false), 320);
+    });
+  }
   initializeForms() {
     this.avatarForm = this.fb.group({
       avatar: [''],
@@ -129,6 +137,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
           ],
         ],
         confirmPassword: ['', Validators.required],
+        acceptTerms: [false, Validators.requiredTrue],
       },
       { validators: this.passwordMatchValidator }
     );
@@ -181,6 +190,8 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
         this.currentStep++;
       } else {
         this.getCurrentForm().markAllAsTouched();
+        this.triggerShake();
+        this.scrollToFirstInvalid();
       }
     }
   }
@@ -234,6 +245,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   async submitFinalRegister() {
     if (this.getCurrentForm().invalid) {
       this.getCurrentForm().markAllAsTouched();
+      this.triggerShake();
       return;
     }
 
@@ -324,5 +336,11 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   }
   get progressPercentage(): number {
     return ((this.currentStep + 1) / this.totalSteps) * 100;
+  }
+  private scrollToFirstInvalid() {
+    setTimeout(() => {
+      const el = document.querySelector('.form-input.error');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 0);
   }
 }

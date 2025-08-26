@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { SecureStorageService } from '../../encrypt/secure';
+import { AuthStateService } from './auth-state.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +11,12 @@ import { environment } from '../../../environments/environment';
 export class Auth {
   apiUrl = `${environment.apiUrl}`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private secureStorage: SecureStorageService,
+    private authState: AuthStateService
+  ) {}
+
 
   login(credentials: {
     username: string;
@@ -25,20 +32,22 @@ export class Auth {
           let resToken = res?.data.token;
           if (resToken != null && resToken != '') {
             console.log(resToken);
-            localStorage.setItem('access_token', res?.data.token);
+            this.secureStorage.setItem('access_token', res?.data.token);
           }
         })
       );
   }
   logout(): void {
-    localStorage.removeItem('access_token');
+    this.secureStorage.removeItem('access_token');
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('access_token');
-  }
+  const token = this.secureStorage.getItem('access_token');
+  return !!(token && token !== 'null' && token !== 'undefined');
+}
+
   getToken(): string | null {
-    return localStorage.getItem('access_token');
+    return this.secureStorage.getItem('access_token');
   }
 
   loginWithGoogle(token: string): Observable<any> {
@@ -68,4 +77,5 @@ export class Auth {
       params,
     });
   }
+
 }

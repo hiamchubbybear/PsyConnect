@@ -1,4 +1,4 @@
-@use '../../styles/variable' as v;
+@use "../../styles/variable" as v;
 
 .not-found {
   display: flex;
@@ -6,7 +6,8 @@
   justify-content: center;
   height: 100vh;
   text-align: center;
-  background-color: v.$color-bg;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-family: v.$font-primary;
 
   .not-found-content {
@@ -16,19 +17,19 @@
     h1 {
       font-size: 6rem;
       margin: 0;
-      color: v.$color-primary;
+      color: var(--color-text);
       font-weight: 700;
     }
 
     h2 {
       font-size: v.$font-size-xl;
       margin: 1rem 0;
-      color: v.$color-text;
+      color: var(--color-text);
     }
 
     p {
       font-size: v.$font-size-md;
-      color: v.$color-text;
+      color: var(--color-text);
       margin-bottom: 2rem;
     }
 
