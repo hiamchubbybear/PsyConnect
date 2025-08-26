@@ -1,17 +1,19 @@
 package dev.psyconnect.identity_service.controller;
 
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
+
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
 import dev.psyconnect.identity_service.dto.response.TokenClaimsResponse;
 import dev.psyconnect.identity_service.service.AuthenticationService;
 import dev.psyconnect.identity_service.service.ExtractClaimService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth/token")
@@ -57,8 +59,8 @@ public class ExtractClaimController {
     }
 
     @PostMapping("/token/claims")
-    public ApiResponse<TokenClaimsResponse> extractClaims(@RequestBody String token) throws ParseException, JOSEException {
+    public ApiResponse<TokenClaimsResponse> extractClaims(@RequestBody String token)
+            throws ParseException, JOSEException {
         return new ApiResponse<>(authenticationService.extractClaims(token));
     }
-
 }

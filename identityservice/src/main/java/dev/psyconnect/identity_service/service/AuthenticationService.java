@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
 
-import dev.psyconnect.identity_service.dto.response.TokenClaimsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +28,7 @@ import dev.psyconnect.identity_service.dto.request.Oauth2AuthenticationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
 import dev.psyconnect.identity_service.dto.response.LogoutRequest;
 import dev.psyconnect.identity_service.dto.response.LogoutResponse;
+import dev.psyconnect.identity_service.dto.response.TokenClaimsResponse;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.model.Account;
