@@ -1,0 +1,35 @@
+.account-sidebar {
+  width: 240px;
+  padding: 1rem;
+  border-right: 1px solid #eaeaea;
+  position: sticky;
+  top: 80px; // tránh đè lên header
+  height: calc(100vh - 80px);
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: 1rem;
+
+      a {
+        display: block;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #007bff;
+        }
+
+        &.active {
+          color: #007bff;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}

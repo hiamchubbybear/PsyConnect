@@ -1,0 +1,11 @@
+<nav class="account-sidebar">
+  <ul>
+    <li *ngFor="let sec of sections">
+      <a
+        (click)="scrollTo(sec.id)"
+        [class.active]="activeSection === sec.id">
+        {{ sec.label }}
+      </a>
+    </li>
+  </ul>
+</nav>

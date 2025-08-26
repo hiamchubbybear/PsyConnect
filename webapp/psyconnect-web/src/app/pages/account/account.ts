@@ -1,15 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
+    FormBuilder,
+    FormGroup,
+    ReactiveFormsModule,
+    Validators,
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AppRoutingModule } from '../../app.routes';
-import { SidebarComponent } from '../../components/sidebar/sidebar';
-import { AppAccountSidebar } from './sidebar/account-sidebar/account-sidebar';
+import { AccountSidebarComponent } from './account-sidebar/account-sidebar';
 
 @Component({
   selector: 'app-update-account',
@@ -19,7 +18,7 @@ import { AppAccountSidebar } from './sidebar/account-sidebar/account-sidebar';
     CommonModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    AppAccountSidebar,
+AccountSidebarComponent,
   ],
   templateUrl: './account.html',
   styleUrls: ['./account.scss', '../login/login.scss'],

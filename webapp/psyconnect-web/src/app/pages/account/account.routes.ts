@@ -1,20 +1,28 @@
-// account.routes.ts
+// app.routes.ts (hoặc account.routes.ts nếu bạn tách riêng)
 import { Routes } from '@angular/router';
 import { UpdateAccountComponent } from './account';
-// import { AccountLayoutComponent } from './account.component';
-// import { AccountInfoComponent } from './pages/info/info.component';
-// import { AccountPaymentComponent } from './pages/payment/payment.component';
-// import { AccountSecurityComponent } from './pages/security/security.component';
-
-export const accountRoutes: Routes = [
+export const routes: Routes = [
   {
     path: 'account',
-    component: UpdateAccountComponent, // layout chứa sidebar + outlet
+    component:UpdateAccountComponent, // account.html có sidebar + router-outlet
     children: [
-      { path: 'info', component: UpdateAccountComponent },
-      { path: 'security', component: UpdateAccountComponent },
-      { path: 'payment', component: UpdateAccountComponent },
-      { path: '', redirectTo: 'info', pathMatch: 'full' },
-    ],
-  },
+      {
+        path: '',
+        redirectTo: 'profile', // default
+        pathMatch: 'full'
+      },
+      {
+        path: 'profile',
+        component: UpdateAccountComponent
+      },
+      {
+        path: 'security',
+        component: UpdateAccountComponent
+      },
+      {
+        path: 'payment',
+        component: UpdateAccountComponent
+      }
+    ]
+  }
 ];

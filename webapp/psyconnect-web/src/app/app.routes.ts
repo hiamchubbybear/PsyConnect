@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
-import { AppAccountSidebar } from './pages/account/sidebar/account-sidebar/account-sidebar';
+import { AccountSidebarComponent } from './pages/account/account-sidebar/account-sidebar';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
 import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
@@ -21,7 +21,7 @@ export const routes: Routes = [
   { path: 'oauth2/callback', component: Login, canActivate: [guestGuard] },
 
   { path: 'chat-page', component: ChatComponent, canActivate: [authGuard] },
-  { path: 'account', component: AppAccountSidebar, canActivate: [authGuard] },
+  { path: 'account', component: AccountSidebarComponent, canActivate: [authGuard] },
   { path: 'feature/feed', component: Notfound, canActivate: [authGuard] },
   {
     path: 'feature/schedule',
