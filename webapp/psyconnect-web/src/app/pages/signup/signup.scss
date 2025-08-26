@@ -1,6 +1,8 @@
 @use "sass:color" as c;
 @use "../../styles/variable" as v;
 @use "../../styles/mixins" as m;
+
+// Base mixins
 @mixin button-reset {
   background: transparent;
   border: none;
@@ -20,17 +22,7 @@
   user-select: none;
 }
 
-.hidden-input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
+// Shared form styles
 %form-control-base {
   font-family: v.$font-primary;
   font-size: v.$font-size-md;
@@ -41,8 +33,7 @@
   padding: v.$spacing-md;
   transition: all v.$transition-medium;
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  width: 100%;
 
   &:focus {
     outline: 2px solid var(--color-accent);
@@ -57,27 +48,53 @@
 
   &::placeholder {
     color: var(--color-text-muted);
-    font-family: v.$font-primary;
   }
 }
 
+// Apply to form elements
 input[type="date"],
-input[type="time"],
+input[type="time"], 
 input[type="datetime-local"],
-select {
-  @extend %form-control-base;
-}
-
+select,
 .form-input,
 .form-select {
   @extend %form-control-base;
-  width: 100%;
 }
 
+// Utility classes
+.hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Form components
 .form-group {
   display: flex;
   flex-direction: column;
   gap: v.$spacing-sm;
+
+  &.terms {
+    margin-top: 1rem;
+    
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+    }
+  }
 
   .form-label {
     font-size: v.$font-size-sm;
@@ -98,6 +115,27 @@ select {
       content: "⚠";
       font-size: 12px;
     }
+  }
+}
+
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  .icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--color-bg-contrast);
+    pointer-events: none;
+  }
+
+  .form-input {
+    padding-left: 2.5rem;
   }
 }
 
@@ -125,27 +163,7 @@ select {
   }
 }
 
-.input-with-icon {
-  display: flex;
-  align-items: center;
-  position: relative;
-
-  .icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
-    color: var(--color-bg-contrast);
-    pointer-events: none;
-  }
-
-  .form-input {
-    padding-left: 2.5rem;
-  }
-}
-
+// Main container
 .register-container {
   display: flex;
   flex-direction: column;
@@ -205,11 +223,7 @@ select {
 
       .progress-fill {
         height: 100%;
-        background: linear-gradient(
-          90deg,
-          var(--color-accent),
-          var(--color-accent-hover)
-        );
+        background: linear-gradient(90deg, var(--color-accent), var(--color-accent-hover));
         border-radius: v.$border-radius-sm;
         transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -287,13 +301,8 @@ select {
             inset: -3px;
             border-radius: 50%;
             padding: 3px;
-            background: linear-gradient(
-              45deg,
-              var(--color-accent),
-              var(--color-accent-hover)
-            );
-            mask: linear-gradient(#fff 0 0) content-box,
-              linear-gradient(#fff 0 0);
+            background: linear-gradient(45deg, var(--color-accent), var(--color-accent-hover));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             mask-composite: xor;
             opacity: 0;
             transition: opacity v.$transition-medium;
@@ -429,28 +438,29 @@ select {
         cursor: not-allowed;
       }
 
-      &.btn-primary {
-        background: var(--color-bg);
-        color: var(--color-white);
-        border: 2px solid var(--color-border);
+      &.btn-primary,
+      &--primary {
+        background: var(--color-text);
+        color: var(--color-bg);
+        border: 1px solid var(--color-text);
 
         &:hover:not(:disabled) {
-          background: var(--color-accent-hover);
-          border-color: var(--color-accent-hover);
-          color: var(--color-text-hover);
+          background: var(--color-text-muted);
+          border-color: var(--color-text-muted);
           transform: translateY(-1px);
           box-shadow: var(--shadow-button-hover);
         }
       }
 
-      &.btn-secondary {
-        background: var(--color-bg);
+      &.btn-secondary,
+      &--secondary {
+        background: transparent;
         color: var(--color-text);
-        border: 2px solid var(--color-border);
+        border: 1px solid var(--color-border);
 
         &:hover {
           background: var(--color-surface-hover);
-          border-color: var(--color-accent);
+          border-color: var(--color-text-muted);
         }
       }
 
@@ -471,14 +481,25 @@ select {
   }
 }
 
+// Animations & utilities
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
+
+@keyframes shake-once {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+.shake-errors {
+  animation: shake-once 0.25s ease;
+}
+
+// Links
 a {
   color: var(--color-text);
   text-decoration: none;
@@ -493,71 +514,9 @@ a {
     outline: 1px solid var(--color-accent);
     outline-offset: 2px;
   }
-}
-.button,
-.btn {
-  &--primary,
-  &.btn-primary {
-    background: var(--color-text);
-    color: var(--color-bg);
-    border: 1px solid var(--color-text);
 
-&:hover {
-      background: var(--color-text-muted);
-      border-color: var(--color-text-muted);
-    }
+  &[href="/terms"] {
+    color: var(--color-primary);
+    text-decoration: underline;
   }
-
-  &--secondary,
-  &.btn-secondary {
-    background: transparent;
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-
-    &:hover {
-      background: var(--color-surface-hover);
-      border-color: var(--color-text-muted);
-    }
-  }
-}
-.form-group.terms {
-  margin-top: 1rem;
-
-  .checkbox {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-
-    input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-    }
-
-    a {
-      color: var(--color-primary);
-      text-decoration: underline;
-    }
-  }
-}
-@keyframes shake-once {
-  0% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px);
-  }
-  50% {
-    transform: translateX(4px);
-  }
-  75% {
-    transform: translateX(-2px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-.shake-errors {
-  animation: shake-once 0.25s ease;
 }

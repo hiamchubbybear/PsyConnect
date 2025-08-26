@@ -57,6 +57,11 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "host": "0.0.0.0",
+            "port": 4200,
+            "allowedHosts": ["psyconnect.chessy.dev", "localhost"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "psyconnect-web:build:production"
