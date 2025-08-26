@@ -16,7 +16,7 @@ export class Auth {
     private secureStorage: SecureStorageService,
     private authState: AuthStateService
   ) {}
-  
+
 
   login(credentials: {
     username: string;
@@ -42,8 +42,10 @@ export class Auth {
   }
 
   isLoggedIn(): boolean {
-    return !!this.secureStorage.getItem('access_token');
-  }
+  const token = this.secureStorage.getItem('access_token');
+  return !!(token && token !== 'null' && token !== 'undefined');
+}
+
   getToken(): string | null {
     return this.secureStorage.getItem('access_token');
   }

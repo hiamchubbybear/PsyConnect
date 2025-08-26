@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Calme</title>
+    <title>Psyconnect</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -25,9 +25,36 @@
       rel="stylesheet"
     />
 
-    <link rel="icon" type="image/x-icon" href="./public/favicon.ico" />
+    <link
+      id="favicon"
+      rel="icon"
+      type="image/svg+xml"
+      href="./assets/icon/icon-web-light.svg"
+    />
   </head>
+
   <body>
     <app-root></app-root>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const favicon = document.getElementById("favicon");
+
+        function updateFavicon() {
+          const isDark = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          ).matches;
+          favicon.href = isDark
+            ? "./assets/icon/icon-web-light.svg"
+            : "./assets/icon/icon-web-dark.svg";
+          const newFavicon = favicon.cloneNode();
+          favicon.parentNode.replaceChild(newFavicon, favicon);
+        }
+
+        updateFavicon();
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", updateFavicon);
+      });
+    </script>
   </body>
 </html>

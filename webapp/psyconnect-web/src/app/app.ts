@@ -1,19 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import {
+    Event,
+    NavigationCancel,
+    NavigationEnd,
+    NavigationError,
+    NavigationStart,
+    Router,
+    RouterModule,
+    RouterOutlet
+} from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Footer } from './components/footer/footer';
 import { Header } from './components/header/header';
 import { SidebarComponent } from './components/sidebar/sidebar';
 import { fadeRouteAnimation } from './route-animation';
 import { AuthStateService } from './services/auth/auth-state.service';
 import { AuthService } from './services/auth/auth.service';
+import { LoaderService } from './services/loader/loader';
 import { LoaderComponent } from './services/loader/loader.component';
 import {
-  UserContextService,
-  UserProfile,
+    UserContextService,
+    UserProfile,
 } from './services/profile/profile-service';
+import { ThemeService } from './services/theme/theme-service';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +40,7 @@ import {
     ReactiveFormsModule,
     CommonModule,
     RouterModule,
+
   ],
   animations: [fadeRouteAnimation],
   templateUrl: './app.html',
@@ -36,17 +49,23 @@ import {
 export class App implements OnInit {
   showSidebar: boolean = false;
   constructor(
+    private renderer: Renderer2,
+    private themeService: ThemeService,
     private http: HttpClient,
     private auth: AuthService,
     private userContext: UserContextService,
-    private authState: AuthStateService
+    private authState: AuthStateService,
+    private router: Router,
+    private loader: LoaderService
   ) {}
+  private routerSub?: Subscription;
+  isLoading = false;
 
   ngOnInit() {
+    this.setInitialTheme();
     this.authState.sidebarVisible$.subscribe((visible) => {
       this.showSidebar = visible;
     });
-
     const token = this.auth.getToken();
     if (token) {
       this.authState.showSidebar();
@@ -54,8 +73,32 @@ export class App implements OnInit {
     } else {
       this.authState.hideSidebar();
     }
+    this.loader.loading$.subscribe((v) => (this.isLoading = v));
+
+    this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationStart) {
+        this.loader.show();
+      } else if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        this.loader.hide();
+      }
+    });
   }
 
+  ngOnDestroy() {
+    this.routerSub?.unsubscribe();
+  }
+  setInitialTheme() {
+    const savedTheme = localStorage.getItem('app-theme');
+    if (savedTheme === 'dark') {
+      this.themeService.setTheme('dark');
+    } else {
+      this.themeService.setTheme('light');
+    }
+  }
   private fetchUserProfile() {
     this.http.get<UserProfile>('/api/profile').subscribe({
       next: (profile) => {
@@ -70,5 +113,4 @@ export class App implements OnInit {
       },
     });
   }
-  
 }

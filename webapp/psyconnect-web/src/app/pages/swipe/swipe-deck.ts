@@ -8,6 +8,7 @@ import { SwipeService } from '../../services/swipe/swipe.service';
 @Component({
   selector: 'app-swipe-deck',
   templateUrl: './swipe-deck.html',
+  standalone: true,
   styleUrls: ['./swipe-deck.scss'],
   imports: [SwipeCardComponent, CommonModule],
 })
