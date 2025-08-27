@@ -5,14 +5,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'account-content',
   templateUrl: './account-content.html',
-  styleUrls: ['./account-content.scss'] ,
-  standalone :true,
-  imports :  [ CommonModule ,ReactiveFormsModule
-
-  ]
+  styleUrls: ['./account-content.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
 })
 export class AccountContentComponent {
-
   accountForm: FormGroup;
   personalForm: FormGroup;
   securityForm: FormGroup;
@@ -21,24 +18,24 @@ export class AccountContentComponent {
   constructor(private fb: FormBuilder) {
     this.accountForm = this.fb.group({
       username: [''],
-      email: ['']
+      email: [''],
     });
 
     this.personalForm = this.fb.group({
       fullname: [''],
-      phone: ['']
+      phone: [''],
     });
 
     this.securityForm = this.fb.group({
       currentPassword: [''],
       newPassword: [''],
-      confirmPassword: ['']
+      confirmPassword: [''],
     });
 
     this.paymentForm = this.fb.group({
       cardNumber: [''],
       expiry: [''],
-      cvv: ['']
+      cvv: [''],
     });
   }
 

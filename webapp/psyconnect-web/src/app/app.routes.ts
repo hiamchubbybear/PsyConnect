@@ -2,7 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
-import { AccountSidebarComponent } from './pages/account/account-sidebar/account-sidebar';
+import { UpdateAccountComponent } from './pages/account/account-update';
+import { PaymentSessionComponent } from './pages/account/payment/payment';
+import { ProfileSectionComponent } from './pages/account/profile/profile-update';
+import { SecuritySessionComponent } from './pages/account/security/security';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
 import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
@@ -21,7 +24,17 @@ export const routes: Routes = [
   { path: 'oauth2/callback', component: Login, canActivate: [guestGuard] },
 
   { path: 'chat-page', component: ChatComponent, canActivate: [authGuard] },
-  { path: 'account', component: AccountSidebarComponent, canActivate: [authGuard] },
+  {
+    path: 'account',
+    component: UpdateAccountComponent,
+    canActivate: [authGuard],
+    children: [
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
+      { path: 'profile', component: ProfileSectionComponent },
+      { path: 'security', component: SecuritySessionComponent },
+      { path: 'payment', component: PaymentSessionComponent },
+    ],
+  },
   { path: 'feature/feed', component: Notfound, canActivate: [authGuard] },
   {
     path: 'feature/schedule',

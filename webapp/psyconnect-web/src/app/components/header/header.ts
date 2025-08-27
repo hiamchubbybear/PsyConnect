@@ -91,8 +91,8 @@ export class Header implements OnInit, OnDestroy {
       this.userAvatarUrl = newAvatarUrl;
       this.userName = newUserName;
     } else {
-      this.userAvatarUrl = 'assets/images/avatar.jpeg';
-      this.userName = 'Anonymous';
+    //   this.userAvatarUrl = 'assets/images/avatar.jpeg';
+    //   this.userName = 'Anonymous';
     }
   }
 

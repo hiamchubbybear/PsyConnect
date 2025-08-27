@@ -1,0 +1,18 @@
+<section class="account-section">
+  <h2>Thanh toán</h2>
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <label>
+      Số thẻ
+      <input formControlName="cardNumber" />
+    </label>
+    <label>
+      Hạn sử dụng
+      <input formControlName="expiry" placeholder="MM/YY" />
+    </label>
+    <label>
+      CVV
+      <input formControlName="cvv" type="password" />
+    </label>
+    <button type="submit">Lưu</button>
+  </form>
+</section>

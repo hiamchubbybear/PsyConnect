@@ -1,33 +1,45 @@
-.account-sidebar {
+@use "../../../styles/variable" as v;
+
+.sidebar {
+  position: fixed;
   width: 240px;
+  min-height: 100vh;
+  border-right: 1px solid var(--color-border);
+  background-color: transparent;
   padding: 1rem;
-  border-right: 1px solid #eaeaea;
-  position: sticky;
-  top: 80px; // tránh đè lên header
-  height: calc(100vh - 80px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 
-  ul {
+  .sidebar__title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .sidebar__list {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
 
-    li {
-      margin-bottom: 1rem;
-
+    .sidebar__item {
       a {
         display: block;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        color: var(--color-text);
         text-decoration: none;
-        color: #333;
         font-weight: 500;
-        transition: color 0.2s;
+        transition: background-color 0.2s, color 0.2s;
 
         &:hover {
-          color: #007bff;
+          background-color: var(--color-text-muted);
         }
 
         &.active {
-          color: #007bff;
-          font-weight: 600;
+          background-color: var(--color-primary);
+          color: var(--color-primary);
         }
       }
     }

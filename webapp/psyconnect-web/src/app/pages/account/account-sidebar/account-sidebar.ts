@@ -1,42 +1,35 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'account-sidebar',
   templateUrl: './account-sidebar.html',
   styleUrls: ['./account-sidebar.scss'],
-  imports : [CommonModule] ,
-  standalone : true
+  standalone: true,
+  imports: [CommonModule, RouterModule],
 })
-export class AccountSidebarComponent {
+export class AppAccountSidebar {
+  @Input() activeSection: string | null = null;
+  @Output() navigate = new EventEmitter<string>();
 
-  sections = [
-    { id: 'account-info', label: 'Thông tin tài khoản' },
-    { id: 'personal-info', label: 'Thông tin cá nhân' },
-    { id: 'security', label: 'Bảo mật' },
-    { id: 'payment', label: 'Thanh toán' }
-  ];
-
-  activeSection: string = this.sections[0].id;
-
-  scrollTo(sectionId: string) {
-    const el = document.getElementById(sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      this.activeSection = sectionId;
-    }
+  onClick(sectionId: string) {
+    this.navigate.emit(sectionId);
   }
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    for (let sec of this.sections) {
-      const el = document.getElementById(sec.id);
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        if (rect.top <= 100 && rect.bottom >= 100) {
-          this.activeSection = sec.id;
-          break;
-        }
+  onScroll(event: Event) {
+    const target = event.target as HTMLElement;
+    const sections = target.querySelectorAll('.settings-section');
+    let current = '';
+
+    sections.forEach((section: Element) => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 100 && rect.bottom >= 100) {
+        current = section.id;
       }
+    });
+
+    if (current) {
+      this.activeSection = current;
     }
   }
 }
