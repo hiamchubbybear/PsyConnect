@@ -1,0 +1,313 @@
+<section class="account-section security-section">
+  <h2>Mật khẩu và bảo mật</h2>
+  <p class="account-section__description">
+    Quản lý mật khẩu, đăng nhập, và phương thức bảo mật khác.
+  </p>
+
+  <div class="account-section__group">
+    <div
+      class="account-row"
+      *ngFor="let item of securityItems"
+      (click)="openEdit(item.key)"
+    >
+      <span>{{ item.label }}</span>
+    </div>
+  </div>
+
+  <h3 class="account-section__subheading">Kiểm tra bảo mật</h3>
+  <p class="account-section__description">
+    Xem xét các vấn đề bảo mật trên thiết bị, email và ứng dụng.
+  </p>
+
+  <div class="account-section__group">
+    <div
+      class="account-row"
+      *ngFor="let item of securityCheckItems"
+      (click)="openEdit(item.key)"
+    >
+      <span>{{ item.label }}</span>
+    </div>
+  </div>
+  <div class="security-section__group">
+    <div class="security-row" (click)="openEdit('changePassword')">
+      <h3 *ngIf="editing === 'changePassword'">Đổi mật khẩu</h3>
+    </div>
+  </div>
+  <div class="security-section__group">
+    <div class="security-row" (click)="openEdit('2fa')">
+      <h3 *ngIf="editing === '2fa'">Xác thực hai yếu tố (2FA)</h3>
+    </div>
+  </div>
+  <div class="security-section__group">
+    <div class="security-row" (click)="openEdit('recentLogins')">
+      <h3 *ngIf="editing === 'recentLogins'">Hoạt động đăng nhập gần đây</h3>
+    </div>
+  </div>
+  <div class="security-section__group">
+    <div class="security-row" (click)="openEdit('securityMethods')">
+      <h3 *ngIf="editing === 'securityMethods'">Phương thức bảo mật</h3>
+    </div>
+  </div>
+  <div class="security-section__group">
+    <div class="security-row" (click)="openEdit('loggedDevices')">
+      <h3 *ngIf="editing === 'loggedDevices'">Thiết bị đang đăng nhập</h3>
+    </div>
+  </div>
+  <div class="security-section__group">
+    <div class="security-row" (click)="openEdit('suspiciousActivity')">
+      <h3 *ngIf="editing === 'suspiciousActivity'">
+        Hoạt động đăng nhập đáng ngờ
+      </h3>
+    </div>
+  </div>
+  <div class="security-section__group">
+    <div class="security-row" (click)="openEdit('linkedEmails')">
+      <h3 *ngIf="editing === 'linkedEmails'">Email liên kết</h3>
+    </div>
+  </div>
+  <div class="security-section__group">
+    <div class="security-row" (click)="openEdit('thirdPartyApps')">
+      <h3 *ngIf="editing === 'thirdPartyApps'">Ứng dụng và quyền</h3>
+    </div>
+  </div>
+  <button-group
+    primaryText="Confirm"
+    secondaryText="Cancel"
+    (primaryClick)="confirmChanges()"
+    (secondaryClick)="cancel()"
+    class="button-group"
+  ></button-group>
+</section>
+
+<div class="overlay" *ngIf="editing === 'changePassword'">
+  <div class="overlay-content">
+    <div class="form">
+      <input
+        type="password"
+        placeholder="Mật khẩu hiện tại"
+        [(ngModel)]="passwordData.current"
+      />
+      <input
+        type="password"
+        placeholder="Mật khẩu mới"
+        [(ngModel)]="passwordData.new"
+      />
+      <input
+        type="password"
+        placeholder="Nhập lại mật khẩu mới"
+        [(ngModel)]="passwordData.confirm"
+      />
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel()"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName()"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overlay" *ngIf="editing === '2fa'">
+  <div class="overlay-content">
+    <div class="form">
+      <p>Chọn phương thức 2FA để bảo vệ tài khoản:</p>
+      <div class="button-group">
+        <button class="button" (click)="enable2FA('authApp')">
+          Authenticator App
+        </button>
+        <button class="button" (click)="enable2FA('sms')">SMS</button>
+        <button class="button" (click)="enable2FA('securityKey')">
+          Key vật lý
+        </button>
+      </div>
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel()"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName()"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overlay" *ngIf="editing === 'recentLogins'">
+  <div class="overlay-content">
+    <div class="form">
+      <div *ngFor="let login of recentLogins" class="login-row">
+        <span>{{ login.time | date : "short" }}</span>
+        <span>{{ login.device }}</span>
+        <span>{{ login.location }}</span>
+      </div>
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel()"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName()"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overlay" *ngIf="editing === 'securityMethods'">
+  <div class="overlay-content">
+    <div class="form">
+      <label>Email khôi phục:</label>
+      <input type="email" [(ngModel)]="securityMethods.email" />
+      <label>Số điện thoại xác thực:</label>
+      <input type="tel" [(ngModel)]="securityMethods.phone" />
+      <label>Key bảo mật vật lý:</label>
+      <input type="text" [(ngModel)]="securityMethods.key" />
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel()"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName()"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overlay" *ngIf="editing === 'loggedDevices'">
+  <div class="overlay-content">
+    <div class="form">
+      <div *ngFor="let device of loggedDevices" class="device-row">
+        <span>{{ device.name }}</span>
+        <span>{{ device.lastActive | date : "short" }}</span>
+        <button (click)="logoutDevice(device)">Đăng xuất</button>
+      </div>
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel()"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName()"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overlay" *ngIf="editing === 'suspiciousActivity'">
+  <div class="overlay-content">
+    <div class="form">
+      <div *ngFor="let alert of suspiciousActivities">
+        <p>{{ alert.message }} - {{ alert.time | date : "short" }}</p>
+        <button (click)="resolveAlert(alert)">Xác minh</button>
+      </div>
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel()"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName()"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overlay" *ngIf="editing === 'linkedEmails'">
+  <div class="overlay-content">
+    <div class="form">
+      <div *ngFor="let email of linkedEmails" class="email-row">
+        <span>{{ email.address }}</span>
+        <button (click)="removeEmail(email)">Xóa</button>
+      </div>
+      <input type="email" placeholder="Thêm email mới" [(ngModel)]="newEmail" />
+      <button (click)="addEmail()">Thêm</button>
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel()"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName()"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overlay" *ngIf="editing === 'thirdPartyApps'">
+  <div class="overlay-content">
+    <div class="form">
+      <div *ngFor="let app of thirdPartyApps" class="app-row">
+        <span>{{ app.name }}</span>
+        <span>Quyền: {{ app.permissions.join(", ") }}</span>
+        <button (click)="revokeApp(app)">Thu hồi quyền</button>
+      </div>
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel()"
+        >
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName()"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
