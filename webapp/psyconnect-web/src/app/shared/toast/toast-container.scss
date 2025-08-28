@@ -1,57 +1,82 @@
-@use "../../styles/variable" as v;
+// toast-container.component.scss
 .toast-container {
   position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: 1.5rem;
+  right: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  z-index: 9999;
+  z-index: 10000;
+  align-items: flex-end;
+  max-width: 420px;
+  max-height: calc(100vh - 3rem);
+  pointer-events: none;
 
-  .toast {
-    display: flex;
-    align-items: flex-start;
-    padding: 1rem;
-    border: 1px solid;
-    border-radius: 8px;
-    background: v.$color-white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-    min-width: 280px;
-    max-width: 360px;
-    animation: toast-in 0.25s ease-out both;
+  // Smooth stacking animation
+  app-toast {
+    animation: slideInFromRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    .icon {
-      margin-right: 0.75rem;
-      font-size: 1.5rem;
-      flex-shrink: 0;
+    &:nth-child(1) {
+      animation-delay: 0ms;
     }
-
-    .content {
-      flex: 1;
-
-      .title {
-        font-weight: 600;
-        font-size: v.$font-size-md;
-        margin-bottom: 0.25rem;
-      }
-
-      .message {
-        font-size: v.$font-size-sm;
-        color: v.$color-text;
-      }
+    &:nth-child(2) {
+      animation-delay: 50ms;
     }
-
-    .close {
-      cursor: pointer;
-      margin-left: 0.5rem;
-      font-size: 1.25rem;
-      color: v.$color-gray;
-      transition: all 0.2s ease;
-
-      &:hover {
-        color: v.$color-primary;
-      }
+    &:nth-child(3) {
+      animation-delay: 100ms;
     }
+    &:nth-child(4) {
+      animation-delay: 150ms;
+    }
+    &:nth-child(5) {
+      animation-delay: 200ms;
+    }
+  }
+}
+
+// Slide in animation
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(120%) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 640px) {
+  .toast-container {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    align-items: stretch;
+    max-width: none;
+
+    app-toast {
+      animation: slideInFromBottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  }
+
+  @keyframes slideInFromBottom {
+    0% {
+      transform: translateY(100%) scale(0.95);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+// Tablet
+@media (max-width: 768px) and (min-width: 641px) {
+  .toast-container {
+    right: 1rem;
+    bottom: 1rem;
+    max-width: 380px;
   }
 }

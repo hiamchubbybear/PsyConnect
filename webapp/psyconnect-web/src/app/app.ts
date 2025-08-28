@@ -25,6 +25,7 @@ import {
     UserProfile,
 } from './services/profile/profile-service';
 import { ThemeService } from './services/theme/theme-service';
+import { ToastContainerComponent } from "./shared/toast/toast-container";
 
 @Component({
   selector: 'app-root',
@@ -39,7 +40,8 @@ import { ThemeService } from './services/theme/theme-service';
     ReactiveFormsModule,
     CommonModule,
     RouterModule,
-  ],
+    ToastContainerComponent
+],
   animations: [fadeRouteAnimation],
   templateUrl: './app.html',
   styleUrl: './app.scss',
