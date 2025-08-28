@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
 } from '@angular/forms';
 import { map, Observable, of } from 'rxjs';
 import { ButtonGroupComponent } from '../../../components/button-group/button-group';
@@ -12,16 +12,16 @@ import { SecureStorageService } from '../../../encrypt/secure';
 import { CloudinaryService } from '../../../services/cloudinary/cloudinary.service';
 import { LoaderService } from '../../../services/loader/loader';
 import {
-  Profile,
-  UserProfileUpdateRequest,
+    Profile,
+    UserProfileUpdateRequest,
 } from '../../../services/profile/profile';
 import {
-  UserContextService,
-  UserProfile,
+    UserContextService,
+    UserProfile,
 } from '../../../services/profile/profile-service';
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
-import { ProfileModel } from './profile-model-update';
+import { ProfileModel } from './profile-model';
 
 @Component({
   selector: 'app-profile-section',

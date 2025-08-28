@@ -1,14 +1,14 @@
 @use "../../styles/variable" as v;
 .toast {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   padding: 1rem;
   border: 1px solid;
   border-radius: 8px;
   background: var(color-white);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
-  max-width: 360px;
+  max-width: auto;
   animation: toast-in 0.25s ease-out both;
 
   .material-icons {

@@ -21,10 +21,10 @@ import { LoaderService } from './loader';
   styles: [
     `
       .loading-bar {
-        position: absolute;
+        position: fixed;
         top: 100%;
         left: 0;
-        width: 100%;
+        width: auto;
         height: 3px;
         background: linear-gradient(90deg, #000, #555);
         animation: loading 1s infinite linear;
