@@ -1,0 +1,47 @@
+{
+  "APP_NAME": "Psyconnect",
+  "HEADER": {
+    "Feature": "Feature",
+    "Therapist": "Therapist",
+    "Community": "Community",
+    "About": "About",
+    "Login": "Login",
+    "Sign Up": "Sign"
+  },
+  "COMMON": {
+    "GetStartedFree": "Get Started Free",
+    "LearnMore": "Learn More",
+    "SignUpFree": "Sign Up Free",
+    "Login": "Log In"
+  },
+  "HOME": {
+    "Tagline": "Take care of your mind, one step at a time",
+    "Description": "Connect with licensed therapists, track your mood, and join a supportive community on your mental health journey.",
+    "IllustrationTitle": "Mental Health Illustration",
+    "SectionTitle": "Everything you need for better mental health",
+    "SectionDescription": "Comprehensive tools and support to help you thrive",
+    "TherapyBooking": {
+      "Title": "Therapy Booking",
+      "Description": "Schedule sessions with licensed therapists who specialize in your needs. Available 24/7."
+    },
+    "MoodTracking": {
+      "Title": "Mood Tracking",
+      "Description": "Monitor your emotional patterns and progress with our intuitive mood tracking tools."
+    },
+    "CommunitySupport": {
+      "Title": "Community Support",
+      "Description": "Connect with others on similar journeys in our safe, moderated community spaces."
+    },
+    "AppPreview": {
+      "Title": "App Interface Preview",
+      "Subtitle": "Your mental health, simplified",
+      "Features": {
+        "ProfessionalSupport": "Professional Support – Access to licensed therapists and mental health professionals",
+        "PrivacyFirst": "Privacy First – Your data is encrypted and protected with the highest security standards",
+        "Availability": "24/7 Availability – Support when you need it most, any time of day or night"
+      },
+      "CallToAction": "Ready to start your journey?",
+      "JoinUsers": "Join thousands of users who are taking control of their mental health"
+    }
+  }
+}

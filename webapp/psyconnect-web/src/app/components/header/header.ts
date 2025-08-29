@@ -1,29 +1,31 @@
 import { CommonModule } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  HostListener,
-  OnDestroy,
-  OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    OnDestroy,
+    OnInit,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
 import {
-  UserContextService,
-  UserProfile,
+    UserContextService,
+    UserProfile,
 } from '../../services/profile/profile-service';
 import { ThemeService } from '../../services/theme/theme-service';
+import { TranslationService } from '../../shared/translate/translate-service';
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
 import { HeaderStateService } from './header-state';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatMenuModule, AvatarMenuComponent],
+  imports: [CommonModule, MatMenuModule, AvatarMenuComponent, TranslateModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -48,7 +50,8 @@ export class Header implements OnInit, OnDestroy {
     public loaderService: LoaderService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private translateService: TranslationService
   ) {}
 
   ngOnInit() {
@@ -109,6 +112,7 @@ export class Header implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
   toggleTheme() {
+    this.translateService.switchLanguage();
     this.themeService.toggleTheme();
     this.isDark = !this.isDark;
   }
@@ -116,7 +120,7 @@ export class Header implements OnInit, OnDestroy {
   onScroll() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     if (scrollTop > this.lastScrollTop + 1) {
-      this.headerState.setMini(true);
+    this.headerState.setMini(true);
     } else if (scrollTop < this.lastScrollTop - 10) {
       this.headerState.setMini(false);
     }

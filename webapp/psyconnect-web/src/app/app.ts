@@ -9,7 +9,7 @@ import {
     NavigationStart,
     Router,
     RouterModule,
-    RouterOutlet
+    RouterOutlet,
 } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { Footer } from './components/footer/footer';
@@ -25,7 +25,8 @@ import {
     UserProfile,
 } from './services/profile/profile-service';
 import { ThemeService } from './services/theme/theme-service';
-import { ToastContainerComponent } from "./shared/toast/toast-container";
+import { ToastContainerComponent } from './shared/toast/toast-container';
+import { TranslationService } from './shared/translate/translate-service';
 
 @Component({
   selector: 'app-root',
@@ -40,8 +41,8 @@ import { ToastContainerComponent } from "./shared/toast/toast-container";
     ReactiveFormsModule,
     CommonModule,
     RouterModule,
-    ToastContainerComponent
-],
+    ToastContainerComponent,
+  ],
   animations: [fadeRouteAnimation],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -58,8 +59,10 @@ export class App implements OnInit {
     private userContext: UserContextService,
     private authState: AuthStateService,
     private router: Router,
-    private loader: LoaderService
+    private loader: LoaderService,
+    private translate: TranslationService
   ) {
+    console.log(this.translate.getCurrentLanguage);
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {

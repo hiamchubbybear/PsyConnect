@@ -1,0 +1,47 @@
+{
+  "APP_NAME": "Psyconnect",
+  "HEADER": {
+    "Feature": "Tính năng",
+    "Therapist": "Chuyên gia tâm lý",
+    "Community": "Cộng đồng",
+    "About": "Về chúng tôi",
+    "Login": "Đăng nhập",
+    "Sign Up": "Đăng ký"
+  },
+  "COMMON": {
+    "GetStartedFree": "Bắt đầu miễn phí",
+    "LearnMore": "Tìm hiểu thêm",
+    "SignUpFree": "Đăng ký miễn phí",
+    "Login": "Đăng nhập"
+  },
+  "HOME": {
+    "Tagline": "Chăm sóc tâm trí của bạn, từng bước một",
+    "Description": "Kết nối với các chuyên gia tâm lý có giấy phép, theo dõi tâm trạng của bạn và tham gia cộng đồng hỗ trợ trên hành trình sức khỏe tinh thần của bạn.",
+    "IllustrationTitle": "Minh họa sức khỏe tinh thần",
+    "SectionTitle": "Mọi thứ bạn cần để cải thiện sức khỏe tinh thần",
+    "SectionDescription": "Công cụ và hỗ trợ toàn diện để giúp bạn phát triển",
+    "TherapyBooking": {
+      "Title": "Đặt lịch trị liệu",
+      "Description": "Đặt lịch với các chuyên gia tâm lý có giấy phép, chuyên về nhu cầu của bạn. Có sẵn 24/7."
+    },
+    "MoodTracking": {
+      "Title": "Theo dõi tâm trạng",
+      "Description": "Theo dõi các mẫu cảm xúc và tiến triển của bạn với các công cụ theo dõi tâm trạng trực quan của chúng tôi."
+    },
+    "CommunitySupport": {
+      "Title": "Hỗ trợ cộng đồng",
+      "Description": "Kết nối với những người có hành trình tương tự trong các không gian cộng đồng an toàn, được kiểm duyệt."
+    },
+    "AppPreview": {
+      "Title": "Xem trước giao diện ứng dụng",
+      "Subtitle": "Sức khỏe tinh thần của bạn, đơn giản hóa",
+      "Features": {
+        "ProfessionalSupport": "Hỗ trợ chuyên nghiệp – Truy cập các chuyên gia tâm lý và nhân viên y tế tinh thần có giấy phép",
+        "PrivacyFirst": "Ưu tiên quyền riêng tư – Dữ liệu của bạn được mã hóa và bảo vệ theo tiêu chuẩn bảo mật cao nhất",
+        "Availability": "Sẵn sàng 24/7 – Hỗ trợ khi bạn cần nhất, bất cứ lúc nào trong ngày hay đêm"
+      },
+      "CallToAction": "Sẵn sàng bắt đầu hành trình của bạn?",
+      "JoinUsers": "Tham gia hàng ngàn người dùng đang kiểm soát sức khỏe tinh thần của họ"
+    }
+  }
+}
