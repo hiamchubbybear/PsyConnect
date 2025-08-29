@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    OnInit,
+} from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
@@ -22,7 +27,6 @@ import {
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { ProfileModel } from './profile-model';
-
 @Component({
   selector: 'app-profile-section',
   standalone: true,
@@ -31,15 +35,18 @@ import { ProfileModel } from './profile-model';
     ReactiveFormsModule,
     FormsModule,
     ButtonGroupComponent,
+    ReactiveFormsModule,
   ],
   templateUrl: './profile-update.html',
   styleUrls: ['./profile-update.scss'],
 })
 export class ProfileSectionComponent implements OnInit {
+  private initialProfile: any;
   selectedImage: File | null = null;
   imagePreview: string | null = null;
   username: string | null = '';
   isUploadImage?: boolean | false;
+  avatarUriOrigin: string = '';
   profileUpdate: UserProfileUpdateRequest | undefined;
   onImageSelected(event: any) {
     const file = event.target.files[0];
@@ -90,7 +97,7 @@ export class ProfileSectionComponent implements OnInit {
         this.imagePreview = null;
         this.isUploadImage = false;
       }
-      if (avatarUri) this.updateProfile(avatarUri);
+      this.updateProfile(avatarUri || this.avatarUriOrigin);
     } catch (err) {
       console.error('Upload error:', err);
       this.toastService.show(
@@ -123,36 +130,31 @@ export class ProfileSectionComponent implements OnInit {
     private cloudinaryService: CloudinaryService,
     private toastService: ToastService,
     private loaderService: LoaderService,
-    private userContext: UserContextService
+    private userContext: UserContextService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.getProfile().subscribe((profile) => {
-      if (profile) {
-        this.profile = profile;
-        this.form.patchValue(profile);
-      }
-    });
-    this.username = this.secureStorage.getItem('username');
     this.form = this.fb.group({
-      firstName: [this.profile?.firstName || ''],
-      lastName: [this.profile?.lastName || ''],
-      dob: [this.profile?.dob || ''],
-      address: [this.profile?.address || ''],
-      gender: [this.profile?.gender || ''],
-      avatarUri: [this.profile?.avatarUri || ''],
+      firstName: [''],
+      lastName: [''],
+      dob: [''],
+      address: [''],
+      gender: [''],
+      avatarUri: [''],
     });
+
+    this.username = this.secureStorage.getItem('username');
 
     this.profileService.getProfile().subscribe((res) => {
       if (res?.data) {
-        this.form.patchValue({
-          firstName: res.data.firstName,
-          lastName: res.data.lastName,
-          dob: res.data.dob,
-          address: res.data.address,
-          gender: res.data.gender,
-          avatarUri: res.data.avatarUri,
-        });
+        this.profile = res.data;
+
+        this.form.patchValue(this.profile);
+
+        this.initialProfile = { ...this.profile };
+
+        this.avatarUriOrigin = res.data.avatarUri;
       }
     });
   }
@@ -207,6 +209,7 @@ export class ProfileSectionComponent implements OnInit {
   }
   saveField(fieldName: string) {
     if (!this.editing) return;
+
     this.form.patchValue({ [this.editing]: this.editValue });
     if (!this.profileUpdate) {
       this.profileUpdate = {
@@ -214,8 +217,9 @@ export class ProfileSectionComponent implements OnInit {
       } as UserProfileUpdateRequest;
     }
     (this.profileUpdate as any)[this.editing] = this.editValue;
-    console.log(`Updated ${this.editing}:`, this.editValue);
+
     this.editing = null;
+    this.cdr.detectChanges();
   }
 
   cancel() {
@@ -235,11 +239,12 @@ export class ProfileSectionComponent implements OnInit {
 
     this.profileService.updateProfile(this.profileUpdate).subscribe({
       next: (response) => {
-        // this.toastService.show(
-        //   'Cập nhật profile thành công!',
-        //   'Success',
-        //   ToastType.Success
-        // );
+        this.toastService.show(
+          'Cập nhật profile thành công!',
+          'Success',
+          ToastType.Success
+        );
+        console.log('Cập nhật thành công', response);
 
         this.form.patchValue({
           ...this.profileUpdate,
@@ -298,6 +303,20 @@ export class ProfileSectionComponent implements OnInit {
         );
       },
     });
+  }
+  get canConfirm(): boolean {
+    if (this.isUploadImage) return true;
+    if (!this.initialProfile) return false;
+
+    if (this.profileUpdate) {
+      return Object.keys(this.profileUpdate).some((key) => {
+        const newVal = (this.profileUpdate as any)[key];
+        const oldVal = (this.initialProfile as any)[key];
+
+        return newVal !== oldVal;
+      });
+    }
+    return false;
   }
 
   @HostListener('document:keydown', ['$event'])

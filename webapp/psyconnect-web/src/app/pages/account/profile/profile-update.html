@@ -49,13 +49,22 @@
         <span class="account-row__icon">›</span>
       </div>
     </div>
-
+    <div class="update-warning" *ngIf="!canConfirm">
+      <p>
+        Bạn chưa thay đổi thông tin nào. Nếu muốn cập nhật, vui lòng chỉnh sửa
+        dữ liệu trước khi nhấn <strong>Xác nhận</strong>.
+      </p>
+    </div>
+    <div *ngIf="canConfirm" class="update-warning">
+      Bạn có thay đổi chưa được lưu
+    </div>
     <button-group
       primaryText="Confirm"
       secondaryText="Cancel"
       (primaryClick)="confirmChanges()"
       (secondaryClick)="cancel()"
       class="button-group"
+      [disabledPrimary]="!canConfirm"
     ></button-group>
   </form>
 </section>

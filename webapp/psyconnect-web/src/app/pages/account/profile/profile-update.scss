@@ -472,3 +472,17 @@
   line-height: 1.2;
   max-width: 200px;
 }
+.error-warning {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-align: end;
+}
+.update-warning {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-warning-text);
+  font-weight: 500;
+  text-align: end;
+}

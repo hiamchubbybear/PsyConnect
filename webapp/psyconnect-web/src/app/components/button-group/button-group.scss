@@ -15,7 +15,17 @@
   white-space: nowrap;
   user-select: none;
 }
+.button-group.is-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  transition: opacity 0.2s ease;
 
+  button {
+    pointer-events: none;
+    color: red;
+  }
+}
 .button-group {
   @include button-base;
   flex: 1;

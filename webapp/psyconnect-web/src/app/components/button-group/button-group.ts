@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class ButtonGroupComponent {
   @Input() primaryText = '';
   @Input() secondaryText = '';
-
+  @Input() disabledPrimary = false;
   @Output() primaryClick = new EventEmitter<void>();
   @Output() secondaryClick = new EventEmitter<void>();
 
