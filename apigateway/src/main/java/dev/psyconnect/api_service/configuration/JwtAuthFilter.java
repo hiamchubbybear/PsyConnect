@@ -38,7 +38,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         log.info("Security filters: {}", authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -60,7 +59,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                         .header("X-Profile-Id", profileId)
                         .header("X-Roles", scopes)
                         .build();
-                log.info("Header Profile Id {}" , userId);
+                log.info("Header Profile Id {}", userId);
                 return chain.filter(exchange.mutate().request(mutatedRequest).build());
             } catch (SignatureException e) {
                 kafkaService.sendLog(buildLog(
@@ -71,7 +70,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                 log.error("Invalid JWT signature: {}", e.getMessage());
             }
         }
-
         return chain.filter(exchange);
     }
 

@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleGeneralException(Exception ex) {
         log.warn("General Exception: ", ex);
         ApiResponse<String> response =
-                new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server Error", null);
+                new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server Error", ex.getMessage());
         kafkaService.sendLog(LogEvent.builder()
                 .service("api-gateway")
                 .level(LogLevel.ERROR)
@@ -45,14 +45,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleNullPointerException(NullPointerException ex) {
         log.warn("NullPointerException: ", ex);
         ApiResponse<String> response =
-                new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Null value encountered", null);
+                new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Null value encountered", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("IllegalArgumentException: ", ex);
-        ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Illegal Argument", null);
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Illegal Argument", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -64,14 +64,14 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .orElse("Validation error");
 
-        ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Validation Failed", null);
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), "Validation Failed", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<String>> handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("AccessDeniedException: ", ex);
-        ApiResponse<String> response = new ApiResponse<>(HttpStatus.FORBIDDEN.value(), "Access denied", null);
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.FORBIDDEN.value(), "Access denied", ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 

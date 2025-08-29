@@ -35,8 +35,8 @@ public class KafkaProducerConfig {
 
     @Bean
     public DefaultErrorHandler errorHandler() {
-        FixedBackOff backOff = new FixedBackOff(1000L, 3);
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(backOff);
+        FixedBackOff fixedBackOff = new FixedBackOff(1000L, 3L);
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler(fixedBackOff);
         errorHandler.setRetryListeners((record, ex, deliveryAttempt) -> {
             log.error("Failed to consume record: {}, attempt {}, error: {}", record, deliveryAttempt, ex.getMessage());
         });
