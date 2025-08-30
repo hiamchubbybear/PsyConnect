@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'account-sidebar',
   templateUrl: './account-sidebar.html',
   styleUrls: ['./account-sidebar.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule , TranslateModule],
 })
 export class AppAccountSidebar {
   @Input() activeSection: string | null = null;

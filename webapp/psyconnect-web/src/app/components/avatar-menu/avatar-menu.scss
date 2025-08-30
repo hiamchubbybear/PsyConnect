@@ -1,15 +1,9 @@
 @use "../../styles/variable" as v;
-
-/* ===============================
-   Avatar Dropdown Menu
-================================= */
-
 .avatar-menu {
   position: relative;
   display: inline-block;
 }
 
-/* Trigger button */
 .avatar-trigger {
   display: flex;
   align-items: center;

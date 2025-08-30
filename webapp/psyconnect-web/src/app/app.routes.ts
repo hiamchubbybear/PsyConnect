@@ -5,7 +5,7 @@ import { guestGuard } from './guards/guest-guard';
 import { UpdateAccountComponent } from './pages/account/account-update';
 import { PaymentSessionComponent } from './pages/account/payment/payment';
 import { ProfileSectionComponent } from './pages/account/profile/profile-update';
-import { SecuritySessionComponent } from './pages/account/security/security';
+import { SecuritySectionComponent } from './pages/account/security/security-update';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
 import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
@@ -31,7 +31,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'profile', pathMatch: 'full' },
       { path: 'profile', component: ProfileSectionComponent },
-      { path: 'security', component: SecuritySessionComponent },
+      { path: 'security', component: SecuritySectionComponent },
       { path: 'payment', component: PaymentSessionComponent },
     ],
   },

@@ -1,11 +1,10 @@
 <section class="not-found">
   <div class="not-found-content">
-    <h1>404</h1>
-    <h2>Oops! This page doesn’t exist.</h2>
-    <p>
-      The page you are looking for might have been removed or is temporarily
-      unavailable.
-    </p>
-    <button (click)="toggleTheme()" class="btn back-home">Back to Home</button>
+    <h1>{{ "NOTFOUND.Code" | translate }}</h1>
+    <h2>{{ "NOTFOUND.Title" | translate }}</h2>
+    <p>{{ "NOTFOUND.Description" | translate }}</p>
+    <button (click)="toggleTheme()" class="btn back-home">
+      {{ "NOTFOUND.BackButton" | translate }}
+    </button>
   </div>
 </section>

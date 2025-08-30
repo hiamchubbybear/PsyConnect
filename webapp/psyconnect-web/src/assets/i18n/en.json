@@ -1,0 +1,231 @@
+{
+  "APP_NAME": "Psyconnect",
+  "HEADER": {
+    "Feature": "Feature",
+    "Therapist": "Therapist",
+    "Community": "Community",
+    "About": "About",
+    "Login": "Login",
+    "Sign Up": "Sign"
+  },
+  "COMMON": {
+    "GetStartedFree": "Get Started Free",
+    "LearnMore": "Learn More",
+    "SignUpFree": "Sign Up Free",
+    "Login": "Log In",
+    "Confirm": "Confirm",
+    "Cancel": "Cancel",
+    "SaveChanges": "Save Changes",
+    "Remove": "Remove",
+    "Add": "Add",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "Update": "Update",
+    "Back": "Back",
+    "Next": "Next",
+    "Previous": "Previous",
+    "Submit": "Submit",
+    "Reset": "Reset",
+    "Search": "Search",
+    "Filter": "Filter",
+    "Sort": "Sort",
+    "Loading": "Loading...",
+    "NoData": "No data available",
+    "Error": "Error",
+    "Success": "Success",
+    "Warning": "Warning",
+    "Info": "Information"
+  },
+  "HOME": {
+    "Tagline": "Take care of your mind, one step at a time",
+    "Description": "Connect with licensed therapists, track your mood, and join a supportive community on your mental health journey.",
+    "IllustrationTitle": "Mental Health Illustration",
+    "SectionTitle": "Everything you need for better mental health",
+    "SectionDescription": "Comprehensive tools and support to help you thrive",
+    "TherapyBooking": {
+      "Title": "Therapy Booking",
+      "Description": "Schedule sessions with licensed therapists who specialize in your needs. Available 24/7."
+    },
+    "MoodTracking": {
+      "Title": "Mood Tracking",
+      "Description": "Monitor your emotional patterns and progress with our intuitive mood tracking tools."
+    },
+    "CommunitySupport": {
+      "Title": "Community Support",
+      "Description": "Connect with others on similar journeys in our safe, moderated community spaces."
+    },
+    "AppPreview": {
+      "Title": "App Interface Preview",
+      "Subtitle": "Your mental health, simplified",
+      "Features": {
+        "ProfessionalSupport": "Professional Support – Access to licensed therapists and mental health professionals",
+        "PrivacyFirst": "Privacy First – Your data is encrypted and protected with the highest security standards",
+        "Availability": "24/7 Availability – Support when you need it most, any time of day or night"
+      },
+      "CallToAction": "Ready to start your journey?",
+      "JoinUsers": "Join thousands of users who are taking control of their mental health"
+    }
+  },
+  "FOOTER": {
+    "Brand": {
+      "Title": "PsyConnect",
+      "Description": "Supporting your mental health journey with professional care and community support."
+    },
+    "Links": {
+      "Company": {
+        "Title": "Company",
+        "About": "About",
+        "Contact": "Contact",
+        "Careers": "Careers"
+      },
+      "Support": {
+        "Title": "Support",
+        "HelpCenter": "Help Center",
+        "PrivacyPolicy": "Privacy Policy",
+        "TermsOfService": "Terms of Service"
+      }
+    },
+    "Copyright": "© 2025 Psyconnect. All rights reserved."
+  },
+  "NOTFOUND": {
+    "Code": "404",
+    "Title": "Oops! This page doesn’t exist.",
+    "Description": "The page you are looking for might have been removed or is temporarily unavailable.",
+    "BackButton": "Back to Home"
+  },
+  "LOGIN": {
+    "Header": {
+      "Title": "Welcome Back",
+      "Subtitle": "Sign in to your account"
+    },
+    "Form": {
+      "Username": "Username",
+      "UsernamePlaceholder": "Enter your username",
+      "UsernameRequired": "Username is required",
+      "UsernameMinLength": "Username must be at least 6 characters",
+      "Password": "Password",
+      "PasswordPlaceholder": "Enter your password",
+      "PasswordRequired": "Password is required",
+      "RememberMe": "Remember me",
+      "ForgotPassword": "Forgot password?",
+      "SignIn": "Sign In",
+      "DividerText": "or continue with",
+      "SocialGoogle": "Google",
+      "SocialFacebook": "Facebook",
+      "NoAccount": "Don’t have an account?",
+      "CreateAccount": "Create one"
+    }
+  },
+  "AVATAR_MENU": {
+    "Profile": "Profile",
+    "Account": "Account",
+    "Activity": "Activity",
+    "History": "History",
+    "Notifications": "Notifications",
+    "Settings": "Settings",
+    "HelpSupport": "Help & Support",
+    "PrivacySecurity": "Privacy & Security",
+    "Logout": "Logout"
+  },
+  "SWIPE_CARD": {
+    "Overlays": {
+      "Like": "LIKE",
+      "Nope": "NOPE"
+    },
+    "Pricing": {
+      "NA": "N/A",
+      "TypicalSession": "Typical session length: 50 mins",
+      "PerHour": "/ hour"
+    },
+    "Availability": {
+      "NoInfo": "No availability info"
+    },
+    "Modes": {
+      "RemoteInPerson": "Remote + In-person where available"
+    },
+    "Actions": {
+      "Pass": "Pass",
+      "Match": "Match"
+    }
+  },
+  "ACCOUNT_MANAGEMENT": {
+    "Sidebar": {
+      "Title": "Account Settings",
+      "Items": {
+        "AccountInfo": "Account Information",
+        "Security": "Security",
+        "Payment": "Payment"
+      }
+    },
+    "Profile": {
+      "Avatar": "Avatar",
+      "FirstName": "First Name",
+      "MiddleName": "Middle Name",
+      "LastName": "Last Name",
+      "Name": "Name",
+      "DOB": "Date of Birth",
+      "Address": "Address",
+      "Gender": "Gender",
+      "GenderOptions": {
+        "Male": "Male",
+        "Female": "Female",
+        "Other": "Other"
+      },
+      "Notices": {
+        "NameChangeWarning": "If you change your name, you cannot change it again for 60 days. Do not use unusual capitalization or add punctuation, random characters, or words.",
+        "DOBInfo": "Used to verify your age.",
+        "AddressInfo": "This address helps determine service area.",
+        "GenderInfo": "This helps personalize your experience.",
+        "NoChanges": "You haven't changed anything yet. Please edit data before clicking Confirm.",
+        "UnsavedChanges": "You have unsaved changes."
+      },
+      "Buttons": {
+        "Confirm": "Confirm",
+        "Cancel": "Cancel",
+        "SaveChanges": "Save Changes"
+      },
+      "ImageSelected": "Selected image"
+    },
+    "Security": {
+      "Title": "Password & Security",
+      "Description": "Manage passwords, login, and other security methods.",
+      "CheckSecurity": "Security Check",
+      "CheckDescription": "Review security issues on devices, email, and applications.",
+      "Items": {
+        "ChangePassword": "Change Password",
+        "TwoFA": "Two-Factor Authentication (2FA)",
+        "RecentLogins": "Recent Login Activity",
+        "SecurityMethods": "Security Methods",
+        "LoggedDevices": "Logged In Devices",
+        "SuspiciousActivity": "Suspicious Login Activity",
+        "LinkedEmails": "Linked Emails",
+        "ThirdPartyApps": "Apps & Permissions"
+      },
+      "Check": {
+        "LoggedDevices": "Check device security",
+        "LinkedEmails": "Check linked emails",
+        "ThirdPartyApps": "Check third-party applications"
+      },
+      "Overlay": {
+        "CurrentPassword": "Current Password",
+        "NewPassword": "New Password",
+        "ConfirmPassword": "Confirm New Password",
+        "TwoFAInstruction": "Choose 2FA method to protect your account:",
+        "AuthApp": "Authenticator App",
+        "SMS": "SMS",
+        "SecurityKey": "Physical Key",
+        "EmailRecovery": "Recovery Email",
+        "PhoneVerification": "Authentication Phone",
+        "PhysicalKey": "Physical Security Key",
+        "LogoutDevice": "Logout",
+        "Verify": "Verify",
+        "AddEmail": "Add new email",
+        "RevokePermission": "Revoke Permissions",
+        "Buttons": {
+          "Cancel": "Cancel",
+          "SaveChanges": "Save Changes"
+        }
+      }
+    }
+  }
+}

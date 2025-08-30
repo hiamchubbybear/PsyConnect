@@ -11,12 +11,14 @@ import {
     ViewChild,
 } from '@angular/core';
 import { Therapist } from '../../models/swipe-card';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  standalone : true,
   selector: 'app-swipe-card',
   templateUrl: './swipe-card.html',
   styleUrls: ['./swipe-card.scss'],
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
 })
 export class SwipeCardComponent implements OnInit, OnDestroy {
   @Input() therapist: any = {};

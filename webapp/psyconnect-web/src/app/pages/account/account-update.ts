@@ -3,7 +3,7 @@ import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { AppAccountSidebar } from './account-sidebar/account-sidebar';
 import { PaymentSessionComponent } from './payment/payment';
 import { ProfileSectionComponent } from './profile/profile-update';
-import { SecuritySessionComponent } from './security/security';
+import { SecuritySectionComponent } from "./security/security-update";
 
 @Component({
   selector: 'app-update-account',
@@ -11,10 +11,10 @@ import { SecuritySessionComponent } from './security/security';
   imports: [
     CommonModule,
     AppAccountSidebar,
-    SecuritySessionComponent,
     PaymentSessionComponent,
     ProfileSectionComponent,
-  ],
+    SecuritySectionComponent
+],
   templateUrl: './account-update.html',
   styleUrls: ['./account-update.scss'],
 })
