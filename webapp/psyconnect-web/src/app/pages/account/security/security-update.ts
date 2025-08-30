@@ -10,6 +10,7 @@ import { ButtonGroupComponent } from '../../../components/button-group/button-gr
 import { LoaderService } from '../../../services/loader/loader';
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 interface PasswordData {
   current: string;
@@ -31,6 +32,7 @@ interface SecurityMethods {
     FormsModule,
     ReactiveFormsModule,
     ButtonGroupComponent,
+    TranslateModule
   ],
   templateUrl: './security-update.html',
   styleUrls: ['./security-update.scss'],
@@ -42,22 +44,22 @@ throw new Error('Method not implemented.');
   confirmChanges() {
     throw new Error('Method not implemented.');
   }
-  securityItems = [
-    { label: 'Đổi mật khẩu', key: 'changePassword' },
-    { label: 'Xác thực hai yếu tố (2FA)', key: '2fa' },
-    { label: 'Hoạt động đăng nhập gần đây', key: 'recentLogins' },
-    { label: 'Phương thức bảo mật', key: 'securityMethods' },
-    { label: 'Thiết bị đang đăng nhập', key: 'loggedDevices' },
-    { label: 'Hoạt động đăng nhập đáng ngờ', key: 'suspiciousActivity' },
-    { label: 'Email liên kết', key: 'linkedEmails' },
-    { label: 'Ứng dụng và quyền', key: 'thirdPartyApps' },
-  ];
+securityItems = [
+  { label: 'ACCOUNT_MANAGEMENT.Security.Items.ChangePassword', key: 'changePassword' },
+  { label: 'ACCOUNT_MANAGEMENT.Security.Items.TwoFA', key: '2fa' },
+  { label: 'ACCOUNT_MANAGEMENT.Security.Items.RecentLogins', key: 'recentLogins' },
+  { label: 'ACCOUNT_MANAGEMENT.Security.Items.SecurityMethods', key: 'securityMethods' },
+  { label: 'ACCOUNT_MANAGEMENT.Security.Items.LoggedDevices', key: 'loggedDevices' },
+  { label: 'ACCOUNT_MANAGEMENT.Security.Items.SuspiciousActivity', key: 'suspiciousActivity' },
+  { label: 'ACCOUNT_MANAGEMENT.Security.Items.LinkedEmails', key: 'linkedEmails' },
+  { label: 'ACCOUNT_MANAGEMENT.Security.Items.ThirdPartyApps', key: 'thirdPartyApps' },
+];
 
   securityCheckItems = [
-    { label: 'Kiểm tra bảo mật thiết bị', key: 'loggedDevices' },
-    { label: 'Kiểm tra email liên kết', key: 'linkedEmails' },
-    { label: 'Kiểm tra ứng dụng bên thứ ba', key: 'thirdPartyApps' },
-  ];
+  { label: 'ACCOUNT_MANAGEMENT.Security.Check.LoggedDevices', key: 'loggedDevices' },
+  { label: 'ACCOUNT_MANAGEMENT.Security.Check.LinkedEmails', key: 'linkedEmails' },
+  { label: 'ACCOUNT_MANAGEMENT.Secuity.Check.ThirdPartyApps', key: 'thirdPartyApps' },
+];
 
   editing: string | null = null;
   passwordData: PasswordData = {

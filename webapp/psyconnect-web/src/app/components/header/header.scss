@@ -302,3 +302,18 @@ body {
     opacity: 0;
   }
 }
+
+.lang-switcher {
+  background: transparent;
+  border: 1px solid var(--color-text);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+}

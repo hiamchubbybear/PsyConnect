@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    HostListener,
-    OnDestroy,
-    OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
@@ -14,8 +14,8 @@ import { Observable, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
 import {
-    UserContextService,
-    UserProfile,
+  UserContextService,
+  UserProfile,
 } from '../../services/profile/profile-service';
 import { ThemeService } from '../../services/theme/theme-service';
 import { TranslationService } from '../../shared/translate/translate-service';
@@ -31,6 +31,11 @@ import { HeaderStateService } from './header-state';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit, OnDestroy {
+  currentLang: string = 'en';
+  switchLang() {
+    const nextLang = this.currentLang === 'en' ? 'vi' : 'en';
+    this.translateService.setLanguage(nextLang);
+  } 
   isMini = false;
 
   userAvatarUrl = 'assets/images/avatar.jpeg';
@@ -52,7 +57,12 @@ export class Header implements OnInit, OnDestroy {
     private router: Router,
     private themeService: ThemeService,
     private translateService: TranslationService
-  ) {}
+  ) {
+      // Subscribe language changes
+    this.translateService.currentLanguage$.subscribe(lang => {
+      this.currentLang = lang;
+    });
+  }
 
   ngOnInit() {
     this.userSubscription = this.headerState.isMini$.subscribe((value) => {
@@ -120,7 +130,7 @@ export class Header implements OnInit, OnDestroy {
   onScroll() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     if (scrollTop > this.lastScrollTop + 1) {
-    this.headerState.setMini(true);
+      this.headerState.setMini(true);
     } else if (scrollTop < this.lastScrollTop - 10) {
       this.headerState.setMini(false);
     }

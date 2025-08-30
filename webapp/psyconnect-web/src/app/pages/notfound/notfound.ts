@@ -3,11 +3,13 @@ import { RouterModule } from '@angular/router';
 import { ThemeService } from '../../services/theme/theme-service';
 import { ToastType } from '../../shared/toast/toast-type';
 import { ToastService } from '../../shared/toast/toast.service';
+import { SharedTranslateModule } from '../../shared/translate/translate.module';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-notfound',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, TranslateModule],
   templateUrl: './notfound.html',
   styleUrl: './notfound.scss',
 })

@@ -1,5 +1,5 @@
-// export interface Account {
-//   username: String;
-//   password: String;
-//   email: String;
-// }
+export interface Account {
+  username: String;
+  password: String;
+  email: String;
+}

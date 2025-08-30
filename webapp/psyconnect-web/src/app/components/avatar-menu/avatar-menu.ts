@@ -9,11 +9,12 @@ import {
 import { RouterModule } from '@angular/router';
 import { ThemeService } from '../../services/theme/theme-service';
 import { SecureStorageService } from '../../encrypt/secure';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-avatar-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule , TranslateModule],
   templateUrl: './avatar-menu.html',
   styleUrl: './avatar-menu.scss',
 })
