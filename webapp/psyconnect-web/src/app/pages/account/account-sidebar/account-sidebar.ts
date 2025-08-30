@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -10,8 +10,12 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule],
 })
 export class AppAccountSidebar {
-  activeSection: string = 'payment';
+  @Input() activeSection: string | null = null;
+  @Output() navigate = new EventEmitter<string>();
 
+  onClick(sectionId: string) {
+    this.navigate.emit(sectionId);
+  }
   onScroll(event: Event) {
     const target = event.target as HTMLElement;
     const sections = target.querySelectorAll('.settings-section');

@@ -1,0 +1,32 @@
+<nav class="sidebar">
+  <h3 class="sidebar__title">Cài đặt tài khoản</h3>
+  <ul class="sidebar__list">
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('profile')"
+        [class.active]="activeSection === 'profile'"
+      >
+        Thông tin tài khoản
+      </a>
+    </li>
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('security')"
+        [class.active]="activeSection === 'security'"
+      >
+        Bảo mật
+      </a>
+    </li>
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('payment')"
+        [class.active]="activeSection === 'payment'"
+      >
+        Thanh toán
+      </a>
+    </li>
+  </ul>
+</nav>

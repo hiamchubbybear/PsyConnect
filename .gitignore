@@ -143,7 +143,6 @@ coverage/
 *.ngfactory.ts
 *.ngstyle.ts
 *.tsbuildinfo
-*.js
 *.d.ts
 
 # ===============================

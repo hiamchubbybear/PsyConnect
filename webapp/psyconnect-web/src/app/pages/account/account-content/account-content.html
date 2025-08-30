@@ -1,0 +1,75 @@
+<div class="account-content">
+
+  <!-- Thông tin tài khoản -->
+  <section id="account-info" class="account-section">
+    <h2>Thông tin tài khoản</h2>
+    <form [formGroup]="accountForm" (ngSubmit)="saveForm(accountForm, 'account')">
+      <label>
+        Tên đăng nhập
+        <input formControlName="username" type="text" />
+      </label>
+      <label>
+        Email
+        <input formControlName="email" type="email" />
+      </label>
+      <button type="submit">Lưu</button>
+    </form>
+  </section>
+
+  <!-- Thông tin cá nhân -->
+  <section id="personal-info" class="account-section">
+    <h2>Thông tin cá nhân</h2>
+    <form [formGroup]="personalForm" (ngSubmit)="saveForm(personalForm, 'personal')">
+      <label>
+        Họ và tên
+        <input formControlName="fullname" type="text" />
+      </label>
+      <label>
+        Số điện thoại
+        <input formControlName="phone" type="tel" />
+      </label>
+      <button type="submit">Lưu</button>
+    </form>
+  </section>
+
+  <!-- Bảo mật -->
+  <section id="security" class="account-section">
+    <h2>Bảo mật</h2>
+    <form [formGroup]="securityForm" (ngSubmit)="saveForm(securityForm, 'security')">
+      <label>
+        Mật khẩu hiện tại
+        <input formControlName="currentPassword" type="password" />
+      </label>
+      <label>
+        Mật khẩu mới
+        <input formControlName="newPassword" type="password" />
+      </label>
+      <label>
+        Nhập lại mật khẩu
+        <input formControlName="confirmPassword" type="password" />
+      </label>
+      <button type="submit">Đổi mật khẩu</button>
+    </form>
+  </section>
+
+  <!-- Thanh toán -->
+  <section id="payment" class="account-section">
+    <h2>Thanh toán</h2>
+    <form [formGroup]="paymentForm" (ngSubmit)="saveForm(paymentForm, 'payment')">
+      <label>
+        Số thẻ
+        <input formControlName="cardNumber" type="text" />
+      </label>
+      <label>
+        Hạn sử dụng
+        <input formControlName="expiry" type="text" placeholder="MM/YY" />
+      </label>
+      <label>
+        CVV
+        <input formControlName="cvv" type="password" />
+      </label>
+      <button type="submit">Lưu</button>
+    </form>
+  </section>
+
+</div>

@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import {
-    Component,
-    EventEmitter,
-    HostListener,
-    Input,
-    Output,
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ThemeService } from '../../services/theme/theme-service';
+import { SecureStorageService } from '../../encrypt/secure';
 
 @Component({
   selector: 'app-avatar-menu',
@@ -18,7 +19,10 @@ import { ThemeService } from '../../services/theme/theme-service';
 })
 export class AvatarMenuComponent {
   isOpen = false;
-  constructor(private themeService: ThemeService) {}
+  constructor(
+    private themeService: ThemeService,
+    private secureStorage: SecureStorageService
+  ) {}
   toggleMenu() {
     this.isOpen = !this.isOpen;
   }
@@ -33,6 +37,7 @@ export class AvatarMenuComponent {
   }
   logout() {
     this.logoutClicked.emit();
+    this.secureStorage.clear();
   }
   @HostListener('document:keydown', ['$event'])
   onEsc(event: KeyboardEvent) {

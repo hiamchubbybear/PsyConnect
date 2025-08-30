@@ -1,9 +1,9 @@
 import {
-    ApplicationRef,
-    ComponentRef,
-    EnvironmentInjector,
-    Injectable,
-    createComponent,
+  ApplicationRef,
+  ComponentRef,
+  EnvironmentInjector,
+  Injectable,
+  createComponent,
 } from '@angular/core';
 import { ToastContainerComponent } from './toast-container';
 import { ToastData, ToastType } from './toast.model';
