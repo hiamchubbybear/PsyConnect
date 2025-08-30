@@ -535,3 +535,13 @@ a {
 .content {
   padding: v.$spacing-6xl;
 }
+.dropdown__trigger {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+}

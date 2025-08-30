@@ -106,4 +106,7 @@ export class TranslationService {
   public waitForTranslations(): Observable<boolean> {
     return this.translateService.onTranslationChange.pipe(map(() => true));
   }
+    public translateMultikey(key: string | string[], params?: any): Observable<any> {
+      return this.translateService.get(key, params);
+    }
 }

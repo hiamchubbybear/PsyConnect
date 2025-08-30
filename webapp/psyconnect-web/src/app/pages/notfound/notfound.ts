@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ThemeService } from '../../services/theme/theme-service';
-import { ToastType } from '../../shared/toast/toast-type';
-import { ToastService } from '../../shared/toast/toast.service';
-import { SharedTranslateModule } from '../../shared/translate/translate.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { ThemeService } from '../../services/theme/theme-service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-notfound',
@@ -21,6 +19,5 @@ export class Notfound {
   toggleTheme() {
     this.themeService.toggleTheme();
     console.log('Show toast');
-    this.toastService.show('Login success', 'Success', ToastType.Success);
   }
 }

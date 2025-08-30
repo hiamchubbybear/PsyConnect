@@ -229,5 +229,9 @@
         }
       }
     }
+  },
+  "LANGUAGE": {
+    "English": "Tiếng Anh",
+    "Vietnamese": "Tiếng Việt"
   }
 }

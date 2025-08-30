@@ -227,5 +227,9 @@
         }
       }
     }
+  },
+  "LANGUAGE": {
+    "English": "English",
+    "Vietnamese": "Vietnamese"
   }
 }

@@ -20,22 +20,35 @@ import {
 import { ThemeService } from '../../services/theme/theme-service';
 import { TranslationService } from '../../shared/translate/translate-service';
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
+import { DropdownComponent, DropdownOption } from '../dropdown/dropdown';
 import { HeaderStateService } from './header-state';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatMenuModule, AvatarMenuComponent, TranslateModule],
+  imports: [
+    CommonModule,
+    MatMenuModule,
+    AvatarMenuComponent,
+    TranslateModule,
+    DropdownComponent,
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit, OnDestroy {
-  currentLang: string = 'en';
-  switchLang() {
-    const nextLang = this.currentLang === 'en' ? 'vi' : 'en';
-    this.translateService.setLanguage(nextLang);
-  } 
+  currentLang: string = '';
+  displayLang: string = '';
+
+  selectedLanguage: any = null;
+  private subscriptions: Subscription = new Subscription();
+
+  languageOptions: DropdownOption[] = [
+    { value: 'en', label: 'English' },
+    { value: 'vi', label: 'Vietnamese' },
+  ];
+
   isMini = false;
 
   userAvatarUrl = 'assets/images/avatar.jpeg';
@@ -58,12 +71,11 @@ export class Header implements OnInit, OnDestroy {
     private themeService: ThemeService,
     private translateService: TranslationService
   ) {
-      // Subscribe language changes
-    this.translateService.currentLanguage$.subscribe(lang => {
+    this.translateService.currentLanguage$.subscribe((lang) => {
       this.currentLang = lang;
+      this.displayLang = lang === 'en' ? 'English' : 'Vietnamese';
     });
   }
-
   ngOnInit() {
     this.userSubscription = this.headerState.isMini$.subscribe((value) => {
       this.isMini = value;
@@ -125,6 +137,12 @@ export class Header implements OnInit, OnDestroy {
     this.translateService.switchLanguage();
     this.themeService.toggleTheme();
     this.isDark = !this.isDark;
+  }
+  onLanguageChange(option: DropdownOption | null) {
+    if (option) {
+      this.translateService.setLanguage(option.value);
+      this.selectedLanguage = option.value;
+    }
   }
   @HostListener('window:scroll', [])
   onScroll() {
