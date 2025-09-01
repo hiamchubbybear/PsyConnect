@@ -10,4 +10,12 @@
   <ng-template #empty>
     <div class="empty">No more therapists — check back later</div>
   </ng-template>
+  <app-therapist-profile-overlay
+    *ngIf="isOverlayOpen && selectedTherapist"
+    [therapist]="selectedTherapist"
+    [isVisible]="isOverlayOpen"
+    (closeOverlay)="onCloseOverlay()"
+    (bookAppointment)="onBookAppointment($event)"
+    (sendMessage)="onSendMessage($event)"
+  ></app-therapist-profile-overlay>
 </div>

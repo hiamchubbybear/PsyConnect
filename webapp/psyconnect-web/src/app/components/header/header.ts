@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  HostListener,
-  OnDestroy,
-  OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    OnDestroy,
+    OnInit,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
@@ -14,8 +14,8 @@ import { Observable, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
 import {
-  UserContextService,
-  UserProfile,
+    UserContextService,
+    UserProfile,
 } from '../../services/profile/profile-service';
 import { ThemeService } from '../../services/theme/theme-service';
 import { TranslationService } from '../../shared/translate/translate-service';
@@ -134,7 +134,6 @@ export class Header implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
   toggleTheme() {
-    this.translateService.switchLanguage();
     this.themeService.toggleTheme();
     this.isDark = !this.isDark;
   }

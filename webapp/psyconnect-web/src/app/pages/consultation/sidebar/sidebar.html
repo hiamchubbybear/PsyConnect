@@ -1,0 +1,67 @@
+<nav class="sidebar">
+  <h3 class="sidebar__title">
+    {{ "CONSULTATION.Sidebar.Title" | translate }}
+  </h3>
+
+  <ul class="sidebar__list">
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('discover')"
+        [class.active]="activeSection === 'discover'"
+      >
+        {{ "CONSULTATION.Sidebar.Items.Discover" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('sessions')"
+        [class.active]="activeSection === 'sessions'"
+      >
+        {{ "CONSULTATION.Sidebar.Items.Sessions" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('schedule')"
+        [class.active]="activeSection === 'schedule'"
+      >
+        {{ "CONSULTATION.Sidebar.Items.Schedule" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('history')"
+        [class.active]="activeSection === 'history'"
+      >
+        {{ "CONSULTATION.Sidebar.Items.History" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('reviews')"
+        [class.active]="activeSection === 'reviews'"
+      >
+        {{ "CONSULTATION.Sidebar.Items.Reviews" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('settings')"
+        [class.active]="activeSection === 'settings'"
+      >
+        {{ "CONSULTATION.Sidebar.Items.Settings" | translate }}
+      </a>
+    </li>
+  </ul>
+</nav>

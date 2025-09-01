@@ -7,11 +7,11 @@ import { PaymentSessionComponent } from './pages/account/payment/payment';
 import { ProfileSectionComponent } from './pages/account/profile/profile-update';
 import { SecuritySectionComponent } from './pages/account/security/security-update';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
+import { Consultation } from './pages/consultation/consultation';
 import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
 import { Notfound } from './pages/notfound/notfound';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
-import { SwipeDeckComponent } from './pages/swipe/swipe-deck';
 
 export const routes: Routes = [
   { path: '', component: Homepage, canActivate: [guestGuard] },
@@ -38,7 +38,7 @@ export const routes: Routes = [
   { path: 'feature/feed', component: Notfound, canActivate: [authGuard] },
   {
     path: 'feature/schedule',
-    component: SwipeDeckComponent,
+    component: Consultation,
     canActivate: [authGuard],
   },
   { path: 'feature/chat', component: Notfound, canActivate: [authGuard] },

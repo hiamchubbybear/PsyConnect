@@ -146,6 +146,24 @@
     "Actions": {
       "Pass": "Pass",
       "Match": "Match"
+    },
+    "Tabs": {
+      "specialties": "Specialties",
+      "pricing": "Pricing",
+      "availability": "Availability",
+      "languages": "Languages",
+      "modes": "Modes"
+    },
+    "Rating": {
+      "NoRating": "—"
+    },
+    "Specialties": {
+      "MainAreas": "Main areas of focus",
+      "NoInfo": "No specialty information"
+    },
+    "Languages": {
+      "Spoken": "Languages spoken",
+      "NoInfo": "No language information"
     }
   },
   "ACCOUNT_MANAGEMENT": {
@@ -231,5 +249,19 @@
   "LANGUAGE": {
     "English": "English",
     "Vietnamese": "Vietnamese"
+  },
+  "CONSULTATION": {
+    "Sidebar": {
+      "Title": "Consultation",
+      "Items": {
+        "Discover": "Discover",
+        "Messages": "Messages",
+        "Sessions": "Sessions",
+        "Schedule": "Schedule",
+        "History": "History",
+        "Reviews": "Reviews & Feedback",
+        "Settings": "Settings"
+      }
+    }
   }
 }

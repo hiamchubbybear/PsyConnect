@@ -233,5 +233,19 @@
   "LANGUAGE": {
     "English": "Tiếng Anh",
     "Vietnamese": "Tiếng Việt"
+  },
+  "CONSULTATION": {
+    "Sidebar": {
+      "Title": "Tư vấn",
+      "Items": {
+        "Discover": "Tư vấn / Khám phá",
+        "Messages": "Nhắn tin",
+        "Sessions": "Phiên tư vấn",
+        "Schedule": "Lịch hẹn",
+        "History": "Lịch sử",
+        "Reviews": "Đánh giá & Phản hồi",
+        "Settings": "Cài đặt"
+      }
+    }
   }
 }

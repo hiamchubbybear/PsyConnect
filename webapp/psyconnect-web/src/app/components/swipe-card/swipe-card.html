@@ -1,63 +1,79 @@
-<div class="overlay like" [style.opacity]="likeOpacity">
-  {{ "SWIPE_CARD.Overlays.Like" | translate }}
-</div>
-<div class="overlay nope" [style.opacity]="nopeOpacity">
-  {{ "SWIPE_CARD.Overlays.Nope" | translate }}
-</div>
-
-<div *ngSwitchCase="'pricing'">
-  <div class="line">
-    {{
-      (therapist.pricePerHour ?? therapist.pricing?.priceRange) ||
-        ("SWIPE_CARD.Pricing.NA" | translate)
-    }}
-    {{ therapist.currency || therapist.pricing?.currency || "" }}
-    {{ "SWIPE_CARD.Pricing.PerHour" | translate }}
-  </div>
-  <div class="line muted">
-    {{ "SWIPE_CARD.Pricing.TypicalSession" | translate }}
-  </div>
-</div>
-
-<div *ngSwitchCase="'availability'">
-  <div
-    class="line muted"
-    *ngIf="!therapist.nextAvailable || therapist.nextAvailable.trim() === ''"
+<div class="card-wrapper" [style.zIndex]="100 - index">
+  <article
+    #card
+    class="card"
+    role="article"
+    [style.transform]="transform"
+    [style.transition]="transition"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+    tabindex="0"
+    [attr.aria-label]="
+      'SWIPE_CARD.AriaLabel.TherapistCard'
+        | translate : { name: therapist.name || 'profile' }
+    "
   >
-    {{ "SWIPE_CARD.Availability.NoInfo" | translate }}
-  </div>
-  <div
-    class="line"
-    *ngIf="therapist.nextAvailable && therapist.nextAvailable.trim() !== ''"
-  >
-    {{ therapist.nextAvailable }}
-  </div>
+    <div class="overlay like" [style.opacity]="likeOpacity">
+      {{ "SWIPE_CARD.Overlays.Like" | translate }}
+    </div>
+    <div class="overlay nope" [style.opacity]="nopeOpacity">
+      {{ "SWIPE_CARD.Overlays.Nope" | translate }}
+    </div>
+
+    <header class="card-header">
+      <img
+        *ngIf="therapist.avatar_override; else placeholder"
+        [src]="therapist.avatar_override"
+        [alt]="therapist.name"
+        class="avatar"
+      />
+      <ng-template #placeholder>
+        <div class="avatar">👩‍⚕️</div>
+      </ng-template>
+
+      <div class="meta">
+        <h3 class="name">{{ therapist.name }}</h3>
+        <div class="title">
+          {{ therapist.professional_info?.title?.display }}
+        </div>
+        <div class="rating">
+          <span class="stars">★</span>
+          <span class="score">{{
+            therapist.rating ?? ("SWIPE_CARD.Rating.NoRating" | translate)
+          }}</span>
+          <span class="reviews" *ngIf="therapist.experience">
+            ({{ therapist.experience }} years)
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <footer class="card-actions">
+      <button
+        class="btn pass"
+        (click)="pass()"
+        [attr.aria-label]="'SWIPE_CARD.Actions.Pass' | translate"
+      >
+        ✕ {{ "SWIPE_CARD.Actions.Pass" | translate }}
+      </button>
+
+      <button
+        class="btn up"
+        (click)="animateUp()"
+        [attr.aria-label]="'SWIPE_CARD.Actions.ViewProfile' | translate"
+      >
+        👁️ View Profile
+      </button>
+
+      <button
+        class="btn match"
+        (click)="match()"
+        [attr.aria-label]="'SWIPE_CARD.Actions.Match' | translate"
+      >
+        ❤ {{ "SWIPE_CARD.Actions.Match" | translate }}
+      </button>
+    </footer>
+  </article>
 </div>
-
-<div *ngSwitchCase="'modes'">
-  <div
-    class="line"
-    *ngFor="let mode of therapist.consultationModes || [] | slice : 0 : 3"
-  >
-    {{ mode }}
-  </div>
-  <div class="line muted">
-    {{ "SWIPE_CARD.Modes.RemoteInPerson" | translate }}
-  </div>
-</div>
-
-<footer class="card-actions">
-  <button
-    (click)="pass()"
-    [attr.aria-label]="'SWIPE_CARD.Actions.Pass' | translate"
-  >
-    Pass
-  </button>
-
-  <button
-    (click)="match()"
-    [attr.aria-label]="'SWIPE_CARD.Actions.Match' | translate"
-  >
-    Match
-  </button>
-</footer>

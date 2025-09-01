@@ -10,22 +10,23 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { Therapist } from '../../models/swipe-card';
 import { TranslateModule } from '@ngx-translate/core';
+import { TherapistProfile } from '../profile-overlay/profile-overlay';
 
 @Component({
-  standalone : true,
+  standalone: true,
   selector: 'app-swipe-card',
   templateUrl: './swipe-card.html',
   styleUrls: ['./swipe-card.scss'],
   imports: [CommonModule, TranslateModule],
 })
 export class SwipeCardComponent implements OnInit, OnDestroy {
-  @Input() therapist: any = {};
+  @Input() therapist: TherapistProfile = {} as TherapistProfile;
   @Input() index = 0;
+
   @Output() swiped = new EventEmitter<{
-    direction: 'left' | 'right';
-    therapist: Therapist;
+    direction: 'left' | 'right' | 'up';
+    therapist: TherapistProfile;
   }>();
 
   @ViewChild('card', { static: true }) cardRef!: ElementRef<HTMLElement>;
@@ -61,6 +62,16 @@ export class SwipeCardComponent implements OnInit, OnDestroy {
     cancelAnimationFrame(this.rafId);
   }
 
+  animateUp() {
+    this.transition = 'transform 300ms cubic-bezier(.2,.9,.2,1), opacity 300ms';
+    this.transform = `translate(0px, -50%)`;
+
+    setTimeout(() => {
+      this.swiped.emit({ direction: 'up', therapist: this.therapist });
+      this.resetPosition();
+    }, 300);
+  }
+
   onPointerDown(ev: PointerEvent) {
     if (this.pointerId !== null) return;
     this.pointerId = ev.pointerId;
@@ -83,6 +94,7 @@ export class SwipeCardComponent implements OnInit, OnDestroy {
   onPointerUp(ev: PointerEvent) {
     if (!this.dragging || ev.pointerId !== this.pointerId) return;
     this.dragging = false;
+
     if (this.pointerId !== null) {
       try {
         (ev.target as Element).releasePointerCapture(this.pointerId);
@@ -91,9 +103,13 @@ export class SwipeCardComponent implements OnInit, OnDestroy {
     }
 
     const dx = this.currentX - this.startX;
+    const dy = this.currentY - this.startY;
+
     if (Math.abs(dx) >= this.swipeThreshold) {
       const dir: 'left' | 'right' = dx > 0 ? 'right' : 'left';
       this.animateOffScreen(dir);
+    } else if (dy <= -this.swipeThreshold) {
+      this.animateUp();
     } else {
       this.resetPosition();
     }
@@ -105,6 +121,8 @@ export class SwipeCardComponent implements OnInit, OnDestroy {
       this.programmaticSwipe('left');
     } else if (ev.key === 'ArrowRight') {
       this.programmaticSwipe('right');
+    } else if (ev.key === 'ArrowUp') {
+      this.animateUp();
     }
   }
 
