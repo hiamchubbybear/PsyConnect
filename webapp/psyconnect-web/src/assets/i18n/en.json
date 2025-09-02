@@ -263,5 +263,49 @@
         "Settings": "Settings"
       }
     }
+  },
+  "THERAPIST_OVERLAY": {
+    "Close": "Close",
+    "BookAppointment": "Book Appointment",
+    "SendMessage": "Send Message",
+    "TherapistName": "Therapist Name",
+    "LicensedTherapist": "Licensed Therapist",
+    "Rating": "Rating",
+    "Experience": "years experience",
+    "Location": "Location",
+    "Languages": "Languages",
+    "Specializations": "Specializations",
+    "ConsultationOptions": "Consultation Options",
+    "Qualifications": "Qualifications",
+    "Education": "Education",
+    "Certifications": "Certifications",
+    "Availability": "Availability",
+    "AvailableDays": "Available Days",
+    "TimeSlots": "Time Slots",
+    "Days": {
+      "Monday": "Monday",
+      "Tuesday": "Tuesday",
+      "Wednesday": "Wednesday",
+      "Thursday": "Thursday",
+      "Friday": "Friday",
+      "Saturday": "Saturday",
+      "Sunday": "Sunday"
+    },
+    "TimePeriods": {
+      "AM": "AM",
+      "PM": "PM"
+    },
+    "LanguagesList": {
+      "English": "English",
+      "Spanish": "Spanish"
+    },
+    "SpecializationsList": {
+      "Cognitive Behavioral Therapy": "Cognitive Behavioral Therapy",
+      "Anxiety Management": "Anxiety Management"
+    },
+    "ConsultationModesList": {
+      "Online": "Online",
+      "In-Person": "In-Person"
+    }
   }
 }

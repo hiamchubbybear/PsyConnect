@@ -247,5 +247,49 @@
         "Settings": "Cài đặt"
       }
     }
+  },
+  "THERAPIST_OVERLAY": {
+    "Close": "Đóng",
+    "BookAppointment": "Đặt lịch",
+    "SendMessage": "Gửi tin nhắn",
+    "TherapistName": "Tên chuyên gia",
+    "LicensedTherapist": "Chuyên gia được cấp phép",
+    "Rating": "Đánh giá",
+    "Experience": "năm kinh nghiệm",
+    "Location": "Địa chỉ",
+    "Languages": "Ngôn ngữ",
+    "Specializations": "Chuyên môn",
+    "ConsultationOptions": "Hình thức tư vấn",
+    "Qualifications": "Trình độ chuyên môn",
+    "Education": "Học vấn",
+    "Certifications": "Chứng chỉ",
+    "Availability": "Khả dụng",
+    "AvailableDays": "Ngày có sẵn",
+    "TimeSlots": "Khung giờ",
+    "Days": {
+      "Monday": "Thứ Hai",
+      "Tuesday": "Thứ Ba",
+      "Wednesday": "Thứ Tư",
+      "Thursday": "Thứ Năm",
+      "Friday": "Thứ Sáu",
+      "Saturday": "Thứ Bảy",
+      "Sunday": "Chủ Nhật"
+    },
+    "TimePeriods": {
+      "AM": "Sáng",
+      "PM": "Chiều"
+    },
+    "LanguagesList": {
+      "English": "Tiếng Anh",
+      "Spanish": "Tiếng Tây Ban Nha"
+    },
+    "SpecializationsList": {
+      "Cognitive Behavioral Therapy": "Liệu pháp Hành vi – Nhận thức",
+      "Anxiety Management": "Quản lý Lo âu"
+    },
+    "ConsultationModesList": {
+      "Online": "Trực tuyến",
+      "In-Person": "Trực tiếp"
+    }
   }
 }

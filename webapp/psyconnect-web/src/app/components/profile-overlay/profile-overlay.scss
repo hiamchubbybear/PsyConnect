@@ -1,6 +1,3 @@
-// therapist-profile-overlay.component.scss
-
-// Variables
 :root {
   --primary-50: #eff6ff;
   --primary-100: #dbeafe;
@@ -19,40 +16,34 @@
   --neutral-900: #111827;
 }
 
-// Overlay
 .therapist-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: absolute;
+  top: auto;
+  left: auto;
   width: 100%;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  z-index: 50;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.2s ease;
-
+  height: auto;
+  background: transparent;
+  display: block;
+  padding: 0;
+  z-index: auto;
+  opacity: 1;
+  visibility: visible;
+  transition: none;
   &--visible {
     opacity: 1;
     visibility: visible;
   }
 }
 
-// Main card
 .therapist-card {
   background: var(--color-bg);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 640px;
-  max-height: 90vh;
   overflow-y: auto;
   position: relative;
   transform: scale(0.95);
+  margin-top: 1rem;
   transition: transform 0.2s ease;
 
   .therapist-overlay--visible & {
@@ -64,7 +55,6 @@
   }
 }
 
-// Header
 .therapist-card__header {
   position: relative;
   background: linear-gradient(135deg, var(--primary-500), var(--purple-500));
@@ -153,7 +143,6 @@
   opacity: 0.8;
 }
 
-// Content
 .therapist-card__content {
   padding: 1.5rem;
   display: flex;
@@ -161,7 +150,6 @@
   gap: 1.5rem;
 }
 
-// Info sections
 .therapist-info {
   display: flex;
   gap: 0.75rem;
@@ -191,7 +179,6 @@
   font-size: 0.875rem;
 }
 
-// Tags
 .therapist-tags {
   display: flex;
   flex-wrap: wrap;
@@ -226,7 +213,6 @@
   }
 }
 
-// Qualifications
 .therapist-qualifications {
   display: flex;
   flex-direction: column;
@@ -268,7 +254,6 @@
   }
 }
 
-// Availability
 .therapist-availability {
   background: var(--neutral-50);
   border-radius: 6px;
@@ -314,7 +299,6 @@
   }
 }
 
-// Actions
 .therapist-card__actions {
   display: flex;
   gap: 0.75rem;
@@ -335,7 +319,7 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-
+  font-family: var(--font-family);
   &--primary {
     background: var(--primary-500);
     color: var(--color-bg-contrast);
@@ -360,7 +344,6 @@
     color: var(--color-bg-contrast);
 
     &:hover {
-      background: #16a34a;
       transform: translateY(-1px);
     }
 
@@ -375,7 +358,6 @@
   }
 }
 
-// Responsive
 @media (min-width: 768px) {
   .therapist-card__content {
     padding: 2rem;

@@ -18,7 +18,7 @@ import { SwipeService } from '../../services/swipe/swipe.service';
 export class SwipeDeckComponent implements OnInit {
   therapists: TherapistProfile[] = [];
   currentIndex = 0;
-  isOverlayOpen = true;
+  isOverlayOpen = false;
   selectedTherapist: TherapistProfile | null = null;
 
   constructor(
@@ -91,7 +91,7 @@ export class SwipeDeckComponent implements OnInit {
   openOverlay(therapist: TherapistProfile) {
     console.log('Opening overlay for:', therapist.name);
     this.selectedTherapist = { ...therapist };
-    this.isOverlayOpen = true;
+    this.isOverlayOpen = !this.isOverlayOpen;
     document.body.classList.add('overlay-open');
   }
 
@@ -126,14 +126,11 @@ export class SwipeDeckComponent implements OnInit {
   }
 
   onBookAppointment(therapist: TherapistProfile) {
-    console.log('Book appointment with:', therapist.name);
-    // Add booking logic here
     this.onCloseOverlay();
   }
 
   onSendMessage(therapist: TherapistProfile) {
     console.log('Send message to:', therapist.name);
-    // Add messaging logic here
     this.onCloseOverlay();
   }
 

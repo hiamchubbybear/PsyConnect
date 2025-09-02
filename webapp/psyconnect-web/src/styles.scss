@@ -4,6 +4,7 @@
 @include mat.core();
 
 :root {
+  --font-family: #{v.$font-primary};
   --color-surface-hover: #{rgba(0, 0, 0, 0.04)};
   --color-accent-bg: #{rgba(59, 130, 246, 0.1)};
   --shadow-card: #{v.$shadow-card};
