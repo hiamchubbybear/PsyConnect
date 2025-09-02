@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
@@ -17,18 +18,37 @@ import {
     UserProfile,
 } from '../../services/profile/profile-service';
 import { ThemeService } from '../../services/theme/theme-service';
+import { TranslationService } from '../../shared/translate/translate-service';
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
+import { DropdownComponent, DropdownOption } from '../dropdown/dropdown';
 import { HeaderStateService } from './header-state';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatMenuModule, AvatarMenuComponent],
+  imports: [
+    CommonModule,
+    MatMenuModule,
+    AvatarMenuComponent,
+    TranslateModule,
+    DropdownComponent,
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit, OnDestroy {
+  currentLang: string = '';
+  displayLang: string = '';
+
+  selectedLanguage: any = null;
+  private subscriptions: Subscription = new Subscription();
+
+  languageOptions: DropdownOption[] = [
+    { value: 'en', label: 'English' },
+    { value: 'vi', label: 'Vietnamese' },
+  ];
+
   isMini = false;
 
   userAvatarUrl = 'assets/images/avatar.jpeg';
@@ -48,9 +68,14 @@ export class Header implements OnInit, OnDestroy {
     public loaderService: LoaderService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private themeService: ThemeService
-  ) {}
-
+    private themeService: ThemeService,
+    private translateService: TranslationService
+  ) {
+    this.translateService.currentLanguage$.subscribe((lang) => {
+      this.currentLang = lang;
+      this.displayLang = lang === 'en' ? 'English' : 'Vietnamese';
+    });
+  }
   ngOnInit() {
     this.userSubscription = this.headerState.isMini$.subscribe((value) => {
       this.isMini = value;
@@ -111,6 +136,12 @@ export class Header implements OnInit, OnDestroy {
   toggleTheme() {
     this.themeService.toggleTheme();
     this.isDark = !this.isDark;
+  }
+  onLanguageChange(option: DropdownOption | null) {
+    if (option) {
+      this.translateService.setLanguage(option.value);
+      this.selectedLanguage = option.value;
+    }
   }
   @HostListener('window:scroll', [])
   onScroll() {

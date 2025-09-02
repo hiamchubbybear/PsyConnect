@@ -2,8 +2,8 @@
   <div class="login-container">
     <div class="login-form">
       <div class="form-header">
-        <h2>Welcome Back</h2>
-        <p>Sign in to your account</p>
+        <h2>{{ "LOGIN.Header.Title" | translate }}</h2>
+        <p>{{ "LOGIN.Header.Subtitle" | translate }}</p>
       </div>
 
       <form
@@ -12,13 +12,13 @@
         [class.shake-errors]="shakeErrors"
       >
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="username">{{ "LOGIN.Form.Username" | translate }}</label>
           <div class="input-with-error" [class.shake-errors]="shakeErrors">
             <input
               type="text"
               id="username"
               formControlName="username"
-              placeholder="Enter your username"
+              placeholder="{{ 'LOGIN.Form.UsernamePlaceholder' | translate }}"
               required
               [class.error]="
                 loginForm.get('username')?.touched &&
@@ -33,24 +33,23 @@
               "
             >
               <span *ngIf="loginForm.get('username')?.errors?.['required']">
-                Username is required
+                {{ "LOGIN.Form.UsernameRequired" | translate }}
               </span>
               <span *ngIf="loginForm.get('username')?.errors?.['minlength']">
-                Username must be at least 6 characters
+                {{ "LOGIN.Form.UsernameMinLength" | translate }}
               </span>
             </div>
           </div>
         </div>
 
-        <!-- Password -->
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">{{ "LOGIN.Form.Password" | translate }}</label>
           <div class="input-with-error" [class.shake-errors]="shakeErrors">
             <input
               type="password"
               id="password"
               formControlName="password"
-              placeholder="Enter your password"
+              placeholder="{{ 'LOGIN.Form.PasswordPlaceholder' | translate }}"
               required
               [class.error]="
                 loginForm.get('password')?.touched &&
@@ -65,22 +64,28 @@
               "
             >
               <span *ngIf="loginForm.get('password')?.errors?.['required']">
-                Password is required
+                {{ "LOGIN.Form.PasswordRequired" | translate }}
               </span>
             </div>
           </div>
         </div>
 
-        <!-- Options -->
         <div class="form-options">
-          <label> <input type="checkbox" /> Remember me </label>
-          <a routerLink="/forgot-password">Forgot password?</a>
+          <label>
+            <input type="checkbox" />
+            {{ "LOGIN.Form.RememberMe" | translate }}
+          </label>
+          <a routerLink="/forgot-password">
+            {{ "LOGIN.Form.ForgotPassword" | translate }}
+          </a>
         </div>
 
-        <button type="submit" class="btn btn-primary">Sign In</button>
+        <button type="submit" class="btn btn-primary">
+          {{ "LOGIN.Form.SignIn" | translate }}
+        </button>
 
         <div class="divider">
-          <span>or continue with</span>
+          <span>{{ "LOGIN.Form.DividerText" | translate }}</span>
         </div>
 
         <div class="social-login">
@@ -89,20 +94,20 @@
             class="btn btn-google btn-primary"
             (click)="handleOAuth2('google')"
           >
-            Google
+            {{ "LOGIN.Form.SocialGoogle" | translate }}
           </button>
           <button
             type="button"
             class="btn btn-apple btn-primary"
             (click)="handleOAuth2('facebook')"
           >
-            Facebook
+            {{ "LOGIN.Form.SocialFacebook" | translate }}
           </button>
         </div>
 
         <p class="signup-text">
-          Don’t have an account?
-          <a routerLink="/auth/signup">Create one</a>
+          {{ "LOGIN.Form.NoAccount" | translate }}
+          <a routerLink="/auth/signup">{{ "LOGIN.Form.CreateAccount" | translate }}</a>
         </p>
       </form>
     </div>

@@ -1,5 +1,5 @@
 <div class="register-container">
-  <!-- Header -->
+
   <div class="header">
     <button
       *ngIf="currentStep > 0"
@@ -11,7 +11,7 @@
     <h1 class="title">Create Account</h1>
   </div>
 
-  <!-- Progress Bar -->
+
   <div class="progress-container">
     <div class="progress-bar">
       <div class="progress-fill" [style.width.%]="progressPercentage"></div>
@@ -19,9 +19,9 @@
     <p class="progress-text">Step {{ currentStep + 1 }} of {{ totalSteps }}</p>
   </div>
 
-  <!-- Steps Content -->
+
   <div class="steps-container">
-    <!-- Step 1: Avatar -->
+
     <div
       *ngIf="currentStep === 0"
       class="step-content"
@@ -59,7 +59,7 @@
       </form>
     </div>
 
-    <!-- Step 2: Name -->
+
     <div
       *ngIf="currentStep === 1"
       class="step-content"
@@ -162,7 +162,7 @@
       </form>
     </div>
 
-    <!-- Step 3: Birth & Gender -->
+
     <div
       *ngIf="currentStep === 2"
       class="step-content"
@@ -261,7 +261,7 @@
       </form>
     </div>
 
-    <!-- Step 4: Address -->
+
     <div
       *ngIf="currentStep === 3"
       class="step-content"
@@ -333,7 +333,7 @@
       </form>
     </div>
 
-    <!-- Step 5: Email -->
+
     <div
       *ngIf="currentStep === 4"
       class="step-content"
@@ -399,7 +399,7 @@
       </form>
     </div>
 
-    <!-- Step 6: Role -->
+
     <div
       *ngIf="currentStep === 5"
       class="step-content"
@@ -454,7 +454,7 @@
       </form>
     </div>
 
-    <!-- Step 7: Credentials -->
+
     <div
       *ngIf="currentStep === 6"
       class="step-content"
@@ -632,7 +632,7 @@
     </div>
   </div>
 
-  <!-- Navigation Buttons -->
+
   <div class="navigation-buttons">
     <button
       *ngIf="currentStep > 0"

@@ -6,13 +6,12 @@ import {
     Event,
     NavigationCancel,
     NavigationEnd,
-    NavigationError,
     NavigationStart,
     Router,
     RouterModule,
-    RouterOutlet
+    RouterOutlet,
 } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { Footer } from './components/footer/footer';
 import { Header } from './components/header/header';
 import { SidebarComponent } from './components/sidebar/sidebar';
@@ -26,6 +25,8 @@ import {
     UserProfile,
 } from './services/profile/profile-service';
 import { ThemeService } from './services/theme/theme-service';
+import { ToastContainerComponent } from './shared/toast/toast-container';
+import { TranslationService } from './shared/translate/translate-service';
 
 @Component({
   selector: 'app-root',
@@ -40,7 +41,7 @@ import { ThemeService } from './services/theme/theme-service';
     ReactiveFormsModule,
     CommonModule,
     RouterModule,
-
+    ToastContainerComponent,
   ],
   animations: [fadeRouteAnimation],
   templateUrl: './app.html',
@@ -48,6 +49,8 @@ import { ThemeService } from './services/theme/theme-service';
 })
 export class App implements OnInit {
   showSidebar: boolean = false;
+  showFooter = true;
+
   constructor(
     private renderer: Renderer2,
     private themeService: ThemeService,
@@ -56,8 +59,18 @@ export class App implements OnInit {
     private userContext: UserContextService,
     private authState: AuthStateService,
     private router: Router,
-    private loader: LoaderService
-  ) {}
+    private loader: LoaderService,
+    private translate: TranslationService
+  ) {
+    console.log(this.translate.getCurrentLanguage);
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        const url = event.urlAfterRedirects;
+        this.showFooter =
+          url === '/' || url.startsWith('/about') || url.startsWith('/contact');
+      });
+  }
   private routerSub?: Subscription;
   isLoading = false;
 
@@ -81,7 +94,7 @@ export class App implements OnInit {
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
-        event instanceof NavigationError
+        event instanceof NavigationEnd
       ) {
         this.loader.hide();
       }

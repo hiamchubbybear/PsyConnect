@@ -1,17 +1,23 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme/theme-service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-notfound',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, TranslateModule],
   templateUrl: './notfound.html',
   styleUrl: './notfound.scss',
 })
 export class Notfound {
-  constructor(private themeService: ThemeService) {}
+  constructor(
+    private themeService: ThemeService,
+    private toastService: ToastService
+  ) {}
   toggleTheme() {
     this.themeService.toggleTheme();
+    console.log('Show toast');
   }
 }
