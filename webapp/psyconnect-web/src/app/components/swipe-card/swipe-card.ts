@@ -8,6 +8,7 @@ import {
     OnDestroy,
     OnInit,
     Output,
+    SimpleChanges,
     ViewChild,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -23,6 +24,8 @@ import { TherapistProfile } from '../profile-overlay/profile-overlay';
 export class SwipeCardComponent implements OnInit, OnDestroy {
   @Input() therapist: TherapistProfile = {} as TherapistProfile;
   @Input() index = 0;
+  @Output() openOverlay = new EventEmitter<TherapistProfile>();
+  @Input() isOverlayOpen: boolean = false;
 
   @Output() swiped = new EventEmitter<{
     direction: 'left' | 'right' | 'up';
@@ -63,8 +66,35 @@ export class SwipeCardComponent implements OnInit, OnDestroy {
   }
 
   animateUp() {
+    this.isOverlayOpen = !this.isOverlayOpen;
+
     this.transition = 'transform 300ms cubic-bezier(.2,.9,.2,1), opacity 300ms';
-    this.transform = `translate(0px, -50%)`;
+
+    if (this.isOverlayOpen) {
+      const target = document.querySelector('.therapist-card__actions');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      } else {
+        const observer = new MutationObserver(() => {
+          const targetNew = document.querySelector('.therapist-card__actions');
+          if (targetNew) {
+            targetNew.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+      }
+
+      this.transition =
+        'transform 300ms cubic-bezier(.2,.9,.2,1), opacity 300ms';
+      this.transform = `translate(0px, -50%)`;
+    } else {
+      const card = document.querySelector('.card-wrapper'); // hoặc '.therapist-card'
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      this.transform = `translate(0px, 0px)`;
+    }
 
     setTimeout(() => {
       this.swiped.emit({ direction: 'up', therapist: this.therapist });
@@ -183,11 +213,22 @@ export class SwipeCardComponent implements OnInit, OnDestroy {
     this.animateOffScreen(dir);
   }
 
+  match() {
+    this.programmaticSwipe('right');
+  }
+
   pass() {
     this.programmaticSwipe('left');
   }
-
-  match() {
-    this.programmaticSwipe('right');
+  viewProfile() {
+    this.openOverlay.emit(this.therapist);
+  }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['isOverlayOpen'] && this.isOverlayOpen) {
+      const target = document.querySelector('.therapist-card__actions');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    }
   }
 }

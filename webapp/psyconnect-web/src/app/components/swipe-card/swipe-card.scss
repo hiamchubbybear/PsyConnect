@@ -216,12 +216,27 @@
     overflow-y: auto;
   }
 }
+.btn.up {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  color: #555;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  //   .icon {
+  //     display: block;
+  //     animation: bounceUp 1.5s infinite;
+  //   }
+
+  //   &:hover {
+  //     opacity: 1;
+  //     transform: translateX(-50%) scale(1.1);
+  //   }
 }
