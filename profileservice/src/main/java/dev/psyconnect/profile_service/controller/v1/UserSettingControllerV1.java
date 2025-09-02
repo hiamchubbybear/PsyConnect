@@ -16,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 @RequestMapping("/v1/user-setting")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserSettingControllerV1{
+public class UserSettingControllerV1 {
     private final UserSettingService userSettingService;
     private final KafkaService kafkaService;
 
