@@ -1,16 +1,26 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { ToastData, ToastType } from './toast.model';
+import { Component, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { ToastComponent } from './toast';
+import { ToastData } from './toast.model';
+import { ToastService } from './toast.service';
 
 @Component({
   selector: 'app-toast-container',
-  imports: [CommonModule],
-  standalone : true,
+  standalone: true,
+  imports: [CommonModule, ToastComponent],
   templateUrl: './toast-container.html',
   styleUrls: ['./toast-container.scss'],
 })
-export class ToastContainerComponent {
+export class ToastContainerComponent implements OnDestroy {
   toasts: ToastData[] = [];
+  private sub: Subscription;
+
+  constructor(private toastService: ToastService) {
+    this.sub = this.toastService.toasts$.subscribe((toast) => {
+      this.addToast(toast);
+    });
+  }
 
   addToast(toast: ToastData) {
     this.toasts.push(toast);
@@ -21,16 +31,7 @@ export class ToastContainerComponent {
     this.toasts = this.toasts.filter((t) => t.id !== id);
   }
 
-  getIcon(type: ToastType): string {
-    switch (type) {
-      case ToastType.Success:
-        return 'check_circle';
-      case ToastType.Info:
-        return 'info';
-      case ToastType.Warning:
-        return 'warning';
-      case ToastType.Error:
-        return 'error';
-    }
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }

@@ -1,0 +1,32 @@
+<nav class="sidebar">
+  <h3 class="sidebar__title">{{ "ACCOUNT_MANAGEMENT.Sidebar.Title" | translate }}</h3>
+  <ul class="sidebar__list">
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('profile')"
+        [class.active]="activeSection === 'profile'"
+      >
+        {{ "ACCOUNT_MANAGEMENT.Sidebar.Items.AccountInfo" | translate }}
+      </a>
+    </li>
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('security')"
+        [class.active]="activeSection === 'security'"
+      >
+        {{ "ACCOUNT_MANAGEMENT.Sidebar.Items.Security" | translate }}
+      </a>
+    </li>
+    <li class="sidebar__item">
+      <a
+        href="javascript:void(0)"
+        (click)="onClick('payment')"
+        [class.active]="activeSection === 'payment'"
+      >
+        {{ "ACCOUNT_MANAGEMENT.Sidebar.Items.Payment" | translate }}
+      </a>
+    </li>
+  </ul>
+</nav>

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme/theme-service';
 
 @Component({
   selector: 'app-homepage',
-  imports: [RouterModule],
+  imports: [RouterModule, TranslateModule],
   standalone: true,
   templateUrl: './homepage.html',
   styleUrl: './homepage.scss',

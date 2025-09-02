@@ -11,6 +11,4 @@ export interface ToastData {
   message: string;
   type: ToastType;
   duration?: number;
-  bgColor: string;
-  accentColor: string;
 }

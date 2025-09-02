@@ -1,0 +1,10 @@
+<consultation-sidebar
+  [activeSection]="activeSection"
+  (navigate)="scrollToSection($event)"
+></consultation-sidebar>
+
+<div class="account-content" #content>
+  <section id="discover" class="account-section">
+    <consultation-discover></consultation-discover>
+  </section>
+</div>

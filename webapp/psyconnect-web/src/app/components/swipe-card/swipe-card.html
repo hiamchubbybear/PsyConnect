@@ -1,4 +1,3 @@
-<!-- src/app/swipe-card/swipe-card.component.html -->
 <div class="card-wrapper" [style.zIndex]="100 - index">
   <article
     #card
@@ -11,16 +10,22 @@
     (pointerup)="onPointerUp($event)"
     (pointercancel)="onPointerUp($event)"
     tabindex="0"
-    [attr.aria-label]="'Therapist card for ' + (therapist.name || 'profile')"
+    [attr.aria-label]="
+      'SWIPE_CARD.AriaLabel.TherapistCard'
+        | translate : { name: therapist.name || 'profile' }
+    "
   >
-    <!-- overlays while dragging -->
-    <div class="overlay like" [style.opacity]="likeOpacity">LIKE</div>
-    <div class="overlay nope" [style.opacity]="nopeOpacity">NOPE</div>
+    <div class="overlay like" [style.opacity]="likeOpacity">
+      {{ "SWIPE_CARD.Overlays.Like" | translate }}
+    </div>
+    <div class="overlay nope" [style.opacity]="nopeOpacity">
+      {{ "SWIPE_CARD.Overlays.Nope" | translate }}
+    </div>
 
     <header class="card-header">
       <img
-        *ngIf="therapist.avatarUrl; else placeholder"
-        [src]="therapist.avatarUrl"
+        *ngIf="therapist.avatar_override; else placeholder"
+        [src]="therapist.avatar_override"
         [alt]="therapist.name"
         class="avatar"
       />
@@ -30,102 +35,74 @@
 
       <div class="meta">
         <h3 class="name">{{ therapist.name }}</h3>
-        <div class="title">{{ therapist.title }}</div>
+        <div class="title">
+          {{ therapist.professional_info.title.display }}
+        </div>
         <div class="rating">
           <span class="stars">★</span>
-          <span class="score">{{ therapist.rating ?? "—" }}</span>
-          <span class="reviews" *ngIf="therapist.reviews"
-            >({{ therapist.reviews }})</span
-          >
+          <span class="score">{{
+            "SWIPE_CARD.Rating.NoRating" | translate
+          }}</span>
+          <span class="reviews" *ngIf="therapist.experience">
+            ({{ therapist.experience }} years)
+          </span>
         </div>
       </div>
     </header>
 
-    <!-- horizontal tabs -->
-    <nav class="tabs" role="tablist" aria-label="Therapist details tabs">
-      <button
-        *ngFor="let tab of tabs"
-        class="tab-btn"
-        [class.active]="activeTab === tab.key"
-        (click)="activeTab = tab.key"
-        role="tab"
-        [attr.aria-selected]="activeTab === tab.key"
-      >
-        {{ tab.label }}
-      </button>
-    </nav>
-
-    <!-- tab content area -->
-    <section class="tab-content" role="tabpanel">
-      <ng-container [ngSwitch]="activeTab">
-        <div *ngSwitchCase="'specialties'">
-          <div
-            class="line"
-            *ngFor="let s of therapist.specialties || [] | slice : 0 : 3"
-          >
-            {{ s }}
-          </div>
-        </div>
-
-        <div *ngSwitchCase="'pricing'">
-          <div class="line">
-            {{
-              (therapist.pricePerHour ?? therapist.pricing?.priceRange) || "N/A"
-            }}
-            {{ therapist.currency || therapist.pricing?.currency || "" }} / hour
-          </div>
-          <div class="line muted">Typical session length: 50 mins</div>
-        </div>
-
-        <div *ngSwitchCase="'availability'">
-          <div
-            class="line muted"
-            *ngIf="
-              !therapist.nextAvailable || therapist.nextAvailable.trim() === ''
-            "
-          >
-            No availability info
-          </div>
-          <div
-            class="line"
-            *ngIf="
-              therapist.nextAvailable && therapist.nextAvailable.trim() !== ''
-            "
-          >
-            {{ therapist.nextAvailable }}
-          </div>
-        </div>
-
-        <div *ngSwitchCase="'languages'">
-          <div
-            class="line"
-            *ngFor="let lang of therapist.languages || [] | slice : 0 : 4"
-          >
-            {{ lang }}
-          </div>
-        </div>
-
-        <div *ngSwitchCase="'modes'">
-          <div
-            class="line"
-            *ngFor="
-              let mode of therapist.consultationModes || [] | slice : 0 : 3
-            "
-          >
-            {{ mode }}
-          </div>
-          <div class="line muted">Remote + In-person where available</div>
-        </div>
-      </ng-container>
-    </section>
-
     <footer class="card-actions">
-      <button class="btn pass" (click)="pass()" aria-label="Pass">
-        ✕ Pass
+      <button
+        class="btn pass"
+        (click)="pass()"
+        [attr.aria-label]="'SWIPE_CARD.Actions.Pass' | translate"
+      >
+        ✕ {{ "SWIPE_CARD.Actions.Pass" | translate }}
       </button>
-      <button class="btn match" (click)="match()" aria-label="Match">
-        ❤ Match
+
+      <button
+        class="btn match"
+        (click)="match()"
+        [attr.aria-label]="'SWIPE_CARD.Actions.Match' | translate"
+      >
+        ❤ {{ "SWIPE_CARD.Actions.Match" | translate }}
       </button>
     </footer>
   </article>
+  <button
+    class="btn up"
+    (click)="animateUp()"
+    [attr.aria-label]="'SWIPE_CARD.Actions.ViewProfile' | translate"
+  >
+    <svg
+      *ngIf="!isOverlayOpen"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide"
+    >
+      <path d="m18 15-6-6-6 6" />
+    </svg>
+
+    <svg
+      *ngIf="isOverlayOpen"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide lucide-chevron-down-icon lucide-chevron-down"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </button>
 </div>

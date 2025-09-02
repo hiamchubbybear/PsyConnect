@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import {
-    NavigationCancel,
-    NavigationEnd,
-    NavigationError,
-    NavigationStart,
-    Router,
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
 } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 

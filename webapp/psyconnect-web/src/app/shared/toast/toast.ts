@@ -1,8 +1,7 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
-import { ToastType } from './toast-type';
-
 import { animate, style, transition, trigger } from '@angular/animations';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ToastType } from './toast-type';
 
 @Component({
   selector: 'app-toast',
@@ -11,7 +10,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
   templateUrl: './toast.html',
   styleUrls: ['./toast.scss'],
   animations: [
-    trigger('fade', [
+    trigger('toastAnimation', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(10px)' }),
         animate(
@@ -28,38 +27,30 @@ import { animate, style, transition, trigger } from '@angular/animations';
     ]),
   ],
 })
-export class ToastComponent implements OnInit {
+export class ToastComponent {
   @Input() title!: string;
+  @Input() id!: string;
   @Input() message!: string;
   @Input() type: ToastType = ToastType.Info;
   @Input() onClose!: () => void;
-
-  icon = '';
-  bgColor = '';
-  accentColor = '';
-
-  ngOnInit(): void {
+  @Output() close: EventEmitter<string> = new EventEmitter<string>();
+  get icon(): string {
     switch (this.type) {
       case ToastType.Success:
-        this.bgColor = '#e6f4ea';
-        this.icon = 'check_circle';
-        this.accentColor = '#28a745';
-        break;
+        return 'check_circle';
       case ToastType.Info:
-        this.bgColor = '#e8f0fe';
-        this.icon = 'info';
-        this.accentColor = '#1e88e5';
-        break;
+        return 'info';
       case ToastType.Warning:
-        this.bgColor = '#fff3cd';
-        this.icon = 'warning';
-        this.accentColor = '#ffc107';
-        break;
+        return 'warning';
       case ToastType.Error:
-        this.bgColor = '#f8d7da';
-        this.icon = 'error';
-        this.accentColor = '#dc3545';
-        break;
+        return 'error';
+      default:
+        return 'info';
     }
+  }
+
+  handleClose() {
+    if (this.onClose) this.onClose();
+    this.close.emit(this.id);
   }
 }

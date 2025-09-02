@@ -1,29 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { SecureStorageService } from '../../encrypt/secure';
 import { Auth } from '../../services/auth/auth';
 import { AuthStateService } from '../../services/auth/auth-state.service';
 import { LoaderService } from '../../services/loader/loader';
 import { Profile, ProfileResponse } from '../../services/profile/profile';
 import {
-    UserContextService,
-    UserProfile,
+  UserContextService,
+  UserProfile,
 } from '../../services/profile/profile-service';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, TranslateModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -41,7 +43,8 @@ export class Login implements OnInit {
     private userContext: UserContextService,
     private loaderService: LoaderService,
     private toastService: ToastService,
-    private authState: AuthStateService
+    private authState: AuthStateService,
+    private secureStorage: SecureStorageService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(6)]],
@@ -63,7 +66,10 @@ export class Login implements OnInit {
     this.setLoading(true);
 
     this.auth.login(this.loginForm.value).subscribe({
-      next: () => this.loadUserProfile(),
+      next: () => {
+        this.loadUserProfile();
+        this.secureStorage.setItem('username', this.loginForm.value.username);
+      },
       error: () => {
         this.authState.showSidebar();
         this.setError('Invalid email or password.');
@@ -114,7 +120,7 @@ export class Login implements OnInit {
           gender: profile.data.gender,
           avatarUri: profile.data.avatarUri,
         };
-        console.log(profile.data.avatarUri);
+        console.log(profile);
         this.userContext.setUser(userProfile);
         this.toastService.show('Login success', 'Success', ToastType.Success);
         this.setLoading(false);

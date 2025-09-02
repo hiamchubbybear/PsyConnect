@@ -19,29 +19,30 @@
 
     <!-- Account -->
     <div class="dropdown-section">
-      <a routerLink="/profile"> Profile</a>
-      <a routerLink="/activity"> Activity</a>
-      <a routerLink="/history"> History</a>
+      <a routerLink="/profile">{{ "AVATAR_MENU.Profile" | translate }}</a>
+      <a routerLink="/account">{{ "AVATAR_MENU.Account" | translate }}</a>
+      <a routerLink="/activity">{{ "AVATAR_MENU.Activity" | translate }}</a>
+      <a routerLink="/history">{{ "AVATAR_MENU.History" | translate }}</a>
     </div>
     <hr />
 
     <!-- Notifications -->
     <div class="dropdown-section">
-      <a routerLink="/notifications"> Notifications</a>
+      <a routerLink="/notifications">{{ "AVATAR_MENU.Notifications" | translate }}</a>
     </div>
     <hr />
 
     <!-- Settings -->
     <div class="dropdown-section">
-      <a routerLink="/settings"> Settings</a>
-      <a routerLink="/help"> Help & Support</a>
-      <a routerLink="/privacy"> Privacy & Security</a>
+      <a routerLink="/settings">{{ "AVATAR_MENU.Settings" | translate }}</a>
+      <a routerLink="/help">{{ "AVATAR_MENU.HelpSupport" | translate }}</a>
+      <a routerLink="/privacy">{{ "AVATAR_MENU.PrivacySecurity" | translate }}</a>
     </div>
     <hr />
 
     <!-- Logout -->
     <div class="dropdown-section">
-      <a (click)="logout()"> Logout</a>
+      <a (click)="logout()">{{ "AVATAR_MENU.Logout" | translate }}</a>
     </div>
   </div>
 </div>

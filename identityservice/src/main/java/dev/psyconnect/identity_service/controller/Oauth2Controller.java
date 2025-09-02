@@ -61,7 +61,6 @@ public class Oauth2Controller {
             Authentication authentication,
             HttpServletResponse response)
             throws IOException {
-
         var res = oAuth2Service.processOAuth2PreLogin(email, avatar, authentication, provider);
         log.info(
                 "OAuth2 userInfo | token: {}, email: {}, provider: {}, platform: {}",
@@ -69,54 +68,63 @@ public class Oauth2Controller {
                 email,
                 provider,
                 platform);
-
         if (res.isSuccessful()) {
             String accessToken = res.getToken();
-
             if (accessToken != null
                     && !accessToken.isBlank()
                     && email != null
                     && !email.isBlank()
                     && provider != null
                     && !provider.isBlank()) {
+                if ("mobile".equalsIgnoreCase(platform)) {
+                    String deepLinkUrl = String.format(
+                            "psyconnect://oauth2/callback/code?code=%s&email=%s&provider=%s&platform=%s",
+                            URLEncoder.encode(accessToken, StandardCharsets.UTF_8),
+                            URLEncoder.encode(email, StandardCharsets.UTF_8),
+                            URLEncoder.encode(provider, StandardCharsets.UTF_8),
+                            URLEncoder.encode(platform, StandardCharsets.UTF_8));
 
-                String deepLinkUrl = String.format(
-                        "psyconnect://oauth2/callback/code?code=%s&email=%s&provider=%s&platform=%s",
-                        URLEncoder.encode(accessToken, StandardCharsets.UTF_8),
-                        URLEncoder.encode(email, StandardCharsets.UTF_8),
-                        URLEncoder.encode(provider, StandardCharsets.UTF_8),
-                        URLEncoder.encode(platform, StandardCharsets.UTF_8));
+                    String redirectHtml = String.format(
+                            """
+							<!DOCTYPE html>
+							<html>
+							<head>
+								<title>Redirecting to PsyConnect...</title>
+								<meta charset="UTF-8">
+							</head>
+							<body>
+								<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+									<h2>Login Successful!</h2>
+									<p>Redirecting you back to PsyConnect app...</p>
+									<p>If you're not redirected automatically, <a href="%s">click here</a></p>
+									<button onclick="window.location.href='%s'" style="padding:10px 20px;">Open App</button>
+								</div>
+								<script>
+									window.location.href = '%s';
+									setTimeout(function() {
+										window.close();
+									}, 3000);
+								</script>
+							</body>
+							</html>
+							""",
+                            deepLinkUrl, deepLinkUrl, deepLinkUrl);
+                    response.setContentType("text/html; charset=UTF-8");
+                    response.getWriter().write(redirectHtml);
+                } else {
+                    String webUrl = String.format(
+                            "https://psyconnect.chessy.dev/oauth2/callback?code=%s&email=%s&provider=%s&platform=%s",
+                            URLEncoder.encode(accessToken, StandardCharsets.UTF_8),
+                            URLEncoder.encode(email, StandardCharsets.UTF_8),
+                            URLEncoder.encode(provider, StandardCharsets.UTF_8),
+                            URLEncoder.encode(platform, StandardCharsets.UTF_8));
+                    response.sendRedirect(webUrl);
+                }
 
-                String redirectHtml = String.format(
-                        """
-								<!DOCTYPE html>
-								<html>
-								<head>
-									<title>Redirecting to PsyConnect...</title>
-									<meta charset="UTF-8">
-								</head>
-								<body>
-									<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-										<h2>Login Successful!</h2>
-										<p>Redirecting you back to PsyConnect app...</p>
-										<p>If you're not redirected automatically, <a href="%s">click here</a></p>
-									</div>
-									<script>
-										window.location.href = '%s';
-										setTimeout(function() {
-											window.close();
-										}, 3000);
-									</script>
-								</body>
-								</html>
-								""",
-                        deepLinkUrl, deepLinkUrl);
-
-                response.setContentType("text/html; charset=UTF-8");
-                response.getWriter().write(redirectHtml);
             } else {
                 throw new CustomExceptionHandler(ErrorCode.NULL_EXCEPTION);
             }
+
         } else {
             response.sendRedirect("/oauth2/callback/error");
         }

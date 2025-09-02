@@ -1,0 +1,18 @@
+<account-sidebar
+  [activeSection]="activeSection"
+  (navigate)="scrollToSection($event)"
+></account-sidebar>
+
+<div class="account-content" #content>
+  <section id="profile" class="account-section">
+    <app-profile-section></app-profile-section>
+  </section>
+
+  <section id="security" class="account-section">
+    <app-security-section></app-security-section>
+  </section>
+
+  <section id="payment" class="account-section">
+    <app-payment></app-payment>
+  </section>
+</div>
