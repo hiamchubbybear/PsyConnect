@@ -13,6 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
+@ToString
 public class Token {
     @Id
     private String username;
