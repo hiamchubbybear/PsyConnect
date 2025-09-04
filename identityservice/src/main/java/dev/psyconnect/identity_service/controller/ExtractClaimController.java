@@ -22,7 +22,7 @@ public class ExtractClaimController {
     private final AuthenticationService authenticationService;
     private final ExtractClaimService extractClaimService;
 
-        @GetMapping("/claims")
+    @GetMapping("/claims")
     public Map<String, Object> getAllClaims(@RequestParam("token") String token) throws ParseException, JOSEException {
         JWTClaimsSet claims = extractClaimService.extractAllClaims(token);
         Map<String, Object> result = new HashMap<>();
