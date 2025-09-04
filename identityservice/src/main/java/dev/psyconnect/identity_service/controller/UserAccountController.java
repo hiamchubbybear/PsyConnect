@@ -1,5 +1,6 @@
 package dev.psyconnect.identity_service.controller;
 
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.web.bind.annotation.*;
 
 import dev.psyconnect.identity_service.apiresponse.ApiResponse;
@@ -12,6 +13,8 @@ import dev.psyconnect.identity_service.service.UserAccountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/identity")
@@ -38,8 +41,22 @@ public class UserAccountController {
         return new ApiResponse<>(userAccountService.requestActivateAccount(activateAccountNotificationRequest));
     }
 
+
     @GetMapping("/hello")
     public ApiResponse<String> register() {
         return new ApiResponse<>("Hello World");
     }
+
+    @PutMapping("/password")
+    public ApiResponse<Boolean> register(@RequestBody PasswordResetRequest passwordResetRequest) {
+        return new ApiResponse<>(userAccountService.resetPassword(passwordResetRequest));
+    }
+
+    @PostMapping(value = "/req/reset-password")
+    public ApiResponse<Boolean> requestPasswordRequest(
+            @RequestBody RequestPasswordReset requestPasswordReset) {
+        return new ApiResponse<>(userAccountService.requestPasswordReset(requestPasswordReset));
+    }
+
+
 }
