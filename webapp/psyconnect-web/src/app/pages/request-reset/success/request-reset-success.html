@@ -1,0 +1,33 @@
+<main class="reset-page">
+  <div class="reset-container">
+    <div class="reset-form">
+      <div class="form-header">
+        <h2>{{ "LOGIN.REQUEST.Success.Title" | translate }}</h2>
+        <p>
+          {{ "LOGIN.REQUEST.Success.Subtitle" | translate }}
+          <strong>{{ email }}</strong>
+        </p>
+      </div>
+
+      <div class="form-actions">
+        <button
+          class="btn btn-primary"
+          (click)="onResend()"
+          [disabled]="countdown > 0"
+        >
+          {{
+            countdown > 0
+              ? ("LOGIN.REQUEST.Success.ResendIn"
+                | translate : { seconds: countdown })
+              : ("LOGIN.REQUEST.Success.Resend" | translate)
+          }}
+        </button>
+        <p class="signup-text">
+          <a routerLink="/auth/login">{{
+            "LOGIN.REQUEST.Form.BackToLogin" | translate
+          }}</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</main>

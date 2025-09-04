@@ -1,295 +1,346 @@
 {
-  "APP_NAME": "Psyconnect",
-  "HEADER": {
-    "Feature": "Tính năng",
-    "Therapist": "Chuyên gia tâm lý",
-    "Community": "Cộng đồng",
-    "About": "Về chúng tôi",
-    "Login": "Đăng nhập",
-    "Sign Up": "Đăng ký"
-  },
-  "COMMON": {
-    "GetStartedFree": "Bắt đầu miễn phí",
-    "LearnMore": "Tìm hiểu thêm",
-    "SignUpFree": "Đăng ký miễn phí",
-    "Login": "Đăng nhập"
-  },
-  "HOME": {
-    "Tagline": "Chăm sóc tâm trí của bạn, từng bước một",
-    "Description": "Kết nối với các chuyên gia tâm lý có giấy phép, theo dõi tâm trạng của bạn và tham gia cộng đồng hỗ trợ trên hành trình sức khỏe tinh thần của bạn.",
-    "IllustrationTitle": "Minh họa sức khỏe tinh thần",
-    "SectionTitle": "Mọi thứ bạn cần để cải thiện sức khỏe tinh thần",
-    "SectionDescription": "Công cụ và hỗ trợ toàn diện để giúp bạn phát triển",
-    "TherapyBooking": {
-      "Title": "Đặt lịch trị liệu",
-      "Description": "Đặt lịch với các chuyên gia tâm lý có giấy phép, chuyên về nhu cầu của bạn. Có sẵn 24/7."
-    },
-    "MoodTracking": {
-      "Title": "Theo dõi tâm trạng",
-      "Description": "Theo dõi các mẫu cảm xúc và tiến triển của bạn với các công cụ theo dõi tâm trạng trực quan của chúng tôi."
-    },
-    "CommunitySupport": {
-      "Title": "Hỗ trợ cộng đồng",
-      "Description": "Kết nối với những người có hành trình tương tự trong các không gian cộng đồng an toàn, được kiểm duyệt."
-    },
-    "AppPreview": {
-      "Title": "Xem trước giao diện ứng dụng",
-      "Subtitle": "Sức khỏe tinh thần của bạn, đơn giản hóa",
-      "Features": {
-        "ProfessionalSupport": "Hỗ trợ chuyên nghiệp – Truy cập các chuyên gia tâm lý và nhân viên y tế tinh thần có giấy phép",
-        "PrivacyFirst": "Ưu tiên quyền riêng tư – Dữ liệu của bạn được mã hóa và bảo vệ theo tiêu chuẩn bảo mật cao nhất",
-        "Availability": "Sẵn sàng 24/7 – Hỗ trợ khi bạn cần nhất, bất cứ lúc nào trong ngày hay đêm"
-      },
-      "CallToAction": "Sẵn sàng bắt đầu hành trình của bạn?",
-      "JoinUsers": "Tham gia hàng ngàn người dùng đang kiểm soát sức khỏe tinh thần của họ"
-    }
-  },
-  "FOOTER": {
-    "Brand": {
-      "Title": "PsyConnect",
-      "Description": "Hỗ trợ hành trình sức khỏe tinh thần của bạn với sự chăm sóc chuyên nghiệp và cộng đồng hỗ trợ."
-    },
-    "Links": {
-      "Company": {
-        "Title": "Công ty",
+    "APP_NAME": "Psyconnect",
+    "HEADER": {
+        "Feature": "Tính năng",
+        "Therapist": "Chuyên gia tâm lý",
+        "Community": "Cộng đồng",
         "About": "Về chúng tôi",
-        "Contact": "Liên hệ",
-        "Careers": "Tuyển dụng"
-      },
-      "Support": {
-        "Title": "Hỗ trợ",
-        "HelpCenter": "Trung tâm trợ giúp",
-        "PrivacyPolicy": "Chính sách bảo mật",
-        "TermsOfService": "Điều khoản dịch vụ"
-      }
+        "Login": "Đăng nhập",
+        "Sign Up": "Đăng ký"
     },
-    "Copyright": "© 2025 Psyconnect. Bảo lưu mọi quyền."
-  },
-  "NOTFOUND": {
-    "Code": "404",
-    "Title": "Ôi! Trang này không tồn tại.",
-    "Description": "Trang bạn đang tìm có thể đã bị xóa hoặc tạm thời không khả dụng.",
-    "BackButton": "Quay về trang chủ",
-    "Confirm": "Xác nhận",
-    "Cancel": "Hủy",
-    "SaveChanges": "Lưu thay đổi",
-    "Remove": "Xóa",
-    "Add": "Thêm",
-    "Edit": "Chỉnh sửa",
-    "Delete": "Xóa",
-    "Update": "Cập nhật",
-    "Back": "Quay lại",
-    "Next": "Tiếp theo",
-    "Previous": "Trước",
-    "Submit": "Gửi",
-    "Reset": "Đặt lại",
-    "Search": "Tìm kiếm",
-    "Filter": "Lọc",
-    "Sort": "Sắp xếp",
-    "Loading": "Đang tải...",
-    "NoData": "Không có dữ liệu",
-    "Error": "Lỗi",
-    "Success": "Thành công",
-    "Warning": "Cảnh báo",
-    "Info": "Thông tin"
-  },
-  "LOGIN": {
-    "Header": {
-      "Title": "Chào mừng trở lại",
-      "Subtitle": "Đăng nhập vào tài khoản của bạn"
+    "COMMON": {
+        "GetStartedFree": "Bắt đầu miễn phí",
+        "LearnMore": "Tìm hiểu thêm",
+        "SignUpFree": "Đăng ký miễn phí",
+        "Login": "Đăng nhập"
     },
-    "Form": {
-      "Username": "Tên đăng nhập",
-      "UsernamePlaceholder": "Nhập tên đăng nhập của bạn",
-      "UsernameRequired": "Tên đăng nhập là bắt buộc",
-      "UsernameMinLength": "Tên đăng nhập phải có ít nhất 6 ký tự",
-      "Password": "Mật khẩu",
-      "PasswordPlaceholder": "Nhập mật khẩu của bạn",
-      "PasswordRequired": "Mật khẩu là bắt buộc",
-      "RememberMe": "Ghi nhớ đăng nhập",
-      "ForgotPassword": "Quên mật khẩu?",
-      "SignIn": "Đăng nhập",
-      "DividerText": "hoặc tiếp tục với",
-      "SocialGoogle": "Google",
-      "SocialFacebook": "Facebook",
-      "NoAccount": "Chưa có tài khoản?",
-      "CreateAccount": "Tạo tài khoản"
-    }
-  },
-  "AVATAR_MENU": {
-    "Profile": "Hồ sơ",
-    "Account": "Tài khoản",
-    "Activity": "Hoạt động",
-    "History": "Lịch sử",
-    "Notifications": "Thông báo",
-    "Settings": "Cài đặt",
-    "HelpSupport": "Trợ giúp & Hỗ trợ",
-    "PrivacySecurity": "Bảo mật & Quyền riêng tư",
-    "Logout": "Đăng xuất"
-  },
-  "SWIPE_CARD": {
-    "Overlays": {
-      "Like": "THÍCH",
-      "Nope": "KHÔNG"
+    "HOME": {
+        "Tagline": "Chăm sóc tâm trí của bạn, từng bước một",
+        "Description": "Kết nối với các chuyên gia tâm lý có giấy phép, theo dõi tâm trạng của bạn và tham gia cộng đồng hỗ trợ trên hành trình sức khỏe tinh thần của bạn.",
+        "IllustrationTitle": "Minh họa sức khỏe tinh thần",
+        "SectionTitle": "Mọi thứ bạn cần để cải thiện sức khỏe tinh thần",
+        "SectionDescription": "Công cụ và hỗ trợ toàn diện để giúp bạn phát triển",
+        "TherapyBooking": {
+            "Title": "Đặt lịch trị liệu",
+            "Description": "Đặt lịch với các chuyên gia tâm lý có giấy phép, chuyên về nhu cầu của bạn. Có sẵn 24/7."
+        },
+        "MoodTracking": {
+            "Title": "Theo dõi tâm trạng",
+            "Description": "Theo dõi các mẫu cảm xúc và tiến triển của bạn với các công cụ theo dõi tâm trạng trực quan của chúng tôi."
+        },
+        "CommunitySupport": {
+            "Title": "Hỗ trợ cộng đồng",
+            "Description": "Kết nối với những người có hành trình tương tự trong các không gian cộng đồng an toàn, được kiểm duyệt."
+        },
+        "AppPreview": {
+            "Title": "Xem trước giao diện ứng dụng",
+            "Subtitle": "Sức khỏe tinh thần của bạn, đơn giản hóa",
+            "Features": {
+                "ProfessionalSupport": "Hỗ trợ chuyên nghiệp – Truy cập các chuyên gia tâm lý và nhân viên y tế tinh thần có giấy phép",
+                "PrivacyFirst": "Ưu tiên quyền riêng tư – Dữ liệu của bạn được mã hóa và bảo vệ theo tiêu chuẩn bảo mật cao nhất",
+                "Availability": "Sẵn sàng 24/7 – Hỗ trợ khi bạn cần nhất, bất cứ lúc nào trong ngày hay đêm"
+            },
+            "CallToAction": "Sẵn sàng bắt đầu hành trình của bạn?",
+            "JoinUsers": "Tham gia hàng ngàn người dùng đang kiểm soát sức khỏe tinh thần của họ"
+        }
     },
-    "Pricing": {
-      "NA": "N/A",
-      "TypicalSession": "Thời lượng buổi trị liệu: 50 phút",
-      "PerHour": "/ giờ"
+    "FOOTER": {
+        "Brand": {
+            "Title": "PsyConnect",
+            "Description": "Hỗ trợ hành trình sức khỏe tinh thần của bạn với sự chăm sóc chuyên nghiệp và cộng đồng hỗ trợ."
+        },
+        "Links": {
+            "Company": {
+                "Title": "Công ty",
+                "About": "Về chúng tôi",
+                "Contact": "Liên hệ",
+                "Careers": "Tuyển dụng"
+            },
+            "Support": {
+                "Title": "Hỗ trợ",
+                "HelpCenter": "Trung tâm trợ giúp",
+                "PrivacyPolicy": "Chính sách bảo mật",
+                "TermsOfService": "Điều khoản dịch vụ"
+            }
+        },
+        "Copyright": "© 2025 Psyconnect. Bảo lưu mọi quyền."
     },
-    "Availability": {
-      "NoInfo": "Không có thông tin khả dụng"
-    },
-    "Modes": {
-      "RemoteInPerson": "Trực tuyến + Tại chỗ nếu có"
-    },
-    "Actions": {
-      "Pass": "Bỏ qua",
-      "Match": "Kết nối"
-    }
-  },
-  "ACCOUNT_MANAGEMENT": {
-    "Sidebar": {
-      "Title": "Cài đặt tài khoản",
-      "Items": {
-        "AccountInfo": "Thông tin tài khoản",
-        "Security": "Bảo mật",
-        "Payment": "Thanh toán"
-      }
-    },
-    "Profile": {
-      "Avatar": "Ảnh đại diện",
-      "FirstName": "Họ",
-      "MiddleName": "Họ đệm",
-      "LastName": "Tên",
-      "Name": "Tên",
-      "DOB": "Ngày sinh",
-      "Address": "Địa chỉ",
-      "Gender": "Giới tính",
-      "GenderOptions": {
-        "Male": "Nam",
-        "Female": "Nữ",
-        "Other": "Khác"
-      },
-      "Notices": {
-        "NameChangeWarning": "Nếu đổi tên, bạn không thể đổi lại trong 60 ngày. Đừng viết hoa khác thường, thêm bất kỳ dấu câu, ký tự hoặc từ ngẫu nhiên nào.",
-        "DOBInfo": "Dùng để xác nhận độ tuổi của bạn.",
-        "AddressInfo": "Địa chỉ này giúp xác định khu vực dịch vụ.",
-        "GenderInfo": "Thông tin này giúp cá nhân hóa trải nghiệm của bạn.",
-        "NoChanges": "Bạn chưa thay đổi thông tin nào. Nếu muốn cập nhật, vui lòng chỉnh sửa dữ liệu trước khi nhấn Xác nhận.",
-        "UnsavedChanges": "Bạn có thay đổi chưa được lưu."
-      },
-      "Buttons": {
+    "NOTFOUND": {
+        "Code": "404",
+        "Title": "Ôi! Trang này không tồn tại.",
+        "Description": "Trang bạn đang tìm có thể đã bị xóa hoặc tạm thời không khả dụng.",
+        "BackButton": "Quay về trang chủ",
         "Confirm": "Xác nhận",
         "Cancel": "Hủy",
-        "SaveChanges": "Lưu thay đổi"
-      },
-      "ImageSelected": "Ảnh đã chọn"
+        "SaveChanges": "Lưu thay đổi",
+        "Remove": "Xóa",
+        "Add": "Thêm",
+        "Edit": "Chỉnh sửa",
+        "Delete": "Xóa",
+        "Update": "Cập nhật",
+        "Back": "Quay lại",
+        "Next": "Tiếp theo",
+        "Previous": "Trước",
+        "Submit": "Gửi",
+        "Reset": "Đặt lại",
+        "Search": "Tìm kiếm",
+        "Filter": "Lọc",
+        "Sort": "Sắp xếp",
+        "Loading": "Đang tải...",
+        "NoData": "Không có dữ liệu",
+        "Error": "Lỗi",
+        "Success": "Thành công",
+        "Warning": "Cảnh báo",
+        "Info": "Thông tin"
     },
-    "Security": {
-      "Title": "Mật khẩu và bảo mật",
-      "Description": "Quản lý mật khẩu, đăng nhập, và phương thức bảo mật khác.",
-      "CheckSecurity": "Kiểm tra bảo mật",
-      "CheckDescription": "Xem xét các vấn đề bảo mật trên thiết bị, email và ứng dụng.",
-      "Items": {
-        "ChangePassword": "Đổi mật khẩu",
-        "TwoFA": "Xác thực hai yếu tố (2FA)",
-        "RecentLogins": "Hoạt động đăng nhập gần đây",
-        "SecurityMethods": "Phương thức bảo mật",
-        "LoggedDevices": "Thiết bị đang đăng nhập",
-        "SuspiciousActivity": "Hoạt động đăng nhập đáng ngờ",
-        "LinkedEmails": "Email liên kết",
-        "ThirdPartyApps": "Ứng dụng và quyền"
-      },
-      "Security": {
-        "Check": {
-          "LoggedDevices": "Kiểm tra bảo mật thiết bị",
-          "LinkedEmails": "Kiểm tra email liên kết",
-          "ThirdPartyApps": "Kiểm tra ứng dụng bên thứ ba"
+    "LOGIN": {
+        "Header": {
+            "Title": "Chào mừng trở lại",
+            "Subtitle": "Đăng nhập vào tài khoản của bạn"
         },
-        "Overlay": {
-          "CurrentPassword": "Mật khẩu hiện tại",
-          "NewPassword": "Mật khẩu mới",
-          "ConfirmPassword": "Nhập lại mật khẩu mới",
-          "TwoFAInstruction": "Chọn phương thức 2FA để bảo vệ tài khoản:",
-          "AuthApp": "Ứng dụng Authenticator",
-          "SMS": "SMS",
-          "SecurityKey": "Key vật lý",
-          "EmailRecovery": "Email khôi phục",
-          "PhoneVerification": "Số điện thoại xác thực",
-          "PhysicalKey": "Key bảo mật vật lý",
-          "LogoutDevice": "Đăng xuất",
-          "Verify": "Xác minh",
-          "AddEmail": "Thêm email mới",
-          "RevokePermission": "Thu hồi quyền",
-          "Buttons": {
-            "Cancel": "Hủy",
-            "SaveChanges": "Lưu thay đổi"
-          }
+        "Form": {
+            "Username": "Tên đăng nhập",
+            "UsernamePlaceholder": "Nhập tên đăng nhập của bạn",
+            "UsernameRequired": "Tên đăng nhập là bắt buộc",
+            "UsernameMinLength": "Tên đăng nhập phải có ít nhất 6 ký tự",
+            "Password": "Mật khẩu",
+            "PasswordPlaceholder": "Nhập mật khẩu của bạn",
+            "PasswordRequired": "Mật khẩu là bắt buộc",
+            "RememberMe": "Ghi nhớ đăng nhập",
+            "ForgotPassword": "Quên mật khẩu?",
+            "SignIn": "Đăng nhập",
+            "DividerText": "hoặc tiếp tục với",
+            "SocialGoogle": "Google",
+            "SocialFacebook": "Facebook",
+            "NoAccount": "Chưa có tài khoản?",
+            "CreateAccount": "Tạo tài khoản"
+        },
+        "RESET": {
+            "Header": {
+                "Title": "Đặt lại mật khẩu",
+                "Subtitle": "Chúng tôi sẽ đặt lại mật khẩu cho tài khoản:"
+            },
+            "Form": {
+                "Password": "Mật khẩu mới",
+                "PasswordPlaceholder": "Nhập mật khẩu mới",
+                "PasswordRequired": "Mật khẩu là bắt buộc",
+                "PasswordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+                "PasswordHint": "Tối thiểu 8 ký tự. Khuyến nghị gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+                "ConfirmPassword": "Xác nhận mật khẩu",
+                "ConfirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+                "ConfirmPasswordRequired": "Xác nhận mật khẩu là bắt buộc",
+                "PasswordMismatch": "Mật khẩu xác nhận không khớp",
+                "Strength": "Độ mạnh",
+                "Cancel": "Hủy",
+                "Submit": "Cập nhật mật khẩu",
+                "Submitting": "Đang xử lý…",
+                "BackToLogin": "Quay lại đăng nhập",
+                "Weak": "Yếu",
+                "Medium": "Trung bình",
+                "Strong": "Mạnh",
+                "Invalid": "Dữ liệu không hợp lệ",
+                "Success": "Mật khẩu đã được cập nhật thành công!"
+            }
+        },
+        "REQUEST": {
+            "Header": {
+                "Title": "Yêu cầu đặt lại mật khẩu",
+                "Subtitle": "Nhập email để nhận liên kết đặt lại mật khẩu."
+            },
+            "Form": {
+                "Email": "Email",
+                "EmailPlaceholder": "Nhập địa chỉ email",
+                "EmailRequired": "Email là bắt buộc",
+                "EmailInvalid": "Email không hợp lệ",
+                "Submit": "Gửi liên kết đặt lại",
+                "Submitting": "Đang gửi…",
+                "BackToLogin": "Quay lại đăng nhập",
+                "Invalid": "Dữ liệu không hợp lệ",
+                "Success": "Yêu cầu đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra email."
+            },
+            "Success": {
+                "Title": "Yêu cầu đặt lại mật khẩu đã được gửi",
+                "Subtitle": "Chúng tôi đã gửi đường dẫn đặt lại mật khẩu tới",
+                "Resend": "Gửi lại email",
+                "ResendIn": "Gửi lại sau {{seconds}} giây",
+                "BackToLogin": "Quay lại đăng nhập"
+            }
         }
-      }
-    }
-  },
-  "LANGUAGE": {
-    "English": "Tiếng Anh",
-    "Vietnamese": "Tiếng Việt"
-  },
-  "CONSULTATION": {
-    "Sidebar": {
-      "Title": "Tư vấn",
-      "Items": {
-        "Discover": "Tư vấn / Khám phá",
-        "Messages": "Nhắn tin",
-        "Sessions": "Phiên tư vấn",
-        "Schedule": "Lịch hẹn",
+    },
+    "AVATAR_MENU": {
+        "Profile": "Hồ sơ",
+        "Account": "Tài khoản",
+        "Activity": "Hoạt động",
         "History": "Lịch sử",
-        "Reviews": "Đánh giá & Phản hồi",
-        "Settings": "Cài đặt"
-      }
+        "Notifications": "Thông báo",
+        "Settings": "Cài đặt",
+        "HelpSupport": "Trợ giúp & Hỗ trợ",
+        "PrivacySecurity": "Bảo mật & Quyền riêng tư",
+        "Logout": "Đăng xuất"
+    },
+    "SWIPE_CARD": {
+        "Overlays": {
+            "Like": "THÍCH",
+            "Nope": "KHÔNG"
+        },
+        "Pricing": {
+            "NA": "N/A",
+            "TypicalSession": "Thời lượng buổi trị liệu: 50 phút",
+            "PerHour": "/ giờ"
+        },
+        "Availability": {
+            "NoInfo": "Không có thông tin khả dụng"
+        },
+        "Modes": {
+            "RemoteInPerson": "Trực tuyến + Tại chỗ nếu có"
+        },
+        "Actions": {
+            "Pass": "Bỏ qua",
+            "Match": "Kết nối"
+        }
+    },
+    "ACCOUNT_MANAGEMENT": {
+        "Sidebar": {
+            "Title": "Cài đặt tài khoản",
+            "Items": {
+                "AccountInfo": "Thông tin tài khoản",
+                "Security": "Bảo mật",
+                "Payment": "Thanh toán"
+            }
+        },
+        "Profile": {
+            "Avatar": "Ảnh đại diện",
+            "FirstName": "Họ",
+            "MiddleName": "Họ đệm",
+            "LastName": "Tên",
+            "Name": "Tên",
+            "DOB": "Ngày sinh",
+            "Address": "Địa chỉ",
+            "Gender": "Giới tính",
+            "GenderOptions": {
+                "Male": "Nam",
+                "Female": "Nữ",
+                "Other": "Khác"
+            },
+            "Notices": {
+                "NameChangeWarning": "Nếu đổi tên, bạn không thể đổi lại trong 60 ngày. Đừng viết hoa khác thường, thêm bất kỳ dấu câu, ký tự hoặc từ ngẫu nhiên nào.",
+                "DOBInfo": "Dùng để xác nhận độ tuổi của bạn.",
+                "AddressInfo": "Địa chỉ này giúp xác định khu vực dịch vụ.",
+                "GenderInfo": "Thông tin này giúp cá nhân hóa trải nghiệm của bạn.",
+                "NoChanges": "Bạn chưa thay đổi thông tin nào. Nếu muốn cập nhật, vui lòng chỉnh sửa dữ liệu trước khi nhấn Xác nhận.",
+                "UnsavedChanges": "Bạn có thay đổi chưa được lưu."
+            },
+            "Buttons": {
+                "Confirm": "Xác nhận",
+                "Cancel": "Hủy",
+                "SaveChanges": "Lưu thay đổi"
+            },
+            "ImageSelected": "Ảnh đã chọn"
+        },
+        "Security": {
+            "Title": "Mật khẩu và bảo mật",
+            "Description": "Quản lý mật khẩu, đăng nhập, và phương thức bảo mật khác.",
+            "CheckSecurity": "Kiểm tra bảo mật",
+            "CheckDescription": "Xem xét các vấn đề bảo mật trên thiết bị, email và ứng dụng.",
+            "Items": {
+                "ChangePassword": "Đổi mật khẩu",
+                "TwoFA": "Xác thực hai yếu tố (2FA)",
+                "RecentLogins": "Hoạt động đăng nhập gần đây",
+                "SecurityMethods": "Phương thức bảo mật",
+                "LoggedDevices": "Thiết bị đang đăng nhập",
+                "SuspiciousActivity": "Hoạt động đăng nhập đáng ngờ",
+                "LinkedEmails": "Email liên kết",
+                "ThirdPartyApps": "Ứng dụng và quyền"
+            },
+            "Security": {
+                "Check": {
+                    "LoggedDevices": "Kiểm tra bảo mật thiết bị",
+                    "LinkedEmails": "Kiểm tra email liên kết",
+                    "ThirdPartyApps": "Kiểm tra ứng dụng bên thứ ba"
+                },
+                "Overlay": {
+                    "CurrentPassword": "Mật khẩu hiện tại",
+                    "NewPassword": "Mật khẩu mới",
+                    "ConfirmPassword": "Nhập lại mật khẩu mới",
+                    "TwoFAInstruction": "Chọn phương thức 2FA để bảo vệ tài khoản:",
+                    "AuthApp": "Ứng dụng Authenticator",
+                    "SMS": "SMS",
+                    "SecurityKey": "Key vật lý",
+                    "EmailRecovery": "Email khôi phục",
+                    "PhoneVerification": "Số điện thoại xác thực",
+                    "PhysicalKey": "Key bảo mật vật lý",
+                    "LogoutDevice": "Đăng xuất",
+                    "Verify": "Xác minh",
+                    "AddEmail": "Thêm email mới",
+                    "RevokePermission": "Thu hồi quyền",
+                    "Buttons": {
+                        "Cancel": "Hủy",
+                        "SaveChanges": "Lưu thay đổi"
+                    }
+                }
+            }
+        }
+    },
+    "LANGUAGE": {
+        "English": "Tiếng Anh",
+        "Vietnamese": "Tiếng Việt"
+    },
+    "CONSULTATION": {
+        "Sidebar": {
+            "Title": "Tư vấn",
+            "Items": {
+                "Discover": "Tư vấn / Khám phá",
+                "Messages": "Nhắn tin",
+                "Sessions": "Phiên tư vấn",
+                "Schedule": "Lịch hẹn",
+                "History": "Lịch sử",
+                "Reviews": "Đánh giá & Phản hồi",
+                "Settings": "Cài đặt"
+            }
+        }
+    },
+    "THERAPIST_OVERLAY": {
+        "Close": "Đóng",
+        "BookAppointment": "Đặt lịch",
+        "SendMessage": "Gửi tin nhắn",
+        "TherapistName": "Tên chuyên gia",
+        "LicensedTherapist": "Chuyên gia được cấp phép",
+        "Rating": "Đánh giá",
+        "Experience": "năm kinh nghiệm",
+        "Location": "Địa chỉ",
+        "Languages": "Ngôn ngữ",
+        "Specializations": "Chuyên môn",
+        "ConsultationOptions": "Hình thức tư vấn",
+        "Qualifications": "Trình độ chuyên môn",
+        "Education": "Học vấn",
+        "Certifications": "Chứng chỉ",
+        "Availability": "Khả dụng",
+        "AvailableDays": "Ngày có sẵn",
+        "TimeSlots": "Khung giờ",
+        "Days": {
+            "Monday": "Thứ Hai",
+            "Tuesday": "Thứ Ba",
+            "Wednesday": "Thứ Tư",
+            "Thursday": "Thứ Năm",
+            "Friday": "Thứ Sáu",
+            "Saturday": "Thứ Bảy",
+            "Sunday": "Chủ Nhật"
+        },
+        "TimePeriods": {
+            "AM": "Sáng",
+            "PM": "Chiều"
+        },
+        "LanguagesList": {
+            "English": "Tiếng Anh",
+            "Spanish": "Tiếng Tây Ban Nha"
+        },
+        "SpecializationsList": {
+            "Cognitive Behavioral Therapy": "Liệu pháp Hành vi – Nhận thức",
+            "Anxiety Management": "Quản lý Lo âu"
+        },
+        "ConsultationModesList": {
+            "Online": "Trực tuyến",
+            "In-Person": "Trực tiếp"
+        }
     }
-  },
-  "THERAPIST_OVERLAY": {
-    "Close": "Đóng",
-    "BookAppointment": "Đặt lịch",
-    "SendMessage": "Gửi tin nhắn",
-    "TherapistName": "Tên chuyên gia",
-    "LicensedTherapist": "Chuyên gia được cấp phép",
-    "Rating": "Đánh giá",
-    "Experience": "năm kinh nghiệm",
-    "Location": "Địa chỉ",
-    "Languages": "Ngôn ngữ",
-    "Specializations": "Chuyên môn",
-    "ConsultationOptions": "Hình thức tư vấn",
-    "Qualifications": "Trình độ chuyên môn",
-    "Education": "Học vấn",
-    "Certifications": "Chứng chỉ",
-    "Availability": "Khả dụng",
-    "AvailableDays": "Ngày có sẵn",
-    "TimeSlots": "Khung giờ",
-    "Days": {
-      "Monday": "Thứ Hai",
-      "Tuesday": "Thứ Ba",
-      "Wednesday": "Thứ Tư",
-      "Thursday": "Thứ Năm",
-      "Friday": "Thứ Sáu",
-      "Saturday": "Thứ Bảy",
-      "Sunday": "Chủ Nhật"
-    },
-    "TimePeriods": {
-      "AM": "Sáng",
-      "PM": "Chiều"
-    },
-    "LanguagesList": {
-      "English": "Tiếng Anh",
-      "Spanish": "Tiếng Tây Ban Nha"
-    },
-    "SpecializationsList": {
-      "Cognitive Behavioral Therapy": "Liệu pháp Hành vi – Nhận thức",
-      "Anxiety Management": "Quản lý Lo âu"
-    },
-    "ConsultationModesList": {
-      "Online": "Trực tuyến",
-      "In-Person": "Trực tiếp"
-    }
-  }
 }
