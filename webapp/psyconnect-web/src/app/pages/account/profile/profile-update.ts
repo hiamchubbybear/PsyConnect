@@ -28,6 +28,7 @@ import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { ProfileModel } from './profile-model';
 import { TranslateModule } from '@ngx-translate/core';
+import { ProfileOverlayComponent } from "./profile-overlay";
 @Component({
   selector: 'app-profile-section',
   standalone: true,
@@ -37,8 +38,9 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     ButtonGroupComponent,
     ReactiveFormsModule,
-    TranslateModule
-  ],
+    TranslateModule,
+    ProfileOverlayComponent
+],
   templateUrl: './profile-update.html',
   styleUrls: ['./profile-update.scss'],
 })

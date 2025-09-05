@@ -1,0 +1,127 @@
+@use "sass:color" as c;
+@use "../../app/styles/variable" as v;
+@use "../../app/styles/mixins" as m;
+
+
+.hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+%form-control-base {
+  font-family: v.$font-primary;
+  font-size: v.$font-size-md;
+  color: var(--color-text);
+  background-color: var(--color-surface-mid);
+  border: 1px solid var(--color-border);
+  border-radius: v.$border-radius-md;
+  padding: v.$spacing-md;
+  transition: all v.$transition-medium;
+  appearance: none;
+
+  &:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+    border-color: var(--color-accent);
+  }
+
+  &.error {
+    border-color: var(--color-error-border);
+    box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--color-text-muted);
+  }
+}
+
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+select {
+  @extend %form-control-base;
+}
+
+.form-input,
+.form-select {
+  @extend %form-control-base;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-sm;
+
+  .form-label {
+    font-size: v.$font-size-sm;
+    font-weight: 500;
+    color: var(--color-text);
+    margin-bottom: 2px;
+  }
+
+  .error-text {
+    font-size: v.$font-size-xs;
+    color: var(--color-error-text);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &::before {
+      content: "⚠";
+      font-size: 12px;
+    }
+  }
+}
+
+a {
+  color: var(--color-text);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-bottom-color: var(--color-border);
+  }
+
+  &:focus {
+    outline: 1px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+.button,
+.btn {
+  &--primary,
+  &.btn-primary {
+    background: var(--color-text);
+    color: var(--color-bg);
+    border: 1px solid var(--color-text);
+
+    &:hover {
+      background: var(--color-text-muted);
+      border-color: var(--color-text-muted);
+    }
+  }
+
+  &--secondary,
+  &.btn-secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+
+    &:hover {
+      background: var(--color-surface-hover);
+      border-color: var(--color-text-muted);
+    }
+  }
+}
+

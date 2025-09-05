@@ -16,6 +16,7 @@ import { RequestResetComponent } from './pages/request-reset/request-reset';
 import { RequestResetSuccessComponent } from './pages/request-reset/success/request-reset-success';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
 import { PasswordResetGuard } from './guards/password-reset-guard';
+import { RequestResetSuccessGuard } from './guards/request-reset-guard';
 
 export const routes: Routes = [
   { path: '', component: Homepage, canActivate: [guestGuard] },
@@ -43,7 +44,7 @@ export const routes: Routes = [
     component: RequestResetSuccessComponent,
     canActivate: [
       guestGuard,
-      //  RequestResetSuccessGuard
+       RequestResetSuccessGuard
     ],
   },
   {

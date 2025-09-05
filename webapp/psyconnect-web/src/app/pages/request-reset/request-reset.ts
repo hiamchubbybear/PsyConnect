@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
+    FormBuilder,
+    FormGroup,
+    ReactiveFormsModule,
+    Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PasswordService } from '../../services/auth/password.service';
 import { ToastService } from '../../shared/toast/toast.service';
 
@@ -27,7 +27,8 @@ export class RequestResetComponent {
     private fb: FormBuilder,
     private router: Router,
     private passwordService: PasswordService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private translate: TranslateService
   ) {
     this.requestForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -44,12 +45,12 @@ export class RequestResetComponent {
     if (!field || !field.errors) return '';
 
     if (field.errors['required']) {
-      return 'LOGIN.REQUEST.Form.EmailRequired';
+      return this.translate.instant('LOGIN.REQUEST.Form.EmailRequired');
     }
     if (field.errors['email']) {
-      return 'LOGIN.REQUEST.Form.EmailInvalid';
+      return this.translate.instant('LOGIN.REQUEST.Form.EmailInvalid');
     }
-    return 'LOGIN.REQUEST.Form.Invalid';
+    return this.translate.instant('LOGIN.REQUEST.Form.Invalid');
   }
 
   private triggerShake() {
