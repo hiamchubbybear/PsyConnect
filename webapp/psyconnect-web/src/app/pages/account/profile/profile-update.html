@@ -1,52 +1,64 @@
 <section class="account-section profile-section">
   <form [formGroup]="form">
+    <!-- Avatar + Info -->
     <div class="avatar-section">
       <label class="profile-avatar-wrapper">
         <img
           class="profile-avatar"
-          [src]="imagePreview || form.value.avatarUri || 'https://i.pinimg.com/736x/85/bc/ed/85bceda292465d9c8c59e03a9be8d676.jpg'"
+          [src]="
+            imagePreview ||
+            form.value.avatarUri ||
+            'https://i.pinimg.com/736x/85/bc/ed/85bceda292465d9c8c59e03a9be8d676.jpg'
+          "
           alt="{{ 'ACCOUNT_MANAGEMENT.Profile.Avatar' | translate }}"
         />
-        <input type="file" accept="image/*" (change)="onImageSelected($event)" hidden />
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onImageSelected($event)"
+          hidden
+        />
         <span class="avatar-edit-overlay">✏️</span>
       </label>
       <h2>
-        {{ form.value.firstName }} {{ form.value.middleName }} {{ form.value.lastName }}
+        {{ form.value.firstName }} {{ form.value.middleName }}
+        {{ form.value.lastName }}
       </h2>
       <p *ngIf="selectedImage" class="image-selected-notice">
-        {{ 'ACCOUNT_MANAGEMENT.Profile.ImageSelected' | translate }}: {{ selectedImage.name }}
+        {{ "ACCOUNT_MANAGEMENT.Profile.ImageSelected" | translate }}:
+        {{ selectedImage.name }}
       </p>
     </div>
 
+    <!-- Editable fields -->
     <div class="account-section__group">
       <div class="account-row" (click)="openEdit('name')">
-        <span>{{ 'ACCOUNT_MANAGEMENT.Profile.Name' | translate }}</span>
+        <span>{{ "ACCOUNT_MANAGEMENT.Profile.Name" | translate }}</span>
         <span class="account-row__icon">›</span>
       </div>
-
       <div class="account-row" (click)="openEdit('dob')">
-        <span>{{ 'ACCOUNT_MANAGEMENT.Profile.DOB' | translate }}</span>
+        <span>{{ "ACCOUNT_MANAGEMENT.Profile.DOB" | translate }}</span>
         <span class="account-row__icon">›</span>
       </div>
-
       <div class="account-row" (click)="openEdit('address')">
-        <span>{{ 'ACCOUNT_MANAGEMENT.Profile.Address' | translate }}</span>
+        <span>{{ "ACCOUNT_MANAGEMENT.Profile.Address" | translate }}</span>
         <span class="account-row__icon">›</span>
       </div>
-
       <div class="account-row" (click)="openEdit('gender')">
-        <span>{{ 'ACCOUNT_MANAGEMENT.Profile.Gender' | translate }}</span>
+        <span>{{ "ACCOUNT_MANAGEMENT.Profile.Gender" | translate }}</span>
         <span class="account-row__icon">›</span>
       </div>
     </div>
 
+    <!-- Warnings -->
     <div class="update-warning" *ngIf="!canConfirm">
-      <p>{{ 'ACCOUNT_MANAGEMENT.Profile.Notices.NoChanges' | translate }}</p>
+      <p>{{ "ACCOUNT_MANAGEMENT.Profile.Notices.NoChanges" | translate }}</p>
     </div>
     <div *ngIf="canConfirm" class="update-warning">
-      {{ 'ACCOUNT_MANAGEMENT.Profile.Notices.UnsavedChanges' | translate }}
+      {{ "ACCOUNT_MANAGEMENT.Profile.Notices.UnsavedChanges" | translate }}
     </div>
 
+    <!-- Buttons -->
     <button-group
       [primaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Confirm' | translate"
       [secondaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel' | translate"
@@ -57,84 +69,13 @@
     ></button-group>
   </form>
 </section>
-<div class="overlay" *ngIf="editing === 'name'">
-  <div class="overlay-content">
-    <h3>{{ 'ACCOUNT_MANAGEMENT.Profile.Name' | translate }}</h3>
-    <div class="form">
-      <input type="text" [(ngModel)]="draftData.firstName" name="firstName" placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.FirstName' | translate }}" />
-      <input type="text" [(ngModel)]="draftData.middleName" name="middleName" placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.MiddleName' | translate }}" />
-      <input type="text" [(ngModel)]="draftData.lastName" name="lastName" placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.LastName' | translate }}" />
-      <p class="notice">{{ 'ACCOUNT_MANAGEMENT.Profile.Notices.NameChangeWarning' | translate }}</p>
-      <div class="overlay-actions">
-        <button type="button" class="button button--secondary" (click)="cancel()">
-          {{ 'ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel' | translate }}
-        </button>
-        <button type="button" class="button button--primary" (click)="saveName()">
-          {{ 'ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges' | translate }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="overlay" *ngIf="editing === 'dob'">
-  <div class="overlay-content">
-    <h3>{{ 'ACCOUNT_MANAGEMENT.Profile.DOB' | translate }}</h3>
-    <p>{{ 'ACCOUNT_MANAGEMENT.Profile.Notices.DOBInfo' | translate }}</p>
-    <div class="form">
-      <input type="date" [(ngModel)]="editValue" name="dobField" />
-      <div class="overlay-actions">
-        <button type="button" class="button button--secondary" (click)="cancel()">
-          {{ 'ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel' | translate }}
-        </button>
-        <button type="button" class="button button--primary" (click)="saveField('dob')">
-          {{ 'ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges' | translate }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="overlay" *ngIf="editing === 'address'">
-  <div class="overlay-content">
-    <h3>{{ 'ACCOUNT_MANAGEMENT.Profile.Address' | translate }}</h3>
-    <p>{{ 'ACCOUNT_MANAGEMENT.Profile.Notices.AddressInfo' | translate }}</p>
-    <div class="form">
-      <input type="text" [(ngModel)]="editValue" name="addressField" />
-      <div class="overlay-actions">
-        <button type="button" class="button button--secondary" (click)="cancel()">
-          {{ 'ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel' | translate }}
-        </button>
-        <button type="button" class="button button--primary" (click)="saveField('address')">
-          {{ 'ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges' | translate }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
-<div class="overlay" *ngIf="editing === 'gender'">
-  <div class="overlay-content">
-    <h3>{{ 'ACCOUNT_MANAGEMENT.Profile.Gender' | translate }}</h3>
-    <p class="overlay-subtitle">{{ 'ACCOUNT_MANAGEMENT.Profile.Notices.GenderInfo' | translate }}</p>
-
-    <div class="gender-options">
-      <button type="button" class="gender-option" [class.selected]="editValue === 'Male'" (click)="editValue = 'Male'">
-        {{ 'ACCOUNT_MANAGEMENT.Profile.GenderOptions.Male' | translate }}
-      </button>
-      <button type="button" class="gender-option" [class.selected]="editValue === 'Female'" (click)="editValue = 'Female'">
-        {{ 'ACCOUNT_MANAGEMENT.Profile.GenderOptions.Female' | translate }}
-      </button>
-      <button type="button" class="gender-option" [class.selected]="editValue === 'Other'" (click)="editValue = 'Other'">
-        {{ 'ACCOUNT_MANAGEMENT.Profile.GenderOptions.Other' | translate }}
-      </button>
-    </div>
-
-    <div class="overlay-actions">
-      <button type="button" class="button button--secondary" (click)="cancel()">
-        {{ 'ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel' | translate }}
-      </button>
-      <button type="button" class="button button--primary" (click)="saveField('gender')">
-        {{ 'ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges' | translate }}
-      </button>
-    </div>
-  </div>
-</div>
+<!-- Overlay component -->
+<app-profile-overlay
+  [editing]="editing"
+  [draftData]="draftData"
+  [editValue]="editValue"
+  (saveName)="saveName()"
+  (saveField)="saveField($event)"
+  (cancel)="cancel()"
+></app-profile-overlay>
