@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    ReactiveFormsModule,
-    Validators,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ToastService } from '../../shared/toast/toast.service';
+import { PasswordService } from '../../services/auth/password.service';
 
 @Component({
   selector: 'app-password-reset',
@@ -35,7 +37,9 @@ export class ResetPasswordComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastService: ToastService,
+    private passwordService: PasswordService
   ) {}
 
   ngOnInit() {
@@ -159,15 +163,33 @@ export class ResetPasswordComponent implements OnInit {
 
     this.submitting = true;
 
-    // TODO: call API reset password
-    setTimeout(() => {
-      console.log('Password reset successful');
-      this.router.navigate(['/auth/login'], {
-        queryParams: {
-          message: this.translate.instant('LOGIN.RESET.Form.Success'),
-        },
-      });
-    }, 2000);
+    const payload = {
+      username: this.username,
+      email: this.email,
+      newPassword: this.resetForm.value.password,
+      resetToken: this.token,
+    };
+
+    this.passwordService.confirmReset(payload).subscribe({
+      next: (res) => {
+        this.submitting = false;
+        if (res.code === 200 && res.data) {
+          this.toastService.success('Success', res.message, 2000);
+          this.router.navigate(['/auth/login'], {
+            queryParams: { message: res.message },
+          });
+        } else {
+          this.toastService.error('Error', res.message, 2000);
+          this.triggerShake();
+        }
+      },
+      error: (err) => {
+        this.submitting = false;
+        this.triggerShake();
+        const msg = err.error?.message || 'Something went wrong';
+        this.toastService.error('Error', msg, 2000);
+      },
+    });
   }
 
   onCancel() {

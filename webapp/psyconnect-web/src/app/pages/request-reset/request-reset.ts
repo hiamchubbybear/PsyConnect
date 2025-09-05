@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    ReactiveFormsModule,
-    Validators,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { PasswordService } from '../../services/auth/password.service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-request-reset',
@@ -24,7 +26,8 @@ export class RequestResetComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private translate: TranslateService
+    private passwordService: PasswordService,
+    private toastService: ToastService
   ) {
     this.requestForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -65,12 +68,44 @@ export class RequestResetComponent {
 
     this.submitting = true;
     const email = this.requestForm.value.email;
-    setTimeout(() => {
-      this.submitting = false;
-      this.router.navigate(['/auth/request-reset-success'], {
-        state: { email },
+    /**
+     * @deprecated The field should be remove next api update
+     */
+    const username = '';
+    this.passwordService
+      .requestReset({
+        email: email,
+        username: username,
+      })
+      .subscribe({
+        next: (res) => {
+          if (res.code == 200 && res.data) {
+            setTimeout(() => {
+              this.submitting = false;
+              this.router.navigate(['/auth/request-reset-success'], {
+                state: { email },
+              });
+            }, 1500);
+          } else {
+            this.toastService.error('Error', res.message, 1500);
+            this.triggerShake();
+          }
+        },
+        error: (err) => {
+          this.submitting = false;
+          this.triggerShake();
+          if (err.error && err.error.message) {
+            this.toastService.error('Error', err.error.message, 2000);
+          } else {
+            this.toastService.error(
+              'Error',
+              err.statusText || 'Unknown error',
+              2000
+            );
+            console.log('HTTP error:', err);
+          }
+        },
       });
-    }, 1500);
   }
 
   onCancel() {

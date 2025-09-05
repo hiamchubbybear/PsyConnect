@@ -10,7 +10,7 @@ export class PasswordResetGuard implements CanActivate {
     const email = route.queryParamMap.get('email');
     const token = route.queryParamMap.get('token');
 
-    if (!username || !email || !token) {
+    if (!email || !token) {
       this.router.navigate(['/auth/login']);
       return false;
     }

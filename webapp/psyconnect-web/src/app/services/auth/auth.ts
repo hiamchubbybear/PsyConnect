@@ -38,7 +38,8 @@ export class Auth {
       );
   }
   logout(): void {
-    this.secureStorage.removeItem('access_token');
+    this.secureStorage.clear();
+
   }
 
   isLoggedIn(): boolean {

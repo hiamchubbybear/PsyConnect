@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
-import { PasswordResetGuard } from './guards/password-reset-guard';
-import { RequestResetSuccessGuard } from './guards/request-reset-guard';
 import { UpdateAccountComponent } from './pages/account/account-update';
 import { PaymentSessionComponent } from './pages/account/payment/payment';
 import { ProfileSectionComponent } from './pages/account/profile/profile-update';
@@ -17,6 +15,7 @@ import { ResetPasswordComponent } from './pages/password-reset/password-reset';
 import { RequestResetComponent } from './pages/request-reset/request-reset';
 import { RequestResetSuccessComponent } from './pages/request-reset/success/request-reset-success';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
+import { PasswordResetGuard } from './guards/password-reset-guard';
 
 export const routes: Routes = [
   { path: '', component: Homepage, canActivate: [guestGuard] },
@@ -42,7 +41,10 @@ export const routes: Routes = [
   {
     path: 'auth/request-reset-success',
     component: RequestResetSuccessComponent,
-    canActivate: [guestGuard, RequestResetSuccessGuard],
+    canActivate: [
+      guestGuard,
+      //  RequestResetSuccessGuard
+    ],
   },
   {
     path: 'account',
