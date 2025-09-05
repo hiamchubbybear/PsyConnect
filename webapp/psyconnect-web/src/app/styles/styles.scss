@@ -1,6 +1,7 @@
 @use "@angular/material" as mat;
-@use "../src/app/styles/variable" as v;
-@use "../src/app/styles/form-base" as *;
+@use "./variable" as v;
+@use "./form-base" as *;
+
 @include mat.core();
 
 :root {
