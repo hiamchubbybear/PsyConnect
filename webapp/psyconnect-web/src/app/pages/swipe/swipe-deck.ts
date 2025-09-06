@@ -116,7 +116,7 @@ export class SwipeDeckComponent implements OnInit {
       (t) => t.profile_id !== event.therapist.profile_id
     );
 
-    localStorage.setItem('therapists', JSON.stringify(this.therapists));
+    this.secureStorage.setItem('therapists', this.therapists);
 
     if (event.direction === 'right') {
       console.log('Matched:', event.therapist.name);
