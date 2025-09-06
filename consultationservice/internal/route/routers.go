@@ -77,7 +77,6 @@ func RouterInit(
 		uncategoryGroup.GET("/client/:id", clientHandler.GetClientByIdHandler)            // Deprecated
 	}
 
-
 	api := router.Group("/v1/consultation")
 
 	// Therapists
@@ -132,6 +131,15 @@ func RouterInit(
 	{
 		match.GET("/", matchingHandler.GetAllMatchTherapist)
 		match.POST("/", matchingHandler.MatchRequest)
+	}
+	// Uncategorize Routes
+	uncategoryGroupV1 := router.Group("/v1/consultation")
+	uncategoryGroup.Use(middleware.RoleRequire(""))
+	{
+
+		uncategoryGroupV1.GET("/therapist/:id", therapistHandler.GetTherapistByIdHandlerV1)
+		uncategoryGroupV1.GET("/me/recommend/top", swipeHandler.PopTop5V1)
+		uncategoryGroupV1.GET("/client/:id", clientHandler.GetClientByIdHandler)
 	}
 
 	router.Run(urI)

@@ -57,6 +57,7 @@ func (r *SwipeRepository) InsertSwipes(clientId string, swipes []model.ClientSwi
 	return nil
 }
 
+// Deprecated: Replace  PopTop5SwipesV1
 func (r *SwipeRepository) PopTop5Swipes(clientId string) ([]model.Therapist, error) {
 	ctx := context.Background()
 
@@ -108,7 +109,27 @@ func (r *SwipeRepository) PopTop5Swipes(clientId string) ([]model.Therapist, err
 	return therapistResponse, nil
 }
 
+// Deprecated: Replace getTop5PendingSwipesV1  instead
 func (r *SwipeRepository) getTop5PendingSwipes(clientId string) ([]model.ClientSwipe, error) {
+	ctx := context.Background()
+
+	cursor, err := r.swipeRepo.Find(ctx,
+		bson.M{"client_id": clientId, "status": "pending"},
+		optsFindTop5(),
+	)
+	if err != nil {
+		log.Println("Failed to find top 5 swipes:", err)
+		return nil, errors.New("failed to find swipes")
+	}
+
+	var swipes []model.ClientSwipe
+	if err := cursor.All(ctx, &swipes); err != nil {
+		return nil, err
+	}
+	return swipes, nil
+}
+
+func (r *SwipeRepository) getTop5PendingSwipesV1(clientId string) ([]model.ClientSwipe, error) {
 	ctx := context.Background()
 
 	cursor, err := r.swipeRepo.Find(ctx,
