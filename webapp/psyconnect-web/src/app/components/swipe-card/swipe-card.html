@@ -24,8 +24,8 @@
 
     <header class="card-header">
       <img
-        *ngIf="therapist.avatar_override; else placeholder"
-        [src]="therapist.avatar_override"
+        *ngIf="therapist.avatarOverride; else placeholder"
+        [src]="therapist.avatarOverride"
         [alt]="therapist.name"
         class="avatar"
       />
@@ -36,7 +36,7 @@
       <div class="meta">
         <h3 class="name">{{ therapist.name }}</h3>
         <div class="title">
-          {{ therapist.professional_info.title.display }}
+          {{ therapist.professionalInfo?.title?.display }}
         </div>
         <div class="rating">
           <span class="stars">★</span>

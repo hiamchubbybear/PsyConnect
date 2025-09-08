@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
 import { Auth } from '../../services/auth/auth';
@@ -15,12 +16,11 @@ import { AuthStateService } from '../../services/auth/auth-state.service';
 import { LoaderService } from '../../services/loader/loader';
 import { Profile, ProfileResponse } from '../../services/profile/profile';
 import {
-  UserContextService,
-  UserProfile,
+    UserContextService,
+    UserProfile,
 } from '../../services/profile/profile-service';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
-import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
