@@ -190,33 +190,34 @@ func (r *SwipeRepository) GetSwipedTherapistIds(clientId string) ([]string, erro
 }
 
 func (r *SwipeRepository) FilterAllTherapist(clientId string) ([]model.ClientSwipe, error) {
+
 	client, err := r.clientRepo.FindClientMatchingProfile(clientId)
 	if err != nil {
-		log.Println("Failed to find client profile", err)
+
 		return nil, errors.New("failed to find client profile")
 	}
 
 	therapists, err := r.therapistRepo.FindAllTherapistMatchingProfiles()
 	if err != nil {
-		log.Println("Failed to find therapist profile", err)
+
 		return nil, errors.New("failed to find therapist profile")
 	}
 
 	raw, err := AppendDataIntoSwipe(client, therapists)
 	if err != nil {
-		log.Println("Failed to append swipe data", err)
+
 		return nil, errors.New("failed to append swipe data")
 	}
 
 	swipes, err := external.RecommendationApi(raw)
 	if err != nil {
-		log.Println("Recommendation API error:", err)
+
 		return nil, errors.New("failed to fetch recommendation")
 	}
 
 	swipedIds, err := r.GetSwipedTherapistIds(clientId)
 	if err != nil {
-		log.Println("Failed to get swiped therapist IDs", err)
+
 		return nil, errors.New("failed to get swiped therapist IDs")
 	}
 
@@ -229,14 +230,18 @@ func (r *SwipeRepository) FilterAllTherapist(clientId string) ([]model.ClientSwi
 	for _, s := range swipes {
 		if !bf.Test([]byte(s.TherapistId)) {
 			filtered = append(filtered, s)
+		} else {
+			log.Printf("[DEBUG] Skipped therapistId=%s (already swiped)\n", s.TherapistId)
 		}
 	}
+	log.Printf("[DEBUG] After filtering: %d swipes remain\n", len(filtered))
 
 	err = r.InsertSwipes(clientId, filtered)
 	if err != nil {
-		log.Println("Failed to save swipes", err)
+		log.Println("[ERROR] Failed to save swipes:", err)
 		return nil, err
 	}
+	log.Printf("[DEBUG] Successfully inserted %d swipes into DB for client %s\n", len(filtered), clientId)
 
 	return filtered, nil
 }
@@ -262,7 +267,7 @@ func (r *SwipeRepository) PopTop5SwipesV1(clientId string) ([]model.TherapistV1,
 		return cached, nil
 	}
 
-	swipes, err := r.getTop5PendingSwipes(clientId)
+	swipes, err := r.getTop5PendingSwipesV1(clientId)
 	if err != nil {
 		return nil, err
 	}
@@ -271,7 +276,7 @@ func (r *SwipeRepository) PopTop5SwipesV1(clientId string) ([]model.TherapistV1,
 		if err := r.UpdateAllPendingTherapistSwipeProfile(clientId); err != nil {
 			return nil, err
 		}
-		swipes, err = r.getTop5PendingSwipes(clientId)
+		swipes, err = r.getTop5PendingSwipesV1(clientId)
 		if err != nil {
 			return nil, err
 		}

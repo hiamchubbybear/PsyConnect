@@ -96,13 +96,12 @@ func RouterInit(
 	client := api.Group("/clients")
 	client.Use(middleware.RoleRequire("client"))
 	{
-		// thao tác với chính mình
 		client.GET("/me", clientHandler.GetClientHandler)
 		client.POST("/me", clientHandler.PostClientHandler)
 		client.PUT("/me", clientHandler.PutClientHandler)
 
-		client.POST("/me/recommend", swipeHandler.TriggerUpdate)
-		client.GET("/me/recommend/top", swipeHandler.PopTop5)
+		client.POST("/me/recommend", swipeHandler.TriggerUpdateV1)
+		client.GET("/me/recommend/top", swipeHandler.PopTop5V1)
 		client.POST("/me/match", matchingHandler.MatchRequest)
 		client.POST("/me/swipe", swipeHandler.SwipeTherapist)
 
