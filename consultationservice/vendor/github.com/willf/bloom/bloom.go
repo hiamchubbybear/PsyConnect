@@ -22,26 +22,26 @@ a non-cryptographic hashing function.
 This implementation accepts keys for setting as testing as []byte. Thus, to
 add a string item, "Love":
 
-    uint n = 1000
-    filter := bloom.New(20*n, 5) // load of 20, 5 keys
-    filter.Add([]byte("Love"))
+	uint n = 1000
+	filter := bloom.New(20*n, 5) // load of 20, 5 keys
+	filter.Add([]byte("Love"))
 
 Similarly, to test if "Love" is in bloom:
 
-    if filter.Test([]byte("Love"))
+	if filter.Test([]byte("Love"))
 
 For numeric data, I recommend that you look into the binary/encoding library. But,
 for example, to add a uint32 to the filter:
 
-    i := uint32(100)
-    n1 := make([]byte,4)
-    binary.BigEndian.PutUint32(n1,i)
-    f.Add(n1)
+	i := uint32(100)
+	n1 := make([]byte,4)
+	binary.BigEndian.PutUint32(n1,i)
+	f.Add(n1)
 
 Finally, there is a method to estimate the false positive rate of a particular
 Bloom filter for a set of size _n_:
 
-    if filter.EstimateFalsePositiveRate(1000) > 0.001
+	if filter.EstimateFalsePositiveRate(1000) > 0.001
 
 Given the particular hashing scheme, it's best to be empirical about this. Note
 that estimating the FP rate will clear the Bloom filter.

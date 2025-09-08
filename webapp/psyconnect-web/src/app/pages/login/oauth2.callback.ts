@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SecureStorageService } from '../../encrypt/secure';
 import { Auth } from '../../services/auth/auth';
 import { UserContextService } from '../../services/profile/profile-service';
 
@@ -14,7 +15,8 @@ export class OAuth2CallbackComponent implements OnInit {
   constructor(
     private auth: Auth,
     private userContext: UserContextService,
-    private router: Router
+    private router: Router,
+    private secureStorage: SecureStorageService
   ) {}
 
   ngOnInit() {
@@ -30,8 +32,8 @@ export class OAuth2CallbackComponent implements OnInit {
       this.auth.exchangeOAuth2Code(code, email, provider, platform).subscribe({
         next: (res) => {
           console.log('OAuth2 exchange success:', res);
-          localStorage.setItem('access_token', res.data.token);
-          localStorage.setItem('profile', JSON.stringify(res.data));
+          this.secureStorage.setItem('access_token', res.data.token);
+          this.secureStorage.setItem('profile', JSON.stringify(res.data));
           this.userContext.setUser(res.data);
           this.router.navigate(['/']);
         },
