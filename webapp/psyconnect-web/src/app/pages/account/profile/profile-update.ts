@@ -11,8 +11,9 @@ import {
     FormsModule,
     ReactiveFormsModule,
 } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { map, Observable, of } from 'rxjs';
-import { ButtonGroupComponent } from '../../../components/button-group/button-group';
+import { SingleButton } from '../../../components/single-button/single-button';
 import { SecureStorageService } from '../../../encrypt/secure';
 import { CloudinaryService } from '../../../services/cloudinary/cloudinary.service';
 import { LoaderService } from '../../../services/loader/loader';
@@ -27,8 +28,7 @@ import {
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { ProfileModel } from './profile-model';
-import { TranslateModule } from '@ngx-translate/core';
-import { ProfileOverlayComponent } from "./profile-overlay";
+import { ProfileOverlayComponent } from './profile-overlay';
 @Component({
   selector: 'app-profile-section',
   standalone: true,
@@ -36,11 +36,11 @@ import { ProfileOverlayComponent } from "./profile-overlay";
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    ButtonGroupComponent,
     ReactiveFormsModule,
     TranslateModule,
-    ProfileOverlayComponent
-],
+    ProfileOverlayComponent,
+    SingleButton,
+  ],
   templateUrl: './profile-update.html',
   styleUrls: ['./profile-update.scss'],
 })

@@ -427,5 +427,178 @@
             "Online": "Online",
             "Offline": "In-Person"
         }
-    }
+    },
+    "about_us": "About Us",
+    "hero_tagline": "Vietnam's Leading Mental Health Connection Platform",
+    "mission_statement": "Connecting people seeking psychological support with verified experts — fast, safe, and transparent.",
+    "vision_statement": "To become the leading neutral platform that helps everyone easily access the most suitable expertise.",
+    "core_values": [
+        "Neutral",
+        "Transparent",
+        "Secure",
+        "Empathetic",
+        "Professional"
+    ],
+    "find_expert": "Find Expert",
+    "become_partner": "Become Partner",
+    "verified_experts": "Verified Experts",
+    "successful_sessions": "Successful Sessions",
+    "average_rating": "Average Rating",
+    "support_available": "24/7 Support",
+    "our_story_title": "Why We Created This Platform",
+    "our_story_content": "We noticed many people want to access mental health professionals but face barriers: not knowing where to find them, concerns about quality, or difficulty comparing costs. PsyConnect was created as a trusted bridge — where clients can search, compare, and book appointments with high-quality independent counseling experts, based on detailed profiles, real user reviews, and our rigorous verification process.",
+    "our_mission": "Our Mission",
+    "our_vision": "Our Vision",
+    "expert_verification": "Expert Verification Process",
+    "verification_description": "We apply a rigorous 4-step verification process to ensure the quality of experts on our platform.",
+    "verification_steps": [
+        "Verification of degrees & professional certificates",
+        "Identity verification & personal information (KYC)",
+        "Verification of practical experience & professional references",
+        "Commitment to professional ethics & legal compliance"
+    ],
+    "quality_standards": [
+        "All experts have recognized degrees",
+        "Regular verification of practice licenses",
+        "Regular service quality assessments",
+        "Transparent feedback and complaint system",
+        "Continuous training on new methods"
+    ],
+    "featured_experts": "Featured Experts",
+    "featured_experts_desc": "Top mental health professionals who have been verified and have extensive experience on our platform.",
+    "verified": "Verified",
+    "reviews": "reviews",
+    "years_experience": "years experience",
+    "education": "Education",
+    "certificates": "Certificates",
+    "verify": "Verify",
+    "our_services": "Our Services",
+    "services_description": "We provide various types of psychological counseling services to meet diverse client needs.",
+    "individual_counseling": "Individual Counseling 1-1",
+    "individual_counseling_desc": "Private counseling sessions with suitable experts, available online or at clinics.",
+    "group_therapy": "Group Therapy",
+    "group_therapy_desc": "Topic-specific support groups led by experienced professionals.",
+    "couples_therapy": "Couples Therapy",
+    "couples_therapy_desc": "Support for couples to resolve conflicts and improve relationships.",
+    "online_consultation": "Online Consultation",
+    "online_consultation_desc": "Convenient video call counseling service, saving travel time.",
+    "therapeutic_methods": [
+        "CBT (Cognitive Behavioral Therapy)",
+        "ACT (Acceptance and Commitment Therapy)",
+        "Mindfulness",
+        "Psychodynamic Therapy",
+        "Humanistic Counseling",
+        "EMDR",
+        "Family Systems Therapy",
+        "Solution-Focused Therapy"
+    ],
+    "who_should_use": "Who Should Use PsyConnect?",
+    "target_audience": [
+        "Individuals needing personal counseling",
+        "Families with support needs",
+        "Students facing academic pressure",
+        "Working professionals with job stress",
+        "Couples with relationship conflicts",
+        "People experiencing psychological trauma",
+        "People with anxiety and depression issues"
+    ],
+    "getting_started_message": "You don't need to be an expert to get started — just one simple step to find the right person for you.",
+    "our_team": "Our Team",
+    "team_description": "A team of professional psychologists and managers committed to delivering the best user experience.",
+    "clinical_director": "Clinical Director",
+    "clinical_director_bio": "Clinical psychologist with over 15 years of experience. Leading expert in CBT and EMDR therapy.",
+    "head_of_operations": "Head of Operations",
+    "head_of_operations_bio": "10 years of experience in technology project management and product development in healthcare.",
+    "privacy_security": "Privacy & Security",
+    "privacy_protection": "Privacy Protection",
+    "privacy_features": [
+        "End-to-end encryption for all conversations",
+        "No sharing of personal information with third parties",
+        "Right to complete data deletion upon request",
+        "Strict compliance with personal data protection laws",
+        "Two-factor authentication system"
+    ],
+    "security_measures": [
+        "Servers protected by advanced firewalls",
+        "Automated and secure data backup",
+        "Regular security audits by third parties",
+        "SSL certificates for all connections",
+        "24/7 monitoring for anomaly detection"
+    ],
+    "frequently_asked": "Frequently Asked Questions",
+    "faq_items": [
+        {
+            "question": "How do I know which expert is right for me?",
+            "answer": "You can view detailed profiles, specializations, experience, and reviews of each expert. We also have a recommendation system based on your needs."
+        },
+        {
+            "question": "How much does counseling cost?",
+            "answer": "Costs range from 300,000 - 1,200,000 VND per session depending on the service type and expert experience. You can see specific prices on each expert's profile."
+        },
+        {
+            "question": "Is my information kept confidential?",
+            "answer": "Absolutely. We apply end-to-end encryption and strictly comply with personal information security regulations."
+        },
+        {
+            "question": "Can I cancel appointments?",
+            "answer": "Yes, you can cancel appointments 24 hours in advance without charge. Cancellations within 24 hours may incur fees according to each expert's policy."
+        },
+        {
+            "question": "What if I need emergency support?",
+            "answer": "For emergency cases, please call the hotline 113 or contact the nearest medical facility. PsyConnect does not provide emergency psychological services."
+        }
+    ],
+    "contact_us": "Contact Us",
+    "hotline": "Hotline",
+    "email": "Email",
+    "address": "Address",
+    "business_hours": "Business Hours",
+    "weekdays": "Monday - Friday",
+    "weekends": "Weekends",
+    "crisis_support": "Crisis Support",
+    "crisis_support_desc": "If you are in an emergency situation or have thoughts of self-harm, please contact immediately:",
+    "emergency_call": "Emergency Call",
+    "current_version": "Current Version",
+    "whats_new": "What's New",
+    "coming_soon": "Coming Soon",
+    "development_team": "Development Team",
+    "view_repository": "View Repository",
+    "release_notes": [
+        "Platform launch with full registration and booking features",
+        "Detailed expert profile system with certificate verification",
+        "Secure online payment integration",
+        "User review and feedback system",
+        "High-quality video call counseling",
+        "iOS and Android mobile applications"
+    ],
+    "upcoming_features": [
+        "AI chatbot for 24/7 primary support",
+        "Google Calendar and Outlook integration",
+        "Therapy progress tracking system",
+        "VR application for relaxation therapy",
+        "Community support group features",
+        "API for hospital/clinic integration"
+    ],
+    "fullstack_lead": "Fullstack Lead",
+    "fullstack_lead_bio": "8 years of experience in web and mobile application development. Expert in React, Node.js, and cloud architecture.",
+    "backend_developer": "Backend Developer",
+    "backend_developer_bio": "Experienced in building scalable microservices with Node.js and Golang, focusing on performance and reliability.",
+    "uiux_designer": "UI/UX Designer",
+    "uiux_designer_bio": "Passionate about design systems, usability and user experience, with a strong background in Figma and prototyping.",
+    "frontend_developer": "Frontend Developer",
+    "frontend_developer_bio": "UI/UX specialist with 5 years of experience creating beautiful and user-friendly interfaces using Angular and React.",
+    "devops_engineer": "DevOps Engineer",
+    "devops_engineer_bio": "Cloud infrastructure and automation expert with experience at leading tech startups.",
+    "security_engineer": "Security Engineer",
+    "security_engineer_bio": "Focused on application security, penetration testing, and ensuring compliance with industry standards.",
+    "qa_engineer": "QA Engineer",
+    "qa_engineer_bio": "Skilled in automation testing and manual testing, ensuring high product quality before release.",
+    "product_manager": "Product Manager",
+    "product_manager_bio": "Bridges business and technology, manages backlog, roadmap, and ensures product vision is delivered.",
+    "anxiety_disorders": "Anxiety Disorders",
+    "depression": "Depression",
+    "trauma_therapy": "Trauma Therapy",
+    "family_counseling": "Family Counseling",
+    "couples_therapy": "Couples Therapy",
+    "child_psychology": "Child Psychology"
 }

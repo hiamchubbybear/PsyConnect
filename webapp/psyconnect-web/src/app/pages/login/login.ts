@@ -25,7 +25,13 @@ import { ToastService } from '../../shared/toast/toast.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, TranslateModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -125,6 +131,7 @@ export class Login implements OnInit {
         this.toastService.show('Login success', 'Success', ToastType.Success);
         this.setLoading(false);
         this.router.navigate(['/']);
+        this.authState.setLoggedIn(true);
       },
       error: (err) => {
         console.error('Get profile error', err);

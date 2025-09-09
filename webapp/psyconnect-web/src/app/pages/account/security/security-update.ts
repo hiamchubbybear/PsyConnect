@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
 } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { ButtonGroupComponent } from '../../../components/button-group/button-group';
-import { LoaderService } from '../../../services/loader/loader';
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
-import { TranslateModule } from '@ngx-translate/core';
 
 interface PasswordData {
   current: string;
@@ -32,34 +31,64 @@ interface SecurityMethods {
     FormsModule,
     ReactiveFormsModule,
     ButtonGroupComponent,
-    TranslateModule
+    TranslateModule,
   ],
   templateUrl: './security-update.html',
   styleUrls: ['./security-update.scss'],
 })
 export class SecuritySectionComponent implements OnInit {
-saveName() {
-throw new Error('Method not implemented.');
-}
+  saveName() {
+    throw new Error('Method not implemented.');
+  }
   confirmChanges() {
     throw new Error('Method not implemented.');
   }
-securityItems = [
-  { label: 'ACCOUNT_MANAGEMENT.Security.Items.ChangePassword', key: 'changePassword' },
-  { label: 'ACCOUNT_MANAGEMENT.Security.Items.TwoFA', key: '2fa' },
-  { label: 'ACCOUNT_MANAGEMENT.Security.Items.RecentLogins', key: 'recentLogins' },
-  { label: 'ACCOUNT_MANAGEMENT.Security.Items.SecurityMethods', key: 'securityMethods' },
-  { label: 'ACCOUNT_MANAGEMENT.Security.Items.LoggedDevices', key: 'loggedDevices' },
-  { label: 'ACCOUNT_MANAGEMENT.Security.Items.SuspiciousActivity', key: 'suspiciousActivity' },
-  { label: 'ACCOUNT_MANAGEMENT.Security.Items.LinkedEmails', key: 'linkedEmails' },
-  { label: 'ACCOUNT_MANAGEMENT.Security.Items.ThirdPartyApps', key: 'thirdPartyApps' },
-];
+  securityItems = [
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Items.ChangePassword',
+      key: 'changePassword',
+    },
+    { label: 'ACCOUNT_MANAGEMENT.Security.Items.TwoFA', key: '2fa' },
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Items.RecentLogins',
+      key: 'recentLogins',
+    },
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Items.SecurityMethods',
+      key: 'securityMethods',
+    },
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Items.LoggedDevices',
+      key: 'loggedDevices',
+    },
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Items.SuspiciousActivity',
+      key: 'suspiciousActivity',
+    },
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Items.LinkedEmails',
+      key: 'linkedEmails',
+    },
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Items.ThirdPartyApps',
+      key: 'thirdPartyApps',
+    },
+  ];
 
   securityCheckItems = [
-  { label: 'ACCOUNT_MANAGEMENT.Security.Check.LoggedDevices', key: 'loggedDevices' },
-  { label: 'ACCOUNT_MANAGEMENT.Security.Check.LinkedEmails', key: 'linkedEmails' },
-  { label: 'ACCOUNT_MANAGEMENT.Secuity.Check.ThirdPartyApps', key: 'thirdPartyApps' },
-];
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Check.LoggedDevices',
+      key: 'loggedDevices',
+    },
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Check.LinkedEmails',
+      key: 'linkedEmails',
+    },
+    {
+      label: 'ACCOUNT_MANAGEMENT.Security.Check.ThirdPartyApps',
+      key: 'thirdPartyApps',
+    },
+  ];
 
   editing: string | null = null;
   passwordData: PasswordData = {
@@ -86,11 +115,7 @@ securityItems = [
 
   form!: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private toastService: ToastService,
-    private loaderService: LoaderService
-  ) {}
+  constructor(private fb: FormBuilder, private toastService: ToastService) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -143,7 +168,6 @@ securityItems = [
       return;
     }
 
-    // TODO: API call to update password
     this.toastService.show(
       'Mật khẩu đã được cập nhật!',
       'Success',
@@ -153,7 +177,6 @@ securityItems = [
   }
 
   saveSecurityMethods() {
-    // TODO: API call to update security methods
     this.toastService.show(
       'Phương thức bảo mật đã được cập nhật!',
       'Success',
@@ -163,7 +186,6 @@ securityItems = [
   }
 
   enable2FA(method: 'authApp' | 'sms' | 'securityKey') {
-    // TODO: API call to enable 2FA
     this.toastService.show(
       `2FA được bật bằng ${method}`,
       'Success',
@@ -173,7 +195,6 @@ securityItems = [
   }
 
   logoutDevice(device: { name: string; lastActive: Date }) {
-    // TODO: API call to logout device
     this.toastService.show(
       `Đã đăng xuất thiết bị ${device.name}`,
       'Success',
@@ -183,7 +204,6 @@ securityItems = [
   }
 
   resolveAlert(alert: { message: string; time: Date }) {
-    // TODO: API call to resolve alert
     this.toastService.show(
       `Đã xác minh: ${alert.message}`,
       'Success',
