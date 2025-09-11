@@ -6,6 +6,8 @@ import { SwipeCardComponent } from '../../components/swipe-card/swipe-card';
 import { SecureStorageService } from '../../encrypt/secure';
 import { mapTherapistResponse, Therapist } from '../../models/swipe-card';
 import { SwipeService } from '../../services/swipe/swipe.service';
+import { ToastService } from '../../shared/toast/toast.service';
+import { ToastType } from '../../shared/toast/toast.model';
 
 @Component({
   selector: 'app-swipe-deck',
@@ -22,7 +24,8 @@ export class SwipeDeckComponent implements OnInit {
 
   constructor(
     private swipeService: SwipeService,
-    private secureStorage: SecureStorageService
+    private secureStorage: SecureStorageService,
+    private toastService : ToastService
   ) {}
 
   ngOnInit() {
@@ -38,13 +41,24 @@ export class SwipeDeckComponent implements OnInit {
           if (res?.data?.length) {
             this.therapists = mapTherapistResponse(res);
           } else {
-            this.therapists = this.getFallbackData();
+           this.onHandleUpdateTherapist();
           }
         },
         error: (err) => {
           this.therapists = this.getFallbackData();
         },
       });
+  }
+  onHandleUpdateTherapist() {
+    this.swipeService.getUpdateTherapistHandler().subscribe({
+      
+      next: (res) => {
+        if(res) this.toastService.show("Updated" , "Therapist updated" , ToastType.Success) 
+          else this.toastService.show("Updated" , "Therapist updated failed"  , ToastType.Success) 
+      },
+      error : err => this.toastService.show("Updated" , err  , ToastType.Success) 
+    }
+    )
   }
 
   private getFallbackData(): Therapist[] {
@@ -208,4 +222,6 @@ export class SwipeDeckComponent implements OnInit {
       : '';
     return `${days}${days && times ? ' - ' : ''}${times}`;
   }
+
 }
+

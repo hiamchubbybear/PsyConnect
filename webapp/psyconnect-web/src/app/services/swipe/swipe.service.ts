@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
 import { Therapist } from '../../models/swipe-card';
@@ -11,6 +11,18 @@ export interface SwipeProfile {
   reasons: string[];
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: string;
+}
+interface TherapistRecommendResponse {
+  message: string;
+  status: number;
+  data: {
+    client_id: string;
+    therapist_id: string;
+    points: number;
+    reasons: string[];
+    status: string;
+    created_at: string;
+  }[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -57,5 +69,19 @@ export class SwipeService {
     }>(`${this.apiUrl}/${this.version}/consultation/clients/me/recommend/top`, {
       headers,
     });
+  }
+  getUpdateTherapistHandler(): Observable<boolean> {
+    const token = this.secureStorage.getItem('access_token');
+    const url = `${this.apiUrl}/consultation/client/recommend`;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.get<TherapistRecommendResponse>(url, { headers }).pipe(
+      map((res) => {
+        return Array.isArray(res.data) && res.data.length > 0;
+      })
+    );
   }
 }
