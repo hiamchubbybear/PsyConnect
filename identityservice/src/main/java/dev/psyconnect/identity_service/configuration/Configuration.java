@@ -69,6 +69,8 @@ public class Configuration {
                                 "/oauth2/callback/google",
                                 "/login/oauth2/code/google",
                                 "/identity/**",
+                                "/v1/identity/**",
+                                "/v1/auth/**",
                                 "/identity/**",
                                 "/identity/req/reset-password",
                                 "/identity/create",

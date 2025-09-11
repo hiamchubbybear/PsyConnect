@@ -1,4 +1,4 @@
-package dev.psyconnect.identity_service.controller;
+package dev.psyconnect.identity_service.controller.v0;
 
 import java.text.ParseException;
 

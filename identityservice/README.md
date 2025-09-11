@@ -19,7 +19,20 @@ PsyConnect platform. It provides secure and scalable identity management feature
 - **Database**: MySQL
 - **API Communication**: RESTful APIs
 
-## API Endpoints
+## 📌 Version History
+
+| Version | Date       | Changes |
+|---------|-----------|---------|
+| **v1.1.0** | 2025-08-15 | - Add new endpoint and refactor version |
+| **v1.0.0** | 2025-08-14 | - Initial release |
+
+## API Endpoints Update V1
+
+| Method | Endpoint           | Description                       | Role Required | Headers Required |
+|--------|--------------------|-----------------------------------|---------------|------------------|
+| POST   | `/v1/auth/login`   | Authenticate user and get token   | None          | None             |
+| POST   | `/v1/auth/refresh` | Refresh access token with refresh | None          | None             |
+
 
 ### Authentication
 
@@ -51,6 +64,7 @@ PsyConnect platform. It provides secure and scalable identity management feature
 | GET    | `/account/all/{page}` | Get paginated list of accounts | role.admin:permission | X-Roles          |
 
 ---
+
 
 ## Setup & Configuration
 
