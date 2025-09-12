@@ -195,7 +195,7 @@ public class AuthenticationService {
         else if (!passwordEncoder().matches(password, user.getPassword()))
             throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
         else {
-            String refreshToken = tokenService.generateRefreshToken(authenticationRequest.getUsername());
+            String refreshToken = tokenService.generateRefreshToken(authenticationRequest.getUsername(), null);
             var response = AuthenticationResponseV1.builder()
                     .isSuccessful(true)
                     .token(generateToken(authenticationRequest.getUsername(), provider, clientPlatform))
@@ -207,11 +207,14 @@ public class AuthenticationService {
 
     public AuthenticationResponseV1 refreshTokenV1(
             String username, String refreshToken, String provider, String clientPlatform) {
-        tokenRepository.findById(username).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.TOKEN_INVALID));
+        var token = tokenRepository
+                .findById(username)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.TOKEN_INVALID));
+        String newRefreshToken = tokenService.generateRefreshToken(username, refreshToken);
         var response = AuthenticationResponseV1.builder()
                 .isSuccessful(true)
                 .token(generateToken(username, provider, clientPlatform))
-                .refreshToken(refreshToken)
+                .refreshToken(newRefreshToken)
                 .build();
         return response;
     }
