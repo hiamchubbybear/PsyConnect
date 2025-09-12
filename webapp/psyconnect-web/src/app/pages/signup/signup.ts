@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import {
     AfterViewInit,
     ChangeDetectorRef,
@@ -14,6 +15,7 @@ import {
     ReactiveFormsModule,
     Validators,
 } from '@angular/forms';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CloudinaryService } from '../../services/cloudinary/cloudinary.service';
 import {
     RegisterRequest,
@@ -21,6 +23,7 @@ import {
 } from '../../services/signup/register';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
+
 @Component({
   standalone: true,
   selector: 'signup',
@@ -63,13 +66,14 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  currentStep = 0;
+  currentStep = 3;
   totalSteps = 7;
   isLoading = false;
   selectedImage: File | null = null;
   imagePreview: string | null = null;
-  addressSuggestions: string[] = [];
+  addressSuggestions: String[] = [];
 
+  selectedIndex: number = -1;
   avatarForm!: FormGroup;
   nameForm!: FormGroup;
   personalForm!: FormGroup;
@@ -83,11 +87,28 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     private cloudinaryService: CloudinaryService,
     private registerService: RegisterService,
     private toastService: ToastService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
     this.initializeForms();
+    this.addressForm
+      .get('address')!
+      .valueChanges.pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((query: string) => {
+        if (query && query.length > 2) {
+          const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+            query
+          )}&format=json&addressdetails=1&limit=10`;
+
+          this.http.get<any[]>(url).subscribe((data) => {
+            this.addressSuggestions = data.map((item) => item.display_name);
+          });
+        } else {
+          this.addressSuggestions = [];
+        }
+      });
   }
   shakeErrors = false;
 
@@ -227,21 +248,24 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   onAddressInput(event: any) {
     const query = event.target.value;
     if (query.length > 2) {
-      this.addressSuggestions = [
-        `${query}, Ho Chi Minh City, Vietnam`,
-        `${query}, Hanoi, Vietnam`,
-        `${query}, Da Nang, Vietnam`,
-      ];
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        query
+      )}&format=json&addressdetails=1&limit=10`;
+
+      this.http.get<any[]>(url).subscribe((data) => {
+        this.addressSuggestions = data.map((item) => item.display_name);
+        this.selectedIndex = -1;
+      });
     } else {
       this.addressSuggestions = [];
+      this.selectedIndex = -1;
     }
   }
 
-  selectAddress(address: string) {
+  selectAddress(address: String) {
     this.addressForm.get('address')?.setValue(address);
     this.addressSuggestions = [];
   }
-
   async submitFinalRegister() {
     if (this.getCurrentForm().invalid) {
       this.getCurrentForm().markAllAsTouched();

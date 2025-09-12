@@ -1,3 +1,4 @@
+@use "../../../styles/variable" as v;
 .overlay {
   position: fixed;
   top: 0;
@@ -68,6 +69,31 @@
 
       &:focus {
         border-color: var(--color-text-muted);
+      }
+    }
+  }
+  .suggestions-dropdown {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: v.$border-radius-md;
+    margin-top: 4px;
+    box-shadow: var(--shadow-dropdown);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+
+    .suggestion-item {
+      padding: v.$spacing-md;
+      cursor: pointer;
+      font-size: v.$font-size-sm;
+      transition: background v.$transition-fast;
+
+      &:hover {
+        background: var(--color-surface-hover);
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--color-border);
       }
     }
   }

@@ -75,8 +75,27 @@
   <div class="overlay-content">
     <h3>{{ "ACCOUNT_MANAGEMENT.Profile.Address" | translate }}</h3>
     <p>{{ "ACCOUNT_MANAGEMENT.Profile.Notices.AddressInfo" | translate }}</p>
+
     <div class="form">
-      <input type="text" [(ngModel)]="editValue" name="addressField" />
+      <input
+        type="text"
+        [(ngModel)]="editValue"
+        name="addressField"
+        (ngModelChange)="onAddressInput($event)"
+        placeholder="Enter your full address"
+      />
+
+      <!-- Suggestion dropdown -->
+      <div *ngIf="addressSuggestions.length > 0" class="suggestions-dropdown">
+        <div
+          *ngFor="let suggestion of addressSuggestions"
+          class="suggestion-item"
+          (click)="selectAddress(suggestion)"
+        >
+          {{ suggestion }}
+        </div>
+      </div>
+
       <div class="overlay-actions">
         <button
           type="button"

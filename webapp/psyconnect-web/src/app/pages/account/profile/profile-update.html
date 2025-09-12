@@ -79,10 +79,10 @@
 
 <!-- Overlay component -->
 <app-profile-overlay
+  [(editValue)]="editValue"
   [editing]="editing"
   [draftData]="draftData"
-  [editValue]="editValue"
-  (saveName)="saveName()"
   (saveField)="saveField($event)"
+  (saveName)="saveName()"
   (cancel)="cancel()"
 ></app-profile-overlay>

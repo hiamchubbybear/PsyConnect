@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { SecureStorageService } from '../../encrypt/secure';
 import { Auth } from '../auth/auth';
 
 export interface ProfileResponse {
@@ -42,6 +41,7 @@ export interface UserProfileUpdateRequest {
   gender: string;
   avatarUri: string;
 }
+
 @Injectable({
   providedIn: 'root',
 })
@@ -52,7 +52,6 @@ export class Profile {
   constructor(
     private http: HttpClient,
     private auth: Auth,
-    private secureStorage: SecureStorageService
   ) {}
 
   getProfile(): Observable<ProfileResponse> {
