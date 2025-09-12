@@ -8,7 +8,7 @@
 .vscode/
 *.code-workspace
 mongo-data/
-
+identityservice/.metadata/
 # ===============================
 # 🐘 Java / Spring Boot
 # ===============================
