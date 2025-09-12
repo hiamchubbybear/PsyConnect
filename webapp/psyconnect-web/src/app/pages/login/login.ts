@@ -101,7 +101,7 @@ export class Login implements OnInit {
       this.auth.exchangeOAuth2Code(code, email, provider, platform).subscribe({
         next: (res) => {
           console.log(res);
-          localStorage.setItem('access_token', res.data.token);
+          this.secureStorage.setItem('access_token', res.data.token);
           this.loadUserProfile();
         },
         error: (err) => {
