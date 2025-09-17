@@ -25,6 +25,7 @@ public enum ErrorCode {
     USERNAME_INVALID(301, "Username must be between 4 and 20 characters", HttpStatus.BAD_REQUEST),
     EXPIRED_SESSION(305, "Session token is not match or expired", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(302, "Password must be at least 8 characters", HttpStatus.BAD_REQUEST),
+    PASSWORD_WRONG(306, "Password doesn't match", HttpStatus.BAD_REQUEST),
 
     TOKEN_INVALID(303, "Token is used or has expired", HttpStatus.BAD_REQUEST),
 
