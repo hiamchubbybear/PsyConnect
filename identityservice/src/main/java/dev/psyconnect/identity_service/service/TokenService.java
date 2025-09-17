@@ -22,7 +22,7 @@ public class TokenService {
 
     public static int FRESH_TOKEN_TIME_EXPIRES = 7;
 
-    public String generateRefreshToken(String username, String oldRefreshToken) {
+    public String checkAndReGenerateRefreshToken(String username, String oldRefreshToken) {
         String newUUID = generateUUID();
         Instant newExpiry = Instant.now().plus(FRESH_TOKEN_TIME_EXPIRES, ChronoUnit.DAYS);
 
@@ -38,6 +38,22 @@ public class TokenService {
                     if (existingToken.getExpires().toInstant().isBefore(Instant.now())) {
                         throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
                     }
+                    existingToken.setToken(newUUID);
+                    existingToken.setExpires(Timestamp.from(newExpiry));
+                    existingToken.setIssuedAt(Timestamp.from(Instant.now()));
+                    return existingToken;
+                })
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.TOKEN_INVALID));
+        return tokenRepository.save(responseToken).getToken();
+    }
+
+    public String generateRefreshToken(String username) {
+        String newUUID = generateUUID();
+        Instant newExpiry = Instant.now().plus(FRESH_TOKEN_TIME_EXPIRES, ChronoUnit.DAYS);
+
+        Token responseToken = tokenRepository
+                .findById(username)
+                .map(existingToken -> {
                     existingToken.setToken(newUUID);
                     existingToken.setExpires(Timestamp.from(newExpiry));
                     existingToken.setIssuedAt(Timestamp.from(Instant.now()));

@@ -193,16 +193,14 @@ public class AuthenticationService {
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         if (password == null) throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
         else if (!passwordEncoder().matches(password, user.getPassword()))
-            throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
-        else {
-            String refreshToken = tokenService.generateRefreshToken(authenticationRequest.getUsername(), null);
-            var response = AuthenticationResponseV1.builder()
-                    .isSuccessful(true)
-                    .token(generateToken(authenticationRequest.getUsername(), provider, clientPlatform))
-                    .refreshToken(refreshToken)
-                    .build();
-            return response;
-        }
+            throw new CustomExceptionHandler(ErrorCode.PASSWORD_WRONG);
+        String refreshToken = tokenService.generateRefreshToken(authenticationRequest.getUsername());
+        var response = AuthenticationResponseV1.builder()
+                .isSuccessful(true)
+                .token(generateToken(authenticationRequest.getUsername(), provider, clientPlatform))
+                .refreshToken(refreshToken)
+                .build();
+        return response;
     }
 
     public AuthenticationResponseV1 refreshTokenV1(
@@ -210,7 +208,7 @@ public class AuthenticationService {
         var token = tokenRepository
                 .findById(username)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.TOKEN_INVALID));
-        String newRefreshToken = tokenService.generateRefreshToken(username, refreshToken);
+        String newRefreshToken = tokenService.checkAndReGenerateRefreshToken(username, refreshToken);
         var response = AuthenticationResponseV1.builder()
                 .isSuccessful(true)
                 .token(generateToken(username, provider, clientPlatform))
