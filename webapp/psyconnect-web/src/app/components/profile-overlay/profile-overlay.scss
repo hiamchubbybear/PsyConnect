@@ -97,14 +97,25 @@
 }
 
 .therapist-card__avatar {
-  width: 4rem;
-  height: 4rem;
+  width: 32px;
+  height: 32px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-bg-contrast);
+  //   border-radius: 50%;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   color: var(--color-bg-contrast);
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; // đảm bảo ảnh không méo
+    display: block;
+  }
 }
 
 .therapist-card__info {

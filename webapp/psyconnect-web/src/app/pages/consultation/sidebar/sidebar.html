@@ -6,60 +6,40 @@
   <ul class="sidebar__list">
     <li class="sidebar__item">
       <a
-        href="javascript:void(0)"
-        (click)="onClick('discover')"
-        [class.active]="activeSection === 'discover'"
+        routerLink="discover"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
       >
         {{ "CONSULTATION.Sidebar.Items.Discover" | translate }}
       </a>
     </li>
 
     <li class="sidebar__item">
-      <a
-        href="javascript:void(0)"
-        (click)="onClick('sessions')"
-        [class.active]="activeSection === 'sessions'"
-      >
+      <a routerLink="sessions" routerLinkActive="active">
         {{ "CONSULTATION.Sidebar.Items.Sessions" | translate }}
       </a>
     </li>
 
     <li class="sidebar__item">
-      <a
-        href="javascript:void(0)"
-        (click)="onClick('schedule')"
-        [class.active]="activeSection === 'schedule'"
-      >
+      <a routerLink="schedule" routerLinkActive="active">
         {{ "CONSULTATION.Sidebar.Items.Schedule" | translate }}
       </a>
     </li>
 
     <li class="sidebar__item">
-      <a
-        href="javascript:void(0)"
-        (click)="onClick('history')"
-        [class.active]="activeSection === 'history'"
-      >
+      <a routerLink="history" routerLinkActive="active">
         {{ "CONSULTATION.Sidebar.Items.History" | translate }}
       </a>
     </li>
 
     <li class="sidebar__item">
-      <a
-        href="javascript:void(0)"
-        (click)="onClick('reviews')"
-        [class.active]="activeSection === 'reviews'"
-      >
+      <a routerLink="reviews" routerLinkActive="active">
         {{ "CONSULTATION.Sidebar.Items.Reviews" | translate }}
       </a>
     </li>
 
     <li class="sidebar__item">
-      <a
-        href="javascript:void(0)"
-        (click)="onClick('settings')"
-        [class.active]="activeSection === 'settings'"
-      >
+      <a routerLink="settings" routerLinkActive="active">
         {{ "CONSULTATION.Sidebar.Items.Settings" | translate }}
       </a>
     </li>

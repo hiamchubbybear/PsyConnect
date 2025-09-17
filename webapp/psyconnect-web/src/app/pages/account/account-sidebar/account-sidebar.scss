@@ -34,12 +34,15 @@
         transition: background-color 0.2s, color 0.2s;
 
         &:hover {
-          background-color: var(--color-text-muted);
+          border-color: var(--header-border);
+          background-color: var(--color-bg);
+          color: var(--color-bg-contrast);
         }
 
         &.active {
-          background-color: var(--color-primary);
-          color: var(--color-primary);
+          border-color: var(--header-border);
+          background-color: var(--color-bg-contrast);
+          color: var(--color-surface-low);
         }
       }
     }

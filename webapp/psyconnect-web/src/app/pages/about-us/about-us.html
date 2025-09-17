@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ "about_us" | translate }} - {{ brand.name }}</title>
+    <link rel="stylesheet" href="./about-us.scss" />
+  </head>
+  <body>
+    <main class="about-us">
+      <section class="about-us__hero">
+        <div class="about-us__inner container">
+          <div class="hero-content">
+            <img
+              class="about-us__logo"
+              [src]="brand.logo"
+              alt="{{ brand.name }} logo"
+            />
+            <div class="about-us__meta">
+              <h1 class="about-us__title">{{ brand.name }}</h1>
+              <p class="about-us__tagline">{{ "hero_tagline" | translate }}</p>
+              <p class="about-us__mission">{{ mission }}</p>
+
+              <div class="about-us__values">
+                <span class="pill" *ngFor="let v of coreValues">{{
+                  v | translate
+                }}</span>
+              </div>
+
+              <div class="about-us__cta">
+                <button class="btn btn--primary" (click)="onBookNow()">
+                  {{ "find_expert" | translate }}
+                </button>
+                <button class="btn btn--ghost" (click)="onListAsPartner()">
+                  {{ "become_partner" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STATISTICS -->
+          <div class="statistics-grid">
+            <div class="stat-card" *ngFor="let stat of statistics">
+              <div class="stat-card__icon">
+                <i class="icon-{{ stat.icon }}"></i>
+              </div>
+              <div class="stat-card__value">{{ stat.value }}</div>
+              <div class="stat-card__label">{{ stat.label | translate }}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OUR STORY -->
+      <section class="about-us__story container">
+        <div class="story-content">
+          <h2 class="section-title">{{ storyTitle }}</h2>
+          <p class="lead">{{ story }}</p>
+
+          <div class="mission-vision">
+            <div class="mission-card">
+              <h3 class="subhead">{{ "our_mission" | translate }}</h3>
+              <p>{{ mission }}</p>
+            </div>
+            <div class="vision-card">
+              <h3 class="subhead">{{ "our_vision" | translate }}</h3>
+              <p>{{ vision }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VERIFICATION PROCESS -->
+      <section class="about-us__verification container">
+        <h2 class="section-title">{{ "expert_verification" | translate }}</h2>
+        <p class="section-desc">{{ "verification_description" | translate }}</p>
+
+        <div class="verification-grid">
+          <div
+            class="verification-step"
+            *ngFor="let step of verificationSteps; let i = index"
+          >
+            <div class="step-number">{{ i + 1 }}</div>
+            <div class="step-content">
+              <h4>{{ step | translate }}</h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="quality-assurance">
+          <h3 class="subhead">{{ "quality_standards" | translate }}</h3>
+          <ul class="quality-list">
+            <li *ngFor="let standard of qualityStandards">
+              <i class="icon-check"></i>
+              {{ standard | translate }}
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- FEATURED PARTNERS -->
+      <section class="about-us__partners container">
+        <h2 class="section-title">{{ "featured_experts" | translate }}</h2>
+        <p class="section-desc">{{ "featured_experts_desc" | translate }}</p>
+
+        <div class="partner-grid">
+          <div *ngFor="let p of partners" class="partner-card">
+            <div class="partner-card__header">
+              <img
+                class="partner-card__avatar"
+                [src]="p.avatar"
+                [alt]="p.name"
+              />
+              <div class="partner-card__verified" *ngIf="p.verified">
+                <i class="icon-shield-check"></i>
+                {{ "verified" | translate }}
+              </div>
+            </div>
+
+            <div class="partner-card__meta">
+              <h4 class="partner-card__name">{{ p.name }}</h4>
+              <p class="partner-card__role">{{ p.role | translate }}</p>
+
+              <div class="partner-card__stats">
+                <div class="stat">
+                  <i class="icon-star"></i>
+                  {{ p.rating }} ({{ p.reviewCount }}
+                  {{ "reviews" | translate }})
+                </div>
+                <div class="stat">
+                  <i class="icon-clock"></i>
+                  {{ p.experience }} {{ "years_experience" | translate }}
+                </div>
+              </div>
+
+              <div class="partner-card__specialization">
+                <span class="chip" *ngFor="let spec of p.specialization">
+                  {{ spec | translate }}
+                </span>
+              </div>
+
+              <div class="partner-card__education">
+                <h5>{{ "education" | translate }}:</h5>
+                <ul>
+                  <li *ngFor="let edu of p.education">{{ edu }}</li>
+                </ul>
+              </div>
+
+              <div class="partner-card__certificates">
+                <h5>{{ "certificates" | translate }}:</h5>
+                <div class="certificate-list">
+                  <div
+                    *ngFor="let cert of p.certificates"
+                    class="certificate-item"
+                  >
+                    <div class="cert-info">
+                      <strong>{{ cert.name }}</strong>
+                      <small
+                        >{{ cert.issuer }} - {{ cert.issueDate | date }}</small
+                      >
+                    </div>
+                    <button
+                      *ngIf="cert.verificationUrl"
+                      class="btn btn--sm btn--ghost"
+                      (click)="verifyCertificate(cert)"
+                    >
+                      {{ "verify" | translate }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="partner-card__languages">
+                <span *ngFor="let lang of p.languages" class="language-tag">{{
+                  lang
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section class="about-us__services container">
+        <h2 class="section-title">{{ "our_services" | translate }}</h2>
+        <p class="section-desc">{{ "services_description" | translate }}</p>
+
+        <div class="service-grid">
+          <div *ngFor="let s of services" class="service-card">
+            <div class="service-card__icon">
+              <i class="icon-{{ s.icon }}"></i>
+            </div>
+            <div class="service-card__content">
+              <h4 class="service-card__name">{{ s.name | translate }}</h4>
+              <p class="service-card__desc">{{ s.desc | translate }}</p>
+              <div class="service-card__details">
+                <div class="detail" *ngIf="s.duration">
+                  <i class="icon-clock"></i>
+                  {{ s.duration }}
+                </div>
+                <div class="detail" *ngIf="s.priceRange">
+                  <i class="icon-dollar-sign"></i>
+                  {{ s.priceRange }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="methods-section">
+          <h3 class="subhead">{{ "therapeutic_methods" | translate }}</h3>
+          <div class="methods-grid">
+            <span class="method-chip" *ngFor="let m of methods">{{
+              m | translate
+            }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TARGET AUDIENCE -->
+      <section class="about-us__audience container">
+        <h2 class="section-title">{{ "who_should_use" | translate }}</h2>
+        <div class="audience-grid">
+          <div *ngFor="let a of targetAudience" class="audience-card">
+            <i class="icon-users"></i>
+            <h4>{{ a | translate }}</h4>
+          </div>
+        </div>
+        <p class="lead">{{ "getting_started_message" | translate }}</p>
+      </section>
+
+      <!-- OUR TEAM -->
+      <section class="about-us__team container">
+        <h2 class="section-title">{{ "our_team" | translate }}</h2>
+        <p class="section-desc">{{ "team_description" | translate }}</p>
+
+        <div class="team-grid">
+          <div *ngFor="let member of team" class="team-card">
+            <img
+              class="team-card__avatar"
+              [src]="member.avatar"
+              [alt]="member.name"
+            />
+            <div class="team-card__info">
+              <h4 class="team-card__name">{{ member.name }}</h4>
+              <p class="team-card__role">{{ member.role | translate }}</p>
+              <p class="team-card__bio">{{ member.bio | translate }}</p>
+              <div class="team-card__social" *ngIf="member.social">
+                <a
+                  *ngIf="member.social.linkedin"
+                  [href]="member.social.linkedin"
+                  target="_blank"
+                >
+                  <i class="icon-linkedin"></i>
+                </a>
+                <a
+                  *ngIf="member.social.email"
+                  [href]="'mailto:' + member.social.email"
+                >
+                  <i class="icon-mail"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRIVACY & SECURITY -->
+      <section class="about-us__privacy container">
+        <h2 class="section-title">{{ "privacy_security" | translate }}</h2>
+
+        <div class="privacy-grid">
+          <div class="privacy-card">
+            <h3 class="subhead">{{ "privacy_protection" | translate }}</h3>
+            <ul>
+              <li *ngFor="let feature of privacyFeatures">
+                <i class="icon-shield"></i>
+                {{ feature | translate }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="security-card">
+            <h3 class="subhead">{{ "security_measures" | translate }}</h3>
+            <ul>
+              <li *ngFor="let measure of securityMeasures">
+                <i class="icon-lock"></i>
+                {{ measure | translate }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="about-us__faq container">
+        <h2 class="section-title">{{ "frequently_asked" | translate }}</h2>
+
+        <div class="faq-list">
+          <details class="faq-item" *ngFor="let item of faq">
+            <summary class="faq-question">
+              {{ item.question | translate }}
+            </summary>
+            <div class="faq-answer">{{ item.answer | translate }}</div>
+          </details>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section class="about-us__contact container">
+        <h2 class="section-title">{{ "contact_us" | translate }}</h2>
+
+        <div class="contact-grid">
+          <div class="contact-info">
+            <div class="contact-item">
+              <i class="icon-phone"></i>
+              <div>
+                <strong>{{ "hotline" | translate }}</strong>
+                <p>{{ contact.hotline }}</p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <i class="icon-mail"></i>
+              <div>
+                <strong>{{ "email" | translate }}</strong>
+                <p>
+                  <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                </p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <i class="icon-map-pin"></i>
+              <div>
+                <strong>{{ "address" | translate }}</strong>
+                <p>{{ contact.address | translate }}</p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <i class="icon-clock"></i>
+              <div>
+                <strong>{{ "business_hours" | translate }}</strong>
+                <p>
+                  {{ "weekdays" | translate }}:
+                  {{ contact.businessHours.weekdays }}
+                </p>
+                <p>
+                  {{ "weekends" | translate }}:
+                  {{ contact.businessHours.weekends }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="emergency-contact">
+            <div class="emergency-card">
+              <h3>{{ "crisis_support" | translate }}</h3>
+              <p>{{ "crisis_support_desc" | translate }}</p>
+              <button class="btn btn--danger" (click)="onEmergencyHelp()">
+                <i class="icon-phone"></i>
+                {{ "emergency_call" | translate }}: {{ contact.emergency }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="social-links">
+          <a
+            [href]="contact.socials.facebook"
+            target="_blank"
+            class="social-btn"
+          >
+            <i class="icon-facebook"></i>
+          </a>
+          <a
+            [href]="contact.socials.instagram"
+            target="_blank"
+            class="social-btn"
+          >
+            <i class="icon-instagram"></i>
+          </a>
+          <a
+            [href]="contact.socials.linkedin"
+            target="_blank"
+            class="social-btn"
+          >
+            <i class="icon-linkedin"></i>
+          </a>
+        </div>
+      </section>
+
+      <!-- DEVELOPMENT INFO -->
+      <section class="about-us__development container">
+        <div class="release-card">
+          <div class="release-header">
+            <h3>{{ "current_version" | translate }}: {{ release.version }}</h3>
+            <div class="release-date">{{ release.date | date }}</div>
+          </div>
+
+          <div class="release-content">
+            <div class="release-notes">
+              <h4>{{ "whats_new" | translate }}</h4>
+              <ul>
+                <li *ngFor="let note of release.notes">
+                  {{ note | translate }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="upcoming-features">
+              <h4>{{ "coming_soon" | translate }}</h4>
+              <ul>
+                <li *ngFor="let feature of release.upcomingFeatures">
+                  {{ feature | translate }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="dev-team">
+            <h4>{{ "development_team" | translate }}</h4>
+            <div class="dev-grid">
+              <div *ngFor="let d of devs" class="dev-card">
+                <img class="dev-avatar" [src]="d.avatar" [alt]="d.name" />
+                <div class="dev-info">
+                  <strong>{{ d.name }}</strong>
+                  <p class="dev-role">{{ d.role | translate }}</p>
+                  <p class="dev-bio">{{ d.bio | translate }}</p>
+                  <div class="dev-links">
+                    <a
+                      *ngIf="d.github"
+                      [href]="'https://' + d.github"
+                      target="_blank"
+                      class="link"
+                    >
+                      <i class="icon-github"></i>
+                    </a>
+                    <a
+                      *ngIf="d.linkedin"
+                      [href]="'https://' + d.linkedin"
+                      target="_blank"
+                      class="link"
+                    >
+                      <i class="icon-linkedin"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="release-cta">
+            <button class="btn btn--ghost" (click)="onViewRepo()">
+              <i class="icon-github"></i>
+              {{ "view_repository" | translate }}
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

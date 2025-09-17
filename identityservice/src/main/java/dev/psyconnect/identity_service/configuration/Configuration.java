@@ -69,6 +69,10 @@ public class Configuration {
                                 "/oauth2/callback/google",
                                 "/login/oauth2/code/google",
                                 "/identity/**",
+                                "/v1/identity/**",
+                                "/v1/auth/**",
+                                "/identity/**",
+                                "/identity/req/reset-password",
                                 "/identity/create",
                                 "/auth/login/**",
                                 "/oauth2/userInfo/google",
@@ -118,7 +122,6 @@ public class Configuration {
                                 redirectUrl = String.format(
                                         "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s&platform=%s",
                                         oauth2RedirectBase, registrationId, email, avatarUri, platform);
-                                log.info("Redirect url {}", redirectUrl);
                                 response.sendRedirect(redirectUrl);
                             } catch (Exception e) {
                                 log.error("OAuth2 success handler error", e);

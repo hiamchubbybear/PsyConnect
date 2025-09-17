@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
 import { Auth } from '../../services/auth/auth';
@@ -15,17 +16,22 @@ import { AuthStateService } from '../../services/auth/auth-state.service';
 import { LoaderService } from '../../services/loader/loader';
 import { Profile, ProfileResponse } from '../../services/profile/profile';
 import {
-  UserContextService,
-  UserProfile,
+    UserContextService,
+    UserProfile,
 } from '../../services/profile/profile-service';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
-import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, TranslateModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    RouterModule,
+    TranslateModule,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -95,7 +101,7 @@ export class Login implements OnInit {
       this.auth.exchangeOAuth2Code(code, email, provider, platform).subscribe({
         next: (res) => {
           console.log(res);
-          localStorage.setItem('access_token', res.data.token);
+          this.secureStorage.setItem('access_token', res.data.token);
           this.loadUserProfile();
         },
         error: (err) => {
@@ -125,6 +131,7 @@ export class Login implements OnInit {
         this.toastService.show('Login success', 'Success', ToastType.Success);
         this.setLoading(false);
         this.router.navigate(['/']);
+        this.authState.setLoggedIn(true);
       },
       error: (err) => {
         console.error('Get profile error', err);

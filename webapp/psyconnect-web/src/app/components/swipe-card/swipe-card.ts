@@ -12,7 +12,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { TherapistProfile } from '../profile-overlay/profile-overlay';
+import { Therapist } from '../../models/swipe-card';
 
 @Component({
   standalone: true,
@@ -22,14 +22,14 @@ import { TherapistProfile } from '../profile-overlay/profile-overlay';
   imports: [CommonModule, TranslateModule],
 })
 export class SwipeCardComponent implements OnInit, OnDestroy {
-  @Input() therapist: TherapistProfile = {} as TherapistProfile;
+  @Input() therapist: Therapist = {} as Therapist;
   @Input() index = 0;
-  @Output() openOverlay = new EventEmitter<TherapistProfile>();
+  @Output() openOverlay = new EventEmitter<Therapist>();
   @Input() isOverlayOpen: boolean = false;
 
   @Output() swiped = new EventEmitter<{
     direction: 'left' | 'right' | 'up';
-    therapist: TherapistProfile;
+    therapist: Therapist;
   }>();
 
   @ViewChild('card', { static: true }) cardRef!: ElementRef<HTMLElement>;
@@ -89,7 +89,7 @@ export class SwipeCardComponent implements OnInit, OnDestroy {
         'transform 300ms cubic-bezier(.2,.9,.2,1), opacity 300ms';
       this.transform = `translate(0px, -50%)`;
     } else {
-      const card = document.querySelector('.card-wrapper'); // hoặc '.therapist-card'
+      const card = document.querySelector('.card-wrapper');
       if (card) {
         card.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }

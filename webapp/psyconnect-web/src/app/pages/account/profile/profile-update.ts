@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import {
     ChangeDetectorRef,
     Component,
@@ -11,8 +12,9 @@ import {
     FormsModule,
     ReactiveFormsModule,
 } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { map, Observable, of } from 'rxjs';
-import { ButtonGroupComponent } from '../../../components/button-group/button-group';
+import { SingleButton } from '../../../components/single-button/single-button';
 import { SecureStorageService } from '../../../encrypt/secure';
 import { CloudinaryService } from '../../../services/cloudinary/cloudinary.service';
 import { LoaderService } from '../../../services/loader/loader';
@@ -27,8 +29,7 @@ import {
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { ProfileModel } from './profile-model';
-import { TranslateModule } from '@ngx-translate/core';
-import { ProfileOverlayComponent } from "./profile-overlay";
+import { ProfileOverlayComponent } from './profile-overlay';
 @Component({
   selector: 'app-profile-section',
   standalone: true,
@@ -36,11 +37,11 @@ import { ProfileOverlayComponent } from "./profile-overlay";
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    ButtonGroupComponent,
     ReactiveFormsModule,
     TranslateModule,
-    ProfileOverlayComponent
-],
+    ProfileOverlayComponent,
+    SingleButton,
+  ],
   templateUrl: './profile-update.html',
   styleUrls: ['./profile-update.scss'],
 })
@@ -51,7 +52,10 @@ export class ProfileSectionComponent implements OnInit {
   username: string | null = '';
   isUploadImage?: boolean | false;
   avatarUriOrigin: string = '';
+  editValue: string = '';
+  addressSuggestions: string[] = [];
   profileUpdate: UserProfileUpdateRequest | undefined;
+
   onImageSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -81,11 +85,13 @@ export class ProfileSectionComponent implements OnInit {
     }
   }
 
-  async confirmChanges() {
+  async confirmChanges(): Promise<void> {
     this.loaderService.show();
-    try {
-      let avatarUri = this.profile?.avatarUri;
 
+    try {
+      let avatarUri: string | undefined;
+
+      // Handle image upload if needed
       if (this.isUploadImage && this.selectedImage) {
         const uploadedUrl = await this.cloudinaryService.uploadImage(
           this.selectedImage,
@@ -97,11 +103,10 @@ export class ProfileSectionComponent implements OnInit {
         }
 
         avatarUri = uploadedUrl;
-        this.selectedImage = null;
-        this.imagePreview = null;
-        this.isUploadImage = false;
       }
-      this.updateProfile(avatarUri || this.avatarUriOrigin);
+
+      // Update profile with all current data
+      this.updateProfile(avatarUri);
     } catch (err) {
       console.error('Upload error:', err);
       this.toastService.show(
@@ -109,18 +114,21 @@ export class ProfileSectionComponent implements OnInit {
         'Error',
         ToastType.Error
       );
-      this.selectedImage = null;
-      this.imagePreview = null;
-      this.isUploadImage = false;
+      this.resetUploadStates();
     } finally {
       this.loaderService.hide();
     }
+  }
+  private resetUploadStates(): void {
+    this.isUploadImage = false;
+    this.selectedImage = null;
+    this.imagePreview = null;
+    this.editing = null;
   }
   form!: FormGroup;
   profile: ProfileModel | null = null;
 
   editing: string | null = null;
-  editValue: any = '';
   isOverlayOpen: boolean = false;
   draftData = {
     firstName: '',
@@ -135,7 +143,8 @@ export class ProfileSectionComponent implements OnInit {
     private toastService: ToastService,
     private loaderService: LoaderService,
     private userContext: UserContextService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -162,7 +171,91 @@ export class ProfileSectionComponent implements OnInit {
       }
     });
   }
+  private prepareCompleteProfileUpdate(
+    avatarUri?: string
+  ): UserProfileUpdateRequest {
+    // Get current form values
+    const currentFormValues = this.form.value;
 
+    // Merge with existing profile data to ensure no fields are missing
+    const completeProfileData: UserProfileUpdateRequest = {
+      username: this.username || '',
+      firstName: currentFormValues.firstName || this.profile?.firstName || '',
+      lastName: currentFormValues.lastName || this.profile?.lastName || '',
+      dob: currentFormValues.dob || this.profile?.dob || '',
+      address: currentFormValues.address || this.profile?.address || '',
+      gender: currentFormValues.gender || this.profile?.gender || '',
+      avatarUri:
+        avatarUri ||
+        currentFormValues.avatarUri ||
+        this.profile?.avatarUri ||
+        '',
+    };
+
+    return completeProfileData;
+  }
+
+  private updateProfile(avatarUri?: string): void {
+    // Prepare complete profile data
+    const profileUpdateData = this.prepareCompleteProfileUpdate(avatarUri);
+
+    console.log('Complete profile data to update:', profileUpdateData);
+
+    this.profileService.updateProfile(profileUpdateData).subscribe({
+      next: (response) => {
+        console.log('Profile update response:', response);
+
+        // Show success message
+        this.toastService.show(
+          'Cập nhật profile thành công!',
+          'Success',
+          ToastType.Success
+        );
+
+        // Update local profile data
+        this.profile = {
+          ...this.profile,
+          ...profileUpdateData,
+        } as ProfileModel;
+
+        // Update form with latest data
+        this.form.patchValue(profileUpdateData);
+
+        // Update initial profile for comparison
+        this.initialProfile = { ...profileUpdateData };
+
+        // Update secure storage
+        this.secureStorage.setItem('profile', profileUpdateData);
+
+        // Update user context
+        const updatedUser: UserProfile = {
+          firstName: profileUpdateData.firstName,
+          lastName: profileUpdateData.lastName,
+          dob: profileUpdateData.dob,
+          address: profileUpdateData.address,
+          gender: profileUpdateData.gender,
+          avatarUri: profileUpdateData.avatarUri,
+          accountId: this.profile?.accountId || '',
+          profileId: this.profile?.profileId || '',
+        };
+        this.userContext.setUser(updatedUser);
+
+        // Reset upload states
+        this.resetUploadStates();
+
+        // Clear profile update tracking
+        this.profileUpdate = undefined;
+      },
+      error: (err) => {
+        console.error('Profile update error:', err);
+        this.toastService.show(
+          'Cập nhật profile thất bại!',
+          'Error',
+          ToastType.Error
+        );
+      },
+    });
+  }
   getProfile(): Observable<ProfileModel | null> {
     const profileJson = this.secureStorage.getItem('profile');
     if (profileJson) {
@@ -186,141 +279,114 @@ export class ProfileSectionComponent implements OnInit {
     this.editing = field;
     if (field === 'name') {
       this.draftData = {
-        firstName: this.form.get('firstName')?.value || 'Huy',
+        firstName: this.form.get('firstName')?.value || '',
         middleName: this.form.get('middleName')?.value || '',
-        lastName: this.form.get('lastName')?.value || 'Tran',
+        lastName: this.form.get('lastName')?.value || '',
       };
     } else {
       this.editValue = this.form.get(field)?.value || '';
     }
   }
-  saveName() {
+
+  onAddressInput(query: string) {
+    if (query && query.length > 2) {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+        query
+      )}&format=json&limit=5`;
+
+      this.http.get<any[]>(url).subscribe((data) => {
+        this.addressSuggestions = data.map((item) => item.display_name);
+        console.log('Suggestion ', this.addressSuggestions);
+      });
+    } else {
+      this.addressSuggestions = [];
+    }
+  }
+
+  selectAddress(suggestion: string) {
+    this.editValue = suggestion;
+    this.addressSuggestions = [];
+  }
+  saveName(): void {
     this.form.patchValue({
       firstName: this.draftData.firstName,
       middleName: this.draftData.middleName,
       lastName: this.draftData.lastName,
     });
 
+    // Initialize profileUpdate for change tracking if not exists
     if (!this.profileUpdate) {
-      this.profileUpdate = {
-        username: this.username || '',
-      } as UserProfileUpdateRequest;
+      this.profileUpdate = this.prepareCompleteProfileUpdate();
     }
+
     this.profileUpdate.firstName = this.draftData.firstName;
     this.profileUpdate.lastName =
       this.draftData.lastName + ' ' + this.draftData.middleName;
+
     this.editing = null;
   }
-  saveField(fieldName: string) {
+
+  // Refactored saveField method
+  saveField(event: { field: string; value: string }): void {
+    console.log('saveField called for field:', event.field);
+    console.log('Value to save:', event.value);
+
     if (!this.editing) return;
 
-    this.form.patchValue({ [this.editing]: this.editValue });
-    if (!this.profileUpdate) {
-      this.profileUpdate = {
-        username: this.username || '',
-      } as UserProfileUpdateRequest;
+    // Update form directly
+    if (this.editing === 'name') {
+      this.form.patchValue({
+        firstName: this.draftData.firstName,
+        middleName: this.draftData.middleName,
+        lastName: this.draftData.lastName,
+      });
+    } else {
+      this.form.patchValue({ [this.editing]: event.value });
     }
-    (this.profileUpdate as any)[this.editing] = this.editValue;
+
+    // Initialize profileUpdate for change tracking if not exists
+    if (!this.profileUpdate) {
+      this.profileUpdate = this.prepareCompleteProfileUpdate();
+    }
+
+    // Update the specific field in profileUpdate for tracking changes
+    if (this.editing === 'name') {
+      this.profileUpdate.firstName = this.draftData.firstName;
+      this.profileUpdate.lastName = this.draftData.lastName;
+    } else {
+      const field = this.editing as keyof UserProfileUpdateRequest;
+      (this.profileUpdate as any)[field] = event.value;
+    }
+
+    console.log('Updated profileUpdate for tracking:', this.profileUpdate);
 
     this.editing = null;
     this.cdr.detectChanges();
   }
 
+  private initProfileUpdate() {}
   cancel() {
     this.editing = null;
   }
 
-  private updateProfile(avatarUri: string) {
-    this.profileUpdate = {
-      username: this.username || '',
-      firstName: this.form.value.firstName,
-      lastName: this.form.value.lastName,
-      dob: this.form.value.dob,
-      address: this.form.value.address,
-      gender: this.form.value.gender,
-      avatarUri,
-    };
-
-    this.profileService.updateProfile(this.profileUpdate).subscribe({
-      next: (response) => {
-        this.toastService.show(
-          'Cập nhật profile thành công!',
-          'Success',
-          ToastType.Success
-        );
-        console.log('Cập nhật thành công', response);
-
-        this.form.patchValue({
-          ...this.profileUpdate,
-          avatarUri: avatarUri,
-        });
-
-        this.profile = {
-          ...this.profile,
-          ...this.profileUpdate,
-        } as ProfileModel;
-        if (this.profileUpdate) {
-          this.profileService.updateProfile(this.profileUpdate).subscribe({
-            next: () => {
-              this.toastService.show(
-                'Profile updated successfully!',
-                'Success',
-                ToastType.Success
-              );
-
-              this.secureStorage.setItem('profile', this.profileUpdate);
-              if (this.profileUpdate) {
-                const updatedUser: UserProfile = {
-                  firstName: this.profileUpdate.firstName,
-                  lastName: this.profileUpdate.lastName,
-                  dob: this.profileUpdate.dob,
-                  address: this.profileUpdate.address,
-                  gender: this.profileUpdate.gender,
-                  avatarUri: this.profileUpdate.avatarUri,
-                  accountId: '',
-                  profileId: '',
-                };
-
-                this.userContext.setUser(updatedUser);
-              }
-              this.isUploadImage = false;
-              this.selectedImage = null;
-              this.imagePreview = null;
-            },
-            error: (err) => {
-              this.toastService.show(
-                'Profile update failed!',
-                'Error',
-                ToastType.Error
-              );
-              console.error(err);
-            },
-          });
-        }
-      },
-      error: (err) => {
-        console.error('Profile update error:', err);
-        this.toastService.show(
-          'Cập nhật profile thất bại!',
-          'Error',
-          ToastType.Error
-        );
-      },
-    });
-  }
   get canConfirm(): boolean {
+    // Always allow confirm if there's an image to upload
     if (this.isUploadImage) return true;
+
     if (!this.initialProfile) return false;
 
-    if (this.profileUpdate) {
-      return Object.keys(this.profileUpdate).some((key) => {
-        const newVal = (this.profileUpdate as any)[key];
-        const oldVal = (this.initialProfile as any)[key];
+    // Check if any form value has changed from initial profile
+    const currentFormValues = this.form.value;
 
-        return newVal !== oldVal;
-      });
-    }
-    return false;
+    return Object.keys(currentFormValues).some((key) => {
+      const currentValue = currentFormValues[key];
+      const initialValue = (this.initialProfile as any)[key];
+      return (
+        currentValue !== initialValue &&
+        currentValue !== null &&
+        currentValue !== ''
+      );
+    });
   }
 
   @HostListener('document:keydown', ['$event'])

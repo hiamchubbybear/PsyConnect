@@ -1,5 +1,4 @@
 <div class="register-container">
-
   <div class="header">
     <button
       *ngIf="currentStep > 0"
@@ -11,7 +10,6 @@
     <h1 class="title">Create Account</h1>
   </div>
 
-
   <div class="progress-container">
     <div class="progress-bar">
       <div class="progress-fill" [style.width.%]="progressPercentage"></div>
@@ -19,9 +17,7 @@
     <p class="progress-text">Step {{ currentStep + 1 }} of {{ totalSteps }}</p>
   </div>
 
-
   <div class="steps-container">
-
     <div
       *ngIf="currentStep === 0"
       class="step-content"
@@ -58,7 +54,6 @@
         </div>
       </form>
     </div>
-
 
     <div
       *ngIf="currentStep === 1"
@@ -162,7 +157,6 @@
       </form>
     </div>
 
-
     <div
       *ngIf="currentStep === 2"
       class="step-content"
@@ -261,7 +255,6 @@
       </form>
     </div>
 
-
     <div
       *ngIf="currentStep === 3"
       class="step-content"
@@ -297,13 +290,14 @@
                 formControlName="address"
                 placeholder="Enter your full address"
                 class="form-input"
-                (input)="onAddressInput($event)"
                 [class.error]="
                   addressForm.get('address')?.invalid &&
                   addressForm.get('address')?.touched
                 "
               />
             </div>
+
+            <!-- dropdown gợi ý -->
             <div
               *ngIf="addressSuggestions.length > 0"
               class="suggestions-dropdown"
@@ -324,15 +318,14 @@
               "
               class="error-text"
             >
-              <span *ngIf="addressForm.get('address')?.errors?.['required']"
-                >Address is required</span
-              >
+              <span *ngIf="addressForm.get('address')?.errors?.['required']">
+                Address is required
+              </span>
             </div>
           </div>
         </div>
       </form>
     </div>
-
 
     <div
       *ngIf="currentStep === 4"
@@ -399,7 +392,6 @@
       </form>
     </div>
 
-
     <div
       *ngIf="currentStep === 5"
       class="step-content"
@@ -453,7 +445,6 @@
         </div>
       </form>
     </div>
-
 
     <div
       *ngIf="currentStep === 6"
@@ -631,7 +622,6 @@
       </form>
     </div>
   </div>
-
 
   <div class="navigation-buttons">
     <button

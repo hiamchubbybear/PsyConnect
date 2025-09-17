@@ -59,23 +59,30 @@
     </div>
 
     <!-- Buttons -->
-    <button-group
+    <!-- <app-single-button
       [primaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Confirm' | translate"
       [secondaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel' | translate"
       (primaryClick)="confirmChanges()"
       (secondaryClick)="cancel()"
       class="button-group"
       [disabledPrimary]="!canConfirm"
-    ></button-group>
+    ></app-single-button> -->
+    <app-single-button
+      [primaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Confirm' | translate"
+      (primaryClick)="confirmChanges()"
+      class="button-group"
+      [disabledPrimary]="!canConfirm"
+    >
+    </app-single-button>
   </form>
 </section>
 
 <!-- Overlay component -->
 <app-profile-overlay
+  [(editValue)]="editValue"
   [editing]="editing"
   [draftData]="draftData"
-  [editValue]="editValue"
-  (saveName)="saveName()"
   (saveField)="saveField($event)"
+  (saveName)="saveName()"
   (cancel)="cancel()"
 ></app-profile-overlay>

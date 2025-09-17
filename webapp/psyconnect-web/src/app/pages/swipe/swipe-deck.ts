@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-    TherapistProfile,
-    TherapistProfileOverlayComponent,
-} from '../../components/profile-overlay/profile-overlay';
+import { switchMap } from 'rxjs';
+import { TherapistProfileOverlayComponent } from '../../components/profile-overlay/profile-overlay';
 import { SwipeCardComponent } from '../../components/swipe-card/swipe-card';
 import { SecureStorageService } from '../../encrypt/secure';
+import { mapTherapistResponse, Therapist } from '../../models/swipe-card';
 import { SwipeService } from '../../services/swipe/swipe.service';
+import { ToastService } from '../../shared/toast/toast.service';
+import { ToastType } from '../../shared/toast/toast.model';
 
 @Component({
   selector: 'app-swipe-deck',
@@ -16,86 +17,158 @@ import { SwipeService } from '../../services/swipe/swipe.service';
   imports: [SwipeCardComponent, CommonModule, TherapistProfileOverlayComponent],
 })
 export class SwipeDeckComponent implements OnInit {
-  therapists: TherapistProfile[] = [];
+  therapists: Therapist[] = [];
   currentIndex = 0;
   isOverlayOpen = false;
-  selectedTherapist: TherapistProfile | null = null;
+  selectedTherapist: Therapist | null = null;
 
   constructor(
     private swipeService: SwipeService,
-    private secureStorage: SecureStorageService
+    private secureStorage: SecureStorageService,
+    private toastService : ToastService
   ) {}
 
   ngOnInit() {
-    if (!this.therapists.length) {
-      this.therapists = [
-        {
-          profile_id: 't001',
-          name: 'Dr. Sarah Johnson',
-          address: '123 Main Street, City, Country',
-          languages: ['English', 'Spanish'],
-          specialization: [
-            'Cognitive Behavioral Therapy',
-            'Anxiety Management',
-          ],
-          consultation_modes: ['Online', 'In-Person'],
-          experience: 10,
-          rating: 4.8,
-          availability: {
-            days: ['Monday', 'Wednesday', 'Friday'],
-            time_slots: ['10:00 AM - 12:00 PM', '2:00 PM - 4:00 PM'],
-          },
-          professional_info: {
-            title: {
-              code: 'LCP',
-              display: 'Licensed Clinical Psychologist',
-            },
-            degrees: [
-              'Ph.D. in Clinical Psychology',
-              'M.A. in Counseling Psychology',
-            ],
-            certifications: ['CBT Certified', 'Anxiety Disorders Specialist'],
-            experience_years: 10,
-          },
-        },
-        {
-          profile_id: 't002',
-          name: 'Dr. Michael Chen',
-          address: '456 Oak Avenue, Downtown, Country',
-          languages: ['English', 'Mandarin'],
-          specialization: ['Family Therapy', 'Couples Counseling'],
-          consultation_modes: ['Online', 'In-Person'],
-          experience: 8,
-          rating: 4.9,
-          availability: {
-            days: ['Tuesday', 'Thursday', 'Saturday'],
-            time_slots: ['9:00 AM - 11:00 AM', '1:00 PM - 3:00 PM'],
-          },
-          professional_info: {
-            title: {
-              code: 'LMFT',
-              display: 'Licensed Marriage and Family Therapist',
-            },
-            degrees: [
-              'M.S. in Marriage and Family Therapy',
-              'B.A. in Psychology',
-            ],
-            certifications: ['Gottman Method Couples Therapy', 'EFT Certified'],
-            experience_years: 8,
-          },
-        },
-      ];
-    }
+    this.loadTherapists();
   }
 
-  openOverlay(therapist: TherapistProfile) {
-    console.log('Opening overlay for:', therapist.name);
+  private loadTherapists() {
+    this.swipeService
+      .triggerUpdate()
+      .pipe(switchMap(() => this.swipeService.getSwipeData()))
+      .subscribe({
+        next: (res) => {
+          if (res?.data?.length) {
+            this.therapists = mapTherapistResponse(res);
+          } else {
+           this.onHandleUpdateTherapist();
+          }
+        },
+        error: (err) => {
+          this.therapists = this.getFallbackData();
+        },
+      });
+  }
+  onHandleUpdateTherapist() {
+    this.swipeService.getUpdateTherapistHandler().subscribe({
+      
+      next: (res) => {
+        if(res) this.toastService.show("Updated" , "Therapist updated" , ToastType.Success) 
+          else this.toastService.show("Updated" , "Therapist updated failed"  , ToastType.Success) 
+      },
+      error : err => this.toastService.show("Updated" , err  , ToastType.Success) 
+    }
+    )
+  }
+
+  private getFallbackData(): Therapist[] {
+    return [
+      {
+        profileId: 't001',
+        name: 'Dr. Sarah Johnson',
+        address: '123 Main Street, City, Country',
+        languages: ['English', 'Spanish'],
+        specialization: ['Cognitive Behavioral Therapy', 'Anxiety Management'],
+        consultationModes: ['Online', 'In-Person'],
+        experience: 10,
+        rating: 4.8,
+        currency: 'USD',
+        ragePrice: 120,
+        isAvailable: true,
+        availability: {
+          days: ['Monday', 'Wednesday', 'Friday'],
+          timeSlots: ['10:00 AM - 12:00 PM', '2:00 PM - 4:00 PM'],
+        },
+        currentSession: [],
+        matchedClients: [],
+        avatarOverride: '',
+        professionalInfo: {
+          title: {
+            code: 'LCP',
+            display: 'Licensed Clinical Psychologist',
+          },
+          degrees: [
+            {
+              type: 'PhD',
+              field: 'Clinical Psychology',
+              institution: 'Harvard',
+              year: 2012,
+            },
+            {
+              type: 'MA',
+              field: 'Counseling Psychology',
+              institution: 'Stanford',
+              year: 2009,
+            },
+          ],
+          certifications: [
+            { name: 'CBT Certified', issuer: 'APA', year: 2015 },
+            { name: 'Anxiety Disorders Specialist', issuer: 'ABP', year: 2016 },
+          ],
+          experienceYears: 10,
+        },
+      },
+      {
+        profileId: 't002',
+        name: 'Dr. Michael Chen',
+        address: '456 Oak Avenue, Downtown, Country',
+        languages: ['English', 'Mandarin'],
+        specialization: ['Family Therapy', 'Couples Counseling'],
+        consultationModes: ['Online', 'In-Person'],
+        experience: 8,
+        rating: 4.9,
+        currency: 'USD',
+        ragePrice: 100,
+        isAvailable: false,
+        availability: {
+          days: ['Tuesday', 'Thursday', 'Saturday'],
+          timeSlots: ['9:00 AM - 11:00 AM', '1:00 PM - 3:00 PM'],
+        },
+        currentSession: [],
+        matchedClients: [],
+        avatarOverride: '',
+        professionalInfo: {
+          title: {
+            code: 'LMFT',
+            display: 'Licensed Marriage and Family Therapist',
+          },
+          degrees: [
+            {
+              type: 'MS',
+              field: 'Marriage and Family Therapy',
+              institution: 'UCLA',
+              year: 2014,
+            },
+            {
+              type: 'BA',
+              field: 'Psychology',
+              institution: 'UC Berkeley',
+              year: 2010,
+            },
+          ],
+          certifications: [
+            {
+              name: 'Gottman Method Couples Therapy',
+              issuer: 'Gottman Institute',
+              year: 2016,
+            },
+            { name: 'EFT Certified', issuer: 'ICEEFT', year: 2017 },
+          ],
+          experienceYears: 8,
+        },
+      },
+    ];
+  }
+
+  openOverlay(therapist: Therapist) {
+    console.log('[SwipeDeck] Opening overlay for:', therapist);
     this.selectedTherapist = { ...therapist };
-    this.isOverlayOpen = !this.isOverlayOpen;
+    this.isOverlayOpen = true;
     document.body.classList.add('overlay-open');
   }
 
   onCloseOverlay() {
+    console.log('[SwipeDeck] Closing overlay');
     this.isOverlayOpen = false;
     this.selectedTherapist = null;
     document.body.classList.remove('overlay-open');
@@ -103,9 +176,9 @@ export class SwipeDeckComponent implements OnInit {
 
   onCardSwiped(event: {
     direction: 'left' | 'right' | 'up';
-    therapist: TherapistProfile;
+    therapist: Therapist;
   }) {
-    console.log('Card swiped:', event.direction, event.therapist.name);
+    console.log('[SwipeDeck] Card swiped:', event.direction, event.therapist);
 
     if (event.direction === 'up') {
       this.openOverlay(event.therapist);
@@ -113,34 +186,30 @@ export class SwipeDeckComponent implements OnInit {
     }
 
     this.therapists = this.therapists.filter(
-      (t) => t.profile_id !== event.therapist.profile_id
+      (t) => t.profileId !== event.therapist.profileId
     );
 
     this.secureStorage.setItem('therapists', this.therapists);
 
     if (event.direction === 'right') {
-      console.log('Matched:', event.therapist.name);
+      console.log('[SwipeDeck] Matched:', event.therapist.name);
     } else if (event.direction === 'left') {
-      console.log('Passed:', event.therapist.name);
+      console.log('[SwipeDeck] Passed:', event.therapist.name);
     }
   }
 
-  onBookAppointment(therapist: TherapistProfile) {
+  onBookAppointment(therapist: Therapist) {
+    console.log('[SwipeDeck] Book appointment with:', therapist.name);
     this.onCloseOverlay();
   }
 
-  onSendMessage(therapist: TherapistProfile) {
-    console.log('Send message to:', therapist.name);
+  onSendMessage(therapist: Therapist) {
+    console.log('[SwipeDeck] Send message to:', therapist.name);
     this.onCloseOverlay();
   }
 
-  get currentTherapist(): TherapistProfile | null {
+  get currentTherapist(): Therapist | null {
     return this.therapists.length > 0 ? this.therapists[0] : null;
-  }
-
-  loadCurrentTherapist() {
-    this.therapists =
-      this.secureStorage.getItem<TherapistProfile[]>('therapists') ?? [];
   }
 
   formatNextAvailable(availability: any): string {
@@ -153,4 +222,6 @@ export class SwipeDeckComponent implements OnInit {
       : '';
     return `${days}${days && times ? ' - ' : ''}${times}`;
   }
+
 }
+

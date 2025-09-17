@@ -19,12 +19,25 @@ PsyConnect platform. It provides secure and scalable identity management feature
 - **Database**: MySQL
 - **API Communication**: RESTful APIs
 
-## API Endpoints
+## 📌 Version History
+
+| Version    | Date       | Changes                                 |
+| ---------- | ---------- | --------------------------------------- |
+| **v1.1.1** | 2025-09-11 | - Add new endpoint and refactor version |
+| **v1.1.1** | 2025-09-11 | - Add new endpoint and refactor version |
+| **v1.1.0** | 2025-09-9  | - Initial release                       |
+
+## API Endpoints Update V1
+
+| Method | Endpoint           | Description                       | Role Required | Headers Required |
+| ------ | ------------------ | --------------------------------- | ------------- | ---------------- |
+| POST   | `/v1/auth/login`   | Authenticate user and get token   | None          | None             |
+| POST   | `/v1/auth/refresh` | Refresh access token with refresh | None          | None             |
 
 ### Authentication
 
 | Method | Endpoint                       | Description                      | Role Required | Headers Required |
-|--------|--------------------------------|----------------------------------|---------------|------------------|
+| ------ | ------------------------------ | -------------------------------- | ------------- | ---------------- |
 | POST   | `/auth/login`                  | Authenticate user and get token  | None          | None             |
 | POST   | `/auth/introspect`             | Logout user and invalidate token | None          | None             |
 | POST   | `/auth/internal/valid`         | Internal token validation        | None          | None             |
@@ -34,7 +47,7 @@ PsyConnect platform. It provides secure and scalable identity management feature
 ### User Account Management
 
 | Method | Endpoint                 | Description                 | Role Required | Headers Required |
-|--------|--------------------------|-----------------------------|---------------|------------------|
+| ------ | ------------------------ | --------------------------- | ------------- | ---------------- |
 | POST   | `/identity/create`       | Register a new user account | None          | None             |
 | POST   | `/identity/activate`     | Activate user account       | None          | None             |
 | POST   | `/identity/req/activate` | Request activation link     | None          | None             |
@@ -43,7 +56,7 @@ PsyConnect platform. It provides secure and scalable identity management feature
 ### Account Settings
 
 | Method | Endpoint              | Description                    | Role Required         | Headers Required |
-|--------|-----------------------|--------------------------------|-----------------------|------------------|
+| ------ | --------------------- | ------------------------------ | --------------------- | ---------------- |
 | POST   | `/account/delete`     | Request account deletion       | None                  | X-User-Id        |
 | DELETE | `/account/delete`     | Confirm account deletion       | None                  | X-User-Id        |
 | GET    | `/account/info`       | Retrieve account details       | None                  | X-User-Id        |
@@ -73,7 +86,7 @@ SERVER_PORT={your-variable}
    cd psyconnect-dev/identityservice
    ```
 2. Build and run the service:
-   ```bash
+   ```bashe
    mvn clean install
    mvn spring-boot:run
    ```

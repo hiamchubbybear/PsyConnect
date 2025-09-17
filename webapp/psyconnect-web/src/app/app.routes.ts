@@ -2,6 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
+import { PasswordResetGuard } from './guards/password-reset-guard';
+import { RequestResetSuccessGuard } from './guards/request-reset-guard';
+import { AboutUsComponent } from './pages/about-us/about-us';
 import { UpdateAccountComponent } from './pages/account/account-update';
 import { PaymentSessionComponent } from './pages/account/payment/payment';
 import { ProfileSectionComponent } from './pages/account/profile/profile-update';
@@ -15,8 +18,6 @@ import { ResetPasswordComponent } from './pages/password-reset/password-reset';
 import { RequestResetComponent } from './pages/request-reset/request-reset';
 import { RequestResetSuccessComponent } from './pages/request-reset/success/request-reset-success';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
-import { PasswordResetGuard } from './guards/password-reset-guard';
-import { RequestResetSuccessGuard } from './guards/request-reset-guard';
 
 export const routes: Routes = [
   { path: '', component: Homepage, canActivate: [guestGuard] },
@@ -42,10 +43,7 @@ export const routes: Routes = [
   {
     path: 'auth/request-reset-success',
     component: RequestResetSuccessComponent,
-    canActivate: [
-      guestGuard,
-       RequestResetSuccessGuard
-    ],
+    canActivate: [guestGuard, RequestResetSuccessGuard],
   },
   {
     path: 'account',
@@ -63,10 +61,51 @@ export const routes: Routes = [
     path: 'feature/schedule',
     component: Consultation,
     canActivate: [authGuard],
+    children: [
+      {
+        path: 'discover',
+        loadComponent: () =>
+          import('./pages/consultation/discover/discover').then(
+            (m) => m.Discover
+          ),
+      },
+      {
+        path: 'sessions',
+        loadComponent: () =>
+          import('./pages/consultation/sessions/sessions').then(
+            (m) => m.Sessions
+          ),
+      },
+      {
+        path: 'schedule',
+        loadComponent: () =>
+          import('./pages/consultation/schedules/schedules').then(
+            (m) => m.Schedules
+          ),
+      },
+      {
+        path: 'history',
+        loadComponent: () =>
+          import('./pages/consultation/history/history').then((m) => m.History),
+      },
+      {
+        path: 'reviews',
+        loadComponent: () =>
+          import('./pages/consultation/reviews/reviews').then((m) => m.Reviews),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/consultation/settings/settings').then(
+            (m) => m.Settings
+          ),
+      },
+      { path: '', redirectTo: 'discover', pathMatch: 'full' }, // default
+    ],
   },
   { path: 'feature/chat', component: Notfound, canActivate: [authGuard] },
   { path: 'feature/profile', component: Notfound, canActivate: [authGuard] },
-
+  { path: 'about-us', component: AboutUsComponent },
   { path: '**', component: Notfound },
 ];
 

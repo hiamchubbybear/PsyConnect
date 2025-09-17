@@ -31,6 +31,7 @@ import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.*;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
+import dev.psyconnect.identity_service.repository.TokenRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

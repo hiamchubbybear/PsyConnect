@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
+import { SecureStorageService } from '../../encrypt/secure';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+    constructor(private secureService : SecureStorageService) {
+
+    }
   private readonly TOKEN_KEY = 'access_token';
 
   saveToken(token: string) {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    this.secureService.setItem(this.TOKEN_KEY, token);
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return this.secureService.getItem(this.TOKEN_KEY);
   }
 
   isLoggedIn(): boolean {
@@ -17,6 +21,6 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem(this.TOKEN_KEY);
+    this.secureService.removeItem(this.TOKEN_KEY);
   }
 }
