@@ -169,6 +169,7 @@
     },
     "AVATAR_MENU": {
         "Profile": "Hồ sơ",
+        "Payment": "Thanh toán",
         "Account": "Tài khoản",
         "Activity": "Hoạt động",
         "History": "Lịch sử",
@@ -582,6 +583,21 @@
     "depression": "Trầm cảm",
     "trauma_therapy": "Trị liệu chấn thương",
     "family_counseling": "Tư vấn gia đình",
-    "couples_therapy": "Tư vấn cặp đôi",
-    "child_psychology": "Tâm lý trẻ em"
+    "child_psychology": "Tâm lý trẻ em",
+    "PAYMENT": {
+        "Sidebar": {
+            "Title": "Quản lý thanh toán",
+            "Items": {
+                "Overview": "Tổng quan",
+                "Dashboard": "Bảng điều khiển",
+                "Segments": "Phân khúc",
+                "Transactions": "Giao dịch",
+                "Invoices": "Hóa đơn",
+                "Refunds": "Hoàn tiền",
+                "Methods": "Phương thức thanh toán",
+                "Reports": "Báo cáo",
+                "Settings": "Cài đặt"
+            }
+        }
+    }
 }

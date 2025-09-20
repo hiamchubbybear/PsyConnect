@@ -1,51 +1,55 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
-import { AuthStateService } from './auth-state.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Auth {
   apiUrl = `${environment.apiUrl}`;
+  apiVersion = `${environment.apiVersion}`;
+  refreshKey = `${environment.refreshKey}`;
 
   constructor(
     private http: HttpClient,
-    private secureStorage: SecureStorageService,
-    private authState: AuthStateService
+    private secureStorage: SecureStorageService
   ) {}
-
 
   login(credentials: {
     username: string;
     password: string;
-  }): Observable<{ data: { token: string } }> {
-    const url = `${this.apiUrl}/auth/login?provider=NORMAL&platform=web`;
+  }): Observable<{ data: { token: string; refreshToken: string } }> {
+    const url = `${this.apiUrl}/${this.apiVersion}/auth/login?provider=NORMAL&platform=web`;
     return this.http
-      .post<{ data: { token: string } }>(url, credentials, {
-        withCredentials: false,
-      })
+      .post<{ data: { token: string; refreshToken: string } }>(
+        url,
+        credentials,
+        {
+          withCredentials: false,
+        }
+      )
       .pipe(
         tap((res) => {
+          console.log(res);
           let resToken = res?.data.token;
+          let refreshToken = res?.data.refreshToken;
           if (resToken != null && resToken != '') {
-            console.log(resToken);
-            this.secureStorage.setItem('access_token', res?.data.token);
+            this.secureStorage.setItem('access_token', resToken);
+            this.secureStorage.setItem(this.refreshKey, refreshToken);
           }
         })
       );
   }
   logout(): void {
     this.secureStorage.clear();
-
   }
 
   isLoggedIn(): boolean {
-  const token = this.secureStorage.getItem('access_token');
-  return !!(token && token !== 'null' && token !== 'undefined');
-}
+    const token = this.secureStorage.getItem('access_token');
+    return !!(token && token !== 'null' && token !== 'undefined');
+  }
 
   getToken(): string | null {
     return this.secureStorage.getItem('access_token');
@@ -62,6 +66,55 @@ export class Auth {
       token,
     });
   }
+  isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const exp = payload.exp * 1000;
+      return Date.now() > exp;
+    } catch (e) {
+      return true;
+    }
+  }
+  checkTokenOnStartup() {
+    const token = this.secureStorage.getItem<string>('access_token');
+    const username = this.secureStorage.getItem<string>('username');
+    if (!token || !username) {
+      this.logout();
+      return;
+    }
+    if (token && this.isTokenExpired(token)) {
+      this.refreshToken(username).subscribe({
+        next: () => console.log('Token refreshed on startup'),
+        error: () => this.logout(),
+      });
+    }
+  }
+
+  refreshToken(username: string): Observable<string> {
+    const refreshToken = this.secureStorage.getItem<string>('refresh_token');
+
+    const params = new HttpParams()
+      .set('provider', 'NORMAL')
+      .set('platform', 'web')
+      .set('token', refreshToken || '')
+      .set('username', username);
+
+    return this.http
+      .post<{
+        code: number;
+        message: string;
+        data: { token: string; refreshToken: string; successful: boolean };
+      }>(`${this.apiUrl}/${this.apiVersion}/auth/refresh`, {}, { params })
+      .pipe(
+        tap((res) => {
+          this.secureStorage.setItem('access_token', res.data.token);
+          console.log('access token', res.data.token);
+          this.secureStorage.setItem('refresh_token', res.data.refreshToken);
+        }),
+        map((res) => res.data.token)
+      );
+  }
+
   exchangeOAuth2Code(
     code: string,
     email: string,
@@ -78,5 +131,4 @@ export class Auth {
       params,
     });
   }
-
 }

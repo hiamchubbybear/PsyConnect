@@ -346,3 +346,16 @@ body {
 - Increase shadow opacity in dark mode
 - Use `--icon-theme-color: brightness(0) invert(1)` for icon theming
 - Ensure sufficient contrast ratios
+
+
+
+<div className="min-h-screen w-full bg-[#020617] relative">
+  {/* Dark Radial Glow Background */}
+  <div
+    className="absolute inset-0 z-0"
+    style={{
+      backgroundImage: ``,
+    }}
+  />
+     {/* Your Content/Components */}
+</div>

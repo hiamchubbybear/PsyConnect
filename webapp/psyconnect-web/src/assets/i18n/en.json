@@ -170,6 +170,7 @@
     },
     "AVATAR_MENU": {
         "Profile": "Profile",
+        "Payment": "Payment",
         "Account": "Account",
         "Activity": "Activity",
         "History": "History",
@@ -599,6 +600,21 @@
     "depression": "Depression",
     "trauma_therapy": "Trauma Therapy",
     "family_counseling": "Family Counseling",
-    "couples_therapy": "Couples Therapy",
-    "child_psychology": "Child Psychology"
+    "child_psychology": "Child Psychology",
+    "PAYMENT": {
+        "Sidebar": {
+            "Title": "Payment Management",
+            "Items": {
+                "Overview": "Overview",
+                "Dashboard": "Dashboard",
+                "Segments": "Segments",
+                "Transactions": "Transactions",
+                "Invoices": "Invoices",
+                "Refunds": "Refunds",
+                "Methods": "Payment Methods",
+                "Reports": "Reports",
+                "Settings": "Settings"
+            }
+        }
+    }
 }

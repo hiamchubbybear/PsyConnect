@@ -15,6 +15,7 @@ import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
 import { Notfound } from './pages/notfound/notfound';
 import { ResetPasswordComponent } from './pages/password-reset/password-reset';
+import { PaymentManagement } from './pages/payment-management/payment-management';
 import { RequestResetComponent } from './pages/request-reset/request-reset';
 import { RequestResetSuccessComponent } from './pages/request-reset/success/request-reset-success';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
@@ -106,6 +107,77 @@ export const routes: Routes = [
   { path: 'feature/chat', component: Notfound, canActivate: [authGuard] },
   { path: 'feature/profile', component: Notfound, canActivate: [authGuard] },
   { path: 'about-us', component: AboutUsComponent },
+  {
+    path: 'payment',
+    component: PaymentManagement,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/payment-management/dashboard/dashboard').then(
+            (m) => m.Dashboard
+          ),
+      },
+      {
+        path: 'overview',
+        loadComponent: () =>
+          import('./pages/payment-management/overview/overview').then(
+            (m) => m.Overview
+          ),
+      },
+      {
+        path: 'invoices',
+        loadComponent: () =>
+          import('./pages/payment-management/invoices/invoices').then(
+            (m) => m.Invoices
+          ),
+      },
+      {
+        path: 'methods',
+        loadComponent: () =>
+          import('./pages/payment-management/methods/methods').then(
+            (m) => m.Methods
+          ),
+      },
+      {
+        path: 'refunds',
+        loadComponent: () =>
+          import('./pages/payment-management/refunds/refunds').then(
+            (m) => m.Refunds
+          ),
+      },
+      {
+        path: 'reports',
+        loadComponent: () =>
+          import('./pages/payment-management/reports/reports').then(
+            (m) => m.Reports
+          ),
+      },
+      {
+        path: 'segments',
+        loadComponent: () =>
+          import('./pages/payment-management/segments/segments').then(
+            (m) => m.Segments
+          ),
+      },
+      {
+        path: 'transactions',
+        loadComponent: () =>
+          import('./pages/payment-management/transactions/transactions').then(
+            (m) => m.Transactions
+          ),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/payment-management/settings/settings').then(
+            (m) => m.Settings
+          ),
+      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
+  },
   { path: '**', component: Notfound },
 ];
 

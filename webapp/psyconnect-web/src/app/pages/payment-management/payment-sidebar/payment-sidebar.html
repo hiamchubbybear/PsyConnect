@@ -1,0 +1,65 @@
+<nav class="sidebar">
+  <h3 class="sidebar__title">
+    {{ "PAYMENT.Sidebar.Title" | translate }}
+  </h3>
+
+  <ul class="sidebar__list">
+    <li class="sidebar__item">
+      <a
+        routerLink="overview"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        {{ "PAYMENT.Sidebar.Items.Overview" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="dashboard" routerLinkActive="active">
+        {{ "PAYMENT.Sidebar.Items.Dashboard" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="segments" routerLinkActive="active">
+        {{ "PAYMENT.Sidebar.Items.Segments" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="transactions" routerLinkActive="active">
+        {{ "PAYMENT.Sidebar.Items.Transactions" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="invoices" routerLinkActive="active">
+        {{ "PAYMENT.Sidebar.Items.Invoices" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="refunds" routerLinkActive="active">
+        {{ "PAYMENT.Sidebar.Items.Refunds" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="methods" routerLinkActive="active">
+        {{ "PAYMENT.Sidebar.Items.Methods" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="reports" routerLinkActive="active">
+        {{ "PAYMENT.Sidebar.Items.Reports" | translate }}
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="settings" routerLinkActive="active">
+        {{ "PAYMENT.Sidebar.Items.Settings" | translate }}
+      </a>
+    </li>
+  </ul>
+</nav>
