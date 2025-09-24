@@ -1,13 +1,12 @@
-// onboarding-modal.interface.ts
 export interface OnboardingStep {
   id: string;
-  icon?: string; // Icon class or URL
+  icon?: string;
   title: string;
   description: string;
   primaryButton: OnboardingButton;
   secondaryButton?: OnboardingButton;
   backgroundGradient?: string;
-  image?: string; // Optional image URL
+  image?: string;
 }
 
 export interface OnboardingButton {
@@ -170,7 +169,6 @@ export class OnboardingModalComponent implements OnInit {
     this.complete.emit();
   }
 
-  // Utility methods for template
   getBackgroundStyle(): any {
     return {
       background:

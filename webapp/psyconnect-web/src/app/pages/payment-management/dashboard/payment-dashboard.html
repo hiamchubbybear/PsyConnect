@@ -1,0 +1,119 @@
+<div class="dashboard-container">
+  <!-- KPI cards -->
+  <div class="kpi-row">
+    <mat-card class="kpi-card success">
+      <div class="title">Today's Earn</div>
+      <div class="value">$12,426</div>
+      <div class="change positive">+36%</div>
+    </mat-card>
+    <mat-card class="kpi-card danger">
+      <div class="title">Total Spend</div>
+      <div class="value">$238,485</div>
+      <div class="change negative">-14%</div>
+    </mat-card>
+    <mat-card class="kpi-card info">
+      <div class="title">Total Orders</div>
+      <div class="value">84,382</div>
+      <div class="change positive">+12%</div>
+    </mat-card>
+    <mat-card class="kpi-card success">
+      <div class="title">Total Incomes</div>
+      <div class="value">33,493</div>
+      <div class="change positive">+8%</div>
+    </mat-card>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <mat-card class="chart-card">
+      <h3>Income Report</h3>
+      <canvas
+        baseChart
+        [data]="incomeChartData"
+        [options]="chartOptions"
+        [type]="'bar'"
+      ></canvas>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <h3>Spending Categories</h3>
+      <canvas
+        baseChart
+        [data]="spendingChartData"
+        [options]="chartOptions"
+        [type]="'bar'"
+      ></canvas>
+    </mat-card>
+  </div>
+
+  <!-- Transactions & Customers -->
+  <div class="bottom-row">
+    <mat-card class="transactions-card">
+      <h3>Recent Transactions</h3>
+      <table mat-table [dataSource]="transactions">
+        <!-- ID -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let t">{{ t.id }}</td>
+        </ng-container>
+
+        <!-- Customer -->
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef>Customer</th>
+          <td mat-cell *matCellDef="let t">{{ t.customer }}</td>
+        </ng-container>
+
+        <!-- Method -->
+        <ng-container matColumnDef="method">
+          <th mat-header-cell *matHeaderCellDef>Method</th>
+          <td mat-cell *matCellDef="let t">{{ t.method }}</td>
+        </ng-container>
+
+        <!-- Amount -->
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let t">${{ t.amount }}</td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let t">
+            <span
+              [class.success]="t.status === 'Completed'"
+              [class.pending]="t.status === 'Pending'"
+              [class.cancelled]="t.status === 'Cancelled'"
+            >
+              {{ t.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="['id', 'customer', 'method', 'amount', 'status']"
+        ></tr>
+        <tr
+          mat-row
+          *matRowDef="
+            let row;
+            columns: ['id', 'customer', 'method', 'amount', 'status']
+          "
+        ></tr>
+      </table>
+    </mat-card>
+
+    <mat-card class="customers-card">
+      <h3>Recent Customers</h3>
+      <div *ngFor="let c of customers" class="customer">
+        <img [src]="c.avatar" alt="{{ c.name }}" />
+        <div>
+          <div class="name">{{ c.name }}</div>
+          <div class="email">{{ c.email }}</div>
+          <div class="amount">${{ c.amount }}</div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>
+viết file ts theo html này

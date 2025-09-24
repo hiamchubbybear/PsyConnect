@@ -66,7 +66,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  currentStep = 3;
+  currentStep = 0;
   totalSteps = 7;
   isLoading = false;
   selectedImage: File | null = null;

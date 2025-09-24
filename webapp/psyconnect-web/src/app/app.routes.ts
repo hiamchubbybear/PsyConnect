@@ -19,6 +19,7 @@ import { PaymentManagement } from './pages/payment-management/payment-management
 import { RequestResetComponent } from './pages/request-reset/request-reset';
 import { RequestResetSuccessComponent } from './pages/request-reset/success/request-reset-success';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
+import { Start } from './pages/start/start';
 
 export const routes: Routes = [
   { path: '', component: Homepage, canActivate: [guestGuard] },
@@ -115,8 +116,8 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./pages/payment-management/dashboard/dashboard').then(
-            (m) => m.Dashboard
+          import('./pages/payment-management/dashboard/payment-dashboard').then(
+            (m) => m.PaymentDashboardComponent
           ),
       },
       {
@@ -178,6 +179,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
+  { path: 'start', component: Start },
   { path: '**', component: Notfound },
 ];
 

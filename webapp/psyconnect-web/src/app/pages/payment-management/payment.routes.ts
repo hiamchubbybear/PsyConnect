@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { Dashboard } from './dashboard/dashboard';
+import { PaymentDashboardComponent } from './dashboard/payment-dashboard';
 import { Invoices } from './invoices/invoices';
 import { Methods } from './methods/methods';
 import { Overview } from './overview/overview';
@@ -16,7 +16,7 @@ export const paymentRoutes: Routes = [
     component: PaymentManagement,
     children: [
       { path: 'overview', component: Overview },
-      { path: 'dashboard', component: Dashboard },
+      { path: 'dashboard', component: PaymentDashboardComponent },
       { path: 'segments', component: Segments },
       { path: 'transactions', component: Transactions },
       { path: 'invoices', component: Invoices },

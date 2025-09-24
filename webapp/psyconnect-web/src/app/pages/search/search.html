@@ -1,0 +1,27 @@
+<div class="search-bar">
+  <input id="searchInput" type="text" placeholder="Search..." value="Healing" />
+  <select>
+    <option>1 category selected</option>
+  </select>
+  <button onclick="searchPosts()">Search</button>
+</div>
+
+<div class="tags">
+  <span id="activeTag" class="tag">Healing ✕</span>
+</div>
+
+<div id="results" class="results">
+  <div class="post">
+    <img
+      src="https://i.pinimg.com/1200x/55/81/80/558180f961f4da7db384c55903ae464c.jpg"
+      alt="Healing"
+      style="width: 120px; height: auto; border-radius: 8px"
+    />
+    <p>Healing tips and therapy posts...</p>
+  </div>
+</div>
+
+<div class="footer">
+  <div id="count">0 results</div>
+  <button onclick="loadMore()">Show me more results →</button>
+</div>
