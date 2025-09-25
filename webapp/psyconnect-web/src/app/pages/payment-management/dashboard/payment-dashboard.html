@@ -1,5 +1,4 @@
-<div class="dashboard-container">
-  <!-- KPI cards -->
+<!-- <div class="dashboard-container">
   <div class="kpi-row">
     <mat-card class="kpi-card success">
       <div class="title">Today's Earn</div>
@@ -23,7 +22,6 @@
     </mat-card>
   </div>
 
-  <!-- Charts -->
   <div class="charts-row">
     <mat-card class="chart-card">
       <h3>Income Report</h3>
@@ -46,36 +44,35 @@
     </mat-card>
   </div>
 
-  <!-- Transactions & Customers -->
   <div class="bottom-row">
     <mat-card class="transactions-card">
       <h3>Recent Transactions</h3>
       <table mat-table [dataSource]="transactions">
-        <!-- ID -->
+
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef>ID</th>
           <td mat-cell *matCellDef="let t">{{ t.id }}</td>
         </ng-container>
 
-        <!-- Customer -->
+
         <ng-container matColumnDef="customer">
           <th mat-header-cell *matHeaderCellDef>Customer</th>
           <td mat-cell *matCellDef="let t">{{ t.customer }}</td>
         </ng-container>
 
-        <!-- Method -->
+
         <ng-container matColumnDef="method">
           <th mat-header-cell *matHeaderCellDef>Method</th>
           <td mat-cell *matCellDef="let t">{{ t.method }}</td>
         </ng-container>
 
-        <!-- Amount -->
+
         <ng-container matColumnDef="amount">
           <th mat-header-cell *matHeaderCellDef>Amount</th>
           <td mat-cell *matCellDef="let t">${{ t.amount }}</td>
         </ng-container>
 
-        <!-- Status -->
+
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let t">
@@ -116,4 +113,4 @@
     </mat-card>
   </div>
 </div>
-viết file ts theo html này
+ -->

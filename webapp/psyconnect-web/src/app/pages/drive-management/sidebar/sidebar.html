@@ -1,0 +1,27 @@
+<nav class="sidebar">
+  <h3 class="sidebar__title">Drive Management</h3>
+
+  <ul class="sidebar__list">
+    <li class="sidebar__item">
+      <a
+        routerLink="folders"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Folders
+      </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="files" routerLinkActive="active"> Files </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="search" routerLinkActive="active"> Search </a>
+    </li>
+
+    <li class="sidebar__item">
+      <a routerLink="stats" routerLinkActive="active"> Stats </a>
+    </li>
+  </ul>
+</nav>

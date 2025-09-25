@@ -1,6 +1,7 @@
 @use "../../styles/variable" as v;
 
 .header {
+  font-family: var(--font-family);
   display: flex;
   align-items: center;
   justify-content: space-between;

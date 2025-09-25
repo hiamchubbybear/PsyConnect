@@ -1,3 +1,4 @@
+
 @use "@angular/material" as mat;
 @use "./variable" as v;
 @use "./form-base" as *;
@@ -547,3 +548,6 @@ a {
   border-style: none !important;
   border-color: transparent !important;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

@@ -11,6 +11,7 @@ import { ProfileSectionComponent } from './pages/account/profile/profile-update'
 import { SecuritySectionComponent } from './pages/account/security/security-update';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
 import { Consultation } from './pages/consultation/consultation';
+import { DriveManagement } from './pages/drive-management/drive-management.routes';
 import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
 import { Notfound } from './pages/notfound/notfound';
@@ -107,6 +108,49 @@ export const routes: Routes = [
   },
   { path: 'feature/chat', component: Notfound, canActivate: [authGuard] },
   { path: 'feature/profile', component: Notfound, canActivate: [authGuard] },
+  {
+    path: 'feature/drive',
+    component: DriveManagement,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'folders',
+        loadComponent: () =>
+          import('./pages/drive-management/folders/folders/folders').then(
+            (m) => m.FoldersComponent
+          ),
+      },
+      {
+        path: 'files',
+        loadComponent: () =>
+          import('./pages/drive-management/files/files/files').then(
+            (m) => m.FilesComponent
+          ),
+      },
+      {
+        path: 'upload',
+        loadComponent: () =>
+          import('./pages/drive-management/upload/upload/upload').then(
+            (m) => m.Upload
+          ),
+      },
+      {
+        path: 'search',
+        loadComponent: () =>
+          import('./pages/drive-management/search/search/search').then(
+            (m) => m.SearchComponent
+          ),
+      },
+      {
+        path: 'stats',
+        loadComponent: () =>
+          import('./pages/drive-management/stats/stats/stats').then(
+            (m) => m.StatsComponent
+          ),
+      },
+      { path: '', redirectTo: 'folders', pathMatch: 'full' },
+    ],
+  },
   { path: 'about-us', component: AboutUsComponent },
   {
     path: 'payment',
@@ -117,7 +161,7 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () =>
           import('./pages/payment-management/dashboard/payment-dashboard').then(
-            (m) => m.PaymentDashboardComponent
+            (m) => m.DashboardComponent
           ),
       },
       {
@@ -179,6 +223,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
+
   { path: 'start', component: Start },
   { path: '**', component: Notfound },
 ];

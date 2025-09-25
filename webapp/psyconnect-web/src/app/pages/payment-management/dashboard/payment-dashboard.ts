@@ -3,11 +3,12 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-dashboard',
+  standalone : true,
   templateUrl: './payment-dashboard.html',
   styleUrls: ['./payment-dashboard.scss'],
 })
 export class DashboardComponent {
-  // Chart Options
+
   chartOptions: ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,

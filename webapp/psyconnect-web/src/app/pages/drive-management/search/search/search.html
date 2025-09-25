@@ -1,0 +1,39 @@
+<div class="search-page">
+  <h2>Search Files</h2>
+
+  <div class="search-bar">
+    <input
+      type="text"
+      placeholder="Enter keyword..."
+      [(ngModel)]="keyword"
+      (keyup.enter)="search()"
+    />
+    <button (click)="search()" [disabled]="loading">Search</button>
+  </div>
+
+  <div *ngIf="loading">Searching files...</div>
+
+  <table *ngIf="!loading && files.length">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Size (KB)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let file of files">
+        <td>{{ file.name }}</td>
+        <td>{{ file.mimeType }}</td>
+        <td>{{ +file.size / 1024 | number : "1.0-2" }}</td>
+        <td>
+          <button (click)="downloadFile(file)">Download</button>
+          <button (click)="deleteFile(file)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && files.length === 0">No files found.</div>
+</div>

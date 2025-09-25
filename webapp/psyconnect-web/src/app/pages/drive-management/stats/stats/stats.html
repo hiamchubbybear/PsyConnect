@@ -1,0 +1,74 @@
+<div class="stats-dashboard" *ngIf="!loading">
+  <h2>Drive Statistics</h2>
+
+  <!-- Tổng quan -->
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Total Files</div>
+      <div class="card-value">{{ totalFiles }}</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Total Size</div>
+      <div class="card-value">{{ formatSize(totalSize) }}</div>
+    </div>
+  </div>
+
+  <!-- Files per Folder -->
+  <div class="table-card">
+    <h3>Files Per Folder</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Folder ID / Name</th>
+          <th>File Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of filesPerFolder">
+          <td>{{ folderMap[f.key] || f.key }}</td>
+          <td>{{ f.value }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Files by Type -->
+  <div class="table-card">
+    <h3>Files By Type</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>File Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of filesByType">
+          <td>{{ t.key }}</td>
+          <td>{{ t.value }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Folder Sizes -->
+  <div class="table-card">
+    <h3>Folder Sizes</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Folder ID / Name</th>
+          <th>Size (MB)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let f of folderSizes">
+          <td>{{ f.key }}</td>
+          <td>{{ formatSize(f.value) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading">Loading statistics...</div>
