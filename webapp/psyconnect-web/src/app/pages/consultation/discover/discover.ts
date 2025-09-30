@@ -6,6 +6,6 @@ import { SwipeDeckComponent } from '../../swipe/swipe-deck';
   selector: 'consultation-discover',
   imports: [CommonModule, SwipeDeckComponent],
   templateUrl: './discover.html',
-  styleUrl: './discover.scss',
+  styleUrls: ['./discover.scss'],
 })
 export class Discover {}

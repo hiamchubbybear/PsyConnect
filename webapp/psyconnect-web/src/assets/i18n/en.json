@@ -616,5 +616,17 @@
                 "Settings": "Settings"
             }
         }
+    },
+    "POST": {
+        "Sidebar": {
+            "Title": "Post Management",
+            "Items": {
+                "AllPosts": "All Posts",
+                "Create": "Create Post",
+                "Categories": "Categories",
+                "Reviews": "Reviews",
+                "Settings": "Settings"
+            }
+        }
     }
 }

@@ -2,10 +2,18 @@ import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 
-import { HttpClient, provideHttpClient, withFetch } from '@angular/common/http';
+import {
+    HttpClient,
+    provideHttpClient,
+    withFetch,
+    withInterceptors,
+} from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { routes } from './app.routes';
+import {
+    authInterceptor
+} from './services/auth/auth.interceptor';
 
 // Custom loader class đơn giản
 export class CustomTranslateLoader implements TranslateLoader {
@@ -24,7 +32,7 @@ export function createTranslateLoader(http: HttpClient) {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes), // Router
-    provideHttpClient(withFetch()), // HTTP Client
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])), // HTTP Client
     provideAnimations(), // Angular animations
     importProvidersFrom(
       TranslateModule.forRoot({

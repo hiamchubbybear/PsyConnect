@@ -1,0 +1,223 @@
+.scheduler-container {
+  display: flex;
+  justify-content: flex-start;
+  gap: var(--spacing-3xl);
+  padding: var(--spacing-3xl);
+  flex-wrap: wrap;
+  transition: all 0.3s ease;
+
+  &.sidebar-collapsed {
+    .left-side {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .schedule {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  &:not(.sidebar-collapsed) {
+    .left-side {
+      width: 420px;
+      flex-shrink: 0;
+    }
+
+    .schedule {
+      flex: 1;
+      max-width: calc(100% - 420px - var(--spacing-3xl));
+    }
+  }
+
+  .left-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    transition: all 0.3s ease;
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      box-shadow: var(--shadow-card);
+      padding: var(--spacing-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+      transition: all 0.3s ease;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+
+      button {
+        border: none;
+        background: var(--color-surface-low);
+        border-radius: 8px;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--color-surface-hover);
+        }
+      }
+    }
+
+    .cal-weekdays,
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin: 8px 0 6px;
+    }
+
+    .cal-days button {
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: var(--color-surface-low);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+
+      &:hover {
+        background: var(--color-surface-hover);
+      }
+
+      &.out {
+        color: var(--color-text-muted);
+        background: var(--color-bg-secondary);
+      }
+
+      &.today {
+        border-color: var(--color-primary);
+      }
+
+      &.selected {
+        background: var(--color-primary);
+        color: var(--color-on-accent);
+        border-color: var(--color-primary);
+      }
+    }
+
+    .therapist-list {
+      .therapist {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-sm) var(--spacing-md);
+        border-radius: 10px;
+        background: var(--color-surface-low);
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--color-surface-hover);
+        }
+
+        img {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .actions {
+          margin-left: auto;
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-md);
+
+          .circle {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--color-border);
+            border-radius: 50%;
+            display: inline-block;
+          }
+
+          .circle.selected {
+            border-color: var(--color-primary);
+            background: var(--color-primary);
+          }
+        }
+      }
+    }
+  }
+
+  .schedule {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    transition: all 0.3s ease;
+
+    .time-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: var(--spacing-md);
+      justify-items: center;
+
+      .time-slot {
+        display: inline-block;
+        border: 2px solid var(--color-border);
+        border-radius: 14px;
+        padding: 16px 0;
+        width: 140px;
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        cursor: pointer;
+        background: var(--color-surface-low);
+        transition: all var(--transition-fast);
+
+        input {
+          display: none;
+        }
+
+        &:hover {
+          background: var(--color-surface-hover);
+          border-color: var(--color-primary);
+        }
+
+        input:checked + & {
+          background: var(--color-primary);
+          color: var(--color-on-accent);
+          border-color: var(--color-primary-hover);
+        }
+      }
+    }
+
+    .schedule-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+
+      .next-btn {
+        border: none;
+        border-radius: 10px;
+        background: var(--color-surface-mid);
+        padding: var(--spacing-sm) var(--spacing-md);
+        cursor: pointer;
+        font-weight: bold;
+        transition: all var(--transition-fast);
+
+        &:hover {
+          background: var(--color-surface-high);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}

@@ -10,15 +10,16 @@ import { PaymentSessionComponent } from './pages/account/payment/payment';
 import { ProfileSectionComponent } from './pages/account/profile/profile-update';
 import { SecuritySectionComponent } from './pages/account/security/security-update';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
-import { Consultation } from './pages/consultation/consultation';
-import { DriveManagement } from './pages/drive-management/drive-management.routes';
+import { ConsultationComponent } from './pages/consultation/consultation';
 import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
 import { Notfound } from './pages/notfound/notfound';
 import { ResetPasswordComponent } from './pages/password-reset/password-reset';
-import { PaymentManagement } from './pages/payment-management/payment-management';
+import { PaymentManagementComponent } from './pages/payment-management/payment-management';
+import { PostManagementComponent } from './pages/post-management/post-managements';
 import { RequestResetComponent } from './pages/request-reset/request-reset';
 import { RequestResetSuccessComponent } from './pages/request-reset/success/request-reset-success';
+import { SearchComponent } from './pages/search/search';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
 import { Start } from './pages/start/start';
 
@@ -60,9 +61,52 @@ export const routes: Routes = [
     ],
   },
   { path: 'feature/feed', component: Notfound, canActivate: [authGuard] },
+  { path: 'feature/search', component: SearchComponent },
+  {
+    path: 'feature/article',
+    component: PostManagementComponent,
+    children: [
+      {
+        path: 'all',
+        loadComponent: () =>
+          import('../app/pages/post-management/all/all-posts/all-posts').then(
+            (m) => m.AllPosts
+          ),
+      },
+      {
+        path: 'create',
+        loadComponent: () =>
+          import(
+            '../app/pages/post-management/create/create-post/create-post'
+          ).then((m) => m.CreatePost),
+      },
+      {
+        path: 'categories',
+        loadComponent: () =>
+          import(
+            '../app/pages/post-management/categories/categories/categories'
+          ).then((m) => m.Categories),
+      },
+      {
+        path: 'reviews',
+        loadComponent: () =>
+          import('../app/pages/post-management/reviews/reviews/reviews').then(
+            (m) => m.Reviews
+          ),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import(
+            '../app/pages/post-management/settings/settings/settings'
+          ).then((m) => m.Settings),
+      },
+      { path: '', redirectTo: 'all', pathMatch: 'full' },
+    ],
+  },
   {
     path: 'feature/schedule',
-    component: Consultation,
+    component: ConsultationComponent,
     canActivate: [authGuard],
     children: [
       {
@@ -82,8 +126,8 @@ export const routes: Routes = [
       {
         path: 'schedule',
         loadComponent: () =>
-          import('./pages/consultation/schedules/schedules').then(
-            (m) => m.Schedules
+          import('./pages/consultation/schedules/scheduler').then(
+            (m) => m.SchedulerComponent
           ),
       },
       {
@@ -108,53 +152,11 @@ export const routes: Routes = [
   },
   { path: 'feature/chat', component: Notfound, canActivate: [authGuard] },
   { path: 'feature/profile', component: Notfound, canActivate: [authGuard] },
-  {
-    path: 'feature/drive',
-    component: DriveManagement,
-    canActivate: [authGuard],
-    children: [
-      {
-        path: 'folders',
-        loadComponent: () =>
-          import('./pages/drive-management/folders/folders/folders').then(
-            (m) => m.FoldersComponent
-          ),
-      },
-      {
-        path: 'files',
-        loadComponent: () =>
-          import('./pages/drive-management/files/files/files').then(
-            (m) => m.FilesComponent
-          ),
-      },
-      {
-        path: 'upload',
-        loadComponent: () =>
-          import('./pages/drive-management/upload/upload/upload').then(
-            (m) => m.Upload
-          ),
-      },
-      {
-        path: 'search',
-        loadComponent: () =>
-          import('./pages/drive-management/search/search/search').then(
-            (m) => m.SearchComponent
-          ),
-      },
-      {
-        path: 'stats',
-        loadComponent: () =>
-          import('./pages/drive-management/stats/stats/stats').then(
-            (m) => m.StatsComponent
-          ),
-      },
-      { path: '', redirectTo: 'folders', pathMatch: 'full' },
-    ],
-  },
+
   { path: 'about-us', component: AboutUsComponent },
   {
     path: 'payment',
-    component: PaymentManagement,
+    component: PaymentManagementComponent,
     canActivate: [authGuard],
     children: [
       {

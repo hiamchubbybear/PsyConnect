@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
+import { DashboardComponent } from './dashboard/payment-dashboard';
 import { Invoices } from './invoices/invoices';
 import { Methods } from './methods/methods';
 import { Overview } from './overview/overview';
-import { PaymentManagement } from './payment-management';
+import { PaymentManagementComponent } from './payment-management';
 import { Refunds } from './refunds/refunds';
 import { Reports } from './reports/reports';
 import { Segments } from './segments/segments';
@@ -12,10 +13,10 @@ import { Transactions } from './transactions/transactions';
 export const paymentRoutes: Routes = [
   {
     path: '',
-    component: PaymentManagement,
+    component: PaymentManagementComponent,
     children: [
       { path: 'overview', component: Overview },
-      { path: 'dashboard', component: PaymentManagement },
+      { path: 'dashboard', component: DashboardComponent },
       { path: 'segments', component: Segments },
       { path: 'transactions', component: Transactions },
       { path: 'invoices', component: Invoices },

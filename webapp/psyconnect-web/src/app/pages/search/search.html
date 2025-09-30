@@ -1,27 +1,38 @@
-<div class="search-bar">
-  <input id="searchInput" type="text" placeholder="Search..." value="Healing" />
-  <select>
+<section class="search-bar">
+  <input
+    id="searchInput"
+    type="text"
+    placeholder="Search..."
+    [(ngModel)]="query"
+  />
+  <select [(ngModel)]="selectedCategory">
+    <option>All categories</option>
     <option>1 category selected</option>
   </select>
-  <button onclick="searchPosts()">Search</button>
+  <!-- nút search có thể giữ lại hoặc bỏ -->
+  <button>Search</button>
+</section>
+
+<div class="tags" *ngIf="query">
+  <span id="activeTag" class="tag">{{ query }} ✕</span>
+  <button class="clear" (click)="clearTag()">Clear</button>
 </div>
 
-<div class="tags">
-  <span id="activeTag" class="tag">Healing ✕</span>
-</div>
+<section id="results" class="results">
+  <div *ngIf="filtered.length === 0" class="empty">No results found.</div>
 
-<div id="results" class="results">
-  <div class="post">
-    <img
-      src="https://i.pinimg.com/1200x/55/81/80/558180f961f4da7db384c55903ae464c.jpg"
-      alt="Healing"
-      style="width: 120px; height: auto; border-radius: 8px"
-    />
-    <p>Healing tips and therapy posts...</p>
+  <div class="card" *ngFor="let post of filtered; trackBy: trackByTitle">
+    <img [src]="post.image" [alt]="post.title" />
+    <div class="card-body">
+      <h3>{{ post.title }}</h3>
+      <p>{{ post.author }}</p>
+    </div>
   </div>
-</div>
+</section>
 
 <div class="footer">
-  <div id="count">0 results</div>
-  <button onclick="loadMore()">Show me more results →</button>
+  <div id="count">{{ resultsCount }} results</div>
+  <button (click)="loadMore()" [disabled]="filtered.length === posts.length">
+    Show me more results →
+  </button>
 </div>

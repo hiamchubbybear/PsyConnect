@@ -1,32 +1,81 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { AppAccountSidebar } from './account-sidebar/account-sidebar';
-import { PaymentSessionComponent } from './payment/payment';
+import {
+    CollapsibleSidebarComponent,
+    SidebarItem,
+} from '../../components/collapsible-sidebar/collapsible-sidebar';
 import { ProfileSectionComponent } from './profile/profile-update';
-import { SecuritySectionComponent } from "./security/security-update";
+import { SecuritySectionComponent } from './security/security-update';
 
 @Component({
   selector: 'app-update-account',
   standalone: true,
   imports: [
     CommonModule,
-    AppAccountSidebar,
-    PaymentSessionComponent,
+    CollapsibleSidebarComponent,
     ProfileSectionComponent,
-    SecuritySectionComponent
-],
-  templateUrl: './account-update.html',
-  styleUrls: ['./account-update.scss'],
+    SecuritySectionComponent,
+  ],
+  template: `
+    <app-collapsible-sidebar
+      [title]="'Account Management'"
+      [titleTranslateKey]="'ACCOUNT_MANAGEMENT.Sidebar.Title'"
+      [items]="sidebarItems"
+      [width]="'240px'"
+      [(collapsed)]="isSidebarCollapsed"
+      (itemClick)="scrollToSection($event.route)"
+    ></app-collapsible-sidebar>
+
+    <div
+      class="main-content"
+      #contentRef
+      [style.margin-left]="isSidebarCollapsed ? '-30px' : '240px'"
+    >
+      <section id="profile">
+        <app-profile-section></app-profile-section>
+      </section>
+      <section id="security">
+        <app-security-section></app-security-section>
+      </section>
+    </div>
+  `,
+  styles: [
+    `
+      .main-content {
+        margin-left: 360px;
+        padding: 2rem;
+        transition: margin-left 0.3s ease;
+      }
+    `,
+  ],
 })
 export class UpdateAccountComponent {
-  @ViewChild('content') contentRef!: ElementRef;
+  @ViewChild('contentRef') contentRef!: ElementRef;
+  isSidebarCollapsed = false;
   activeSection: string | null = null;
 
+  sidebarItems: SidebarItem[] = [
+    {
+      label: 'Account Info',
+      route: 'profile',
+      translateKey: 'ACCOUNT_MANAGEMENT.Sidebar.Items.AccountInfo',
+    },
+    {
+      label: 'Security',
+      route: 'security',
+      translateKey: 'ACCOUNT_MANAGEMENT.Sidebar.Items.Security',
+    },
+    {
+      label: 'Payment',
+      route: 'payment',
+      translateKey: 'ACCOUNT_MANAGEMENT.Sidebar.Items.Payment',
+    },
+  ];
+
   scrollToSection(sectionId: string) {
+    if (!this.contentRef) return;
     const el = this.contentRef.nativeElement.querySelector('#' + sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   @HostListener('window:scroll', [])
@@ -42,7 +91,5 @@ export class UpdateAccountComponent {
         current = section.id;
       }
     });
-
-    this.activeSection = current;
   }
 }

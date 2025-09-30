@@ -599,5 +599,17 @@
                 "Settings": "Cài đặt"
             }
         }
+    },
+    "POST": {
+        "Sidebar": {
+            "Title": "Quản lý Bài viết",
+            "Items": {
+                "AllPosts": "Tất cả bài viết",
+                "Create": "Tạo bài viết",
+                "Categories": "Danh mục",
+                "Reviews": "Đánh giá",
+                "Settings": "Cài đặt"
+            }
+        }
     }
 }

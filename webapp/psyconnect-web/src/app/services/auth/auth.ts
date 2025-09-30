@@ -42,6 +42,7 @@ export class Auth {
         })
       );
   }
+
   logout(): void {
     this.secureStorage.clear();
   }

@@ -1,0 +1,143 @@
+.sidebar {
+  font-family: var(--font-primary);
+  position: fixed;
+  min-height: 100vh;
+  border-right: 1px solid var(--color-border);
+  background-color: transparent;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 100;
+
+  &.collapsed {
+    transform: translateY(calc(100vh - 36px));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    padding-bottom: 40px;
+  }
+
+  &__item {
+    a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      color: var(--color-text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.2s, color 0.2s;
+
+      &:hover {
+        background-color: var(--color-bg);
+        color: var(--color-bg-contrast);
+      }
+
+      &.active {
+        background-color: var(--color-bg-contrast);
+        color: var(--color-surface-low);
+      }
+    }
+
+    &-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    &-label {
+      flex: 1;
+    }
+  }
+}
+
+.sidebar-toggle {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 36px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background-color: var(--color-border);
+    border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+
+  &:hover::before {
+    width: 60px;
+    height: 4px;
+    background-color: var(--color-primary);
+  }
+
+  &.collapsed {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.03), transparent);
+
+    &::before {
+      content: "";
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      background-color: var(--color-border);
+      border-radius: 3px;
+      opacity: 0.4;
+    }
+
+    &::after {
+      content: "⌃";
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--color-text);
+      font-size: 0.65rem;
+      opacity: 0.3;
+      transition: all 0.2s ease;
+    }
+
+    &:hover::before {
+      width: 48px;
+      background-color: var(--color-primary);
+      opacity: 0.6;
+    }
+
+    &:hover::after {
+      opacity: 0.8;
+      color: var(--color-primary);
+      transform: translateX(-50%) translateY(-1px);
+    }
+  }
+}

@@ -6,8 +6,8 @@ import { SwipeCardComponent } from '../../components/swipe-card/swipe-card';
 import { SecureStorageService } from '../../encrypt/secure';
 import { mapTherapistResponse, Therapist } from '../../models/swipe-card';
 import { SwipeService } from '../../services/swipe/swipe.service';
-import { ToastService } from '../../shared/toast/toast.service';
 import { ToastType } from '../../shared/toast/toast.model';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-swipe-deck',
@@ -51,12 +51,12 @@ export class SwipeDeckComponent implements OnInit {
   }
   onHandleUpdateTherapist() {
     this.swipeService.getUpdateTherapistHandler().subscribe({
-      
+
       next: (res) => {
-        if(res) this.toastService.show("Updated" , "Therapist updated" , ToastType.Success) 
-          else this.toastService.show("Updated" , "Therapist updated failed"  , ToastType.Success) 
+        if(res) this.toastService.show("Updated" , "Therapist updated" , ToastType.Success)
+          else this.toastService.show("Updated" , "Therapist updated failed"  , ToastType.Success)
       },
-      error : err => this.toastService.show("Updated" , err  , ToastType.Success) 
+      error : err => this.toastService.show("Updated" , err  , ToastType.Success)
     }
     )
   }
@@ -224,4 +224,3 @@ export class SwipeDeckComponent implements OnInit {
   }
 
 }
-

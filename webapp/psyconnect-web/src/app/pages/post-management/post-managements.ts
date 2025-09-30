@@ -7,13 +7,13 @@ import {
 } from '../../components/collapsible-sidebar/collapsible-sidebar';
 
 @Component({
-  selector: 'app-consultation',
+  selector: 'app-post-management',
   standalone: true,
   imports: [CollapsibleSidebarComponent, CommonModule, RouterOutlet],
   template: `
     <app-collapsible-sidebar
-      [title]="'Consultation'"
-      [titleTranslateKey]="'CONSULTATION.Sidebar.Title'"
+      [title]="'Post Management'"
+      [titleTranslateKey]="'POST.Sidebar.Title'"
       [items]="sidebarItems"
       [width]="'240px'"
       [(collapsed)]="isSidebarCollapsed"
@@ -29,49 +29,42 @@ import {
   `,
   styles: [
     `
-      .account-content {
-        margin-left: 360px;
+      .main-content {
         padding: 2rem;
         transition: margin-left 0.3s ease;
       }
     `,
   ],
 })
-export class ConsultationComponent {
+export class PostManagementComponent {
   isSidebarCollapsed = false;
 
   sidebarItems: SidebarItem[] = [
     {
-      label: 'Discover',
-      route: 'discover',
-      translateKey: 'CONSULTATION.Sidebar.Items.Discover',
-
+      label: 'All Posts',
+      route: 'all',
+      translateKey: 'POST.Sidebar.Items.AllPosts',
       exact: true,
     },
     {
-      label: 'Sessions',
-      route: 'sessions',
-      translateKey: 'CONSULTATION.Sidebar.Items.Sessions',
+      label: 'Create',
+      route: 'create',
+      translateKey: 'POST.Sidebar.Items.Create',
     },
     {
-      label: 'Schedule',
-      route: 'schedule',
-      translateKey: 'CONSULTATION.Sidebar.Items.Schedule',
-    },
-    {
-      label: 'History',
-      route: 'history',
-      translateKey: 'CONSULTATION.Sidebar.Items.History',
+      label: 'Categories',
+      route: 'categories',
+      translateKey: 'POST.Sidebar.Items.Categories',
     },
     {
       label: 'Reviews',
       route: 'reviews',
-      translateKey: 'CONSULTATION.Sidebar.Items.Reviews',
+      translateKey: 'POST.Sidebar.Items.Reviews',
     },
     {
       label: 'Settings',
       route: 'settings',
-      translateKey: 'CONSULTATION.Sidebar.Items.Settings',
+      translateKey: 'POST.Sidebar.Items.Settings',
     },
   ];
 

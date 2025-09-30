@@ -1,0 +1,114 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #fff;
+  color: #333;
+}
+
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  border-bottom: 1px solid #ddd;
+}
+.menu {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  color: #444;
+}
+.profile {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.search-bar {
+  margin: 24px;
+  display: flex;
+  gap: 12px;
+}
+.search-bar input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+.search-bar select, .search-bar button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+.search-bar button {
+  background: black;
+  color: white;
+  cursor: pointer;
+}
+
+
+.tags {
+  margin: 0 24px;
+}
+.tag {
+  display: inline-block;
+  background: #eee;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+
+.results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+.card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 12px;
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.card h3 {
+  margin: 12px 0 6px;
+  font-size: 16px;
+}
+.card p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+
+.footer {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  padding-bottom: 12px;
+}
+.footer button {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-weight: 500;
+  cursor: pointer;
+}

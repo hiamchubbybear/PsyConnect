@@ -1,0 +1,76 @@
+<div class="scheduler-container" [class.collapsed]="!isSidebarCollapsed">
+  <!-- LEFT SIDE -->
+  <div class="left-side">
+    <!-- Calendar -->
+    <div class="calendar card">
+      <div class="calendar-header">
+        <button (click)="prevMonth()">‹</button>
+        <span>{{ monthLabel(viewDate) }}</span>
+        <button (click)="nextMonth()">›</button>
+      </div>
+      <div class="cal-weekdays">
+        <span *ngFor="let day of ['S', 'M', 'T', 'W', 'T', 'F', 'S']">{{
+          day
+        }}</span>
+      </div>
+      <div class="cal-days">
+        <button
+          *ngFor="let day of calendarDays"
+          [class.out]="day.out"
+          [class.today]="day.date.toDateString() === today"
+          [class.selected]="
+            selectedDate &&
+            day.date.toDateString() === selectedDate.toDateString()
+          "
+          (click)="selectDate(day)"
+        >
+          {{ day.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Therapist List -->
+    <div class="therapist-list card">
+      <h4>Therapist</h4>
+      <div
+        class="therapist"
+        *ngFor="let t of therapists"
+        (click)="selectTherapist(t)"
+      >
+        <img [src]="t.img" [alt]="t.name" />
+        <span>{{ t.name }}</span>
+        <div class="actions">
+          <span
+            class="circle"
+            [class.selected]="selectedTherapist?.id === t.id"
+          ></span>
+          <span class="arrow">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE -->
+  <div class="schedule card">
+    <h4>🌞 Morning (8:00 AM to 11:00 AM)</h4>
+    <div class="time-options">
+      <label *ngFor="let t of morningSlots" class="time-slot">
+        <input type="radio" name="time" [value]="t" (change)="selectTime(t)" />
+        {{ t }}
+      </label>
+    </div>
+
+    <h4>🌙 Afternoon (1:00 PM to 5:30 PM)</h4>
+    <div class="time-options">
+      <label *ngFor="let t of afternoonSlots" class="time-slot">
+        <input type="radio" name="time" [value]="t" (change)="selectTime(t)" />
+        {{ t }}
+      </label>
+    </div>
+
+    <div class="schedule-footer">
+      <span>{{ footerText }}</span>
+      <button class="next-btn" [disabled]="!canNext()">NEXT</button>
+    </div>
+  </div>
+</div>
