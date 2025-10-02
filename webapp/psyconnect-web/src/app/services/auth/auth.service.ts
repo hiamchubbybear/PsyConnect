@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-    constructor(private secureService : SecureStorageService) {
-
-    }
-  private readonly TOKEN_KEY = 'access_token';
+  constructor(private secureService: SecureStorageService) {}
+  private readonly TOKEN_KEY = environment.accessTokenKey;
 
   saveToken(token: string) {
     this.secureService.setItem(this.TOKEN_KEY, token);

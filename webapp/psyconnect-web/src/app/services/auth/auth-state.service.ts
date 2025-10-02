@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
 
 @Injectable({ providedIn: 'root' })
@@ -9,9 +10,9 @@ export class AuthStateService {
 
   private sidebarVisible = new BehaviorSubject<boolean>(false);
   sidebarVisible$ = this.sidebarVisible.asObservable();
-
+  ACCESSTOKEN_KEY = environment.accessTokenKey;
   constructor(private secureStorage: SecureStorageService) {
-    const token = this.secureStorage.getItem('access_token');
+    const token = this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
     this.loggedIn.next(!!token);
     this.sidebarVisible.next(!!token);
   }

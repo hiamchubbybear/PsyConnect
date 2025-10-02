@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
 
 export interface UserProfile {
@@ -20,7 +21,7 @@ export class UserContextService {
   private userSubject = new BehaviorSubject<UserProfile | null>(null);
   user$ = this.userSubject.asObservable();
   private isInitialized = false;
-
+  PROFILE_KEY = environment.profileKey;
   constructor(private secureStorage: SecureStorageService) {
     this.initializeUser();
   }
@@ -31,7 +32,7 @@ export class UserContextService {
     }
 
     try {
-      const userString = this.secureStorage.getItem<string>('profile');
+      const userString = this.secureStorage.getItem<string>(this.PROFILE_KEY);
       if (userString) {
         const user = JSON.parse(userString);
 
@@ -40,7 +41,7 @@ export class UserContextService {
       } else {
       }
     } catch (error) {
-      this.secureStorage.removeItem('profile');
+      this.secureStorage.removeItem(this.PROFILE_KEY);
     }
   }
 
@@ -53,7 +54,7 @@ export class UserContextService {
         JSON.stringify(currentUser) !== JSON.stringify(user)
       ) {
         this.userSubject.next(user);
-        this.secureStorage.setItem('profile', JSON.stringify(user));
+        this.secureStorage.setItem(this.PROFILE_KEY, JSON.stringify(user));
         this.isInitialized = true;
       } else {
       }
@@ -68,7 +69,7 @@ export class UserContextService {
 
   clear() {
     this.userSubject.next(null);
-    this.secureStorage.removeItem('profile');
+    this.secureStorage.removeItem(this.PROFILE_KEY);
     this.isInitialized = false;
   }
 

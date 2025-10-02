@@ -14,6 +14,7 @@ import {
 } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { map, Observable, of } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { SingleButton } from '../../../components/single-button/single-button';
 import { SecureStorageService } from '../../../encrypt/secure';
 import { CloudinaryService } from '../../../services/cloudinary/cloudinary.service';
@@ -55,7 +56,8 @@ export class ProfileSectionComponent implements OnInit {
   editValue: string = '';
   addressSuggestions: string[] = [];
   profileUpdate: UserProfileUpdateRequest | undefined;
-
+  PROFILE_KEY = environment.profileKey;
+  USERNAME_KEY = environment.usernameKey;
   onImageSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -91,7 +93,6 @@ export class ProfileSectionComponent implements OnInit {
     try {
       let avatarUri: string | undefined;
 
-      // Handle image upload if needed
       if (this.isUploadImage && this.selectedImage) {
         const uploadedUrl = await this.cloudinaryService.uploadImage(
           this.selectedImage,
@@ -105,7 +106,6 @@ export class ProfileSectionComponent implements OnInit {
         avatarUri = uploadedUrl;
       }
 
-      // Update profile with all current data
       this.updateProfile(avatarUri);
     } catch (err) {
       console.error('Upload error:', err);
@@ -157,7 +157,7 @@ export class ProfileSectionComponent implements OnInit {
       avatarUri: [''],
     });
 
-    this.username = this.secureStorage.getItem('username');
+    this.username = this.secureStorage.getItem(this.USERNAME_KEY);
 
     this.profileService.getProfile().subscribe((res) => {
       if (res?.data) {
@@ -174,10 +174,8 @@ export class ProfileSectionComponent implements OnInit {
   private prepareCompleteProfileUpdate(
     avatarUri?: string
   ): UserProfileUpdateRequest {
-    // Get current form values
     const currentFormValues = this.form.value;
 
-    // Merge with existing profile data to ensure no fields are missing
     const completeProfileData: UserProfileUpdateRequest = {
       username: this.username || '',
       firstName: currentFormValues.firstName || this.profile?.firstName || '',
@@ -196,7 +194,6 @@ export class ProfileSectionComponent implements OnInit {
   }
 
   private updateProfile(avatarUri?: string): void {
-    // Prepare complete profile data
     const profileUpdateData = this.prepareCompleteProfileUpdate(avatarUri);
 
     console.log('Complete profile data to update:', profileUpdateData);
@@ -205,29 +202,23 @@ export class ProfileSectionComponent implements OnInit {
       next: (response) => {
         console.log('Profile update response:', response);
 
-        // Show success message
         this.toastService.show(
           'Cập nhật profile thành công!',
           'Success',
           ToastType.Success
         );
 
-        // Update local profile data
         this.profile = {
           ...this.profile,
           ...profileUpdateData,
         } as ProfileModel;
 
-        // Update form with latest data
         this.form.patchValue(profileUpdateData);
 
-        // Update initial profile for comparison
         this.initialProfile = { ...profileUpdateData };
 
-        // Update secure storage
-        this.secureStorage.setItem('profile', profileUpdateData);
+        this.secureStorage.setItem(this.PROFILE_KEY, profileUpdateData);
 
-        // Update user context
         const updatedUser: UserProfile = {
           firstName: profileUpdateData.firstName,
           lastName: profileUpdateData.lastName,
@@ -240,10 +231,8 @@ export class ProfileSectionComponent implements OnInit {
         };
         this.userContext.setUser(updatedUser);
 
-        // Reset upload states
         this.resetUploadStates();
 
-        // Clear profile update tracking
         this.profileUpdate = undefined;
       },
       error: (err) => {
@@ -257,7 +246,7 @@ export class ProfileSectionComponent implements OnInit {
     });
   }
   getProfile(): Observable<ProfileModel | null> {
-    const profileJson = this.secureStorage.getItem('profile');
+    const profileJson = this.secureStorage.getItem(this.PROFILE_KEY);
     if (profileJson) {
       return of(profileJson as ProfileModel);
     } else {
@@ -314,7 +303,6 @@ export class ProfileSectionComponent implements OnInit {
       lastName: this.draftData.lastName,
     });
 
-    // Initialize profileUpdate for change tracking if not exists
     if (!this.profileUpdate) {
       this.profileUpdate = this.prepareCompleteProfileUpdate();
     }
@@ -326,14 +314,12 @@ export class ProfileSectionComponent implements OnInit {
     this.editing = null;
   }
 
-  // Refactored saveField method
   saveField(event: { field: string; value: string }): void {
     console.log('saveField called for field:', event.field);
     console.log('Value to save:', event.value);
 
     if (!this.editing) return;
 
-    // Update form directly
     if (this.editing === 'name') {
       this.form.patchValue({
         firstName: this.draftData.firstName,
@@ -344,12 +330,10 @@ export class ProfileSectionComponent implements OnInit {
       this.form.patchValue({ [this.editing]: event.value });
     }
 
-    // Initialize profileUpdate for change tracking if not exists
     if (!this.profileUpdate) {
       this.profileUpdate = this.prepareCompleteProfileUpdate();
     }
 
-    // Update the specific field in profileUpdate for tracking changes
     if (this.editing === 'name') {
       this.profileUpdate.firstName = this.draftData.firstName;
       this.profileUpdate.lastName = this.draftData.lastName;
@@ -370,12 +354,10 @@ export class ProfileSectionComponent implements OnInit {
   }
 
   get canConfirm(): boolean {
-    // Always allow confirm if there's an image to upload
     if (this.isUploadImage) return true;
 
     if (!this.initialProfile) return false;
 
-    // Check if any form value has changed from initial profile
     const currentFormValues = this.form.value;
 
     return Object.keys(currentFormValues).some((key) => {

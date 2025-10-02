@@ -11,7 +11,10 @@ export class Auth {
   apiUrl = `${environment.apiUrl}`;
   apiVersion = `${environment.apiVersion}`;
   refreshKey = `${environment.refreshKey}`;
-
+  PROFILE_KEY = environment.profileKey;
+  USERNAME_KEY = environment.usernameKey;
+  ACCESSTOKEN_KEY = environment.accessTokenKey;
+  THERAPIST_KEY = environment.therapistsKey;
   constructor(
     private http: HttpClient,
     private secureStorage: SecureStorageService
@@ -36,7 +39,7 @@ export class Auth {
           let resToken = res?.data.token;
           let refreshToken = res?.data.refreshToken;
           if (resToken != null && resToken != '') {
-            this.secureStorage.setItem('access_token', resToken);
+            this.secureStorage.setItem(this.ACCESSTOKEN_KEY, resToken);
             this.secureStorage.setItem(this.refreshKey, refreshToken);
           }
         })
@@ -48,12 +51,12 @@ export class Auth {
   }
 
   isLoggedIn(): boolean {
-    const token = this.secureStorage.getItem('access_token');
+    const token = this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
     return !!(token && token !== 'null' && token !== 'undefined');
   }
 
   getToken(): string | null {
-    return this.secureStorage.getItem('access_token');
+    return this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
   }
 
   loginWithGoogle(token: string): Observable<any> {
@@ -77,8 +80,8 @@ export class Auth {
     }
   }
   checkTokenOnStartup() {
-    const token = this.secureStorage.getItem<string>('access_token');
-    const username = this.secureStorage.getItem<string>('username');
+    const token = this.secureStorage.getItem<string>(this.ACCESSTOKEN_KEY);
+    const username = this.secureStorage.getItem<string>(this.USERNAME_KEY);
     if (!token || !username) {
       this.logout();
       return;
@@ -92,7 +95,7 @@ export class Auth {
   }
 
   refreshToken(username: string): Observable<string> {
-    const refreshToken = this.secureStorage.getItem<string>('refresh_token');
+    const refreshToken = this.secureStorage.getItem<string>(this.refreshKey);
 
     const params = new HttpParams()
       .set('provider', 'NORMAL')
@@ -108,9 +111,8 @@ export class Auth {
       }>(`${this.apiUrl}/${this.apiVersion}/auth/refresh`, {}, { params })
       .pipe(
         tap((res) => {
-          this.secureStorage.setItem('access_token', res.data.token);
-          console.log('access token', res.data.token);
-          this.secureStorage.setItem('refresh_token', res.data.refreshToken);
+          this.secureStorage.setItem(this.ACCESSTOKEN_KEY, res.data.token);
+          this.secureStorage.setItem(this.refreshKey, res.data.refreshToken);
         }),
         map((res) => res.data.token)
       );

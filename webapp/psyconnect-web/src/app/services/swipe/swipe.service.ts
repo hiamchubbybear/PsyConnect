@@ -29,7 +29,10 @@ interface TherapistRecommendResponse {
 export class SwipeService {
   private readonly apiUrl = environment.apiUrl;
   private readonly version = environment.apiVersion;
-
+  PROFILE_KEY = environment.profileKey;
+  USERNAME_KEY = environment.usernameKey;
+  ACCESSTOKEN_KEY = environment.accessTokenKey;
+  THERAPIST_KEY = environment.therapistsKey;
   constructor(
     private http: HttpClient,
     private secureStorage: SecureStorageService
@@ -40,7 +43,7 @@ export class SwipeService {
     status: number;
     data: SwipeProfile[];
   }> {
-    const token = this.secureStorage.getItem('access_token');
+    const token = this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
     return this.http.post<{
@@ -59,7 +62,7 @@ export class SwipeService {
     status: number;
     data: Therapist[];
   }> {
-    const token = this.secureStorage.getItem('access_token');
+    const token = this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
     return this.http.get<{
@@ -71,7 +74,7 @@ export class SwipeService {
     });
   }
   getUpdateTherapistHandler(): Observable<boolean> {
-    const token = this.secureStorage.getItem('access_token');
+    const token = this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
     const url = `${this.apiUrl}/consultation/client/recommend`;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

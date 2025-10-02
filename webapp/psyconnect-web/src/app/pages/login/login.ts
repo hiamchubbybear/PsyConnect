@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,8 +16,8 @@ import { AuthStateService } from '../../services/auth/auth-state.service';
 import { LoaderService } from '../../services/loader/loader';
 import { Profile, ProfileResponse } from '../../services/profile/profile';
 import {
-    UserContextService,
-    UserProfile,
+  UserContextService,
+  UserProfile,
 } from '../../services/profile/profile-service';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
@@ -36,6 +36,8 @@ import { ToastService } from '../../shared/toast/toast.service';
   styleUrl: './login.scss',
 })
 export class Login implements OnInit {
+  USERNAME_KEY = environment.usernameKey;
+  ACCESSTOKEN_KEY = environment.accessTokenKey;
   loginForm: FormGroup;
   error: string | null = null;
   loading = false;
@@ -74,7 +76,10 @@ export class Login implements OnInit {
     this.auth.login(this.loginForm.value).subscribe({
       next: () => {
         this.loadUserProfile();
-        this.secureStorage.setItem('username', this.loginForm.value.username);
+        this.secureStorage.setItem(
+          this.USERNAME_KEY,
+          this.loginForm.value.username
+        );
       },
       error: () => {
         this.authState.showSidebar();
@@ -101,7 +106,7 @@ export class Login implements OnInit {
       this.auth.exchangeOAuth2Code(code, email, provider, platform).subscribe({
         next: (res) => {
           console.log(res);
-          this.secureStorage.setItem('access_token', res.data.token);
+          this.secureStorage.setItem(this.ACCESSTOKEN_KEY, res.data.token);
           this.loadUserProfile();
         },
         error: (err) => {

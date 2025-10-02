@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { SecureStorageService } from '../../encrypt/secure';
 
 interface ApiResponse<T> {
   code: number;
@@ -14,10 +13,7 @@ interface ApiResponse<T> {
 export class PasswordService {
   private apiUrl = `${environment.apiUrl}`;
 
-  constructor(
-    private http: HttpClient,
-    private secureStorage: SecureStorageService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   requestReset(payload: {
     email: string;

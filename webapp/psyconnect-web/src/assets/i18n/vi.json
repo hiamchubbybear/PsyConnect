@@ -611,5 +611,65 @@
                 "Settings": "Cài đặt"
             }
         }
+    },
+    "FEED": {
+        "Header": {
+            "Title": "Chào mừng đến với Psyconnect",
+            "Subtitle": "Hành trình chăm sóc sức khỏe tâm thần của bạn bắt đầu tại đây. Kết nối với chuyên gia, theo dõi tiến trình và tham gia cộng đồng."
+        },
+        "Mood": {
+            "Title": "Bạn cảm thấy thế nào hôm nay?",
+            "LogButton": "Ghi lại tâm trạng hôm nay"
+        },
+        "Community": {
+            "Title": "Cộng đồng",
+            "NewPost": "+ Bài viết mới"
+        },
+        "Days": {
+            "0": "Th 2",
+            "1": "Th 3",
+            "2": "Th 4",
+            "3": "Th 5",
+            "4": "Th 6",
+            "5": "Th 7",
+            "6": "CN"
+        },
+        "Posts": {
+            "P1": {
+                "Title": "5 Kỹ thuật thở đơn giản giảm lo âu",
+                "Excerpt": "Kiểm soát nhịp thở có thể giảm các triệu chứng lo âu đáng kể..."
+            },
+            "P2": {
+                "Title": "Một tuần thiền — tiến trình của tôi",
+                "Excerpt": "Chia sẻ rằng tôi đã hoàn thành tuần thiền đầu tiên! Theo dõi tâm trạng hàng ngày giúp tôi nhận thấy tiến triển..."
+            }
+        },
+        "Therapists": {
+            "Title": "Tìm chuyên gia trị liệu",
+            "ViewAll": "Xem tất cả",
+            "P1": {
+                "Specialty": "Lo âu & Trầm cảm",
+                "Status": "Sẵn sàng"
+            },
+            "P2": {
+                "Specialty": "Chấn thương & PTSD",
+                "Status": "Đang bận"
+            },
+            "BookButton": "Đặt lịch hẹn"
+        },
+        "SupportGroups": {
+            "Title": "Nhóm hỗ trợ",
+            "P1": "Hỗ trợ Lo âu",
+            "P2": "Phục hồi Trầm cảm",
+            "Members": "thành viên",
+            "JoinButton": "Tham gia"
+        }
+    },
+    "MOBILE_REQUIRED": {
+        "Title": "Ứng dụng yêu cầu màn hình đủ lớn",
+        "Subtitle": "Vui lòng truy cập từ desktop hoặc tải ứng dụng di động.",
+        "Android": "Tải Android",
+        "iOS": "Tải iOS",
+        "ViewRepo": "Xem kho lưu trữ"
     }
 }

@@ -11,6 +11,7 @@ import { ProfileSectionComponent } from './pages/account/profile/profile-update'
 import { SecuritySectionComponent } from './pages/account/security/security-update';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
 import { ConsultationComponent } from './pages/consultation/consultation';
+import { FeedComponent } from './pages/feed/feed';
 import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
 import { Notfound } from './pages/notfound/notfound';
@@ -60,7 +61,7 @@ export const routes: Routes = [
       { path: 'payment', component: PaymentSessionComponent },
     ],
   },
-  { path: 'feature/feed', component: Notfound, canActivate: [authGuard] },
+  { path: 'feature/feed', component: FeedComponent, canActivate: [authGuard] },
   { path: 'feature/search', component: SearchComponent },
   {
     path: 'feature/article',

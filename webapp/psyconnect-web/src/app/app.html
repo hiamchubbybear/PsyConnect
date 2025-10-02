@@ -1,15 +1,21 @@
-<app-header></app-header>
-<app-loader></app-loader>
+<ng-container *ngIf="screenOk; else mobileApp">
+  <app-header></app-header>
+  <app-loader></app-loader>
 
-<div class="app-layout">
-  <app-sidebar *ngIf="showSidebar" class="sidebar"></app-sidebar>
+  <div class="app-layout">
+    <app-sidebar *ngIf="showSidebar" class="sidebar"></app-sidebar>
 
-  <main
-    class="content"
-    [@fadeAnimation]="o.isActivated && o.activatedRoute.routeConfig?.path"
-  >
-    <router-outlet #o="outlet"></router-outlet>
-  </main>
-</div>
-<app-toast-container></app-toast-container>
-<app-footer *ngIf="showFooter"></app-footer>
+    <main
+      class="content"
+      [@fadeAnimation]="o.isActivated && o.activatedRoute.routeConfig?.path"
+    >
+      <router-outlet #o="outlet"></router-outlet>
+    </main>
+  </div>
+
+  <app-toast-container></app-toast-container>
+  <app-footer *ngIf="showFooter"></app-footer>
+</ng-container>
+<ng-template #mobileApp>
+  <app-mobile-required></app-mobile-required>
+</ng-template>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, HostListener, OnInit, Renderer2 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
     Event,
@@ -15,6 +15,7 @@ import { filter, Subscription } from 'rxjs';
 import { Footer } from './components/footer/footer';
 import { Header } from './components/header/header';
 import { SidebarComponent } from './components/sidebar/sidebar';
+import { MobileRequiredComponent } from './pages/mobile/mobile';
 import { fadeRouteAnimation } from './route-animation';
 import { AuthStateService } from './services/auth/auth-state.service';
 import { AuthService } from './services/auth/auth.service';
@@ -41,6 +42,7 @@ import { TranslationService } from './shared/translate/translate-service';
     ReactiveFormsModule,
     CommonModule,
     RouterModule,
+    MobileRequiredComponent,
     ToastContainerComponent,
   ],
   animations: [fadeRouteAnimation],
@@ -50,6 +52,10 @@ import { TranslationService } from './shared/translate/translate-service';
 export class App implements OnInit {
   showSidebar: boolean = false;
   showFooter = true;
+
+  minWidth = 1235;
+  minHeight = 277;
+  screenOk = true;
 
   constructor(
     private renderer: Renderer2,
@@ -71,14 +77,19 @@ export class App implements OnInit {
           url === '/' || url.startsWith('/about') || url.startsWith('/contact');
       });
   }
+
   private routerSub?: Subscription;
   isLoading = false;
 
   ngOnInit() {
     this.setInitialTheme();
+
+    this.checkScreenSize(window.innerWidth, window.innerHeight);
+
     this.authState.sidebarVisible$.subscribe((visible) => {
       this.showSidebar = visible;
     });
+
     const token = this.auth.getToken();
     if (token) {
       this.authState.showSidebar();
@@ -86,6 +97,7 @@ export class App implements OnInit {
     } else {
       this.authState.hideSidebar();
     }
+
     this.loader.loading$.subscribe((v) => (this.isLoading = v));
 
     this.router.events.subscribe((event: Event) => {
@@ -93,17 +105,26 @@ export class App implements OnInit {
         this.loader.show();
       } else if (
         event instanceof NavigationEnd ||
-        event instanceof NavigationCancel ||
-        event instanceof NavigationEnd
+        event instanceof NavigationCancel
       ) {
         this.loader.hide();
       }
     });
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkScreenSize(event.target.innerWidth, event.target.innerHeight);
+  }
+
+  private checkScreenSize(width: number, height: number) {
+    this.screenOk = width >= this.minWidth && height >= this.minHeight;
+  }
+
   ngOnDestroy() {
     this.routerSub?.unsubscribe();
   }
+
   setInitialTheme() {
     const savedTheme = localStorage.getItem('app-theme');
     if (savedTheme === 'dark') {
@@ -112,6 +133,7 @@ export class App implements OnInit {
       this.themeService.setTheme('light');
     }
   }
+
   private fetchUserProfile() {
     this.http.get<UserProfile>('/api/profile').subscribe({
       next: (profile) => {

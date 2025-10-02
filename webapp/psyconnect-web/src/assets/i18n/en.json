@@ -628,5 +628,65 @@
                 "Settings": "Settings"
             }
         }
+    },
+    "FEED": {
+        "Header": {
+            "Title": "Welcome to Psyconnect",
+            "Subtitle": "Your journey to better mental health starts here. Connect with professionals, track progress, and join our community."
+        },
+        "Mood": {
+            "Title": "How are you feeling today?",
+            "LogButton": "Log Today's Mood"
+        },
+        "Community": {
+            "Title": "Community Feed",
+            "NewPost": "+ New Post"
+        },
+        "Days": {
+            "0": "Mon",
+            "1": "Tue",
+            "2": "Wed",
+            "3": "Thu",
+            "4": "Fri",
+            "5": "Sat",
+            "6": "Sun"
+        },
+        "Posts": {
+            "P1": {
+                "Title": "5 Simple Breathing Techniques for Anxiety",
+                "Excerpt": "Taking control of your breathing can significantly reduce anxiety symptoms..."
+            },
+            "P2": {
+                "Title": "One week of meditation — my progress",
+                "Excerpt": "Just wanted to share that I completed my first week of meditation practice..."
+            }
+        },
+        "Therapists": {
+            "Title": "Find a Therapist",
+            "ViewAll": "View All",
+            "P1": {
+                "Specialty": "Anxiety & Depression",
+                "Status": "Available"
+            },
+            "P2": {
+                "Specialty": "Trauma & PTSD",
+                "Status": "Busy"
+            },
+            "BookButton": "Book Appointment"
+        },
+        "SupportGroups": {
+            "Title": "Support Groups",
+            "P1": "Anxiety Support",
+            "P2": "Depression Recovery",
+            "Members": "members",
+            "JoinButton": "Join"
+        }
+    },
+    "MOBILE_REQUIRED": {
+        "Title": "App requires larger screen",
+        "Subtitle": "Please access from desktop or download the mobile app.",
+        "Android": "Download Android",
+        "iOS": "Download iOS",
+        "ViewRepo": "View Repository"
     }
 }

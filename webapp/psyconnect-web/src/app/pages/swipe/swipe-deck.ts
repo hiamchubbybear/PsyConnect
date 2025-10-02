@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { switchMap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { TherapistProfileOverlayComponent } from '../../components/profile-overlay/profile-overlay';
 import { SwipeCardComponent } from '../../components/swipe-card/swipe-card';
 import { SecureStorageService } from '../../encrypt/secure';
@@ -25,9 +26,9 @@ export class SwipeDeckComponent implements OnInit {
   constructor(
     private swipeService: SwipeService,
     private secureStorage: SecureStorageService,
-    private toastService : ToastService
+    private toastService: ToastService
   ) {}
-
+  THERAPIST_KEY = environment.therapistsKey;
   ngOnInit() {
     this.loadTherapists();
   }
@@ -41,7 +42,7 @@ export class SwipeDeckComponent implements OnInit {
           if (res?.data?.length) {
             this.therapists = mapTherapistResponse(res);
           } else {
-           this.onHandleUpdateTherapist();
+            this.onHandleUpdateTherapist();
           }
         },
         error: (err) => {
@@ -51,14 +52,22 @@ export class SwipeDeckComponent implements OnInit {
   }
   onHandleUpdateTherapist() {
     this.swipeService.getUpdateTherapistHandler().subscribe({
-
       next: (res) => {
-        if(res) this.toastService.show("Updated" , "Therapist updated" , ToastType.Success)
-          else this.toastService.show("Updated" , "Therapist updated failed"  , ToastType.Success)
+        if (res)
+          this.toastService.show(
+            'Updated',
+            'Therapist updated',
+            ToastType.Success
+          );
+        else
+          this.toastService.show(
+            'Updated',
+            'Therapist updated failed',
+            ToastType.Success
+          );
       },
-      error : err => this.toastService.show("Updated" , err  , ToastType.Success)
-    }
-    )
+      error: (err) => this.toastService.show('Updated', err, ToastType.Success),
+    });
   }
 
   private getFallbackData(): Therapist[] {
@@ -189,7 +198,7 @@ export class SwipeDeckComponent implements OnInit {
       (t) => t.profileId !== event.therapist.profileId
     );
 
-    this.secureStorage.setItem('therapists', this.therapists);
+    this.secureStorage.setItem(this.THERAPIST_KEY, this.therapists);
 
     if (event.direction === 'right') {
       console.log('[SwipeDeck] Matched:', event.therapist.name);
@@ -222,5 +231,4 @@ export class SwipeDeckComponent implements OnInit {
       : '';
     return `${days}${days && times ? ' - ' : ''}${times}`;
   }
-
 }

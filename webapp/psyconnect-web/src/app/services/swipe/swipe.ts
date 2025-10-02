@@ -8,14 +8,13 @@ class Swipe {
     private http: HttpClient,
     private securityStorage: SecureStorageService
   ) {}
+  ACCESSTOKEN_KEY = environment.accessTokenKey;
   private readonly apiUrl = environment.apiUrl;
   getSwipeData(): Observable<any> {
-    const token = this.securityStorage.getItem('access_token');
-
+    const token = this.securityStorage.getItem(this.ACCESSTOKEN_KEY);
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
     });
-
     return this.http.post<any>(
       `${this.apiUrl}/consultation/client/recommend/top`,
       {
