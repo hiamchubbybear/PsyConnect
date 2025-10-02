@@ -671,5 +671,38 @@
         "Android": "Tải Android",
         "iOS": "Tải iOS",
         "ViewRepo": "Xem kho lưu trữ"
+    },
+    "CHAT": {
+        "SELECT": "Chọn một cuộc trò chuyện",
+        "EXAMPLE": {
+            "title": "Trò chuyện",
+            "search": "Tìm kiếm",
+            "lastChats": "Cuộc trò chuyện gần đây",
+            "status": {
+                "available": "Trực tuyến",
+                "offline": "Ngoại tuyến",
+                "busy": "Đang bận"
+            },
+            "actions": {
+                "call": "Gọi",
+                "add": "Thêm",
+                "view": "Xem",
+                "newChat": "Cuộc trò chuyện mới",
+                "moreOptions": "Tuỳ chọn khác"
+            },
+            "selectChat": "Chọn cuộc trò chuyện",
+            "tabs": {
+                "messages": "Tin nhắn",
+                "participants": "Người tham gia"
+            },
+            "placeholder": "Nhập tin nhắn...",
+            "files": "Tệp",
+            "documents": "Tài liệu",
+            "images": "Hình ảnh",
+            "videos": "Video",
+            "links": "Liên kết",
+            "more": "Khác"
+        },
+        "TYPING": "{{name}} đang nhập..."
     }
 }

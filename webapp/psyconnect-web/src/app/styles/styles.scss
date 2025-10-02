@@ -18,7 +18,7 @@
   --color-surface-mid: #{v.$color-gray-200};
   --color-surface-high: #{v.$color-gray-300};
   --color-surface-overlay: #{v.$color-gray-400};
-  --collapse-content : 60px;
+  --collapse-content: 60px;
   --color-text: #{v.$color-text};
   --color-text-muted: #{v.$color-text-muted};
   --color-text-hover: #b7b7ba;
@@ -532,4 +532,21 @@ a {
   border-width: 0 !important;
   border-style: none !important;
   border-color: transparent !important;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-high);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-overlay);
 }

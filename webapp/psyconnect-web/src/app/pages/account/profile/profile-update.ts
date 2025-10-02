@@ -17,12 +17,10 @@ import { map, Observable, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { SingleButton } from '../../../components/single-button/single-button';
 import { SecureStorageService } from '../../../encrypt/secure';
+import { UserProfileUpdateRequest } from '../../../models/profile';
 import { CloudinaryService } from '../../../services/cloudinary/cloudinary.service';
 import { LoaderService } from '../../../services/loader/loader';
-import {
-    Profile,
-    UserProfileUpdateRequest,
-} from '../../../services/profile/profile';
+import { Profile } from '../../../services/profile/profile';
 import {
     UserContextService,
     UserProfile,

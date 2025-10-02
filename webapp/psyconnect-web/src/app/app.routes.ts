@@ -151,7 +151,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'discover', pathMatch: 'full' }, // default
     ],
   },
-  { path: 'feature/chat', component: Notfound, canActivate: [authGuard] },
+  { path: 'feature/chat', component: ChatComponent, canActivate: [authGuard] },
   { path: 'feature/profile', component: Notfound, canActivate: [authGuard] },
 
   { path: 'about-us', component: AboutUsComponent },

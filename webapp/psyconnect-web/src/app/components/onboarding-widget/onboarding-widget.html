@@ -69,15 +69,15 @@
         <button
           *ngIf="currentStep.secondaryButton"
           class="btn btn--secondary"
-          [disabled]="currentStep.secondaryButton?.disabled || isAnimating"
+          [disabled]="currentStep.secondaryButton.disabled || isAnimating"
           (click)="onSecondaryAction()"
           type="button"
         >
           <i
             *ngIf="currentStep.secondaryButton?.icon"
-            [class]="currentStep.secondaryButton?.icon"
+            [class]="currentStep.secondaryButton.icon"
           ></i>
-          <span>{{ currentStep.secondaryButton?.text }}</span>
+          <span>{{ currentStep.secondaryButton.text }}</span>
           <div
             *ngIf="currentStep.secondaryButton?.loading"
             class="btn-loading"
@@ -86,15 +86,15 @@
 
         <button
           class="btn btn--primary"
-          [disabled]="currentStep.primaryButton?.disabled || isAnimating"
+          [disabled]="currentStep.primaryButton.disabled || isAnimating"
           (click)="onPrimaryAction()"
           type="button"
         >
           <i
             *ngIf="currentStep.primaryButton?.icon"
-            [class]="currentStep.primaryButton?.icon"
+            [class]="currentStep.primaryButton.icon"
           ></i>
-          <span>{{ currentStep.primaryButton?.text }}</span>
+          <span>{{ currentStep.primaryButton.text }}</span>
           <div
             *ngIf="currentStep.primaryButton?.loading"
             class="btn-loading"

@@ -688,5 +688,40 @@
         "Android": "Download Android",
         "iOS": "Download iOS",
         "ViewRepo": "View Repository"
+    },
+    "CHAT": {
+        "MAIN": {
+            "SELECT": "Select a chat"
+        },
+        "EXAMPLE": {
+            "title": "Chat",
+            "search": "Search",
+            "lastChats": "Last chats",
+            "status": {
+                "available": "Available",
+                "offline": "Offline",
+                "busy": "Busy"
+            },
+            "actions": {
+                "call": "Call",
+                "add": "Add",
+                "view": "View",
+                "newChat": "New Chat",
+                "moreOptions": "More Options"
+            },
+            "selectChat": "Select a chat",
+            "tabs": {
+                "messages": "Messages",
+                "participants": "Participants"
+            },
+            "placeholder": "Type a message...",
+            "files": "Files",
+            "documents": "Documents",
+            "images": "Images",
+            "videos": "Videos",
+            "links": "Links",
+            "more": "More"
+        },
+        "TYPING": "is typing..."
     }
 }

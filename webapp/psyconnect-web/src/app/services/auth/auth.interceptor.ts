@@ -104,34 +104,18 @@ export const authInterceptor: HttpInterceptorFn = (
           return next(
             req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })
           ).pipe(
-            retryWhen((errors) =>
-              errors.pipe(
-                scan((count, err) => {
-                  if (count >= maxRetry) {
-                    console.error(
-                      '[AuthInterceptor] Max retries reached after refresh, logout'
-                    );
-                    toastService.show(
-                      'Phiên đăng nhập của bạn đã hết hạn',
-                      'Failed',
-                      ToastType.Error
-                    );
-                    authService.logout();
-                    throw err;
-                  }
-                  console.warn(
-                    `[AuthInterceptor] Retry after refresh #${count + 1}`
-                  );
-                  toastService.show(
-                    `Retry attempt #${count + 1} failed`,
-                    'Warning',
-                    ToastType.Warning
-                  );
-                  return count + 1;
-                }, 0),
-                delayWhen(() => timer(1000))
-              )
-            )
+            catchError((err) => {
+              console.error(
+                '[AuthInterceptor] Request failed after refresh, logout'
+              );
+              toastService.show(
+                'Phiên đăng nhập của bạn đã hết hạn',
+                'Failed',
+                ToastType.Error
+              );
+              authService.logout();
+              return throwError(() => err);
+            })
           );
         }),
         catchError((err) => {

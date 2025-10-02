@@ -47,7 +47,6 @@ import { TranslationService } from './shared/translate/translate-service';
   ],
   animations: [fadeRouteAnimation],
   templateUrl: './app.html',
-  styleUrl: './app.scss',
 })
 export class App implements OnInit {
   showSidebar: boolean = false;

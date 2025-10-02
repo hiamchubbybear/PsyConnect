@@ -1,0 +1,30 @@
+<div class="message-wrapper" [class.mine]="message().isMine">
+  <!-- Avatar chỉ hiển thị khi không phải tin nhắn của mình -->
+  @if (!message().isMine) {
+  <div class="message-avatar">
+    <img [src]="message().userAvatar" [alt]="message().userName" />
+  </div>
+  }
+
+  <div class="message-content">
+    <!-- Header (tên + thời gian) chỉ hiển thị với tin nhắn người khác -->
+    @if (!message().isMine) {
+    <div class="message-header">
+      <span class="message-author">{{ message().userName }}</span>
+      <span class="message-time">{{ formatTime(message().timestamp) }}</span>
+    </div>
+    }
+
+    <!-- Bubble -->
+    <div class="message-bubble" [class.mine]="message().isMine">
+      <p>{{ message().content }}</p>
+    </div>
+
+    <!-- Thời gian của tin nhắn mình -->
+    @if (message().isMine) {
+    <div class="message-time-mine">
+      {{ formatTime(message().timestamp) }}
+    </div>
+    }
+  </div>
+</div>

@@ -96,6 +96,7 @@ export class Auth {
 
   refreshToken(username: string): Observable<string> {
     const refreshToken = this.secureStorage.getItem<string>(this.refreshKey);
+    console.log(refreshToken);
 
     const params = new HttpParams()
       .set('provider', 'NORMAL')
