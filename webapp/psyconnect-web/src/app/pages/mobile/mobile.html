@@ -1,7 +1,7 @@
 <div class="mobile-required-container">
   <div class="mobile-required-card">
     <div class="logo">
-      <img src="assets/logo.svg" alt="MindCare Logo" />
+      <img [src]="logoPath()" alt="MindCare Logo" />
     </div>
 
     <h1>{{ "MOBILE_REQUIRED.Title" | translate }}</h1>
@@ -17,9 +17,9 @@
     </div>
 
     <div class="repo-link">
-      <a href="https://github.com/your-repo" target="_blank">{{
-        "MOBILE_REQUIRED.ViewRepo" | translate
-      }}</a>
+      <a href="https://github.com/hiamchubbybear/psyconnect-dev" target="_blank">
+        {{ "MOBILE_REQUIRED.ViewRepo" | translate }}
+      </a>
     </div>
   </div>
 </div>

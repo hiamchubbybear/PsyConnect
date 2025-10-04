@@ -90,6 +90,9 @@ export class ProfileSectionComponent implements OnInit {
 
     try {
       let avatarUri: string | undefined;
+      console.log('Username key ' + this.USERNAME_KEY);
+
+      console.log('🔎 Username before upload:', this.username);
 
       if (this.isUploadImage && this.selectedImage) {
         const uploadedUrl = await this.cloudinaryService.uploadImage(
@@ -156,6 +159,7 @@ export class ProfileSectionComponent implements OnInit {
     });
 
     this.username = this.secureStorage.getItem(this.USERNAME_KEY);
+    console.log('Get username start', this.username);
 
     this.profileService.getProfile().subscribe((res) => {
       if (res?.data) {

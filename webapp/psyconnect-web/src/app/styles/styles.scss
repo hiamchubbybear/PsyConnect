@@ -521,7 +521,9 @@ a {
   }
 }
 .content {
-  padding: v.$spacing-6xl;
+  padding-top: v.$spacing-6xl;
+  padding-left: v.$spacing-6xl;
+  padding-right: v.$spacing-4xl;
 }
 .dropdown__trigger {
   appearance: none !important;

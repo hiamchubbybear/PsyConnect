@@ -29,11 +29,18 @@
       id="favicon"
       rel="icon"
       type="image/svg+xml"
-      href="./assets/icon/icon-web-light.svg"
+      href="./assets/sig-logo/iconic-logo-light.svg"
     />
-      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
 
   <body>
     <app-root></app-root>
@@ -46,8 +53,8 @@
             "(prefers-color-scheme: dark)"
           ).matches;
           favicon.href = isDark
-            ? "./assets/icon/icon-web-light.svg"
-            : "./assets/icon/icon-web-dark.svg";
+            ? "./assets/sig-logo/iconic-logo-dark.svg"
+            : "./assets/sig-logo/iconic-logo-light.svg";
           const newFavicon = favicon.cloneNode();
           favicon.parentNode.replaceChild(newFavicon, favicon);
         }

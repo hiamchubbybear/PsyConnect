@@ -81,6 +81,9 @@ export class Login implements OnInit {
           this.USERNAME_KEY,
           this.loginForm.value.username
         );
+        console.log(this.loginForm.value.username);
+        console.log('Username username key login ', this.USERNAME_KEY);
+        const username = this.secureStorage.getItem(this.USERNAME_KEY);
       },
       error: () => {
         this.authState.showSidebar();
@@ -136,7 +139,7 @@ export class Login implements OnInit {
         this.userContext.setUser(userProfile);
         this.toastService.show('Login success', 'Success', ToastType.Success);
         this.setLoading(false);
-        this.router.navigate(['/']);
+        this.router.navigate(['/feature/feed']);
         this.authState.setLoggedIn(true);
       },
       error: (err) => {

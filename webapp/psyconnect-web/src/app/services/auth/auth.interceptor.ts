@@ -1,4 +1,5 @@
 import {
+    HttpContextToken,
     HttpErrorResponse,
     HttpEvent,
     HttpHandlerFn,
@@ -23,8 +24,11 @@ import { ToastType } from '../../shared/toast/toast-type';
 import { ToastService } from '../../shared/toast/toast.service';
 import { LoaderService } from '../loader/loader';
 import { Auth } from './auth';
-const PROFILE_KEY = environment.profileKey;
+
+const usernameKey = environment.usernameKey;
 const ACCESSTOKEN_KEY = environment.accessTokenKey;
+export const SKIP_AUTH = new HttpContextToken(() => false);
+
 export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
   next: HttpHandlerFn
@@ -36,6 +40,11 @@ export const authInterceptor: HttpInterceptorFn = (
   const isRefreshing = { value: false };
   const tokenSubject = new BehaviorSubject<string | null>(null);
   const maxRetry = 3;
+
+  if (req.context.get(SKIP_AUTH)) {
+    console.log('[AuthInterceptor] Skipping auth for:', req.url);
+    return next(req);
+  }
 
   const token = secureStorage.getItem<string>(ACCESSTOKEN_KEY);
   let authReq = req;
@@ -66,7 +75,7 @@ export const authInterceptor: HttpInterceptorFn = (
       catchError((err) => {
         if (!(err instanceof HttpErrorResponse)) return throwError(() => err);
         if (err.status === 500) {
-          const username = secureStorage.getItem<string>(PROFILE_KEY);
+          const username = secureStorage.getItem<string>(usernameKey);
           if (!username) {
             console.warn('[AuthInterceptor] No username in storage, logout');
             authService.logout();
@@ -89,7 +98,6 @@ export const authInterceptor: HttpInterceptorFn = (
       console.log('[AuthInterceptor] Starting token refresh...');
       isRefreshing.value = true;
       tokenSubject.next(null);
-
       loaderService.show();
 
       return authService.refreshToken(username).pipe(

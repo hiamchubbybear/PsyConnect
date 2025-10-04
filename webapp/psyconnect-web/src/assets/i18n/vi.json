@@ -666,7 +666,7 @@
         }
     },
     "MOBILE_REQUIRED": {
-        "Title": "Ứng dụng yêu cầu màn hình đủ lớn",
+        "Title": "Psyconnect yêu cầu màn hình đủ lớn",
         "Subtitle": "Vui lòng truy cập từ desktop hoặc tải ứng dụng di động.",
         "Android": "Tải Android",
         "iOS": "Tải iOS",

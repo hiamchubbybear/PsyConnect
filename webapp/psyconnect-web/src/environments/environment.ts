@@ -6,6 +6,6 @@ export const environment = {
   refreshKey: 'X9fG2kLp',
   accessTokenKey: 'A7dRt6vQ',
   therapistsKey: 'T1bYz3xM',
-  usernameKey: 'U8pQs4nJ',
+  usernameKey: 'N3vL9pQs',
   profileKey: 'U8pQs4nJ',
 };

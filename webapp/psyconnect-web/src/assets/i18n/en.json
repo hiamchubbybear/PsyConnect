@@ -683,7 +683,7 @@
         }
     },
     "MOBILE_REQUIRED": {
-        "Title": "App requires larger screen",
+        "Title": "Psyconnect requires larger screen",
         "Subtitle": "Please access from desktop or download the mobile app.",
         "Android": "Download Android",
         "iOS": "Download iOS",

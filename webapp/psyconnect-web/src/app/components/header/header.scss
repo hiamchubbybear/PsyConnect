@@ -1,14 +1,42 @@
 @use "../../styles/variable" as v;
 
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: block;
+  background: transparent;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .header {
   font-family: var(--font-family);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   background: var(--header-bg);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.full {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0.4rem 1rem;
+  }
+
+  &.mini {
+    transform: translateY(-90%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    padding: 0.5rem 2rem;
+
+    .logo {
+      font-size: 1rem;
+    }
+  }
 
   &.hidden {
     transform: translateY(-100%);
@@ -28,14 +56,27 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+
     a {
       text-decoration: none;
       color: var(--header-text);
       font-weight: 500;
       font-size: v.$font-size-md;
+      outline: none;
+      box-shadow: none;
+      border: none;
+      background: transparent;
 
       &:hover {
         color: var(--header-link-hover);
+      }
+
+      &:focus,
+      &:focus-visible,
+      &:active {
+        outline: none;
+        box-shadow: none;
+        border: none;
       }
     }
   }
@@ -45,12 +86,14 @@
     align-items: center;
     gap: 0.5rem;
     flex-shrink: 0;
+
     .divider {
       width: 1px !important;
       height: 24px !important;
       background: rgba(147, 146, 146, 0.1) !important;
       margin: 0 0.75rem !important;
     }
+
     .theme-toggle {
       background: none;
       border: none;
@@ -61,6 +104,8 @@
       align-items: center;
       justify-content: center;
       transition: background 0.2s ease;
+      outline: none;
+      box-shadow: none;
 
       svg {
         width: 22px;
@@ -74,6 +119,12 @@
         background: var(--header-hover-bg);
       }
 
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
+      }
+
       .ng-animating svg {
         transform: rotate(180deg);
         opacity: 0;
@@ -85,9 +136,17 @@
       text-decoration: none;
       font-weight: 500;
       color: var(--header-text);
+      outline: none;
+      box-shadow: none;
 
       &:hover {
         color: var(--header-link-hover);
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
       }
 
       &.signup {
@@ -99,6 +158,7 @@
         white-space: nowrap;
         overflow: visible;
         padding: 0.5rem 1rem;
+
         &:hover {
           color: var(--header-link-hover);
         }
@@ -113,6 +173,14 @@
       border: none;
       cursor: pointer;
       padding: 0;
+      outline: none;
+      box-shadow: none;
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
+      }
 
       .avatar {
         width: 36px;
@@ -149,9 +217,17 @@
       padding: 0.75rem 0;
       text-decoration: none;
       color: v.$color-text;
+      outline: none;
+      box-shadow: none;
 
       &:hover {
         color: v.$color-primary;
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
       }
 
       &.signup {
@@ -202,15 +278,18 @@
   }
 }
 
-.mat-mdc-menu-panel {
-  min-width: 160px !important;
-  border-radius: 8px !important;
+body {
+  &.header-fixed {
+    padding-top: 20px;
+  }
 }
 
-.mat-mdc-menu-item {
-  font-family: v.$font-primary !important;
-  font-size: v.$font-size-sm !important;
+.loader-bar {
+  position: absolute;
+  height: 3px;
+  animation: loading 1s ease-in-out infinite;
 }
+
 .route-loader {
   position: absolute;
   bottom: 0;
@@ -232,86 +311,13 @@
     transform: translateX(100%);
   }
 }
-.loader-bar {
-  position: absolute;
 
-  height: 3px;
-
-  animation: loading 1s ease-in-out infinite;
-}
-:host {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-
-  display: block;
-  background: transparent;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.mat-mdc-menu-panel {
+  min-width: 160px !important;
+  border-radius: 8px !important;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 1rem;
-  background: var(--header-bg);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &.full {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 0.4rem 1rem;
-  }
-
-  &.mini {
-    transform: translateY(-90%);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    padding: 0.5rem 2rem;
-
-    .logo {
-      font-size: 1rem;
-    }
-
-    nav.header-center {
-      opacity: 0.7;
-    }
-  }
-}
-
-body {
-  &.header-fixed {
-    padding-top: 20px;
-  }
-}
-.theme-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.4rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s ease;
-
-  svg {
-    width: 22px;
-    height: 22px;
-    stroke: var(--header-text);
-    fill: none;
-    transition: opacity 0.3s ease, transform 0.4s ease, stroke 0.2s ease;
-  }
-
-  &:hover {
-    background: var(--header-hover-bg);
-  }
-
-  .ng-animating svg {
-    transform: rotate(180deg);
-    opacity: 0;
-  }
+.mat-mdc-menu-item {
+  font-family: v.$font-primary !important;
+  font-size: v.$font-size-sm !important;
 }
