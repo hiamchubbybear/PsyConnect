@@ -23,6 +23,7 @@ const topicHandlers = {
     await sendAccountUpdateEmail(data);
   },
   "notification.user-reset": async (data) => {
+	  console.log(data);
     await sendResetPasswordEmail(data);
   },
 };

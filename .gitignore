@@ -17,11 +17,6 @@ target/
 *.war
 *.ear
 .mvn/
-application.properties
-application.yml
-application-*.properties
-application-*.yml
-
 # ===============================
 # 🐹 Go
 # ===============================
