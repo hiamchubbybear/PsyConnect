@@ -12,9 +12,10 @@ import {
     FormsModule,
     ReactiveFormsModule,
 } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { map, Observable, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { ProfileFieldDropdownComponent } from '../../../components/field-row/field-row';
 import { SingleButton } from '../../../components/single-button/single-button';
 import { SecureStorageService } from '../../../encrypt/secure';
 import { UserProfileUpdateRequest } from '../../../models/profile';
@@ -40,6 +41,7 @@ import { ProfileOverlayComponent } from './profile-overlay';
     TranslateModule,
     ProfileOverlayComponent,
     SingleButton,
+    ProfileFieldDropdownComponent,
   ],
   templateUrl: './profile-update.html',
   styleUrls: ['./profile-update.scss'],
@@ -56,6 +58,22 @@ export class ProfileSectionComponent implements OnInit {
   profileUpdate: UserProfileUpdateRequest | undefined;
   PROFILE_KEY = environment.profileKey;
   USERNAME_KEY = environment.usernameKey;
+  expandedField: string | null = null;
+
+  toggleExpand(field: string): void {
+    if (this.expandedField === field) {
+      this.expandedField = null;
+    } else {
+      this.expandedField = field;
+    }
+  }
+
+  onExpandClick(event: Event, field: string): void {
+    event.stopPropagation();
+    this.expandedField = null;
+    this.openEdit(field);
+  }
+
   onImageSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -90,9 +108,6 @@ export class ProfileSectionComponent implements OnInit {
 
     try {
       let avatarUri: string | undefined;
-      console.log('Username key ' + this.USERNAME_KEY);
-
-      console.log('🔎 Username before upload:', this.username);
 
       if (this.isUploadImage && this.selectedImage) {
         const uploadedUrl = await this.cloudinaryService.uploadImage(
@@ -145,7 +160,8 @@ export class ProfileSectionComponent implements OnInit {
     private loaderService: LoaderService,
     private userContext: UserContextService,
     private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -159,15 +175,18 @@ export class ProfileSectionComponent implements OnInit {
     });
 
     this.username = this.secureStorage.getItem(this.USERNAME_KEY);
-    console.log('Get username start', this.username);
 
     this.profileService.getProfile().subscribe((res) => {
       if (res?.data) {
         this.profile = res.data;
+        console.log(res.data);
 
         this.form.patchValue(this.profile);
 
-        this.initialProfile = { ...this.profile };
+        this.initialProfile = {
+          ...this.profile,
+          profile_id: this.profile.profileId,
+        };
 
         this.avatarUriOrigin = res.data.avatarUri;
       }
@@ -198,12 +217,8 @@ export class ProfileSectionComponent implements OnInit {
   private updateProfile(avatarUri?: string): void {
     const profileUpdateData = this.prepareCompleteProfileUpdate(avatarUri);
 
-    console.log('Complete profile data to update:', profileUpdateData);
-
     this.profileService.updateProfile(profileUpdateData).subscribe({
       next: (response) => {
-        console.log('Profile update response:', response);
-
         this.toastService.show(
           'Cập nhật profile thành công!',
           'Success',
@@ -287,7 +302,6 @@ export class ProfileSectionComponent implements OnInit {
 
       this.http.get<any[]>(url).subscribe((data) => {
         this.addressSuggestions = data.map((item) => item.display_name);
-        console.log('Suggestion ', this.addressSuggestions);
       });
     } else {
       this.addressSuggestions = [];
@@ -317,9 +331,6 @@ export class ProfileSectionComponent implements OnInit {
   }
 
   saveField(event: { field: string; value: string }): void {
-    console.log('saveField called for field:', event.field);
-    console.log('Value to save:', event.value);
-
     if (!this.editing) return;
 
     if (this.editing === 'name') {
@@ -343,8 +354,6 @@ export class ProfileSectionComponent implements OnInit {
       const field = this.editing as keyof UserProfileUpdateRequest;
       (this.profileUpdate as any)[field] = event.value;
     }
-
-    console.log('Updated profileUpdate for tracking:', this.profileUpdate);
 
     this.editing = null;
     this.cdr.detectChanges();
@@ -377,6 +386,46 @@ export class ProfileSectionComponent implements OnInit {
   onEsc(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       this.cancel();
+    }
+  }
+  copyToClipboard(value: string) {
+    if (!value) return;
+    navigator.clipboard.writeText(value).then(() => {
+      console.log('Copied Profile ID:', value);
+      this.toastService.show(
+        'Your id copied!',
+        'Success',
+        ToastType.Success
+      );
+    });
+  }
+
+  getDisplayValue(field: string): string {
+    if (!this.form?.value) return '';
+
+    switch (field) {
+      case 'name':
+        return `${this.form.value.firstName || ''} ${
+          this.form.value.middleName || ''
+        } ${this.form.value.lastName || ''}`.trim();
+
+      case 'dob':
+        return this.form.value.dob
+          ? new Date(this.form.value.dob).toLocaleDateString('vi-VN')
+          : '-';
+
+      case 'address':
+        return this.form.value.address || '-';
+
+      case 'gender':
+        if (this.form.value.gender === 'male')
+          return this.translate.instant('ACCOUNT_MANAGEMENT.Profile.Male');
+        if (this.form.value.gender === 'female')
+          return this.translate.instant('ACCOUNT_MANAGEMENT.Profile.Female');
+        return this.translate.instant('ACCOUNT_MANAGEMENT.Profile.Other');
+
+      default:
+        return '';
     }
   }
 }

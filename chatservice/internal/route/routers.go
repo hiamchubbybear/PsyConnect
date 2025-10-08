@@ -1,13 +1,14 @@
 package route
 
 import (
-	"chatservice/bootstrap"
-	handlers "chatservice/internal/handler"
-	"chatservice/internal/repository"
 	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
+
+	"chatservice/bootstrap"
+	handlers "chatservice/internal/handler"
+	"chatservice/internal/repository"
 )
 
 func RouterInit(

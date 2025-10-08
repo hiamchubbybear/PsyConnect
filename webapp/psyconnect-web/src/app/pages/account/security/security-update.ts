@@ -1,13 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { ButtonGroupComponent } from '../../../components/button-group/button-group';
+import { environment } from '../../../../environments/environment';
+import { ProfileFieldDropdownComponent } from '../../../components/field-row/field-row';
+import { SecureStorageService } from '../../../encrypt/secure';
+import { PasswordService } from '../../../services/auth/password.service';
+import { Profile } from '../../../services/profile/profile';
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
 
@@ -30,13 +34,14 @@ interface SecurityMethods {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ButtonGroupComponent,
+    ProfileFieldDropdownComponent,
     TranslateModule,
   ],
   templateUrl: './security-update.html',
   styleUrls: ['./security-update.scss'],
 })
 export class SecuritySectionComponent implements OnInit {
+  PROFILE_KEY = environment.profileKey;
   saveName() {
     throw new Error('Method not implemented.');
   }
@@ -115,7 +120,12 @@ export class SecuritySectionComponent implements OnInit {
 
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder, private toastService: ToastService) {}
+  constructor(
+    private fb: FormBuilder,
+    private toastService: ToastService,
+    private passwordService: PasswordService,
+    private secureStorage: SecureStorageService
+  ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -147,10 +157,9 @@ export class SecuritySectionComponent implements OnInit {
 
   openEdit(field: string) {
     this.editing = field;
-
     switch (field) {
       case 'changePassword':
-        this.passwordData = { current: '', new: '', confirm: '' };
+        this.passwordResetEmail = this.userEmail;
         break;
       case 'securityMethods':
         this.securityMethods = { ...this.securityMethods };
@@ -158,22 +167,57 @@ export class SecuritySectionComponent implements OnInit {
     }
   }
 
-  savePassword() {
-    if (this.passwordData.new !== this.passwordData.confirm) {
+  passwordResetEmail = '';
+  submittingReset = false;
+
+  get userEmail(): string {
+    return (
+      this.secureStorage.getItem<Profile>(this.PROFILE_KEY)?.getEmail() ||
+      'user@example.com'
+    );
+  }
+
+  sendPasswordReset() {
+    if (!this.passwordResetEmail) {
       this.toastService.show(
-        'Mật khẩu mới và xác nhận không trùng khớp!',
+        'Không có email để gửi reset!',
         'Error',
         ToastType.Error
       );
       return;
     }
 
-    this.toastService.show(
-      'Mật khẩu đã được cập nhật!',
-      'Success',
-      ToastType.Success
-    );
-    this.editing = null;
+    this.submittingReset = true;
+
+    this.passwordService
+      .requestReset({ email: this.passwordResetEmail })
+      .subscribe({
+        next: (res) => {
+          this.submittingReset = false;
+          if (res.code === 200) {
+            this.toastService.show(
+              `Email reset mật khẩu đã được gửi tới ${this.passwordResetEmail}`,
+              'Success',
+              ToastType.Success
+            );
+            this.editing = null;
+          } else {
+            this.toastService.show(
+              res.message || 'Có lỗi xảy ra!',
+              'Error',
+              ToastType.Error
+            );
+          }
+        },
+        error: (err) => {
+          this.submittingReset = false;
+          this.toastService.show(
+            err.error?.message || 'Có lỗi xảy ra!',
+            'Error',
+            ToastType.Error
+          );
+        },
+      });
   }
 
   saveSecurityMethods() {
@@ -249,5 +293,55 @@ export class SecuritySectionComponent implements OnInit {
     if (event.key === 'Escape') {
       this.cancel();
     }
+  }
+  getFieldDisplay(key: string): string {
+    switch (key) {
+      case 'changePassword':
+        return '••••••••';
+      case '2fa':
+        return this.editing === '2fa' ? 'Enabled' : 'Disabled';
+      case 'recentLogins':
+        return `${this.recentLogins.length} logins`;
+      case 'loggedDevices':
+        return `${this.loggedDevices.length} devices`;
+      case 'suspiciousActivity':
+        return `${this.suspiciousActivities.length} alerts`;
+      case 'linkedEmails':
+        return this.linkedEmails.map((e) => e.address).join(', ');
+      case 'thirdPartyApps':
+        return this.thirdPartyApps.map((a) => a.name).join(', ');
+      case 'securityMethods':
+        return '••••';
+      default:
+        return '-';
+    }
+  }
+  closeOverlay() {
+    this.editing = null;
+  }
+  saveOverlay() {
+    switch (this.editing) {
+      case 'changePassword':
+        this.savePassword();
+        break;
+      case 'securityMethods':
+        this.saveSecurityMethods();
+        break;
+      case '2fa':
+        this.toastService.show(
+          '2FA đã được cập nhật!',
+          'Success',
+          ToastType.Success
+        );
+        break;
+      default:
+        this.toastService.show(
+          'Cập nhật thành công!',
+          'Success',
+          ToastType.Success
+        );
+        break;
+    }
+    this.closeOverlay();
   }
 }

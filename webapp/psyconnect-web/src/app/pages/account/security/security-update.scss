@@ -1,7 +1,7 @@
 .security-section {
   background: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  //   border-radius: 6px;
   padding: var(--spacing-2xl);
   margin-bottom: var(--spacing-6xl);
   display: flex;
@@ -24,7 +24,6 @@
   .account-section__group {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--color-border);
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: var(--spacing-lg);
