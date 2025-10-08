@@ -703,6 +703,78 @@
             "links": "Liên kết",
             "more": "Khác"
         },
-        "TYPING": "{{name}} đang nhập..."
+        "TYPING": " đang nhập..."
+    },
+    "register": {
+        "title": "Tạo tài khoản",
+        "step": "Bước {{current}} trên {{total}}",
+        "step0": {
+            "title": "Chọn ảnh đại diện của bạn",
+            "subtitle": "Giúp người khác nhận ra bạn dễ dàng hơn",
+            "tapToAddPhoto": "Chạm để thêm ảnh"
+        },
+        "step1": {
+            "title": "Tên của bạn là gì?",
+            "subtitle": "Hãy cho chúng tôi biết cách xưng hô với bạn",
+            "firstNameRequired": "Vui lòng nhập tên",
+            "firstNameMin": "Tên phải có ít nhất 2 ký tự",
+            "lastNameRequired": "Vui lòng nhập họ",
+            "lastNameMin": "Họ phải có ít nhất 2 ký tự"
+        },
+        "step2": {
+            "title": "Thông tin cá nhân",
+            "subtitle": "Hãy cho biết ngày sinh và giới tính của bạn",
+            "dobRequired": "Vui lòng nhập ngày sinh",
+            "underAge": "Bạn phải từ 18 tuổi trở lên",
+            "genderLabel": "Giới tính",
+            "genderSelect": "Chọn giới tính",
+            "genderMale": "Nam",
+            "genderFemale": "Nữ",
+            "genderNone": "Không tiết lộ",
+            "genderRequired": "Vui lòng chọn giới tính"
+        },
+        "step3": {
+            "title": "Bạn đang sống ở đâu?",
+            "subtitle": "Giúp chúng tôi cung cấp dịch vụ tốt hơn",
+            "addressPlaceholder": "Nhập địa chỉ đầy đủ của bạn",
+            "addressRequired": "Vui lòng nhập địa chỉ"
+        },
+        "step4": {
+            "title": "Địa chỉ email",
+            "subtitle": "Chúng tôi sẽ gửi các thông tin quan trọng qua email này",
+            "emailPlaceholder": "ten.email@vi.du",
+            "emailRequired": "Vui lòng nhập email",
+            "emailInvalid": "Email không hợp lệ",
+            "emailExists": "Email đã tồn tại."
+        },
+        "step5": {
+            "title": "Chọn vai trò của bạn",
+            "subtitle": "Bạn muốn sử dụng PsyConnect như thế nào?",
+            "clientTitle": "Người dùng",
+            "clientDesc": "Tìm kiếm hỗ trợ sức khỏe tinh thần",
+            "therapistTitle": "Chuyên gia trị liệu",
+            "therapistDesc": "Cung cấp dịch vụ tư vấn tâm lý",
+            "roleRequired": "Vui lòng chọn vai trò"
+        },
+        "step6": {
+            "title": "Tạo tài khoản của bạn",
+            "subtitle": "Chọn tên đăng nhập và mật khẩu an toàn",
+            "usernameRequired": "Vui lòng nhập tên đăng nhập",
+            "usernameMin": "Tên đăng nhập phải có ít nhất 4 ký tự",
+            "usernameExists": "Tên đăng nhập đã tồn tại",
+            "passwordRequired": "Vui lòng nhập mật khẩu",
+            "passwordMin": "Mật khẩu phải có ít nhất 8 ký tự",
+            "passwordWeak": "Mật khẩu phải gồm chữ, số và ký tự đặc biệt",
+            "confirmRequired": "Vui lòng xác nhận mật khẩu",
+            "passwordMismatch": "Mật khẩu không khớp",
+            "acceptTerms": "Tôi đồng ý với",
+            "termsLink": "Điều khoản & Chính sách",
+            "mustAccept": "Bạn phải đồng ý với điều khoản để tiếp tục"
+        },
+        "buttons": {
+            "back": "Quay lại",
+            "continue": "Tiếp tục",
+            "create": "Tạo tài khoản"
+        }
     }
 }

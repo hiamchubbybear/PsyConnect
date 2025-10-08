@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
 } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
 import { ProfileFieldDropdownComponent } from '../../../components/field-row/field-row';
 import { SecureStorageService } from '../../../encrypt/secure';
 import { PasswordService } from '../../../services/auth/password.service';
-import { Profile } from '../../../services/profile/profile';
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { ProfileModel } from '../profile/profile-model';
 
 interface PasswordData {
   current: string;
@@ -172,7 +172,7 @@ export class SecuritySectionComponent implements OnInit {
 
   get userEmail(): string {
     return (
-      this.secureStorage.getItem<Profile>(this.PROFILE_KEY)?.getEmail() ||
+      this.secureStorage.getItem<ProfileModel>(this.PROFILE_KEY)?.firstName ||
       'user@example.com'
     );
   }
@@ -317,6 +317,14 @@ export class SecuritySectionComponent implements OnInit {
     }
   }
   closeOverlay() {
+    this.editing = null;
+  }
+  savePassword() {
+    this.toastService.show(
+      'Mật khẩu đã được cập nhật thành công!',
+      'Success',
+      ToastType.Success
+    );
     this.editing = null;
   }
   saveOverlay() {

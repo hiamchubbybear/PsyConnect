@@ -15,6 +15,7 @@ import {
     ReactiveFormsModule,
     Validators,
 } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CloudinaryService } from '../../services/cloudinary/cloudinary.service';
 import {
@@ -29,7 +30,7 @@ import { ToastService } from '../../shared/toast/toast.service';
   selector: 'signup',
   templateUrl: './signup.html',
   styleUrls: ['./signup.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule , TranslateModule],
 })
 export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   @ViewChild('emailInput') emailInputRef!: ElementRef;

@@ -7,7 +7,7 @@
     >
       <i class="icon-back"></i>
     </button>
-    <h1 class="title">Create Account</h1>
+    <h1 class="title">{{ "register.title" | translate }}</h1>
   </div>
 
   <div class="progress-container">
@@ -25,8 +25,8 @@
     >
       <form [formGroup]="avatarForm" class="step-form">
         <div class="step-header">
-          <h2>Choose Your Profile Picture</h2>
-          <p>This helps others recognize you</p>
+          <h2>{{ "register.step0.title" | translate }}</h2>
+          <p>{{ "register.step0.subtitle" | translate }}</p>
         </div>
 
         <div class="avatar-section">
@@ -50,7 +50,9 @@
             (change)="onImageSelected($event)"
             class="hidden-input"
           />
-          <p *ngIf="!imagePreview" class="tap-text">Tap to add photo</p>
+          <p *ngIf="!imagePreview" class="tap-text">
+            {{ "register.step0.tapToAddPhoto" | translate }}
+          </p>
         </div>
       </form>
     </div>
@@ -62,8 +64,8 @@
     >
       <form [formGroup]="nameForm" class="step-form">
         <div class="step-header">
-          <h2>What's Your Name?</h2>
-          <p>Let us know how to address you</p>
+          <h2>{{ "register.step1.title" | translate }}</h2>
+          <p>{{ "register.step1.subtitle" | translate }}</p>
         </div>
 
         <div class="form-fields">
@@ -87,7 +89,7 @@
                 #firstnameInput
                 type="text"
                 formControlName="firstName"
-                placeholder="First Name"
+                placeholder="{{ 'register.step1.title' | translate }}"
                 class="form-input with-icon"
                 [class.error]="
                   nameForm.get('firstName')?.invalid &&
@@ -102,11 +104,11 @@
               "
               class="error-text"
             >
-              <span *ngIf="nameForm.get('firstName')?.errors?.['required']"
-                >First name is required</span
+              <span *ngIf="nameForm.get('firstName')?.errors?.['required']">
+                {{ "register.step1.firstNameRequired" | translate }}</span
               >
-              <span *ngIf="nameForm.get('firstName')?.errors?.['minlength']"
-                >First name must be at least 2 characters</span
+              <span *ngIf="nameForm.get('firstName')?.errors?.['minlength']">
+                {{ "register.step1.firstNameMin" | translate }}</span
               >
             </div>
           </div>
@@ -130,7 +132,7 @@
               <input
                 type="text"
                 formControlName="lastName"
-                placeholder="Last Name"
+                placeholder="{{ 'register.step1.subtitle' | translate }}"
                 class="form-input with-icon"
                 [class.error]="
                   nameForm.get('lastName')?.invalid &&
@@ -145,12 +147,12 @@
               "
               class="error-text"
             >
-              <span *ngIf="nameForm.get('lastName')?.errors?.['required']"
-                >Last name is required</span
+              <span *ngIf="nameForm.get('lastName')?.errors?.['required']">
+                {{ "register.step1.lastNameRequired" | translate }}</span
               >
-              <span *ngIf="nameForm.get('lastName')?.errors?.['minlength']"
-                >Last name must be at least 2 characters</span
-              >
+              <span *ngIf="nameForm.get('lastName')?.errors?.['minlength']">{{
+                "register.step1.lastNameMin" | translate
+              }}</span>
             </div>
           </div>
         </div>
@@ -164,8 +166,8 @@
     >
       <form [formGroup]="personalForm" class="step-form">
         <div class="step-header">
-          <h2>Personal Information</h2>
-          <p>Tell us your date of birth and gender</p>
+          <h2>{{ "register.step2.title" | translate }}</h2>
+          <p>{{ "register.step2.subtitle" | translate }}</p>
         </div>
 
         <div class="form-fields">
@@ -211,11 +213,13 @@
             >
               <span
                 *ngIf="personalForm.get('dateOfBirth')?.errors?.['required']"
-                >Date of birth is required</span
+              >
+                {{ "register.step2.dobRequired" | translate }}</span
               >
               <span
                 *ngIf="personalForm.get('dateOfBirth')?.errors?.['underAge']"
-                >You must be 18 years or older</span
+              >
+                {{ "register.step2.underAge" | translate }}</span
               >
             </div>
           </div>
@@ -231,10 +235,18 @@
                   personalForm.get('gender')?.touched
                 "
               >
-                <option value="" disabled selected>Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="None">Prefer not to say</option>
+                <option value="" disabled selected>
+                  {{ "register.step2.genderSelect" | translate }}
+                </option>
+                <option value="Male">
+                  {{ "register.step2.genderMale" | translate }}
+                </option>
+                <option value="Female">
+                  {{ "register.step2.genderFemale" | translate }}
+                </option>
+                <option value="None">
+                  {{ "register.step2.genderNone" | translate }}
+                </option>
               </select>
               <i class="fa fa-chevron-down"></i>
             </div>
@@ -247,7 +259,7 @@
               class="error-text"
             >
               <span *ngIf="personalForm.get('gender')?.errors?.['required']">
-                Please select your gender
+                {{ "register.step2.genderRequired" | translate }}
               </span>
             </div>
           </div>
@@ -262,8 +274,8 @@
     >
       <form [formGroup]="addressForm" class="step-form">
         <div class="step-header">
-          <h2>Where Are You Located?</h2>
-          <p>This helps us provide better services</p>
+          <h2>{{ "register.step3.title" | translate }}</h2>
+          <p>{{ "register.step3.subtitle" | translate }}</p>
         </div>
 
         <div class="form-fields">
@@ -288,7 +300,9 @@
                 #addressInput
                 type="text"
                 formControlName="address"
-                placeholder="Enter your full address"
+                placeholder="{{
+                  'register.step3.addressPlaceholder' | translate
+                }}"
                 class="form-input"
                 [class.error]="
                   addressForm.get('address')?.invalid &&
@@ -319,7 +333,7 @@
               class="error-text"
             >
               <span *ngIf="addressForm.get('address')?.errors?.['required']">
-                Address is required
+                {{ "register.step3.addressRequired" | translate }}
               </span>
             </div>
           </div>
@@ -334,8 +348,8 @@
     >
       <form [formGroup]="emailForm" class="step-form">
         <div class="step-header">
-          <h2>Email Address</h2>
-          <p>We'll use this to send you important updates</p>
+          <h2>{{ "register.step4.title" | translate }}</h2>
+          <p>{{ "register.step4.subtitle" | translate }}</p>
         </div>
 
         <div class="form-fields">
@@ -375,16 +389,16 @@
               "
               class="error-text"
             >
-              <span *ngIf="emailForm.get('email')?.errors?.['required']"
-                >Email is required</span
-              >
-              <span *ngIf="emailForm.get('email')?.errors?.['email']"
-                >Please enter a valid email address</span
+              <span *ngIf="emailForm.get('email')?.errors?.['required']">
+                {{ "register.step4.emailRequired" | translate }}
+              </span>
+              <span *ngIf="emailForm.get('email')?.errors?.['email']">
+                {{ "register.step4.emailInvalid" | translate }}</span
               >
               <div
                 *ngIf="emailForm.get('email')?.errors?.['exists'] as existsMsg"
               >
-                {{ existsMsg === true ? "Email already exists." : existsMsg }}
+                {{ "register.step4.emailExists" | translate }}
               </div>
             </div>
           </div>
@@ -399,8 +413,8 @@
     >
       <form [formGroup]="roleForm" class="step-form">
         <div class="step-header">
-          <h2>Choose Your Role</h2>
-          <p>How would you like to use PsyConnect?</p>
+          <h2>{{ "register.step5.title" | translate }}</h2>
+          <p>{{ "register.step5.subtitle" | translate }}</p>
         </div>
 
         <div class="form-fields">
@@ -413,8 +427,8 @@
                 class="radio-input"
               />
               <div class="role-card">
-                <h3>Client</h3>
-                <p>Looking for mental health support</p>
+                <h3>{{ "register.step5.clientTitle" | translate }}</h3>
+                <p>{{ "register.step5.clientDesc" | translate }}</p>
               </div>
             </label>
 
@@ -426,8 +440,8 @@
                 class="radio-input"
               />
               <div class="role-card">
-                <h3>Therapist</h3>
-                <p>Providing mental health services</p>
+                <h3>{{ "register.step5.therapistTitle" | translate }}</h3>
+                <p>{{ "register.step5.therapistDesc" | translate }}</p>
               </div>
             </label>
           </div>
@@ -438,9 +452,9 @@
             "
             class="error-text"
           >
-            <span *ngIf="roleForm.get('role')?.errors?.['required']"
-              >Please select a role</span
-            >
+            <span *ngIf="roleForm.get('role')?.errors?.['required']">{{
+              "register.step5.roleRequired" | translate
+            }}</span>
           </div>
         </div>
       </form>
@@ -453,8 +467,8 @@
     >
       <form [formGroup]="credentialsForm" class="step-form">
         <div class="step-header">
-          <h2>Create Your Account</h2>
-          <p>Choose a username and secure password</p>
+          <h2>{{ "register.step6.title" | translate }}</h2>
+          <p>{{ "register.step6.subtitle" | translate }}</p>
         </div>
 
         <div class="form-fields">
@@ -496,15 +510,17 @@
             >
               <span
                 *ngIf="credentialsForm.get('username')?.errors?.['required']"
-                >Username is required</span
+              >
+                {{ "register.step6.usernameRequired" | translate }}</span
               >
               <span
                 *ngIf="credentialsForm.get('username')?.errors?.['minlength']"
-                >Username must be at least 4 characters</span
               >
-              <span *ngIf="credentialsForm.get('username')?.errors?.['exists']"
-                >Username already exists</span
+                {{ "register.step6.usernameMin" | translate }}</span
               >
+              <span *ngIf="credentialsForm.get('username')?.errors?.['exists']">
+                {{ "register.step6.usernameExists" | translate }}
+              </span>
             </div>
           </div>
 
@@ -546,16 +562,18 @@
             >
               <span
                 *ngIf="credentialsForm.get('password')?.errors?.['required']"
-                >Password is required</span
+              >
+                {{ "register.step6.passwordRequired" | translate }}</span
               >
               <span
                 *ngIf="credentialsForm.get('password')?.errors?.['minlength']"
-                >Password must be at least 8 characters</span
+              >
+                {{ "register.step6.passwordMin" | translate }}</span
               >
               <span
                 *ngIf="credentialsForm.get('password')?.errors?.['passwordStrength']"
-                >Password must include letters, numbers and special
-                characters</span
+              >
+                {{ "register.step6.passwordWeak" | translate }}</span
               >
             </div>
           </div>
@@ -593,19 +611,22 @@
             >
               <span
                 *ngIf="credentialsForm.get('confirmPassword')?.errors?.['required']"
-                >Please confirm your password</span
               >
-              <span *ngIf="credentialsForm.errors?.['passwordMismatch']"
-                >Passwords do not match</span
+                {{ "register.step6.confirmRequired" | translate }}</span
+              >
+              <span *ngIf="credentialsForm.errors?.['passwordMismatch']">
+                {{ "register.step6.passwordMismatch" | translate }}</span
               >
             </div>
           </div>
           <div class="form-group terms">
             <label class="checkbox">
               <input type="checkbox" formControlName="acceptTerms" />
-              <span
-                >I agree to the
-                <a href="/terms" target="_blank">Terms & Conditions</a></span
+              <span>
+                {{ "register.step6.acceptTerms" | translate }}
+                <a href="/terms" target="_blank">{{
+                  "register.step6.termsLink" | translate
+                }}</a></span
               >
             </label>
             <div
@@ -615,7 +636,7 @@
               "
               class="error-text"
             >
-              You must accept the terms to continue
+              {{ "register.step6.mustAccept" | translate }}
             </div>
           </div>
         </div>
@@ -630,7 +651,7 @@
       class="btn btn-secondary"
       (click)="previousStep()"
     >
-      Back
+      {{ "register.buttons.back" | translate }}
     </button>
 
     <button
@@ -642,9 +663,13 @@
       "
       [disabled]="isLoading"
     >
-      <span *ngIf="!isLoading">
-        {{ currentStep === totalSteps - 1 ? "Create Account" : "Continue" }}
-      </span>
+      <ng-container *ngIf="!isLoading">
+        {{
+          currentStep === totalSteps - 1
+            ? ("register.buttons.create" | translate)
+            : ("register.buttons.continue" | translate)
+        }}
+      </ng-container>
 
       <div
         *ngIf="isLoading && currentStep === totalSteps - 1"

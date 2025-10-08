@@ -723,5 +723,77 @@
             "more": "More"
         },
         "TYPING": "is typing..."
+    },
+    "register": {
+        "title": "Create Account",
+        "step": "Step {{current}} of {{total}}",
+        "step0": {
+            "title": "Choose Your Profile Picture",
+            "subtitle": "This helps others recognize you",
+            "tapToAddPhoto": "Tap to add photo"
+        },
+        "step1": {
+            "title": "What's Your Name?",
+            "subtitle": "Let us know how to address you",
+            "firstNameRequired": "First name is required",
+            "firstNameMin": "First name must be at least 2 characters",
+            "lastNameRequired": "Last name is required",
+            "lastNameMin": "Last name must be at least 2 characters"
+        },
+        "step2": {
+            "title": "Personal Information",
+            "subtitle": "Tell us your date of birth and gender",
+            "dobRequired": "Date of birth is required",
+            "underAge": "You must be 18 years or older",
+            "genderLabel": "Gender",
+            "genderSelect": "Select Gender",
+            "genderMale": "Male",
+            "genderFemale": "Female",
+            "genderNone": "Prefer not to say",
+            "genderRequired": "Please select your gender"
+        },
+        "step3": {
+            "title": "Where Are You Located?",
+            "subtitle": "This helps us provide better services",
+            "addressPlaceholder": "Enter your full address",
+            "addressRequired": "Address is required"
+        },
+        "step4": {
+            "title": "Email Address",
+            "subtitle": "We'll use this to send you important updates",
+            "emailPlaceholder": "your.email@example.com",
+            "emailRequired": "Email is required",
+            "emailInvalid": "Please enter a valid email address",
+            "emailExists": "Email already exists."
+        },
+        "step5": {
+            "title": "Choose Your Role",
+            "subtitle": "How would you like to use PsyConnect?",
+            "clientTitle": "Client",
+            "clientDesc": "Looking for mental health support",
+            "therapistTitle": "Therapist",
+            "therapistDesc": "Providing mental health services",
+            "roleRequired": "Please select a role"
+        },
+        "step6": {
+            "title": "Create Your Account",
+            "subtitle": "Choose a username and secure password",
+            "usernameRequired": "Username is required",
+            "usernameMin": "Username must be at least 4 characters",
+            "usernameExists": "Username already exists",
+            "passwordRequired": "Password is required",
+            "passwordMin": "Password must be at least 8 characters",
+            "passwordWeak": "Password must include letters, numbers and special characters",
+            "confirmRequired": "Please confirm your password",
+            "passwordMismatch": "Passwords do not match",
+            "acceptTerms": "I agree to the",
+            "termsLink": "Terms & Conditions",
+            "mustAccept": "You must accept the terms to continue"
+        },
+        "buttons": {
+            "back": "Back",
+            "continue": "Continue",
+            "create": "Create Account"
+        }
     }
 }

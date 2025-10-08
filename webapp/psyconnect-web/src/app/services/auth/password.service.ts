@@ -17,10 +17,6 @@ export class PasswordService {
 
   requestReset(payload: {
     email: string;
-    /**
-     * @deprecated The field should be remove next api update
-     */
-    username: string;
   }): Observable<ApiResponse<boolean>> {
     const url = `${this.apiUrl}/identity/req/reset-password`;
     return this.http.post<ApiResponse<boolean>>(url, payload, {

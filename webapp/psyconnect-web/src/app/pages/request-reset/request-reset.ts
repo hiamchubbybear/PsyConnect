@@ -76,7 +76,6 @@ export class RequestResetComponent {
     this.passwordService
       .requestReset({
         email: email,
-        username: username,
       })
       .subscribe({
         next: (res) => {

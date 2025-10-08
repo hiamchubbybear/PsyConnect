@@ -12,7 +12,6 @@ import { SecuritySectionComponent } from './pages/account/security/security-upda
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
 import { ConsultationComponent } from './pages/consultation/consultation';
 import { FeedComponent } from './pages/feed/feed';
-import { Homepage } from './pages/homepage/homepage';
 import { Login } from './pages/login/login';
 import { Notfound } from './pages/notfound/notfound';
 import { ResetPasswordComponent } from './pages/password-reset/password-reset';
@@ -25,7 +24,7 @@ import { MultiStepRegisterComponent } from './pages/signup/signup';
 import { Start } from './pages/start/start';
 
 export const routes: Routes = [
-  { path: '', component: Homepage, canActivate: [guestGuard] },
+  { path: '', component: Start, canActivate: [guestGuard] },
   {
     path: 'auth/signup',
     component: MultiStepRegisterComponent,
@@ -148,7 +147,7 @@ export const routes: Routes = [
             (m) => m.Settings
           ),
       },
-      { path: '', redirectTo: 'discover', pathMatch: 'full' }, 
+      { path: '', redirectTo: 'discover', pathMatch: 'full' },
     ],
   },
   { path: 'feature/chat', component: ChatComponent, canActivate: [authGuard] },
