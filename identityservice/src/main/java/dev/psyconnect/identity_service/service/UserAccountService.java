@@ -434,7 +434,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         if (username == null || username.isBlank()) {
             throw new CustomExceptionHandler(ErrorCode.NULL_EXCEPTION);
         }
-
         Token token = tokenRepository
                 .findById(username)
                 .orElse(Token.builder()
@@ -448,7 +447,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         token.setToken(activationCode);
         token.setRevoked(false);
         token.setExpires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
-
         return tokenRepository.save(token);
     }
 
@@ -456,6 +454,11 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         var userFound = userAccountRepository
                 .findByEmail(passwordResetRequest.getEmail())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        var tokenFound = tokenRepository.findById(userFound.getUsername()).get().getToken();
+        log.info("Token found!!!!!!! {}", tokenFound);
+        if (userFound.getToken() == null || userFound.getToken().getToken() == null) {
+            throw new CustomExceptionHandler(ErrorCode.TOKEN_NOT_FOUND);
+        }
         if (userFound.getToken().getToken().equals(passwordResetRequest.getResetToken())) {
             userFound.setPassword(PasswordEncodingService.encoder(passwordResetRequest.getNewPassword()));
             Token userToken = userFound.getToken();

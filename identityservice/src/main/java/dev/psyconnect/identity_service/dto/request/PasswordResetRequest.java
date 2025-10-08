@@ -9,7 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PasswordResetRequest {
     String newPassword;
-    String username;
     String email;
     String resetToken;
 }

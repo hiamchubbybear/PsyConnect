@@ -21,6 +21,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Builder
+@ToString
 @Table(name = "user_account", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class Account {
 
