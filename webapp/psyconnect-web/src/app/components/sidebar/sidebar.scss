@@ -109,7 +109,6 @@ $transition-ease: ease-in-out;
       color $transition-time $transition-ease;
 
     &:hover {
-      background-color: $color-hover;
       transform: translateY(-2px);
       color: darken($color-text, 20%);
       .icon-static {

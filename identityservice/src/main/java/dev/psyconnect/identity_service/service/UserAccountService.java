@@ -386,7 +386,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         ActivateAccountNotificationRequest req = ActivateAccountNotificationRequest.builder()
                 .email(userFound.getEmail())
-                .fullname(requestActivationAccount.getFullName())
                 .code(generateActivationCode())
                 .username(userFound.getUsername())
                 .build();

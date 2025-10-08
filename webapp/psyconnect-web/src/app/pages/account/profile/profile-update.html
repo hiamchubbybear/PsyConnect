@@ -1,6 +1,5 @@
 <section class="account-section profile-section">
   <form [formGroup]="form">
-    <!-- Avatar + Info -->
     <div class="avatar-section">
       <label class="profile-avatar-wrapper">
         <img
@@ -18,7 +17,7 @@
           (change)="onImageSelected($event)"
           hidden
         />
-        <span class="avatar-edit-overlay">✏️</span>
+        <span class="avatar-edit-overlay"></span>
       </label>
       <h2>
         {{ form.value.firstName }} {{ form.value.middleName }}
@@ -30,27 +29,45 @@
       </p>
     </div>
 
-    <!-- Editable fields -->
+    <app-profile-field-dropdown
+      label="ID"
+      [displayValue]="form.value.profile_id || profile?.profileId"
+      [editable]="false"
+      [copyable]="true"
+      field="profile_id"
+      (copyRequested)="copyToClipboard($event)"
+    ></app-profile-field-dropdown>
+
     <div class="account-section__group">
-      <div class="account-row" (click)="openEdit('name')">
-        <span>{{ "ACCOUNT_MANAGEMENT.Profile.Name" | translate }}</span>
-        <span class="account-row__icon">›</span>
-      </div>
-      <div class="account-row" (click)="openEdit('dob')">
-        <span>{{ "ACCOUNT_MANAGEMENT.Profile.DOB" | translate }}</span>
-        <span class="account-row__icon">›</span>
-      </div>
-      <div class="account-row" (click)="openEdit('address')">
-        <span>{{ "ACCOUNT_MANAGEMENT.Profile.Address" | translate }}</span>
-        <span class="account-row__icon">›</span>
-      </div>
-      <div class="account-row" (click)="openEdit('gender')">
-        <span>{{ "ACCOUNT_MANAGEMENT.Profile.Gender" | translate }}</span>
-        <span class="account-row__icon">›</span>
-      </div>
+      <app-profile-field-dropdown
+        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Name' | translate }}"
+        [displayValue]="getDisplayValue('name')"
+        field="name"
+        (editRequested)="openEdit('name')"
+      ></app-profile-field-dropdown>
+
+      <app-profile-field-dropdown
+        label="{{ 'ACCOUNT_MANAGEMENT.Profile.DOB' | translate }}"
+        [displayValue]="getDisplayValue('dob')"
+        field="dob"
+        (editRequested)="openEdit('dob')"
+      ></app-profile-field-dropdown>
+
+      <app-profile-field-dropdown
+        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Address' | translate }}"
+        [displayValue]="getDisplayValue('address')"
+        field="address"
+        (editRequested)="openEdit('address')"
+      ></app-profile-field-dropdown>
+
+      <app-profile-field-dropdown
+        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Gender' | translate }}"
+        [displayValue]="getDisplayValue('gender')"
+        field="gender"
+        (editRequested)="openEdit('gender')"
+      ></app-profile-field-dropdown>
     </div>
 
-    <!-- Warnings -->
     <div class="update-warning" *ngIf="!canConfirm">
       <p>{{ "ACCOUNT_MANAGEMENT.Profile.Notices.NoChanges" | translate }}</p>
     </div>
@@ -58,26 +75,15 @@
       {{ "ACCOUNT_MANAGEMENT.Profile.Notices.UnsavedChanges" | translate }}
     </div>
 
-    <!-- Buttons -->
-    <!-- <app-single-button
-      [primaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Confirm' | translate"
-      [secondaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel' | translate"
-      (primaryClick)="confirmChanges()"
-      (secondaryClick)="cancel()"
-      class="button-group"
-      [disabledPrimary]="!canConfirm"
-    ></app-single-button> -->
     <app-single-button
       [primaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Confirm' | translate"
       (primaryClick)="confirmChanges()"
       class="button-group"
       [disabledPrimary]="!canConfirm"
-    >
-    </app-single-button>
+    ></app-single-button>
   </form>
 </section>
 
-<!-- Overlay component -->
 <app-profile-overlay
   [(editValue)]="editValue"
   [editing]="editing"

@@ -148,7 +148,7 @@ export const routes: Routes = [
             (m) => m.Settings
           ),
       },
-      { path: '', redirectTo: 'discover', pathMatch: 'full' }, // default
+      { path: '', redirectTo: 'discover', pathMatch: 'full' }, 
     ],
   },
   { path: 'feature/chat', component: ChatComponent, canActivate: [authGuard] },

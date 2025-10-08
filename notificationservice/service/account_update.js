@@ -12,18 +12,17 @@ const sendAccountUpdateEmail = async ({ username, email }) => {
   console.log("[DEBUG] Sending account update email...");
   await sendEmail({
     to: email,
-    subject: `🔔 ${username}, your account information was updated`,
+    subject: `${username}, your account information was updated`,
     html,
   });
   console.log("[DEBUG] Account update email sent successfully!");
 };
 
-const sendResetPasswordEmail = async ({ username, email, code, fullname }) => {
+const sendResetPasswordEmail = async ({ username, email, code, }) => {
   console.log("[DEBUG] sendResetPasswordEmail called with:", {
     username,
     email,
-    code,
-    fullname,
+    code
   });
 
   const template = loadTemplate("reset-password.html");
@@ -33,8 +32,6 @@ const sendResetPasswordEmail = async ({ username, email, code, fullname }) => {
     .replace("{USERNAME}", username)
     .replace("{TOKEN}", code)
     .replace("{EMAIL}", email);
-
-  console.log("[DEBUG] Sending reset password email...");
   await sendEmail({
     to: email,
     subject: `Hey ${username}!! Reset Your Password (15 min valid)`,

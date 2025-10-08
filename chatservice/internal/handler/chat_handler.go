@@ -1,13 +1,14 @@
 package handlers
 
 import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
 	"chatservice/bootstrap"
 	"chatservice/internal/model"
 	"chatservice/internal/repository"
 	"chatservice/pkg/apiresponse"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 type ChatHandler struct {

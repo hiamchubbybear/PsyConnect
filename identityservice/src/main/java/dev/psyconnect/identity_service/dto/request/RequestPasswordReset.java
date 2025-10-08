@@ -9,5 +9,4 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RequestPasswordReset {
     String email;
-    String fullName;
 }
