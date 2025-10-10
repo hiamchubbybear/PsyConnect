@@ -1,0 +1,41 @@
+name: Auto Cleanup Branches
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log cleanup start
+        run: |
+          echo "----------------------------------------"
+          echo "Starting branch cleanup process"
+          echo "Current UTC time: $(date -u)"
+          echo "----------------------------------------"
+
+      - name: Delete old branches
+        uses: phips28/gh-action-delete-old-branches@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days: 30
+          dry-run: false
+          delete-merged: true
+          exclude: main,develop,release/*
+
+      - name: Log cleanup end
+        run: |
+          echo "----------------------------------------"
+          echo "Branch cleanup finished successfully."
+          echo "Check above logs for deleted branches."
+          echo "----------------------------------------"
