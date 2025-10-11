@@ -220,7 +220,7 @@ export class ProfileSectionComponent implements OnInit {
     this.profileService.updateProfile(profileUpdateData).subscribe({
       next: (response) => {
         this.toastService.show(
-          'Cập nhật profile thành công!',
+          'Cập nhật hồ sơ thành công!',
           'Success',
           ToastType.Success
         );

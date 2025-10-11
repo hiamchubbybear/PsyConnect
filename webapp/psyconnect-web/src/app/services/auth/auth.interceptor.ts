@@ -7,6 +7,7 @@ import {
     HttpRequest,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError, timer } from 'rxjs';
 import {
     catchError,
@@ -40,6 +41,7 @@ export const authInterceptor: HttpInterceptorFn = (
   const isRefreshing = { value: false };
   const tokenSubject = new BehaviorSubject<string | null>(null);
   const maxRetry = 3;
+  const router = inject(Router);
 
   if (req.context.get(SKIP_AUTH)) {
     console.log('[AuthInterceptor] Skipping auth for:', req.url);
@@ -138,6 +140,7 @@ export const authInterceptor: HttpInterceptorFn = (
             ToastType.Error
           );
           authService.logout();
+          router.navigate(['/auth/login']);
           return throwError(() => err);
         }),
         finalize(() => {

@@ -1,9 +1,9 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
-
+import { SKIP_AUTH } from './auth.interceptor';
 @Injectable({
   providedIn: 'root',
 })
@@ -109,7 +109,7 @@ export class Auth {
         code: number;
         message: string;
         data: { token: string; refreshToken: string; successful: boolean };
-      }>(`${this.apiUrl}/${this.apiVersion}/auth/refresh`, {}, { params })
+      }>(`${this.apiUrl}/${this.apiVersion}/auth/refresh`, {}, { params, context: new HttpContext().set(SKIP_AUTH, true), })
       .pipe(
         tap((res) => {
           this.secureStorage.setItem(this.ACCESSTOKEN_KEY, res.data.token);

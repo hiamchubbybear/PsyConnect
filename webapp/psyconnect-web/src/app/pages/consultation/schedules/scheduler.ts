@@ -21,11 +21,31 @@ export class SchedulerComponent implements OnInit, OnDestroy {
   isSidebarCollapsed = false;
   private sub?: Subscription;
   therapists: Therapist[] = [
-    { id: 'gabi', name: 'Gabi Guimaraes', img: 'assets/img/t1.jpg' },
-    { id: 'yuki', name: 'Yuki Ishikawa', img: 'assets/img/t5.jpg' },
-    { id: 'fornal', name: 'Tomasz Fornal', img: 'assets/img/t4.jpg' },
-    { id: 'sun', name: 'Sun YingSha', img: 'assets/img/t2.jpg' },
-    { id: 'wang', name: 'Wang ChuQin', img: 'assets/img/t6.jpg' },
+    {
+      id: 'gabi',
+      name: 'Gabi Guimaraes',
+      img: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=400&h=400&fit=crop',
+    },
+    {
+      id: 'yuki',
+      name: 'Yuki Ishikawa',
+      img: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop',
+    },
+    {
+      id: 'fornal',
+      name: 'Tomasz Fornal',
+      img: 'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=400&h=400&fit=crop',
+    },
+    {
+      id: 'sun',
+      name: 'Sun YingSha',
+      img: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=400&fit=crop&crop=faces&auto=format',
+    },
+    {
+      id: 'wang',
+      name: 'Wang ChuQin',
+      img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces&auto=format',
+    },
   ];
 
   viewDate: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
