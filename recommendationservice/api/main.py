@@ -9,10 +9,7 @@ app = Flask(__name__)
 @app.route('/recommend', methods=['POST'])
 def recommend():
     try:
-        print("✅ Received request")
         data = request.json
-        print("📦 Raw data:", data)
-
         client = data.get("clientRaw")
         therapists = data.get("therapistsRaw")
 
@@ -110,11 +107,11 @@ def recommend():
                 "created_at": now
             })
 
-        # Sắp xếp theo điểm cao nhất
+        
         swipes.sort(key=lambda x: x["points"], reverse=True)
 
         result = {
-            "client_id": client["profile_id"],  # 🔧 Thêm dòng này để Go decode được
+            "client_id": client["profile_id"],  
             "swipes": swipes
         }
         print(" Response:", result)
