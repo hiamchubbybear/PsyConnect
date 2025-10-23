@@ -675,6 +675,9 @@
     "CHAT": {
         "SELECT": "Chọn một cuộc trò chuyện",
         "EXAMPLE": {
+            "loadMore": "Tải thêm",
+            "loading": "Đang tải",
+            "friends": "Bạn bè",
             "title": "Trò chuyện",
             "search": "Tìm kiếm",
             "lastChats": "Cuộc trò chuyện gần đây",

@@ -694,6 +694,9 @@
             "SELECT": "Select a chat"
         },
         "EXAMPLE": {
+            "loadMore": "Load more",
+            "loading": "Loading",
+            "friends": "Friends",
             "title": "Chat",
             "search": "Search",
             "lastChats": "Last chats",
