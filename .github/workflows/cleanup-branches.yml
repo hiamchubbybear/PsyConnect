@@ -2,7 +2,7 @@ name: Auto Cleanup Branches
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -25,13 +25,13 @@ jobs:
           echo "----------------------------------------"
 
       - name: Delete old branches
-        uses: phips28/gh-action-delete-old-branches@v3
+        uses: beatlabs/delete-old-branches-action@v0.0.11
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          days: 30
-          dry-run: false
-          delete-merged: true
-          exclude: main,develop,release/*
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          date: "30 days ago"
+          delete_tags: false
+          protected_branch_regex: ^(main|develop|release/.*)$
+          dry_run: false
 
       - name: Log cleanup end
         run: |
