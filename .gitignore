@@ -144,8 +144,6 @@ coverage/
 # ===============================
 # 🔒 Environment & Logs
 # ===============================
-.env.*.local
-*.env
 *.log
 logs/
 cache/
