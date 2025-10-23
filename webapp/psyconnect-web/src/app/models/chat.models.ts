@@ -4,11 +4,27 @@ export interface User {
   avatar: string;
   status?: 'available' | 'busy' | 'offline';
 }
-
+export interface ChatFromApi {
+  id: string;
+  senderId: string;
+  conversationId: string;
+  text: string;
+  createdAt: string;
+  updateAt: string;
+}
+export interface Friend {
+  profileId: string;
+  firstName: string;
+  lastName: string;
+  avatarUri: string;
+  isOnline?: boolean;
+  hasNewMessage?: boolean;
+}
 export interface Message {
   id: string;
-  userId: string;
+  conversationId: string;
   userName: string;
+  senderId: string;
   userAvatar: string;
   content: string;
   timestamp: Date;
@@ -24,32 +40,3 @@ export interface Chat {
   unread?: number;
   isTyping?: boolean;
 }
-export const fakeMessages: Message[] = [
-  {
-    id: '1',
-    userId: 'u1',
-    userName: 'Alice',
-    userAvatar: 'assets/avatars/alice.png',
-    content: 'Hey, how are you?',
-    timestamp: new Date(Date.now() - 1000 * 60 * 5),
-    isMine: false,
-  },
-  {
-    id: '2',
-    userId: 'me',
-    userName: 'You',
-    userAvatar: 'assets/avatars/me.png',
-    content: 'I’m good, just working on the Angular chat UI 😊',
-    timestamp: new Date(Date.now() - 1000 * 60 * 3),
-    isMine: true,
-  },
-  {
-    id: '3',
-    userId: 'u1',
-    userName: 'Alice',
-    userAvatar: 'assets/avatars/alice.png',
-    content: 'Nice! Send me a screenshot later.',
-    timestamp: new Date(Date.now() - 1000 * 60 * 1),
-    isMine: false,
-  },
-];

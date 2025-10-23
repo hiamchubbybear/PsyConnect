@@ -140,7 +140,6 @@ public class UserProfileService {
                     .map(p -> ProfileWithMoodSummaryDto.builder()
                             .profile(ProfileSummaryDto.builder()
                                     .profileId(p.getProfile().getProfileId())
-                                    .username(p.getProfile().getUsername())
                                     .avatarUri(p.getProfile().getAvatarUri())
                                     .build())
                             .mood(p.getMood())

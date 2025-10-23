@@ -1,18 +1,19 @@
 package ws
 
 import (
-	"chatservice/internal/model"
-	"chatservice/internal/repository"
+	"encoding/json"
 	"fmt"
 	"time"
+
+	"chatservice/internal/model"
+	"chatservice/internal/repository"
 )
 
 type Message struct {
-	ConversationID string
-	SenderID       string
-	Content        []byte
+	ConversationID string `json:"conversationId" bson:"conversation_id"`
+	SenderID       string `json:"sendId"`
+	Content        []byte `json:"text" `
 }
-
 type Hub struct {
 	Clients    map[string][]*Client
 	Register   chan *Client
@@ -47,10 +48,12 @@ func (h *Hub) Run() {
 			}
 
 		case message := <-h.Broadcast:
-			h.handleMessage(message)
+			h.handleMessageV1(message)
 		}
 	}
 }
+
+// Deprecated : Replace handleMessageV1 insteads
 func (h *Hub) handleMessage(message Message) {
 	var newChat = &model.Chat{
 		SenderID:       message.SenderID,
@@ -68,5 +71,47 @@ func (h *Hub) handleMessage(message Message) {
 		if client.ID != message.SenderID {
 			client.Send <- message.Content
 		}
+	}
+}
+
+func (h *Hub) handleMessageV1(message Message) {
+	fmt.Println("Handler save messsage")
+	newChat := &model.Chat{
+		SenderID:       message.SenderID,
+		ConversationID: message.ConversationID,
+		Text:           string(message.Content),
+		CreatedAt:      time.Now().UTC(),
+		UpdatedAt:      time.Now().UTC(),
+	}
+
+	res, err := h.ChatRepo.CreateChat(newChat)
+	if err != nil || res == nil {
+		fmt.Println("Save error:", err)
+		return
+	}
+
+	fmt.Printf("[Chat Saved] sender=%s text=%s\n", newChat.SenderID, newChat.Text)
+
+	for _, client := range h.Clients[message.ConversationID] {
+
+		payload := map[string]interface{}{
+			"id":             newChat.ID,
+			"userId":         newChat.SenderID,
+			"senderId":       newChat.SenderID,
+			"userName":       "",
+			"userAvatar":     "",
+			"content":        newChat.Text,
+			"timestamp":      newChat.CreatedAt.Format(time.RFC3339),
+			"isMine":         nil,
+			"conversationId": newChat.ConversationID,
+		}
+
+		data, err := json.Marshal(payload)
+		if err != nil {
+			fmt.Println("Error encoding message:", err)
+			continue
+		}
+
+		client.Send <- data
 	}
 }

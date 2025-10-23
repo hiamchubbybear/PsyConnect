@@ -62,21 +62,17 @@
 }
 
 .message-bubble.mine {
-  background: #e0f2fe;
+  background: var(--color-bg-contrast);
   border-radius: 12px;
   border-bottom-right-radius: 4px;
   margin-left: auto;
-}
-[data-theme="dark"] .message-bubble.mine {
-  background: #1e3a5f;
-  color: white;
+  color: var(--color-bg);
 }
 
 .message-bubble p {
   margin: 0;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: var(--color-text);
 }
 
 .message-time-mine {

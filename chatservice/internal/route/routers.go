@@ -2,29 +2,22 @@ package route
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
 
 	"chatservice/bootstrap"
-	handlers "chatservice/internal/handler"
+	"chatservice/internal/handler"
 	"chatservice/internal/repository"
 )
 
-func RouterInit(
-	env *bootstrap.Env,
-	repoManager *repository.RepositoryManager,
-) {
+func RouterInit(env *bootstrap.Env, repoManager *repository.RepositoryManager) {
+	uri := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 
-	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery())
 
-	defer func() {
-		if err := recover(); err != nil {
-			log.Fatal(err)
-		}
-	}()
-	chatHandler := handlers.NewChatHandler(env, repoManager)
+	chatHandler := handler.NewChatHandler(env, repoManager)
+	conversationHandler := handler.NewConversationHandler(env, repoManager)
 
 	router.POST("/chats", chatHandler.CreateChat)
 	router.GET("/chats/:id", chatHandler.GetChatByID)
@@ -32,5 +25,7 @@ func RouterInit(
 	router.PUT("/chats/:id", chatHandler.UpdateChat)
 	router.DELETE("/chats/:id", chatHandler.DeleteChat)
 
-	router.Run(urI)
+	router.POST("/conversations", chatHandler.CreateConversation)
+	router.GET("/conversations/by-users", conversationHandler.GetConversationByUsers)
+	router.Run(uri)
 }

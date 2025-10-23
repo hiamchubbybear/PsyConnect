@@ -1,11 +1,12 @@
 package ws
 
 import (
-	encoder "chatservice/internal/utils/conversation"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
+
+	"chatservice/internal/ws/middleware"
 )
 
 var upgrader = websocket.Upgrader{
@@ -15,27 +16,13 @@ var upgrader = websocket.Upgrader{
 }
 
 func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-	receiver := query.Get("receiver")
-
-	userID := r.Header.Get("X-User-Id")
-	if userID == "" {
-		http.Error(w, "Unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	profileID := r.Header.Get("X-Profile-Id")
-	if profileID == "" {
-		http.Error(w, "Unauthenticated", http.StatusUnauthorized)
-		return
-	}
-
-	conversationID, err := encoder.New().EncodeConversationId(userID, receiver)
-	if err != nil || conversationID == "" {
+	receiver := r.URL.Query().Get("receiver")
+	conversationID := r.URL.Query().Get("conversationId")
+	profileID := r.Context().Value(middleware.ProfileIDKey).(string)
+	if receiver == "" || conversationID == "" {
 		http.Error(w, "Cannot generate conversation ID", http.StatusBadRequest)
 		return
 	}
-
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("Upgrade error:", err)
@@ -43,7 +30,7 @@ func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := &Client{
-		ID:             userID,
+		ID:             profileID,
 		ProfileID:      profileID,
 		ConversationID: conversationID,
 		Conn:           conn,
@@ -52,7 +39,6 @@ func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 
 	hub.Register <- client
-
 	go client.WritePump()
 	go client.ReadPump()
 }

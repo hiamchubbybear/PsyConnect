@@ -63,7 +63,6 @@ export class UserContextService {
 
   getUser(): UserProfile | null {
     console.log(this.userSubject.value);
-
     return this.userSubject.value;
   }
 

@@ -64,7 +64,10 @@ func GetChatCollection() *mongo.Collection {
 	chat := InitDB()
 	return chat.Database(dbName).Collection("chat")
 }
-
+func GetConversationCollection() *mongo.Collection {
+	chat := InitDB()
+	return chat.Database(dbName).Collection("conversation")
+}
 func CloseDB() {
 	if mongoClient != nil {
 		if err := mongoClient.Disconnect(context.TODO()); err != nil {

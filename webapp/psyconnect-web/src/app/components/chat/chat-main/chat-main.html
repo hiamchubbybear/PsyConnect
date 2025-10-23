@@ -1,66 +1,87 @@
 <div class="chat-main">
   <div class="chat-header">
-    <button class="back-btn">
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <path d="M15 18l-6-6 6-6" />
-      </svg>
-    </button>
-
-    <div class="chat-info" *ngIf="selectedChat() as chat">
+    <div class="chat-info" *ngIf="selectedFriend as friend">
       <div class="chat-avatar">
         <img
-          *ngIf="chat.avatar && chat.avatar.startsWith('http')"
-          [src]="chat.avatar"
-          [alt]="chat.title"
+          *ngIf="friend.avatarUri && friend.avatarUri.startsWith('http')"
+          [src]="friend.avatarUri"
+          [alt]="friend.firstName"
         />
         <div
-          *ngIf="!chat.avatar || !chat.avatar.startsWith('http')"
+          *ngIf="!friend.avatarUri || !friend.avatarUri.startsWith('http')"
           class="avatar-fallback"
         >
-          {{ chat.title.charAt(0).toUpperCase() }}
+          {{ friend.firstName.charAt(0).toUpperCase() }}
         </div>
       </div>
 
-      <h2 class="chat-title">
-        {{ chat.title || ("CHAT.EXAMPLE.selectChat" | translate) }}
+      <div class="chat-meta">
+        <h2 class="chat-title">{{ friend.firstName }} {{ friend.lastName }}</h2>
+      </div>
+    </div>
+
+    <div class="chat-info" *ngIf="!selectedFriend">
+      <h2 class="chat-title text-muted">
+        {{ "CHAT.EXAMPLE.selectFriend" | translate }}
       </h2>
     </div>
   </div>
+  <div
+    class="load-more-container"
+    *ngIf="messages.length > 0"
+    (scroll)="onScroll()"
+  >
+    <button
+      class="load-more-btn"
+      (click)="loadOlderMessages()"
+      [disabled]="isLoadingOld"
+    >
+      <ng-container *ngIf="!isLoadingOld; else loadingOldTpl">
+        {{ "CHAT.EXAMPLE.loadMore" | translate }}
+      </ng-container>
+      <ng-template #loadingOldTpl>
+        <span class="loading">{{ "CHAT.EXAMPLE.loading" | translate }}</span>
+      </ng-template>
+    </button>
+  </div>
+  <div class="messages-container" #scrollContainer>
+    <ng-container *ngIf="selectedFriend; else noFriend">
+      <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
+        <app-message-bubble [message]="message"></app-message-bubble>
+      </ng-container>
 
-  <div class="messages-container" #messagesContainer>
-    @for (message of messages(); track message.id) {
-    <app-message-bubble [message]="message"></app-message-bubble>
-    } @if (isTyping()) {
-    <div class="typing-indicator">
-      <div class="typing-avatar">
-        <img
-          [src]="selectedChat()?.avatar || 'assets/images/default-avatar.png'"
-          [alt]="selectedChat()?.title || 'User'"
-        />
+      <div *ngIf="isTyping" class="typing-indicator">
+        <div class="typing-avatar">
+          <img
+            [src]="
+              selectedFriend.avatarUri || 'assets/images/default-avatar.png'
+            "
+            [alt]="selectedFriend.firstName || 'User'"
+          />
+        </div>
+        <div class="typing-bubble">
+          <span>
+            {{ selectedFriend.firstName }} {{ "CHAT.TYPING" | translate }}
+          </span>
+        </div>
       </div>
-      <div class="typing-bubble">
-        <span>
-          {{ selectedChat()?.title || "User" }}
-          {{ "CHAT.TYPING" | translate }}
-        </span>
+    </ng-container>
+
+    <ng-template #noFriend>
+      <div class="no-friend-selected">
+        {{ "CHAT.EXAMPLE.noFriendSelected" | translate }}
       </div>
-    </div>
-    }
+    </ng-template>
   </div>
 
-  <div class="message-input-container">
+  <div class="message-input-container" *ngIf="selectedFriend">
     <input
       type="text"
       [placeholder]="'CHAT.EXAMPLE.placeholder' | translate"
       [(ngModel)]="messageText"
-      (keyup.enter)="sendMessage()"
+      (keyup.enter)="onSendMessage()"
     />
+
     <button class="attach-btn" title="Attach file">
       <svg
         width="20"
@@ -74,6 +95,7 @@
         />
       </svg>
     </button>
+
     <button class="emoji-btn" title="Add emoji">
       <svg
         width="20"
@@ -88,9 +110,10 @@
         <line x1="15" y1="9" x2="15.01" y2="9" />
       </svg>
     </button>
+
     <button
       class="send-btn"
-      (click)="sendMessage()"
+      (click)="onSendMessage()"
       [disabled]="!messageText.trim()"
     >
       <svg

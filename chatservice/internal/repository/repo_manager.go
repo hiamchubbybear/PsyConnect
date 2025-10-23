@@ -1,22 +1,30 @@
 package repository
 
 import (
+	"log"
+
 	"chatservice/bootstrap"
 	"chatservice/internal/db"
-	"log"
 )
 
 type RepositoryManager struct {
-	MessageRepo *ChatRepository
+	MessageRepo            *ChatRepository
+	ConversationRepository *ConversationRepository
 }
 
 func NewRepositoryManager(env *bootstrap.Env) *RepositoryManager {
 	messageRepo := NewChatRepository(db.GetChatCollection())
+	conversationRepo := NewConversationRepository(db.GetConversationCollection())
+
 	if messageRepo == nil {
-		log.Fatal("clientRepo is nil")
+		log.Fatal("messageRepo is nil")
 	}
-	repoManager := RepositoryManager{
-		MessageRepo: messageRepo,
+	if conversationRepo == nil {
+		log.Fatal("conversationRepo is nil")
 	}
-	return &repoManager
+
+	return &RepositoryManager{
+		MessageRepo:            messageRepo,
+		ConversationRepository: conversationRepo,
+	}
 }

@@ -8,8 +8,8 @@ import (
 )
 
 type Chat struct {
-	ID             string    `bson:"_id,omitempty"`
-	SenderID       string    `json:"Sender" bson:"sender_id"`
+	ID             string    `json:"id" bson:"_id,omitempty"`
+	SenderID       string    `json:"senderId" bson:"sender_id"`
 	ConversationID string    `json:"conversationId" bson:"conversation_id"`
 	Text           string    `json:"text" bson:"text"`
 	CreatedAt      time.Time `json:"createdAt" bson:"created_at"`

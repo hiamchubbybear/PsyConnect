@@ -1,3 +1,6 @@
+.chat-main {
+  font-family: "Quicksand", sans-serif;
+}
 .files-sidebar {
   position: absolute;
   right: 1rem;
@@ -258,4 +261,30 @@
       }
     }
   }
+}
+.load-more-container {
+  font-family: "Quicksand", sans-serif;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.load-more-btn {
+  background: var(--color-bg);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--color-bg-contrast);
+  transition: background 0.2s;
+}
+
+.load-more-btn:hover {
+  background: var(--color-bg-contrast);
+  color: var(--color-bg);;
+}
+
+.load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
