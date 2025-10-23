@@ -14,6 +14,5 @@ import lombok.NoArgsConstructor;
 public class ProfileSummaryDto implements Serializable {
     private static final long serialVersionUID = 1L;
     private String profileId;
-    private String username;
     private String avatarUri;
 }

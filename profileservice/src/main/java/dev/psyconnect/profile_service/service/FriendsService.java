@@ -2,6 +2,7 @@ package dev.psyconnect.profile_service.service;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -207,6 +208,30 @@ public class FriendsService {
                     LogLevel.LOG));
             throw e;
         }
+    }
+
+    public List<Map<String, Object>> getReceivedRequests(String profileId) {
+        return friendRepository.findReceivedFriendRequests(profileId);
+    }
+
+    public List<Map<String, Object>> getSentRequests(String profileId) {
+        return friendRepository.findSentFriendRequests(profileId);
+    }
+
+    public List<Map<String, Object>> getMutualFriends(String id, String toId) {
+        return friendRepository.findMutualFriends(id, toId);
+    }
+
+    public List<Map<String, Object>> getFriendSuggestions(String id) {
+        return friendRepository.suggestFriends(id);
+    }
+
+    public List<Map<String, Object>> getAllFriendsById(String profileId) {
+        var friends = friendRepository.findAcceptedFriendsLightweight(profileId);
+        if (friends == null || friends.isEmpty()) {
+            throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
+        }
+        return friends;
     }
 
     private LogEvent buildLog(

@@ -29,7 +29,6 @@ public class Profile implements Serializable {
     private static final long serialVersionUID = 1L;
     private @Id @Indexed String profileId;
     private @Property("accountId") @NotNull String accountId;
-    private @Property("username") String username;
     private @Property("firstName") String firstName;
     private @Property("lastName") String lastName;
     private @Property("dob") @JsonFormat(pattern = "yyyy-MM-dd") LocalDate dob;
