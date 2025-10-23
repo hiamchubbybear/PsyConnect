@@ -1,7 +1,7 @@
 import { UserProfile } from '../services/profile/profile-service';
 
 export interface ChatUser {
-  id: string;
+  profileId: string;
   name: string;
   avatar: string;
   isOnline: boolean;
@@ -13,16 +13,25 @@ export function mapUserProfileToChatUser(
 ): ChatUser {
   if (!profile) {
     return {
-      id: 'fallback',
+      profileId: 'fallback',
       name: 'Guest User',
       avatar: 'https://i.pravatar.cc/150?img=1',
       isOnline: true,
       status: 'CHAT.EXAMPLE.status.available',
     };
   }
+  console.log('Profile', {
+    id: profile.profileId || 'unknown',
+    name:
+      `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim() ||
+      'No Name',
+    avatar: profile.avatarUri || 'https://i.pravatar.cc/150?img=1',
+    isOnline: true,
+    status: 'CHAT.EXAMPLE.status.available',
+  });
 
   return {
-    id: profile.profileId || 'unknown',
+    profileId: profile.profileId || 'unknown',
     name:
       `${profile.firstName ?? ''} ${profile.lastName ?? ''}`.trim() ||
       'No Name',
