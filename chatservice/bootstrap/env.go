@@ -7,13 +7,14 @@ import (
 )
 
 type Env struct {
-	Port              string `mapstructure:"SERVICE_PORT"`
+	Port              string `mapstructure:"CHAT_SERVICE_PORT"`
 	Addr              string `mapstructure:"SERVICE_HOST"`
 	KafkaAddr         string `mapstructure:"KAFKA_ADDRESS"`
 	KafkaTopic        string `mapstructure:"KAFKA_TOPIC"`
 	KafkaPart         string `mapstructure:"KAFKA_PARTITION"`
 	GrpcAdd           string `mapstructure:"GRPC_ADDRESS"`
 	NotificationTopic string `mapstructure:"KAFKA_NOTIFICATION_TOPIC"`
+	JwtSecret         string `mapstructure:"JWT_SIGNER_KEY"`
 }
 
 func LoadEnv() *Env {

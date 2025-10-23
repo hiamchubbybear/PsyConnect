@@ -1,13 +1,17 @@
-package handlers
+package handler
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
 	"chatservice/bootstrap"
 	"chatservice/internal/model"
 	"chatservice/internal/repository"
+	encoder "chatservice/internal/utils/conversation"
 	"chatservice/pkg/apiresponse"
 )
 
@@ -73,7 +77,21 @@ func (h *ChatHandler) GetChatsByConversation(c *gin.Context) {
 		return
 	}
 
-	chats, err := h.RepoManager.MessageRepo.FindChatsByConversation(conversationID)
+	limitStr := c.DefaultQuery("limit", "10")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit <= 0 {
+		limit = 10
+	}
+	beforeStr := c.Query("before")
+	var before time.Time
+	if beforeStr != "" {
+		before, err = time.Parse(time.RFC3339, beforeStr)
+		if err != nil {
+			apiresponse.ErrorHandler(c, http.StatusBadRequest, "Invalid 'before' time format, must be RFC3339")
+			return
+		}
+	}
+	chats, err := h.RepoManager.MessageRepo.FindChatsByConversation(conversationID, limit, before)
 	if err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
 		return
@@ -129,4 +147,60 @@ func (h *ChatHandler) DeleteChat(c *gin.Context) {
 	}
 
 	apiresponse.NewApiResponse(c, gin.H{"deleted": true})
+}
+func (h *ChatHandler) CreateConversation(c *gin.Context) {
+
+	var req struct {
+		UserIds []string `json:"userIds"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(req.UserIds) < 2 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "need at least two user IDs"})
+		return
+	}
+	fmt.Println("Users " + req.UserIds[0])
+	conversationUUID, err := encoder.New().EncodeConversationId(req.UserIds[0], req.UserIds[1])
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	existing, _ := h.RepoManager.ConversationRepository.Exists(conversationUUID)
+	if existing {
+		c.JSON(http.StatusOK, gin.H{"data": existing})
+		return
+	}
+	conversation := model.Conversation{
+		Id:           conversationUUID,
+		Participants: req.UserIds,
+		CreatedAt:    time.Now(),
+	}
+
+	if err := h.RepoManager.ConversationRepository.CreateConversation(&conversation); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": conversation})
+}
+func (s *ChatHandler) GetOrCreateConversation(user1ID, user2ID string) (*model.Conversation, error) {
+	existing, err := s.RepoManager.ConversationRepository.GetConversationByUsers(user1ID, user2ID)
+	if err != nil {
+		return nil, err
+	}
+	if existing != nil {
+		return existing, nil
+	}
+
+	newConv := &model.Conversation{
+		Participants: []string{user1ID, user2ID},
+	}
+	err = s.RepoManager.ConversationRepository.CreateConversation(newConv)
+	if err != nil {
+		return nil, err
+	}
+	return newConv, nil
 }
