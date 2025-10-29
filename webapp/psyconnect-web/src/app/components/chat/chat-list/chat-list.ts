@@ -55,8 +55,10 @@ export class ChatListComponent implements OnInit {
       this.visibleCount += 6;
     }
   }
+  selectedUserId: string | null = null;
 
   onSelect(friend: Friend) {
+    this.selectedUserId = friend.profileId;
     this.friendSelected.emit(friend);
   }
   trackByFn(index: number, item: Friend) {

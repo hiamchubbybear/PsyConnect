@@ -16,7 +16,7 @@ export class ToastService {
     duration = 4000
   ) {
     const toast: ToastData = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       title,
       message,
       type,

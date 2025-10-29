@@ -29,7 +29,7 @@ import {
   `,
   styles: [
     `
-      .account-content {
+      .main-content {
         margin-left: 360px;
         padding: 2rem;
         transition: margin-left 0.3s ease;

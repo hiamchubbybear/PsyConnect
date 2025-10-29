@@ -779,5 +779,63 @@
             "continue": "Tiếp tục",
             "create": "Tạo tài khoản"
         }
+    },
+    "SOCIAL": {
+        "sidebar": {
+            "items": {
+                "wall": "Tường",
+                "friends": "Bạn bè",
+                "discover": "Khám phá",
+                "settings": "Cài đặt"
+            }
+        }
+    },
+    "profile": {
+        "title": "Profile",
+        "edit": {
+            "button": "Edit",
+            "ariaLabel": "Edit profile"
+        },
+        "staffInfo": {
+            "title": "Staff Member Information"
+        },
+        "staffWebsite": {
+            "title": "Staff Website"
+        },
+        "contact": {
+            "email": "Send email",
+            "message": "Send message",
+            "slack": "Contact on Slack",
+            "phone": "Call phone"
+        }
+    },
+    "friends": {
+        "title": "Bạn bè",
+        "requests": {
+            "title": "Lời mời kết bạn",
+            "accept": "Chấp nhận",
+            "decline": "Từ chối",
+            "empty": "Không có lời mời kết bạn nào"
+        },
+        "list": {
+            "title": "Tất cả bạn bè",
+            "message": "Nhắn tin",
+            "unfriend": "Hủy kết bạn",
+            "empty": "Bạn chưa có bạn bè nào"
+        },
+        "suggestions": {
+            "title": "Người bạn có thể biết",
+            "add": "Kết bạn",
+            "mutual": "{{count}} bạn chung",
+            "empty": "Không có gợi ý kết bạn"
+        }
+    },
+    "common": {
+        "cancel": "Hủy",
+        "confirm": "Xác nhận"
+    },
+    "dialog": {
+        "unfriend_title": "Xóa bạn bè",
+        "unfriend_message": "Bạn có chắc chắn muốn xóa {{name}} khỏi danh sách bạn bè?"
     }
 }

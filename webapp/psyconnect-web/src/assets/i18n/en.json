@@ -798,5 +798,63 @@
             "continue": "Continue",
             "create": "Create Account"
         }
+    },
+    "SOCIAL": {
+        "sidebar": {
+            "items": {
+                "wall": "Wall",
+                "friends": "Friends",
+                "discover": "Discover",
+                "settings": "Setting"
+            }
+        }
+    },
+    "profile": {
+        "title": "Profile",
+        "edit": {
+            "button": "Edit",
+            "ariaLabel": "Edit profile"
+        },
+        "staffInfo": {
+            "title": "Staff Member Information"
+        },
+        "staffWebsite": {
+            "title": "Staff Website"
+        },
+        "contact": {
+            "email": "Send email",
+            "message": "Send message",
+            "slack": "Contact on Slack",
+            "phone": "Call phone"
+        }
+    },
+    "friends": {
+        "title": "Friends",
+        "requests": {
+            "title": "Friend Requests",
+            "accept": "Accept",
+            "decline": "Decline",
+            "empty": "No friend requests at the moment"
+        },
+        "list": {
+            "title": "All Friends",
+            "message": "Message",
+            "unfriend": "Unfriend",
+            "empty": "You don't have any friends yet"
+        },
+        "suggestions": {
+            "title": "Friend Suggestions",
+            "add": "Add Friend",
+            "mutual": "{{count}} mutual friends",
+            "empty": "No friend suggestions available"
+        }
+    },
+    "common": {
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+    },
+    "dialog": {
+        "unfriend_title": "Delete friends",
+        "unfriend_message": "Bạn có chắc chắn muốn xóa {{name}} khỏi danh sách bạn bè?"
     }
 }

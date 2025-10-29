@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
-  //   apiUrl: 'https://api.chessy.dev',
-  //   wsUrl: 'ws://api.chessy.dev/ws',
-  apiUrl: 'http://localhost:8888',
-  wsUrl: 'ws://localhost:8085/ws',
+  apiUrl: 'https://api.chessy.dev',
+  wsUrl: 'wss://ws.chessy.dev/ws',
+  //   apiUrl: 'http://localhost:8888',
+  //   wsUrl: 'ws://localhost:8085/ws',
   key_theme: 'KEY_THEME',
   apiVersion: 'v1',
   refreshKey: 'X9fG2kLp',

@@ -10,12 +10,10 @@ import {
 } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
+import { lucideConfig } from '../lucide.config';
 import { routes } from './app.routes';
-import {
-    authInterceptor
-} from './services/auth/auth.interceptor';
+import { authInterceptor } from './services/auth/auth.interceptor';
 
-// Custom loader class đơn giản
 export class CustomTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) {}
 
@@ -24,19 +22,19 @@ export class CustomTranslateLoader implements TranslateLoader {
   }
 }
 
-// Factory function
 export function createTranslateLoader(http: HttpClient) {
   return new CustomTranslateLoader(http);
 }
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes), // Router
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])), // HTTP Client
-    provideAnimations(), // Angular animations
+    lucideConfig,
+    provideRouter(routes),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideAnimations(),
     importProvidersFrom(
       TranslateModule.forRoot({
-        defaultLanguage: 'en', // hoặc 'vi'
+        defaultLanguage: 'en',
         loader: {
           provide: TranslateLoader,
           useFactory: createTranslateLoader,
@@ -44,8 +42,5 @@ export const appConfig: ApplicationConfig = {
         },
       })
     ),
-    // Nếu cần ReactiveFormsModule hoặc FormsModule thì importProvidersFrom tương tự
-    // importProvidersFrom(ReactiveFormsModule),
-    // importProvidersFrom(FormsModule),
   ],
 };
