@@ -72,6 +72,186 @@ scss.component {
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   transition: all 0.2s ease;
 }
+  Write variable base :root {
+  --font-family: #{v.$font-primary};
+  --color-surface-hover: #{rgba(0, 0, 0, 0.04)};
+  --color-accent-bg: #{rgba(59, 130, 246, 0.1)};
+  --shadow-card: #{v.$shadow-card};
+  --shadow-card-hover: #{v.$shadow-card-hover};
+  --shadow-dropdown: #{v.$shadow-dropdown};
+  --shadow-button-hover: #{v.$shadow-button-hover};
+  --color-bg: #{v.$color-white};
+  --color-bg-secondary: #{v.$color-gray-50};
+  --color-surface-low: #{v.$color-gray-100};
+  --color-surface-mid: #{v.$color-gray-200};
+  --color-surface-high: #{v.$color-gray-300};
+  --color-surface-overlay: #{v.$color-gray-400};
+  --collapse-content: 60px;
+  --color-text: #{v.$color-text};
+  --color-text-muted: #{v.$color-text-muted};
+  --color-text-hover: #b7b7ba;
+
+  --color-primary: #{v.$color-primary};
+  --color-primary-hover: #{v.$color-primary-hover};
+  --color-accent: #{v.$color-accent};
+  --color-accent-hover: #{v.$color-accent-hover};
+
+  --color-border: #{v.$border-color};
+  --color-surface: #{v.$color-white};
+
+  --spacing-xs: #{v.$spacing-xs};
+  --spacing-sm: #{v.$spacing-sm};
+  --spacing-md: #{v.$spacing-md};
+  --spacing-lg: #{v.$spacing-lg};
+  --spacing-xl: #{v.$spacing-xl};
+  --spacing-2xl: #{v.$spacing-2xl};
+
+  --shadow-sm: #{v.$shadow-sm};
+  --shadow-md: #{v.$shadow-md};
+
+  --transition-fast: #{v.$transition-fast};
+  --transition-medium: #{v.$transition-medium};
+
+  --header-bg: #{v.$color-gray-100};
+  --header-text: #{v.$color-gray-900};
+  --header-border: #{v.$color-gray-200};
+  --header-link-text: #{v.$color-gray-700};
+  --header-link-hover: #{v.$color-primary};
+  --header-link-arrow: #{v.$color-gray-400};
+  --header-shadow: #{v.$shadow-sm};
+  --footer-a: #{v.$footer-a};
+  --footer-line: #d4d4d8;
+
+  --dropdown-bg: #{v.$color-white};
+  --dropdown-border: #{v.$color-gray-200};
+  --dropdown-text: #{v.$color-gray-900};
+  --dropdown-item-hover-bg: #{v.$color-gray-50};
+  --dropdown-item-hover-text: #{v.$color-primary};
+  --dropdown-shadow: #{v.$shadow-md};
+  --dropdown-badge-bg: #{v.$color-accent};
+  --dropdown-badge-bg-hover: #{v.$color-accent-hover};
+  --dropdown-badge-text: #{v.$color-white};
+
+  --color-bg-contrast: #000;
+  --login-container: #{v.$color-gray-200};
+
+  --color-primary: #{v.$color-primary};
+  --color-primary-hover: #{v.$color-primary-hover};
+  --color-accent: #{v.$color-accent};
+  --color-accent-hover: #{v.$color-accent-hover};
+  --color-accent-bg: #{rgba(23, 23, 23, 0.05)};
+
+  --color-border: #{v.$border-color};
+
+  --color-success-bg: #f0fdf4;
+  --color-success-text: #{v.$color-success};
+  --color-success-border: #bbf7d0;
+
+  --color-error-bg: #fef2f2;
+  --color-error-text: #{v.$color-error};
+  --color-error-border: #fecaca;
+
+  --color-warning-bg: #fffbeb;
+  --color-warning-text: #{v.$color-warning};
+  --color-warning-border: #fed7aa;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --icon-theme-color: none;
+
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+
+  --color-on-accent: #ffffff;
+
+  --color-icon: #666666;
+  --color-icon-hover: #222222;
+
+  --color-text-secondary: var(--color-text-muted);
+
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] {
+  --color-bg-contrast: #fff;
+  --color-bg: #1a1a1b;
+  --color-bg-secondary: #151515;
+  --color-surface-low: #151515;
+  --color-surface-mid: #1e1e20;
+  --color-surface-high: #27272a;
+  --color-surface-overlay: #2f2f33;
+
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-text-hover: #292930;
+
+  --color-primary: #fafafa;
+  --color-primary-hover: #f5f5f5;
+  --color-accent: #d4d4d4;
+  --color-accent-hover: #e5e5e5;
+  --color-accent-bg: #{rgba(255, 255, 255, 0.05)};
+
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-surface: #111111;
+
+  --header-bg: #1e1e20;
+  --header-text: #fafafa;
+  --header-border: #3f3f46;
+  --header-link-text: #d4d4d8;
+  --header-link-hover: #e5e5f7;
+  --header-link-arrow: #71717a;
+  --header-shadow: #{v.$shadow-sm};
+  --footer-a: #d4d4d8;
+  --footer-line: #3d3d43;
+
+  --dropdown-bg: #1e1e20;
+  --dropdown-border: #3f3f46;
+  --dropdown-text: #fafafa;
+  --dropdown-item-hover-bg: #27272a;
+  --dropdown-item-hover-text: #f4f4f5;
+  --dropdown-shadow: #{v.$shadow-md};
+  --dropdown-badge-bg: #3b82f6;
+  --dropdown-badge-bg-hover: #2563eb;
+  --dropdown-badge-text: #ffffff;
+
+  --color-border: #{rgba(255, 255, 255, 0.08)};
+
+  --color-success-bg: #0f1419;
+  --color-success-text: #4ade80;
+  --color-success-border: #166534;
+
+  --color-error-bg: #1c0b0b;
+  --color-error-text: #f87171;
+  --color-error-border: #7f1d1d;
+
+  --color-warning-bg: #1a1206;
+  --color-warning-text: #fbbf24;
+  --color-warning-border: #92400e;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.6);
+
+  --icon-theme-color: brightness(0) invert(1);
+  --overlay-bg: rgba(0, 0, 0, 0.7);
+  --color-on-accent: #000000;
+  --color-icon: #a1a1aa;
+  --color-icon-hover: #ffffff;
+  --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.6);
+
+  --color-text-secondary: var(--color-text-muted);
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+}
+
+
 🚫 AVOID
 
 Gradients phức tạp
@@ -92,24 +272,9 @@ Transition cho smooth UX
 Consistent spacing system
 Error/loading states
 
-📱 RESPONSIVE RULES
-scss// Mobile first approach
-.component {
-  padding: 0.75rem; // Mobile default
-  font-size: 14px;
 
-  @media (min-width: 768px) {
-    padding: 1rem; // Tablet
-    font-size: 16px;
-  }
-
-  @media (min-width: 1024px) {
-    padding: 1.5rem; // Desktop
-  }
-}
 Prompt format khi cần SCSS:
-
+Có response sive nhưng không có res cho mobile vì tôi đã validate màn hình nhỏ là sẽ bắt buộc tải app .
 "Viết SCSS theo minimalism rules: subtle colors, 0.2s transitions, 6-8px border-radius, consistent spacing (4px system), hover states, mobile-first responsive focus need input if there are somefeild"
 
 Bạn copy rules này và paste vào đầu mỗi prompt về SCSS để đảm bảo output luôn professional và minimal! */
-/* https://lordicon.com/?utm_source=chatgpt.com */

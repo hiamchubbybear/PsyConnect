@@ -269,6 +269,7 @@
 }
 
 .load-more-btn {
+  font-family: var(--font-family);
   background: var(--color-bg);
   border: none;
   border-radius: 8px;
@@ -281,7 +282,7 @@
 
 .load-more-btn:hover {
   background: var(--color-bg-contrast);
-  color: var(--color-bg);;
+  color: var(--color-bg);
 }
 
 .load-more-btn:disabled {

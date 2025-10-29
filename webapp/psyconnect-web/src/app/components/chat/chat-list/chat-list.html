@@ -40,7 +40,11 @@
 
   <div class="chats-list">
     <ng-container *ngFor="let friend of filteredFriends; trackBy: trackByFn">
-      <div class="chat-item" (click)="onSelect(friend)">
+      <div
+        class="chat-item"
+        (click)="onSelect(friend)"
+        [ngClass]="{ selected: friend.profileId === selectedUserId }"
+      >
         <div class="chat-avatar">
           <img
             [src]="friend.avatarUri"

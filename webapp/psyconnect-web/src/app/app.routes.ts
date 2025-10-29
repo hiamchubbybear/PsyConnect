@@ -21,6 +21,9 @@ import { RequestResetComponent } from './pages/request-reset/request-reset';
 import { RequestResetSuccessComponent } from './pages/request-reset/success/request-reset-success';
 import { SearchComponent } from './pages/search/search';
 import { MultiStepRegisterComponent } from './pages/signup/signup';
+import { FriendsPage } from './pages/socialprofile/friends/friends-page';
+import { SocialProfile } from './pages/socialprofile/socialprofile';
+import { ProfilePageComponent } from './pages/socialprofile/wall/wall';
 import { Start } from './pages/start/start';
 
 export const routes: Routes = [
@@ -151,7 +154,16 @@ export const routes: Routes = [
     ],
   },
   { path: 'feature/chat', component: ChatComponent, canActivate: [authGuard] },
-  { path: 'feature/profile', component: Notfound, canActivate: [authGuard] },
+  {
+    path: 'feature/social',
+    component: SocialProfile,
+    canActivate: [authGuard],
+    children: [
+      { path: '', redirectTo: 'wall', pathMatch: 'full' },
+      { path: 'wall', component: ProfilePageComponent },
+      { path: 'friends', component: FriendsPage },
+    ],
+  },
 
   { path: 'about-us', component: AboutUsComponent },
   {

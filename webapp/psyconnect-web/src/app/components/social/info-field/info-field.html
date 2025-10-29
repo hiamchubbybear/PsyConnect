@@ -1,0 +1,10 @@
+<!-- src/app/features/profile/components/info-field/info-field.component.html -->
+<div class="info-field">
+  <dt class="info-field__label">{{ label }}</dt>
+  <dd class="info-field__value">
+    <ng-container *ngIf="isTemplateRef(value); else stringValue">
+      <ng-container *ngTemplateOutlet="value"></ng-container>
+    </ng-container>
+    <ng-template #stringValue>{{ value }}</ng-template>
+  </dd>
+</div>

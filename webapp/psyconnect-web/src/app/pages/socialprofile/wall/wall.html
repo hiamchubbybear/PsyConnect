@@ -1,0 +1,16 @@
+<div class="profile-page">
+  <app-profile-card [user]="mockUser"></app-profile-card>
+  <div class="profile-page__container">
+    <app-info-block
+      [title]="'profile.staffInfo.title' | translate"
+      [fields]="staffInfoFields"
+      (edit)="onEditStaffInfo()"
+    ></app-info-block>
+
+    <app-info-block
+      [title]="'profile.staffWebsite.title' | translate"
+      [fields]="websiteFields"
+      (edit)="onEditWebsite()"
+    ></app-info-block>
+  </div>
+</div>

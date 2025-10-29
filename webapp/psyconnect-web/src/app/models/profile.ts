@@ -35,3 +35,17 @@ export interface UserProfileUpdateRequest {
   gender: string;
   avatarUri: string;
 }
+export interface UserProfile {
+  id: string;
+  name: string;
+  role: string;
+  email: string;
+  phone: string;
+  city: string;
+  avatarUrl?: string;
+  coverUrl?: string;
+  accountStatus: string;
+  twoFactorAuth: string;
+  userType: string;
+  propertyAccess: string;
+}
