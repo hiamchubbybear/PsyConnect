@@ -1,0 +1,22 @@
+.profile-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: var(--spacing-lg, 24px);
+
+  &__container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+}
+app-profile-card {
+  width: calc(100% + 36rem);
+
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .profile-page {
+    padding: var(--spacing-xl, 32px);
+  }
+}

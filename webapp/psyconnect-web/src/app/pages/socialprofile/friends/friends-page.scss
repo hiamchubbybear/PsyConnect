@@ -1,0 +1,184 @@
+.friends-page {
+  min-height: 100vh;
+  background: var(--color-bg-secondary);
+  padding: 16px;
+
+  display: flex;
+  justify-content: center;
+
+  &__container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: var(--color-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+  }
+
+  /* Thanh header có tiêu đề và thanh tìm kiếm */
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0;
+    }
+  }
+
+  &__search {
+    flex: 1;
+    min-width: 220px;
+    background: var(--color-surface-low);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.9rem;
+      color: var(--color-text);
+
+      &::placeholder {
+        color: var(--color-text-muted);
+      }
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--color-text-muted);
+    }
+  }
+
+  /* Khối con (requests, list, suggestions) */
+  app-friend-requests,
+  app-friend-list,
+  app-friend-suggestions {
+    display: block;
+    background: var(--color-surface, #fff);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: var(--color-surface-hover);
+    }
+  }
+
+  /* Danh sách friend/suggestion */
+  app-friend-list .friend-list,
+  app-friend-suggestions .friend-suggestions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  /* Card bạn bè */
+  .friend-card {
+    background: var(--color-bg);
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    &__avatar-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 2px var(--color-surface);
+    }
+
+    &__name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--color-text);
+      margin: 4px 0;
+    }
+
+    &__mutual-text {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+
+    &__actions {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    &__btn {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &--primary {
+        background: var(--color-primary);
+        color: #fff;
+        border: none;
+
+        &:hover {
+          background: var(--color-primary-hover);
+        }
+      }
+
+      &--outline {
+        border: 1px solid var(--color-border);
+        background: transparent;
+        color: var(--color-text);
+
+        &:hover {
+          background: var(--color-surface-low);
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .friends-page {
+    padding: 24px;
+
+    &__container {
+      gap: 32px;
+      padding: 28px;
+    }
+
+    .friend-card__avatar-img {
+      width: 72px;
+      height: 72px;
+    }
+  }
+}

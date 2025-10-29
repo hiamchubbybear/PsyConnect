@@ -1,0 +1,19 @@
+<div class="confirm-overlay" (click)="cancel.emit()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <h3 class="confirm-dialog__title">
+      {{ title | translate }}
+    </h3>
+    <p class="confirm-dialog__message">
+      {{ message | translate }}
+    </p>
+
+    <div class="confirm-dialog__actions">
+      <button class="confirm-btn confirm-btn--cancel" (click)="cancel.emit()">
+        {{ "common.cancel" | translate }}
+      </button>
+      <button class="confirm-btn confirm-btn--confirm" (click)="confirm.emit()">
+        {{ "common.confirm" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

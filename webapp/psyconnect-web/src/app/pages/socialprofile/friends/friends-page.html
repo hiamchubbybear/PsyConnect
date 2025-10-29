@@ -1,0 +1,24 @@
+<div class="friends-page">
+  <div class="friends-page__container">
+    <div class="friends-page__header">
+      <h2>{{ "friends.title" | translate }}</h2>
+    </div>
+
+    <app-friend-list
+      [friends]="friends"
+      (messageFriend)="onMessageFriend($event)"
+      (unfriendUser)="onUnfriend($event)"
+    ></app-friend-list>
+
+    <app-friend-requests
+      [requests]="friendRequests"
+      (acceptRequest)="onAcceptRequest($event)"
+      (declineRequest)="onDeclineRequest($event)"
+    ></app-friend-requests>
+
+    <app-friend-suggestions
+      [suggestions]="suggestions"
+      (addFriend)="onAddFriend($event)"
+    ></app-friend-suggestions>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="dropdown" [class.visible]="visible">
+  <div class="dropdown__header">
+    <strong>{{ friend.name }}</strong>
+  </div>
+
+  <ng-container [ngSwitch]="cardType">
+    <ng-container *ngSwitchCase="'request'">
+      <button class="dropdown__item" (click)="accept.emit()">
+        <lucide-icon name="check"></lucide-icon>
+        Accept
+      </button>
+      <button class="dropdown__item" (click)="decline.emit()">
+        <lucide-icon name="x"></lucide-icon>
+        Decline
+      </button>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'friend'">
+      <button class="dropdown__item" (click)="message.emit()">
+        <lucide-icon name="message-square"></lucide-icon>
+        Message
+      </button>
+      <button class="dropdown__item" (click)="openConfirmOverlay()">
+        <lucide-icon name="user-x"></lucide-icon>
+        Remove
+      </button>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'suggestion'">
+      <button class="dropdown__item" (click)="addFriend.emit()">
+        <lucide-icon name="user-plus"></lucide-icon>
+        Add Friend
+      </button>
+    </ng-container>
+  </ng-container>
+</div>
