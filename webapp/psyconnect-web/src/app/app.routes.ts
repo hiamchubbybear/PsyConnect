@@ -146,8 +146,8 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () =>
-          import('./pages/consultation/settings/settings').then(
-            (m) => m.Settings
+          import('./pages/consultation/consultation/consultation').then(
+            (m) => m.ProfileFormClientComponent
           ),
       },
       { path: '', redirectTo: 'discover', pathMatch: 'full' },

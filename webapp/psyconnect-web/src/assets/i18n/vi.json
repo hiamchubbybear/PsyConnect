@@ -206,7 +206,8 @@
             "Items": {
                 "AccountInfo": "Thông tin tài khoản",
                 "Security": "Bảo mật",
-                "Payment": "Thanh toán"
+                "Payment": "Thanh toán",
+                "Consultation": "Tư vấn"
             }
         },
         "Profile": {
@@ -837,5 +838,199 @@
     "dialog": {
         "unfriend_title": "Xóa bạn bè",
         "unfriend_message": "Bạn có chắc chắn muốn xóa {{name}} khỏi danh sách bạn bè?"
+    },
+    "profileUpdate": {
+        "title": "Hoàn thiện hồ sơ",
+        "subtitle": "Giúp chúng tôi kết nối bạn với chuyên gia tâm lý phù hợp bằng cách hoàn thiện hồ sơ.",
+        "saveSuccess": "Đã cập nhật hồ sơ thành công!"
+    },
+    "client": {
+        "steps": {
+            "basic": "Cơ bản",
+            "preferences": "Ưu tiên",
+            "availability": "Lịch trình",
+            "therapist": "Chuyên gia"
+        },
+        "basicInfo": {
+            "title": "Thông tin cơ bản",
+            "subtitle": "Cho chúng tôi biết về bạn và nơi bạn sinh sống"
+        },
+        "address": {
+            "label": "Địa điểm của bạn",
+            "placeholder": "Thành phố Hồ Chí Minh, Việt Nam"
+        },
+        "languages": {
+            "label": "Ngôn ngữ bạn nói"
+        },
+        "preferences": {
+            "title": "Ưu tiên trị liệu",
+            "subtitle": "Giúp chúng tôi hiểu bạn đang tìm kiếm điều gì trong liệu pháp"
+        },
+        "issueDetail": {
+            "label": "Điều gì khiến bạn tìm đến trị liệu? (Tùy chọn)"
+        },
+        "consultationModes": {
+            "label": "Bạn muốn gặp mặt như thế nào?"
+        },
+        "budget": {
+            "label": "Ngân sách mỗi buổi (VND)",
+            "placeholder": "500000"
+        },
+        "sessionDuration": {
+            "label": "Thời lượng buổi trị liệu ưa thích"
+        },
+        "availability": {
+            "title": "Lịch trình của bạn",
+            "subtitle": "Bạn có thể tham gia buổi trị liệu khi nào?"
+        },
+        "availableDays": {
+            "label": "Ngày có thể tham gia"
+        },
+        "timeSlots": {
+            "label": "Khung giờ ưa thích"
+        },
+        "flexibleSchedule": {
+            "label": "Tôi linh hoạt với lịch trình"
+        },
+        "therapistPreferences": {
+            "title": "Ưu tiên chuyên gia",
+            "subtitle": "Cho chúng tôi biết về chuyên gia lý tưởng của bạn"
+        },
+        "preferredGender": {
+            "label": "Giới tính ưa thích"
+        },
+        "experienceLevel": {
+            "label": "Mức độ kinh nghiệm"
+        },
+        "therapistSpecialization": {
+            "label": "Chuyên môn ưa thích"
+        },
+        "preferredLanguage": {
+            "label": "Chuyên gia phải nói"
+        },
+        "urgencyLevel": {
+            "label": "Bạn cần giúp đỡ trong bao lâu?"
+        }
+    },
+    "therapist": {
+        "steps": {
+            "basic": "Cơ bản",
+            "professional": "Chuyên môn",
+            "practice": "Hành nghề",
+            "availability": "Lịch trình"
+        },
+        "basicInfo": {
+            "title": "Thông tin cơ bản",
+            "subtitle": "Cho chúng tôi biết về bạn và phòng khám của bạn"
+        },
+        "name": {
+            "label": "Họ và tên",
+            "placeholder": "Tiến sĩ Sarah Johnson"
+        },
+        "address": {
+            "label": "Địa điểm hành nghề",
+            "placeholder": "Quận 1, Thành phố Hồ Chí Minh"
+        },
+        "avatar": {
+            "label": "URL ảnh đại diện (Tùy chọn)",
+            "placeholder": "https://example.com/photo.jpg"
+        },
+        "languages": {
+            "label": "Ngôn ngữ bạn nói"
+        },
+        "professionalInfo": {
+            "title": "Thông tin chuyên môn",
+            "subtitle": "Chia sẻ thông tin xác thực và trình độ của bạn"
+        },
+        "title": {
+            "label": "Chức danh chuyên môn"
+        },
+        "experienceYears": {
+            "label": "Số năm kinh nghiệm",
+            "placeholder": "8"
+        },
+        "degrees": {
+            "title": "Học vấn & Bằng cấp"
+        },
+        "degree": {
+            "title": "Bằng cấp",
+            "type": {
+                "label": "Loại bằng cấp",
+                "placeholder": "PhD, MD, MSW, v.v."
+            },
+            "field": {
+                "label": "Lĩnh vực nghiên cứu",
+                "placeholder": "Tâm lý học lâm sàng"
+            },
+            "institution": {
+                "label": "Trường đại học",
+                "placeholder": "Đại học California"
+            },
+            "year": {
+                "label": "Năm tốt nghiệp",
+                "placeholder": "2015"
+            }
+        },
+        "certifications": {
+            "title": "Chứng chỉ chuyên môn"
+        },
+        "certification": {
+            "title": "Chứng chỉ",
+            "name": {
+                "label": "Tên chứng chỉ",
+                "placeholder": "Chuyên gia CBT"
+            },
+            "issuer": {
+                "label": "Tổ chức cấp",
+                "placeholder": "Hiệp hội Tâm lý học Hoa Kỳ"
+            },
+            "year": {
+                "label": "Năm đạt được",
+                "placeholder": "2016"
+            }
+        },
+        "addDegree": "Thêm bằng cấp",
+        "addCertification": "Thêm chứng chỉ",
+        "practice": {
+            "title": "Chuyên môn & Hành nghề",
+            "subtitle": "Cho chúng tôi biết về các lĩnh vực chuyên môn của bạn"
+        },
+        "specialization": {
+            "label": "Lĩnh vực chuyên môn"
+        },
+        "consultationModes": {
+            "label": "Hình thức tư vấn cung cấp"
+        },
+        "sessionFee": {
+            "label": "Chi phí buổi trị liệu",
+            "placeholder": "800000"
+        },
+        "experience": {
+            "label": "Tổng số năm hành nghề",
+            "placeholder": "8"
+        },
+        "isAvailable": {
+            "label": "Hiện tôi đang nhận khách hàng mới"
+        },
+        "availability": {
+            "title": "Lịch trình & Có mặt",
+            "subtitle": "Bạn có thể gặp khách hàng khi nào?"
+        },
+        "availableDays": {
+            "label": "Ngày có thể làm việc"
+        },
+        "timeSlots": {
+            "label": "Khung giờ làm việc"
+        }
+    },
+    "common": {
+        "cancel": "Hủy",
+        "back": "Quay lại",
+        "continue": "Tiếp tục",
+        "saveProfile": "Lưu hồ sơ",
+        "saving": "Đang lưu...",
+        "remove": "Xóa",
+        "selectOption": "Chọn một tùy chọn",
+        "minutes": "phút"
     }
 }

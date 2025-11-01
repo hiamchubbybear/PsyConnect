@@ -225,7 +225,8 @@
             "Items": {
                 "AccountInfo": "Account Information",
                 "Security": "Security",
-                "Payment": "Payment"
+                "Payment": "Payment",
+                "Consultation": "Consultation"
             }
         },
         "Profile": {
@@ -856,5 +857,199 @@
     "dialog": {
         "unfriend_title": "Delete friends",
         "unfriend_message": "Bạn có chắc chắn muốn xóa {{name}} khỏi danh sách bạn bè?"
+    },
+    "profileUpdate": {
+        "title": "Complete Your Profile",
+        "subtitle": "Help us match you with the right therapist by completing your profile.",
+        "saveSuccess": "Profile updated successfully!"
+    },
+    "client": {
+        "steps": {
+            "basic": "Basic Info",
+            "preferences": "Preferences",
+            "availability": "Availability",
+            "therapist": "Therapist"
+        },
+        "basicInfo": {
+            "title": "Basic Information",
+            "subtitle": "Tell us a bit about yourself and where you're located"
+        },
+        "address": {
+            "label": "Your Location",
+            "placeholder": "Ho Chi Minh City, Vietnam"
+        },
+        "languages": {
+            "label": "Languages You Speak"
+        },
+        "preferences": {
+            "title": "Therapy Preferences",
+            "subtitle": "Help us understand what you're looking for in therapy"
+        },
+        "issueDetail": {
+            "label": "What brings you to therapy? (Optional)"
+        },
+        "consultationModes": {
+            "label": "How would you like to meet?"
+        },
+        "budget": {
+            "label": "Budget per Session (VND)",
+            "placeholder": "500000"
+        },
+        "sessionDuration": {
+            "label": "Preferred Session Duration"
+        },
+        "availability": {
+            "title": "Your Availability",
+            "subtitle": "When are you available for therapy sessions?"
+        },
+        "availableDays": {
+            "label": "Available Days"
+        },
+        "timeSlots": {
+            "label": "Preferred Time Slots"
+        },
+        "flexibleSchedule": {
+            "label": "I'm flexible with my schedule"
+        },
+        "therapistPreferences": {
+            "title": "Therapist Preferences",
+            "subtitle": "Tell us about your ideal therapist"
+        },
+        "preferredGender": {
+            "label": "Preferred Gender"
+        },
+        "experienceLevel": {
+            "label": "Experience Level"
+        },
+        "therapistSpecialization": {
+            "label": "Preferred Specializations"
+        },
+        "preferredLanguage": {
+            "label": "Therapist Must Speak"
+        },
+        "urgencyLevel": {
+            "label": "How soon do you need help?"
+        }
+    },
+    "therapist": {
+        "steps": {
+            "basic": "Basic Info",
+            "professional": "Professional",
+            "practice": "Practice",
+            "availability": "Availability"
+        },
+        "basicInfo": {
+            "title": "Basic Information",
+            "subtitle": "Tell us about yourself and your practice"
+        },
+        "name": {
+            "label": "Full Name",
+            "placeholder": "Dr. Sarah Johnson"
+        },
+        "address": {
+            "label": "Practice Location",
+            "placeholder": "District 1, Ho Chi Minh City"
+        },
+        "avatar": {
+            "label": "Profile Photo URL (Optional)",
+            "placeholder": "https://example.com/photo.jpg"
+        },
+        "languages": {
+            "label": "Languages You Speak"
+        },
+        "professionalInfo": {
+            "title": "Professional Information",
+            "subtitle": "Share your credentials and qualifications"
+        },
+        "title": {
+            "label": "Professional Title"
+        },
+        "experienceYears": {
+            "label": "Years of Experience",
+            "placeholder": "8"
+        },
+        "degrees": {
+            "title": "Education & Degrees"
+        },
+        "degree": {
+            "title": "Degree",
+            "type": {
+                "label": "Degree Type",
+                "placeholder": "PhD, MD, MSW, etc."
+            },
+            "field": {
+                "label": "Field of Study",
+                "placeholder": "Clinical Psychology"
+            },
+            "institution": {
+                "label": "Institution",
+                "placeholder": "University of California"
+            },
+            "year": {
+                "label": "Graduation Year",
+                "placeholder": "2015"
+            }
+        },
+        "certifications": {
+            "title": "Professional Certifications"
+        },
+        "certification": {
+            "title": "Certification",
+            "name": {
+                "label": "Certification Name",
+                "placeholder": "CBT Specialist"
+            },
+            "issuer": {
+                "label": "Issuing Organization",
+                "placeholder": "American Psychological Association"
+            },
+            "year": {
+                "label": "Year Obtained",
+                "placeholder": "2016"
+            }
+        },
+        "addDegree": "Add Degree",
+        "addCertification": "Add Certification",
+        "practice": {
+            "title": "Specialization & Practice",
+            "subtitle": "Tell us about your areas of expertise"
+        },
+        "specialization": {
+            "label": "Areas of Specialization"
+        },
+        "consultationModes": {
+            "label": "Consultation Modes Offered"
+        },
+        "sessionFee": {
+            "label": "Session Fee",
+            "placeholder": "800000"
+        },
+        "experience": {
+            "label": "Total Years in Practice",
+            "placeholder": "8"
+        },
+        "isAvailable": {
+            "label": "I'm currently accepting new clients"
+        },
+        "availability": {
+            "title": "Schedule & Availability",
+            "subtitle": "When are you available to see clients?"
+        },
+        "availableDays": {
+            "label": "Available Days"
+        },
+        "timeSlots": {
+            "label": "Available Time Slots"
+        }
+    },
+    "common": {
+        "cancel": "Cancel",
+        "back": "Back",
+        "continue": "Continue",
+        "saveProfile": "Save Profile",
+        "saving": "Saving...",
+        "remove": "Remove",
+        "selectOption": "Select an option",
+        "minutes": "minutes"
     }
 }
