@@ -75,17 +75,28 @@ export const authInterceptor: HttpInterceptorFn = (
         )
       ),
       catchError((err) => {
-        if (!(err instanceof HttpErrorResponse)) return throwError(() => err);
-        if (err.status === 500) {
-          const username = secureStorage.getItem<string>(usernameKey);
-          if (!username) {
-            console.warn('[AuthInterceptor] No username in storage, logout');
-            authService.logout();
-            return throwError(() => new Error('No username in storage'));
-          }
+        if (!(err instanceof HttpErrorResponse)) {
+          return throwError(() => err);
+        }
+        const message = (err.error?.message || '').toLowerCase();
+        const username = secureStorage.getItem<string>(usernameKey);
+        if (!username) {
+          console.warn('[AuthInterceptor] No username in storage, logout');
+          authService.logout();
+          return throwError(() => new Error('No username in storage'));
+        }
+        if (err.status === 401) {
+          console.warn('[AuthInterceptor] 401 Unauthorized → refresh token');
           return refreshTokenAndRetry(req, next, username);
         }
-
+        if (err.status === 500 && message.includes('server error')) {
+          console.warn('[AuthInterceptor] 500 Server Error → refresh token');
+          return refreshTokenAndRetry(req, next, username);
+        }
+        if (err.status === 500) {
+          console.error('[AuthInterceptor] 500 error (non-server):', message);
+          return throwError(() => err);
+        }
         return throwError(() => err);
       })
     );

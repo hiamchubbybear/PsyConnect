@@ -4,6 +4,7 @@ import {
     CollapsibleSidebarComponent,
     SidebarItem,
 } from '../../components/collapsible-sidebar/collapsible-sidebar';
+import { ProfileFormClientComponent } from "../consultation/consultation/consultation";
 import { ProfileSectionComponent } from './profile/profile-update';
 import { SecuritySectionComponent } from './security/security-update';
 
@@ -15,7 +16,8 @@ import { SecuritySectionComponent } from './security/security-update';
     CollapsibleSidebarComponent,
     ProfileSectionComponent,
     SecuritySectionComponent,
-  ],
+    ProfileFormClientComponent
+],
   template: `
     <app-collapsible-sidebar
       [title]="'Account Management'"
@@ -37,6 +39,9 @@ import { SecuritySectionComponent } from './security/security-update';
       <section id="security">
         <app-security-section></app-security-section>
       </section>
+       <section id="consultation">
+    <app-consultation-profile></app-consultation-profile>
+        </section>
     </div>
   `,
   styles: [
@@ -69,6 +74,11 @@ export class UpdateAccountComponent {
       label: 'Payment',
       route: 'payment',
       translateKey: 'ACCOUNT_MANAGEMENT.Sidebar.Items.Payment',
+    },
+    {
+      label: 'Consultation',
+      route: 'consultation',
+      translateKey: 'ACCOUNT_MANAGEMENT.Sidebar.Items.Consultation',
     },
   ];
 

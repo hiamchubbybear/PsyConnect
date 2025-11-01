@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"consultationservice/internal/model"
-	"consultationservice/internal/redis"
 	"context"
 	"errors"
 	"log"
@@ -10,6 +8,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"consultationservice/internal/model"
+	"consultationservice/internal/redis"
 )
 
 type ClientRepository struct {

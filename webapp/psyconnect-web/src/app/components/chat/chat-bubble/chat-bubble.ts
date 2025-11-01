@@ -12,6 +12,7 @@ import { Message } from '../../../models/chat.models';
 export class MessageBubbleComponent {
   @Input() message!: Message;
   hasReaction = true;
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['message']) {
       console.log('[MessageBubble] New message input:', this.message);
@@ -39,13 +40,8 @@ export class MessageBubbleComponent {
           this.message.content,
           typeof this.message.content
         );
-        if (this.message.timestamp instanceof Date) {
-          console.log(
-            'timestamp:',
-            this.message.timestamp.toISOString(),
-            ' Date object'
-          );
-    } else {
+
+        if (!(this.message.timestamp instanceof Date)) {
           console.warn(
             'timestamp is not a Date object, converting...',
             this.message.timestamp
@@ -59,18 +55,34 @@ export class MessageBubbleComponent {
       }
     }
   }
+
   formatTime(date: any): string {
     if (!date) return '';
 
     const d = date instanceof Date ? date : new Date(date);
-
     if (isNaN(d.getTime())) return '';
+
+    const now = new Date();
+    const isToday =
+      d.getDate() === now.getDate() &&
+      d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear();
 
     const hours = d.getHours();
     const minutes = d.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const displayHours = hours % 12 || 12;
     const displayMinutes = minutes.toString().padStart(2, '0');
-    return `${displayHours}:${displayMinutes} ${ampm}`;
+    const timeString = `${displayHours}:${displayMinutes} ${ampm}`;
+
+    if (isToday) return timeString;
+
+    const dateString = `${d.getDate().toString().padStart(2, '0')}/${(
+      d.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, '0')}/${d.getFullYear()}`;
+
+    return `${dateString}, ${timeString}`;
   }
 }

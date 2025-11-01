@@ -1,0 +1,399 @@
+
+<form class="profile-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+
+
+  <div class="profile-form__steps">
+    <div class="profile-form__step" [class.profile-form__step--active]="currentStep >= 1" [class.profile-form__step--completed]="currentStep > 1">
+      <div class="profile-form__step-number">1</div>
+      <div class="profile-form__step-label">{{ 'client.steps.basic' | translate }}</div>
+    </div>
+    <div class="profile-form__step-divider"></div>
+    <div class="profile-form__step" [class.profile-form__step--active]="currentStep >= 2" [class.profile-form__step--completed]="currentStep > 2">
+      <div class="profile-form__step-number">2</div>
+      <div class="profile-form__step-label">{{ 'client.steps.preferences' | translate }}</div>
+    </div>
+    <div class="profile-form__step-divider"></div>
+    <div class="profile-form__step" [class.profile-form__step--active]="currentStep >= 3" [class.profile-form__step--completed]="currentStep > 3">
+      <div class="profile-form__step-number">3</div>
+      <div class="profile-form__step-label">{{ 'client.steps.availability' | translate }}</div>
+    </div>
+    <div class="profile-form__step-divider"></div>
+    <div class="profile-form__step" [class.profile-form__step--active]="currentStep >= 4">
+      <div class="profile-form__step-number">4</div>
+      <div class="profile-form__step-label">{{ 'client.steps.therapist' | translate }}</div>
+    </div>
+  </div>
+
+
+  <section class="profile-form__section" *ngIf="currentStep === 1">
+    <h2 class="profile-form__section-title">{{ 'client.basicInfo.title' | translate }}</h2>
+    <p class="profile-form__section-subtitle">{{ 'client.basicInfo.subtitle' | translate }}</p>
+
+    <div class="profile-form__grid">
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__label" for="address">
+          {{ 'client.address.label' | translate }}
+          <span class="profile-form__required">*</span>
+        </label>
+        <input
+          type="text"
+          id="address"
+          class="profile-form__input"
+          formControlName="address"
+          [placeholder]="'client.address.placeholder' | translate"
+        />
+        <span class="profile-form__error" *ngIf="getFieldError('address')">
+          {{ getFieldError('address') }}
+        </span>
+      </div>
+
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__label">
+          {{ 'client.languages.label' | translate }}
+          <span class="profile-form__required">*</span>
+        </label>
+        <div class="profile-form__chip-group">
+          <label
+            *ngFor="let lang of languages"
+            class="profile-form__chip"
+            [class.profile-form__chip--selected]="isSelected('languages', lang.value)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isSelected('languages', lang.value)"
+              (change)="toggleArrayValue('languages', lang.value)"
+              class="profile-form__chip-input"
+            />
+            <span class="profile-form__chip-content">
+              <svg *ngIf="isSelected('languages', lang.value)" class="profile-form__chip-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ lang.label }}
+            </span>
+          </label>
+        </div>
+        <span class="profile-form__error" *ngIf="getFieldError('languages')">
+          {{ getFieldError('languages') }}
+        </span>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="profile-form__section" *ngIf="currentStep === 2">
+    <h2 class="profile-form__section-title">{{ 'client.preferences.title' | translate }}</h2>
+    <p class="profile-form__section-subtitle">{{ 'client.preferences.subtitle' | translate }}</p>
+
+    <div class="profile-form__grid">
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__label">
+          {{ 'client.issueDetail.label' | translate }}
+        </label>
+        <div class="profile-form__chip-group">
+          <label
+            *ngFor="let spec of specializations"
+            class="profile-form__chip"
+            [class.profile-form__chip--selected]="isSelected('issue_detail', spec.value)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isSelected('issue_detail', spec.value)"
+              (change)="toggleArrayValue('issue_detail', spec.value)"
+              class="profile-form__chip-input"
+            />
+            <span class="profile-form__chip-content">
+              <svg *ngIf="isSelected('issue_detail', spec.value)" class="profile-form__chip-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ spec.label }}
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__label">
+          {{ 'client.consultationModes.label' | translate }}
+          <span class="profile-form__required">*</span>
+        </label>
+        <div class="profile-form__chip-group">
+          <label
+            *ngFor="let mode of consultationModes"
+            class="profile-form__chip"
+            [class.profile-form__chip--selected]="isSelected('consultation_modes', mode.value)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isSelected('consultation_modes', mode.value)"
+              (change)="toggleArrayValue('consultation_modes', mode.value)"
+              class="profile-form__chip-input"
+            />
+            <span class="profile-form__chip-content">
+              <svg *ngIf="isSelected('consultation_modes', mode.value)" class="profile-form__chip-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ mode.label }}
+            </span>
+          </label>
+        </div>
+        <span class="profile-form__error" *ngIf="getFieldError('consultation_modes')">
+          {{ getFieldError('consultation_modes') }}
+        </span>
+      </div>
+
+      <div class="profile-form__field">
+        <label class="profile-form__label" for="rage_price">
+          {{ 'client.budget.label' | translate }}
+          <span class="profile-form__required">*</span>
+        </label>
+        <input
+          type="number"
+          id="rage_price"
+          class="profile-form__input"
+          formControlName="rage_price"
+          min="0"
+          step="50000"
+          [placeholder]="'client.budget.placeholder' | translate"
+        />
+        <span class="profile-form__error" *ngIf="getFieldError('rage_price')">
+          {{ getFieldError('rage_price') }}
+        </span>
+      </div>
+
+      <div class="profile-form__field">
+        <label class="profile-form__label" for="session_duration">
+          {{ 'client.sessionDuration.label' | translate }}
+        </label>
+        <select
+          id="session_duration"
+          class="profile-form__select"
+          formControlName="session_duration"
+        >
+          <option [value]="45">45 {{ 'common.minutes' | translate }}</option>
+          <option [value]="60">60 {{ 'common.minutes' | translate }}</option>
+          <option [value]="90">90 {{ 'common.minutes' | translate }}</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="profile-form__section" *ngIf="currentStep === 3">
+    <h2 class="profile-form__section-title">{{ 'client.availability.title' | translate }}</h2>
+    <p class="profile-form__section-subtitle">{{ 'client.availability.subtitle' | translate }}</p>
+
+    <div class="profile-form__grid" formGroupName="availability">
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__label">
+          {{ 'client.availableDays.label' | translate }}
+          <span class="profile-form__required">*</span>
+        </label>
+        <div class="profile-form__chip-group">
+          <label
+            *ngFor="let day of weekdays"
+            class="profile-form__chip"
+            [class.profile-form__chip--selected]="isNestedSelected('availability', 'days', day.value)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isNestedSelected('availability', 'days', day.value)"
+              (change)="toggleNestedArrayValue('availability', 'days', day.value)"
+              class="profile-form__chip-input"
+            />
+            <span class="profile-form__chip-content">
+              <svg *ngIf="isNestedSelected('availability', 'days', day.value)" class="profile-form__chip-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ day.label }}
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__label">
+          {{ 'client.timeSlots.label' | translate }}
+          <span class="profile-form__required">*</span>
+        </label>
+        <div class="profile-form__chip-group">
+          <label
+            *ngFor="let slot of timeSlots"
+            class="profile-form__chip"
+            [class.profile-form__chip--selected]="isNestedSelected('availability', 'time_slots', slot.value)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isNestedSelected('availability', 'time_slots', slot.value)"
+              (change)="toggleNestedArrayValue('availability', 'time_slots', slot.value)"
+              class="profile-form__chip-input"
+            />
+            <span class="profile-form__chip-content">
+              <svg *ngIf="isNestedSelected('availability', 'time_slots', slot.value)" class="profile-form__chip-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ slot.label }}
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__toggle">
+          <input
+            type="checkbox"
+            formControlName="is_flexible_with_schedule"
+            class="profile-form__toggle-input"
+          />
+          <span class="profile-form__toggle-slider"></span>
+          <span class="profile-form__toggle-label">{{ 'client.flexibleSchedule.label' | translate }}</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="profile-form__section" *ngIf="currentStep === 4">
+    <h2 class="profile-form__section-title">{{ 'client.therapistPreferences.title' | translate }}</h2>
+    <p class="profile-form__section-subtitle">{{ 'client.therapistPreferences.subtitle' | translate }}</p>
+
+    <div class="profile-form__grid">
+      <div class="profile-form__field">
+        <label class="profile-form__label" for="preferred_therapist_gender">
+          {{ 'client.preferredGender.label' | translate }}
+        </label>
+        <select
+          id="preferred_therapist_gender"
+          class="profile-form__select"
+          formControlName="preferred_therapist_gender"
+        >
+          <option *ngFor="let gender of genderPreferences" [value]="gender.value">
+            {{ gender.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="profile-form__field">
+        <label class="profile-form__label" for="experience_level">
+          {{ 'client.experienceLevel.label' | translate }}
+        </label>
+        <select
+          id="experience_level"
+          class="profile-form__select"
+          formControlName="experience_level"
+        >
+          <option *ngFor="let level of experienceLevels" [value]="level.value">
+            {{ level.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="profile-form__field">
+        <label class="profile-form__label" for="urgency_level">
+          {{ 'client.urgencyLevel.label' | translate }}
+        </label>
+        <select
+          id="urgency_level"
+          class="profile-form__select"
+          formControlName="urgency_level"
+        >
+          <option *ngFor="let urgency of urgencyLevels" [value]="urgency.value">
+            {{ urgency.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__label">
+          {{ 'client.therapistSpecialization.label' | translate }}
+        </label>
+        <div class="profile-form__chip-group">
+          <label
+            *ngFor="let spec of specializations"
+            class="profile-form__chip"
+            [class.profile-form__chip--selected]="isSelected('therapist_specialization', spec.value)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isSelected('therapist_specialization', spec.value)"
+              (change)="toggleArrayValue('therapist_specialization', spec.value)"
+              class="profile-form__chip-input"
+            />
+            <span class="profile-form__chip-content">
+              <svg *ngIf="isSelected('therapist_specialization', spec.value)" class="profile-form__chip-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ spec.label }}
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="profile-form__field profile-form__field--full">
+        <label class="profile-form__label">
+          {{ 'client.preferredLanguage.label' | translate }}
+        </label>
+        <div class="profile-form__chip-group">
+          <label
+            *ngFor="let lang of languages"
+            class="profile-form__chip"
+            [class.profile-form__chip--selected]="isSelected('preferred_therapist_language', lang.value)"
+          >
+            <input
+              type="checkbox"
+              [checked]="isSelected('preferred_therapist_language', lang.value)"
+              (change)="toggleArrayValue('preferred_therapist_language', lang.value)"
+              class="profile-form__chip-input"
+            />
+            <span class="profile-form__chip-content">
+              <svg *ngIf="isSelected('preferred_therapist_language', lang.value)" class="profile-form__chip-check" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M13.3337 4L6.00033 11.3333L2.66699 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ lang.label }}
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="profile-form__actions">
+    <button
+      *ngIf="currentStep > 1"
+      type="button"
+      class="profile-form__button profile-form__button--secondary"
+      (click)="previousStep()"
+      [disabled]="isSaving"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      {{ 'common.back' | translate }}
+    </button>
+
+    <div class="profile-form__actions-right">
+      <button
+        *ngIf="currentStep < 4"
+        type="button"
+        class="profile-form__button profile-form__button--primary"
+        (click)="nextStep()"
+      >
+        {{ 'common.continue' | translate }}
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <button
+        *ngIf="currentStep === 4"
+        type="submit"
+        class="profile-form__button profile-form__button--primary"
+        [disabled]="isSaving"
+        [class.profile-form__button--loading]="isSaving"
+      >
+        <span *ngIf="!isSaving">{{ 'common.saveProfile' | translate }}</span>
+        <span *ngIf="isSaving">{{ 'common.saving' | translate }}</span>
+      </button>
+    </div>
+  </div>
+</form>
