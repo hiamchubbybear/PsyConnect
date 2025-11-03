@@ -30,7 +30,7 @@ import { ToastService } from '../../shared/toast/toast.service';
   selector: 'signup',
   templateUrl: './signup.html',
   styleUrls: ['./signup.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule , TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   @ViewChild('emailInput') emailInputRef!: ElementRef;
@@ -284,8 +284,8 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
       );
       if (!uploadedUrl) {
         this.toastService.show(
-          'Image upload failed!',
-          'Error',
+          'toast.image_upload_failed',
+          'toast.error',
           ToastType.Error
         );
         this.isLoading = false;
@@ -311,8 +311,8 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
       next: (res) => {
         if (res.code === 200) {
           this.toastService.show(
-            'Register success',
-            'Success',
+            'toast.register_success',
+            'toast.success',
             ToastType.Success
           );
         }
@@ -322,8 +322,11 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
         if (status === 409) {
           const errorMessage = err.error.message || 'Register failed';
           const errorCode = err.error.code;
-          console.log('Error code ', errorCode);
-          this.toastService.show(errorMessage, 'Error', ToastType.Error);
+          this.toastService.show(
+            'toast.error_message',
+            'toast.error',
+            ToastType.Error
+          );
           if (errorCode === 202) {
             const control = this.credentialsForm.get('username');
             const currentErrors = control?.errors || {};
@@ -347,8 +350,8 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
           this.isLoading = false;
         } else {
           this.toastService.show(
-            'Unexpected error occurred',
-            'Error',
+            'toast.unexpected_error',
+            'toast.error',
             ToastType.Error
           );
           this.isLoading = false;

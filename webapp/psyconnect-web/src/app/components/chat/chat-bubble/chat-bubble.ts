@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Message } from '../../../models/chat.models';
 
 @Component({
@@ -12,49 +12,6 @@ import { Message } from '../../../models/chat.models';
 export class MessageBubbleComponent {
   @Input() message!: Message;
   hasReaction = true;
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['message']) {
-      console.log('[MessageBubble] New message input:', this.message);
-
-      if (this.message) {
-        console.log('id:', this.message.id, typeof this.message.id);
-        console.log(
-          'conversationId:',
-          this.message.conversationId,
-          typeof this.message.conversationId
-        );
-        console.log('userId:', this.message.id, typeof this.message.id);
-        console.log(
-          'userName:',
-          this.message.userName,
-          typeof this.message.userName
-        );
-        console.log(
-          'userAvatar:',
-          this.message.userAvatar,
-          typeof this.message.userAvatar
-        );
-        console.log(
-          'content:',
-          this.message.content,
-          typeof this.message.content
-        );
-
-        if (!(this.message.timestamp instanceof Date)) {
-          console.warn(
-            'timestamp is not a Date object, converting...',
-            this.message.timestamp
-          );
-          this.message.timestamp = new Date(this.message.timestamp);
-        }
-
-        console.log('isMine:', this.message.isMine, typeof this.message.isMine);
-      } else {
-        console.warn('[MessageBubble] message is null or undefined');
-      }
-    }
-  }
 
   formatTime(date: any): string {
     if (!date) return '';

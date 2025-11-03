@@ -42,17 +42,13 @@ export const authInterceptor: HttpInterceptorFn = (
   const tokenSubject = new BehaviorSubject<string | null>(null);
   const maxRetry = 3;
   const router = inject(Router);
-
   if (req.context.get(SKIP_AUTH)) {
-    console.log('[AuthInterceptor] Skipping auth for:', req.url);
     return next(req);
   }
-
   const token = secureStorage.getItem<string>(ACCESSTOKEN_KEY);
   let authReq = req;
   if (token) {
     authReq = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
-    console.log('[AuthInterceptor] Adding token to request header');
   }
 
   return handleRequest(authReq, next);
@@ -68,7 +64,6 @@ export const authInterceptor: HttpInterceptorFn = (
             if (!(err instanceof HttpErrorResponse) || err.status !== 500)
               throw err;
             if (count >= maxRetry) throw err;
-            console.warn(`[AuthInterceptor] Retry #${count + 1} due to 500`);
             return count + 1;
           }, 0),
           delayWhen(() => timer(1000))
@@ -81,16 +76,13 @@ export const authInterceptor: HttpInterceptorFn = (
         const message = (err.error?.message || '').toLowerCase();
         const username = secureStorage.getItem<string>(usernameKey);
         if (!username) {
-          console.warn('[AuthInterceptor] No username in storage, logout');
           authService.logout();
           return throwError(() => new Error('No username in storage'));
         }
         if (err.status === 401) {
-          console.warn('[AuthInterceptor] 401 Unauthorized → refresh token');
           return refreshTokenAndRetry(req, next, username);
         }
         if (err.status === 500 && message.includes('server error')) {
-          console.warn('[AuthInterceptor] 500 Server Error → refresh token');
           return refreshTokenAndRetry(req, next, username);
         }
         if (err.status === 500) {
@@ -115,23 +107,23 @@ export const authInterceptor: HttpInterceptorFn = (
 
       return authService.refreshToken(username).pipe(
         switchMap((newToken) => {
-          console.log('[AuthInterceptor] New token received:', newToken);
           isRefreshing.value = false;
           secureStorage.setItem(ACCESSTOKEN_KEY, newToken);
           tokenSubject.next(newToken);
 
-          toastService.show('Token refreshed', 'Success', ToastType.Success);
+          toastService.show(
+            'TOAST.key_token_refreshed',
+            'TOAST.key_success',
+            ToastType.Success
+          );
 
           return next(
             req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })
           ).pipe(
             catchError((err) => {
-              console.error(
-                '[AuthInterceptor] Request failed after refresh, logout'
-              );
               toastService.show(
-                'Phiên đăng nhập của bạn đã hết hạn',
-                'Failed',
+                'TOAST.key_session_expired',
+                'TOAST.key_failed',
                 ToastType.Error
               );
               authService.logout();
@@ -140,14 +132,10 @@ export const authInterceptor: HttpInterceptorFn = (
           );
         }),
         catchError((err) => {
-          console.error(
-            '[AuthInterceptor] Refresh token failed, logging out',
-            err
-          );
           isRefreshing.value = false;
           toastService.show(
-            'Phiên đăng nhập của bạn đã hết hạn',
-            'Failed',
+            'TOAST.key_session_expired',
+            'TOAST.key_failed',
             ToastType.Error
           );
           authService.logout();
@@ -159,7 +147,6 @@ export const authInterceptor: HttpInterceptorFn = (
         })
       );
     } else {
-      console.log('[AuthInterceptor] Waiting for ongoing token refresh...');
       return tokenSubject.pipe(
         filter((t) => t != null),
         take(1),

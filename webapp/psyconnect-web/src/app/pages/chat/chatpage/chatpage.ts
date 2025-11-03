@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Subscription, finalize } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription, combineLatest, finalize } from 'rxjs';
 import { ChatListComponent } from '../../../components/chat/chat-list/chat-list';
 import { ChatMainComponent } from '../../../components/chat/chat-main/chat-main';
 import { Friend, Message } from '../../../models/chat.models';
@@ -21,7 +22,8 @@ import { LoaderService } from '../../../services/loader/loader';
         <app-chat-list
           [currentUser]="currentUser"
           [friends]="friends"
-          (friendSelected)="onFriendSelected($event)"
+          [selectedFriendId]="selectedFriend()?.profileId || null"
+          (friendSelected)="onFriendSelected($event, true)"
         ></app-chat-list>
       </div>
       <app-chat-main
@@ -48,29 +50,43 @@ export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     private friendService: FriendService,
     private chatService: ChatService,
-    private loader: LoaderService
+    private loader: LoaderService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.sub = this.chatService.getCurrentUser().subscribe((profile) => {
+    combineLatest([
+      this.chatService.getCurrentUser(),
+      this.friendService.getMyFriends(),
+      this.route.paramMap,
+    ]).subscribe(([profile, friends, params]) => {
       this.currentUser = mapUserProfileToChatUser(profile);
-    });
-
-    this.friendService.getMyFriends().subscribe((friends) => {
       this.friends = friends;
-      if (friends.length > 0) this.selectedFriend.set(friends[0]);
+      const idFromParam = params.get('id');
+      if (idFromParam) {
+        const friend = friends.find((f) => f.profileId === idFromParam);
+        if (friend) {
+          this.onFriendSelected(friend, false);
+          return;
+        }
+      }
+      if (friends.length > 0) {
+        this.onFriendSelected(friends[0], true);
+      }
     });
   }
-
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
     this.chatService.disconnect();
   }
 
-  onFriendSelected(friend: Friend) {
+  onFriendSelected(friend: Friend, updateUrl = false) {
     this.selectedFriend.set(friend);
+    if (updateUrl) {
+      this.router.navigate(['/chat', friend.profileId]);
+    }
     this.isLoading = true;
-
     this.chatService
       .getOrCreateConversation(this.currentUser.profileId, friend.profileId)
       .pipe(finalize(() => (this.isLoading = false)))

@@ -55,18 +55,23 @@ export class SwipeDeckComponent implements OnInit {
       next: (res) => {
         if (res)
           this.toastService.show(
-            'Updated',
-            'Therapist updated',
+            'TOAST.key_updated',
+            'TOAST.key_therapist_updated',
             ToastType.Success
           );
         else
           this.toastService.show(
-            'Updated',
-            'Therapist updated failed',
-            ToastType.Success
+            'TOAST.key_updated',
+            'TOAST.key_therapist_update_failed',
+            ToastType.Error
           );
       },
-      error: (err) => this.toastService.show('Updated', err, ToastType.Success),
+      error: (err) =>
+        this.toastService.show(
+          'TOAST.key_updated',
+          'TOAST.key_therapist_update_error',
+          ToastType.Error
+        ),
     });
   }
 

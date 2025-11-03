@@ -81,8 +81,7 @@ export class Login implements OnInit {
           this.USERNAME_KEY,
           this.loginForm.value.username
         );
-        console.log(this.loginForm.value.username);
-        console.log('Username username key login ', this.USERNAME_KEY);
+
         const username = this.secureStorage.getItem(this.USERNAME_KEY);
       },
       error: () => {
@@ -109,7 +108,6 @@ export class Login implements OnInit {
       this.setLoading(true);
       this.auth.exchangeOAuth2Code(code, email, provider, platform).subscribe({
         next: (res) => {
-          console.log(res);
           this.secureStorage.setItem(this.ACCESSTOKEN_KEY, res.data.token);
           this.loadUserProfile();
         },
@@ -135,9 +133,13 @@ export class Login implements OnInit {
           gender: profile.data.gender,
           avatarUri: profile.data.avatarUri,
         };
-        console.log(profile);
+
         this.userContext.setUser(userProfile);
-        this.toastService.show('Login success', 'Success', ToastType.Success);
+        this.toastService.show(
+          'TOAST.login_success',
+          'TOAST.success',
+          ToastType.Success
+        );
         this.setLoading(false);
         this.router.navigate(['/feature/feed']);
         this.authState.setLoggedIn(true);
@@ -145,7 +147,11 @@ export class Login implements OnInit {
       error: (err) => {
         console.error('Get profile error', err);
         this.setLoading(false);
-        this.toastService.show(`Get profile error`, 'Failed', ToastType.Error);
+        this.toastService.show(
+          'TOAST.error_generic',
+          'TOAST.error',
+          ToastType.Error
+        );
       },
     });
   }

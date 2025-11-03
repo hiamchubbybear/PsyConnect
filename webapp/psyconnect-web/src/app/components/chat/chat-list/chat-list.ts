@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Friend } from '../../../models/chat.models';
 import { FriendService } from '../../../services/chat/profile.chat.service';
+import { ToastType } from '../../../shared/toast/toast-type';
+import { ToastService } from '../../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-chat-list',
@@ -13,7 +15,11 @@ import { FriendService } from '../../../services/chat/profile.chat.service';
   styleUrls: ['./chat-list.scss'],
 })
 export class ChatListComponent implements OnInit {
-  constructor(private friendService: FriendService) {}
+  constructor(
+    private friendService: FriendService,
+    private toastService: ToastService
+  ) {}
+  @Input() selectedFriendId: string | null = null;
 
   @Input() currentUser!: {
     profileId: string;
@@ -35,7 +41,12 @@ export class ChatListComponent implements OnInit {
   private loadFriends() {
     this.friendService.getMyFriends().subscribe({
       next: (friends) => (this.friends = friends),
-      error: (err) => console.error('Error loading friends:', err),
+      error: () =>
+        this.toastService.show(
+          'TOAST.key_failed',
+          'TOAST.key_load_friends_failed',
+          ToastType.Error
+        ),
     });
   }
 
@@ -58,7 +69,7 @@ export class ChatListComponent implements OnInit {
   selectedUserId: string | null = null;
 
   onSelect(friend: Friend) {
-    this.selectedUserId = friend.profileId;
+    this.selectedFriendId = friend.profileId ?? null;
     this.friendSelected.emit(friend);
   }
   trackByFn(index: number, item: Friend) {

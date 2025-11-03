@@ -32,6 +32,8 @@
   flex-direction: column;
   gap: 0.25rem;
   max-width: 70%;
+  font-size: 0.6525rem;
+  font-weight: 500;
 }
 
 .message-header {
@@ -42,8 +44,8 @@
 }
 
 .message-author {
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-size: 0.9125rem;
+  font-weight: 600;
   color: var(--color-text);
 }
 

@@ -38,6 +38,11 @@ export const routes: Routes = [
 
   { path: 'chat-page', component: ChatComponent, canActivate: [authGuard] },
   {
+    path: 'chat/:id',
+    component: ChatComponent,
+    canActivate: [authGuard],
+  },
+  {
     path: 'auth/password-reset',
     component: ResetPasswordComponent,
     canActivate: [guestGuard, PasswordResetGuard],

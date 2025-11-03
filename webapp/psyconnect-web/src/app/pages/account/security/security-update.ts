@@ -180,8 +180,8 @@ export class SecuritySectionComponent implements OnInit {
   sendPasswordReset() {
     if (!this.passwordResetEmail) {
       this.toastService.show(
-        'Không có email để gửi reset!',
-        'Error',
+        'TOAST.no_email_to_reset',
+        'TOAST.error',
         ToastType.Error
       );
       return;
@@ -196,24 +196,25 @@ export class SecuritySectionComponent implements OnInit {
           this.submittingReset = false;
           if (res.code === 200) {
             this.toastService.show(
-              `Email reset mật khẩu đã được gửi tới ${this.passwordResetEmail}`,
-              'Success',
+              'TOAST.reset_email_sent',
+              'TOAST.success',
               ToastType.Success
             );
             this.editing = null;
           } else {
             this.toastService.show(
-              res.message || 'Có lỗi xảy ra!',
-              'Error',
+              'TOAST.error_generic',
+              'TOAST.error',
               ToastType.Error
             );
           }
         },
         error: (err) => {
           this.submittingReset = false;
+
           this.toastService.show(
-            err.error?.message || 'Có lỗi xảy ra!',
-            'Error',
+            'TOAST.error_generic',
+            'TOAST.error',
             ToastType.Error
           );
         },
@@ -222,8 +223,8 @@ export class SecuritySectionComponent implements OnInit {
 
   saveSecurityMethods() {
     this.toastService.show(
-      'Phương thức bảo mật đã được cập nhật!',
-      'Success',
+      'TOAST.security_method_updated',
+      'TOAST.success',
       ToastType.Success
     );
     this.editing = null;
@@ -231,8 +232,8 @@ export class SecuritySectionComponent implements OnInit {
 
   enable2FA(method: 'authApp' | 'sms' | 'securityKey') {
     this.toastService.show(
-      `2FA được bật bằng ${method}`,
-      'Success',
+      'TOAST.2fa_enabled',
+      'TOAST.success',
       ToastType.Success
     );
     this.editing = null;
@@ -240,8 +241,8 @@ export class SecuritySectionComponent implements OnInit {
 
   logoutDevice(device: { name: string; lastActive: Date }) {
     this.toastService.show(
-      `Đã đăng xuất thiết bị ${device.name}`,
-      'Success',
+      'TOAST.device_logged_out',
+      'TOAST.success',
       ToastType.Success
     );
     this.loggedDevices = this.loggedDevices.filter((d) => d !== device);
@@ -249,8 +250,8 @@ export class SecuritySectionComponent implements OnInit {
 
   resolveAlert(alert: { message: string; time: Date }) {
     this.toastService.show(
-      `Đã xác minh: ${alert.message}`,
-      'Success',
+      'TOAST.alert_verified',
+      'TOAST.success',
       ToastType.Success
     );
     this.suspiciousActivities = this.suspiciousActivities.filter(
@@ -262,9 +263,10 @@ export class SecuritySectionComponent implements OnInit {
     if (this.newEmail.trim() !== '') {
       this.linkedEmails.push({ address: this.newEmail });
       this.newEmail = '';
+
       this.toastService.show(
-        'Email đã được thêm!',
-        'Success',
+        'TOAST.email_added',
+        'TOAST.success',
         ToastType.Success
       );
     }
@@ -272,14 +274,19 @@ export class SecuritySectionComponent implements OnInit {
 
   removeEmail(email: { address: string }) {
     this.linkedEmails = this.linkedEmails.filter((e) => e !== email);
-    this.toastService.show('Email đã bị xóa!', 'Success', ToastType.Success);
+    this.toastService.show(
+      'TOAST.email_deleted',
+      'TOAST.success',
+      ToastType.Success
+    );
   }
 
   revokeApp(app: { name: string; permissions: string[] }) {
     this.thirdPartyApps = this.thirdPartyApps.filter((a) => a !== app);
+
     this.toastService.show(
-      `Quyền của ${app.name} đã bị thu hồi`,
-      'Success',
+      'TOAST.app_permission_revoked',
+      'TOAST.success',
       ToastType.Success
     );
   }
@@ -321,8 +328,8 @@ export class SecuritySectionComponent implements OnInit {
   }
   savePassword() {
     this.toastService.show(
-      'Mật khẩu đã được cập nhật thành công!',
-      'Success',
+      'TOAST.password_updated',
+      'TOAST.success',
       ToastType.Success
     );
     this.editing = null;
@@ -337,15 +344,15 @@ export class SecuritySectionComponent implements OnInit {
         break;
       case '2fa':
         this.toastService.show(
-          '2FA đã được cập nhật!',
-          'Success',
+          'TOAST.2fa_updated',
+          'TOAST.success',
           ToastType.Success
         );
         break;
       default:
         this.toastService.show(
-          'Cập nhật thành công!',
-          'Success',
+          'TOAST.update_success',
+          'TOAST.success',
           ToastType.Success
         );
         break;

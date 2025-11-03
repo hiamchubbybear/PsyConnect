@@ -67,7 +67,6 @@ export class App implements OnInit {
     private loader: LoaderService,
     private translate: TranslationService
   ) {
-    console.log(this.translate.getCurrentLanguage);
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {

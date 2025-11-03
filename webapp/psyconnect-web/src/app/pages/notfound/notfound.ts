@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ThemeService } from '../../services/theme/theme-service';
 import { ToastService } from '../../shared/toast/toast.service';
+import { ToastType } from '../../shared/toast/toast-type';
 
 @Component({
   selector: 'app-notfound',
@@ -18,6 +19,10 @@ export class Notfound {
   ) {}
   toggleTheme() {
     this.themeService.toggleTheme();
-    console.log('Show toast');
+    this.toastService.show(
+      'TOAST.theme_change_success',
+      'TOAST.success',
+      ToastType.Success
+    );
   }
 }

@@ -59,7 +59,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   }
   onScroll() {
     const container = this.messagesContainer.nativeElement;
-    const threshold = 50; // khoảng cách 50px tính là chạm đỉnh
+    const threshold = 50;
     this.showLoadOlderButton = container.scrollTop <= threshold;
   }
   onSendMessage() {

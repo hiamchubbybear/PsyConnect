@@ -91,10 +91,8 @@ export class UpdateAccountComponent {
   @HostListener('window:scroll', [])
   onScroll() {
     if (!this.contentRef) return;
-
     const sections = this.contentRef.nativeElement.querySelectorAll('section');
     let current: string | null = null;
-
     sections.forEach((section: HTMLElement) => {
       const rect = section.getBoundingClientRect();
       if (rect.top <= 120 && rect.bottom >= 120) {

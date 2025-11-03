@@ -79,18 +79,19 @@ export class ProfileSectionComponent implements OnInit {
     if (file) {
       if (!file.type.startsWith('image/')) {
         this.toastService.show(
-          'Vui lòng chọn file ảnh hợp lệ!',
-          'Error',
+          'TOAST.invalid_image',
+          'TOAST.error',
           ToastType.Error
         );
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
         this.toastService.show(
-          'File ảnh không được vượt quá 5MB!',
-          'Error',
+          'TOAST.image_too_large',
+          'TOAST.error',
           ToastType.Error
         );
+
         return;
       }
       this.selectedImage = file;
@@ -125,11 +126,13 @@ export class ProfileSectionComponent implements OnInit {
       this.updateProfile(avatarUri);
     } catch (err) {
       console.error('Upload error:', err);
+
       this.toastService.show(
-        'Upload ảnh thất bại! Vui lòng thử lại.',
-        'Error',
+        'TOAST.upload_failed',
+        'TOAST.error',
         ToastType.Error
       );
+
       this.resetUploadStates();
     } finally {
       this.loaderService.hide();
@@ -220,22 +223,17 @@ export class ProfileSectionComponent implements OnInit {
     this.profileService.updateProfile(profileUpdateData).subscribe({
       next: (response) => {
         this.toastService.show(
-          'Cập nhật hồ sơ thành công!',
-          'Success',
+          'TOAST.profile_update_success',
+          'TOAST.success',
           ToastType.Success
         );
-
         this.profile = {
           ...this.profile,
           ...profileUpdateData,
         } as ProfileModel;
-
         this.form.patchValue(profileUpdateData);
-
         this.initialProfile = { ...profileUpdateData };
-
         this.secureStorage.setItem(this.PROFILE_KEY, profileUpdateData);
-
         const updatedUser: UserProfile = {
           firstName: profileUpdateData.firstName,
           lastName: profileUpdateData.lastName,
@@ -247,21 +245,19 @@ export class ProfileSectionComponent implements OnInit {
           profileId: this.profile?.profileId || '',
         };
         this.userContext.setUser(updatedUser);
-
         this.resetUploadStates();
-
         this.profileUpdate = undefined;
       },
       error: (err) => {
-        console.error('Profile update error:', err);
         this.toastService.show(
-          'Cập nhật profile thất bại!',
-          'Error',
+          'TOAST.profile_update_failed',
+          'TOAST.error',
           ToastType.Error
         );
       },
     });
   }
+
   getProfile(): Observable<ProfileModel | null> {
     const profileJson = this.secureStorage.getItem(this.PROFILE_KEY);
     if (profileJson) {
@@ -299,7 +295,6 @@ export class ProfileSectionComponent implements OnInit {
       const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
         query
       )}&format=json&limit=5`;
-
       this.http.get<any[]>(url).subscribe((data) => {
         this.addressSuggestions = data.map((item) => item.display_name);
       });
@@ -312,27 +307,24 @@ export class ProfileSectionComponent implements OnInit {
     this.editValue = suggestion;
     this.addressSuggestions = [];
   }
+
   saveName(): void {
     this.form.patchValue({
       firstName: this.draftData.firstName,
       middleName: this.draftData.middleName,
       lastName: this.draftData.lastName,
     });
-
     if (!this.profileUpdate) {
       this.profileUpdate = this.prepareCompleteProfileUpdate();
     }
-
     this.profileUpdate.firstName = this.draftData.firstName;
     this.profileUpdate.lastName =
       this.draftData.lastName + ' ' + this.draftData.middleName;
-
     this.editing = null;
   }
 
   saveField(event: { field: string; value: string }): void {
     if (!this.editing) return;
-
     if (this.editing === 'name') {
       this.form.patchValue({
         firstName: this.draftData.firstName,
@@ -342,11 +334,9 @@ export class ProfileSectionComponent implements OnInit {
     } else {
       this.form.patchValue({ [this.editing]: event.value });
     }
-
     if (!this.profileUpdate) {
       this.profileUpdate = this.prepareCompleteProfileUpdate();
     }
-
     if (this.editing === 'name') {
       this.profileUpdate.firstName = this.draftData.firstName;
       this.profileUpdate.lastName = this.draftData.lastName;
@@ -393,8 +383,8 @@ export class ProfileSectionComponent implements OnInit {
     navigator.clipboard.writeText(value).then(() => {
       console.log('Copied Profile ID:', value);
       this.toastService.show(
-        'Your id copied!',
-        'Success',
+        'TOAST.id_copied',
+        'TOAST.success',
         ToastType.Success
       );
     });
@@ -402,28 +392,23 @@ export class ProfileSectionComponent implements OnInit {
 
   getDisplayValue(field: string): string {
     if (!this.form?.value) return '';
-
     switch (field) {
       case 'name':
         return `${this.form.value.firstName || ''} ${
           this.form.value.middleName || ''
         } ${this.form.value.lastName || ''}`.trim();
-
       case 'dob':
         return this.form.value.dob
           ? new Date(this.form.value.dob).toLocaleDateString('vi-VN')
           : '-';
-
       case 'address':
         return this.form.value.address || '-';
-
       case 'gender':
         if (this.form.value.gender === 'male')
           return this.translate.instant('ACCOUNT_MANAGEMENT.Profile.Male');
         if (this.form.value.gender === 'female')
           return this.translate.instant('ACCOUNT_MANAGEMENT.Profile.Female');
         return this.translate.instant('ACCOUNT_MANAGEMENT.Profile.Other');
-
       default:
         return '';
     }
