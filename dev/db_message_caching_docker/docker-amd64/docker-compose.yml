@@ -14,7 +14,7 @@ services:
       - mynetwork
 
   zookeeper:
-    image: bitnami/zookeeper:latest
+    image: zookeeper:3.9.4
     container_name: zookeeper
     restart: always
     environment:
