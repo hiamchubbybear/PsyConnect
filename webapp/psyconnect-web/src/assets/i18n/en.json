@@ -1088,6 +1088,7 @@
         "key_therapist_updated": "Therapist updated successfully",
         "key_therapist_update_failed": "Therapist update failed",
         "key_therapist_update_error": "An error occurred while updating therapist",
-        "key_load_friends_failed": "Failed to load friends list"
+        "key_load_friends_failed": "Failed to load friends list",
+        "error_notification": "Fail to subscribe notification"
     }
 }

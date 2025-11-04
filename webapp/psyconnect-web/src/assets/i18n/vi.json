@@ -1069,6 +1069,7 @@
         "key_therapist_updated": "Cập nhật người tư vấn thành công",
         "key_therapist_update_failed": "Cập nhật người tư vấn thất bại",
         "key_therapist_update_error": "Đã xảy ra lỗi khi cập nhật người tư vấn",
-        "key_load_friends_failed": "Tải danh sách bạn bè thất bại"
+        "key_load_friends_failed": "Tải danh sách bạn bè thất bại",
+        "error_notification" :"Đăng ký nhận thông báo thất bại"
     }
 }
