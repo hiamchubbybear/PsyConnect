@@ -8,12 +8,15 @@ import {
     withFetch,
     withInterceptors,
 } from '@angular/common/http';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+
 import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 import { lucideConfig } from '../lucide.config';
 import { routes } from './app.routes';
 import { authInterceptor } from './services/auth/auth.interceptor';
-
 export class CustomTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) {}
 
@@ -32,6 +35,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideAnimations(),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideMessaging(() => getMessaging()),
     importProvidersFrom(
       TranslateModule.forRoot({
         defaultLanguage: 'en',

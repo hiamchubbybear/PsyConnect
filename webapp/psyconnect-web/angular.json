@@ -29,7 +29,8 @@
                                 "input": "src/assets",
                                 "output": "assets"
                             },
-                            "src/favicon.ico"
+                            "src/favicon.ico",
+                            "src/firebase-messaging-sw.js"
                         ],
                         "styles": [
                             "src/app/styles/styles.scss"

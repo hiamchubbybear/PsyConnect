@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, HostListener, OnInit, Renderer2 } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
     Event,
@@ -21,13 +21,15 @@ import { AuthStateService } from './services/auth/auth-state.service';
 import { AuthService } from './services/auth/auth.service';
 import { LoaderService } from './services/loader/loader';
 import { LoaderComponent } from './services/loader/loader.component';
+import { NotificationService } from './services/notification/notification.service';
 import {
     UserContextService,
     UserProfile,
 } from './services/profile/profile-service';
 import { ThemeService } from './services/theme/theme-service';
 import { ToastContainerComponent } from './shared/toast/toast-container';
-import { TranslationService } from './shared/translate/translate-service';
+import { ToastType } from './shared/toast/toast-type';
+import { ToastService } from './shared/toast/toast.service';
 
 @Component({
   selector: 'app-root',
@@ -57,7 +59,6 @@ export class App implements OnInit {
   screenOk = true;
 
   constructor(
-    private renderer: Renderer2,
     private themeService: ThemeService,
     private http: HttpClient,
     private auth: AuthService,
@@ -65,7 +66,8 @@ export class App implements OnInit {
     private authState: AuthStateService,
     private router: Router,
     private loader: LoaderService,
-    private translate: TranslationService
+    private notification: NotificationService,
+    private toastService: ToastService
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -97,6 +99,7 @@ export class App implements OnInit {
     }
 
     this.loader.loading$.subscribe((v) => (this.isLoading = v));
+    const profileId = this.userContext.getUser()?.profileId;
 
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
@@ -108,6 +111,20 @@ export class App implements OnInit {
         this.loader.hide();
       }
     });
+    if (profileId) {
+      this.notification.init(profileId);
+      this.toastService.show(
+        'TOAST.error_generic',
+        'TOAST.error_notification',
+        ToastType.Error
+      );
+    } else {
+      this.toastService.show(
+        'TOAST.error_generic',
+        'TOAST.error_notification',
+        ToastType.Error
+      );
+    }
   }
 
   @HostListener('window:resize', ['$event'])

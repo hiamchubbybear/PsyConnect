@@ -11,4 +11,15 @@ export const environment = {
   therapistsKey: 'T1bYz3xM',
   usernameKey: 'N3vL9pQs',
   profileKey: 'U8pQs4nJ',
+  vapidKey:
+    'BMgf_ML9qh8u4tgdLoF7-f-VRMiKFk0iqxXFNS6GcP4bK35pwrsE7IRm1FDBfvTRmTnxgT3_z3OeoEbIiRkNylk',
+  firebaseConfig: {
+    apiKey: 'AIzaSyBjyhkn71RnXenG4dzhdiRIlIc95YM2bAk',
+    authDomain: 'psyconnect-041125.firebaseapp.com',
+    projectId: 'psyconnect-041125',
+    storageBucket: 'psyconnect-041125.firebasestorage.app',
+    messagingSenderId: '130716148033',
+    appId: '1:130716148033:web:bafc7ed2934cf9768241c0',
+    measurementId: 'G-EREPPG37PL',
+  },
 };
