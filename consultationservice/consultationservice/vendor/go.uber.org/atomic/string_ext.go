@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2023 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,42 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-//go:build !go1.20
-// +build !go1.20
+package atomic
 
-package multierr
+//go:generate bin/gen-atomicwrapper -name=String -type=string -wrapped=Value -file=string.go
+// Note: No Swap as String wraps Value, which wraps the stdlib sync/atomic.Value which
+// only supports Swap as of go1.17: https://github.com/golang/go/issues/39351
 
-import "errors"
-
-// Versions of Go before 1.20 did not support the Unwrap() []error method.
-// This provides a similar behavior by implementing the Is(..) and As(..)
-// methods.
-// See the errors.Join proposal for details:
-// https://github.com/golang/go/issues/53435
-
-// As attempts to find the first error in the error list that matches the type
-// of the value that target points to.
-//
-// This function allows errors.As to traverse the values stored on the
-// multierr error.
-func (merr *multiError) As(target interface{}) bool {
-	for _, err := range merr.Errors() {
-		if errors.As(err, target) {
-			return true
-		}
-	}
-	return false
+// String returns the wrapped value.
+func (s *String) String() string {
+	return s.Load()
 }
 
-// Is attempts to match the provided error against errors in the error list.
+// MarshalText encodes the wrapped string into a textual form.
 //
-// This function allows errors.Is to traverse the values stored on the
-// multierr error.
-func (merr *multiError) Is(target error) bool {
-	for _, err := range merr.Errors() {
-		if errors.Is(err, target) {
-			return true
-		}
-	}
-	return false
+// This makes it encodable as JSON, YAML, XML, and more.
+func (s *String) MarshalText() ([]byte, error) {
+	return []byte(s.Load()), nil
+}
+
+// UnmarshalText decodes text and replaces the wrapped string with it.
+//
+// This makes it decodable from JSON, YAML, XML, and more.
+func (s *String) UnmarshalText(b []byte) error {
+	s.Store(string(b))
+	return nil
 }

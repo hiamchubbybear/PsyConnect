@@ -5,7 +5,6 @@ option java_package = "dev.psyconnect.grpc";
 option java_multiple_files = true;
 service ProfileCreationService {
   rpc createUser (ProfileCreationRequest) returns (ProfileCreationResponse);
-  rpc helloword (Hello) returns (HelloResponse);
 }
 
 message ProfileCreationRequest {
@@ -28,12 +27,4 @@ message ProfileCreationResponse {
   string address = 5;
   string gender = 6;
   string avatarUri = 7;
-}
-
-
-message Hello {
-  string message = 1;
-}
-message HelloResponse {
-  string message = 1;
 }

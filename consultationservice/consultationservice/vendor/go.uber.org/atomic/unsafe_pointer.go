@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Uber Technologies, Inc.
+// Copyright (c) 2021 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,49 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package exit provides stubs so that unit tests can exercise code that calls
-// os.Exit(1).
-package exit
+package atomic
 
-import "os"
+import (
+	"sync/atomic"
+	"unsafe"
+)
 
-var _exit = os.Exit
+// UnsafePointer is an atomic wrapper around unsafe.Pointer.
+type UnsafePointer struct {
+	_ nocmp // disallow non-atomic comparison
 
-// With terminates the process by calling os.Exit(code). If the package is
-// stubbed, it instead records a call in the testing spy.
-func With(code int) {
-	_exit(code)
+	v unsafe.Pointer
 }
 
-// A StubbedExit is a testing fake for os.Exit.
-type StubbedExit struct {
-	Exited bool
-	Code   int
-	prev   func(code int)
+// NewUnsafePointer creates a new UnsafePointer.
+func NewUnsafePointer(val unsafe.Pointer) *UnsafePointer {
+	return &UnsafePointer{v: val}
 }
 
-// Stub substitutes a fake for the call to os.Exit(1).
-func Stub() *StubbedExit {
-	s := &StubbedExit{prev: _exit}
-	_exit = s.exit
-	return s
+// Load atomically loads the wrapped value.
+func (p *UnsafePointer) Load() unsafe.Pointer {
+	return atomic.LoadPointer(&p.v)
 }
 
-// WithStub runs the supplied function with Exit stubbed. It returns the stub
-// used, so that users can test whether the process would have crashed.
-func WithStub(f func()) *StubbedExit {
-	s := Stub()
-	defer s.Unstub()
-	f()
-	return s
+// Store atomically stores the passed value.
+func (p *UnsafePointer) Store(val unsafe.Pointer) {
+	atomic.StorePointer(&p.v, val)
 }
 
-// Unstub restores the previous exit function.
-func (se *StubbedExit) Unstub() {
-	_exit = se.prev
+// Swap atomically swaps the wrapped unsafe.Pointer and returns the old value.
+func (p *UnsafePointer) Swap(val unsafe.Pointer) (old unsafe.Pointer) {
+	return atomic.SwapPointer(&p.v, val)
 }
 
-func (se *StubbedExit) exit(code int) {
-	se.Exited = true
-	se.Code = code
+// CAS is an atomic compare-and-swap.
+func (p *UnsafePointer) CAS(old, new unsafe.Pointer) (swapped bool) {
+	return atomic.CompareAndSwapPointer(&p.v, old, new)
 }

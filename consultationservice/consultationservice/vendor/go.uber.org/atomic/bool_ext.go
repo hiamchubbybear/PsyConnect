@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,37 +18,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package zapcore
+package atomic
 
-import "sync"
+import (
+	"strconv"
+)
 
-type lazyWithCore struct {
-	Core
-	sync.Once
-	fields []Field
+//go:generate bin/gen-atomicwrapper -name=Bool -type=bool -wrapped=Uint32 -pack=boolToInt -unpack=truthy -cas -swap -json -file=bool.go
+
+func truthy(n uint32) bool {
+	return n == 1
 }
 
-// NewLazyWith wraps a Core with a "lazy" Core that will only encode fields if
-// the logger is written to (or is further chained in a lon-lazy manner).
-func NewLazyWith(core Core, fields []Field) Core {
-	return &lazyWithCore{
-		Core:   core,
-		fields: fields,
+func boolToInt(b bool) uint32 {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+// Toggle atomically negates the Boolean and returns the previous value.
+func (b *Bool) Toggle() (old bool) {
+	for {
+		old := b.Load()
+		if b.CAS(old, !old) {
+			return old
+		}
 	}
 }
 
-func (d *lazyWithCore) initOnce() {
-	d.Once.Do(func() {
-		d.Core = d.Core.With(d.fields)
-	})
-}
-
-func (d *lazyWithCore) With(fields []Field) Core {
-	d.initOnce()
-	return d.Core.With(fields)
-}
-
-func (d *lazyWithCore) Check(e Entry, ce *CheckedEntry) *CheckedEntry {
-	d.initOnce()
-	return d.Core.Check(e, ce)
+// String encodes the wrapped value as a string.
+func (b *Bool) String() string {
+	return strconv.FormatBool(b.Load())
 }

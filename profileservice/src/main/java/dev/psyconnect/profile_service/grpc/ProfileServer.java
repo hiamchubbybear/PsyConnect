@@ -1,7 +1,5 @@
 package dev.psyconnect.profile_service.grpc;
 
-import dev.psyconnect.grpc.Hello;
-import dev.psyconnect.grpc.HelloResponse;
 import dev.psyconnect.grpc.ProfileCreationRequest;
 import dev.psyconnect.grpc.ProfileCreationResponse;
 import dev.psyconnect.grpc.ProfileCreationServiceGrpc;
@@ -26,14 +24,6 @@ public class ProfileServer extends ProfileCreationServiceGrpc.ProfileCreationSer
         this.userProfileService = userProfileService;
         this.profileMapper = profileMapper;
         System.out.println("ProfileServer gRPC initialized");
-    }
-
-    @Override
-    public void helloword(Hello request, StreamObserver<HelloResponse> responseObserver) {
-        HelloResponse response =
-                HelloResponse.newBuilder().setMessage(request.getMessage()).build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
     }
 
     @Override

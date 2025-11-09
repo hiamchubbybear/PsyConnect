@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,20 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package internal and its subpackages hold types and functionality
-// that are not part of Zap's public API.
-package internal
+package atomic
 
-import "go.uber.org/zap/zapcore"
+// atomic.Value panics on nil inputs, or if the underlying type changes.
+// Stabilize by always storing a custom struct that we control.
 
-// LeveledEnabler is an interface satisfied by LevelEnablers that are able to
-// report their own level.
-//
-// This interface is defined to use more conveniently in tests and non-zapcore
-// packages.
-// This cannot be imported from zapcore because of the cyclic dependency.
-type LeveledEnabler interface {
-	zapcore.LevelEnabler
+//go:generate bin/gen-atomicwrapper -name=Error -type=error -wrapped=Value -pack=packError -unpack=unpackError -file=error.go
 
-	Level() zapcore.Level
+type packedError struct{ Value error }
+
+func packError(v error) interface{} {
+	return packedError{v}
+}
+
+func unpackError(v interface{}) error {
+	if err, ok := v.(packedError); ok {
+		return err.Value
+	}
+	return nil
 }

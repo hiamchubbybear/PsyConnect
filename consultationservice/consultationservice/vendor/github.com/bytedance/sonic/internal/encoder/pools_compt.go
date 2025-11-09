@@ -1,11 +1,14 @@
-/**
- * Copyright 2020 Confluent Inc.
+//go:build !amd64
+// +build !amd64
+
+/*
+ * Copyright 2021 ByteDance Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,8 +17,8 @@
  * limitations under the License.
  */
 
-package librdkafka
+package encoder
 
-// LibrdkafkaGoSubdir is a dummy variable needed to export something so the
-// file is not empty.
-var LibrdkafkaGoSubdir = true
+func init() {
+	ForceUseVM()
+}

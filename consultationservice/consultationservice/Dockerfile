@@ -1,14 +1,22 @@
 FROM golang:1.24-alpine
 
+# Cài git để go mod hoạt động
 RUN apk add --no-cache git
 
 WORKDIR /app
 
+# Copy go.mod/go.sum trước để tận dụng cache
 COPY go.mod go.sum ./
-RUN go mod download
 
+# Tải dependency, đồng bộ vendor
+RUN go mod download
+COPY vendor ./vendor
+
+# Copy toàn bộ source code
 COPY . .
-RUN go build -o consultation-service ./cmd
+
+# Build với vendor
+RUN go build -mod=vendor -o consultation-service ./cmd
 
 EXPOSE 8084
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,7 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package zapcore defines and implements the low-level interfaces upon which
-// zap is built. By providing alternate implementations of these interfaces,
-// external packages can extend zap's capabilities.
-package zapcore // import "go.uber.org/zap/zapcore"
+package atomic
+
+// nocmp is an uncomparable struct. Embed this inside another struct to make
+// it uncomparable.
+//
+//  type Foo struct {
+//    nocmp
+//    // ...
+//  }
+//
+// This DOES NOT:
+//
+//  - Disallow shallow copies of structs
+//  - Disallow comparison of pointers to uncomparable structs
+type nocmp [0]func()

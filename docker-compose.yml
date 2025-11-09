@@ -59,10 +59,10 @@ services:
     env_file:
       - .env
   consultation-service:
-    build: ./consultationservice
+    build: ./consultationservice/consultationservice
     container_name: consultation_service
     ports:
-      - "${SERVICE_PORT}:${SERVICE_PORT}"
+    - "${SERVICE_PORT}:${SERVICE_PORT}"
     environment:
       SERVICE_ENV: ${SERVICE_ENV}
       SERVICE_PORT: ${SERVICE_PORT}

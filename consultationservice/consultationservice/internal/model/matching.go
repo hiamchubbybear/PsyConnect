@@ -1,4 +1,4 @@
-package dto
+package model
 
 type MatchingModel struct {
 	Address                    string   `json:"address" bson:"address"`

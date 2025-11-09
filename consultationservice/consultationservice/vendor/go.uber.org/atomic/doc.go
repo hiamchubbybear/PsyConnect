@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,10 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package zap
-
-import "time"
-
-func timeToMillis(t time.Time) int64 {
-	return t.UnixNano() / int64(time.Millisecond)
-}
+// Package atomic provides simple wrappers around numerics to enforce atomic
+// access.
+package atomic

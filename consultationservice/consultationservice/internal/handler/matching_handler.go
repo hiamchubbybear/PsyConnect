@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"consultationservice/bootstrap"
 	"consultationservice/internal/model"
 	"consultationservice/internal/repository"
 	"consultationservice/internal/utils"
 	"consultationservice/pkg/apiresponse"
-
-	"github.com/gin-gonic/gin"
 )
 
 var converter utils.Converter

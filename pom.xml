@@ -10,11 +10,10 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>grpccommon</module>
         <module>identityservice</module>
         <module>profileservice</module>
         <module>apigateway</module>
-        <module>grpccommon</module> 
-
     </modules>
 
     <properties>

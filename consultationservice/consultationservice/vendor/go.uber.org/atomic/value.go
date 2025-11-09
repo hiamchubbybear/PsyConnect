@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2023 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,12 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-//go:build go1.20
-// +build go1.20
+package atomic
 
-package multierr
+import "sync/atomic"
 
-// Unwrap returns a list of errors wrapped by this multierr.
-func (merr *multiError) Unwrap() []error {
-	return merr.Errors()
+// Value shadows the type of the same name from sync/atomic
+// https://godoc.org/sync/atomic#Value
+type Value struct {
+	atomic.Value
+
+	_ nocmp // disallow non-atomic comparison
 }
