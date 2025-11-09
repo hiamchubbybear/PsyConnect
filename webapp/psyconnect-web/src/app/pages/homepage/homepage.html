@@ -1,0 +1,68 @@
+<section class="hero container">
+  <div class="hero-content">
+    <h1>{{ "HOME.Tagline" | translate }}</h1>
+    <p>{{ "HOME.Description" | translate }}</p>
+    <div class="hero-buttons">
+      <a class="btn start" routerLink="auth/signup">
+        {{ "COMMON.GetStartedFree" | translate }}
+      </a>
+      <a class="btn about" routerLink="/about">
+        {{ "COMMON.LearnMore" | translate }}
+      </a>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img
+      src="assets/images/logo.png"
+      alt="{{ 'HOME.IllustrationTitle' | translate }}"
+    />
+  </div>
+</section>
+
+<section class="features container">
+  <h2>{{ "HOME.SectionTitle" | translate }}</h2>
+  <p>{{ "HOME.SectionDescription" | translate }}</p>
+  <div class="feature-cards">
+    <div class="card">
+      <h3>{{ "HOME.TherapyBooking.Title" | translate }}</h3>
+      <p>{{ "HOME.TherapyBooking.Description" | translate }}</p>
+    </div>
+    <div class="card">
+      <h3>{{ "HOME.MoodTracking.Title" | translate }}</h3>
+      <p>{{ "HOME.MoodTracking.Description" | translate }}</p>
+    </div>
+    <div class="card">
+      <h3>{{ "HOME.CommunitySupport.Title" | translate }}</h3>
+      <p>{{ "HOME.CommunitySupport.Description" | translate }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="app-preview container">
+  <div class="preview-image">
+    <img [src]="bannerUrl" alt="{{ 'HOME.AppPreview.Title' | translate }}" />
+  </div>
+  <div class="preview-content">
+    <h2>{{ "HOME.AppPreview.Subtitle" | translate }}</h2>
+    <ul>
+      <li>{{ "HOME.AppPreview.Features.ProfessionalSupport" | translate }}</li>
+      <li>{{ "HOME.AppPreview.Features.PrivacyFirst" | translate }}</li>
+      <li>{{ "HOME.AppPreview.Features.Availability" | translate }}</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="cta-inner">
+    <h2>{{ "HOME.AppPreview.CallToAction" | translate }}</h2>
+    <p>{{ "HOME.AppPreview.JoinUsers" | translate }}</p>
+    <div class="cta-buttons">
+      <a class="btn primary" routerLink="auth/signup">
+        {{ "COMMON.SignUpFree" | translate }}
+      </a>
+      <a class="btn secondary" routerLink="auth/login">
+        {{ "COMMON.Login" | translate }}
+      </a>
+    </div>
+  </div>
+</section>

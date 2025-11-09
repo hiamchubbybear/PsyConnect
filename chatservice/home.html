@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebSocket Chat Tester</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 600px;
+        margin: auto;
+        padding: 2rem;
+      }
+      input,
+      textarea,
+      button {
+        width: 100%;
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+        font-size: 1rem;
+      }
+      .log {
+        background: #f3f3f3;
+        padding: 1rem;
+        border-radius: 8px;
+        height: 200px;
+        overflow-y: auto;
+        white-space: pre-line;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>🧪 WebSocket Test Client</h2>
+
+    <label>User ID (query: user_id):</label>
+    <input type="text" id="userId" value="user123" />
+
+    <label>Profile ID (query: profile_id):</label>
+    <input type="text" id="profileId" value="profile123" />
+
+    <label>Receiver ID (query: receiver):</label>
+    <input type="text" id="receiver" value="user456" />
+
+    <label>Message to Send:</label>
+    <textarea id="message" rows="3">Hello from test client</textarea>
+
+    <button onclick="connect()">🔌 Connect</button>
+    <button onclick="sendMessage()">📤 Send</button>
+    <button onclick="disconnect()">❌ Disconnect</button>
+
+    <div class="log" id="log"></div>
+
+    <script>
+      let socket;
+      const logEl = document.getElementById("log");
+
+      function log(msg) {
+        const time = new Date().toLocaleTimeString();
+        logEl.innerText += `[${time}] ${msg}\n`;
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      function connect() {
+        const userId = document.getElementById("userId").value;
+        const profileId = document.getElementById("profileId").value;
+        const receiver = document.getElementById("receiver").value;
+
+        const url = `ws://localhost:8085/ws?user_id=${encodeURIComponent(
+          userId
+        )}&profile_id=${encodeURIComponent(
+          profileId
+        )}&receiver=${encodeURIComponent(receiver)}`;
+        socket = new WebSocket(url);
+
+        socket.onopen = () => log("✅ Connected");
+        socket.onmessage = (e) => log("📩 Received: " + e.data);
+        socket.onerror = (e) => log("❌ Error: " + e.message || e);
+        socket.onclose = () => log("🔌 Disconnected");
+      }
+
+      function sendMessage() {
+        const msg = document.getElementById("message").value;
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+          log("⚠️ Not connected");
+          return;
+        }
+        socket.send(msg);
+        log("📤 Sent: " + msg);
+      }
+
+      function disconnect() {
+        if (socket) {
+          socket.close();
+          log("🔌 Disconnected manually");
+        }
+      }
+    </script>
+  </body>
+</html>

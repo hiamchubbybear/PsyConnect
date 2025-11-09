@@ -1,0 +1,50 @@
+<main class="request-page">
+  <div class="request-container">
+    <div class="request-form">
+      <div class="form-header">
+        <h2>{{ "LOGIN.REQUEST.Header.Title" | translate }}</h2>
+        <p>{{ "LOGIN.REQUEST.Header.Subtitle" | translate }}</p>
+      </div>
+
+      <form
+        [formGroup]="requestForm"
+        (ngSubmit)="onSubmit()"
+        [class.shake-errors]="shakeErrors"
+      >
+        <div class="form-group">
+          <label for="email">{{ "LOGIN.REQUEST.Form.Email" | translate }}</label>
+          <div class="input-with-error" [class.shake-errors]="shakeErrors">
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              placeholder="{{ 'LOGIN.REQUEST.Form.EmailPlaceholder' | translate }}"
+              [class.error]="isFieldInvalid('email')"
+            />
+            <div class="error-text" *ngIf="isFieldInvalid('email')">
+              {{ getFieldError('email') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!requestForm.valid || submitting"
+          >
+            {{
+              submitting
+                ? ("LOGIN.REQUEST.Form.Submitting" | translate)
+                : ("LOGIN.REQUEST.Form.Submit" | translate)
+            }}
+          </button>
+        </div>
+
+        <p class="signup-text">
+          <a routerLink="/auth/login">{{ "LOGIN.REQUEST.Form.BackToLogin" | translate }}</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</main>

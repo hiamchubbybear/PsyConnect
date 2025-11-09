@@ -1,0 +1,101 @@
+import { CommonModule } from '@angular/common';
+import { Component, input } from '@angular/core';
+
+type Status = 'available' | 'busy' | 'offline' | 'away';
+
+@Component({
+  selector: 'app-status-badge',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="status-badge" [attr.data-status]="status()">
+      <span class="status-dot"></span>
+      <span class="status-text">{{ status() }}</span>
+      @if (showDropdown()) {
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+      >
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+      }
+    </div>
+  `,
+  styles: [
+    `
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+      }
+
+      .status-badge[data-status='available'] {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .status-badge[data-status='busy'] {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .status-badge[data-status='away'] {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .status-badge[data-status='offline'] {
+        background: #f3f4f6;
+        color: #4b5563;
+      }
+
+      [data-theme='dark'] .status-badge[data-status='available'] {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+      }
+
+      [data-theme='dark'] .status-badge[data-status='busy'] {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+      }
+
+      [data-theme='dark'] .status-badge[data-status='away'] {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+      }
+
+      [data-theme='dark'] .status-badge[data-status='offline'] {
+        background: rgba(156, 163, 175, 0.15);
+        color: #9ca3af;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .status-text {
+        text-transform: capitalize;
+      }
+
+      .status-badge:hover {
+        filter: brightness(0.95);
+      }
+    `,
+  ],
+})
+export class StatusBadgeComponent {
+  status = input<Status>('available');
+  showDropdown = input(true);
+}

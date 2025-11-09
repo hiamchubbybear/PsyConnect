@@ -1,0 +1,361 @@
+# Style Rules & Design System Guidelines
+
+## 1. NAMING CONVENTIONS
+
+### SCSS Variables
+- Use kebab-case with descriptive prefixes
+- Colors: `$color-primary`, `$color-text-muted`, `$color-gray-100`
+- Spacing: `$spacing-xs`, `$spacing-md`, `$spacing-xl`, `$spacing-2xl`
+- Shadows: `$shadow-sm`, `$shadow-card`, `$shadow-dropdown`
+- Typography: `$font-size-md`, `$font-primary`
+- Breakpoints: `$breakpoint-md`, `$breakpoint-lg`
+
+### CSS Custom Properties
+- Use `--` prefix with consistent naming
+- Follow pattern: `--category-property-state`
+- Examples: `--color-bg`, `--color-text-muted`, `--shadow-card-hover`
+
+## 2. COLOR SYSTEM
+
+### Core Colors (Light Theme)
+```scss
+--color-bg: #ffffff
+--color-bg-secondary: #fafafa
+--color-text: #171717
+--color-text-muted: #71717a
+--color-primary: #18181b
+--color-primary-hover: #27272a
+--color-accent: #525252
+--color-accent-hover: #404040
+--color-border: rgba(0, 0, 0, 0.08)
+```
+
+### Dark Theme Override Pattern
+```scss
+[data-theme="dark"] {
+  --color-bg: #1a1a1b;
+  --color-text: #fafafa;
+  --color-border: rgba(255, 255, 255, 0.08);
+  // Always provide dark variants
+}
+```
+
+### Semantic Colors
+```scss
+// Success
+--color-success-bg: #f0fdf4 / #0f1419 (dark)
+--color-success-text: #16a34a / #4ade80 (dark)
+--color-success-border: #bbf7d0 / #166534 (dark)
+
+// Error
+--color-error-bg: #fef2f2 / #1c0b0b (dark)
+--color-error-text: #dc2626 / #f87171 (dark)
+
+// Warning
+--color-warning-bg: #fffbeb / #1a1206 (dark)
+--color-warning-text: #ca8a04 / #fbbf24 (dark)
+```
+
+## 3. SPACING SYSTEM
+
+### Scale Pattern
+```scss
+--spacing-xs: 0.25rem    // 4px
+--spacing-sm: 0.5rem     // 8px
+--spacing-md: 0.75rem    // 12px
+--spacing-lg: 1rem       // 16px
+--spacing-xl: 1.5rem     // 24px
+--spacing-2xl: 2rem      // 32px
+--spacing-6xl: 10rem     // 160px (large sections)
+```
+
+## 4. SHADOW SYSTEM
+
+### Light Theme Shadows
+```scss
+--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03)
+--shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05)
+--shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.08)
+--shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1)
+--shadow-button-hover: 0 4px 12px rgba(59, 130, 246, 0.4)
+```
+
+### Dark Theme Shadows (Stronger)
+```scss
+--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2)
+--shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3)
+--shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.4)
+--shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.6)
+```
+
+## 5. TRANSITION SYSTEM
+
+### Standard Transitions
+```scss
+--transition-fast: 0.15s ease
+--transition-medium: 0.2s ease
+```
+
+### Universal Transition Rule
+```scss
+*,
+*::before,
+*::after {
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+```
+
+## 6. BUTTON MIXINS & PATTERNS
+
+### Base Button Mixin
+```scss
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-primary;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  border-radius: $border-radius-md;
+  transition: all var(--transition-fast);
+
+  &:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+```
+
+### Button Variants
+```scss
+// Primary Button
+&--primary {
+  background: var(--color-primary);
+  color: var(--color-bg);
+  border: 1px solid var(--color-primary);
+
+  &:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-button-hover);
+  }
+}
+
+// Secondary Button
+&--secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+
+  &:hover {
+    background: var(--color-bg-secondary);
+    border-color: var(--color-primary);
+  }
+}
+```
+
+## 7. LINK SYSTEM
+
+### Link Variants
+```scss
+.link {
+  &--subtle { color: #71717a; } // Muted links
+  &--accent { color: #6d28d9; } // Purple accent links
+  &--external::after { content: "↗"; } // External link indicator
+  &--button { /* Button-like styling */ }
+  &--ghost { /* Transparent with border */ }
+}
+```
+
+## 8. COMPONENT PATTERNS
+
+### Card Component
+```scss
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: $border-radius-lg;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-medium);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+```
+
+### Container System
+```scss
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+
+  @media (min-width: $breakpoint-md) {
+    padding: 0 var(--spacing-xl);
+  }
+}
+```
+
+### Layout System
+```scss
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+  box-sizing: border-box;
+  padding: var(--spacing-6xl); // Large section padding
+}
+```
+
+## 9. FORM ELEMENTS
+
+### Input Styling
+```scss
+input, select, textarea {
+  font-family: $font-primary;
+  font-size: $font-size-md;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: $border-radius-md;
+  transition: all var(--transition-fast);
+
+  &::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-color: var(--color-accent);
+  }
+}
+
+// Remove default appearance
+input[type="date"],
+input[type="time"],
+select {
+  appearance: none;
+  -webkit-appearance: none;
+}
+```
+
+## 10. ACCESSIBILITY
+
+### Screen Reader Only
+```scss
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+```
+
+## 11. RESPONSIVE BREAKPOINTS
+
+```scss
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+```
+
+## 12. TYPOGRAPHY
+
+### Font System
+```scss
+$font-primary: "Quicksand", sans-serif;
+
+$font-size-2xs: 0.625rem;
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.25rem;
+$font-size-2xl: 1.5rem;
+$font-size-3xl: 1.875rem;
+```
+
+### Body Text
+```scss
+body {
+  font-family: $font-primary;
+  font-size: $font-size-md;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+```
+
+## 13. COMPONENT-SPECIFIC VARIABLES
+
+### Header/Navigation
+```scss
+--header-bg: light/dark variants
+--header-text: light/dark variants
+--header-link-text: light/dark variants
+--header-link-hover: light/dark variants
+```
+
+### Dropdown/Menu
+```scss
+--dropdown-bg: light/dark variants
+--dropdown-border: light/dark variants
+--dropdown-text: light/dark variants
+--dropdown-item-hover-bg: light/dark variants
+```
+
+## 14. ANIMATION PRINCIPLES
+
+- Use `transform: translateY(-1px)` for button hovers
+- Use `transform: translateY(-2px)` for card hovers
+- Include `&:active { transform: translateY(0); }` for buttons
+- Add box-shadow changes on hover for depth
+- Use consistent transition timing (fast/medium)
+
+## 15. DARK MODE CONSIDERATIONS
+
+- Always provide dark variants for colors
+- Use `[data-theme="dark"]` selector
+- Increase shadow opacity in dark mode
+- Use `--icon-theme-color: brightness(0) invert(1)` for icon theming
+- Ensure sufficient contrast ratios
+
+
+
+<div className="min-h-screen w-full bg-[#020617] relative">
+  {/* Dark Radial Glow Background */}
+  <div
+    className="absolute inset-0 z-0"
+    style={{
+      backgroundImage: ``,
+    }}
+  />
+     {/* Your Content/Components */}
+</div>

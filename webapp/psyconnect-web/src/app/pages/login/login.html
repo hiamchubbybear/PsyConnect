@@ -1,0 +1,115 @@
+<main class="login-page">
+  <div class="login-container">
+    <div class="login-form">
+      <div class="form-header">
+        <h2>{{ "LOGIN.Header.Title" | translate }}</h2>
+        <p>{{ "LOGIN.Header.Subtitle" | translate }}</p>
+      </div>
+
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="onSubmit()"
+        [class.shake-errors]="shakeErrors"
+      >
+        <div class="form-group">
+          <label for="username">{{ "LOGIN.Form.Username" | translate }}</label>
+          <div class="input-with-error" [class.shake-errors]="shakeErrors">
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              placeholder="{{ 'LOGIN.Form.UsernamePlaceholder' | translate }}"
+              required
+              [class.error]="
+                loginForm.get('username')?.touched &&
+                loginForm.get('username')?.invalid
+              "
+            />
+            <div
+              class="error-text"
+              *ngIf="
+                loginForm.get('username')?.touched &&
+                loginForm.get('username')?.invalid
+              "
+            >
+              <span *ngIf="loginForm.get('username')?.errors?.['required']">
+                {{ "LOGIN.Form.UsernameRequired" | translate }}
+              </span>
+              <span *ngIf="loginForm.get('username')?.errors?.['minlength']">
+                {{ "LOGIN.Form.UsernameMinLength" | translate }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">{{ "LOGIN.Form.Password" | translate }}</label>
+          <div class="input-with-error" [class.shake-errors]="shakeErrors">
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              placeholder="{{ 'LOGIN.Form.PasswordPlaceholder' | translate }}"
+              required
+              [class.error]="
+                loginForm.get('password')?.touched &&
+                loginForm.get('password')?.invalid
+              "
+            />
+            <div
+              class="error-text"
+              *ngIf="
+                loginForm.get('password')?.touched &&
+                loginForm.get('password')?.invalid
+              "
+            >
+              <span *ngIf="loginForm.get('password')?.errors?.['required']">
+                {{ "LOGIN.Form.PasswordRequired" | translate }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label>
+            <input type="checkbox" />
+            {{ "LOGIN.Form.RememberMe" | translate }}
+          </label>
+          <a routerLink="/auth/request-reset">
+            {{ "LOGIN.Form.ForgotPassword" | translate }}
+          </a>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          {{ "LOGIN.Form.SignIn" | translate }}
+        </button>
+
+        <div class="divider">
+          <span>{{ "LOGIN.Form.DividerText" | translate }}</span>
+        </div>
+
+        <div class="social-login">
+          <button
+            type="button"
+            class="btn btn-google btn-primary"
+            (click)="handleOAuth2('google')"
+          >
+            {{ "LOGIN.Form.SocialGoogle" | translate }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-apple btn-primary"
+            (click)="handleOAuth2('facebook')"
+          >
+            {{ "LOGIN.Form.SocialFacebook" | translate }}
+          </button>
+        </div>
+
+        <p class="signup-text">
+          {{ "LOGIN.Form.NoAccount" | translate }}
+          <a routerLink="/auth/signup">{{ "LOGIN.Form.CreateAccount" | translate }}</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,57 @@
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg, 24px);
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #1a202c);
+    margin: 0;
+  }
+
+  &__edit-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs, 8px);
+    padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+    background: var(--color-primary, #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.08));
+
+    &:hover {
+      background: var(--color-primary-hover, #4338ca);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.1));
+    }
+
+    &:focus {
+      outline: 2px solid var(--color-primary, #4f46e5);
+      outline-offset: 2px;
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .profile-header {
+    &__title {
+      font-size: 1.875rem;
+    }
+  }
+}

@@ -1,0 +1,171 @@
+<div class="overlay" *ngIf="editing === 'name'">
+  <div class="overlay-content">
+    <h3>{{ "ACCOUNT_MANAGEMENT.Profile.Name" | translate }}</h3>
+    <div class="form">
+      <input
+        type="text"
+        [(ngModel)]="draftData.firstName"
+        name="firstName"
+        placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.FirstName' | translate }}"
+      />
+      <input
+        type="text"
+        [(ngModel)]="draftData.middleName"
+        name="middleName"
+        placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.MiddleName' | translate }}"
+      />
+      <input
+        type="text"
+        [(ngModel)]="draftData.lastName"
+        name="lastName"
+        placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.LastName' | translate }}"
+      />
+      <p class="notice">
+        {{ "ACCOUNT_MANAGEMENT.Profile.Notices.NameChangeWarning" | translate }}
+      </p>
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel.emit()"
+        >
+          {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel" | translate }}
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="saveName.emit()"
+        >
+          {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DOB overlay -->
+<div class="overlay" *ngIf="editing === 'dob'">
+  <div class="overlay-content">
+    <h3>{{ "ACCOUNT_MANAGEMENT.Profile.DOB" | translate }}</h3>
+    <p>{{ "ACCOUNT_MANAGEMENT.Profile.Notices.DOBInfo" | translate }}</p>
+    <div class="form">
+      <input type="date" [(ngModel)]="editValue" name="dobField" />
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel.emit()"
+        >
+          {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel" | translate }}
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="onSaveField('dob')"
+        >
+          {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Address overlay -->
+<div class="overlay" *ngIf="editing === 'address'">
+  <div class="overlay-content">
+    <h3>{{ "ACCOUNT_MANAGEMENT.Profile.Address" | translate }}</h3>
+    <p>{{ "ACCOUNT_MANAGEMENT.Profile.Notices.AddressInfo" | translate }}</p>
+
+    <div class="form">
+      <input
+        type="text"
+        [(ngModel)]="editValue"
+        name="addressField"
+        (ngModelChange)="onAddressInput($event)"
+        placeholder="Enter your full address"
+      />
+
+      <!-- Suggestion dropdown -->
+      <div *ngIf="addressSuggestions.length > 0" class="suggestions-dropdown">
+        <div
+          *ngFor="let suggestion of addressSuggestions"
+          class="suggestion-item"
+          (click)="selectAddress(suggestion)"
+        >
+          {{ suggestion }}
+        </div>
+      </div>
+
+      <div class="overlay-actions">
+        <button
+          type="button"
+          class="button button--secondary"
+          (click)="cancel.emit()"
+        >
+          {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel" | translate }}
+        </button>
+        <button
+          type="button"
+          class="button button--primary"
+          (click)="onSaveField('address')"
+        >
+          {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Gender overlay -->
+<div class="overlay" *ngIf="editing === 'gender'">
+  <div class="overlay-content">
+    <h3>{{ "ACCOUNT_MANAGEMENT.Profile.Gender" | translate }}</h3>
+    <p class="overlay-subtitle">
+      {{ "ACCOUNT_MANAGEMENT.Profile.Notices.GenderInfo" | translate }}
+    </p>
+
+    <div class="gender-options">
+      <button
+        type="button"
+        class="gender-option"
+        [class.selected]="editValue === 'Male'"
+        (click)="editValue = 'Male'"
+      >
+        {{ "ACCOUNT_MANAGEMENT.Profile.GenderOptions.Male" | translate }}
+      </button>
+      <button
+        type="button"
+        class="gender-option"
+        [class.selected]="editValue === 'Female'"
+        (click)="editValue = 'Female'"
+      >
+        {{ "ACCOUNT_MANAGEMENT.Profile.GenderOptions.Female" | translate }}
+      </button>
+      <button
+        type="button"
+        class="gender-option"
+        [class.selected]="editValue === 'Other'"
+        (click)="editValue = 'Other'"
+      >
+        {{ "ACCOUNT_MANAGEMENT.Profile.GenderOptions.Other" | translate }}
+      </button>
+    </div>
+
+    <div class="overlay-actions">
+      <button
+        type="button"
+        class="button button--secondary"
+        (click)="cancel.emit()"
+      >
+        {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel" | translate }}
+      </button>
+      <button
+        type="button"
+        class="button button--primary"
+        (click)="onSaveField('gender')"
+      >
+        {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges" | translate }}
+      </button>
+    </div>
+  </div>
+</div>

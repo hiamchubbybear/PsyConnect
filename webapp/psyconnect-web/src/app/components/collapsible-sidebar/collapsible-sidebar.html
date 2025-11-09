@@ -1,0 +1,37 @@
+<nav class="sidebar" [class.collapsed]="collapsed" [style.width]="width">
+  <h3 class="sidebar__title">
+    <ng-container *ngIf="titleTranslateKey; else plainTitle">
+      {{ titleTranslateKey | translate }}
+    </ng-container>
+    <ng-template #plainTitle>{{ title }}</ng-template>
+  </h3>
+
+  <ul class="sidebar__list">
+    <li class="sidebar__item" *ngFor="let item of items">
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.exact || false }"
+        (click)="onItemClick(item)"
+      >
+        <span class="sidebar__item-icon" *ngIf="item.icon">
+          {{ item.icon }}
+        </span>
+        <span class="sidebar__item-label">
+          <ng-container *ngIf="item.translateKey; else plainLabel">
+            {{ item.translateKey | translate }}
+          </ng-container>
+          <ng-template #plainLabel>{{ item.label }}</ng-template>
+        </span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<button
+  class="sidebar-toggle"
+  [class.collapsed]="collapsed"
+  [style.width]="width"
+  (click)="toggleSidebar()"
+  [attr.aria-label]="collapsed ? 'Open sidebar' : 'Close sidebar'"
+></button>

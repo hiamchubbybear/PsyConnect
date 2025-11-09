@@ -1,0 +1,108 @@
+<div class="card-wrapper" [style.zIndex]="100 - index">
+  <article
+    #card
+    class="card"
+    role="article"
+    [style.transform]="transform"
+    [style.transition]="transition"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+    tabindex="0"
+    [attr.aria-label]="
+      'SWIPE_CARD.AriaLabel.TherapistCard'
+        | translate : { name: therapist.name || 'profile' }
+    "
+  >
+    <div class="overlay like" [style.opacity]="likeOpacity">
+      {{ "SWIPE_CARD.Overlays.Like" | translate }}
+    </div>
+    <div class="overlay nope" [style.opacity]="nopeOpacity">
+      {{ "SWIPE_CARD.Overlays.Nope" | translate }}
+    </div>
+
+    <header class="card-header">
+      <img
+        *ngIf="therapist.avatarOverride; else placeholder"
+        [src]="therapist.avatarOverride"
+        [alt]="therapist.name"
+        class="avatar"
+      />
+      <ng-template #placeholder>
+        <div class="avatar">👩‍⚕️</div>
+      </ng-template>
+
+      <div class="meta">
+        <h3 class="name">{{ therapist.name }}</h3>
+        <div class="title">
+          {{ therapist.professionalInfo?.title?.display }}
+        </div>
+        <div class="rating">
+          <span class="stars">★</span>
+          <span class="score">{{
+            "SWIPE_CARD.Rating.NoRating" | translate
+          }}</span>
+          <span class="reviews" *ngIf="therapist.experience">
+            ({{ therapist.experience }} years)
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <footer class="card-actions">
+      <button
+        class="btn pass"
+        (click)="pass()"
+        [attr.aria-label]="'SWIPE_CARD.Actions.Pass' | translate"
+      >
+        ✕ {{ "SWIPE_CARD.Actions.Pass" | translate }}
+      </button>
+
+      <button
+        class="btn match"
+        (click)="match()"
+        [attr.aria-label]="'SWIPE_CARD.Actions.Match' | translate"
+      >
+        ❤ {{ "SWIPE_CARD.Actions.Match" | translate }}
+      </button>
+    </footer>
+  </article>
+  <button
+    class="btn up"
+    (click)="animateUp()"
+    [attr.aria-label]="'SWIPE_CARD.Actions.ViewProfile' | translate"
+  >
+    <svg
+      *ngIf="!isOverlayOpen"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide"
+    >
+      <path d="m18 15-6-6-6 6" />
+    </svg>
+
+    <svg
+      *ngIf="isOverlayOpen"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide lucide-chevron-down-icon lucide-chevron-down"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </button>
+</div>

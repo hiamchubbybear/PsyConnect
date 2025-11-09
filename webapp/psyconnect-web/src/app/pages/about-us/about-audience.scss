@@ -1,0 +1,68 @@
+@use "../../styles/variable" as v;
+$primary-color: v.$color-primary;
+$secondary-color: v.$color-accent;
+$accent-color: v.$color-accent-hover;
+$danger-color: #ef4444;
+
+$text-primary: v.$color-text;
+$text-secondary: v.$color-text-muted;
+$text-muted: v.$color-gray-400;
+
+$bg-primary: v.$color-bg;
+$bg-secondary: v.$color-bg-secondary;
+$bg-card: v.$color-white;
+$border-color: rgba(0, 0, 0, 0.08);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+$border-radius: 8px;
+$border-radius-sm: 6px;
+$transition: all 0.2s ease;
+
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.25rem;
+
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 1.5rem;
+  box-shadow: $shadow-sm;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.about-us__audience {
+  padding: 4rem 0;
+}
+
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.audience-card {
+  @extend .card;
+  text-align: center;
+
+  i {
+    font-size: 2rem;
+    color: $primary-color;
+    margin-bottom: 1rem;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: $font-size-md;
+    font-weight: 500;
+  }
+}

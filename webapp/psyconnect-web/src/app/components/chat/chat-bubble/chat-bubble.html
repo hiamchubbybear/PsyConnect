@@ -1,0 +1,20 @@
+<div class="message-wrapper" [class.mine]="message.isMine">
+  <div class="message-avatar" *ngIf="!message.isMine">
+    <img [src]="message.userAvatar" [alt]="message.userName" />
+  </div>
+
+  <div class="message-content">
+    <div class="message-header" *ngIf="!message.isMine">
+      <span class="message-author">{{ message.userName }}</span>
+      <span class="message-time">{{ formatTime(message.timestamp) }}</span>
+    </div>
+
+    <div class="message-bubble" [class.mine]="message.isMine">
+      <p>{{ message.content }}</p>
+    </div>
+
+    <div class="message-time-mine" *ngIf="message.isMine">
+      {{ formatTime(message.timestamp) }}
+    </div>
+  </div>
+</div>

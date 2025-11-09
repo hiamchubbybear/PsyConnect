@@ -1,0 +1,11 @@
+<div class="toast-container">
+  <app-toast
+    *ngFor="let toast of toasts"
+    [id]="toast.id"
+    [title]="toast.title"
+    [message]="toast.message"
+    [type]="toast.type"
+    (close)="removeToast($event)"
+  >
+  </app-toast>
+</div>

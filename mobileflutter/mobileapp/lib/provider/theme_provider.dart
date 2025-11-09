@@ -6,9 +6,13 @@ class ThemeProvider extends ChangeNotifier {
   SharedPreferencesProvider preferencesProvider = SharedPreferencesProvider();
   ThemeMode _themeMode = ThemeMode.system;
 
-  ThemeMode get themeMode => _themeMode;
+  ThemeMode get themeMode {
+    return _themeMode;
+  }
 
-  bool get isDarkMode => _themeMode == ThemeMode.dark;
+  bool get isDarkMode {
+    return _themeMode == ThemeMode.dark;
+  }
 
   ThemeProvider() {
     _loadThemeMode();
@@ -17,14 +21,14 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> _loadThemeMode() async {
     bool isDark = await preferencesProvider.isDarkMode();
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
-    Get.changeThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
+    Get.changeThemeMode(_themeMode);
     notifyListeners();
   }
 
   void toggleTheme(bool isOn) {
     _themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
     preferencesProvider.setThemeMode(isOn);
-    Get.changeThemeMode(isOn ? ThemeMode.dark : ThemeMode.light);
+    Get.changeThemeMode(_themeMode);
     notifyListeners();
   }
 }

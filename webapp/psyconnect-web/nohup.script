@@ -1,0 +1,2 @@
+nohup ng serve --project psyconnect > webapp.log 2>&1 &
+

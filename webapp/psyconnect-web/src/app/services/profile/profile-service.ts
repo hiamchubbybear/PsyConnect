@@ -1,0 +1,85 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../../environments/environment';
+import { SecureStorageService } from '../../encrypt/secure';
+
+export interface UserProfile {
+  accountId: string;
+  profileId: string;
+  firstName: string;
+  lastName: string;
+  dob: string;
+  address: string;
+  gender: string;
+  avatarUri: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UserContextService {
+  private userSubject = new BehaviorSubject<UserProfile | null>(null);
+  user$ = this.userSubject.asObservable();
+  private isInitialized = false;
+  PROFILE_KEY = environment.profileKey;
+  constructor(private secureStorage: SecureStorageService) {
+    this.initializeUser();
+  }
+
+  private initializeUser() {
+    if (this.isInitialized) {
+      return;
+    }
+
+    try {
+      const userString = this.secureStorage.getItem<string>(this.PROFILE_KEY);
+      if (userString) {
+        const user = JSON.parse(userString);
+
+        this.userSubject.next(user);
+        this.isInitialized = true;
+      } else {
+      }
+    } catch (error) {
+      this.secureStorage.removeItem(this.PROFILE_KEY);
+    }
+  }
+
+  setUser(user: UserProfile) {
+    try {
+      const currentUser = this.userSubject.value;
+
+      if (
+        !currentUser ||
+        JSON.stringify(currentUser) !== JSON.stringify(user)
+      ) {
+        this.userSubject.next(user);
+        this.secureStorage.setItem(this.PROFILE_KEY, JSON.stringify(user));
+        this.isInitialized = true;
+      } else {
+      }
+    } catch (error) {}
+  }
+
+  getUser(): UserProfile | null {
+    console.log(this.userSubject.value);
+    return this.userSubject.value;
+  }
+
+  clear() {
+    this.userSubject.next(null);
+    this.secureStorage.removeItem(this.PROFILE_KEY);
+    this.isInitialized = false;
+  }
+
+  reloadFromStorage() {
+    if (!this.isInitialized) {
+      this.initializeUser();
+    } else {
+    }
+  }
+
+  hasUser(): boolean {
+    return this.userSubject.value !== null;
+  }
+}

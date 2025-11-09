@@ -98,6 +98,8 @@ public class UserProfileService {
             Profile updatedUser = userProfileMapper.toUserProfile(userProfileUpdateRequest);
             updatedUser.setProfileId(existingUser.getProfileId());
             updatedUser.setAccountId(existingUser.getAccountId());
+            updatedUser.setDob(userProfileUpdateRequest.getDob());
+            log.info("Updated user {}", updatedUser.getDob());
             Profile savedUser = userProfileRepository.save(updatedUser);
             response = userProfileMapper.toUserProfileUpdateResponse(savedUser);
             kafkaService.sendLog(buildLog(
@@ -138,7 +140,6 @@ public class UserProfileService {
                     .map(p -> ProfileWithMoodSummaryDto.builder()
                             .profile(ProfileSummaryDto.builder()
                                     .profileId(p.getProfile().getProfileId())
-                                    .username(p.getProfile().getUsername())
                                     .avatarUri(p.getProfile().getAvatarUri())
                                     .build())
                             .mood(p.getMood())

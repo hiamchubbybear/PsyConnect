@@ -1,0 +1,76 @@
+<div class="page-wrap">
+  <div class="container">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="left-group">
+        <button class="back" aria-label="Back">⟵</button>
+        <h1 class="title">Create Posting</h1>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn btn-outline" (click)="saveDraft()">
+          Save as Draft
+        </button>
+        <button type="button" class="btn btn-primary" (click)="post()">
+          Post
+        </button>
+      </div>
+    </header>
+
+    <!-- FORM GRID -->
+    <form class="form-grid" (ngSubmit)="post()">
+      <!-- Post Title -->
+      <div class="col-label">
+        <label class="label-title">Post Title</label>
+        <div class="label-hint">Create a strong title post</div>
+      </div>
+      <div class="col-content">
+        <input type="text" class="input" [(ngModel)]="title" name="title" />
+        <div class="examples">
+          <div *ngFor="let ex of examples">{{ ex }}</div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="col-label">
+        <label class="label-title">Description</label>
+        <div class="label-hint">Provide a description</div>
+      </div>
+      <div class="col-content">
+        <textarea
+          class="textarea"
+          [(ngModel)]="description"
+          name="description"
+          placeholder="Enter description for the post"
+        ></textarea>
+        <div class="toolbar">
+          <button type="button" class="tool"><b>B</b></button>
+          <button type="button" class="tool"><i>I</i></button>
+          <button type="button" class="tool"><u>U</u></button>
+          <button type="button" class="btn-genius">Use TextGenius</button>
+        </div>
+      </div>
+
+      <!-- Add Pictures -->
+      <div class="col-label">
+        <label class="label-title">Add pictures</label>
+        <div class="label-hint">Choose your photo</div>
+      </div>
+      <div class="col-content">
+        <div class="upload-wrap">
+          <button type="button" class="upload-box">+</button>
+        </div>
+      </div>
+
+      <!-- Post Type -->
+      <div class="col-label">
+        <label class="label-title">Post Type</label>
+      </div>
+      <div class="col-content">
+        <label class="anon-pill">
+          <input type="checkbox" [(ngModel)]="anonymous" name="anonymous" />
+          <span class="anon-text">Anonymous mode</span>
+        </label>
+      </div>
+    </form>
+  </div>
+</div>

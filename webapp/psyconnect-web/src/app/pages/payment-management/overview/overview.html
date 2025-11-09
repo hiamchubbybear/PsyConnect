@@ -1,0 +1,51 @@
+<div class="overview">
+  <div class="overview__header">
+    <input
+      type="text"
+      class="overview__search"
+      placeholder="Search by invoice number, name, amount..."
+    />
+    <button class="overview__filter">Filter</button>
+  </div>
+
+  <table class="overview__table">
+    <thead>
+      <tr>
+        <th>Invoice Number</th>
+        <th>Vendor</th>
+        <th>Billing Date</th>
+        <th>Status</th>
+        <th>Amount</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let invoice of displayedInvoices">
+        <td>{{ invoice.invoiceNumber }}</td>
+        <td>{{ invoice.vendor }}</td>
+        <td>{{ invoice.billingDate }}</td>
+        <td>
+          <span
+            class="status"
+            [ngClass]="{
+              'status--paid': invoice.status === 'Paid',
+              'status--unpaid': invoice.status === 'Unpaid'
+            }"
+          >
+            {{ invoice.status }}
+          </span>
+        </td>
+        <td>{{ invoice.amount }}</td>
+        <td>
+          <button class="pay-btn" [disabled]="invoice.status === 'Paid'">
+            Pay
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="overview__footer" *ngIf="canLoadMore()">
+    <button class="load-more-btn" (click)="loadMore()">Xem thêm</button>
+  </div>
+</div>

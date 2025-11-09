@@ -1,0 +1,129 @@
+@use "../../styles/variable" as v;
+
+$primary-color: v.$color-primary;
+$secondary-color: v.$color-accent;
+$accent-color: v.$color-accent-hover;
+$danger-color: #ef4444;
+
+$text-primary: v.$color-text;
+$text-secondary: v.$color-text-muted;
+$text-muted: v.$color-gray-400;
+
+$bg-primary: v.$color-bg;
+$bg-secondary: v.$color-bg-secondary;
+$bg-card: v.$color-white;
+$border-color: rgba(0, 0, 0, 0.08);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+$border-radius: 8px;
+$border-radius-sm: 6px;
+$transition: all 0.2s ease;
+
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.25rem;
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 1.5rem;
+  box-shadow: $shadow-sm;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: $font-size-md;
+  line-height: 1.6;
+  color: $text-primary;
+  margin: 0;
+  background: $bg-primary;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  @media (min-width: 768px) {
+    padding: 0 1.5rem;
+  }
+}
+.about-us__team {
+  padding: 4rem 0;
+  background: $bg-secondary;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.team-card {
+  @extend .card;
+  text-align: center;
+
+  &__avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1rem;
+  }
+
+  &__name {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+  }
+
+  &__role {
+    color: $text-secondary;
+    font-weight: 500;
+    margin: 0 0 0.75rem;
+  }
+
+  &__bio {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  &__social {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+
+    a {
+      color: $text-muted;
+      transition: $transition;
+
+      &:hover {
+        color: $primary-color;
+        transform: translateY(-1px);
+      }
+    }
+  }
+}

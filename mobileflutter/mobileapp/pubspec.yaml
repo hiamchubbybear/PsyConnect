@@ -71,7 +71,6 @@ flutter:
   assets:
     - assets/images/
     - assets/gifs/
-    - lang/
     - .env
 flutter_icons:
   android: true

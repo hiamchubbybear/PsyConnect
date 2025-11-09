@@ -1,0 +1,53 @@
+@use "../../styles/variable" as v;
+
+.not-found {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: v.$font-primary;
+
+  .not-found-content {
+    max-width: 600px;
+    padding: 2rem;
+
+    h1 {
+      font-size: 6rem;
+      margin: 0;
+      color: var(--color-text);
+      font-weight: 700;
+    }
+
+    h2 {
+      font-size: v.$font-size-xl;
+      margin: 1rem 0;
+      color: var(--color-text);
+    }
+
+    p {
+      font-size: v.$font-size-md;
+      color: var(--color-text);
+      margin-bottom: 2rem;
+    }
+
+    .btn.back-home {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid v.$color-primary;
+      color: v.$color-primary;
+      text-decoration: none;
+      border-radius: v.$btn-border-radius;
+      font-weight: 600;
+      transition: background 0.3s ease, color 0.3s ease;
+
+      &:hover {
+        cursor: pointer;
+        background: v.$color-primary;
+        color: v.$color-white;
+      }
+    }
+  }
+}

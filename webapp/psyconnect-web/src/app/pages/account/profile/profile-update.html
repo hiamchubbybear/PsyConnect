@@ -1,0 +1,94 @@
+<section class="account-section profile-section">
+  <form [formGroup]="form">
+    <div class="avatar-section">
+      <label class="profile-avatar-wrapper">
+        <img
+          class="profile-avatar"
+          [src]="
+            imagePreview ||
+            form.value.avatarUri ||
+            'https://i.pinimg.com/736x/85/bc/ed/85bceda292465d9c8c59e03a9be8d676.jpg'
+          "
+          alt="{{ 'ACCOUNT_MANAGEMENT.Profile.Avatar' | translate }}"
+        />
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onImageSelected($event)"
+          hidden
+        />
+        <span class="avatar-edit-overlay"></span>
+      </label>
+      <h2>
+        {{ form.value.firstName }} {{ form.value.middleName }}
+        {{ form.value.lastName }}
+      </h2>
+      <p *ngIf="selectedImage" class="image-selected-notice">
+        {{ "ACCOUNT_MANAGEMENT.Profile.ImageSelected" | translate }}:
+        {{ selectedImage.name }}
+      </p>
+    </div>
+
+    <app-profile-field-dropdown
+      label="ID"
+      [displayValue]="form.value.profile_id || profile?.profileId"
+      [editable]="false"
+      [copyable]="true"
+      field="profile_id"
+      (copyRequested)="copyToClipboard($event)"
+    ></app-profile-field-dropdown>
+
+    <div class="account-section__group">
+      <app-profile-field-dropdown
+        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Name' | translate }}"
+        [displayValue]="getDisplayValue('name')"
+        field="name"
+        (editRequested)="openEdit('name')"
+      ></app-profile-field-dropdown>
+
+      <app-profile-field-dropdown
+        label="{{ 'ACCOUNT_MANAGEMENT.Profile.DOB' | translate }}"
+        [displayValue]="getDisplayValue('dob')"
+        field="dob"
+        (editRequested)="openEdit('dob')"
+      ></app-profile-field-dropdown>
+
+      <app-profile-field-dropdown
+        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Address' | translate }}"
+        [displayValue]="getDisplayValue('address')"
+        field="address"
+        (editRequested)="openEdit('address')"
+      ></app-profile-field-dropdown>
+
+      <app-profile-field-dropdown
+        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Gender' | translate }}"
+        [displayValue]="getDisplayValue('gender')"
+        field="gender"
+        (editRequested)="openEdit('gender')"
+      ></app-profile-field-dropdown>
+    </div>
+
+    <div class="update-warning" *ngIf="!canConfirm">
+      <p>{{ "ACCOUNT_MANAGEMENT.Profile.Notices.NoChanges" | translate }}</p>
+    </div>
+    <div *ngIf="canConfirm" class="update-warning">
+      {{ "ACCOUNT_MANAGEMENT.Profile.Notices.UnsavedChanges" | translate }}
+    </div>
+
+    <app-single-button
+      [primaryText]="'ACCOUNT_MANAGEMENT.Profile.Buttons.Confirm' | translate"
+      (primaryClick)="confirmChanges()"
+      class="button-group"
+      [disabledPrimary]="!canConfirm"
+    ></app-single-button>
+  </form>
+</section>
+
+<app-profile-overlay
+  [(editValue)]="editValue"
+  [editing]="editing"
+  [draftData]="draftData"
+  (saveField)="saveField($event)"
+  (saveName)="saveName()"
+  (cancel)="cancel()"
+></app-profile-overlay>

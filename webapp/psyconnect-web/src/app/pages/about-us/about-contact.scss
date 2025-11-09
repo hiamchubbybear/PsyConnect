@@ -1,0 +1,159 @@
+
+@use "../../styles/variable" as v;
+
+$primary-color: v.$color-primary;
+$secondary-color: v.$color-accent;
+$accent-color: v.$color-accent-hover;
+$danger-color: #ef4444;
+
+$text-primary: v.$color-text;
+$text-secondary: v.$color-text-muted;
+$text-muted: v.$color-gray-400;
+
+$bg-primary: v.$color-bg;
+$bg-secondary: v.$color-bg-secondary;
+$bg-card: v.$color-white;
+$border-color: rgba(0, 0, 0, 0.08);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+$border-radius: 8px;
+$border-radius-sm: 6px;
+$transition: all 0.2s ease;
+
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.875rem;
+$font-size-md: 1rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.25rem;
+.card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 1.5rem;
+  box-shadow: $shadow-sm;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.about-us__contact {
+  padding: 4rem 0;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.contact-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+
+  i {
+    font-size: 1.25rem;
+    color: $primary-color;
+    margin-top: 0.25rem;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: $text-secondary;
+
+    &:not(:last-child) {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  a {
+    color: $primary-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.emergency-contact {
+  display: flex;
+  align-items: center;
+}
+
+.emergency-card {
+  @extend .card;
+  text-align: center;
+  background: rgba($danger-color, 0.05);
+  border-color: rgba($danger-color, 0.2);
+
+  h3 {
+    color: $danger-color;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    color: $text-secondary;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: 50%;
+  color: $text-muted;
+  text-decoration: none;
+  transition: $transition;
+
+  &:hover {
+    background: $primary-color;
+    color: white;
+    border-color: $primary-color;
+    transform: translateY(-2px);
+  }
+
+  i {
+    font-size: 1.25rem;
+  }
+}

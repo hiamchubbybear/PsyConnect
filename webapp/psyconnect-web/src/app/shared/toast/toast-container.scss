@@ -1,0 +1,82 @@
+// toast-container.component.scss
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 10000;
+  align-items: flex-end;
+  max-width: 420px;
+  max-height: calc(100vh - 3rem);
+  pointer-events: none;
+
+  // Smooth stacking animation
+  app-toast {
+    animation: slideInFromRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &:nth-child(1) {
+      animation-delay: 0ms;
+    }
+    &:nth-child(2) {
+      animation-delay: 50ms;
+    }
+    &:nth-child(3) {
+      animation-delay: 100ms;
+    }
+    &:nth-child(4) {
+      animation-delay: 150ms;
+    }
+    &:nth-child(5) {
+      animation-delay: 200ms;
+    }
+  }
+}
+
+// Slide in animation
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(120%) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 640px) {
+  .toast-container {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    align-items: stretch;
+    max-width: none;
+
+    app-toast {
+      animation: slideInFromBottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  }
+
+  @keyframes slideInFromBottom {
+    0% {
+      transform: translateY(100%) scale(0.95);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+// Tablet
+@media (max-width: 768px) and (min-width: 641px) {
+  .toast-container {
+    right: 1rem;
+    bottom: 1rem;
+    max-width: 380px;
+  }
+}

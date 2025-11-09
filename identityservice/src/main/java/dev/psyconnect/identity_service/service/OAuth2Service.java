@@ -44,6 +44,9 @@ public class OAuth2Service {
     RoleRepository roleRepository;
     private final AuthenticationService authenticationService;
     private final UserAccountService userAccountService;
+    private static String ROLE_CLIENT = "Client";
+    private static String FIRST_NAME = "firstName";
+    private static String LAST_NAME = "lastName";
 
     public AuthenticationResponse processOAuth2PreLogin(
             String email, String avatarUri, Authentication authentication, String loginProvider) {
@@ -63,15 +66,15 @@ public class OAuth2Service {
                 provider = Provider.GOOGLE;
             } else if (loginProvider.toUpperCase().equals(Provider.FACEBOOK.toString())) {
                 OAuth2User user = (OAuth2User) authentication.getPrincipal();
-                firstName = user.getAttribute("firstName");
-                lastName = user.getAttribute("lastName");
+                firstName = user.getAttribute(FIRST_NAME);
+                lastName = user.getAttribute(LAST_NAME);
                 generatedOauth2Code = generateActivationSessionCode();
                 provider = Provider.FACEBOOK;
                 avatarUri = "";
             }
             try {
                 Account existingUser = null;
-                Set<RoleEntity> clientRoles = roleRepository.findAllByRoleId("Client");
+                Set<RoleEntity> clientRoles = roleRepository.findAllByRoleId(ROLE_CLIENT);
 
                 if (clientRoles.isEmpty()) {
                     log.error("Client role not found in database");
@@ -85,7 +88,7 @@ public class OAuth2Service {
                                     .gender(gender)
                                     .firstName(firstName)
                                     .lastName(lastName)
-                                    .role("Client")
+                                    .role(ROLE_CLIENT)
                                     .address("")
                                     .oauth2Session(generatedOauth2Code)
                                     .avatarUri(avatarUri)

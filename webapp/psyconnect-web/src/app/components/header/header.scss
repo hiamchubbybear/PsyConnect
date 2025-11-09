@@ -1,0 +1,323 @@
+@use "../../styles/variable" as v;
+
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: block;
+  background: transparent;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header {
+  font-family: var(--font-family);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: var(--header-bg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.full {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0.4rem 1rem;
+  }
+
+  &.mini {
+    transform: translateY(-90%);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    padding: 0.5rem 2rem;
+
+    .logo {
+      font-size: 1rem;
+    }
+  }
+
+  &.hidden {
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .logo {
+    font-size: v.$font-size-xl;
+    font-weight: 600;
+    color: var(--header-text);
+    text-decoration: none;
+  }
+
+  nav.header-center {
+    display: flex;
+    gap: 2rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    a {
+      text-decoration: none;
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: v.$font-size-md;
+      outline: none;
+      box-shadow: none;
+      border: none;
+      background: transparent;
+
+      &:hover {
+        color: var(--header-link-hover);
+      }
+
+      &:focus,
+      &:focus-visible,
+      &:active {
+        outline: none;
+        box-shadow: none;
+        border: none;
+      }
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+
+    .divider {
+      width: 1px !important;
+      height: 24px !important;
+      background: rgba(147, 146, 146, 0.1) !important;
+      margin: 0 0.75rem !important;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.4rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+      outline: none;
+      box-shadow: none;
+
+      svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--header-text);
+        fill: none;
+        transition: opacity 0.3s ease, transform 0.4s ease, stroke 0.2s ease;
+      }
+
+      &:hover {
+        background: var(--header-hover-bg);
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
+      }
+
+      .ng-animating svg {
+        transform: rotate(180deg);
+        opacity: 0;
+      }
+    }
+
+    .auth {
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--header-text);
+      outline: none;
+      box-shadow: none;
+
+      &:hover {
+        color: var(--header-link-hover);
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
+      }
+
+      &.signup {
+        background: var(--header-bg);
+        color: var(--header-text);
+        border-radius: 4px;
+        margin-left: 0.5rem;
+        text-transform: none;
+        white-space: nowrap;
+        overflow: visible;
+        padding: 0.5rem 1rem;
+
+        &:hover {
+          color: var(--header-link-hover);
+        }
+      }
+    }
+
+    .avatar-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      outline: none;
+      box-shadow: none;
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
+      }
+
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .username {
+        font-size: v.$font-size-sm;
+        font-weight: 500;
+        color: v.$color-text;
+      }
+    }
+  }
+
+  .menu-toggle {
+    display: none;
+    font-size: v.$font-size-xl;
+    cursor: pointer;
+  }
+
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: v.$color-white;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 1rem 2rem;
+
+    a {
+      padding: 0.75rem 0;
+      text-decoration: none;
+      color: v.$color-text;
+      outline: none;
+      box-shadow: none;
+
+      &:hover {
+        color: v.$color-primary;
+      }
+
+      &:focus,
+      &:focus-visible {
+        outline: none;
+        box-shadow: none;
+      }
+
+      &.signup {
+        background: v.$color-primary;
+        color: v.$color-white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+
+        &:hover {
+          background: v.$color-primary-hover;
+        }
+      }
+    }
+
+    .avatar-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+      }
+
+      .username {
+        font-size: v.$font-size-sm;
+      }
+    }
+
+    &.open {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 768px) {
+    nav.header-center,
+    .header-right {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: block;
+    }
+  }
+}
+
+body {
+  &.header-fixed {
+    padding-top: 20px;
+  }
+}
+
+.loader-bar {
+  position: absolute;
+  height: 3px;
+  animation: loading 1s ease-in-out infinite;
+}
+
+.route-loader {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #000, #555);
+  animation: route-progress 1.5s infinite linear;
+}
+
+@keyframes route-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.mat-mdc-menu-panel {
+  min-width: 160px !important;
+  border-radius: 8px !important;
+}
+
+.mat-mdc-menu-item {
+  font-family: v.$font-primary !important;
+  font-size: v.$font-size-sm !important;
+}

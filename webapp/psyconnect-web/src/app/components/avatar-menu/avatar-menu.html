@@ -1,0 +1,48 @@
+<div class="avatar-menu">
+  <!-- Avatar button -->
+  <div class="avatar-trigger" (click)="toggleMenu()">
+    <img [src]="userAvatarUrl" alt="Avatar" class="avatar-img" />
+    <!-- <span class="user-name">{{ userName }}</span> -->
+  </div>
+
+  <!-- Dropdown -->
+  <div class="dropdown-panel" *ngIf="isOpen">
+    <!-- Header -->
+    <div class="dropdown-header">
+      <img [src]="userAvatarUrl" alt="Avatar" class="avatar-lg" />
+      <div class="user-info">
+        <div class="name">{{ userName }}</div>
+        <div class="email">{{ userEmail }}</div>
+      </div>
+    </div>
+    <hr />
+
+    <!-- Account -->
+    <div class="dropdown-section">
+      <a routerLink="/payment">{{ "AVATAR_MENU.Payment" | translate }}</a>
+      <a routerLink="/account">{{ "AVATAR_MENU.Account" | translate }}</a>
+      <a routerLink="/activity">{{ "AVATAR_MENU.Activity" | translate }}</a>
+      <a routerLink="/history">{{ "AVATAR_MENU.History" | translate }}</a>
+    </div>
+    <hr />
+
+    <!-- Notifications -->
+    <div class="dropdown-section">
+      <a routerLink="/notifications">{{ "AVATAR_MENU.Notifications" | translate }}</a>
+    </div>
+    <hr />
+
+    <!-- Settings -->
+    <div class="dropdown-section">
+      <a routerLink="/settings">{{ "AVATAR_MENU.Settings" | translate }}</a>
+      <a routerLink="/help">{{ "AVATAR_MENU.HelpSupport" | translate }}</a>
+      <a routerLink="/privacy">{{ "AVATAR_MENU.PrivacySecurity" | translate }}</a>
+    </div>
+    <hr />
+
+    <!-- Logout -->
+    <div class="dropdown-section">
+      <a (click)="logout()">{{ "AVATAR_MENU.Logout" | translate }}</a>
+    </div>
+  </div>
+</div>

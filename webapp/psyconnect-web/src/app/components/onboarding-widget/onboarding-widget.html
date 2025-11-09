@@ -1,0 +1,120 @@
+<div
+  class="onboarding-overlay"
+  [class.visible]="isVisible"
+  [class]="getThemeClass()"
+  (click)="onBackdropClick()"
+  *ngIf="isVisible"
+>
+  <div
+    class="onboarding-modal"
+    [ngStyle]="getBackgroundStyle()"
+    [class.animating]="isAnimating"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      *ngIf="config.showCloseButton !== false"
+      class="close-btn"
+      (click)="onClose()"
+      type="button"
+      aria-label="Close modal"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18 6L6 18M6 6L18 18"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+
+    <div class="modal-content">
+      <div class="modal-visual">
+        <!-- <div class="modal-icon">
+          <ng-container *ngIf="currentStep.icon; else defaultIcon">
+            <i [class]="currentStep.icon"></i>
+          </ng-container>
+          <ng-template #defaultIcon>
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 6L9 17L4 12"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </ng-template>
+        </div> -->
+      </div>
+
+      <h2 class="modal-title">{{ currentStep.title }}</h2>
+
+      <p class="modal-description">{{ currentStep.description }}</p>
+
+      <div class="modal-actions">
+        <button
+          *ngIf="currentStep.secondaryButton"
+          class="btn btn--secondary"
+          [disabled]="currentStep.secondaryButton.disabled || isAnimating"
+          (click)="onSecondaryAction()"
+          type="button"
+        >
+          <i
+            *ngIf="currentStep.secondaryButton?.icon"
+            [class]="currentStep.secondaryButton.icon"
+          ></i>
+          <span>{{ currentStep.secondaryButton.text }}</span>
+          <div
+            *ngIf="currentStep.secondaryButton?.loading"
+            class="btn-loading"
+          ></div>
+        </button>
+
+        <button
+          class="btn btn--primary"
+          [disabled]="currentStep.primaryButton.disabled || isAnimating"
+          (click)="onPrimaryAction()"
+          type="button"
+        >
+          <i
+            *ngIf="currentStep.primaryButton?.icon"
+            [class]="currentStep.primaryButton.icon"
+          ></i>
+          <span>{{ currentStep.primaryButton.text }}</span>
+          <div
+            *ngIf="currentStep.primaryButton?.loading"
+            class="btn-loading"
+          ></div>
+        </button>
+      </div>
+      <div
+        *ngIf="config.showProgressDots !== false && config.steps.length > 1"
+        class="progress-dots"
+      >
+        <button
+          *ngFor="let step of config.steps; let i = index"
+          class="progress-dot"
+          [class.active]="i === currentStepIndex"
+          [class.completed]="i < currentStepIndex"
+          (click)="goToStep(i)"
+          [attr.aria-label]="'Go to step ' + (i + 1)"
+          type="button"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

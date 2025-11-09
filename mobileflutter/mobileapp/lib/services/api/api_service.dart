@@ -94,4 +94,21 @@ class ApiService {
       throw Exception("Failed to connect to backend: $e");
     }
   }
+
+  static deleteWithAccessToken(
+      {required String endpoint, required String token}) async {
+    final Uri uri = Uri.parse("$_baseUrl/$endpoint");
+    print(uri);
+    try {
+      return await http.delete(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } catch (e) {
+      throw Exception("Failed to connect to backend: $e");
+    }
+  }
 }

@@ -69,6 +69,10 @@ public class Configuration {
                                 "/oauth2/callback/google",
                                 "/login/oauth2/code/google",
                                 "/identity/**",
+                                "/v1/identity/**",
+                                "/v1/auth/**",
+                                "/identity/**",
+                                "/identity/req/reset-password",
                                 "/identity/create",
                                 "/auth/login/**",
                                 "/oauth2/userInfo/google",
@@ -100,27 +104,24 @@ public class Configuration {
                                 String email = "";
                                 String avatarUri = "";
                                 String redirectUrl = "";
+                                String platform = (String) request.getSession().getAttribute("platform");
+                                if (platform == null || platform.isBlank()) {
+                                    platform = "web";
+                                }
                                 if ("google".equals(registrationId)) {
                                     DefaultOidcUser user = (DefaultOidcUser) authentication.getPrincipal();
-                                    log.info(((OAuth2User) authentication.getPrincipal())
-                                            .getAttributes()
-                                            .toString());
+                                    log.info("Google user attributes: {}", user.getAttributes());
                                     email = user.getAttribute("email");
                                     avatarUri = user.getAttribute("picture");
-                                    redirectUrl = String.format(
-                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
-                                            oauth2RedirectBase, registrationId, email, avatarUri);
                                 } else if ("facebook".equals(registrationId)) {
                                     OAuth2User user = (OAuth2User) authentication.getPrincipal();
-                                    log.info(((OAuth2User) authentication.getPrincipal())
-                                            .getAttributes()
-                                            .toString());
+                                    log.info("Facebook user attributes: {}", user.getAttributes());
                                     avatarUri = (String) user.getAttribute("picture");
                                     email = (String) user.getAttribute("email");
-                                    redirectUrl = String.format(
-                                            "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s",
-                                            oauth2RedirectBase, registrationId, email, avatarUri);
                                 }
+                                redirectUrl = String.format(
+                                        "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s&platform=%s",
+                                        oauth2RedirectBase, registrationId, email, avatarUri, platform);
                                 response.sendRedirect(redirectUrl);
                             } catch (Exception e) {
                                 log.error("OAuth2 success handler error", e);

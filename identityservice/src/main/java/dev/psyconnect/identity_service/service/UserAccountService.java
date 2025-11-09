@@ -31,6 +31,7 @@ import dev.psyconnect.identity_service.mapper.UserAccountMapper;
 import dev.psyconnect.identity_service.model.*;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
+import dev.psyconnect.identity_service.repository.TokenRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     @Value("${NOTIFICATION_CREATE_TOPIC}")
     String NOTIFICATION_CREATE_TOPIC;
 
+    static String NOTIFICATION_RESET_TOPIC = "notification.user-reset";
     final KafkaService kafkaService;
     final RoleRepository roleRepository;
     final UserAccountRepository userAccountRepository;
@@ -59,7 +61,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     @Transactional
     @Cacheable(key = "#request.accountId", value = "account")
     public UserAccountCreationResponse createAccount(UserAccountCreationRequest request, Provider provider) {
-        log.info("Oauth2 Session code trước khi lưu vào db ");
+
         String encodedPassword = null, session = "";
         if (userAccountRepository.existsByUsername(request.getUsername())) {
             throw new CustomExceptionHandler(ErrorCode.USERNAME_ALREADY_EXISTS);
@@ -80,7 +82,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
 
         Set<RoleEntity> roles = roleRepository.findAllByRoleId(request.getRole().toUpperCase());
         UUID profileId = UUID.randomUUID();
-        log.info("Oauth2 Session code trước khi lưu vào db 1 1  {}", session);
         Account account = Account.builder()
                 .username(request.getUsername())
                 .isActivated(false)
@@ -116,9 +117,9 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                     e.getMessage(),
                     Map.of("error", e.getMessage()),
                     LogLevel.ERROR));
+            log.info(e.getMessage());
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
-
         String fullName = request.getFirstName() + " " + request.getLastName();
         if (provider == Provider.ORDINARY) {
             kafkaService.send(
@@ -379,6 +380,34 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         return true;
     }
 
+    public Boolean requestPasswordReset(RequestPasswordReset requestActivationAccount) {
+        var userFound = accountRepository
+                .findByEmail(requestActivationAccount.getEmail())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        ActivateAccountNotificationRequest req = ActivateAccountNotificationRequest.builder()
+                .email(userFound.getEmail())
+                .code(generateActivationCode())
+                .username(userFound.getUsername())
+                .build();
+        log.info("Request found {}", req);
+        kafkaService.send((NOTIFICATION_RESET_TOPIC), req);
+        sendNotification(
+                ActivateAccountNotificationRequest.builder()
+                        .username(userFound.getUsername())
+                        .email(requestActivationAccount.getEmail())
+                        .code(req.getCode())
+                        .build(),
+                Provider.ORDINARY);
+        kafkaService.sendLog(buildLog(
+                "identity-service",
+                userFound.getUsername(),
+                "Request account password reset",
+                "Success",
+                Map.of("metadata", req),
+                LogLevel.LOG));
+        return true;
+    }
+
     private LogEvent buildLog(
             String service, String userId, String action, String message, Map<String, ?> metadata, LogLevel level) {
         return LogEvent.builder()
@@ -404,20 +433,40 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         if (username == null || username.isBlank()) {
             throw new CustomExceptionHandler(ErrorCode.NULL_EXCEPTION);
         }
-
         Token token = tokenRepository
                 .findById(username)
                 .orElse(Token.builder()
+                        .token(activationCode)
                         .username(username)
                         .issuedAt(Timestamp.from(Instant.now()))
                         .provider(provider.toString())
                         .revoked(false)
                         .build());
-
+        log.info("Token saved {}", token);
         token.setToken(activationCode);
         token.setRevoked(false);
         token.setExpires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
-
         return tokenRepository.save(token);
+    }
+
+    public Boolean resetPassword(PasswordResetRequest passwordResetRequest) {
+        var userFound = userAccountRepository
+                .findByEmail(passwordResetRequest.getEmail())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        var tokenFound = tokenRepository.findById(userFound.getUsername()).get().getToken();
+        log.info("Token found!!!!!!! {}", tokenFound);
+        if (userFound.getToken() == null || userFound.getToken().getToken() == null) {
+            throw new CustomExceptionHandler(ErrorCode.TOKEN_NOT_FOUND);
+        }
+        if (userFound.getToken().getToken().equals(passwordResetRequest.getResetToken())) {
+            userFound.setPassword(PasswordEncodingService.encoder(passwordResetRequest.getNewPassword()));
+            Token userToken = userFound.getToken();
+            userToken.setToken("");
+            tokenRepository.save(userToken);
+            userAccountRepository.save(userFound);
+            return true;
+        } else {
+            throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
+        }
     }
 }

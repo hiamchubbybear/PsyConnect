@@ -1,0 +1,22 @@
+@use "./variable" as v;
+@mixin button-reset {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+@mixin button-base {
+  @include button-reset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: v.$font-primary;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+}

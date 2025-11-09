@@ -1,9 +1,12 @@
 # Identity Service - PsyConnect - v0.1
 
 ## Overview
-The **Identity Service** is responsible for user authentication, account management, and authorization within the PsyConnect platform. It provides secure and scalable identity management features.
+
+The **Identity Service** is responsible for user authentication, account management, and authorization within the
+PsyConnect platform. It provides secure and scalable identity management features.
 
 ## Features
+
 - User registration and activation
 - User authentication and logout
 - Account management (update, delete, retrieve)
@@ -11,44 +14,63 @@ The **Identity Service** is responsible for user authentication, account managem
 - Account deletion confirmation
 
 ## Technology Stack
+
 - **Backend**: Java Spring Boot
 - **Database**: MySQL
 - **API Communication**: RESTful APIs
 
-## API Endpoints
+## 📌 Version History
+
+| Version    | Date       | Changes                                 |
+| ---------- | ---------- | --------------------------------------- |
+| **v1.1.1** | 2025-09-11 | - Add new endpoint and refactor version |
+| **v1.1.1** | 2025-09-11 | - Add new endpoint and refactor version |
+| **v1.1.0** | 2025-09-9  | - Initial release                       |
+
+## API Endpoints Update V1
+
+| Method | Endpoint           | Description                       | Role Required | Headers Required |
+| ------ | ------------------ | --------------------------------- | ------------- | ---------------- |
+| POST   | `/v1/auth/login`   | Authenticate user and get token   | None          | None             |
+| POST   | `/v1/auth/refresh` | Refresh access token with refresh | None          | None             |
 
 ### Authentication
 
-| Method | Endpoint                | Description                      | Role Required               | Headers Required |
-|--------|-------------------------|----------------------------------|-----------------------------|------------------|
-| POST   | `/auth/login`           | Authenticate user and get token  | None                        | None             |
-| POST   | `/auth/introspect`      | Logout user and invalidate token | None                        | None             |
-| POST   | `/auth/internal/valid`  | Internal token validation        | None                        | None             |
+| Method | Endpoint                       | Description                      | Role Required | Headers Required |
+| ------ | ------------------------------ | -------------------------------- | ------------- | ---------------- |
+| POST   | `/auth/login`                  | Authenticate user and get token  | None          | None             |
+| POST   | `/auth/introspect`             | Logout user and invalidate token | None          | None             |
+| POST   | `/auth/internal/valid`         | Internal token validation        | None          | None             |
+| POST   | `/identity/req/reset-password` | Request reset password token     | None          | None             |
+| PUT    | `/identity/password`           | Reset password                   | None          | None             |
 
 ### User Account Management
 
-| Method | Endpoint                | Description                      | Role Required               | Headers Required |
-|--------|-------------------------|----------------------------------|-----------------------------|------------------|
-| POST   | `/identity/create`      | Register a new user account      | None                        | None             |
-| POST   | `/identity/activate`    | Activate user account            | None                        | None             |
-| POST   | `/identity/req/activate`| Request activation link          | None                        | None             |
-| GET    | `/identity/hello`       | Test API endpoint                | None                        | None             |
+| Method | Endpoint                 | Description                 | Role Required | Headers Required |
+| ------ | ------------------------ | --------------------------- | ------------- | ---------------- |
+| POST   | `/identity/create`       | Register a new user account | None          | None             |
+| POST   | `/identity/activate`     | Activate user account       | None          | None             |
+| POST   | `/identity/req/activate` | Request activation link     | None          | None             |
+| GET    | `/identity/hello`        | Test API endpoint           | None          | None             |
 
 ### Account Settings
 
-| Method | Endpoint                | Description                      | Role Required               | Headers Required |
-|--------|-------------------------|----------------------------------|-----------------------------|------------------|
-| POST   | `/account/delete`       | Request account deletion         | None                        | X-User-Id        |
-| DELETE | `/account/delete`       | Confirm account deletion         | None                        | X-User-Id        |
-| GET    | `/account/info`         | Retrieve account details         | None                        | X-User-Id        |
-| PUT    | `/account/update`       | Update account information       | None                        | X-User-Id        |
-| GET    | `/account/all/{page}`   | Get paginated list of accounts   | role.admin:permission       | X-Roles          |
+| Method | Endpoint              | Description                    | Role Required         | Headers Required |
+| ------ | --------------------- | ------------------------------ | --------------------- | ---------------- |
+| POST   | `/account/delete`     | Request account deletion       | None                  | X-User-Id        |
+| DELETE | `/account/delete`     | Confirm account deletion       | None                  | X-User-Id        |
+| GET    | `/account/info`       | Retrieve account details       | None                  | X-User-Id        |
+| PUT    | `/account/update`     | Update account information     | None                  | X-User-Id        |
+| GET    | `/account/all/{page}` | Get paginated list of accounts | role.admin:permission | X-Roles          |
 
 ---
 
 ## Setup & Configuration
+
 ### Environment Variables
+
 Ensure the following environment variables are set before running the service:
+
 ```env
 MYSQL_SPRING_DATASOURCE_PASSWORD={your-variable}
 MYSQL_SPRING_DATASOURCE_USERNAME={your-variable}
@@ -57,19 +79,22 @@ SERVER_PORT={your-variable}
 ```
 
 ### Installation
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/hiamchubbybear/psyconnect-dev.git
    cd psyconnect-dev/identityservice
    ```
 2. Build and run the service:
-   ```bash
+   ```bashe
    mvn clean install
    mvn spring-boot:run
    ```
 
 ## Contributing
+
 We welcome contributions! Please follow the standard Git workflow:
+
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/YourFeature`)
 3. Commit your changes (`git commit -m 'Add YourFeature'`)
@@ -77,7 +102,9 @@ We welcome contributions! Please follow the standard Git workflow:
 5. Open a Pull Request
 
 ## Contact
+
 For inquiries, reach out via:
+
 - **Project Lead**: Chessy
 - **Email**: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)
 - **GitHub Repository**: [psyconnect-dev](https://github.com/hiamchubbybear/psyconnect-dev)

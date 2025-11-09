@@ -1,0 +1,175 @@
+<section class="account-section security-section">
+  <h2>{{ "ACCOUNT_MANAGEMENT.Security.Title" | translate }}</h2>
+  <p class="account-section__description">
+    {{ "ACCOUNT_MANAGEMENT.Security.Description" | translate }}
+  </p>
+
+  <div class="account-section__group">
+    <app-profile-field-dropdown
+      *ngFor="let item of securityItems"
+      [label]="item.label | translate"
+      [displayValue]="getFieldDisplay(item.key)"
+      [editable]="true"
+      [copyable]="false"
+      (editRequested)="openEdit(item.key)"
+    ></app-profile-field-dropdown>
+  </div>
+
+  <h3 class="account-section__subheading">
+    {{ "ACCOUNT_MANAGEMENT.Security.CheckSecurity" | translate }}
+  </h3>
+  <p class="account-section__description">
+    {{ "ACCOUNT_MANAGEMENT.Security.CheckDescription" | translate }}
+  </p>
+
+  <div class="account-section__group">
+    <app-profile-field-dropdown
+      *ngFor="let item of securityCheckItems"
+      [label]="item.label | translate"
+      [displayValue]="getFieldDisplay(item.key)"
+      [editable]="true"
+      [copyable]="false"
+      (editRequested)="openEdit(item.key)"
+    ></app-profile-field-dropdown>
+  </div>
+
+  <!-- Overlay chung -->
+  <ng-container *ngIf="editing">
+    <div class="overlay">
+      <div class="overlay-content">
+        <ng-container [ngSwitch]="editing">
+          <!-- Change Password -->
+          <div class="overlay" *ngIf="editing === 'changePassword'">
+            <div class="overlay-content">
+              <h3>Đổi mật khẩu</h3>
+              <p>
+                Nhấn nút bên dưới để gửi email đặt lại mật khẩu tới
+                <strong>{{ passwordResetEmail }}</strong
+                >.
+              </p>
+
+              <div class="overlay-actions">
+                <button
+                  (click)="sendPasswordReset()"
+                  [disabled]="submittingReset"
+                >
+                  {{ submittingReset ? "Đang gửi..." : "Gửi email" }}
+                </button>
+                <button (click)="cancel()" [disabled]="submittingReset">
+                  Hủy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2FA -->
+          <div *ngSwitchCase="'2fa'" class="form">
+            <p>
+              {{
+                "ACCOUNT_MANAGEMENT.Security.Overlay.TwoFAInstruction"
+                  | translate
+              }}
+            </p>
+            <div class="button-group">
+              <button class="button" (click)="enable2FA('authApp')">
+                {{ "ACCOUNT_MANAGEMENT.Security.Overlay.AuthApp" | translate }}
+              </button>
+              <button class="button" (click)="enable2FA('sms')">
+                {{ "ACCOUNT_MANAGEMENT.Security.Overlay.SMS" | translate }}
+              </button>
+              <button class="button" (click)="enable2FA('securityKey')">
+                {{
+                  "ACCOUNT_MANAGEMENT.Security.Overlay.SecurityKey" | translate
+                }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Recent Logins / Logged Devices / Suspicious / Linked Emails / Third Party Apps -->
+          <div *ngSwitchCase="'recentLogins'" class="form">
+            <div *ngFor="let login of recentLogins" class="login-row">
+              <span>{{ login.time | date : "short" }}</span>
+              <span>{{ login.device }}</span>
+              <span>{{ login.location }}</span>
+            </div>
+          </div>
+
+          <div *ngSwitchCase="'loggedDevices'" class="form">
+            <div *ngFor="let device of loggedDevices" class="device-row">
+              <span>{{ device.name }}</span>
+              <span>{{ device.lastActive | date : "short" }}</span>
+              <button (click)="logoutDevice(device)">
+                {{ "SECURITY.Logout" | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div *ngSwitchCase="'suspiciousActivity'" class="form">
+            <div *ngFor="let alert of suspiciousActivities">
+              <p>{{ alert.message }} - {{ alert.time | date : "short" }}</p>
+              <button (click)="resolveAlert(alert)">
+                {{ "SECURITY.Verify" | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div *ngSwitchCase="'linkedEmails'" class="form">
+            <div *ngFor="let email of linkedEmails" class="email-row">
+              <span>{{ email.address }}</span>
+              <button (click)="removeEmail(email)">
+                {{ "COMMON.Remove" | translate }}
+              </button>
+            </div>
+            <input
+              type="email"
+              [placeholder]="'SECURITY.AddNewEmail' | translate"
+              [(ngModel)]="newEmail"
+            />
+            <button (click)="addEmail()">{{ "COMMON.Add" | translate }}</button>
+          </div>
+
+          <div *ngSwitchCase="'thirdPartyApps'" class="form">
+            <div *ngFor="let app of thirdPartyApps" class="app-row">
+              <span>{{ app.name }}</span>
+              <span
+                >{{ "SECURITY.Permissions" | translate }}:
+                {{ app.permissions.join(", ") }}</span
+              >
+              <button (click)="revokeApp(app)">
+                {{ "SECURITY.RevokePermissions" | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Security Methods -->
+          <div *ngSwitchCase="'securityMethods'" class="form">
+            <label>{{ "SECURITY.RecoveryEmail" | translate }}:</label>
+            <input type="email" [(ngModel)]="securityMethods.email" />
+            <label>{{ "SECURITY.AuthPhone" | translate }}:</label>
+            <input type="tel" [(ngModel)]="securityMethods.phone" />
+            <label>{{ "SECURITY.PhysicalSecurityKey" | translate }}:</label>
+            <input type="text" [(ngModel)]="securityMethods.key" />
+          </div>
+        </ng-container>
+
+        <!-- Overlay Actions -->
+        <div class="overlay-actions">
+          <button
+            type="button"
+            class="button button--secondary"
+            (click)="closeOverlay()"
+          >
+            {{ "COMMON.Cancel" | translate }}
+          </button>
+          <button
+            type="button"
+            class="button button--primary"
+            (click)="saveOverlay()"
+          >
+            {{ "COMMON.SaveChanges" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</section>

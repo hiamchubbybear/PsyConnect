@@ -1,0 +1,15 @@
+<div class="status-badge" [attr.data-status]="status()">
+  <span class="status-dot"></span>
+  <span class="status-text">{{ status() }}</span>
+  @if (showDropdown()) {
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+  >
+    <path d="M6 9l6 6 6-6" />
+  </svg>
+  }
+</div>

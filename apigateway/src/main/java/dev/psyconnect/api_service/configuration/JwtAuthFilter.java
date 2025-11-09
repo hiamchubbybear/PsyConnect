@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.gateway.route.Route;
+import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -39,28 +41,29 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
+        String userId = null;
+        String profileId = null;
+        String scopes = null;
+
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        log.info("Security filters: {}", authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             if (!service.isTokenValid(token)) throw new CustomExceptionHandler(ErrorCode.UNAUTHORIZED);
             try {
                 Claims claims = getClaimsFromToken(token);
-                String username = claims.getSubject();
-                String userId = claims.get("accountId", String.class);
-                String profileId = claims.get("profileId", String.class);
-                String scopes = claims.get("scope", String.class);
+                userId = claims.get("accountId", String.class);
+                profileId = claims.get("profileId", String.class);
+                scopes = claims.get("scope", String.class);
                 String iss = claims.get("iss", String.class);
-                // If token issuer is not PsyConnect Authentication Service throw exception
                 if (!iss.equals("PsyConnect Authentication Service"))
                     throw new InternalException("Token authentication failed");
-                // Add accountId and profileId into header request
                 ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
                         .header("X-User-Id", userId)
                         .header("X-Profile-Id", profileId)
                         .header("X-Roles", scopes)
                         .build();
-                log.info("Header Profile Id {}" , userId);
+                
+                
                 return chain.filter(exchange.mutate().request(mutatedRequest).build());
             } catch (SignatureException e) {
                 kafkaService.sendLog(buildLog(
@@ -71,7 +74,12 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                 log.error("Invalid JWT signature: {}", e.getMessage());
             }
         }
-
+        Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
+        if (route != null) {
+            log.info("Audit: userId={} profileId={} route={}", userId, profileId, route.getId());
+        } else {
+            log.warn("Audit: userId={} profileId={} route not resolved yet", userId, profileId);
+        }
         return chain.filter(exchange);
     }
 

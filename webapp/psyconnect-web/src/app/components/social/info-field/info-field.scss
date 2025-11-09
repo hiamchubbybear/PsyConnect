@@ -1,0 +1,32 @@
+.info-field {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-sm, 12px) 0;
+  border-bottom: 1px solid var(--color-gray-200, #e2e8f0);
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  &__value {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--color-text);
+    margin: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .info-field {
+    grid-template-columns: 180px 1fr;
+    gap: var(--spacing-lg, 24px);
+    padding: var(--spacing-md, 16px) 0;
+  }
+}

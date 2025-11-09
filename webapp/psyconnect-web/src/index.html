@@ -2,12 +2,72 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Homes</title>
+    <title>Psyconnect</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/lucide-static@latest/font/lucide.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <link
+      id="favicon"
+      rel="icon"
+      type="image/svg+xml"
+      href="./assets/sig-logo/iconic-logo-light.svg"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
   </head>
+
   <body>
     <app-root></app-root>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const favicon = document.getElementById("favicon");
+
+        function updateFavicon() {
+          const isDark = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          ).matches;
+          favicon.href = isDark
+            ? "./assets/sig-logo/iconic-logo-dark.svg"
+            : "./assets/sig-logo/iconic-logo-light.svg";
+          const newFavicon = favicon.cloneNode();
+          favicon.parentNode.replaceChild(newFavicon, favicon);
+        }
+
+        updateFavicon();
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", updateFavicon);
+      });
+    </script>
   </body>
 </html>

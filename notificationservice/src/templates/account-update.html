@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Update Notification</title>
+    <style>
+      body {
+        font-family: "Quicksand", sans-serif;
+        background-color: #f4f4f5;
+        margin: 0;
+        padding: 0;
+        color: #171717;
+      }
+      .email__container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 24px 32px;
+        transition: all 0.2s ease;
+      }
+      .email__header {
+        border-bottom: 1px solid #e4e4e7;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+      }
+      .email__header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #18181b;
+        margin: 0;
+      }
+      .email__highlight {
+        color: #4a90e2;
+        font-weight: 600;
+      }
+      .email__body p {
+        font-size: 0.95rem;
+        color: #52525b;
+        line-height: 1.6;
+        margin: 0 0 12px;
+      }
+      .email__footer {
+        border-top: 1px solid #e4e4e7;
+        padding-top: 12px;
+        font-size: 0.8rem;
+        color: #71717a;
+        text-align: center;
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email__container">
+      <div class="email__header">
+        <h2>Hi <span class="email__highlight">{USERNAME}</span>,</h2>
+      </div>
+      <div class="email__body">
+        <p>
+          Your account <strong>{USERNAME}</strong> has recently been updated.
+        </p>
+        <p>
+          If you didn’t request this, please contact our support team
+          immediately.
+        </p>
+        <p>Thank you for trusting <strong>PsyConnect</strong>.</p>
+      </div>
+      <div class="email__footer">
+        &copy; 2025 PsyConnect. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>

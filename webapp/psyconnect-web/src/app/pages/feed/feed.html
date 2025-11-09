@@ -1,0 +1,129 @@
+<section class="page-feed container">
+  <header class="feed-head">
+    <h1>{{ "FEED.Header.Title" | translate }}</h1>
+    <p class="lead">{{ "FEED.Header.Subtitle" | translate }}</p>
+  </header>
+
+  <div class="grid">
+    <!-- MAIN FEED -->
+    <main class="feed-main">
+      <!-- Mood card -->
+      <div class="mood-card card">
+        <h3>{{ "FEED.Mood.Title" | translate }}</h3>
+        <div class="mood-list">
+          <button class="mood-btn" *ngFor="let m of moodWeek">{{ m }}</button>
+        </div>
+        <button class="btn btn--primary" (click)="toggleMoodLog()">
+          {{ "FEED.Mood.LogButton" | translate }}
+        </button>
+      </div>
+
+      <!-- Section title -->
+      <div class="section-title-row">
+        <h2>{{ "FEED.Community.Title" | translate }}</h2>
+        <button class="btn btn--secondary tiny" (click)="newPost()">
+          {{ "FEED.Community.NewPost" | translate }}
+        </button>
+      </div>
+
+      <!-- Posts -->
+      <section class="posts">
+        <article class="post-card card" *ngFor="let p of posts">
+          <header class="post-head">
+            <div class="avatar">
+              <img [src]="p.avatar" alt="{{ p.author }}" />
+            </div>
+            <div class="meta">
+              <div class="author">
+                {{ p.author }} <span class="role">{{ p.role }}</span>
+              </div>
+              <div class="time">{{ p.time }}</div>
+            </div>
+          </header>
+
+          <h3 class="post-title" (click)="openPost(p)">
+            {{ p.titleKey | translate }}
+          </h3>
+          <p class="post-excerpt">{{ p.excerptKey | translate }}</p>
+          <div class="post-media">
+            <img [src]="p.media" alt="{{ p.titleKey }}" />
+          </div>
+
+          <footer class="post-footer">
+            <button class="icon-btn" (click)="likePost(p)">
+              ♡ {{ p.likes }}
+            </button>
+            <button class="icon-btn">💬 {{ p.comments }}</button>
+            <button class="icon-btn">↗ Share</button>
+          </footer>
+        </article>
+      </section>
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="feed-side">
+      <!-- Mood tracker -->
+      <div class="card small">
+        <h4>{{ "FEED.Mood.Title" | translate }}</h4>
+        <div class="mood-tracker">
+          <div class="days">
+            <div *ngFor="let d of moodWeek; let i = index" class="day">
+              <div class="dot">{{ d }}</div>
+              <div class="day-label">{{ "FEED.Days." + i | translate }}</div>
+            </div>
+          </div>
+          <button class="btn btn--primary small" (click)="toggleMoodLog()">
+            {{ "FEED.Mood.LogButton" | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Therapists -->
+      <div class="card small">
+        <div class="card-row">
+          <h4>{{ "FEED.Therapists.Title" | translate }}</h4>
+          <a class="link-small">{{ "FEED.Therapists.ViewAll" | translate }}</a>
+        </div>
+        <div class="therapist" *ngFor="let t of therapists">
+          <div class="t-left">
+            <div class="avatar small">
+              <img [src]="t.avatar" alt="{{ t.name }}" />
+            </div>
+            <div>
+              <div class="t-name">{{ t.name }}</div>
+              <div class="t-meta">{{ t.specialtyKey | translate }}</div>
+            </div>
+          </div>
+          <div class="t-right">
+            <div class="rating">{{ t.rating }}</div>
+            <div class="status">{{ t.statusKey | translate }}</div>
+          </div>
+        </div>
+        <button
+          class="btn btn--secondary"
+          (click)="bookTherapist(therapists[0])"
+        >
+          {{ "FEED.Therapists.BookButton" | translate }}
+        </button>
+      </div>
+
+      <!-- Support groups -->
+      <div class="card small">
+        <h4>{{ "FEED.SupportGroups.Title" | translate }}</h4>
+        <ul class="support-list">
+          <li *ngFor="let g of supportGroups">
+            <div>
+              <strong>{{ g.nameKey | translate }}</strong>
+              <div class="muted">
+                {{ g.members }} {{ "FEED.SupportGroups.Members" | translate }}
+              </div>
+            </div>
+            <button class="btn btn--primary tiny">
+              {{ "FEED.SupportGroups.JoinButton" | translate }}
+            </button>
+          </li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>

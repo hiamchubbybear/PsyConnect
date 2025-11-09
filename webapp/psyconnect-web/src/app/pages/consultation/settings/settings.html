@@ -1,0 +1,12 @@
+<div class="settings-page">
+  <h1>Consultation Settings</h1>
+  <p>This is a test page to show the onboarding widget.</p>
+
+    <app-onboarding-modal
+        [config]="onboardingConfig"
+        [isVisible]="showOnboarding"
+        (close)="showOnboarding = false"
+        (complete)="onOnboardingComplete()"
+        (stepChange)="onStepChange($event)">
+      </app-onboarding-modal>
+</div>

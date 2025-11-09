@@ -24,6 +24,6 @@ public class CallRestApi {
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
-        return response.getBody(); // JSON string từ Google API
+        return response.getBody();
     }
 }

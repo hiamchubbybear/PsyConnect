@@ -1,8 +1,9 @@
 package model
 
 import (
-	"consultationservice/internal/enum"
 	"time"
+
+	"consultationservice/internal/enum"
 )
 
 type LogModel struct {

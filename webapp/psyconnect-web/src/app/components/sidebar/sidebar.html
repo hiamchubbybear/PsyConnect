@@ -1,0 +1,149 @@
+<!-- <nav *ngIf="isVisible && showSidebar" class="sidebar"> -->
+<nav [class.collapsed]="isCollapsed" class="sidebar">
+  <nav class="sidebar__menu">
+    <a
+      routerLink="/feature/feed"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+      aria-label="Feed"
+    >
+      <span class="sidebar__icon">
+        <img
+          src="../../../assets/animated/system-regular-41-home-hover-home-2.svg"
+          alt="Feed"
+          class="icon-static"
+        />
+        <img
+          src="../../../assets/animated/system-regular-41-home-morph-home-2.gif"
+          alt="Feed animated"
+          class="icon-animated"
+        />
+      </span>
+      <span class="sidebar__label">Feed</span>
+    </a>
+
+    <a
+      routerLink="/feature/schedule"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+      aria-label="Schedule"
+    >
+      <span class="sidebar__icon">
+        <img
+          src="../../../assets/animated/system-regular-23-calendar-hover-calendar.svg"
+          alt="Schedules"
+          class="icon-static"
+        />
+        <img
+          src="../../../assets/animated/system-regular-23-calendar-hover-calendar.gif"
+          alt="Schedules animated"
+          class="icon-animated"
+        />
+      </span>
+      <span class="sidebar__label">Schedule</span>
+    </a>
+
+    <a
+      routerLink="/feature/chat"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+      aria-label="Chat"
+    >
+      <span class="sidebar__icon">
+        <img
+          src="../../../assets/animated/system-regular-47-chat-hover-chat.svg"
+          alt="Chat"
+          class="icon-static"
+        />
+        <img
+          src="../../../assets/animated/system-regular-47-chat-hover-chat.gif"
+          alt="Chat animated"
+          class="icon-animated"
+        />
+      </span>
+      <span class="sidebar__label">Chat</span>
+    </a>
+    <a
+      routerLink="/feature/social"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+      aria-label="Profile"
+    >
+      <span class="sidebar__icon">
+        <img
+          src="../../../assets/animated/system-regular-8-account-hover-account.svg"
+          alt="Profile"
+          class="icon-static"
+        />
+        <img
+          src="../../../assets/animated/system-regular-8-account-hover-account.gif"
+          alt="Profile animated"
+          class="icon-animated"
+        />
+      </span>
+      <span class="sidebar__label">Profile</span>
+    </a>
+    <a
+      routerLink="/feature/search"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+      aria-label="Search"
+    >
+      <span class="sidebar__icon">
+        <img
+          src="../../../assets/animated/system-regular-42-search-hover-search.svg"
+          alt="Search"
+          class="icon-static"
+        />
+        <img
+          src="../../../assets/animated/system-regular-42-search-hover-search.gif"
+          alt="Search animated"
+          class="icon-animated"
+        />
+      </span>
+      <span class="sidebar__label">Search</span>
+    </a>
+
+    <a
+      routerLink="/feature/article"
+      routerLinkActive="active"
+      class="sidebar__item"
+      tabindex="0"
+      aria-label="Article"
+    >
+      <span class="sidebar__icon">
+        <img
+          src="../../../assets/animated/system-regular-14-article-hover-article.svg"
+          alt="Profile"
+          class="icon-static"
+        />
+        <img
+          src="../../../assets/animated/system-regular-14-article-hover-article.gif"
+          alt="Profile animated"
+          class="icon-animated"
+        />
+      </span>
+      <span class="sidebar__label">Article</span>
+    </a>
+  </nav>
+  <a
+    routerLink="/feature/drive"
+    routerLinkActive="active"
+    class="sidebar__item"
+    tabindex="0"
+    aria-label="Drive"
+  >
+    <span class="sidebar__icon">
+      <img
+        src="../../../assets/animated/hard-drive-download.png"
+        alt="Search"
+      />
+    </span>
+    <span class="sidebar__label">Profile</span>
+  </a>
+</nav>

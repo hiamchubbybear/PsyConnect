@@ -1,0 +1,101 @@
+<header class="header" [ngClass]="{ mini: isMini, full: !isMini }">
+  <div class="loader-bar" *ngIf="loaderService.loading$ | async"></div>
+
+  <!-- Logo -->
+  <div class="header-left">
+    <a href="/" class="logo">{{ "APP_NAME" | translate }}</a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="header-center">
+    <a href="/feature">{{ "HEADER.Feature" | translate }}</a>
+    <a href="/therapist">{{ "HEADER.Therapist" | translate }}</a>
+    <a href="/community">{{ "HEADER.Community" | translate }}</a>
+    <a href="/about-us">{{ "HEADER.About" | translate }}</a>
+  </nav>
+
+  <div class="header-right">
+    <app-dropdown
+      [options]="languageOptions"
+      [placeholder]="displayLang"
+      (selectionChange)="onLanguageChange($event)"
+    >
+    </app-dropdown>
+    <div class="divider"></div>
+    <button class="theme-toggle" (click)="toggleTheme()">
+      <span *ngIf="isDark; else lightIcon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="lucide lucide-moon"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+          />
+        </svg>
+      </span>
+      <ng-template #lightIcon>
+        <!-- Sun -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="lucide lucide-sun"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </svg>
+      </ng-template>
+    </button>
+
+    <div class="divider"></div>
+
+    <ng-container *ngIf="auth.isLoggedIn(); else guest">
+      <app-avatar-menu
+        [userAvatarUrl]="userAvatarUrl"
+        [userName]="userName"
+        (logoutClicked)="logout()"
+      ></app-avatar-menu>
+    </ng-container>
+
+    <!-- Guest -->
+    <ng-template #guest>
+      <a href="/auth/login" class="auth">{{ "HEADER.Login" | translate }}</a>
+      <a href="/auth/signup" class="auth signup">{{
+        "HEADER.Sign Up" | translate
+      }}</a>
+    </ng-template>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="menu-toggle" (click)="toggleMenu()">☰</div>
+  <div class="mobile-menu" [class.open]="isMenuOpen">
+    <a href="/feature">{{ "HEADER.Feature" | translate }}</a>
+    <a href="/therapist">{{ "HEADER.Therapist" | translate }}</a>
+    <a href="/community">{{ "HEADER.Community" | translate }}</a>
+    <a href="/about-us">{{ "HEADER.About" | translate }}</a>
+
+    <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
+      <app-avatar-menu
+        [userAvatarUrl]="userAvatarUrl"
+        [userName]="userName"
+        (logoutClicked)="logout()"
+      ></app-avatar-menu>
+    </ng-container>
+
+    <ng-template #guestMobile>
+      <a href="/auth/login">{{ "HEADER.Login" | translate }}</a>
+      <a href="/auth/signup" class="signup">{{
+        "HEADER.Sign Up" | translate
+      }}</a>
+    </ng-template>
+  </div>
+
+  <div class="route-loader" *ngIf="loading$ | async"></div>
+</header>

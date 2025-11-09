@@ -20,7 +20,6 @@ public class ProfileWithRelationShipResponse implements Serializable {
         return ProfileWithMoodSummaryDto.builder()
                 .profile(ProfileSummaryDto.builder()
                         .profileId(profile.getProfileId())
-                        .username(profile.getUsername())
                         .avatarUri(profile.getAvatarUri())
                         .build())
                 .mood(mood)

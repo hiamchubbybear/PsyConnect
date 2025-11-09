@@ -1,0 +1,100 @@
+.field-row {
+  font-family: var(--font-family);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-secondary);
+  transition: all 0.2s ease;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+
+  &:hover {
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  &.expanded {
+    border-color: var(--color-border-strong, #d1d5db);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    :hover {
+      cursor: pointer;
+    }
+    &.disabled {
+      cursor: default;
+      opacity: 0.7;
+    }
+  }
+
+  &__label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--color-text);
+  }
+
+  &__arrow {
+    font-size: 1rem;
+    color: var(--color-icon-muted, #9ca3af);
+    transition: transform 0.2s ease;
+
+    &--down {
+      transform: rotate(0deg);
+    }
+
+    .field-row:not(.expanded) & {
+      transform: rotate(90deg);
+    }
+  }
+
+  &__divider {
+    height: 1px;
+    background: var(--color-border, #e5e7eb);
+    margin: 0 1rem;
+  }
+
+  &__content-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color-text-hover, #2563eb);
+    }
+  }
+
+  &__value {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #374151);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--color-icon-muted, #9ca3af);
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--color-text-hover, #2563eb);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}

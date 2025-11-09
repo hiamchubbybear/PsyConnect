@@ -2,8 +2,6 @@ package dev.psyconnect.profile_service.dto.request;
 
 import java.time.LocalDate;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
@@ -20,8 +18,7 @@ public class UserProfileUpdateRequest {
     String firstName;
     String lastName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate dob;
 
     String address;

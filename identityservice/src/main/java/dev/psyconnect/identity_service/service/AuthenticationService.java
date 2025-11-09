@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,12 +27,15 @@ import dev.psyconnect.identity_service.dto.request.Oauth2AuthenticationRequest;
 import dev.psyconnect.identity_service.dto.response.AuthenticationResponse;
 import dev.psyconnect.identity_service.dto.response.LogoutRequest;
 import dev.psyconnect.identity_service.dto.response.LogoutResponse;
+import dev.psyconnect.identity_service.dto.response.TokenClaimsResponse;
+import dev.psyconnect.identity_service.dto.response.v1.AuthenticationResponseV1;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
 import dev.psyconnect.identity_service.model.Account;
 import dev.psyconnect.identity_service.model.BlackListToken;
 import dev.psyconnect.identity_service.repository.BlackListTokenRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
+import dev.psyconnect.identity_service.repository.TokenRepository;
 import dev.psyconnect.identity_service.repository.UserAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +43,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthenticationService {
 
+    private final TokenRepository tokenRepository;
+
     private final BlackListTokenRepository blackListTokenRepository;
+    private final TokenService tokenService;
 
     @Value("${SIGNER_KEY}")
     private String SIGNER_KEY;
@@ -51,23 +56,26 @@ public class AuthenticationService {
     final RoleRepository roleRepository;
     final UserAccountRepository userAccountRepository;
 
-    @Autowired
     public AuthenticationService(
             RoleRepository roleRepository,
             UserAccountRepository userAccountRepository,
-            BlackListTokenRepository blackListTokenRepository) {
+            BlackListTokenRepository blackListTokenRepository,
+            TokenService tokenService,
+            TokenRepository tokenRepository) {
         this.roleRepository = roleRepository;
+        this.tokenService = tokenService;
         this.userAccountRepository = userAccountRepository;
         this.blackListTokenRepository = blackListTokenRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 
-    public String generateToken(AuthenticationRequest authenticationRequest, String provider, String platForm) {
+    public String generateToken(String username, String provider, String platForm) {
         Account account = userAccountRepository
-                .findByUsername(authenticationRequest.getUsername())
+                .findByUsername(username)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
 
         String role = null;
@@ -77,7 +85,7 @@ public class AuthenticationService {
             throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
         }
         return createJwtToken(
-                authenticationRequest.getUsername(),
+                username,
                 account.getAccountId().toString(),
                 account.getProfileId().toString(),
                 role,
@@ -171,17 +179,47 @@ public class AuthenticationService {
         else {
             var response = AuthenticationResponse.builder()
                     .isSuccessful(true)
-                    .token(generateToken(authenticationRequest, provider, clientPlatform))
+                    .token(generateToken(authenticationRequest.getUsername(), provider, clientPlatform))
                     .build();
-            log.debug("Token is {}", response.getToken());
             return response;
         }
+    }
+
+    public AuthenticationResponseV1 authenticateV1(
+            AuthenticationRequest authenticationRequest, String provider, String clientPlatform) {
+        var password = authenticationRequest.getPassword();
+        var user = userAccountRepository
+                .findByUsername(authenticationRequest.getUsername())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        if (password == null) throw new CustomExceptionHandler(ErrorCode.PASSWORD_INVALID);
+        else if (!passwordEncoder().matches(password, user.getPassword()))
+            throw new CustomExceptionHandler(ErrorCode.PASSWORD_WRONG);
+        String refreshToken = tokenService.generateRefreshToken(authenticationRequest.getUsername());
+        var response = AuthenticationResponseV1.builder()
+                .isSuccessful(true)
+                .token(generateToken(authenticationRequest.getUsername(), provider, clientPlatform))
+                .refreshToken(refreshToken)
+                .build();
+        return response;
+    }
+
+    public AuthenticationResponseV1 refreshTokenV1(
+            String username, String refreshToken, String provider, String clientPlatform) {
+        var token = tokenRepository
+                .findById(username)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.TOKEN_INVALID));
+        String newRefreshToken = tokenService.checkAndReGenerateRefreshToken(username, refreshToken);
+        var response = AuthenticationResponseV1.builder()
+                .isSuccessful(true)
+                .token(generateToken(username, provider, clientPlatform))
+                .refreshToken(newRefreshToken)
+                .build();
+        return response;
     }
 
     private String buildScope(String role) {
         StringBuilder builder = new StringBuilder();
         builder.append("role.").append(role).append(" ");
-
         roleRepository
                 .findByName(role)
                 .ifPresentOrElse(
@@ -251,7 +289,74 @@ public class AuthenticationService {
         return (username.equals(authenticationRequest.getUsername()) && !isTokenExpired(token));
     }
 
+    public TokenClaimsResponse extractClaims(String token) throws ParseException, JOSEException {
+        var claimsSet = verifyToken(token).getJWTClaimsSet();
+
+        return TokenClaimsResponse.builder()
+                .subject(claimsSet.getSubject())
+                .accountId((String) claimsSet.getClaim("accountId"))
+                .profileId((String) claimsSet.getClaim("profileId"))
+                .scope((String) claimsSet.getClaim("scope"))
+                .provider((String) claimsSet.getClaim("type"))
+                .platform((String) claimsSet.getClaim("platform"))
+                .issuedAt(claimsSet.getIssueTime().getTime())
+                .expiresAt(claimsSet.getExpirationTime().getTime())
+                .build();
+    }
+
     public boolean isTokenValid(String token) {
         return !blackListTokenRepository.existsByToken(token);
+    }
+
+    public String generateTokenV1(AuthenticationRequest authenticationRequest, String provider, String platForm) {
+        Account account = userAccountRepository
+                .findByUsername(authenticationRequest.getUsername())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+
+        String role = null;
+        if (account.getRole() != null && !account.getRole().isEmpty()) {
+            role = account.getRole().iterator().next().getName();
+        } else {
+            throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
+        }
+        return createJwtToken(
+                authenticationRequest.getUsername(),
+                account.getAccountId().toString(),
+                account.getProfileId().toString(),
+                role,
+                provider,
+                platForm);
+    }
+
+    public AuthenticationResponse generateOAuth2LoginTokenV1(
+            Oauth2AuthenticationRequest request, String provider, String platForm) {
+        Account account = userAccountRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+        log.info("Found session token {}, ", account.getSession().toString());
+        if (!request.getSessionToken().trim().equals(account.getSession().trim()))
+            throw new CustomExceptionHandler(ErrorCode.USER_UNAUTHENTICATED);
+        if (!request.getProvider().toUpperCase().equals(account.getProvider().toString()))
+            throw new CustomExceptionHandler(ErrorCode.AUTHENTICATE_REQUIRED_DENY);
+        String role = null;
+        if (account.getRole() != null && !account.getRole().isEmpty()) {
+            role = account.getRole().iterator().next().getName();
+        } else {
+            throw new CustomExceptionHandler(ErrorCode.ROLE_NOT_FOUND);
+        }
+        String jwtToken = createJwtToken(
+                request.getEmail(),
+                account.getAccountId().toString(),
+                account.getProfileId().toString(),
+                role,
+                provider,
+                platForm);
+        int effectRow =
+                userAccountRepository.updateSessionIdPostLogin(account.getEmail(), request.getSessionToken(), "");
+        if (effectRow <= 0) throw new CustomExceptionHandler(ErrorCode.DELETE_SESSION_FAILED);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .isSuccessful(true)
+                .build();
     }
 }

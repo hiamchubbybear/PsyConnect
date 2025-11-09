@@ -4,7 +4,7 @@ import 'package:PsyConnect/provider/auth_token_provider.dart';
 import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/provider/user_profile_provider.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
-import 'package:PsyConnect/ui/screens/my_home_page.dart';
+import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -46,8 +46,6 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: const MyHomePage(
-          title: '',
-        ));
+        home: LoginPage());
   }
 }

@@ -1,0 +1,790 @@
+{
+  "psychological_counseling_topics": {
+    "mental_health_disorders": {
+      "vi": "Rối loạn sức khỏe tâm thần",
+      "en": "Mental Health Disorders",
+      "subcategories": {
+        "anxiety_disorders": {
+          "vi": "Rối loạn lo âu",
+          "en": "Anxiety Disorders",
+          "topics": [
+            {"vi": "Rối loạn lo âu tổng quát", "en": "Generalized Anxiety Disorder"},
+            {"vi": "Rối loạn hoảng sợ", "en": "Panic Disorder"},
+            {"vi": "Rối loạn lo âu xã hội", "en": "Social Anxiety Disorder"},
+            {"vi": "Các nỗi sợ hãi cụ thể", "en": "Specific Phobias"},
+            {"vi": "Rối loạn lo âu chia ly", "en": "Separation Anxiety"},
+            {"vi": "Rối loạn lo âu chọn lọc câm lặng", "en": "Selective Mutism"}
+          ]
+        },
+        "mood_disorders": {
+          "vi": "Rối loạn tâm trạng",
+          "en": "Mood Disorders",
+          "topics": [
+            {"vi": "Trầm cảm", "en": "Depression"},
+            {"vi": "Rối loạn lưỡng cực", "en": "Bipolar Disorder"},
+            {"vi": "Rối loạn cảm xúc theo mùa", "en": "Seasonal Affective Disorder"},
+            {"vi": "Rối loạn khó chịu kinh nguyệt", "en": "Premenstrual Dysphoric Disorder"},
+            {"vi": "Trầm cảm sau sinh", "en": "Postpartum Depression"}
+          ]
+        },
+        "trauma_related": {
+          "vi": "Rối loạn liên quan đến chấn thương",
+          "en": "Trauma-Related Disorders",
+          "topics": [
+            {"vi": "PTSD - Rối loạn stress sau chấn thương", "en": "Post-Traumatic Stress Disorder (PTSD)"},
+            {"vi": "Rối loạn stress cấp tính", "en": "Acute Stress Disorder"},
+            {"vi": "Rối loạn thích ứng", "en": "Adjustment Disorder"},
+            {"vi": "Chấn thương phức tạp", "en": "Complex Trauma"},
+            {"vi": "Chấn thương thời thơ ấu", "en": "Childhood Trauma"}
+          ]
+        },
+        "personality_disorders": {
+          "vi": "Rối loạn nhân cách",
+          "en": "Personality Disorders",
+          "topics": [
+            {"vi": "Rối loạn nhân cách biên giới", "en": "Borderline Personality Disorder"},
+            {"vi": "Rối loạn nhân cách tự luyến", "en": "Narcissistic Personality Disorder"},
+            {"vi": "Rối loạn nhân cách tránh né", "en": "Avoidant Personality Disorder"},
+            {"vi": "Rối loạn nhân cách phụ thuộc", "en": "Dependent Personality Disorder"},
+            {"vi": "Rối loạn nhân cách ám ảnh cưỡng chế", "en": "Obsessive-Compulsive Personality Disorder"}
+          ]
+        },
+        "eating_disorders": {
+          "vi": "Rối loạn ăn uống",
+          "en": "Eating Disorders",
+          "topics": [
+            {"vi": "Chán ăn tâm thần", "en": "Anorexia Nervosa"},
+            {"vi": "Bulimia", "en": "Bulimia Nervosa"},
+            {"vi": "Rối loạn ăn uống quá mức", "en": "Binge Eating Disorder"},
+            {"vi": "Rối loạn ăn uống khác", "en": "Other Specified Feeding or Eating Disorder"},
+            {"vi": "Hình ảnh cơ thể", "en": "Body Image Issues"}
+          ]
+        },
+        "substance_related": {
+          "vi": "Rối loạn liên quan đến chất gây nghiện",
+          "en": "Substance-Related Disorders",
+          "topics": [
+            {"vi": "Nghiện rượu", "en": "Alcohol Addiction"},
+            {"vi": "Nghiện ma túy", "en": "Drug Addiction"},
+            {"vi": "Nghiện thuốc lá", "en": "Tobacco Addiction"},
+            {"vi": "Nghiện cờ bạc", "en": "Gambling Addiction"},
+            {"vi": "Nghiện internet/công nghệ", "en": "Internet/Technology Addiction"}
+          ]
+        },
+        "neurodevelopmental": {
+          "vi": "Rối loạn phát triển thần kinh",
+          "en": "Neurodevelopmental Disorders",
+          "topics": [
+            {"vi": "ADHD", "en": "Attention-Deficit/Hyperactivity Disorder"},
+            {"vi": "Rối loạn phổ tự kỷ", "en": "Autism Spectrum Disorder"},
+            {"vi": "Khó khăn học tập", "en": "Learning Disabilities"},
+            {"vi": "Rối loạn ngôn ngữ", "en": "Language Disorders"},
+            {"vi": "Rối loạn phát triển trí tuệ", "en": "Intellectual Developmental Disorder"}
+          ]
+        }
+      }
+    },
+    "life_stages_development": {
+      "vi": "Các giai đoạn phát triển cuộc đời",
+      "en": "Life Stages & Development",
+      "subcategories": {
+        "childhood_adolescence": {
+          "vi": "Thời thơ ấu và tuổi vị thành niên",
+          "en": "Childhood & Adolescence",
+          "topics": [
+            {"vi": "Phát triển tâm lý trẻ em", "en": "Child Psychological Development"},
+            {"vi": "Rối loạn hành vi ở trẻ", "en": "Childhood Behavioral Issues"},
+            {"vi": "Tách ly cha mẹ", "en": "Parental Separation Anxiety"},
+            {"vi": "Bắt nạt ở trường", "en": "School Bullying"},
+            {"vi": "Các vấn đề tuổi dậy thì", "en": "Adolescent Issues"},
+            {"vi": "Định hướng tính dục", "en": "Sexual Identity"},
+            {"vi": "Áp lực bạn bè", "en": "Peer Pressure"},
+            {"vi": "Tự làm hại bản thân", "en": "Self-Harm"}
+          ]
+        },
+        "young_adulthood": {
+          "vi": "Tuổi trưởng thành trẻ",
+          "en": "Young Adulthood",
+          "topics": [
+            {"vi": "Chuyển tiếp từ học đường ra xã hội", "en": "School-to-Work Transition"},
+            {"vi": "Độc lập khỏi gia đình", "en": "Independence from Family"},
+            {"vi": "Định hướng nghề nghiệp", "en": "Career Direction"},
+            {"vi": "Mối quan hệ tình cảm đầu đời", "en": "First Serious Relationships"},
+            {"vi": "Khủng hoảng tuổi đôi mươi", "en": "Quarter-Life Crisis"},
+            {"vi": "Quản lý tài chính cá nhân", "en": "Personal Financial Management"}
+          ]
+        },
+        "midlife": {
+          "vi": "Tuổi trung niên",
+          "en": "Midlife",
+          "topics": [
+            {"vi": "Khủng hoảng tuổi trung niên", "en": "Midlife Crisis"},
+            {"vi": "Cân bằng công việc và gia đình", "en": "Work-Life Balance"},
+            {"vi": "Chăm sóc cha mẹ già", "en": "Caring for Aging Parents"},
+            {"vi": "Thay đổi nghề nghiệp", "en": "Career Changes"},
+            {"vi": "Mãn kinh", "en": "Menopause"},
+            {"vi": "Hội chứng tổ trống", "en": "Empty Nest Syndrome"}
+          ]
+        },
+        "older_adulthood": {
+          "vi": "Tuổi cao niên",
+          "en": "Older Adulthood",
+          "topics": [
+            {"vi": "Nghỉ hưu", "en": "Retirement"},
+            {"vi": "Mất mát và đau buồn", "en": "Loss and Grief"},
+            {"vi": "Suy giảm sức khỏe", "en": "Health Decline"},
+            {"vi": "Cô đơn tuổi già", "en": "Elderly Loneliness"},
+            {"vi": "Ý nghĩa cuộc sống", "en": "Life Meaning"},
+            {"vi": "Di sản và thừa kế", "en": "Legacy and Inheritance"}
+          ]
+        }
+      }
+    },
+    "relationships_family": {
+      "vi": "Mối quan hệ và gia đình",
+      "en": "Relationships & Family",
+      "subcategories": {
+        "romantic_relationships": {
+          "vi": "Mối quan hệ tình cảm",
+          "en": "Romantic Relationships",
+          "topics": [
+            {"vi": "Tìm kiếm đối tác", "en": "Finding a Partner"},
+            {"vi": "Hẹn hò và courtship", "en": "Dating and Courtship"},
+            {"vi": "Cam kết dài hạn", "en": "Long-term Commitment"},
+            {"vi": "Xung đột trong mối quan hệ", "en": "Relationship Conflicts"},
+            {"vi": "Giao tiếp trong mối quan hệ", "en": "Communication in Relationships"},
+            {"vi": "Tin tương và lòng chung thủy", "en": "Trust and Fidelity"},
+            {"vi": "Chia tay và ly hôn", "en": "Breakups and Divorce"},
+            {"vi": "Mối quan hệ độc hại", "en": "Toxic Relationships"},
+            {"vi": "Bạo lực gia đình", "en": "Domestic Violence"},
+            {"vi": "Tình dục và thân mật", "en": "Sexuality and Intimacy"}
+          ]
+        },
+        "marriage_partnership": {
+          "vi": "Hôn nhân và đời sống vợ chồng",
+          "en": "Marriage & Partnership",
+          "topics": [
+            {"vi": "Chuẩn bị kết hôn", "en": "Pre-marital Preparation"},
+            {"vi": "Thích ứng hôn nhân", "en": "Marital Adjustment"},
+            {"vi": "Xung đột vợ chồng", "en": "Marital Conflicts"},
+            {"vi": "Ngoại tình", "en": "Infidelity"},
+            {"vi": "Tái thiết lòng tin", "en": "Rebuilding Trust"},
+            {"vi": "Tư vấn hôn nhân", "en": "Marriage Counseling"},
+            {"vi": "Hôn nhân hỗn hợp", "en": "Intercultural Marriage"},
+            {"vi": "Hôn nhân cùng giới", "en": "Same-sex Marriage"}
+          ]
+        },
+        "parenting": {
+          "vi": "Làm cha mẹ",
+          "en": "Parenting",
+          "topics": [
+            {"vi": "Chuẩn bị làm cha mẹ", "en": "Preparing for Parenthood"},
+            {"vi": "Kỹ năng làm cha mẹ", "en": "Parenting Skills"},
+            {"vi": "Kỷ luật con cái", "en": "Child Discipline"},
+            {"vi": "Cha mẹ đơn thân", "en": "Single Parenting"},
+            {"vi": "Cha mẹ kế", "en": "Step-parenting"},
+            {"vi": "Nuôi con nuôi", "en": "Adoption"},
+            {"vi": "Con cái với nhu cầu đặc biệt", "en": "Special Needs Children"},
+            {"vi": "Cân bằng công việc và nuôi con", "en": "Work-Parenting Balance"},
+            {"vi": "Xung đột với con tuổi teen", "en": "Teenage Conflicts"}
+          ]
+        },
+        "family_dynamics": {
+          "vi": "Động lực gia đình",
+          "en": "Family Dynamics",
+          "topics": [
+            {"vi": "Xung đột gia đình", "en": "Family Conflicts"},
+            {"vi": "Giao tiếp gia đình", "en": "Family Communication"},
+            {"vi": "Ranh giới gia đình", "en": "Family Boundaries"},
+            {"vi": "Truyền thống gia đình", "en": "Family Traditions"},
+            {"vi": "Gia đình ly tán", "en": "Blended Families"},
+            {"vi": "Anh chị em", "en": "Sibling Relationships"},
+            {"vi": "Mối quan hệ với họ hàng", "en": "Extended Family Relations"},
+            {"vi": "Chăm sóc người già trong gia đình", "en": "Elder Care"}
+          ]
+        },
+        "social_relationships": {
+          "vi": "Mối quan hệ xã hội",
+          "en": "Social Relationships",
+          "topics": [
+            {"vi": "Tình bạn", "en": "Friendship"},
+            {"vi": "Kỹ năng xã hội", "en": "Social Skills"},
+            {"vi": "Mối quan hệ đồng nghiệp", "en": "Workplace Relationships"},
+            {"vi": "Mạng lưới xã hội", "en": "Social Networks"},
+            {"vi": "Cô đơn và cô lập", "en": "Loneliness and Isolation"},
+            {"vi": "Xây dựng mối quan hệ", "en": "Building Relationships"},
+            {"vi": "Duy trì mối quan hệ", "en": "Maintaining Relationships"},
+            {"vi": "Kết thúc mối quan hệ", "en": "Ending Relationships"}
+          ]
+        }
+      }
+    },
+    "work_career": {
+      "vi": "Công việc và sự nghiệp",
+      "en": "Work & Career",
+      "subcategories": {
+        "career_development": {
+          "vi": "Phát triển sự nghiệp",
+          "en": "Career Development",
+          "topics": [
+            {"vi": "Lựa chọn nghề nghiệp", "en": "Career Choice"},
+            {"vi": "Định hướng nghề nghiệp", "en": "Career Orientation"},
+            {"vi": "Chuyển đổi nghề nghiệp", "en": "Career Transition"},
+            {"vi": "Thăng tiến trong công việc", "en": "Career Advancement"},
+            {"vi": "Phát triển kỹ năng nghề nghiệp", "en": "Professional Skill Development"},
+            {"vi": "Mục tiêu nghề nghiệp", "en": "Career Goals"},
+            {"vi": "Quy hoạch sự nghiệp", "en": "Career Planning"}
+          ]
+        },
+        "workplace_issues": {
+          "vi": "Vấn đề nơi làm việc",
+          "en": "Workplace Issues",
+          "topics": [
+            {"vi": "Stress công việc", "en": "Work Stress"},
+            {"vi": "Burnout - Kiệt sức", "en": "Burnout"},
+            {"vi": "Xung đột với đồng nghiệp", "en": "Workplace Conflicts"},
+            {"vi": "Quấy rối tại nơi làm việc", "en": "Workplace Harassment"},
+            {"vi": "Bắt nạt tại nơi làm việc", "en": "Workplace Bullying"},
+            {"vi": "Phân biệt đối xử", "en": "Workplace Discrimination"},
+            {"vi": "Áp lực hiệu suất", "en": "Performance Pressure"},
+            {"vi": "Mất việc làm", "en": "Job Loss"},
+            {"vi": "Tìm việc làm", "en": "Job Search"}
+          ]
+        },
+        "work_life_balance": {
+          "vi": "Cân bằng công việc cuộc sống",
+          "en": "Work-Life Balance",
+          "topics": [
+            {"vi": "Quản lý thời gian", "en": "Time Management"},
+            {"vi": "Đặt ranh giới công việc", "en": "Setting Work Boundaries"},
+            {"vi": "Làm việc từ xa", "en": "Remote Work"},
+            {"vi": "Làm thêm giờ", "en": "Overtime Work"},
+            {"vi": "Nghỉ phép và thư giãn", "en": "Vacation and Rest"},
+            {"vi": "Công việc và gia đình", "en": "Work and Family"},
+            {"vi": "Sở thích cá nhân", "en": "Personal Hobbies"}
+          ]
+        },
+        "leadership_management": {
+          "vi": "Lãnh đạo và quản lý",
+          "en": "Leadership & Management",
+          "topics": [
+            {"vi": "Kỹ năng lãnh đạo", "en": "Leadership Skills"},
+            {"vi": "Quản lý nhóm", "en": "Team Management"},
+            {"vi": "Ra quyết định", "en": "Decision Making"},
+            {"vi": "Ủy quyền", "en": "Delegation"},
+            {"vi": "Phản hồi và đánh giá", "en": "Feedback and Evaluation"},
+            {"vi": "Xử lý xung đột", "en": "Conflict Resolution"},
+            {"vi": "Động lực nhân viên", "en": "Employee Motivation"}
+          ]
+        }
+      }
+    },
+    "education_learning": {
+      "vi": "Giáo dục và học tập",
+      "en": "Education & Learning",
+      "subcategories": {
+        "academic_performance": {
+          "vi": "Kết quả học tập",
+          "en": "Academic Performance",
+          "topics": [
+            {"vi": "Khó khăn học tập", "en": "Learning Difficulties"},
+            {"vi": "Động lực học tập", "en": "Academic Motivation"},
+            {"vi": "Kỹ năng học tập", "en": "Study Skills"},
+            {"vi": "Lo âu thi cử", "en": "Test Anxiety"},
+            {"vi": "Hội chứng trì hoãn", "en": "Procrastination"},
+            {"vi": "Quản lý thời gian học tập", "en": "Study Time Management"},
+            {"vi": "Mục tiêu học tập", "en": "Academic Goals"}
+          ]
+        },
+        "school_environment": {
+          "vi": "Môi trường trường học",
+          "en": "School Environment",
+          "topics": [
+            {"vi": "Thích ứng trường học", "en": "School Adjustment"},
+            {"vi": "Mối quan hệ với giáo viên", "en": "Teacher Relationships"},
+            {"vi": "Mối quan hệ với bạn học", "en": "Peer Relationships at School"},
+            {"vi": "Bắt nạt ở trường", "en": "School Bullying"},
+            {"vi": "Hoạt động ngoại khóa", "en": "Extracurricular Activities"},
+            {"vi": "Chuyển trường", "en": "School Transitions"}
+          ]
+        },
+        "higher_education": {
+          "vi": "Giáo dục đại học",
+          "en": "Higher Education",
+          "topics": [
+            {"vi": "Lựa chọn trường đại học", "en": "College Selection"},
+            {"vi": "Thích ứng đời sống đại học", "en": "College Adjustment"},
+            {"vi": "Áp lực học tập đại học", "en": "College Academic Pressure"},
+            {"vi": "Sống xa nhà", "en": "Living Away from Home"},
+            {"vi": "Quản lý tài chính sinh viên", "en": "Student Financial Management"},
+            {"vi": "Tốt nghiệp và việc làm", "en": "Graduation and Employment"}
+          ]
+        },
+        "lifelong_learning": {
+          "vi": "Học tập suốt đời",
+          "en": "Lifelong Learning",
+          "topics": [
+            {"vi": "Học tập người lớn", "en": "Adult Learning"},
+            {"vi": "Đào tạo nghề nghiệp", "en": "Professional Training"},
+            {"vi": "Học kỹ năng mới", "en": "Learning New Skills"},
+            {"vi": "Thích ứng thay đổi công nghệ", "en": "Adapting to Technology Changes"},
+            {"vi": "Học ngôn ngữ mới", "en": "Learning New Languages"}
+          ]
+        }
+      }
+    },
+    "health_wellness": {
+      "vi": "Sức khỏe và sự khỏe mạnh",
+      "en": "Health & Wellness",
+      "subcategories": {
+        "physical_health": {
+          "vi": "Sức khỏe thể chất",
+          "en": "Physical Health",
+          "topics": [
+            {"vi": "Bệnh tật mãn tính", "en": "Chronic Illness"},
+            {"vi": "Đau đớn mãn tính", "en": "Chronic Pain"},
+            {"vi": "Khuyết tật", "en": "Disability"},
+            {"vi": "Phục hồi sau bệnh", "en": "Recovery from Illness"},
+            {"vi": "Tập thể dục và vận động", "en": "Exercise and Physical Activity"},
+            {"vi": "Dinh dưỡng và ăn uống", "en": "Nutrition and Diet"},
+            {"vi": "Giấc ngủ", "en": "Sleep Issues"}
+          ]
+        },
+        "mental_wellness": {
+          "vi": "Sức khỏe tâm thần",
+          "en": "Mental Wellness",
+          "topics": [
+            {"vi": "Quản lý stress", "en": "Stress Management"},
+            {"vi": "Thư giãn và nghỉ ngơi", "en": "Relaxation and Rest"},
+            {"vi": "Mindfulness và thiền", "en": "Mindfulness and Meditation"},
+            {"vi": "Sự cân bằng cảm xúc", "en": "Emotional Balance"},
+            {"vi": "Tự chăm sóc bản thân", "en": "Self-Care"},
+            {"vi": "Lối sống tích cực", "en": "Positive Lifestyle"}
+          ]
+        },
+        "body_image": {
+          "vi": "Hình ảnh cơ thể",
+          "en": "Body Image",
+          "topics": [
+            {"vi": "Chấp nhận cơ thể", "en": "Body Acceptance"},
+            {"vi": "Cân nặng và hình dáng", "en": "Weight and Body Shape"},
+            {"vi": "Phẫu thuật thẩm mỹ", "en": "Cosmetic Surgery"},
+            {"vi": "Rối loạn hình ảnh cơ thể", "en": "Body Dysmorphic Disorder"},
+            {"vi": "Tự tin về ngoại hình", "en": "Physical Appearance Confidence"}
+          ]
+        },
+        "sexuality_intimacy": {
+          "vi": "Tình dục và sự thân mật",
+          "en": "Sexuality & Intimacy",
+          "topics": [
+            {"vi": "Sức khỏe tình dục", "en": "Sexual Health"},
+            {"vi": "Rối loạn chức năng tình dục", "en": "Sexual Dysfunction"},
+            {"vi": "Giáo dục giới tính", "en": "Sex Education"},
+            {"vi": "Định hướng tình dục", "en": "Sexual Orientation"},
+            {"vi": "Bản dạng giới", "en": "Gender Identity"},
+            {"vi": "Thân mật trong mối quan hệ", "en": "Intimacy in Relationships"},
+            {"vi": "Giao tiếp về tình dục", "en": "Sexual Communication"}
+          ]
+        }
+      }
+    },
+    "identity_self_concept": {
+      "vi": "Bản sắc và khái niệm bản thân",
+      "en": "Identity & Self-Concept",
+      "subcategories": {
+        "self_esteem": {
+          "vi": "Lòng tự trọng",
+          "en": "Self-Esteem",
+          "topics": [
+            {"vi": "Xây dựng lòng tự trọng", "en": "Building Self-Esteem"},
+            {"vi": "Tự tin", "en": "Self-Confidence"},
+            {"vi": "Tự chấp nhận", "en": "Self-Acceptance"},
+            {"vi": "Hình ảnh bản thân", "en": "Self-Image"},
+            {"vi": "Tự phê bình", "en": "Self-Criticism"},
+            {"vi": "Hoàn hảo chủ nghĩa", "en": "Perfectionism"}
+          ]
+        },
+        "personal_values": {
+          "vi": "Giá trị cá nhân",
+          "en": "Personal Values",
+          "topics": [
+            {"vi": "Khám phá giá trị cốt lõi", "en": "Discovering Core Values"},
+            {"vi": "Xung đột giá trị", "en": "Value Conflicts"},
+            {"vi": "Đạo đức cá nhân", "en": "Personal Ethics"},
+            {"vi": "Ý nghĩa cuộc sống", "en": "Life Meaning"},
+            {"vi": "Mục đích sống", "en": "Life Purpose"},
+            {"vi": "Tâm linh", "en": "Spirituality"}
+          ]
+        },
+        "cultural_identity": {
+          "vi": "Bản sắc văn hóa",
+          "en": "Cultural Identity",
+          "topics": [
+            {"vi": "Bản sắc dân족", "en": "Ethnic Identity"},
+            {"vi": "Bản sắc tôn giáo", "en": "Religious Identity"},
+            {"vi": "Hòa nhập văn hóa", "en": "Cultural Integration"},
+            {"vi": "Xung đột văn hóa", "en": "Cultural Conflicts"},
+            {"vi": "Đa văn hóa", "en": "Multiculturalism"},
+            {"vi": "Di cư và thích ứng", "en": "Immigration and Adaptation"}
+          ]
+        },
+        "gender_sexual_identity": {
+          "vi": "Bản sắc giới và tình dục",
+          "en": "Gender & Sexual Identity",
+          "topics": [
+            {"vi": "Bản dạng giới", "en": "Gender Identity"},
+            {"vi": "Biểu hiện giới", "en": "Gender Expression"},
+            {"vi": "Chuyển giới", "en": "Gender Transition"},
+            {"vi": "Định hướng tình dục", "en": "Sexual Orientation"},
+            {"vi": "Coming out", "en": "Coming Out"},
+            {"vi": "LGBTQ+ vấn đề", "en": "LGBTQ+ Issues"}
+          ]
+        }
+      }
+    },
+    "life_transitions": {
+      "vi": "Chuyển tiếp cuộc sống",
+      "en": "Life Transitions",
+      "subcategories": {
+        "major_life_changes": {
+          "vi": "Những thay đổi lớn trong cuộc sống",
+          "en": "Major Life Changes",
+          "topics": [
+            {"vi": "Chuyển nhà", "en": "Relocation"},
+            {"vi": "Kết hôn", "en": "Marriage"},
+            {"vi": "Ly hôn", "en": "Divorce"},
+            {"vi": "Có con", "en": "Having Children"},
+            {"vi": "Mất việc", "en": "Job Loss"},
+            {"vi": "Nghỉ hưu", "en": "Retirement"},
+            {"vi": "Bệnh tật nghiêm trọng", "en": "Serious Illness"},
+            {"vi": "Mất mát người thân", "en": "Death of Loved One"}
+          ]
+        },
+        "developmental_transitions": {
+          "vi": "Chuyển tiếp phát triển",
+          "en": "Developmental Transitions",
+          "topics": [
+            {"vi": "Từ tuổi thơ đến tuổi teen", "en": "Childhood to Adolescence"},
+            {"vi": "Từ tuổi teen đến trưởng thành", "en": "Adolescence to Adulthood"},
+            {"vi": "Bước vào đời sống độc lập", "en": "Entering Independent Life"},
+            {"vi": "Thành lập gia đình", "en": "Starting a Family"},
+            {"vi": "Thay đổi nghề nghiệp", "en": "Career Changes"},
+            {"vi": "Tuổi trung niên", "en": "Midlife Transitions"},
+            {"vi": "Tuổi già", "en": "Aging Transitions"}
+          ]
+        },
+        "loss_grief": {
+          "vi": "Mất mát và đau buồn",
+          "en": "Loss & Grief",
+          "topics": [
+            {"vi": "Đau buồn vì mất người thân", "en": "Bereavement Grief"},
+            {"vi": "Đau buồn phức tạp", "en": "Complicated Grief"},
+            {"vi": "Đau buồn dự đoán", "en": "Anticipatory Grief"},
+            {"vi": "Mất mát mối quan hệ", "en": "Relationship Loss"},
+            {"vi": "Mất mát thú cưng", "en": "Pet Loss"},
+            {"vi": "Mất mát sức khỏe", "en": "Health Loss"},
+            {"vi": "Mất mát ước mơ", "en": "Loss of Dreams"},
+            {"vi": "Quá trình chấp nhận", "en": "Acceptance Process"}
+          ]
+        }
+      }
+    },
+    "communication_social_skills": {
+      "vi": "Giao tiếp và kỹ năng xã hội",
+      "en": "Communication & Social Skills",
+      "subcategories": {
+        "interpersonal_communication": {
+          "vi": "Giao tiếp giữa các cá nhân",
+          "en": "Interpersonal Communication",
+          "topics": [
+            {"vi": "Kỹ năng lắng nghe", "en": "Listening Skills"},
+            {"vi": "Giao tiếp bằng lời", "en": "Verbal Communication"},
+            {"vi": "Giao tiếp phi ngôn ngữ", "en": "Non-verbal Communication"},
+            {"vi": "Khẳng định bản thân", "en": "Assertiveness"},
+            {"vi": "Đặt ranh giới", "en": "Setting Boundaries"},
+            {"vi": "Xử lý xung đột", "en": "Conflict Resolution"},
+            {"vi": "Thương lượng", "en": "Negotiation Skills"}
+          ]
+        },
+        "social_anxiety": {
+          "vi": "Lo âu xã hội",
+          "en": "Social Anxiety",
+          "topics": [
+            {"vi": "Nói trước đám đông", "en": "Public Speaking"},
+            {"vi": "Gặp gỡ người mới", "en": "Meeting New People"},
+            {"vi": "Tham gia nhóm", "en": "Group Participation"},
+            {"vi": "Phỏng vấn xin việc", "en": "Job Interviews"},
+            {"vi": "Sự kiện xã hội", "en": "Social Events"},
+            {"vi": "Hội chứng kẻ mạo danh", "en": "Impostor Syndrome"}
+          ]
+        },
+        "digital_communication": {
+          "vi": "Giao tiếp kỹ thuật số",
+          "en": "Digital Communication",
+          "topics": [
+            {"vi": "Mạng xã hội", "en": "Social Media"},
+            {"vi": "Giao tiếp trực tuyến", "en": "Online Communication"},
+            {"vi": "Đời sống kỹ thuật số", "en": "Digital Life"},
+            {"vi": "Nghiện công nghệ", "en": "Technology Addiction"},
+            {"vi": "Cân bằng cuộc sống số", "en": "Digital Life Balance"}
+          ]
+        }
+      }
+    },
+    "financial_material_concerns": {
+      "vi": "Mối quan tâm tài chính và vật chất",
+      "en": "Financial & Material Concerns",
+      "subcategories": {
+        "financial_stress": {
+          "vi": "Căng thẳng tài chính",
+          "en": "Financial Stress",
+          "topics": [
+            {"vi": "Nợ nần", "en": "Debt Management"},
+            {"vi": "Thất nghiệp", "en": "Unemployment"},
+            {"vi": "Bất ổn tài chính", "en": "Financial Instability"},
+            {"vi": "Nghèo đói", "en": "Poverty"},
+            {"vi": "Quản lý ngân sách", "en": "Budget Management"},
+            {"vi": "Lập kế hoạch tài chính", "en": "Financial Planning"}
+          ]
+        },
+        "material_values": {
+          "vi": "Giá trị vật chất",
+          "en": "Material Values",
+          "topics": [
+            {"vi": "Chủ nghĩa tiêu dùng", "en": "Consumerism"},
+            {"vi": "Sự giàu có và hạnh phúc", "en": "Wealth and Happiness"},
+            {"vi": "Tối giản chủ nghĩa", "en": "Minimalism"},
+            {"vi": "Giá trị phi vật chất", "en": "Non-material Values"},
+            {"vi": "Sự hài lòng với cuộc sống", "en": "Life Satisfaction"}
+          ]
+        }
+      }
+    },
+    "behavioral_issues": {
+      "vi": "Vấn đề hành vi",
+      "en": "Behavioral Issues",
+      "subcategories": {
+        "impulse_control": {
+          "vi": "Kiểm soát xung động",
+          "en": "Impulse Control",
+          "topics": [
+            {"vi": "Bốc đồng", "en": "Impulsivity"},
+            {"vi": "Kiểm soát cơn giận", "en": "Anger Management"},
+            {"vi": "Hành vi gây hấn", "en": "Aggressive Behavior"},
+            {"vi": "Hành vi tự hủy hoại", "en": "Self-destructive Behavior"},
+            {"vi": "Nghiện hành vi", "en": "Behavioral Addictions"},
+            {"vi": "Rối loạn ăn uống cưỡng chế", "en": "Compulsive Eating"}
+          ]
+        },
+        "habit_formation": {
+          "vi": "Hình thành thói quen",
+          "en": "Habit Formation",
+          "topics": [
+            {"vi": "Xây dựng thói quen tốt", "en": "Building Good Habits"},
+            {"vi": "Phá bỏ thói quen xấu", "en": "Breaking Bad Habits"},
+            {"vi": "Động lực thay đổi", "en": "Motivation for Change"},
+            {"vi": "Duy trì thay đổi", "en": "Maintaining Changes"},
+            {"vi": "Kỷ luật bản thân", "en": "Self-discipline"}
+          ]
+        }
+      }
+    },
+    "existential_philosophical": {
+      "vi": "Vấn đề hiện sinh và triết học",
+      "en": "Existential & Philosophical Issues",
+      "subcategories": {
+        "meaning_purpose": {
+          "vi": "Ý nghĩa và mục đích",
+          "en": "Meaning & Purpose",
+          "topics": [
+            {"vi": "Ý nghĩa cuộc sống", "en": "Life Meaning"},
+            {"vi": "Mục đích sống", "en": "Life Purpose"},
+            {"vi": "Khủng hoảng hiện sinh", "en": "Existential Crisis"},
+            {"vi": "Cái chết và tính hữu hạn", "en": "Death and Mortality"},
+            {"vi": "Tự do và trách nhiệm", "en": "Freedom and Responsibility"},
+            {"vi": "Tính xác thực", "en": "Authenticity"}
+          ]
+        },
+        "spiritual_concerns": {
+          "vi": "Mối quan tâm tâm linh",
+          "en": "Spiritual Concerns",
+          "topics": [
+            {"vi": "Niềm tin tôn giáo", "en": "Religious Beliefs"},
+            {"vi": "Khủng hoảng đức tin", "en": "Faith Crisis"},
+            {"vi": "Tìm kiếm tâm linh", "en": "Spiritual Seeking"},
+            {"vi": "Thiền định và chánh niệm", "en": "Meditation and Mindfulness"},
+            {"vi": "Trải nghiệm siêu việt", "en": "Transcendent Experiences"},
+            {"vi": "Kết nối với thiên nhiên", "en": "Connection with Nature"}
+          ]
+        }
+      }
+    },
+    "crisis_emergency": {
+      "vi": "Khủng hoảng và tình huống khẩn cấp",
+      "en": "Crisis & Emergency Situations",
+      "subcategories": {
+        "suicide_self_harm": {
+          "vi": "Tự tử và tự làm hại",
+          "en": "Suicide & Self-Harm",
+          "topics": [
+            {"vi": "Ý tưởng tự tử", "en": "Suicidal Ideation"},
+            {"vi": "Kế hoạch tự tử", "en": "Suicide Planning"},
+            {"vi": "Tự làm hại không tự tử", "en": "Non-suicidal Self-injury"},
+            {"vi": "Ngăn chặn tự tử", "en": "Suicide Prevention"},
+            {"vi": "Can thiệp khủng hoảng", "en": "Crisis Intervention"},
+            {"vi": "Hỗ trợ sau nỗ lực tự tử", "en": "Post-suicide Attempt Support"}
+          ]
+        },
+        "acute_crisis": {
+          "vi": "Khủng hoảng cấp tính",
+          "en": "Acute Crisis",
+          "topics": [
+            {"vi": "Suy sụp tâm lý", "en": "Mental Breakdown"},
+            {"vi": "Hoảng loạn cấp tính", "en": "Acute Panic"},
+            {"vi": "Tình trạng phân ly", "en": "Dissociative States"},
+            {"vi": "Hành vi bạo lực", "en": "Violent Behavior"},
+            {"vi": "Tình huống nguy hiểm", "en": "Dangerous Situations"}
+          ]
+        },
+        "trauma_emergency": {
+          "vi": "Chấn thương khẩn cấp",
+          "en": "Emergency Trauma",
+          "topics": [
+            {"vi": "Chấn thương cấp tính", "en": "Acute Trauma"},
+            {"vi": "Tai nạn", "en": "Accidents"},
+            {"vi": "Bạo lực", "en": "Violence"},
+            {"vi": "Thảm họa thiên nhiên", "en": "Natural Disasters"},
+            {"vi": "Tấn công hoặc cướp", "en": "Assault or Robbery"},
+            {"vi": "Chứng kiến sự kiện chấn thương", "en": "Witnessing Traumatic Events"}
+          ]
+        }
+      }
+    },
+    "special_populations": {
+      "vi": "Nhóm đối tượng đặc biệt",
+      "en": "Special Populations",
+      "subcategories": {
+        "children_adolescents": {
+          "vi": "Trẻ em và thiếu niên",
+          "en": "Children & Adolescents",
+          "topics": [
+            {"vi": "Rối loạn phát triển", "en": "Developmental Disorders"},
+            {"vi": "Vấn đề hành vi ở trẻ", "en": "Childhood Behavioral Problems"},
+            {"vi": "Học tập và trường học", "en": "Learning and School Issues"},
+            {"vi": "Mối quan hệ gia đình", "en": "Family Relationships"},
+            {"vi": "Bạn bè và đồng trang lứa", "en": "Peer Relationships"},
+            {"vi": "Phát triển danh tính", "en": "Identity Development"}
+          ]
+        },
+        "elderly": {
+          "vi": "Người cao tuổi",
+          "en": "Elderly",
+          "topics": [
+            {"vi": "Suy giảm nhận thức", "en": "Cognitive Decline"},
+            {"vi": "Sa sút trí tuệ", "en": "Dementia"},
+            {"vi": "Cô đơn tuổi già", "en": "Elderly Loneliness"},
+            {"vi": "Mất độc lập", "en": "Loss of Independence"},
+            {"vi": "Vấn đề sức khỏe", "en": "Health Issues"},
+            {"vi": "Chuẩn bị cho cái chết", "en": "End-of-life Preparation"}
+          ]
+        },
+        "veterans_military": {
+          "vi": "Cựu chiến binh và quân đội",
+          "en": "Veterans & Military",
+          "topics": [
+            {"vi": "PTSD quân đội", "en": "Military PTSD"},
+            {"vi": "Thích ứng dân sự", "en": "Civilian Reintegration"},
+            {"vi": "Chấn thương chiến đấu", "en": "Combat Trauma"},
+            {"vi": "Mất mát đồng đội", "en": "Loss of Comrades"},
+            {"vi": "Bản sắc quân đội", "en": "Military Identity"}
+          ]
+        },
+        "lgbtq_plus": {
+          "vi": "Cộng đồng LGBTQ+",
+          "en": "LGBTQ+ Community",
+          "topics": [
+            {"vi": "Coming out", "en": "Coming Out Process"},
+            {"vi": "Phân biệt đối xử", "en": "Discrimination"},
+            {"vi": "Hỗ trợ gia đình", "en": "Family Support"},
+            {"vi": "Bản sắc giới", "en": "Gender Identity"},
+            {"vi": "Chuyển giới", "en": "Gender Transition"},
+            {"vi": "Mối quan hệ cùng giới", "en": "Same-sex Relationships"}
+          ]
+        },
+        "immigrants_refugees": {
+          "vi": "Người nhập cư và tị nạn",
+          "en": "Immigrants & Refugees",
+          "topics": [
+            {"vi": "Thích ứng văn hóa", "en": "Cultural Adaptation"},
+            {"vi": "Rào cản ngôn ngữ", "en": "Language Barriers"},
+            {"vi": "Chấn thương di cư", "en": "Migration Trauma"},
+            {"vi": "Cách ly khỏi gia đình", "en": "Family Separation"},
+            {"vi": "Bản sắc văn hóa", "en": "Cultural Identity"},
+            {"vi": "Phân biệt đối xử", "en": "Discrimination"}
+          ]
+        }
+      }
+    },
+    "therapeutic_approaches": {
+      "vi": "Phương pháp điều trị",
+      "en": "Therapeutic Approaches",
+      "subcategories": {
+        "therapy_types": {
+          "vi": "Các loại liệu pháp",
+          "en": "Types of Therapy",
+          "topics": [
+            {"vi": "Liệu pháp nhận thức hành vi (CBT)", "en": "Cognitive Behavioral Therapy (CBT)"},
+            {"vi": "Liệu pháp tâm lý động lực", "en": "Psychodynamic Therapy"},
+            {"vi": "Liệu pháp nhân văn", "en": "Humanistic Therapy"},
+            {"vi": "Liệu pháp gia đình", "en": "Family Therapy"},
+            {"vi": "Liệu pháp cặp đôi", "en": "Couples Therapy"},
+            {"vi": "Liệu pháp nhóm", "en": "Group Therapy"},
+            {"vi": "Liệu pháp nghệ thuật", "en": "Art Therapy"},
+            {"vi": "Liệu pháp âm nhạc", "en": "Music Therapy"},
+            {"vi": "EMDR", "en": "Eye Movement Desensitization and Reprocessing"}
+          ]
+        },
+        "treatment_goals": {
+          "vi": "Mục tiêu điều trị",
+          "en": "Treatment Goals",
+          "topics": [
+            {"vi": "Giảm triệu chứng", "en": "Symptom Reduction"},
+            {"vi": "Cải thiện chức năng", "en": "Functional Improvement"},
+            {"vi": "Phát triển kỹ năng đối phó", "en": "Coping Skills Development"},
+            {"vi": "Tăng cường hiểu biết bản thân", "en": "Self-awareness Enhancement"},
+            {"vi": "Cải thiện mối quan hệ", "en": "Relationship Improvement"},
+            {"vi": "Phòng ngừa tái phát", "en": "Relapse Prevention"}
+          ]
+        }
+      }
+    },
+    "assessment_evaluation": {
+      "vi": "Đánh giá và evaluation",
+      "en": "Assessment & Evaluation",
+      "subcategories": {
+        "psychological_assessment": {
+          "vi": "Đánh giá tâm lý",
+          "en": "Psychological Assessment",
+          "topics": [
+            {"vi": "Đánh giá trí tuệ", "en": "Intelligence Assessment"},
+            {"vi": "Đánh giá nhân cách", "en": "Personality Assessment"},
+            {"vi": "Đánh giá neuropsychological", "en": "Neuropsychological Assessment"},
+            {"vi": "Đánh giá rủi ro", "en": "Risk Assessment"},
+            {"vi": "Đánh giá khả năng", "en": "Capacity Assessment"}
+          ]
+        },
+        "diagnostic_considerations": {
+          "vi": "Các cân nhắc chẩn đoán",
+          "en": "Diagnostic Considerations",
+          "topics": [
+            {"vi": "Chẩn đoán phân biệt", "en": "Differential Diagnosis"},
+            {"vi": "Đồng mắc bệnh", "en": "Comorbidity"},
+            {"vi": "Yếu tố văn hóa", "en": "Cultural Factors"},
+            {"vi": "Độ tin cậy chẩn đoán", "en": "Diagnostic Reliability"},
+            {"vi": "Kế hoạch điều trị", "en": "Treatment Planning"}
+          ]
+        }
+      }
+    }
+  }
+}

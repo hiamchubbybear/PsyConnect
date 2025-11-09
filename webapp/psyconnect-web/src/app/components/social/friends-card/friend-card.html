@@ -1,0 +1,29 @@
+<div
+  class="friend-card"
+  (mouseenter)="isHovered = true"
+  (mouseleave)="isHovered = false"
+>
+  <div class="friend-card__avatar">
+    <img
+      [src]="friend.avatarUrl"
+      alt="Avatar"
+      class="friend-card__avatar-img"
+    />
+  </div>
+
+  <div class="friend-card__info">
+    <div class="friend-card__name">{{ friend.name }}</div>
+  </div>
+
+  <app-friend-action-dropdown
+    [visible]="isHovered"
+    [cardType]="cardType"
+    (viewProfile)="onViewProfile()"
+    (accept)="onAccept()"
+    (decline)="onDecline()"
+    (message)="onMessage()"
+    (unfriend)="onUnfriend()"
+    (addFriend)="onAddFriend()"
+    [friend]="friend"
+  />
+</div>
