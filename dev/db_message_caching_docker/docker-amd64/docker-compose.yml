@@ -12,7 +12,6 @@ services:
       - "3306:3306"
     networks:
       - mynetwork
-
   zookeeper:
     image: zookeeper:3.9.4
     container_name: zookeeper
