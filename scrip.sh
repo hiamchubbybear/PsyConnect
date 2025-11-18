@@ -4,6 +4,11 @@ set -e
 DOCKERHUB_USER="hiamchubbybear"
 VERSION="${1:-latest}"
 
+# Login Docker Hub
+echo "Logging into Docker Hub..."
+echo "dckr_pat_LTuO4LaeRlB2Q3JCxLMKRKdG-Rs" | docker login -u "$DOCKERHUB_USER" --password-stdin
+
+# Danh sách services
 services=("apigateway" "consultationservice" "identityservice" "notificationservice" "profileservice")
 
 for service in "${services[@]}"; do
@@ -17,7 +22,8 @@ for service in "${services[@]}"; do
         case "$choice" in
             y|Y )
                 echo "Rebuilding $service..."
-                docker build -f ./$service/Dockerfile -t "$IMAGE" ..
+                # Build from root context with Dockerfile path
+                docker build -f ./services/$service/Dockerfile -t "$IMAGE" .
                 docker push "$IMAGE"
                 ;;
             * )
@@ -26,7 +32,7 @@ for service in "${services[@]}"; do
         esac
     else
         echo "$IMAGE does not exist. Building..."
-        docker build -f ./$service/Dockerfile -t "$IMAGE" ..
+        docker build -f ./services/$service/Dockerfile -t "$IMAGE" .
         docker push "$IMAGE"
     fi
 done

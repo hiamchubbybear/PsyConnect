@@ -1,0 +1,40 @@
+name: Build & Push Services
+
+on:
+  push:
+    branches:
+      - cicd
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    env:
+      DOCKER_USERNAME: hiamchubbybear
+      DOCKER_PASSWORD: dckr_pat_LTuO4LaeRlB2Q3JCxLMKRKdG-Rs
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Check docker
+        run: |
+          echo "DOCKER_HOST=$DOCKER_HOST"
+          docker info || true
+      - name: Set up Docker (host)
+        run: |
+          echo "Using Docker context:"
+          docker context show
+          docker info
+
+      - name: Login Docker Hub
+        run: |
+          echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+      - name: Build & Push Services
+        run: |
+          services=("apigateway" "consultationservice" "identityservice" "notificationservice" "profileservice")
+          for service in "${services[@]}"; do
+            echo "Building $service..."
+            docker build -f ./services/$service/Dockerfile -t hiamchubbybear/$service:latest .
+            docker push hiamchubbybear/$service:latest
+            echo "Done $service"
+          done

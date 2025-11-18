@@ -6,11 +6,11 @@ RUN apk add --no-cache git
 WORKDIR /app
 
 # Copy go.mod và go.sum của service
-COPY consultationservice/go.mod consultationservice/go.sum ./consultationservice/
+COPY services/consultationservice/go.mod services/consultationservice/go.sum ./consultationservice/
 RUN cd consultationservice && go mod download
 
 # Copy toàn bộ source code service
-COPY consultationservice ./consultationservice
+COPY services/consultationservice ./consultationservice
 
 # Build từ folder service
 WORKDIR /app/consultationservice

@@ -24,8 +24,8 @@ jobs:
 
           for service in "${services[@]}"; do
             echo "Building $service"
-            # context = folder service
-            docker build -t hiamchubbybear/$service:latest ./services/$service
+            # Build from root context with Dockerfile path
+            docker build -f ./services/$service/Dockerfile -t hiamchubbybear/$service:latest .
             docker push hiamchubbybear/$service:latest
             echo "Done $service"
           done

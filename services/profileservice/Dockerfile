@@ -3,14 +3,14 @@ FROM maven:3.9.6-eclipse-temurin-21 AS grpccommon-builder
 WORKDIR /build
 
 # Copy and install parent POM
-COPY pom.xml ./pom.xml
+COPY services/pom.xml ./pom.xml
 RUN mvn -N install -DskipTests && \
     echo "=== Parent POM installed ===" && \
     ls -la /root/.m2/repository/dev/psyconnect/
 
 # Copy grpccommon files
-COPY grpccommon/pom.xml ./grpccommon/pom.xml
-COPY grpccommon/src ./grpccommon/src
+COPY services/grpccommon/pom.xml ./grpccommon/pom.xml
+COPY services/grpccommon/src ./grpccommon/src
 
 # Build and install grpccommon
 RUN mvn -f grpccommon/pom.xml clean install -DskipTests && \
@@ -22,7 +22,7 @@ FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /build
 
 # Copy parent POM and install
-COPY pom.xml ./pom.xml
+COPY services/pom.xml ./pom.xml
 RUN mvn -N install -DskipTests
 
 # Copy Maven repository from stage 1
@@ -34,8 +34,8 @@ RUN echo "=== Checking Maven repository ===" && \
     ls -la /root/.m2/repository/dev/psyconnect/grpccommon/ || echo "grpccommon not found!"
 
 # Copy profileservice files
-COPY profileservice/pom.xml ./profileservice/pom.xml
-COPY profileservice/src ./profileservice/src
+COPY services/profileservice/pom.xml ./profileservice/pom.xml
+COPY services/profileservice/src ./profileservice/src
 
 # Build profileservice with verbose output
 RUN mvn -f profileservice/pom.xml clean package -DskipTests -B -X 2>&1 | tee /tmp/build.log || \
