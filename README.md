@@ -1,5 +1,8 @@
 # PsyConnect
 
+## Build Status
+![Build Status](https://github.com/hiamchubbybear/PsyConnect/actions/workflows/ci.yml/badge.svg)
+
 ## Mental Health Platform Documentation
 
 PsyConnect is a comprehensive mental health platform built with modern microservices architecture, focusing on security, scalability, and user experience.
@@ -14,7 +17,7 @@ PsyConnect is a comprehensive mental health platform built with modern microserv
 - [Development & Deployment](#development-deployment)
 - [Contributing](#contributing)
 
-## 🏗 Architecture Overview 
+## 🏗 Architecture Overview
 
 ### Microservices Architecture
 
@@ -148,4 +151,3 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 - Project Lead: Chessy
 - Email: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)
 - Repository: [github.com/hiamchubbybear/PsyConnect](https://github.com/hiamchubbybear/PsyConnect)
-
