@@ -23,8 +23,9 @@ jobs:
           services=("apigateway" "consultationservice" "identityservice" "notificationservice" "profileservice")
 
           for service in "${services[@]}"; do
-            echo "🚀 Building $service"
-            docker build -t hiamchubbybear/$service:latest services/$service
+            echo "Building $service"
+            # context = folder service
+            docker build -t hiamchubbybear/$service:latest ./services/$service
             docker push hiamchubbybear/$service:latest
-            echo "Done."
+            echo "Done $service"
           done
