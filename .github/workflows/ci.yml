@@ -3,6 +3,7 @@ name: Build & Push Services
 on:
   push:
     branches: ["cicd"]
+    environment: secrets
 
 jobs:
   build:
