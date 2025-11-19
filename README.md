@@ -5,6 +5,7 @@
 | Service | Status | Docker Image |
 |---------|--------|--------------|
 | **API Gateway** | ![API Gateway](https://github.com/hiamchubbybear/psyconnect-dev/actions/workflows/ci-apigateway.yml/badge.svg?branch=cicd) | `hiamchubbybear/apigateway:latest` |
+| **Chat Service** | ![Chat](https://github.com/hiamchubbybear/psyconnect-dev/actions/workflows/ci-chatservice.yml/badge.svg?branch=cicd) | `hiamchubbybear/chatservice:latest` |
 | **Consultation Service** | ![Consultation](https://github.com/hiamchubbybear/psyconnect-dev/actions/workflows/ci-consultationservice.yml/badge.svg?branch=cicd) | `hiamchubbybear/consultationservice:latest` |
 | **Identity Service** | ![Identity](https://github.com/hiamchubbybear/psyconnect-dev/actions/workflows/ci-identityservice.yml/badge.svg?branch=cicd) | `hiamchubbybear/identityservice:latest` |
 | **Notification Service** | ![Notification](https://github.com/hiamchubbybear/psyconnect-dev/actions/workflows/ci-notificationservice.yml/badge.svg?branch=cicd) | `hiamchubbybear/notificationservice:latest` |

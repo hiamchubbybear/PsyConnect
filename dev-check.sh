@@ -76,6 +76,20 @@ set_profile() {
     fi
 }
 
+# Function to switch .env files for Go/Node services
+switch_env_file() {
+    local service_dir=$1
+    local profile=$2  # dev or cicd
+
+    if [ -f "$service_dir/.env.$profile" ]; then
+        rm -f "$service_dir/.env"
+        ln -s ".env.$profile" "$service_dir/.env"
+        echo "   ✅ Switched to $profile profile (.env -> .env.$profile)"
+    else
+        echo "   ⚠️  .env.$profile not found"
+    fi
+}
+
 # Check Java services
 echo "═══════════════════════════════════════"
 echo "🔧 Java/Spring Boot Services"
@@ -118,6 +132,12 @@ for service in consultationservice chatservice loggingservice; do
         if [ -f "$SERVICES_DIR/$service/.env" ]; then
             echo "   ✅ Has .env file"
             echo "   📄 Config: $SERVICES_DIR/$service/.env"
+
+            # Check if it's a symlink
+            if [ -L "$SERVICES_DIR/$service/.env" ]; then
+                target=$(readlink "$SERVICES_DIR/$service/.env")
+                echo "   🔗 Symlink to: $target"
+            fi
         elif [ -f "$SERVICES_DIR/$service/.env.example" ]; then
             echo "   ⚠️  Only .env.example found"
             if [ "$MODE" == "dev" ]; then
@@ -127,6 +147,12 @@ for service in consultationservice chatservice loggingservice; do
         else
             echo "   ❌ No .env file"
         fi
+
+        # Switch profile if mode is dev or cicd
+        if [ "$MODE" == "dev" ] || [ "$MODE" == "cicd" ]; then
+            switch_env_file "$SERVICES_DIR/$service" "$MODE"
+        fi
+
         echo ""
     fi
 done
@@ -140,9 +166,21 @@ if [ -d "$SERVICES_DIR/notificationservice" ]; then
     echo "📦 Notification Service:"
     if [ -f "$SERVICES_DIR/notificationservice/.env" ]; then
         echo "   ✅ Has .env file"
+
+        # Check if it's a symlink
+        if [ -L "$SERVICES_DIR/notificationservice/.env" ]; then
+            target=$(readlink "$SERVICES_DIR/notificationservice/.env")
+            echo "   🔗 Symlink to: $target"
+        fi
     else
         echo "   ⚠️  No .env file"
     fi
+
+    # Switch profile if mode is dev or cicd
+    if [ "$MODE" == "dev" ] || [ "$MODE" == "cicd" ]; then
+        switch_env_file "$SERVICES_DIR/notificationservice" "$MODE"
+    fi
+
     echo ""
 fi
 
