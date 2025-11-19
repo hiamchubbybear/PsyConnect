@@ -24,7 +24,6 @@ target/
 *.out
 *.test
 /vendor/
-go.sum
 go.work
 go.work.sum
 $GOPATH/pkg/

@@ -1,0 +1,30 @@
+name: CI - Consultation Service
+
+on:
+  push:
+    branches: ["cicd"]
+    paths:
+      - 'services/consultationservice/**'
+      - '.github/workflows/ci-consultationservice.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: hiamchubbybear
+          password: dckr_pat_LTuO4LaeRlB2Q3JCxLMKRKdG-Rs
+
+      - name: Build & Push Consultation Service
+        run: |
+          echo "Building Consultation Service..."
+          docker build -f ./services/consultationservice/Dockerfile -t hiamchubbybear/consultationservice:latest .
+          docker push hiamchubbybear/consultationservice:latest
+          echo "Consultation Service build complete"

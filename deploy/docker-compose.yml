@@ -1,0 +1,157 @@
+services:
+  apigateway:
+    image: hiamchubbybear/apigateway:latest
+    ports:
+      - "8888:8888"
+    environment:
+      - BOOTSTRAP_ADDRESS=kafka:9092
+
+  identityservice:
+    image: hiamchubbybear/identityservice:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  profileservice:
+    image: hiamchubbybear/profileservice:latest
+    ports:
+      - "8081:8081"
+    depends_on:
+      # neo4j:
+      #   condition: service_healthy
+      db:
+        condition: service_healthy
+  notificationservice:
+    image: hiamchubbybear/notificationservice:latest
+    ports:
+      - "8082:8082"
+
+  consultationservice:
+    image: hiamchubbybear/consultationservice:latest
+    ports:
+      - "8084:8084"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  # -------------------------
+  # DATABASES
+  # -------------------------
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: identityservice
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../dev/db_message_caching_docker/mysql-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mongodb:
+    image: mongo:7
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: consultationservice
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  neo4j:
+    image: neo4j:5
+    restart: always
+    environment:
+      NEO4J_AUTH: neo4j/12345678
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "12345678", "RETURN 1;"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  zookeeper:
+    image: zookeeper:latest
+    restart: always
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+      ZOO_HEAP_SIZE: 1G
+    ports:
+      - "2181:2181"
+    healthcheck:
+      test: ["CMD", "zkServer.sh", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.0
+    restart: always
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: "-Xms1G -Xmx2G"
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD-SHELL", "cub kafka-ready -b localhost:9092 1 20 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:4.0.1
+    platform: linux/amd64
+    restart: always
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+      SERVER_PORT: 9000
+    command:
+      - "--message.format=AVRO"
+
+
+  dozzle:
+    image: amir20/dozzle:latest
+    ports:
+      - "9999:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  mysql_data:
+  mongo_data:
+  neo4j_data:
+  neo4j_logs:

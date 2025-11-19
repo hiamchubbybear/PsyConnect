@@ -1,8 +1,7 @@
-version: '3.8'
-
 services:
-
+  # API Gateway
   apigateway:
+
     build:
       context: .
       dockerfile: ./apigateway/Dockerfile
@@ -17,32 +16,18 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-
+  # Identity Service
   identityservice:
     build:
       context: ./
       dockerfile: ./identityservice/Dockerfile.debug
     container_name: identityservice
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/identityservice
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD_IDENTITY_SERVICE}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      MAIL_USERNAME: ${MAIL_USERNAME}
-      MAIL_PASSWORD: ${MAIL_PASSWORD}
-      JWT_SIGNER_KEY: ${JWT_SIGNER_KEY}
-      BOOTSTRAP_ADDRESS: kafka:9092
-      GRPC_PORT: ${GRPC_PORT}
-      REDIS_PORT: ${REDIS_PORT}
     ports:
       - "8080:8080"
     depends_on:
       db:
         condition: service_started
       redis:
-        condition: service_started
-      kafka:
         condition: service_started
       profileservice:
         condition: service_started
@@ -54,6 +39,8 @@ services:
       - .env
     restart: unless-stopped
 
+
+  # Profile Service
   profileservice:
     build:
       context: .
@@ -62,14 +49,12 @@ services:
     environment:
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: ${NEO4J_PASSWORD_PROFILE_SERVICE}
+      NEO4J_PASSWORD: 12345678
       BOOTSTRAP_ADDRESS: kafka:9092
     ports:
       - "8081:8081"
     depends_on:
       neo4j:
-        condition: service_started
-      kafka:
         condition: service_started
     networks:
       - psyconnect-network
@@ -77,12 +62,13 @@ services:
       - .env
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health" ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
 
+  # Notification Service
   notificationservice:
     build:
       context: .
@@ -96,21 +82,14 @@ services:
       - .env
     restart: unless-stopped
 
+  # Consultation Service (Go)
   consultationservice:
     build:
       context: ./consultationservice
       dockerfile: ./Dockerfile
     container_name: consultation_service
     ports:
-      - "${SERVICE_PORT:-8083}:${SERVICE_PORT:-8083}"
-    environment:
-      SERVICE_ENV: ${SERVICE_ENV:-development}
-      SERVICE_PORT: ${SERVICE_PORT:-8083}
-      DB_HOST: ${DB_HOST:-mongodb}
-      DB_PORT: ${DB_PORT:-27017}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_NAME: ${DB_NAME:-consultation}
+      - "8083:8083"
     depends_on:
       mongodb:
         condition: service_started
@@ -118,14 +97,15 @@ services:
       - psyconnect-network
     restart: unless-stopped
 
+  # MongoDB
   mongodb:
     image: mongo:7
     container_name: mongodb
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+      MONGO_INITDB_ROOT_USERNAME: consultationservice
+      MONGO_INITDB_ROOT_PASSWORD: 123456
     volumes:
       - mongo_data:/data/db
     networks:
@@ -138,12 +118,13 @@ services:
       retries: 5
       start_period: 40s
 
+  # MySQL
   db:
     image: mysql:8
     container_name: mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD_IDENTITY_SERVICE}
+      MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: identityservice
     ports:
       - "3306:3306"
@@ -153,21 +134,19 @@ services:
     networks:
       - psyconnect-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD_IDENTITY_SERVICE}" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "mysql", "-uroot", "-p123456"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
 
+  # Neo4j
   neo4j:
     image: neo4j:5
     container_name: neo4j
     restart: unless-stopped
     environment:
-      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD_PROFILE_SERVICE}
-      NEO4J_dbms_memory_pagecache_size: 512M
-      NEO4J_dbms_memory_heap_initial__size: 512M
-      NEO4J_dbms_memory_heap_max__size: 1G
+      NEO4J_AUTH: neo4j/12345678
     ports:
       - "7474:7474"
       - "7687:7687"
@@ -176,12 +155,13 @@ services:
     networks:
       - psyconnect-network
     healthcheck:
-      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1" ]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
 
+  # Redis
   redis:
     image: redis:7-alpine
     container_name: redis
@@ -193,41 +173,22 @@ services:
     networks:
       - psyconnect-network
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 3s
       retries: 5
     command: redis-server --appendonly yes
 
-  zookeeper:
-    image: zookeeper
-    container_name: zookeeper
-    restart: always
-    environment:
-      ALLOW_ANONYMOUS_LOGIN: "yes"
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
     ports:
-      - "2181:2181"
+      - "9999:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - psyconnect-network
-
-  kafka:
-    image: confluentinc/cp-kafka:7.3.0
-    container_name: kafka
-    restart: always
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    depends_on:
-      - zookeeper
-    networks:
-      - psyconnect-network
-
+    restart: unless-stopped
 volumes:
   db-data:
     driver: local
