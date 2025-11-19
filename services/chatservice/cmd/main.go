@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 
 	"chatservice/bootstrap"
 	"chatservice/internal/db"
 	"chatservice/internal/handler"
 	"chatservice/internal/repository"
-	"chatservice/internal/route"
 	"chatservice/internal/ws"
 	"chatservice/internal/ws/middleware"
 
