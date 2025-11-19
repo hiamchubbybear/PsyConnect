@@ -1,7 +1,7 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY services/notificationservice/package*.json ./
-RUN npm ci --only=production
+RUN npm install --production
 COPY services/notificationservice .
 FROM node:18-alpine
 WORKDIR /app
