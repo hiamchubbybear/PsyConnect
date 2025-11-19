@@ -21,7 +21,7 @@ var (
 
 func InitDB() *mongo.Client {
 	once.Do(func() {
-		err := gotenv.Load("../.env")
+		err := gotenv.Load(".env")
 
 		dbUser := os.Getenv("DB_USER")
 		dbPass := os.Getenv("DB_PASS")

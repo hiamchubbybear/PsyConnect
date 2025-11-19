@@ -4,7 +4,7 @@
 
 set -e
 
-SERVICES_DIR="services"
+SERVICES_DIR="../services"
 MODE="${1:-check}"  # check, dev, cicd
 
 echo "🔍 Checking application configs..."
@@ -113,9 +113,9 @@ fi
 
 # Profile Service
 if [ -d "$SERVICES_DIR/profileservice" ]; then
-    check_service_config "Profile Service" "$SERVICES_DIR/profileservice/src/main/application.properties"
+    check_service_config "Profile Service" "$SERVICES_DIR/profileservice/src/main/resources/application.properties"
     if [ "$MODE" != "check" ]; then
-        set_profile "$SERVICES_DIR/profileservice/src/main/application.properties" "$MODE"
+        set_profile "$SERVICES_DIR/profileservice/src/main/resources/application.properties" "$MODE"
     fi
 fi
 

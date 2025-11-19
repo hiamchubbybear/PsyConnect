@@ -24,7 +24,7 @@ public class KafkaProducerConfig {
     public ConsumerFactory<String, String> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(Map.of(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "kafka:9092",
+                bootstrapAddress,
                 ConsumerConfig.GROUP_ID_CONFIG,
                 "identity-service",
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,

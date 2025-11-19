@@ -21,7 +21,6 @@ spring:
             allowCredentials: false
       routes:
         - id: public_routes
-        #   uri: http://localhost:8080
           uri: identityservice
           predicates:
             - Path=/auth/login,/auth/register
@@ -30,37 +29,31 @@ spring:
             - RemoveRequestHeader=Forwarded
 
         - id: identity_service
-        #   uri: http://localhost:8080
           uri: identityservice
           predicates:
             - Path=/identity/**,/auth/**,/oauth2/**,/account/**,/v1/identity/**,/v1/auth/**
 
         - id: profile_service
-        #   uri: http://localhost:8081
           uri: profileservice
           predicates:
             - Path=/profile/**,/profile/friends/**,/mood/**,/user-setting/**,/v1/profile/**,/v1/profile/friends/**,/v1/mood/**,/v1/user-setting/**
 
         - id: notification_service
-        #   uri: http://localhost:8082
           uri: notificationservice
           predicates:
             - Path=/noti/**
 
         - id: chat_service
-        #   uri: http://localhost:8083
           uri: chatservice
           predicates:
             - Path=/chats/**,/conversations/**
 
         - id: consultation_service
-        #   uri: http://localhost:8084
           uri: consultationservice
           predicates:
             - Path=/consultation/**,/v1/consultation/**
 
         - id: static_delete_data
-        #   uri: forward:/delete-data.html
           uri: apigateway
           predicates:
             - Path=/delete-data
