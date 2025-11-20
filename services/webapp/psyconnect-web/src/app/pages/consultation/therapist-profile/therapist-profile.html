@@ -1,0 +1,266 @@
+<div class="therapist-profile">
+  <div class="therapist-profile__header">
+    <h1 class="therapist-profile__title">
+      {{ (isEditMode ? 'CONSULTATION.THERAPIST.Update' : 'CONSULTATION.THERAPIST.Create') | translate }}
+    </h1>
+    <p class="therapist-profile__subtitle">
+      {{ 'CONSULTATION.THERAPIST.ProfessionalInfo' | translate }}
+    </p>
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form" *ngIf="!loading">
+    <!-- Basic Information -->
+    <section class="form-section">
+      <h2 class="form-section__title">{{ 'COMMON.BasicInfo' | translate }}</h2>
+
+      <div class="form-group">
+        <label for="name" class="form-label">
+          {{ 'COMMON.Name' | translate }} <span class="required">*</span>
+        </label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          class="form-input"
+          [class.error]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched"
+        />
+        <span class="error-message" *ngIf="getErrorMessage('name')">
+          {{ getErrorMessage('name') }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="address" class="form-label">
+          {{ 'COMMON.Address' | translate }} <span class="required">*</span>
+        </label>
+        <input
+          id="address"
+          type="text"
+          formControlName="address"
+          class="form-input"
+          [class.error]="profileForm.get('address')?.invalid && profileForm.get('address')?.touched"
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="experience" class="form-label">
+            {{ 'CONSULTATION.THERAPIST.ExperienceYears' | translate }} <span class="required">*</span>
+          </label>
+          <input
+            id="experience"
+            type="number"
+            formControlName="experience"
+            class="form-input"
+            min="0"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="currency" class="form-label">
+            {{ 'CONSULTATION.THERAPIST.Currency' | translate }} <span class="required">*</span>
+          </label>
+          <select id="currency" formControlName="currency" class="form-select">
+            <option value="USD">USD</option>
+            <option value="VND">VND</option>
+            <option value="EUR">EUR</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="price" class="form-label">
+            {{ 'CONSULTATION.THERAPIST.Price' | translate }} <span class="required">*</span>
+          </label>
+          <input
+            id="price"
+            type="number"
+            formControlName="rage_price"
+            class="form-input"
+            min="0"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Professional Information -->
+    <section class="form-section" formGroupName="professional_info">
+      <h2 class="form-section__title">{{ 'CONSULTATION.THERAPIST.ProfessionalInfo' | translate }}</h2>
+
+      <div class="form-group" formGroupName="title">
+        <label for="title" class="form-label">
+          {{ 'COMMON.Title' | translate }} <span class="required">*</span>
+        </label>
+        <select
+          id="title"
+          formControlName="code"
+          class="form-select"
+          (change)="onTitleChange($event)"
+        >
+          <option value="">Select a title</option>
+          <option *ngFor="let title of professionalTitles" [value]="title.code">
+            {{ title.code }} - {{ title.display }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Degrees -->
+      <div class="form-group">
+        <label class="form-label">{{ 'CONSULTATION.THERAPIST.Degrees' | translate }}</label>
+        <div formArrayName="degrees">
+          <div
+            *ngFor="let degree of degrees.controls; let i = index"
+            [formGroupName]="i"
+            class="array-item"
+          >
+            <div class="form-row">
+              <input formControlName="type" placeholder="Degree Type" class="form-input" />
+              <input formControlName="field" placeholder="Field of Study" class="form-input" />
+              <input formControlName="institution" placeholder="Institution" class="form-input" />
+              <input formControlName="year" type="number" placeholder="Year" class="form-input" />
+              <button type="button" class="btn-remove" (click)="removeDegree(i)">✕</button>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-add" (click)="addDegree()">
+          + {{ 'COMMON.Add' | translate }} {{ 'CONSULTATION.THERAPIST.Degrees' | translate }}
+        </button>
+      </div>
+
+      <!-- Certifications -->
+      <div class="form-group">
+        <label class="form-label">{{ 'CONSULTATION.THERAPIST.Certifications' | translate }}</label>
+        <div formArrayName="certifications">
+          <div
+            *ngFor="let cert of certifications.controls; let i = index"
+            [formGroupName]="i"
+            class="array-item"
+          >
+            <div class="form-row">
+              <input formControlName="name" placeholder="Certification Name" class="form-input" />
+              <input formControlName="issuer" placeholder="Issuer" class="form-input" />
+              <input formControlName="year" type="number" placeholder="Year" class="form-input" />
+              <button type="button" class="btn-remove" (click)="removeCertification(i)">✕</button>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-add" (click)="addCertification()">
+          + {{ 'COMMON.Add' | translate }} {{ 'CONSULTATION.THERAPIST.Certifications' | translate }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Languages & Specialization -->
+    <section class="form-section">
+      <h2 class="form-section__title">{{ 'CONSULTATION.THERAPIST.Specialization' | translate }}</h2>
+
+      <div class="form-group">
+        <label class="form-label">
+          {{ 'CONSULTATION.THERAPIST.Languages' | translate }} <span class="required">*</span>
+        </label>
+        <div class="checkbox-grid">
+          <label *ngFor="let lang of languages" class="checkbox-label">
+            <input
+              type="checkbox"
+              [value]="lang.value"
+              [checked]="profileForm.value.languages?.includes(lang.value)"
+              (change)="toggleLanguage(lang.value, $any($event.target).checked)"
+            />
+            {{ lang.label }}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          {{ 'CONSULTATION.THERAPIST.Specialization' | translate }} <span class="required">*</span>
+        </label>
+        <div class="checkbox-grid">
+          <label *ngFor="let spec of specializations" class="checkbox-label">
+            <input
+              type="checkbox"
+              [value]="spec.value"
+              [checked]="profileForm.value.specialization?.includes(spec.value)"
+              (change)="toggleSpecialization(spec.value, $any($event.target).checked)"
+            />
+            {{ spec.label }}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          {{ 'CONSULTATION.THERAPIST.ConsultationModes' | translate }} <span class="required">*</span>
+        </label>
+        <div class="checkbox-grid">
+          <label *ngFor="let mode of consultationModes" class="checkbox-label">
+            <input
+              type="checkbox"
+              [value]="mode.value"
+              [checked]="profileForm.value.consultation_modes?.includes(mode.value)"
+              (change)="toggleConsultationMode(mode.value, $any($event.target).checked)"
+            />
+            {{ mode.label }}
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Availability -->
+    <section class="form-section" formGroupName="availability">
+      <h2 class="form-section__title">{{ 'CONSULTATION.THERAPIST.Availability' | translate }}</h2>
+
+      <div class="form-group">
+        <label class="form-label">
+          {{ 'COMMON.Days' | translate }} <span class="required">*</span>
+        </label>
+        <div class="checkbox-grid">
+          <label *ngFor="let day of weekdays" class="checkbox-label">
+            <input
+              type="checkbox"
+              [value]="day.value"
+              [checked]="profileForm.value.availability?.days?.includes(day.value)"
+              (change)="toggleDay(day.value, $any($event.target).checked)"
+            />
+            {{ day.label }}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          {{ 'COMMON.TimeSlots' | translate }} <span class="required">*</span>
+        </label>
+        <div class="checkbox-grid">
+          <label *ngFor="let slot of timeSlots" class="checkbox-label">
+            <input
+              type="checkbox"
+              [value]="slot.value"
+              [checked]="profileForm.value.availability?.time_slots?.includes(slot.value)"
+              (change)="toggleTimeSlot(slot.value, $any($event.target).checked)"
+            />
+            {{ slot.label }}
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="loading">
+        {{ 'COMMON.Cancel' | translate }}
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="loading || profileForm.invalid">
+        <span *ngIf="!loading">
+          {{ (isEditMode ? 'COMMON.Update' : 'COMMON.Create') | translate }}
+        </span>
+        <span *ngIf="loading">{{ 'COMMON.Loading' | translate }}</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>{{ 'COMMON.Loading' | translate }}</p>
+  </div>
+</div>

@@ -142,3 +142,66 @@ export const PROFESSIONAL_TITLES = [
   { code: 'MSW', display: 'Master of Social Work' },
   { code: 'MA', display: 'Master of Arts (Counseling/Psychology)' }
 ];
+
+// Session Models
+export interface Session {
+  session_id: string;
+  therapist_id: string;
+  client_id: string;
+  mode: string;
+  start_time: string;
+  end_time: string;
+  status: string;
+  price: number;
+  created_at: string;
+}
+
+export interface SessionRequest {
+  clientID: string;
+  therapistID: string;
+  sessionTime: string;
+  mode: string;
+  price: number;
+}
+
+export interface DeleteSessionRequest {
+  sessionID: string;
+}
+
+// Matching Models
+export interface MatchRequest {
+  client_id?: string;
+  therapist_id?: string;
+  preferences?: any;
+}
+
+export interface MatchResponse {
+  match_id: string;
+  client_id: string;
+  therapist_id: string;
+  match_score: number;
+  created_at: string;
+}
+
+// Social Models
+export interface Follow {
+  follower_id: string;
+  following_id: string;
+  created_at: string;
+}
+
+export interface Bookmark {
+  user_id: string;
+  post_id: string;
+  created_at: string;
+}
+
+export interface FollowersResponse {
+  followers: string[];
+  total: number;
+}
+
+export interface FollowingResponse {
+  following: string[];
+  total: number;
+}

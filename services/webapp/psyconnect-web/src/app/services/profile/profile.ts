@@ -28,6 +28,18 @@ export class Profile {
       headers,
     });
   }
+
+  getProfileById(userId: string): Observable<ProfileResponse> {
+    const token = this.auth.getToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.get<ProfileResponse>(`${this.apiUrl}/${this.apiVersion}/profile/${userId}`, {
+      headers,
+    });
+  }
+
   updateProfile(
     updateProfile: UserProfileUpdateRequest
   ): Observable<ProfileUpdateResponse> {

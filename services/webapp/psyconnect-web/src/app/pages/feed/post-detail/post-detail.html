@@ -1,0 +1,238 @@
+<!-- Post Detail View -->
+<div class="post-detail" *ngIf="post">
+  <!-- Header -->
+  <div class="post-detail__header">
+    <button class="btn-back-modern" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <h1 class="header-title">{{ 'POST.Detail' | translate }}</h1>
+  </div>
+
+  <!-- Post Content -->
+  <article class="post-content">
+    <header class="post-content__header">
+      <div class="post-meta">
+        <span class="post-type">{{ ('POST.Types.' + post.post_type) | translate }}</span>
+        <span class="post-date">{{ formatTime(post.created_at) }}</span>
+      </div>
+
+
+      <!-- Author Info with Hover Card -->
+      <div class="post-author-container">
+        <div
+          class="post-author-wrapper"
+          (mouseenter)="showAuthorCardWithDelay(post.author_id)"
+          (mouseleave)="hideAuthorCard()"
+        >
+          <div class="post-author-avatar">
+            <img *ngIf="authorProfile?.avatarUri" [src]="authorProfile.avatarUri" [alt]="getAuthorName()" />
+            <div *ngIf="!authorProfile?.avatarUri" class="avatar-placeholder">
+              {{ getAuthorName().charAt(0).toUpperCase() }}
+            </div>
+          </div>
+          <span class="post-author-name">{{ getAuthorName() }}</span>
+        </div>
+
+        <!-- Author Profile Card -->
+        <div class="author-card"
+             *ngIf="showAuthorCard && authorProfile && hoveredUserId === post.author_id"
+             (mouseenter)="showAuthorCardWithDelay(post.author_id)"
+             (mouseleave)="hideAuthorCard()">
+          <div class="author-card__cover"></div>
+
+          <div class="author-card__avatar-wrapper">
+            <div class="author-card__avatar">
+              <img *ngIf="authorProfile.avatarUri" [src]="authorProfile.avatarUri" [alt]="getAuthorName()" />
+              <div *ngIf="!authorProfile.avatarUri" class="avatar-placeholder">
+                {{ getAuthorName().charAt(0).toUpperCase() }}
+              </div>
+            </div>
+          </div>
+
+          <div class="author-card__content">
+            <div class="author-card__header">
+              <h4 class="author-card__name">{{ getAuthorName() }}</h4>
+              <span class="author-card__username">@{{ authorProfile.username || post.author_id }}</span>
+            </div>
+
+            <p class="author-card__bio" *ngIf="authorProfile.bio || authorProfile.address">
+              {{ authorProfile.bio || authorProfile.address }}
+            </p>
+
+            <div class="author-card__details">
+              <div class="author-card__detail-item" *ngIf="authorProfile.address">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ authorProfile.address }}</span>
+              </div>
+              <div class="author-card__detail-item" *ngIf="authorProfile.gender">
+                <i class="fas fa-user"></i>
+                <span>{{ authorProfile.gender }}</span>
+              </div>
+              <div class="author-card__detail-item" *ngIf="authorProfile.dob">
+                <i class="fas fa-birthday-cake"></i>
+                <span>{{ authorProfile.dob }}</span>
+              </div>
+            </div>
+
+            <div class="author-card__actions">
+              <a [routerLink]="['/profile', post.author_id]" class="author-card__btn author-card__btn--primary">
+                View Profile
+              </a>
+              <button class="author-card__btn author-card__btn--secondary">
+                Message
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h1 class="post-title">{{ post.title }}</h1>
+
+      <!-- Tags -->
+      <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+        <span *ngFor="let tag of post.tags" class="tag">#{{ tag }}</span>
+      </div>
+    </header>
+
+    <!-- Media -->
+    <div class="post-media" *ngIf="post.media && post.media.length > 0">
+      <div *ngFor="let media of post.media" class="media-item">
+        <img *ngIf="media.type === 'image'" [src]="media.url" [alt]="media.caption || post.title" />
+        <video *ngIf="media.type === 'video'" [src]="media.url" controls></video>
+        <p *ngIf="media.caption" class="media-caption">{{ media.caption }}</p>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="post-body" [innerHTML]="post.content"></div>
+
+    <!-- Categories -->
+    <div class="post-categories" *ngIf="post.categories && post.categories.length > 0">
+      <span class="category-label">{{ 'POST.Categories' | translate }}:</span>
+      <span *ngFor="let category of post.categories" class="category">{{ category }}</span>
+    </div>
+
+    <!-- Engagement Stats -->
+    <div class="post-stats">
+      <span class="stat">
+        <span class="stat-icon">👁️</span>
+        <span class="stat-count">{{ post.view_count }}</span>
+      </span>
+      <span class="stat">
+        <span class="stat-icon">❤️</span>
+        <span class="stat-count">{{ post.like_count }}</span>
+      </span>
+      <span class="stat">
+        <span class="stat-icon">💬</span>
+        <span class="stat-count">{{ post.comment_count }}</span>
+      </span>
+      <span class="stat">
+        <span class="stat-icon">🔄</span>
+        <span class="stat-count">{{ post.share_count }}</span>
+      </span>
+    </div>
+
+    <!-- Actions -->
+    <div class="post-actions">
+      <div class="reaction-container">
+        <button class="action-btn" (click)="toggleReactionPicker($event)">
+          <span>❤️</span> {{ 'NEWSFEED.Reactions.Like' | translate }}
+        </button>
+
+        <div class="reaction-picker" *ngIf="showReactionPicker">
+          <button
+            *ngFor="let type of getReactionKeys()"
+            class="reaction-option"
+            (click)="addReaction(type, $event)"
+          >
+            {{ getReactionEmoji(type) }}
+          </button>
+        </div>
+      </div>
+
+      <button class="action-btn" (click)="toggleBookmark()">
+        <span>{{ isBookmarked ? '🔖' : '📑' }}</span>
+        {{ (isBookmarked ? 'CONSULTATION.SOCIAL.Bookmarked' : 'CONSULTATION.SOCIAL.Bookmark') | translate }}
+      </button>
+
+      <button class="action-btn" (click)="sharePost()">
+        <span>🔄</span> {{ 'CONSULTATION.SOCIAL.Share' | translate }}
+      </button>
+    </div>
+  </article>
+
+  <!-- Comments Section -->
+  <section class="comments-section">
+    <h2 class="comments-title">
+      {{ 'POST.Comments.Title' | translate }} ({{ post.comment_count }})
+    </h2>
+
+    <!-- Comment Form -->
+    <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
+      <textarea
+        formControlName="content"
+        class="comment-input"
+        [placeholder]="'POST.Comments.Placeholder' | translate"
+        rows="3"
+      ></textarea>
+      <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="commentForm.invalid || submittingComment"
+      >
+        {{ submittingComment ? ('COMMON.Loading' | translate) : ('POST.Comments.Submit' | translate) }}
+      </button>
+    </form>
+
+    <!-- Comments List -->
+    <div class="comments-list">
+      <div *ngFor="let comment of comments" class="comment">
+        <div class="comment-header">
+          <div
+            class="comment-author-wrapper"
+            (mouseenter)="comment.author_id && showAuthorCardWithDelay(comment.author_id)"
+            (mouseleave)="hideAuthorCard()"
+          >
+            <div class="comment-avatar">
+              {{ (getUserName(comment.author_id) || '?').charAt(0).toUpperCase() }}
+            </div>
+            <span class="comment-author">{{ getUserName(comment.author_id) || 'Unknown' }}</span>
+          </div>
+          <span class="comment-date">{{ formatTime(comment.created_at) }}</span>
+
+          <!-- Comment Author Card -->
+          <div class="author-card" *ngIf="comment.author_id && showAuthorCard && hoveredUserId === comment.author_id">
+            <div class="author-card__avatar">
+              <img *ngIf="profileCache.get(comment.author_id)?.avatarUri"
+                   [src]="profileCache.get(comment.author_id).avatarUri"
+                   [alt]="getUserName(comment.author_id)" />
+              <div *ngIf="!profileCache.get(comment.author_id)?.avatarUri" class="avatar-placeholder">
+                {{ (getUserName(comment.author_id) || '?').charAt(0).toUpperCase() }}
+              </div>
+            </div>
+            <div class="author-card__info">
+              <h4 class="author-card__name">{{ getUserName(comment.author_id) }}</h4>
+              <p class="author-card__bio" *ngIf="profileCache.get(comment.author_id)?.address">
+                {{ profileCache.get(comment.author_id).address }}
+              </p>
+              <div class="author-card__stats" *ngIf="profileCache.get(comment.author_id)?.gender">
+                <span>{{ profileCache.get(comment.author_id).gender }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="comment-content">{{ comment.content }}</p>
+      </div>
+
+      <div *ngIf="!comments || comments.length === 0" class="no-comments">
+        {{ 'POST.Comments.NoComments' | translate }}
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Error State -->
+<div *ngIf="error" class="error-state">
+  <p>{{ error }}</p>
+  <button class="btn-retry" (click)="goBack()">{{ 'COMMON.Back' | translate }}</button>
+</div>

@@ -1,0 +1,143 @@
+<div class="create-post">
+  <div class="create-post__header">
+    <h1 class="create-post__title">{{ 'POST.Create.Title' | translate }}</h1>
+    <p class="create-post__subtitle">{{ 'POST.Create.Subtitle' | translate }}</p>
+  </div>
+
+  <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="create-post__form">
+    <!-- Post Type Selection -->
+    <div class="form-group">
+      <label class="form-label">{{ 'POST.Create.Type' | translate }}</label>
+      <div class="post-type-selector">
+        <label *ngFor="let type of postTypes" class="post-type-option">
+          <input
+            type="radio"
+            [value]="type.value"
+            formControlName="post_type"
+            class="post-type-radio"
+          />
+          <span class="post-type-label">{{ type.labelKey | translate }}</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="form-group">
+      <label for="title" class="form-label">
+        {{ 'POST.Create.TitleLabel' | translate }} <span class="required">*</span>
+      </label>
+      <input
+        id="title"
+        type="text"
+        formControlName="title"
+        class="form-input"
+        [placeholder]="'POST.Create.TitlePlaceholder' | translate"
+        [class.error]="postForm.get('title')?.invalid && postForm.get('title')?.touched"
+      />
+      <span class="error-message" *ngIf="getErrorMessage('title')">
+        {{ getErrorMessage('title') }}
+      </span>
+    </div>
+
+    <!-- Content -->
+    <div class="form-group">
+      <label for="content" class="form-label">
+        {{ 'POST.Create.ContentLabel' | translate }} <span class="required">*</span>
+      </label>
+      <textarea
+        id="content"
+        formControlName="content"
+        class="form-textarea"
+        rows="12"
+        [placeholder]="'POST.Create.ContentPlaceholder' | translate"
+        [class.error]="postForm.get('content')?.invalid && postForm.get('content')?.touched"
+      ></textarea>
+      <span class="error-message" *ngIf="getErrorMessage('content')">
+        {{ getErrorMessage('content') }}
+      </span>
+    </div>
+
+    <!-- Tags -->
+    <div class="form-group">
+      <label for="tags" class="form-label">{{ 'POST.Create.Tags' | translate }}</label>
+      <input
+        id="tags"
+        type="text"
+        formControlName="tags"
+        class="form-input"
+        [placeholder]="'POST.Create.TagsPlaceholder' | translate"
+      />
+      <small class="form-hint">{{ 'POST.Create.TagsHint' | translate }}</small>
+    </div>
+
+    <!-- Categories -->
+    <div class="form-group">
+      <label for="categories" class="form-label">{{ 'POST.Create.Categories' | translate }}</label>
+      <input
+        id="categories"
+        type="text"
+        formControlName="categories"
+        class="form-input"
+        [placeholder]="'POST.Create.CategoriesPlaceholder' | translate"
+      />
+      <small class="form-hint">{{ 'POST.Create.CategoriesHint' | translate }}</small>
+    </div>
+
+    <!-- Media Upload -->
+    <div class="form-group">
+      <label class="form-label">{{ 'POST.Create.Media' | translate }}</label>
+      <div class="media-upload">
+        <input
+          type="file"
+          #fileInput
+          (change)="onFileSelected($event)"
+          accept="image/*,video/*"
+          multiple
+          style="display: none"
+        />
+        <button
+          type="button"
+          class="btn-upload"
+          (click)="fileInput.click()"
+          [disabled]="selectedFiles.length >= 5"
+        >
+          <span>📎</span>
+          {{ 'POST.Create.AddMedia' | translate }}
+        </button>
+        <small class="form-hint">{{ 'POST.Create.MediaHint' | translate }}</small>
+      </div>
+
+      <!-- File Previews -->
+      <div class="media-previews" *ngIf="selectedFiles.length > 0">
+        <div *ngFor="let file of selectedFiles; let i = index" class="media-preview">
+          <img *ngIf="previewUrls[i]" [src]="previewUrls[i]" alt="Preview" class="preview-image" />
+          <div *ngIf="!previewUrls[i]" class="preview-file">
+            <span>📄 {{ file.name }}</span>
+          </div>
+          <button type="button" class="btn-remove" (click)="removeFile(i)">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visibility -->
+    <div class="form-group">
+      <label class="form-label">{{ 'POST.Create.Visibility' | translate }}</label>
+      <select formControlName="visibility" class="form-select">
+        <option *ngFor="let option of visibilityOptions" [value]="option.value">
+          {{ option.labelKey | translate }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" (click)="cancel()" [disabled]="loading">
+        {{ 'COMMON.Cancel' | translate }}
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="loading || postForm.invalid">
+        <span *ngIf="!loading">{{ 'POST.Create.Publish' | translate }}</span>
+        <span *ngIf="loading">{{ 'COMMON.Loading' | translate }}</span>
+      </button>
+    </div>
+  </form>
+</div>

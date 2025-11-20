@@ -7,6 +7,22 @@
   <div class="grid">
     <!-- MAIN FEED -->
     <main class="feed-main">
+      <!-- Feed Type Switcher -->
+      <div class="feed-switcher">
+        <button
+          class="feed-tab"
+          [class.active]="feedType === 'all'"
+          (click)="switchFeed('all')">
+          {{ "NEWSFEED.FeedTypes.All" | translate }}
+        </button>
+        <button
+          class="feed-tab"
+          [class.active]="feedType === 'trending'"
+          (click)="switchFeed('trending')">
+          {{ "NEWSFEED.FeedTypes.Trending" | translate }}
+        </button>
+      </div>
+
       <!-- Mood card -->
       <div class="mood-card card">
         <h3>{{ "FEED.Mood.Title" | translate }}</h3>
@@ -26,37 +42,143 @@
         </button>
       </div>
 
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>{{ "COMMON.Loading" | translate }}</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !loading" class="error-state">
+        <p>{{ error }}</p>
+        <button class="btn btn--primary" (click)="loadFeed()">
+          {{ "NEWSFEED.RetryLoad" | translate }}
+        </button>
+      </div>
+
       <!-- Posts -->
-      <section class="posts">
+      <section class="posts" *ngIf="!loading && !error">
         <article class="post-card card" *ngFor="let p of posts">
           <header class="post-head">
             <div class="avatar">
-              <img [src]="p.avatar" alt="{{ p.author }}" />
-            </div>
-            <div class="meta">
-              <div class="author">
-                {{ p.author }} <span class="role">{{ p.role }}</span>
+              <div class="avatar-placeholder">
+                {{ getUserName(p.author_id).charAt(0).toUpperCase() }}
               </div>
-              <div class="time">{{ p.time }}</div>
+            </div>
+            <div class="meta"
+                 (mouseenter)="showAuthorCardWithDelay(p.id, p.author_id)"
+                 (mouseleave)="hideAuthorCard(p.id)"
+                 style="position: relative; cursor: pointer;">
+              <div class="author">
+                {{ getUserName(p.author_id) }}
+              </div>
+              <div class="time">{{ formatTime(p.created_at) }}</div>
+
+              <!-- Author Profile Card -->
+              <div class="author-card" *ngIf="showAuthorCard[p.id] && hoveredUserId === p.author_id">
+                <div class="author-card__cover"></div>
+
+                <div class="author-card__avatar-wrapper">
+                  <div class="author-card__avatar">
+                    <img *ngIf="profileCache.get(p.author_id)?.avatarUri"
+                         [src]="profileCache.get(p.author_id).avatarUri"
+                         [alt]="getUserName(p.author_id)" />
+                    <div *ngIf="!profileCache.get(p.author_id)?.avatarUri" class="avatar-placeholder">
+                      {{ getUserName(p.author_id).charAt(0).toUpperCase() }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="author-card__content">
+                  <div class="author-card__header">
+                    <h4 class="author-card__name">{{ getUserName(p.author_id) }}</h4>
+                    <span class="author-card__username">@{{ profileCache.get(p.author_id)?.username || p.author_id }}</span>
+                  </div>
+
+                  <p class="author-card__bio" *ngIf="profileCache.get(p.author_id)?.bio || profileCache.get(p.author_id)?.address">
+                    {{ profileCache.get(p.author_id)?.bio || profileCache.get(p.author_id)?.address }}
+                  </p>
+
+                  <div class="author-card__details">
+                    <div class="author-card__detail-item" *ngIf="profileCache.get(p.author_id)?.address">
+                      <i class="fas fa-map-marker-alt"></i>
+                      <span>{{ profileCache.get(p.author_id).address }}</span>
+                    </div>
+                    <div class="author-card__detail-item" *ngIf="profileCache.get(p.author_id)?.gender">
+                      <i class="fas fa-user"></i>
+                      <span>{{ profileCache.get(p.author_id).gender }}</span>
+                    </div>
+                    <div class="author-card__detail-item" *ngIf="profileCache.get(p.author_id)?.dob">
+                      <i class="fas fa-birthday-cake"></i>
+                      <span>{{ profileCache.get(p.author_id).dob }}</span>
+                    </div>
+                  </div>
+
+                  <div class="author-card__actions">
+                    <a [routerLink]="['/profile', p.author_id]" class="author-card__btn author-card__btn--primary">
+                      View Profile
+                    </a>
+                    <button class="author-card__btn author-card__btn--secondary">
+                      Message
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </header>
 
           <h3 class="post-title" (click)="openPost(p)">
-            {{ p.titleKey | translate }}
+            {{ p.title }}
           </h3>
-          <p class="post-excerpt">{{ p.excerptKey | translate }}</p>
-          <div class="post-media">
-            <img [src]="p.media" alt="{{ p.titleKey }}" />
+          <p class="post-excerpt">{{ p.content }}</p>
+
+          <!-- Tags -->
+          <div class="post-tags" *ngIf="p.tags && p.tags.length > 0">
+            <span class="tag" *ngFor="let tag of p.tags">#{{ tag }}</span>
+          </div>
+
+          <!-- Media -->
+          <div class="post-media" *ngIf="p.media && p.media.length > 0">
+            <img [src]="p.media[0].url" [alt]="p.media[0].caption || p.title" />
           </div>
 
           <footer class="post-footer">
-            <button class="icon-btn" (click)="likePost(p)">
-              ♡ {{ p.likes }}
-            </button>
-            <button class="icon-btn">💬 {{ p.comments }}</button>
-            <button class="icon-btn">↗ Share</button>
+            <!-- Reaction Button with Picker -->
+            <div class="reaction-wrapper">
+              <button
+                class="icon-btn reaction-btn"
+                (click)="toggleReactionPicker(p.id, $event)">
+                ♡ {{ p.like_count }}
+              </button>
+
+              <!-- Reaction Picker Dropdown -->
+              <div
+                class="reaction-picker"
+                *ngIf="showReactionPicker[p.id]"
+                (click)="$event.stopPropagation()">
+                <button
+                  *ngFor="let type of getReactionKeys()"
+                  class="reaction-option"
+                  (click)="addReaction(p, type, $event)"
+                  [title]="type">
+                  {{ getReactionEmoji(type) }}
+                </button>
+              </div>
+            </div>
+
+            <button class="icon-btn">💬 {{ p.comment_count }}</button>
+            <button class="icon-btn">↗ {{ p.share_count }}</button>
+            <button class="icon-btn">👁 {{ p.view_count }}</button>
           </footer>
         </article>
+
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="posts.length === 0">
+          <p>{{ "NEWSFEED.NoPosts" | translate }}</p>
+          <button class="btn btn--primary" (click)="newPost()">
+            {{ "FEED.Community.NewPost" | translate }}
+          </button>
+        </div>
       </section>
     </main>
 
@@ -101,8 +223,7 @@
         </div>
         <button
           class="btn btn--secondary"
-          (click)="bookTherapist(therapists[0])"
-        >
+          (click)="bookTherapist(therapists[0])">
           {{ "FEED.Therapists.BookButton" | translate }}
         </button>
       </div>

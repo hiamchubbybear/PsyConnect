@@ -18,9 +18,10 @@
         "SaveChanges": "Save Changes",
         "Remove": "Remove",
         "Add": "Add",
+        "Update": "Update",
+        "Create": "Create",
         "Edit": "Edit",
         "Delete": "Delete",
-        "Update": "Update",
         "Back": "Back",
         "Next": "Next",
         "Previous": "Previous",
@@ -34,7 +35,11 @@
         "Error": "Error",
         "Success": "Success",
         "Warning": "Warning",
-        "Info": "Information"
+        "Info": "Information",
+        "BasicInfo": "Basic Information",
+        "Days": "Days",
+        "TimeSlots": "Time Slots",
+        "Title": "Title"
     },
     "HOME": {
         "Tagline": "Take care of your mind, one step at a time",
@@ -350,6 +355,81 @@
                 "Reviews": "Reviews & Feedback",
                 "Settings": "Settings"
             }
+        },
+        "SOCIAL": {
+            "Follow": "Follow",
+            "Unfollow": "Unfollow",
+            "Followers": "Followers",
+            "Following": "Following",
+            "Bookmark": "Bookmark",
+            "Bookmarked": "Bookmarked",
+            "RemoveBookmark": "Remove Bookmark",
+            "Share": "Share",
+            "Shared": "Shared Successfully"
+        },
+        "THERAPIST": {
+            "Title": "Therapist Profile",
+            "Create": "Create Therapist Profile",
+            "Update": "Update Profile",
+            "Status": "Change Status",
+            "Available": "Available",
+            "Unavailable": "Unavailable",
+            "ProfessionalInfo": "Professional Information",
+            "Degrees": "Degrees",
+            "Certifications": "Certifications",
+            "ExperienceYears": "Years of Experience",
+            "Specialization": "Specialization",
+            "Languages": "Languages",
+            "ConsultationModes": "Consultation Modes",
+            "Price": "Price Range",
+            "Currency": "Currency",
+            "Availability": "Availability",
+            "Rating": "Rating"
+        },
+        "CLIENT": {
+            "Title": "Client Profile",
+            "Create": "Create Client Profile",
+            "Update": "Update Profile",
+            "IssueDetail": "Issues to Address",
+            "PreferredGender": "Preferred Therapist Gender",
+            "UrgencyLevel": "Urgency Level",
+            "SessionDuration": "Preferred Session Duration",
+            "ExperienceLevel": "Preferred Experience Level",
+            "FlexibleSchedule": "Flexible with Schedule",
+            "TherapistSpecialization": "Preferred Specialization",
+            "Languages": "Preferred Languages"
+        },
+        "SESSION": {
+            "Title": "Sessions",
+            "Create": "Create Session",
+            "Delete": "Delete Session",
+            "Status": "Status",
+            "StartTime": "Start Time",
+            "EndTime": "End Time",
+            "Price": "Price",
+            "Mode": "Mode",
+            "AllSessions": "All Sessions",
+            "Upcoming": "Upcoming",
+            "Past": "Past",
+            "Cancelled": "Cancelled"
+        },
+        "MATCHING": {
+            "Title": "Matching",
+            "RequestMatch": "Request Match",
+            "AllMatches": "All Matches",
+            "MatchScore": "Match Score",
+            "ViewProfile": "View Profile",
+            "BookSession": "Book Session"
+        },
+        "TAGS": {
+            "Title": "Tags",
+            "ViewPosts": "View Posts by Tag",
+            "Popular": "Popular Tags"
+        },
+        "CATEGORIES": {
+            "Title": "Categories",
+            "ViewPosts": "View Posts by Category",
+            "All": "All Categories"
         }
     },
     "THERAPIST_OVERLAY": {
@@ -619,6 +699,23 @@
         }
     },
     "POST": {
+        "Detail": "Post Detail",
+        "Types": {
+            "article": "Article",
+            "question": "Question",
+            "discussion": "Discussion",
+            "event": "Event"
+        },
+        "Comments": {
+            "Title": "Comments",
+            "Placeholder": "Write a comment...",
+            "Submit": "Post Comment"
+        },
+        "Like": "Like",
+        "Liked": "Liked",
+        "Bookmark": "Bookmark",
+        "Bookmarked": "Bookmarked",
+        "Share": "Share",
         "Sidebar": {
             "Title": "Post Management",
             "Items": {
@@ -628,6 +725,62 @@
                 "Reviews": "Reviews",
                 "Settings": "Settings"
             }
+        },
+        "Create": {
+            "Title": "Create New Post",
+            "Subtitle": "Share your knowledge and insights with the community",
+            "Type": "Post Type",
+            "TitleLabel": "Title",
+            "TitlePlaceholder": "Enter a descriptive title for your post",
+            "ContentLabel": "Content",
+            "ContentPlaceholder": "Write your post content here... Share your thoughts, experiences, or professional insights.",
+            "Tags": "Tags",
+            "TagsPlaceholder": "e.g., anxiety, depression, therapy",
+            "TagsHint": "Separate tags with commas. Tags help others find your content.",
+            "Categories": "Categories",
+            "CategoriesPlaceholder": "e.g., Mental Health, Self-Care",
+            "CategoriesHint": "Separate categories with commas",
+            "Media": "Media Attachments",
+            "AddMedia": "Add Images or Videos",
+            "MediaHint": "Maximum 5 files, 5MB each. Supported: images and videos",
+            "Visibility": "Visibility",
+            "Publish": "Publish Post"
+        },
+        "Types": {
+            "Article": "Article",
+            "Question": "Question",
+            "Discussion": "Discussion",
+            "Resource": "Resource"
+        },
+        "Visibility": {
+            "Public": "Public",
+            "Followers": "Followers Only",
+            "Private": "Private"
+        },
+        "Categories": "Categories",
+        "Comments": {
+            "Title": "Comments",
+            "Placeholder": "Write a comment...",
+            "Submit": "Post Comment",
+            "NoComments": "No comments yet. Be the first to comment!"
+        }
+    },
+    "NEWSFEED": {
+        "FeedTypes": {
+            "All": "All",
+            "Trending": "Trending",
+            "Following": "Following"
+        },
+        "RetryLoad": "Retry",
+        "NoPosts": "No posts yet",
+        "LoadMore": "Load More",
+        "Reactions": {
+            "Like": "Like",
+            "Love": "Love",
+            "Laugh": "Laugh",
+            "Think": "Think",
+            "Sad": "Sad",
+            "Angry": "Angry"
         }
     },
     "FEED": {
@@ -850,10 +1003,6 @@
             "empty": "No friend suggestions available"
         }
     },
-    "common": {
-        "cancel": "Cancel",
-        "confirm": "Confirm"
-    },
     "dialog": {
         "unfriend_title": "Delete friends",
         "unfriend_message": "Bạn có chắc chắn muốn xóa {{name}} khỏi danh sách bạn bè?"
@@ -1041,16 +1190,6 @@
         "timeSlots": {
             "label": "Available Time Slots"
         }
-    },
-    "common": {
-        "cancel": "Cancel",
-        "back": "Back",
-        "continue": "Continue",
-        "saveProfile": "Save Profile",
-        "saving": "Saving...",
-        "remove": "Remove",
-        "selectOption": "Select an option",
-        "minutes": "minutes"
     },
     "TOAST": {
         "error": "Error",

@@ -1,7 +1,13 @@
+// All @use rules MUST come first
 @use "@angular/material" as mat;
 @use "./variable" as v;
 @use "./form-base" as *;
 
+// Then @import rules
+@import 'css-variables';
+@import 'variable';
+
+// Then other rules
 @include mat.core();
 
 :root {

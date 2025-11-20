@@ -69,6 +69,14 @@ export const routes: Routes = [
     ],
   },
   { path: 'feature/feed', component: FeedComponent, canActivate: [authGuard] },
+  {
+    path: 'feed/post/:id',
+    loadComponent: () =>
+      import('./pages/feed/post-detail/post-detail').then(
+        (m) => m.PostDetailComponent
+      ),
+    canActivate: [authGuard],
+  },
   { path: 'feature/search', component: SearchComponent },
   {
     path: 'feature/article',
@@ -84,9 +92,9 @@ export const routes: Routes = [
       {
         path: 'create',
         loadComponent: () =>
-          import(
-            '../app/pages/post-management/create/create-post/create-post'
-          ).then((m) => m.CreatePost),
+          import('./pages/post-management/create/create-post').then(
+            (m) => m.CreatePostComponent
+          ),
       },
       {
         path: 'categories',

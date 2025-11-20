@@ -1,0 +1,121 @@
+// Comment author styles
+.comment {
+  .comment-header {
+    position: relative;
+  }
+
+  .comment-author-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    transition: background var(--transition-fast);
+
+    &:hover {
+      background: var(--color-surface-low);
+    }
+  }
+
+  .comment-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  .comment-author {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+}
+
+// Author card hover styles
+.author-card {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  min-width: 280px;
+  animation: fadeIn 0.2s ease-in-out;
+
+  &__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-placeholder {
+      color: var(--color-on-accent);
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__name {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  &__bio {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+  }
+
+  &__stats {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+
+    span {
+      strong {
+        color: var(--color-text);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

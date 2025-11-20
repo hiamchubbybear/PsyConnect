@@ -12,7 +12,32 @@
         "GetStartedFree": "Bắt đầu miễn phí",
         "LearnMore": "Tìm hiểu thêm",
         "SignUpFree": "Đăng ký miễn phí",
-        "Login": "Đăng nhập"
+        "Login": "Đăng nhập",
+        "Confirm": "Xác nhận",
+        "Cancel": "Hủy",
+        "SaveChanges": "Lưu thay đổi",
+        " Remove": "Xóa",
+        "Add": "Thêm",
+        "Edit": "Chỉnh sửa",
+        "Delete": "Xóa",
+        "Update": "Cập nhật",
+        "Back": "Quay lại",
+        "Next": "Tiếp theo",
+        "Previous": "Trước",
+        "Submit": "Gửi",
+        "Reset": "Đặt lại",
+        "Search": "Tìm kiếm",
+        "Filter": "Lọc",
+        "Sort": "Sắp xếp",
+        "Loading": "Đang tải...",
+        "NoData": "Không có dữ liệu",
+        "Error": "Lỗi",
+        "Success": "Thành công",
+        "Warning": "Cảnh báo",
+        "Info": "Thông tin",
+        "Continue": "Tiếp tục",
+        "SaveProfile": "Lưu hồ sơ",
+        "Saving": "Đang lưu..."
     },
     "HOME": {
         "Tagline": "Chăm sóc tâm trí của bạn, từng bước một",
@@ -333,6 +358,81 @@
                 "Reviews": "Đánh giá & Phản hồi",
                 "Settings": "Cài đặt"
             }
+        },
+        "SOCIAL": {
+            "Follow": "Theo dõi",
+            "Unfollow": "Bỏ theo dõi",
+            "Followers": "Người theo dõi",
+            "Following": "Đang theo dõi",
+            "Bookmark": "Lưu",
+            "Bookmarked": "Đã lưu",
+            "RemoveBookmark": "Bỏ lưu",
+            "Share": "Chia sẻ",
+            "Shared": "Đã chia sẻ thành công"
+        },
+        "THERAPIST": {
+            "Title": "Hồ sơ Chuyên gia",
+            "Create": "Tạo hồ sơ Chuyên gia",
+            "Update": "Cập nhật hồ sơ",
+            "Status": "Thay đổi trạng thái",
+            "Available": "Sẵn sàng",
+            "Unavailable": "Không khả dụng",
+            "ProfessionalInfo": "Thông tin chuyên môn",
+            "Degrees": "Bằng cấp",
+            "Certifications": "Chứng chỉ",
+            "ExperienceYears": "Số năm kinh nghiệm",
+            "Specialization": "Chuyên môn",
+            "Languages": "Ngôn ngữ",
+            "ConsultationModes": "Hình thức tư vấn",
+            "Price": "Khoảng giá",
+            "Currency": "Đơn vị tiền tệ",
+            "Availability": "Lịch khả dụng",
+            "Rating": "Đánh giá"
+        },
+        "CLIENT": {
+            "Title": "Hồ sơ Khách hàng",
+            "Create": "Tạo hồ sơ Khách hàng",
+            "Update": "Cập nhật hồ sơ",
+            "IssueDetail": "Vấn đề cần giải quyết",
+            "PreferredGender": "Giới tính chuyên gia ưa thích",
+            "UrgencyLevel": "Mức độ khẩn cấp",
+            "SessionDuration": "Thời lượng phiên ưa thích",
+            "ExperienceLevel": "Mức kinh nghiệm ưa thích",
+            "FlexibleSchedule": "Linh hoạt lịch trình",
+            "TherapistSpecialization": "Chuyên môn ưa thích",
+            "Languages": "Ngôn ngữ ưa thích"
+        },
+        "SESSION": {
+            "Title": "Phiên tư vấn",
+            "Create": "Tạo phiên",
+            "Delete": "Xóa phiên",
+            "Status": "Trạng thái",
+            "StartTime": "Thời gian bắt đầu",
+            "EndTime": "Thời gian kết thúc",
+            "Price": "Giá",
+            "Mode": "Hình thức",
+            "AllSessions": "Tất cả phiên",
+            "Upcoming": "Sắp tới",
+            "Past": "Đã qua",
+            "Cancelled": "Đã hủy"
+        },
+        "MATCHING": {
+            "Title": "Kết nối",
+            "RequestMatch": "Yêu cầu kết nối",
+            "AllMatches": "Tất cả kết nối",
+            "MatchScore": "Điểm phù hợp",
+            "ViewProfile": "Xem hồ sơ",
+            "BookSession": "Đặt lịch"
+        },
+        "TAGS": {
+            "Title": "Thẻ",
+            "ViewPosts": "Xem bài viết theo thẻ",
+            "Popular": "Thẻ phổ biến"
+        },
+        "CATEGORIES": {
+            "Title": "Danh mục",
+            "ViewPosts": "Xem bài viết theo danh mục",
+            "All": "Tất cả danh mục"
         }
     },
     "THERAPIST_OVERLAY": {
@@ -602,6 +702,23 @@
         }
     },
     "POST": {
+        "Detail": "Chi tiết bài viết",
+        "Types": {
+            "article": "Bài viết",
+            "question": "Câu hỏi",
+            "discussion": "Thảo luận",
+            "event": "Sự kiện"
+        },
+        "Comments": {
+            "Title": "Bình luận",
+            "Placeholder": "Viết bình luận...",
+            "Submit": "Đăng bình luận"
+        },
+        "Like": "Thích",
+        "Liked": "Đã thích",
+        "Bookmark": "Lưu",
+        "Bookmarked": "Đã lưu",
+        "Share": "Chia sẻ",
         "Sidebar": {
             "Title": "Quản lý Bài viết",
             "Items": {
@@ -611,6 +728,62 @@
                 "Reviews": "Đánh giá",
                 "Settings": "Cài đặt"
             }
+        },
+        "Create": {
+            "Title": "Tạo bài viết mới",
+            "Subtitle": "Chia sẻ kiến thức và kinh nghiệm của bạn với cộng đồng",
+            "Type": "Loại bài viết",
+            "TitleLabel": "Tiêu đề",
+            "TitlePlaceholder": "Nhập tiêu đề mô tả cho bài viết",
+            "ContentLabel": "Nội dung",
+            "ContentPlaceholder": "Viết nội dung bài viết tại đây... Chia sẻ suy nghĩ, trải nghiệm hoặc kiến thức chuyên môn của bạn.",
+            "Tags": "Thẻ",
+            "TagsPlaceholder": "vd: lo âu, trầm cảm, trị liệu",
+            "TagsHint": "Phân cách các thẻ bằng dấu phẩy. Thẻ giúp người khác tìm thấy nội dung của bạn.",
+            "Categories": "Danh mục",
+            "CategoriesPlaceholder": "vd: Sức khỏe tâm thần, Tự chăm sóc",
+            "CategoriesHint": "Phân cách các danh mục bằng dấu phẩy",
+            "Media": "Tệp đính kèm",
+            "AddMedia": "Thêm ảnh hoặc video",
+            "MediaHint": "Tối đa 5 tệp, mỗi tệp 5MB. Hỗ trợ: ảnh và video",
+            "Visibility": "Hiển thị",
+            "Publish": "Đăng bài"
+        },
+        "Types": {
+            "Article": "Bài viết",
+            "Question": "Câu hỏi",
+            "Discussion": "Thảo luận",
+            "Resource": "Tài nguyên"
+        },
+        "Visibility": {
+            "Public": "Công khai",
+            "Followers": "Chỉ người theo dõi",
+            "Private": "Riêng tư"
+        },
+        "Categories": "Danh mục",
+        "Comments": {
+            "Title": "Bình luận",
+            "Placeholder": "Viết bình luận...",
+            "Submit": "Đăng bình luận",
+            "NoComments": "Chưa có bình luận nào. Hãy là người đầu tiên bình luận!"
+        }
+    },
+    "NEWSFEED": {
+        "FeedTypes": {
+            "All": "Tất cả",
+            "Trending": "Xu hướng",
+            "Following": "Đang theo dõi"
+        },
+        "RetryLoad": "Thử lại",
+        "NoPosts": "Chưa có bài viết nào",
+        "LoadMore": "Xem thêm",
+        "Reactions": {
+            "Like": "Thích",
+            "Love": "Yêu thích",
+            "Laugh": "Vui",
+            "Think": "Suy nghĩ",
+            "Sad": "Buồn",
+            "Angry": "Tức giận"
         }
     },
     "FEED": {
@@ -831,10 +1004,6 @@
             "empty": "Không có gợi ý kết bạn"
         }
     },
-    "common": {
-        "cancel": "Hủy",
-        "confirm": "Xác nhận"
-    },
     "dialog": {
         "unfriend_title": "Xóa bạn bè",
         "unfriend_message": "Bạn có chắc chắn muốn xóa {{name}} khỏi danh sách bạn bè?"
@@ -1023,16 +1192,6 @@
             "label": "Khung giờ làm việc"
         }
     },
-    "common": {
-        "cancel": "Hủy",
-        "back": "Quay lại",
-        "continue": "Tiếp tục",
-        "saveProfile": "Lưu hồ sơ",
-        "saving": "Đang lưu...",
-        "remove": "Xóa",
-        "selectOption": "Chọn một tùy chọn",
-        "minutes": "phút"
-    },
     "TOAST": {
         "error": "Lỗi",
         "success": "Thành công",
@@ -1070,6 +1229,6 @@
         "key_therapist_update_failed": "Cập nhật người tư vấn thất bại",
         "key_therapist_update_error": "Đã xảy ra lỗi khi cập nhật người tư vấn",
         "key_load_friends_failed": "Tải danh sách bạn bè thất bại",
-        "error_notification" :"Đăng ký nhận thông báo thất bại"
+        "error_notification": "Đăng ký nhận thông báo thất bại"
     }
 }
