@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,19 +26,27 @@ public class KafkaService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    @Async
     public void send(String topic, Object payload) {
         try {
             log.info("Send to " + topic + " values : " + payload);
             String objectMapper = new ObjectMapper().writeValueAsString(payload);
             kafkaTemplate.send(topic, objectMapper);
         } catch (Exception e) {
-            log.info(e.getMessage());
-            throw new CustomExceptionHandler(ErrorCode.KAFKA_SERVER_ERROR);
+            // Log error but don't throw - allow request to complete successfully
+            log.error("Kafka send error - Topic: {}, Payload: {}, Error: {}", topic, payload, e.getMessage(), e);
+            log.warn("Continuing request despite Kafka error");
         }
     }
 
+    @Async
     public void sendLog(LogEvent log) {
-        send("logging-service", log);
+        try {
+            send("logging-service", log);
+        } catch (Exception e) {
+            // Silently ignore logging errors
+            this.log.warn("Failed to send log to Kafka: {}", e.getMessage());
+        }
     }
 
     public static <T> T objectMapping(String rawString, Class<T> clazz) {

@@ -2,6 +2,7 @@ package dev.psyconnect.identity_service.grpc.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import dev.psyconnect.grpc.ProfileCreationRequest;
@@ -19,12 +20,14 @@ public class ProfileGRPCClient {
     private final ProfileCreationServiceGrpc.ProfileCreationServiceBlockingStub stub;
     private final UserAccountMapper userAccountMapper;
 
-    public ProfileGRPCClient(UserAccountMapper userAccountMapper) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("profileservice", 9091)
+    public ProfileGRPCClient(
+            UserAccountMapper userAccountMapper,
+            @Value("${baseUriProfileService:localhost}") String profileServiceHost) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(profileServiceHost, 9091)
                 .usePlaintext()
                 .build();
         stub = ProfileCreationServiceGrpc.newBlockingStub(channel);
-        log.info("Gửi request đến {}", channel.toString());
+        log.info("gRPC Profile Service connected to: {}:9091", profileServiceHost);
         this.userAccountMapper = userAccountMapper;
     }
 
