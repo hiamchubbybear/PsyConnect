@@ -78,6 +78,31 @@ func GetMatchedCollection() *mongo.Collection {
 	return client.Database(dbName).Collection("match")
 }
 
+func GetPostCollection() *mongo.Collection {
+	chat := InitDB()
+	return chat.Database(dbName).Collection("posts")
+}
+
+func GetReactionCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("reactions")
+}
+
+func GetCommentCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("comments")
+}
+
+func GetFollowCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("follows")
+}
+
+func GetBookmarkCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("bookmarks")
+}
+
 func CloseDB() {
 	if mongoClient != nil {
 		if err := mongoClient.Disconnect(context.TODO()); err != nil {

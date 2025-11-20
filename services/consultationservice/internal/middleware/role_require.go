@@ -17,6 +17,16 @@ func RoleRequire(required string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+
+		profileID := c.GetHeader("X-Profile-Id")
+		if profileID != "" {
+			c.Set("userID", profileID)
+			log.Printf("DEBUG: Set userID in context: %s", profileID)
+		} else {
+			log.Printf("WARNING: Profile-Id header is missing")
+		}
+
 		roles := strings.Split(headerRoles, " ")
 		role := roles[0]
 		c.Set("roles", role)

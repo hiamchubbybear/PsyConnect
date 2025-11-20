@@ -17,6 +17,11 @@ func RouterInit(
 	matchingHandler *handlers.MatchHandler,
 	sessionHandler *handlers.SessionHandler,
 	swipeHandler *handlers.SwipeHandler,
+	// Newsfeed handlers
+	postHandler *handlers.PostHandler,
+	reactionHandler *handlers.ReactionHandler,
+	commentHandler *handlers.CommentHandler,
+	socialHandler *handlers.SocialHandler,
 ) {
 	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 	router := gin.Default()
@@ -26,6 +31,8 @@ func RouterInit(
 			log.Fatal(err)
 		}
 	}()
+
+	// ===== Existing consultation routes (unchanged) =====
 
 	therapistGroup := router.Group("/consultation/therapist")
 	therapistGroup.Use(middleware.RoleRequire("therapist"))
@@ -131,14 +138,84 @@ func RouterInit(
 		match.GET("/", matchingHandler.GetAllMatchTherapist)
 		match.POST("/", matchingHandler.MatchRequest)
 	}
+
 	// Uncategorize Routes
 	uncategoryGroupV1 := router.Group("/v1/consultation")
 	uncategoryGroup.Use(middleware.RoleRequire(""))
 	{
-
 		uncategoryGroupV1.GET("/therapist/:id", therapistHandler.GetTherapistByIdHandlerV1)
 		uncategoryGroupV1.GET("/me/recommend/top", swipeHandler.PopTop5V1)
 		uncategoryGroupV1.GET("/client/:id", clientHandler.GetClientByIdHandler)
+	}
+
+	// ===== NEW: Professional Newsfeed Routes =====
+
+	// Posts
+	posts := api.Group("/posts")
+	posts.Use(middleware.RoleRequire("")) // All authenticated users
+	{
+		posts.POST("/", postHandler.CreatePost)
+		posts.GET("/", postHandler.GetFeed)                          // Personalized feed
+		posts.GET("/trending", postHandler.GetTrendingPosts)         // Trending posts
+		posts.GET("/search", postHandler.SearchPosts)                // Search query
+		posts.GET("/user/:userId", postHandler.GetUserPosts)         // User's posts
+		posts.GET("/:id", postHandler.GetPostByID)
+		posts.PUT("/:id", postHandler.UpdatePost)
+		posts.DELETE("/:id", postHandler.DeletePost)
+
+		// Reactions
+		posts.POST("/:id/react", reactionHandler.AddReaction)
+		posts.DELETE("/:id/react", reactionHandler.RemoveReaction)
+		posts.GET("/:id/reactions", reactionHandler.GetPostReactions)
+
+		// Comments
+		posts.POST("/:id/comments", commentHandler.CreateComment)
+		posts.GET("/:id/comments", commentHandler.GetComments)
+
+		// Share
+		posts.POST("/:id/share", socialHandler.SharePost)
+
+		// Bookmarks
+		posts.POST("/:id/bookmark", socialHandler.AddBookmark)
+		posts.DELETE("/:id/bookmark", socialHandler.RemoveBookmark)
+	}
+
+	// Comments (standalone routes for edit/delete/replies)
+	comments := api.Group("/comments")
+	comments.Use(middleware.RoleRequire(""))
+	{
+		comments.PUT("/:id", commentHandler.UpdateComment)
+		comments.DELETE("/:id", commentHandler.DeleteComment)
+		comments.GET("/:id/replies", commentHandler.GetReplies)
+	}
+
+	// Social Features
+	users := api.Group("/users")
+	users.Use(middleware.RoleRequire(""))
+	{
+		// Follow/Unfollow
+		users.POST("/:id/follow", socialHandler.FollowUser)
+		users.DELETE("/:id/follow", socialHandler.UnfollowUser)
+		users.GET("/:id/followers", socialHandler.GetFollowers)
+		users.GET("/:id/following", socialHandler.GetFollowing)
+	}
+
+	// Bookmarks
+	bookmarks := api.Group("/bookmarks")
+	bookmarks.Use(middleware.RoleRequire(""))
+	{
+		bookmarks.GET("/", socialHandler.GetBookmarks)
+	}
+
+	// Tags & Categories
+	tags := api.Group("/tags")
+	{
+		tags.GET("/:tag/posts", postHandler.GetPostsByTag)
+	}
+
+	categories := api.Group("/categories")
+	{
+		categories.GET("/:category/posts", postHandler.GetPostsByCategory)
 	}
 
 	router.Run(urI)

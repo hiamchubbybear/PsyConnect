@@ -32,7 +32,7 @@ PsyConnect ecosystem. It is designed to handle profile registration, updates, th
 
 ### Therapist Management
 
-| Method | Endpoint                                | Description                      | Role Required               | Headers Required | 
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
 |--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
 | GET    | `/consultation/therapist`               | Get therapist info               | role.therapist:permission   | X-Roles          |
 | POST   | ~~`/consultation/therapist`~~               | Create therapist profile         | role.therapist:permission   | X-Roles          |
@@ -69,6 +69,62 @@ PsyConnect ecosystem. It is designed to handle profile registration, updates, th
 | POST   | `/consultation/session`                 | Create new session               | None (any authenticated)    | X-Roles          |
 | DELETE | `/consultation/session`                 | Delete current session           | None (any authenticated)    | X-Roles          |
 | GET    | `/consultation/session/{id}`            | Get session by ID                | None (any authenticated)    | X-Roles          |
+
+### Professional Newsfeed - Posts
+
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| POST   | `/v1/consultation/posts`                | Create new post                  | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/posts`                | Get personalized feed            | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/posts/trending`       | Get trending posts               | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/posts/search`         | Search posts (query param)       | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/posts/user/:userId`   | Get user's posts                 | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/posts/:id`            | Get post by ID                   | Any authenticated user      | X-Roles          |
+| PUT    | `/v1/consultation/posts/:id`            | Update post                      | Any authenticated user      | X-Roles          |
+| DELETE | `/v1/consultation/posts/:id`            | Delete post                      | Any authenticated user      | X-Roles          |
+
+### Professional Newsfeed - Reactions
+
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| POST   | `/v1/consultation/posts/:id/react`      | Add reaction to post             | Any authenticated user      | X-Roles          |
+| DELETE | `/v1/consultation/posts/:id/react`      | Remove reaction from post        | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/posts/:id/reactions`  | Get all reactions for post       | Any authenticated user      | X-Roles          |
+
+### Professional Newsfeed - Comments
+
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| POST   | `/v1/consultation/posts/:id/comments`   | Create comment on post           | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/posts/:id/comments`   | Get comments for post            | Any authenticated user      | X-Roles          |
+| PUT    | `/v1/consultation/comments/:id`         | Update comment                   | Any authenticated user      | X-Roles          |
+| DELETE | `/v1/consultation/comments/:id`         | Delete comment                   | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/comments/:id/replies` | Get replies to comment           | Any authenticated user      | X-Roles          |
+
+### Professional Newsfeed - Social Features
+
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| POST   | `/v1/consultation/users/:id/follow`     | Follow user                      | Any authenticated user      | X-Roles          |
+| DELETE | `/v1/consultation/users/:id/follow`     | Unfollow user                    | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/users/:id/followers`  | Get user's followers             | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/users/:id/following`  | Get users being followed         | Any authenticated user      | X-Roles          |
+| POST   | `/v1/consultation/posts/:id/share`      | Share post                       | Any authenticated user      | X-Roles          |
+
+### Professional Newsfeed - Bookmarks
+
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| POST   | `/v1/consultation/posts/:id/bookmark`   | Add bookmark to post             | Any authenticated user      | X-Roles          |
+| DELETE | `/v1/consultation/posts/:id/bookmark`   | Remove bookmark from post        | Any authenticated user      | X-Roles          |
+| GET    | `/v1/consultation/bookmarks`            | Get all user bookmarks           | Any authenticated user      | X-Roles          |
+
+### Professional Newsfeed - Tags & Categories
+
+| Method | Endpoint                                | Description                      | Role Required               | Headers Required |
+|--------|-----------------------------------------|----------------------------------|-----------------------------|------------------|
+| GET    | `/v1/consultation/tags/:tag/posts`      | Get posts by tag                 | Public                      | None             |
+| GET    | `/v1/consultation/categories/:category/posts` | Get posts by category      | Public                      | None             |
 
 ---
 

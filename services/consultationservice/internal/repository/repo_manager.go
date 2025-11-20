@@ -10,17 +10,25 @@ import (
 )
 
 type RepositoryManager struct {
-	SwipeRepo     *SwipeRepository
 	ClientRepo    *ClientRepository
 	TherapistRepo *TherapistRepository
 	MatchingRepo  *MatchRepository
 	SessionRepo   *SessionRepository
-	GrpcProfile   *handler.ProfileGrpc
-	Kafka         *kafka.Producer
-	Redis         *redis.RedisStore
+	SwipeRepo     *SwipeRepository
+
+	// Newsfeed repositories
+	PostRepo      PostRepository
+	ReactionRepo  ReactionRepository
+	CommentRepo   CommentRepository
+	FollowRepo    FollowRepository
+	BookmarkRepo  BookmarkRepository
+
+	GrpcProfile *handler.ProfileGrpc
+	Kafka       *kafka.Producer
+	Redis       *redis.RedisStore
 }
 
-func NewRepositoryManager(env *bootstrap.Env, redis redis.RedisStore) *RepositoryManager {
+func NewRepositoryManager(env *bootstrap.Env, redisClient redis.RedisStore) *RepositoryManager {
 	log.Printf("NewRepositoryManager called with env: %+v", env)
 
 	grpcProfile, err := handler.NewProfileGrpc(env.GrpcAdd)
@@ -34,14 +42,14 @@ func NewRepositoryManager(env *bootstrap.Env, redis redis.RedisStore) *Repositor
 	}
 
 	log.Printf("Initializing ClientRepository...")
-	clientRepo := NewClientRepository(db.GetClientCollection(), redis)
+	clientRepo := NewClientRepository(db.GetClientCollection(), redisClient)
 	if clientRepo == nil {
 		log.Fatal("clientRepo is nil")
 	}
 	log.Printf("ClientRepo created: %+v", clientRepo)
 
 	log.Printf("Initializing TherapistRepository...")
-	therapistRepo := NewTherapistRepository(db.GetTherapistCollection(), redis)
+	therapistRepo := NewTherapistRepository(db.GetTherapistCollection(), redisClient)
 	if therapistRepo == nil {
 		log.Fatal("therapistRepo is nil")
 	}
@@ -50,25 +58,34 @@ func NewRepositoryManager(env *bootstrap.Env, redis redis.RedisStore) *Repositor
 	log.Printf("Initializing MatchRepository...")
 	matchCollection := db.GetMatchedCollection()
 	log.Printf("Got matchCollection: %+v", matchCollection)
-	matchingRepo := NewMatchRepository(matchCollection, redis)
+	matchingRepo := NewMatchRepository(matchCollection, redisClient)
 	if matchingRepo == nil {
 		log.Fatal("matchingRepo is nil after NewMatchRepository")
 	}
 	log.Printf("MatchingRepo created successfully: %+v", matchingRepo)
 
 	log.Printf("Initializing SessionRepository...")
-	sessionRepo := NewSessionRepository(db.GetSessionCollection(), clientRepo, therapistRepo, matchingRepo, redis)
+	sessionRepo := NewSessionRepository(db.GetSessionCollection(), clientRepo, therapistRepo, matchingRepo, redisClient)
 	if sessionRepo == nil {
 		log.Fatal("sessionRepo is nil")
 	}
 	log.Printf("SessionRepo created: %+v", sessionRepo)
 
 	log.Printf("Initializing SwipeRepository...")
-	swipesRepo := NewSwipeRepository(clientRepo, therapistRepo, sessionRepo, db.GetSwipedCollection(), redis)
+	swipesRepo := NewSwipeRepository(clientRepo, therapistRepo, sessionRepo, db.GetSwipedCollection(), redisClient)
 	if swipesRepo == nil {
 		log.Fatalf("swipesRepo is nil")
 	}
 	log.Printf("SwipesRepo created: %+v", swipesRepo)
+
+	// Initialize newsfeed repositories
+	log.Printf("Initializing Newsfeed repositories...")
+	postRepo := NewPostRepo()
+	reactionRepo := NewReactionRepo()
+	commentRepo := NewCommentRepo()
+	followRepo := NewFollowRepo()
+	bookmarkRepo := NewBookmarkRepo()
+	log.Printf("Newsfeed repos created successfully")
 
 	repoManager := &RepositoryManager{
 		ClientRepo:    clientRepo,
@@ -78,6 +95,14 @@ func NewRepositoryManager(env *bootstrap.Env, redis redis.RedisStore) *Repositor
 		GrpcProfile:   grpcProfile,
 		Kafka:         kafkaProducer,
 		SwipeRepo:     swipesRepo,
+		Redis:         &redisClient,
+
+		// Newsfeed repos
+		PostRepo:     postRepo,
+		ReactionRepo: reactionRepo,
+		CommentRepo:  commentRepo,
+		FollowRepo:   followRepo,
+		BookmarkRepo: bookmarkRepo,
 	}
 
 	log.Printf("RepositoryManager created: %+v", repoManager)
