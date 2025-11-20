@@ -46,4 +46,20 @@ public interface ProfileRepository extends Neo4jRepository<Profile, String> {
 
     @Query("MATCH (p:user_profile {profileId: $profileId})<-[:HAS_MOOD]-(m:Mood) RETURN p, collect(m) as moodList")
     Optional<Profile> findProfileWithMoodById(@Param("profileId") String profileId);
+
+    @Query(
+            """
+		MATCH (p:user_profile)
+		WHERE toLower(p.firstName) CONTAINS toLower($query) OR toLower(p.lastName) CONTAINS toLower($query)
+		RETURN p
+		SKIP $skip LIMIT $limit
+	""")
+    List<Profile> searchProfiles(@Param("query") String query, @Param("skip") int skip, @Param("limit") int limit);
+
+    @Query("""
+		MATCH (p:user_profile)
+		WHERE p.profileId IN $profileIds
+		RETURN p
+	""")
+    List<Profile> findAllByIds(@Param("profileIds") List<String> profileIds);
 }

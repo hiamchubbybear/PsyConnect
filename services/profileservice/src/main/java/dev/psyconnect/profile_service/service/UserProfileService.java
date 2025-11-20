@@ -56,14 +56,17 @@ public class UserProfileService {
         profile.setDob((dobStr != null && !dobStr.isEmpty()) ? Time.parseFromString(dobStr) : null);
         var temp = userProfileRepository.save(profile);
         eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
-        kafkaService.send("profile.user-create-setting", request.getProfileId());
-        kafkaService.sendLog(buildLog(
-                "profile-service",
-                request.getProfileId(),
-                "Create profile",
-                "Success",
-                Map.of("metadata", temp.toString()),
-                LogLevel.LOG));
+
+        // Create user settings directly (no Kafka)
+        userSettingService.resetSettings(temp.getProfileId());
+
+        // kafkaService.sendLog(buildLog(
+        //         "profile-service",
+        //         request.getProfileId(),
+        //         "Create profile",
+        //         "Success",
+        //         Map.of("metadata", temp.toString()),
+        //         LogLevel.LOG));
         var response = userProfileMapper.toUserProfile(temp);
         response.setDob(request.getDob());
         return response;
@@ -132,6 +135,26 @@ public class UserProfileService {
             throw e;
         }
         return result;
+    }
+
+    public List<UserProfileResponse> search(String query, int page, int size) {
+        try {
+            return userProfileRepository.searchProfiles(query, page * size, size).stream()
+                    .map(userProfileMapper::toUserProfileRequest)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public List<UserProfileResponse> getBatch(List<String> profileIds) {
+        try {
+            return userProfileRepository.findAllByIds(profileIds).stream()
+                    .map(userProfileMapper::toUserProfileRequest)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     public List<ProfileWithMoodSummaryDto> getProfileWithMood(String profileId) {

@@ -11,6 +11,7 @@ import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithMoodSummaryDto;
 import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
+import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileUpdateResponse;
 import dev.psyconnect.profile_service.service.UserProfileService;
 import lombok.AccessLevel;
@@ -39,6 +40,24 @@ public class UserProfileControllerV1 {
     @GetMapping("/me")
     ApiResponse<?> getUserProfile(@RequestHeader(value = "X-Profile-Id") String profileId) {
         return new ApiResponse<>(userProfileService.get(profileId));
+    }
+
+    @GetMapping("/{profileId}")
+    ApiResponse<UserProfileResponse> getUserProfileById(@PathVariable String profileId) {
+        return new ApiResponse<>(userProfileService.get(profileId));
+    }
+
+    @GetMapping("/search")
+    ApiResponse<List<UserProfileResponse>> searchUserProfiles(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return new ApiResponse<>(userProfileService.search(query, page, size));
+    }
+
+    @PostMapping("/batch")
+    ApiResponse<List<UserProfileResponse>> getBatchUserProfiles(@RequestBody List<String> profileIds) {
+        return new ApiResponse<>(userProfileService.getBatch(profileIds));
     }
 
     @GetMapping("/all")
