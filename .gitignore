@@ -178,7 +178,7 @@ services/webapp/psyconnect-web/src/firebase-messaging-sw.js
 *.config.js
 *.config.ts
 *.config.json
-*.yml
-*.yaml
+application-*.properties
+application-*.yml
 .env
 config/
