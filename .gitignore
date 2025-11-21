@@ -169,3 +169,16 @@ Thumbs.db
 * text=auto
 *.sh text eol=lf
 *.cmd text eol=crlf
+# Firebase and config files to ignore
+services/notificationservice/psyconnect-*-firebase-adminsdk-*.json
+services/notificationservice/src/config/firebase.js
+services/notificationservice/src/services/firebase.service.js
+services/webapp/psyconnect-web/src/firebase-messaging-sw.js
+# Generic config files to ignore
+*.config.js
+*.config.ts
+*.config.json
+*.yml
+*.yaml
+.env
+config/
