@@ -183,7 +183,7 @@ application-*.yml
 application.yml
 application.properties
 .env
-.env-dev
-.env-cicd
+.env.dev
+.env.cicd
 config/
 .settings
