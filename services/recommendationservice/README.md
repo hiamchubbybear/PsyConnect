@@ -1,153 +1,68 @@
 # Recommendation Service - PsyConnect
 
-## Overview
-The **Recommendation Service** provides AI-powered recommendations for matching clients with therapists within the PsyConnect platform. This service uses machine learning algorithms to provide personalized therapist recommendations based on client preferences, needs, and compatibility factors.
+![Python](https://img.shields.io/badge/Python-3.9-blue?style=flat&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-2.0-black?style=flat&logo=flask&logoColor=white)
+![Scikit-learn](https://img.shields.io/badge/Scikit_Learn-ML-orange?style=flat&logo=scikitlearn&logoColor=white)
 
-## Features
-- AI-powered therapist-client matching
-- Similarity-based scoring algorithms
-- Multi-criteria recommendation system
-- Real-time matching capabilities
-- Data-driven insights and analytics
-- Continuous learning and improvement
+## 📖 Overview
 
-## Technology Stack
-- **Backend**: Python
-- **Machine Learning**: scikit-learn, pandas, numpy
-- **Algorithms**: Cosine similarity, collaborative filtering
-- **Data Format**: JSON
-- **API Communication**: RESTful APIs (planned)
+The **Recommendation Service** powers the smart matching between clients and therapists. It uses Machine Learning algorithms (Cosine Similarity) to analyze profiles and suggest the best matches based on specialization, language, availability, and more.
 
-## AI Algorithms
+## ✨ Features
 
-### Cosine Similarity Matching
-The service uses cosine similarity to match clients with therapists based on:
-- Specialization alignment
-- Language compatibility  
-- Location preferences
-- Availability matching
-- Price range compatibility
-- Experience level requirements
+- **Smart Matching**: Calculates compatibility scores between clients and therapists.
+- **Multi-criteria Analysis**: Considers language, location, price, and expertise.
+- **Real-time Recommendations**: Provides instant suggestions via API.
 
-### Matching Criteria
-- **Specialization**: Client issues vs therapist expertise
-- **Languages**: Communication language preferences
-- **Location**: Geographic proximity or online availability
-- **Price Range**: Budget compatibility
-- **Availability**: Schedule alignment
-- **Experience Level**: Required vs available experience
-- **Gender Preferences**: Optional therapist gender preference
-- **Session Duration**: Preferred session length
+## 🛠 Technology Stack
 
-## API Endpoints
+- **Language**: Python 3.9
+- **Framework**: Flask
+- **ML Libraries**: Scikit-learn, Pandas, NumPy
+- **Algorithm**: Cosine Similarity, Collaborative Filtering
 
-### Recommendation Engine
+## 🔌 API Endpoints
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/recommend/therapist` | Get therapist recommendations for client |
-| GET | `/recommend/match/{clientId}` | Get pre-computed matches for client |
-| POST | `/recommend/update` | Update recommendation parameters |
+| `POST` | `/recommend` | Get therapist recommendations for a client |
+| `GET` | `/health` | Service health check |
 
-### Analytics and Insights
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/analytics/match-success` | Get matching success statistics |
-| GET | `/analytics/popular-specializations` | Get popular specialization trends |
-| POST | `/analytics/feedback` | Submit matching feedback |
-
-### Data Management
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/data/therapist` | Add/update therapist data |
-| POST | `/data/client` | Add/update client preferences |
-| GET | `/data/statistics` | Get system statistics |
-
-*Note: API endpoints are currently in development.*
-
-## Matching Process
-
-### Input Parameters
-```json
-{
-  "profile_id": "C002",
-  "address": "HCMC",
-  "languages": ["English"],
-  "issue_detail": "marriage",
-  "consultation_modes": ["online"],
-  "range_price": 600000,
-  "availability": ["Morning_Weekday"],
-  "preferred_therapist_gender": null,
-  "experience_level": "senior",
-  "specialization": ["marriage"],
-  "urgency_level": "low",
-  "session_duration": 60,
-  "preferred_therapist_language": "English",
-  "is_flexible_with_schedule": false
-}
-```
-
-### Output Format
-```json
-{
-  "matches": [
-    {
-      "therapist_id": "T002",
-      "compatibility_score": 0.95,
-      "match_reasons": ["specialization_match", "language_match", "location_match"],
-      "confidence": "high"
-    }
-  ],
-  "total_matches": 5,
-  "processing_time_ms": 45
-}
-```
-
-## Data Files
-- `generated_therapists.json` - Therapist profile data
-- `generated_client.json` - Client preference data  
-- `matching_results.json` - Pre-computed matching results
-- `hard_client.json` - Test client data
-
-## Setup & Configuration
+## ⚙️ Configuration
 
 ### Environment Variables
-```env
-PORT=8087
-MODEL_PATH={path-to-model-files}
-DATA_PATH={path-to-data-files}
-LOG_LEVEL=INFO
+This service uses a `.env` file for configuration.
+1. Copy the example file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Update the variables in `.env`:
+   - `PORT`: Service port (default: 5000)
+   - `FLASK_ENV`: development/production
+
+## 🚀 Installation & Run
+
+### Prerequisites
+- Python 3.9+
+- Pip
+
+### Local Run
+```bash
+# 1. Navigate to directory
+cd services/recommendationservice
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Run application
+python api/main.py
 ```
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/hiamchubbybear/PsyConnect.git
-   cd PsyConnect/recommendationservice
-   ```
-2. Install Python dependencies:
-   ```bash
-   pip install pandas numpy scikit-learn
-   ```
-3. Run the recommendation engine:
-   ```bash
-   python recommendation-ai/consine.py
-   ```
+### Docker Run
+```bash
+docker build -t psyconnect/recommendationservice .
+docker run -p 5000:5000 --env-file .env psyconnect/recommendationservice
+```
 
-## Performance
-- Processing time: ~45ms per recommendation request
-- Supports real-time matching for up to 1000+ therapists
-- Scalable architecture for growing user base
-
-## Contributing
-We welcome contributions! Please follow the standard Git workflow:
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/YourFeature`)
-3. Commit your changes (`git commit -m 'Add YourFeature'`)
-4. Push to your branch (`git push origin feature/YourFeature`)
-5. Open a Pull Request
-
-## Contact
-For inquiries, reach out via:
-- **Project Lead**: Chessy
-- **Email**: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)
-- **GitHub Repository**: [PsyConnect](https://github.com/hiamchubbybear/PsyConnect)
+## 🤝 Contributing
+Please refer to the root [README](../../README.md) for contributing guidelines.

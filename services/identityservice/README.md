@@ -1,110 +1,84 @@
-# Identity Service - PsyConnect - v0.1
+# Identity Service - PsyConnect
 
-## Overview
+![Java](https://img.shields.io/badge/Java-17-orange?style=flat&logo=java&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.0-green?style=flat&logo=spring-boot&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=flat&logo=mysql&logoColor=white)
 
-The **Identity Service** is responsible for user authentication, account management, and authorization within the
-PsyConnect platform. It provides secure and scalable identity management features.
+## 📖 Overview
 
-## Features
+The **Identity Service** is the backbone of user authentication and authorization in PsyConnect. It handles user registration, secure login (OAuth2/OIDC), account management, and role-based access control (RBAC).
 
-- User registration and activation
-- User authentication and logout
-- Account management (update, delete, retrieve)
-- Role-based access control (RBAC)
-- Account deletion confirmation
+## ✨ Features
 
-## Technology Stack
+- **User Management**: Registration, activation, profile updates, and deletion.
+- **Authentication**: Secure login with JWT issuance and validation.
+- **OAuth2 Integration**: Support for Google and Facebook login.
+- **RBAC**: Role-based permission management (Admin, Therapist, Client).
+- **Password Management**: Reset and change password functionality.
 
-- **Backend**: Java Spring Boot
-- **Database**: MySQL
-- **API Communication**: RESTful APIs
+## 🛠 Technology Stack
 
-## 📌 Version History
+- **Framework**: Java Spring Boot 3
+- **Database**: MySQL 8.0
+- **Security**: Spring Security, OAuth2 Resource Server
+- **Build Tool**: Maven
 
-| Version    | Date       | Changes                                 |
-| ---------- | ---------- | --------------------------------------- |
-| **v1.1.1** | 2025-09-11 | - Add new endpoint and refactor version |
-| **v1.1.1** | 2025-09-11 | - Add new endpoint and refactor version |
-| **v1.1.0** | 2025-09-9  | - Initial release                       |
-
-## API Endpoints Update V1
-
-| Method | Endpoint           | Description                       | Role Required | Headers Required |
-| ------ | ------------------ | --------------------------------- | ------------- | ---------------- |
-| POST   | `/v1/auth/login`   | Authenticate user and get token   | None          | None             |
-| POST   | `/v1/auth/refresh` | Refresh access token with refresh | None          | None             |
+## 🔌 API Endpoints
 
 ### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/auth/login` | Authenticate user and get token |
+| `POST` | `/auth/introspect` | Validate token validity |
+| `POST` | `/auth/refresh` | Refresh access token |
+| `POST` | `/auth/logout` | Invalidate token |
 
-| Method | Endpoint                       | Description                      | Role Required | Headers Required |
-| ------ | ------------------------------ | -------------------------------- | ------------- | ---------------- |
-| POST   | `/auth/login`                  | Authenticate user and get token  | None          | None             |
-| POST   | `/auth/introspect`             | Logout user and invalidate token | None          | None             |
-| POST   | `/auth/internal/valid`         | Internal token validation        | None          | None             |
-| POST   | `/identity/req/reset-password` | Request reset password token     | None          | None             |
-| PUT    | `/identity/password`           | Reset password                   | None          | None             |
+### User Management
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/identity/create` | Register new user |
+| `POST` | `/identity/activate` | Activate account via code |
+| `GET` | `/account/info` | Get current user info |
+| `PUT` | `/account/update` | Update user details |
+| `DELETE` | `/account/delete` | Delete account |
 
-### User Account Management
-
-| Method | Endpoint                 | Description                 | Role Required | Headers Required |
-| ------ | ------------------------ | --------------------------- | ------------- | ---------------- |
-| POST   | `/identity/create`       | Register a new user account | None          | None             |
-| POST   | `/identity/activate`     | Activate user account       | None          | None             |
-| POST   | `/identity/req/activate` | Request activation link     | None          | None             |
-| GET    | `/identity/hello`        | Test API endpoint           | None          | None             |
-
-### Account Settings
-
-| Method | Endpoint              | Description                    | Role Required         | Headers Required |
-| ------ | --------------------- | ------------------------------ | --------------------- | ---------------- |
-| POST   | `/account/delete`     | Request account deletion       | None                  | X-User-Id        |
-| DELETE | `/account/delete`     | Confirm account deletion       | None                  | X-User-Id        |
-| GET    | `/account/info`       | Retrieve account details       | None                  | X-User-Id        |
-| PUT    | `/account/update`     | Update account information     | None                  | X-User-Id        |
-| GET    | `/account/all/{page}` | Get paginated list of accounts | role.admin:permission | X-Roles          |
-
----
-
-## Setup & Configuration
+## ⚙️ Configuration
 
 ### Environment Variables
+This service uses a `.env` file for configuration.
+1. Copy the example file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Update the variables in `.env`:
+   - `MYSQL_SPRING_DATASOURCE_PASSWORD`: Your MySQL password
+   - `SIGNER_KEY`: JWT signing key
+   - `SERVER_PORT`: Service port (default: 8080)
 
-Ensure the following environment variables are set before running the service:
+## 🚀 Installation & Run
 
-```env
-MYSQL_SPRING_DATASOURCE_PASSWORD={your-variable}
-MYSQL_SPRING_DATASOURCE_USERNAME={your-variable}
-SPRING_DATASOURCE_URL={your-variable}
-SERVER_PORT={your-variable}
+### Prerequisites
+- Java JDK 17+
+- Maven
+- MySQL Server
+
+### Local Run
+```bash
+# 1. Navigate to directory
+cd services/identityservice
+
+# 2. Install dependencies
+mvn clean install
+
+# 3. Run application
+mvn spring-boot:run
 ```
 
-### Installation
+### Docker Run
+```bash
+docker build -t psyconnect/identityservice .
+docker run -p 8080:8080 --env-file .env psyconnect/identityservice
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/hiamchubbybear/psyconnect-dev.git
-   cd psyconnect-dev/identityservice
-   ```
-2. Build and run the service:
-   ```bashe
-   mvn clean install
-   mvn spring-boot:run
-   ```
-
-## Contributing
-
-We welcome contributions! Please follow the standard Git workflow:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/YourFeature`)
-3. Commit your changes (`git commit -m 'Add YourFeature'`)
-4. Push to your branch (`git push origin feature/YourFeature`)
-5. Open a Pull Request
-
-## Contact
-
-For inquiries, reach out via:
-
-- **Project Lead**: Chessy
-- **Email**: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)
-- **GitHub Repository**: [psyconnect-dev](https://github.com/hiamchubbybear/psyconnect-dev)
+## 🤝 Contributing
+Please refer to the root [README](../../README.md) for contributing guidelines.

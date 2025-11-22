@@ -1,101 +1,71 @@
-# API Gateway Service
+# API Gateway - PsyConnect
 
-## Overview
-The **API Gateway Service** is responsible for routing requests to different microservices within the PsyConnect platform. It uses **Spring Cloud Gateway** to define routes and filters, ensuring efficient communication between clients and backend services.
+![Java](https://img.shields.io/badge/Java-17-orange?style=flat&logo=java&logoColor=white)
+![Spring Cloud Gateway](https://img.shields.io/badge/Spring_Cloud-Gateway-green?style=flat&logo=spring&logoColor=white)
 
-## Features
-- Routes incoming requests to appropriate microservices
-- Adds user-related headers for downstream services
-- Logs events for debugging and monitoring
-- Request routing to identity, profile, notification, and consultation services
+## 📖 Overview
 
-## Configuration
+The **API Gateway** is the single entry point for all client requests. It handles routing, load balancing, and initial security checks (like JWT validation) before forwarding requests to the appropriate microservices.
+
+## ✨ Features
+
+- **Centralized Routing**: Maps external paths to internal microservice addresses.
+- **Authentication Filter**: Validates JWT tokens and extracts user context.
+- **Header Injection**: Injects `X-User-Id`, `X-Roles` into downstream requests.
+- **CORS Management**: Centralized Cross-Origin Resource Sharing configuration.
+
+## 🛠 Technology Stack
+
+- **Framework**: Java Spring Boot 3
+- **Library**: Spring Cloud Gateway
+- **Security**: Spring Security (Resource Server)
+
+## 🔌 Routes
+
+| Path Prefix | Target Service | Description |
+|-------------|----------------|-------------|
+| `/identity/**` | Identity Service | Auth & User accounts |
+| `/profile/**` | Profile Service | Profiles & Social |
+| `/consultation/**` | Consultation Service | Matching & Sessions |
+| `/noti/**` | Notification Service | Notifications |
+| `/chats/**` | Chat Service | Messaging |
+
+## ⚙️ Configuration
 
 ### Environment Variables
-| Variable       | Description                         |
-|---------------|-------------------------------------|
-| `SIGNER_KEY`  | Secret key used for token validation |
-| `server.port` | Port on which the API Gateway runs |
+This service uses a `.env` file for configuration.
+1. Copy the example file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Update the variables in `.env`:
+   - `IDENTITY_SERVICE_URI`: URL for Identity Service
+   - `PROFILE_SERVICE_URI`: URL for Profile Service
+   - `SERVER_PORT`: Gateway port (default: 8888)
 
-### Application Properties
-The routing configuration is defined in `application.properties`:
-```properties
-# Service name
-spring.application.name=api_service
+## 🚀 Installation & Run
 
-# Base URLs
-base.url=http://localhost
-identity.port=8080
-profile.port=8081
+### Prerequisites
+- Java JDK 17+
+- Maven
 
-# Port
-server.port=8888
+### Local Run
+```bash
+# 1. Navigate to directory
+cd services/apigateway
 
-# Identity Service Config
-spring.cloud.gateway.routes[0].id=identity_service
-spring.cloud.gateway.routes[0].uri=http://localhost:8080
-spring.cloud.gateway.routes[0].predicates[0]=Path=/identity/**,/auth/**,/oauth2/**,/account/**
+# 2. Install dependencies
+mvn clean install
 
-# Profile Service Config
-spring.cloud.gateway.routes[1].id=profile_service
-spring.cloud.gateway.routes[1].uri=http://localhost:8081
-spring.cloud.gateway.routes[1].predicates[0]=Path=/profile/**,/profile/friends/**,/mood/**,/user-setting/**
-
-# Notification Service Config
-spring.cloud.gateway.routes[2].id=notification_service
-spring.cloud.gateway.routes[2].uri=http://localhost:8082
-spring.cloud.gateway.routes[2].predicates[0]=Path=/noti/**
-
-# Consultation Service Config
-spring.cloud.gateway.routes[3].id=consultation_service
-spring.cloud.gateway.routes[3].uri=http://localhost:8084
-spring.cloud.gateway.routes[3].predicates[0]=Path=/consultation/**
-
-# Logging
-logging.level.org.springframework.web=DEBUG
-logging.level.org.springframework.cloud.gateway=TRACE
-```
-
-## Request Processing
-The gateway processes requests and forwards them to the appropriate microservice based on the configured routes.
-
-### Headers Added by Gateway
-| Header Name    | Description                                    |
-|----------------|------------------------------------------------|
-| `X-User-Id`    | User ID extracted from request context         |
-| `X-Profile-Id` | Profile ID extracted from request context      |
-| `X-Roles`      | Roles and permissions for authorization         |
-
-### Example Request Flow
-#### Request:
-```http
-GET /profile HTTP/1.1
-Host: localhost:8888
-```
-
-#### Forwarded Request (after processing):
-```http
-GET /profile HTTP/1.1
-Host: localhost:8081
-X-User-Id: 12345
-X-Profile-Id: 67890
-X-Roles: role.client:permission
-```
-
-## Running the Service
-To start the API Gateway Service, run:
-```sh
+# 3. Run application
 mvn spring-boot:run
 ```
 
-## Logging & Debugging
-- Set logging level in `application.properties`:
-  ```properties
-  logging.level.org.springframework.web=DEBUG
-  logging.level.org.springframework.cloud.gateway=TRACE
-  ```
-- Logs will show routing details and filter actions
+### Docker Run
+```bash
+docker build -t psyconnect/apigateway .
+docker run -p 8888:8888 --env-file .env psyconnect/apigateway
+```
 
-## Contributing
-Feel free to contribute by submitting issues or pull requests!
-
+## 🤝 Contributing
+Please refer to the root [README](../../README.md) for contributing guidelines.

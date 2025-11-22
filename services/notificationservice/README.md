@@ -1,102 +1,72 @@
 # Notification Service - PsyConnect
 
-## Overview
-The **Notification Service** handles email notifications and messaging features within the PsyConnect platform. It provides endpoints for sending activation emails, account update notifications, and other email-based communications to users.
+![Node.js](https://img.shields.io/badge/Node.js-18-green?style=flat&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.18-black?style=flat&logo=express&logoColor=white)
+![Kafka](https://img.shields.io/badge/Kafka-Events-black?style=flat&logo=apachekafka&logoColor=white)
 
-## Features
-- Email notifications for account activation
-- Account update notifications
-- Kafka consumer for processing notification events
-- Template-based email system
-- Integration with external email providers
+## 📖 Overview
 
-## Technology Stack
-- **Backend**: Node.js with Express
-- **Message Queue**: Apache Kafka
-- **Email Service**: SMTP/External email provider
-- **API Communication**: RESTful APIs
+The **Notification Service** handles all outbound communications from the platform. It listens for events (like "User Registered" or "Appointment Booked") and delivers notifications via Email or Push Notifications.
 
-## API Endpoints
+## ✨ Features
 
-### Email Notifications
+- **Email Notifications**: SMTP integration for transactional emails.
+- **Event-Driven**: Consumes Kafka topics to trigger notifications asynchronously.
+- **Templates**: HTML email templates for consistent branding.
+- **Push Notifications**: (Planned) Mobile push support.
+
+## 🛠 Technology Stack
+
+- **Runtime**: Node.js 18
+- **Framework**: Express.js
+- **Message Broker**: Apache Kafka (Consumer)
+- **Email**: Nodemailer / SMTP
+
+## 🔌 API Endpoints
+
+While primarily event-driven, it exposes endpoints for testing or direct triggers.
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/noti/activate` | Send account activation email |
-| POST | `/noti/account-update` | Send account update notification email |
+| `POST` | `/noti/activate` | Send activation email |
+| `POST` | `/noti/account-update` | Send security alert |
 
-### Request Examples
+## ⚙️ Configuration
 
-#### Send Activation Email
-```bash
-POST /noti/activate
-Content-Type: application/json
-
-{
-  "username": "john_doe",
-  "code": "12345",
-  "email": "john@example.com",
-  "fullname": "John Doe"
-}
-```
-
-#### Send Account Update Email
-```bash
-POST /noti/account-update
-Content-Type: application/json
-
-{
-  "username": "john_doe",
-  "email": "john@example.com"
-}
-```
-
-## Environment Variables
-Ensure the following environment variables are set before running the service:
-```env
-PORT=8082
-SMTP_HOST={your-smtp-host}
-SMTP_PORT={your-smtp-port}
-MAIL_USERNAME={your-email-username}
-MAIL_PASSWORD={your-email-password}
-KAFKA_BROKER={your-kafka-broker}
-```
-
-## Setup & Configuration
-
-### Installation
-1. Clone the repository:
+### Environment Variables
+This service uses a `.env` file for configuration.
+1. Copy the example file:
    ```bash
-   git clone https://github.com/hiamchubbybear/PsyConnect.git
-   cd PsyConnect/notificationservice
+   cp .env.example .env
    ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the service:
-   ```bash
-   npm start
-   ```
+2. Update the variables in `.env`:
+   - `SMPT_HOST`, `SMPT_USER`, `SMPT_PASS`: Email credentials
+   - `KAFKA_BROKER`: Kafka address
+   - `PORT`: Service port (default: 8082)
 
-### Docker
+## 🚀 Installation & Run
+
+### Prerequisites
+- Node.js 18+
+- Kafka (for event consumption)
+
+### Local Run
 ```bash
-docker build -t psyconnect/notification-service .
-docker run -p 8082:8082 psyconnect/notification-service
+# 1. Navigate to directory
+cd services/notificationservice
+
+# 2. Install dependencies
+npm install
+
+# 3. Run application
+npm start
 ```
 
-## Kafka Integration
-The service includes a Kafka consumer that automatically processes notification events from other microservices, enabling real-time email notifications.
+### Docker Run
+```bash
+docker build -t psyconnect/notificationservice .
+docker run -p 8082:8082 --env-file .env psyconnect/notificationservice
+```
 
-## Contributing
-We welcome contributions! Please follow the standard Git workflow:
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/YourFeature`)
-3. Commit your changes (`git commit -m 'Add YourFeature'`)
-4. Push to your branch (`git push origin feature/YourFeature`)
-5. Open a Pull Request
-
-## Contact
-For inquiries, reach out via:
-- **Project Lead**: Chessy
-- **Email**: [tranvanhuy16032004@gmail.com](mailto:tranvanhuy16032004@gmail.com)
-- **GitHub Repository**: [PsyConnect](https://github.com/hiamchubbybear/PsyConnect)
+## 🤝 Contributing
+Please refer to the root [README](../../README.md) for contributing guidelines.
