@@ -1,0 +1,48 @@
+# Binaries
+logging-service
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Logs
+logs/*.log
+logs/*.gz
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Grafana data
+grafana/data/
+
+# Prometheus data
+prometheus/data/
+
+# Tempo data
+tempo/data/

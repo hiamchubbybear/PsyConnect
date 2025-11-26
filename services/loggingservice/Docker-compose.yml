@@ -1,18 +1,37 @@
+version: '3.8'
+
 services:
+  # Loki - Log aggregation system
   loki:
     image: grafana/loki:2.9.3
+    container_name: psyconnect-loki
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+    networks:
+      - logging-network
+    restart: unless-stopped
+
+  # Promtail - Log shipper (optional, for file-based logs)
   promtail:
     image: grafana/promtail:2.9.3
+    container_name: psyconnect-promtail
     volumes:
       - ./logs:/var/log/myapp
       - ./promtail-config.yml:/etc/promtail/config.yml
     command: -config.file=/etc/promtail/config.yml
+    networks:
+      - logging-network
+    depends_on:
+      - loki
+    restart: unless-stopped
 
+  # Grafana - Visualization and dashboards
   grafana:
     image: grafana/grafana:10.3.1
+    container_name: psyconnect-grafana
     ports:
       - "3000:3000"
     environment:
@@ -20,10 +39,92 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=16032004
       - GF_SERVER_ROOT_URL=https://admin.chessy.dev
       - GF_SERVER_SERVE_FROM_SUB_PATH=false
-
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_AUTH_ANONYMOUS_ENABLED=false
     volumes:
-      - /home/chessy/grafana/config/grafana.ini:/etc/grafana/grafana.ini
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - logging-network
+    depends_on:
+      - loki
+      - prometheus
+    restart: unless-stopped
+
+  # Prometheus - Metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: psyconnect-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - logging-network
+    restart: unless-stopped
+
+  # Tempo - Distributed tracing (optional for Phase 3)
+  tempo:
+    image: grafana/tempo:latest
+    container_name: psyconnect-tempo
+    ports:
+      - "3200:3200"   # Tempo HTTP
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/tmp/tempo
+    networks:
+      - logging-network
+    restart: unless-stopped
+
+  # Logging Service - Kafka consumer that sends logs to Loki
+  logging-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: psyconnect-logging-service
+    env_file:
+      - .env.${ENVIRONMENT:-dev}
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+      - KAFKA_GROUP_ID=logging-service
+      - KAFKA_TOPIC=logging-service
+      - LOKI_ENABLED=true
+      - LOKI_URL=http://loki:3100
+      - FILE_LOGGER_ENABLED=true
+      - APP_LOG_PATH=./logs/app.log
+      - ERROR_LOG_PATH=./logs/error.log
+      - SERVER_PORT=8080
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - logging-network
+    depends_on:
+      - loki
+    restart: unless-stopped
 
 volumes:
-  grafana-storage:
+  loki-data:
+    driver: local
+  grafana-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  tempo-data:
+    driver: local
 
+networks:
+  logging-network:
+    driver: bridge

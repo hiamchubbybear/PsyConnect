@@ -1,0 +1,417 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": null,
+    "links": [],
+    "panels": [
+        {
+            "datasource": "Loki",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 50
+                            },
+                            {
+                                "color": "red",
+                                "value": 200
+                            }
+                        ]
+                    },
+                    "unit": "short"
+                }
+            },
+            "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 0,
+                "y": 0
+            },
+            "id": 2,
+            "options": {
+                "orientation": "auto",
+                "reduceOptions": {
+                    "values": false,
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": ""
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true
+            },
+            "targets": [
+                {
+                    "expr": "sum(count_over_time({service=\"profile-service\"}[5m]))",
+                    "refId": "A"
+                }
+            ],
+            "title": "Total Requests (5m)",
+            "type": "gauge"
+        },
+        {
+            "datasource": "Loki",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 1
+                            }
+                        ]
+                    }
+                }
+            },
+            "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 8,
+                "y": 0
+            },
+            "id": 3,
+            "options": {
+                "orientation": "auto",
+                "reduceOptions": {
+                    "values": false,
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": ""
+                },
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true
+            },
+            "targets": [
+                {
+                    "expr": "sum(count_over_time({service=\"profile-service\", level=\"ERROR\"}[5m]))",
+                    "refId": "A"
+                }
+            ],
+            "title": "Errors (5m)",
+            "type": "gauge"
+        },
+        {
+            "datasource": "Loki",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "blue",
+                                "value": null
+                            }
+                        ]
+                    }
+                }
+            },
+            "gridPos": {
+                "h": 6,
+                "w": 8,
+                "x": 16,
+                "y": 0
+            },
+            "id": 4,
+            "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                    "values": false,
+                    "calcs": [
+                        "lastNotNull"
+                    ],
+                    "fields": ""
+                },
+                "textMode": "auto"
+            },
+            "targets": [
+                {
+                    "expr": "count(count_over_time({service=\"profile-service\"} | json | userId != \"\" [1h]) by (userId))",
+                    "refId": "A"
+                }
+            ],
+            "title": "Active Users (1h)",
+            "type": "stat"
+        },
+        {
+            "datasource": "Loki",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 20,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "tooltip": false,
+                            "viz": false,
+                            "legend": false
+                        },
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            }
+                        ]
+                    }
+                }
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 6
+            },
+            "id": 5,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "mean",
+                        "max"
+                    ],
+                    "displayMode": "table",
+                    "placement": "bottom"
+                },
+                "tooltip": {
+                    "mode": "multi"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "sum by (action) (rate({service=\"profile-service\"} | json | action != \"\" [1m]))",
+                    "legendFormat": "{{action}}",
+                    "refId": "A"
+                }
+            ],
+            "title": "Profile Actions Rate",
+            "type": "timeseries"
+        },
+        {
+            "datasource": "Loki",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "hideFrom": {
+                            "tooltip": false,
+                            "viz": false,
+                            "legend": false
+                        }
+                    },
+                    "mappings": []
+                }
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 6
+            },
+            "id": 6,
+            "options": {
+                "legend": {
+                    "displayMode": "table",
+                    "placement": "right",
+                    "values": [
+                        "value",
+                        "percent"
+                    ]
+                },
+                "pieType": "donut",
+                "tooltip": {
+                    "mode": "single"
+                }
+            },
+            "targets": [
+                {
+                    "expr": "sum by (action) (count_over_time({service=\"profile-service\"} | json | action != \"\" [1h]))",
+                    "refId": "A"
+                }
+            ],
+            "title": "Actions Distribution (1h)",
+            "type": "piechart"
+        },
+        {
+            "datasource": "Loki",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 14
+            },
+            "id": 7,
+            "options": {
+                "showLabels": false,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true,
+                "enableLogDetails": true,
+                "dedupStrategy": "none"
+            },
+            "targets": [
+                {
+                    "expr": "{service=\"profile-service\", action=~\"CREATE.*|UPDATE.*\"}",
+                    "refId": "A"
+                }
+            ],
+            "title": "Profile Modifications",
+            "type": "logs"
+        },
+        {
+            "datasource": "Loki",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 14
+            },
+            "id": 8,
+            "options": {
+                "showLabels": false,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true,
+                "enableLogDetails": true,
+                "dedupStrategy": "none"
+            },
+            "targets": [
+                {
+                    "expr": "{service=\"profile-service\", action=~\".*FRIEND.*\"}",
+                    "refId": "A"
+                }
+            ],
+            "title": "Friend-Related Actions",
+            "type": "logs"
+        },
+        {
+            "datasource": "Loki",
+            "gridPos": {
+                "h": 10,
+                "w": 24,
+                "x": 0,
+                "y": 22
+            },
+            "id": 9,
+            "options": {
+                "showLabels": false,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true,
+                "enableLogDetails": true,
+                "dedupStrategy": "none"
+            },
+            "targets": [
+                {
+                    "expr": "{service=\"profile-service\", level=\"ERROR\"}",
+                    "refId": "A"
+                }
+            ],
+            "title": "Error Logs",
+            "type": "logs"
+        }
+    ],
+    "refresh": "10s",
+    "schemaVersion": 27,
+    "style": "dark",
+    "tags": [
+        "psyconnect",
+        "profile-service",
+        "social"
+    ],
+    "templating": {
+        "list": [
+            {
+                "allValue": null,
+                "current": {
+                    "selected": false,
+                    "text": "All",
+                    "value": "$__all"
+                },
+                "datasource": "Loki",
+                "definition": "label_values({service=\"profile-service\"}, action)",
+                "hide": 0,
+                "includeAll": true,
+                "label": "Action",
+                "multi": true,
+                "name": "action",
+                "options": [],
+                "query": "label_values({service=\"profile-service\"}, action)",
+                "refresh": 1,
+                "regex": "",
+                "skipUrlSync": false,
+                "sort": 0,
+                "type": "query"
+            }
+        ]
+    },
+    "time": {
+        "from": "now-1h",
+        "to": "now"
+    },
+    "timepicker": {
+        "refresh_intervals": [
+            "5s",
+            "10s",
+            "30s",
+            "1m",
+            "5m",
+            "15m",
+            "30m",
+            "1h"
+        ]
+    },
+    "timezone": "browser",
+    "title": "PsyConnect - Profile Service",
+    "uid": "psyconnect-profile-service",
+    "version": 1
+}

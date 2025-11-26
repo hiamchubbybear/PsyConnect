@@ -1,0 +1,225 @@
+apiVersion: 1
+
+groups:
+  - name: psyconnect_alerts
+    interval: 1m
+    folder: PsyConnect
+    rules:
+      # High Error Rate Alert
+      - uid: high_error_rate
+        title: High Error Rate Detected
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: '(sum(count_over_time({level="ERROR"}[5m])) / sum(count_over_time({}[5m]))) * 100 > 5'
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'Error rate is above 5% for the last 5 minutes. Current rate: {{ $values.A }}%'
+          summary: High error rate detected in PsyConnect services
+        labels:
+          severity: warning
+          team: backend
+
+      # Critical Error Rate Alert
+      - uid: critical_error_rate
+        title: Critical Error Rate
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: '(sum(count_over_time({level="ERROR"}[5m])) / sum(count_over_time({}[5m]))) * 100 > 10'
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          description: 'CRITICAL: Error rate is above 10% for the last 5 minutes. Current rate: {{ $values.A }}%'
+          summary: Critical error rate in PsyConnect - immediate action required
+        labels:
+          severity: critical
+          team: backend
+
+      # Fatal Error Alert
+      - uid: fatal_error_detected
+        title: Fatal Error Detected
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 60
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({level="FATAL"}[1m])) > 0'
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 0m
+        annotations:
+          description: 'A FATAL error has been detected. Immediate investigation required!'
+          summary: Fatal error in PsyConnect system
+        labels:
+          severity: critical
+          team: backend
+          priority: p1
+
+      # Service Down Alert (No logs for 5 minutes)
+      - uid: service_no_logs
+        title: Service Not Logging
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: 'sum by (service) (count_over_time({service=~".+"}[5m])) < 1'
+              refId: A
+        noDataState: Alerting
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'Service {{ $labels.service }} has not produced any logs for 5 minutes. Service may be down.'
+          summary: Service {{ $labels.service }} appears to be down
+        labels:
+          severity: critical
+          team: devops
+
+      # High Login Failure Rate
+      - uid: high_login_failures
+        title: High Login Failure Rate
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({service="identity-service", action="LOGIN", level="ERROR"}[10m])) > 10'
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'More than 10 failed login attempts in the last 10 minutes. Possible security issue or system problem.'
+          summary: High number of failed login attempts
+        labels:
+          severity: warning
+          team: security
+
+      # Database Error Alert
+      - uid: database_errors
+        title: Database Errors Detected
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({level="ERROR"} |= "database" or "sql" or "connection" [5m])) > 5'
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 3m
+        annotations:
+          description: 'Multiple database-related errors detected in the last 5 minutes.'
+          summary: Database connectivity or query issues detected
+        labels:
+          severity: warning
+          team: backend
+          component: database
+
+      # Kafka Consumer Lag Alert
+      - uid: kafka_consumer_lag
+        title: Kafka Consumer Lag
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({service="logging-service"} |= "lag" or "behind" [5m])) > 3'
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        annotations:
+          description: 'Kafka consumer lag detected in logging service. Messages may be delayed.'
+          summary: Logging service Kafka consumer is lagging
+        labels:
+          severity: warning
+          team: backend
+          component: kafka
+
+      # Unusual Error Spike
+      - uid: error_spike
+        title: Unusual Error Spike
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({level="ERROR"}[5m])) > 50'
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 2m
+        annotations:
+          description: 'Unusual spike in errors detected. More than 50 errors in 5 minutes.'
+          summary: Error spike detected - investigate immediately
+        labels:
+          severity: warning
+          team: backend
+
+      # New User Registration Spike (Potential Bot Attack)
+      - uid: registration_spike
+        title: Unusual Registration Spike
+        condition: A
+        data:
+          - refId: A
+            queryType: ''
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              expr: 'sum(count_over_time({action="REGISTER"}[5m])) > 20'
+              refId: A
+        noDataState: NoData
+        execErrState: Error
+        for: 3m
+        annotations:
+          description: 'Unusual spike in user registrations. More than 20 registrations in 5 minutes. Possible bot attack.'
+          summary: Unusual registration activity detected
+        labels:
+          severity: warning
+          team: security

@@ -1,168 +1,140 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/loggingservice/pkg/filelogger"
+	"github.com/loggingservice/pkg/kafka"
+	"github.com/loggingservice/pkg/loki"
+	"github.com/loggingservice/pkg/models"
+	"github.com/loggingservice/pkg/server"
+	"github.com/loggingservice/pkg/settings"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func listenOnKafkaHandler() error {
-	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": "127.0.0.1:9092",
-		"group.id":          "logging-service",
-		"auto.offset.reset": "earliest",
-	})
+func main() {
+	// Initialize console logger for the service itself
+	consoleLogger := initConsoleLogger()
+	defer consoleLogger.Sync()
+
+	consoleLogger.Info("🚀 Starting PsyConnect Logging Service")
+
+	// Load configuration
+	config := settings.LoadConfig()
+	if err := config.Validate(); err != nil {
+		consoleLogger.Fatal("Invalid configuration", zap.Error(err))
+	}
+
+	consoleLogger.Info("Configuration loaded",
+		zap.String("kafka_servers", config.Kafka.BootstrapServers),
+		zap.Strings("kafka_topics", config.Kafka.Topics),
+		zap.Bool("loki_enabled", config.Loki.Enabled),
+		zap.String("loki_url", config.Loki.URL),
+		zap.Bool("file_logger_enabled", config.FileLogger.Enabled),
+	)
+
+	// Initialize components
+	var lokiClient *loki.Client
+	if config.Loki.Enabled {
+		lokiClient = loki.NewClient(config.Loki)
+		lokiClient.Start()
+		defer lokiClient.Stop()
+		consoleLogger.Info("✅ Loki client initialized")
+	} else {
+		consoleLogger.Warn("⚠️  Loki client disabled")
+	}
+
+	fileLogger := filelogger.NewFileLogger(config.FileLogger)
+	defer fileLogger.Close()
+	if config.FileLogger.Enabled {
+		consoleLogger.Info("✅ File logger initialized",
+			zap.String("app_log", config.FileLogger.AppLogPath),
+			zap.String("error_log", config.FileLogger.ErrLogPath),
+		)
+	} else {
+		consoleLogger.Warn("⚠️  File logger disabled")
+	}
+
+	// Initialize HTTP server for health checks
+	httpServer := server.NewServer(config.Server, consoleLogger)
+	if err := httpServer.Start(); err != nil {
+		consoleLogger.Fatal("Failed to start HTTP server", zap.Error(err))
+	}
+	defer httpServer.Stop()
+	consoleLogger.Info("✅ HTTP server started", zap.Int("port", config.Server.Port))
+
+	// Initialize Kafka consumer
+	kafkaConsumer, err := kafka.NewConsumer(config.Kafka, consoleLogger)
 	if err != nil {
-		panic(err)
+		consoleLogger.Fatal("Failed to create Kafka consumer", zap.Error(err))
 	}
-	defer c.Close()
+	defer kafkaConsumer.Close()
 
-	topics := []string{
-		"logging-service",
-		"identity-service",
-		"profile-service",
-		"friends-service",
-	}
-	err = c.SubscribeTopics(topics, nil)
-	if err != nil {
-		panic(err)
-	}
+	// Add log handlers
+	kafkaConsumer.AddHandler(func(event *models.LogEvent) error {
+		httpServer.IncrementMessages()
 
-	fmt.Println("Listening to topics:", topics)
+		// Log to console for debugging
+		consoleLogger.Debug("Processing log event",
+			zap.String("service", event.Service),
+			zap.String("level", event.Level),
+			zap.String("message", event.Message),
+		)
 
-	sigchan := make(chan os.Signal, 1)
-	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
+		// Write to file
+		if err := fileLogger.Write(event); err != nil {
+			consoleLogger.Error("Failed to write to file", zap.Error(err))
+			httpServer.IncrementErrors()
+			return err
+		}
 
-	run := true
-	for run {
-		select {
-		case sig := <-sigchan:
-			fmt.Printf("\nReceived signal %v, shutting down...\n", sig)
-			run = false
-
-		default:
-			ev := c.Poll(100)
-			if ev == nil {
-				continue
-			}
-			switch e := ev.(type) {
-			case *kafka.Message:
-				topic := *e.TopicPartition.Topic
-				fmt.Printf("\nMessage from topic [%s], partition [%d], offset [%d]\n",
-					topic, e.TopicPartition.Partition, e.TopicPartition.Offset)
-
-				if len(e.Key) > 0 {
-					fmt.Printf("Key: %s\n", string(e.Key))
-				}
-
-				var jsonData map[string]interface{}
-				if err := json.Unmarshal(e.Value, &jsonData); err == nil {
-					jsonString, _ := json.MarshalIndent(jsonData, "", "  ")
-					fmt.Printf("JSON Content:\n%s\n", string(jsonString))
-					_ = writeToLog(string(jsonString))
-				} else {
-					fmt.Printf("Raw Content: %s\n", string(e.Value))
-					_ = writeToLog(string(e.Value))
-				}
-
-			case kafka.Error:
-				fmt.Fprintf(os.Stderr, "Kafka Error: %v\n", e)
+		// Push to Loki
+		if lokiClient != nil {
+			if err := lokiClient.Push(event); err != nil {
+				consoleLogger.Error("Failed to push to Loki", zap.Error(err))
+				httpServer.IncrementErrors()
+				return err
 			}
 		}
-	}
-	return nil
-}
-func main() {
-	listenOnKafkaHandler()
-}
-func writeToLog(message string) error {
-	var event map[string]interface{}
-	if err := json.Unmarshal([]byte(message), &event); err != nil {
-		return err
+
+		return nil
+	})
+
+	consoleLogger.Info("✅ Kafka consumer initialized and handlers registered")
+	consoleLogger.Info("🎯 Logging service is ready to process events")
+	consoleLogger.Info("📊 Health check available at http://localhost:" + fmt.Sprintf("%d", config.Server.Port) + "/health")
+
+	// Start consuming (blocking)
+	if err := kafkaConsumer.Start(); err != nil {
+		consoleLogger.Fatal("Kafka consumer error", zap.Error(err))
 	}
 
-	logWriter := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "./logs/app.log",
-		MaxSize:    15,
-		MaxBackups: 10,
-		MaxAge:     120,
-		Compress:   true,
-		LocalTime:  true,
-	})
+	consoleLogger.Info("👋 Logging service shutting down gracefully")
+}
+
+// initConsoleLogger initializes a console logger for the service itself
+func initConsoleLogger() *zap.Logger {
 	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:     "timestamp",
-		LevelKey:    "level",
-		MessageKey:  "msg",
-		EncodeTime:  zapcore.ISO8601TimeEncoder,
-		EncodeLevel: zapcore.CapitalLevelEncoder,
+		TimeKey:        "time",
+		LevelKey:       "level",
+		NameKey:        "logger",
+		CallerKey:      "caller",
+		MessageKey:     "msg",
+		StacktraceKey:  "stacktrace",
+		LineEnding:     zapcore.DefaultLineEnding,
+		EncodeLevel:    zapcore.CapitalColorLevelEncoder,
+		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
-	logError := zap.New(zapcore.NewCore(
-		zapcore.NewJSONEncoder(encoderConfig),
-		zapcore.AddSync(&lumberjack.Logger{
-			Filename: "./logs/error.log",
-			MaxSize:  10, MaxBackups: 5, MaxAge: 30, Compress: true,
-		}),
-		zapcore.ErrorLevel,
-	))
+
 	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(encoderConfig),
-		logWriter,
+		zapcore.NewConsoleEncoder(encoderConfig),
+		zapcore.AddSync(os.Stdout),
 		zapcore.InfoLevel,
 	)
-	logger := zap.New(core)
-	defer logger.Sync()
 
-	get := func(k string) string {
-		if val, ok := event[k]; ok {
-			if s, ok := val.(string); ok {
-				return s
-			}
-		}
-		return ""
-	}
-	consoleEncoder := zapcore.NewConsoleEncoder(encoderConfig)
-	core = zapcore.NewTee(
-		zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig), logWriter, zapcore.InfoLevel),
-		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
-	)
-
-	level := get("level")
-	switch level {
-	case "LOG", "AUDIT":
-		logger.Info("LogEvent",
-			zap.String("service", get("service")),
-			zap.String("action", get("action")),
-			zap.String("userId", get("userId")),
-			zap.String("traceId", get("traceId")),
-			zap.String("timestamp", get("timestamp")),
-			zap.Any("metadata", event["metadata"]),
-			zap.String("message", get("message")))
-	case "ERROR", "WARN":
-		logError.Error("LogEvent",
-			zap.String("service", get("service")),
-			zap.String("action", get("action")),
-			zap.String("userId", get("userId")),
-			zap.String("traceId", get("traceId")),
-			zap.String("timestamp", get("timestamp")),
-			zap.Any("metadata", event["metadata"]),
-			zap.String("message", get("message")))
-	default:
-		logger.Info("LogEvent (default level)",
-			zap.String("service", get("service")),
-			zap.String("action", get("action")),
-			zap.String("userId", get("userId")),
-			zap.String("traceId", get("traceId")),
-			zap.String("timestamp", get("timestamp")),
-			zap.Any("metadata", event["metadata"]),
-			zap.String("message", get("message")))
-	}
-
-	return nil
+	return zap.New(core, zap.AddCaller())
 }
