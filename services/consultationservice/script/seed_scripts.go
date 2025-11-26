@@ -156,8 +156,7 @@ func randomCertifications(count int) []Certification {
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	const MONGO_URI = "mongodb://consultationservice:123456@localhost:27017"
-
+	const MONGO_URI = "mongodb://root:123456@localhost:27017/?authSource=admin"
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(MONGO_URI))
 	if err != nil {
 		log.Fatal(err)

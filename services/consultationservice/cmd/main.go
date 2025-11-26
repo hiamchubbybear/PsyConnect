@@ -5,17 +5,45 @@ import (
 	"consultationservice/internal/db"
 	handlers "consultationservice/internal/handler"
 	"consultationservice/internal/kafka"
+	"consultationservice/internal/middleware"
 	"consultationservice/internal/redis"
 	"consultationservice/internal/repository"
 	"consultationservice/internal/route"
+	"consultationservice/pkg/logger"
 	"log"
+	"os"
+	"strings"
 )
 
 func main() {
 	db.InitDB()
 	env := bootstrap.LoadEnv()
+
+	// Initialize Kafka Logger
+	kafkaBrokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
+	if len(kafkaBrokers) == 0 || kafkaBrokers[0] == "" {
+		kafkaBrokers = []string{"localhost:9092"}
+	}
+
+	kafkaLogger := logger.NewKafkaLogger(logger.Config{
+		Brokers:     kafkaBrokers,
+		Topic:       "logging-service",
+		ServiceName: "consultation-service",
+		Environment: os.Getenv("ENVIRONMENT"),
+		Version:     "1.0.0",
+	})
+	defer kafkaLogger.Close()
+
+	kafkaLogger.Info("Consultation service starting", map[string]interface{}{
+		"port":        os.Getenv("PORT"),
+		"environment": os.Getenv("ENVIRONMENT"),
+	})
+
 	redisClient, err := redis.NewRedisStore(env)
 	if err != nil {
+		kafkaLogger.Fatal("Failed to initialize Redis", map[string]interface{}{
+			"error": err.Error(),
+		})
 		log.Println(err)
 		panic(err)
 	}
@@ -37,8 +65,11 @@ func main() {
 	kafka.NewConsumer(env)
 	kafka.NewProducer(env)
 
+	kafkaLogger.Info("Consultation service initialized successfully", nil)
+
 	route.RouterInit(
 		env,
+		kafkaLogger,
 		clientHandler,
 		therapistHandler,
 		matchHandler,

@@ -1,17 +1,20 @@
 package route
 
 import (
-	"consultationservice/bootstrap"
-	handlers "consultationservice/internal/handler"
-	"consultationservice/internal/middleware"
 	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
+
+	"consultationservice/bootstrap"
+	handlers "consultationservice/internal/handler"
+	"consultationservice/internal/middleware"
+	"consultationservice/pkg/logger"
 )
 
 func RouterInit(
 	env *bootstrap.Env,
+	kafkaLogger *logger.KafkaLogger,
 	clientHandler *handlers.ClientHandler,
 	therapistHandler *handlers.TherapistHandler,
 	matchingHandler *handlers.MatchHandler,
@@ -26,13 +29,17 @@ func RouterInit(
 	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 	router := gin.Default()
 
+	// Add logging middleware
+	router.Use(middleware.LoggingMiddleware(kafkaLogger))
+
 	defer func() {
 		if err := recover(); err != nil {
+			kafkaLogger.Fatal("Router panic", map[string]interface{}{
+				"error": fmt.Sprintf("%v", err),
+			})
 			log.Fatal(err)
 		}
 	}()
-
-	// ===== Existing consultation routes (unchanged) =====
 
 	therapistGroup := router.Group("/consultation/therapist")
 	therapistGroup.Use(middleware.RoleRequire("therapist"))
@@ -148,7 +155,6 @@ func RouterInit(
 		uncategoryGroupV1.GET("/client/:id", clientHandler.GetClientByIdHandler)
 	}
 
-	// ===== NEW: Professional Newsfeed Routes =====
 
 	// Posts
 	posts := api.Group("/posts")
@@ -162,7 +168,6 @@ func RouterInit(
 		posts.GET("/:id", postHandler.GetPostByID)
 		posts.PUT("/:id", postHandler.UpdatePost)
 		posts.DELETE("/:id", postHandler.DeletePost)
-
 		// Reactions
 		posts.POST("/:id/react", reactionHandler.AddReaction)
 		posts.DELETE("/:id/react", reactionHandler.RemoveReaction)
