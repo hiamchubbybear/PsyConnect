@@ -32,9 +32,83 @@ services:
     image: hiamchubbybear/consultationservice:latest
     ports:
       - "8084:8084"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+      - ENVIRONMENT=production
     depends_on:
       mongodb:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  chatservice:
+    image: hiamchubbybear/chatservice:latest
+    ports:
+      - "8083:8083"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+      - ENVIRONMENT=production
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  # Logging Service
+  logging-service:
+    image: hiamchubbybear/loggingservice:latest
+    ports:
+      - "8085:8080"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_GROUP_ID=logging-service
+      - KAFKA_TOPIC=logging-service
+      - LOKI_ENABLED=true
+      - LOKI_URL=http://loki:3100
+      - FILE_LOGGER_ENABLED=true
+      - ENVIRONMENT=production
+    depends_on:
+      kafka:
+        condition: service_healthy
+      loki:
+        condition: service_started
+    restart: unless-stopped
+
+  # Loki - Log aggregation
+  loki:
+    image: grafana/loki:2.9.3
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+    restart: unless-stopped
+
+  # Grafana - Visualization
+  grafana:
+    image: grafana/grafana:10.3.1
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=16032004
+      - GF_SERVER_ROOT_URL=${GRAFANA_URL:-http://localhost:3000}
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - loki
+      - prometheus
+    restart: unless-stopped
+
+  # Prometheus - Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+    restart: unless-stopped
 
   # -------------------------
   # DATABASES
@@ -155,3 +229,6 @@ volumes:
   mongo_data:
   neo4j_data:
   neo4j_logs:
+  loki-data:
+  grafana-data:
+  prometheus-data:
