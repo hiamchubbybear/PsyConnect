@@ -115,48 +115,59 @@
     <!-- Engagement Stats -->
     <div class="post-stats">
       <span class="stat">
-        <span class="stat-icon">👁️</span>
+        <img src="/assets/reaction/message-circle.svg" alt="Views" class="stat-icon-img" />
         <span class="stat-count">{{ post.view_count }}</span>
       </span>
       <span class="stat">
-        <span class="stat-icon">❤️</span>
-        <span class="stat-count">{{ post.like_count }}</span>
+        <img src="/assets/reaction/arrow-big-up-dash.svg" alt="Upvotes" class="stat-icon-img" />
+        <span class="stat-count">{{ post.upvote_count || 0 }}</span>
       </span>
       <span class="stat">
-        <span class="stat-icon">💬</span>
+        <img src="/assets/reaction/arrow-big-down-dash.svg" alt="Downvotes" class="stat-icon-img" />
+        <span class="stat-count">{{ post.downvote_count || 0 }}</span>
+      </span>
+      <span class="stat">
+        <img src="/assets/reaction/message-circle.svg" alt="Comments" class="stat-icon-img" />
         <span class="stat-count">{{ post.comment_count }}</span>
       </span>
       <span class="stat">
-        <span class="stat-icon">🔄</span>
+        <img src="/assets/reaction/share.svg" alt="Shares" class="stat-icon-img" />
         <span class="stat-count">{{ post.share_count }}</span>
       </span>
     </div>
 
     <!-- Actions -->
     <div class="post-actions">
-      <div class="reaction-container">
-        <button class="action-btn" (click)="toggleReactionPicker($event)">
-          <span>❤️</span> {{ 'NEWSFEED.Reactions.Like' | translate }}
-        </button>
+      <!-- Upvote Button -->
+      <button class="action-btn" [class.active]="hasUpvoted()" (click)="handleVote('upvote', $event)">
+        <img src="/assets/reaction/arrow-big-up-dash.svg" alt="Upvote" class="action-icon-img" />
+        {{ 'NEWSFEED.Reactions.Upvote' | translate }}
+      </button>
 
-        <div class="reaction-picker" *ngIf="showReactionPicker">
-          <button
-            *ngFor="let type of getReactionKeys()"
-            class="reaction-option"
-            (click)="addReaction(type, $event)"
-          >
-            {{ getReactionEmoji(type) }}
-          </button>
-        </div>
-      </div>
+      <!-- Downvote Button -->
+      <button class="action-btn" [class.active]="hasDownvoted()" (click)="handleVote('downvote', $event)">
+        <img src="/assets/reaction/arrow-big-down-dash.svg" alt="Downvote" class="action-icon-img" />
+        {{ 'NEWSFEED.Reactions.Downvote' | translate }}
+      </button>
 
-      <button class="action-btn" (click)="toggleBookmark()">
-        <span>{{ isBookmarked ? '🔖' : '📑' }}</span>
+      <!-- Comment Button -->
+      <button class="action-btn">
+        <img src="/assets/reaction/message-circle.svg" alt="Comment" class="action-icon-img" />
+        {{ 'COMMON.Comment' | translate }}
+      </button>
+
+      <!-- Bookmark Button -->
+      <button class="action-btn" [class.active]="isBookmarked" (click)="toggleBookmark()">
+        <img [src]="isBookmarked ? '/assets/reaction/message-circle-off.svg' : '/assets/reaction/message-circle.svg'"
+             [alt]="isBookmarked ? 'Bookmarked' : 'Bookmark'"
+             class="action-icon-img" />
         {{ (isBookmarked ? 'CONSULTATION.SOCIAL.Bookmarked' : 'CONSULTATION.SOCIAL.Bookmark') | translate }}
       </button>
 
+      <!-- Share Button -->
       <button class="action-btn" (click)="sharePost()">
-        <span>🔄</span> {{ 'CONSULTATION.SOCIAL.Share' | translate }}
+        <img src="/assets/reaction/share.svg" alt="Share" class="action-icon-img" />
+        {{ 'CONSULTATION.SOCIAL.Share' | translate }}
       </button>
     </div>
   </article>

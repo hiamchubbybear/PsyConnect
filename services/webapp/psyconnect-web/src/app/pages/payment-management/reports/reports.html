@@ -1,1 +1,74 @@
-<p>reports works!</p>
+<div class="reports-container">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'PAYMENT.Reports.Title' | translate }}</h1>
+      <p class="subtitle">{{ 'PAYMENT.Reports.Subtitle' | translate }}</p>
+    </div>
+    <button class="btn-primary" (click)="exportReport()">
+      <i class="fas fa-download"></i>
+      {{ 'PAYMENT.Reports.Export' | translate }}
+    </button>
+  </header>
+
+  <div class="summary-cards">
+    <div class="summary-card">
+      <div class="card-icon revenue">
+        <i class="fas fa-dollar-sign"></i>
+      </div>
+      <div class="card-content">
+        <span class="label">{{ 'PAYMENT.Reports.TotalRevenue' | translate }}</span>
+        <span class="value">\${{ summary.totalRevenue.toLocaleString() }}</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="card-icon transactions">
+        <i class="fas fa-exchange-alt"></i>
+      </div>
+      <div class="card-content">
+        <span class="label">{{ 'PAYMENT.Reports.TotalTransactions' | translate }}</span>
+        <span class="value">{{ summary.totalTransactions }}</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="card-icon refunds">
+        <i class="fas fa-undo"></i>
+      </div>
+      <div class="card-content">
+        <span class="label">{{ 'PAYMENT.Reports.TotalRefunds' | translate }}</span>
+        <span class="value">\${{ summary.totalRefunds.toLocaleString() }}</span>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="card-icon net">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="card-content">
+        <span class="label">{{ 'PAYMENT.Reports.NetRevenue' | translate }}</span>
+        <span class="value">\${{ summary.netRevenue.toLocaleString() }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="reports-table">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ 'PAYMENT.Reports.Period' | translate }}</th>
+          <th>{{ 'PAYMENT.Reports.Revenue' | translate }}</th>
+          <th>{{ 'PAYMENT.Reports.Transactions' | translate }}</th>
+          <th>{{ 'PAYMENT.Reports.Refunds' | translate }}</th>
+          <th>{{ 'PAYMENT.Reports.NetRevenue' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let report of reports">
+          <td class="period">{{ report.period }}</td>
+          <td class="revenue">\${{ report.revenue.toLocaleString() }}</td>
+          <td class="transactions">{{ report.transactions }}</td>
+          <td class="refunds">\${{ report.refunds.toLocaleString() }}</td>
+          <td class="net-revenue">\${{ report.netRevenue.toLocaleString() }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

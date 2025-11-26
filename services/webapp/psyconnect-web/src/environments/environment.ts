@@ -8,6 +8,7 @@ export const environment = {
   apiVersion: 'v1',
   refreshKey: 'X9fG2kLp',
   accessTokenKey: 'A7dRt6vQ',
+  roleKey: 'R5mK8wNp',
   therapistsKey: 'T1bYz3xM',
   usernameKey: 'N3vL9pQs',
   profileKey: 'U8pQs4nJ',

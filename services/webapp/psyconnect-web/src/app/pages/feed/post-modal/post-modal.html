@@ -1,0 +1,179 @@
+<div class="post-modal-overlay" (click)="onOverlayClick($event)" *ngIf="post">
+  <div class="post-modal-container">
+    <button
+      class="modal-close-btn"
+      (click)="close()"
+      [attr.aria-label]="'COMMON.Close' | translate"
+    >
+      <i class="fas fa-times"></i>
+    </button>
+
+    <div class="post-modal-content">
+      <div class="post-section">
+        <div class="post-header">
+          <div
+            class="post-author-info"
+            (mouseenter)="showAuthorCardWithDelay(post.author_id)"
+            (mouseleave)="hideAuthorCard()"
+          >
+            <div class="author-avatar">
+              <img
+                *ngIf="authorProfile?.avatarUri"
+                [src]="authorProfile.avatarUri"
+                [alt]="getAuthorName()"
+              />
+              <div *ngIf="!authorProfile?.avatarUri" class="avatar-placeholder">
+                {{ getAuthorName().charAt(0).toUpperCase() }}
+              </div>
+            </div>
+            <div class="author-details">
+              <h3 class="author-name">{{ getAuthorName() }}</h3>
+              <span class="post-time">{{ formatTime(post.created_at) }}</span>
+            </div>
+          </div>
+          <span class="post-type-badge">{{
+            "POST.Types." + post.post_type | translate
+          }}</span>
+        </div>
+
+        <h1 class="post-title">{{ post.title }}</h1>
+
+        <div class="post-tags" *ngIf="post.tags && post.tags.length > 0">
+          <span *ngFor="let tag of post.tags" class="tag">#{{ tag }}</span>
+        </div>
+
+        <div class="post-media" *ngIf="post.media && post.media.length > 0">
+          <div *ngFor="let media of post.media" class="media-item">
+            <img
+              *ngIf="media.type === 'image'"
+              [src]="media.url"
+              [alt]="media.caption || post.title"
+            />
+            <video
+              *ngIf="media.type === 'video'"
+              [src]="media.url"
+              controls
+            ></video>
+            <p *ngIf="media.caption" class="media-caption">
+              {{ media.caption }}
+            </p>
+          </div>
+        </div>
+
+        <div class="post-body" [innerHTML]="post.content"></div>
+
+        <div class="post-stats">
+          <span class="stat">
+            <i class="fas fa-heart"></i>
+            <span class="stat-count">{{ post.like_count }}</span>
+          </span>
+          <span class="stat">
+            <i class="fas fa-comment"></i>
+            <span class="stat-count">{{ post.comment_count }}</span>
+          </span>
+          <span class="stat">
+            <i class="fas fa-share"></i>
+            <span class="stat-count">{{ post.share_count }}</span>
+          </span>
+        </div>
+
+        <div class="post-actions">
+          <div class="reaction-container">
+            <button class="action-btn" (click)="toggleReactionPicker($event)">
+              <i class="fas fa-heart"></i>
+              <span>{{ "POST.Actions.Like" | translate }}</span>
+            </button>
+            <div class="reaction-picker" *ngIf="showReactionPicker">
+              <button
+                *ngFor="let type of getReactionKeys()"
+                class="reaction-option"
+                (click)="addReaction(type, $event)"
+              >
+                {{ getReactionEmoji(type) }}
+              </button>
+            </div>
+          </div>
+
+          <button class="action-btn" (click)="toggleBookmark()">
+            <i
+              [class]="isBookmarked ? 'fas fa-bookmark' : 'far fa-bookmark'"
+            ></i>
+            <span>{{
+              (isBookmarked
+                ? "POST.Actions.Bookmarked"
+                : "POST.Actions.Bookmark"
+              ) | translate
+            }}</span>
+          </button>
+
+          <button class="action-btn" (click)="sharePost()">
+            <i class="fas fa-share"></i>
+            <span>{{ "POST.Actions.Share" | translate }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="comments-section">
+        <h2 class="comments-title">
+          {{ "POST.Comments.Title" | translate }} ({{ post.comment_count }})
+        </h2>
+
+        <form
+          [formGroup]="commentForm"
+          (ngSubmit)="submitComment()"
+          class="comment-form"
+        >
+          <textarea
+            formControlName="content"
+            class="comment-input"
+            [placeholder]="'POST.Comments.Placeholder' | translate"
+            rows="2"
+          ></textarea>
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="commentForm.invalid || submittingComment"
+          >
+            {{
+              submittingComment
+                ? ("COMMON.Loading" | translate)
+                : ("POST.Comments.Submit" | translate)
+            }}
+          </button>
+        </form>
+
+        <div class="comments-list">
+          <div *ngFor="let comment of comments" class="comment">
+            <div class="comment-avatar">
+              {{
+                (getUserName(comment.author_id) || "?").charAt(0).toUpperCase()
+              }}
+            </div>
+            <div class="comment-content-wrapper">
+              <div class="comment-bubble">
+                <span class="comment-author">{{
+                  getUserName(comment.author_id) || "Unknown"
+                }}</span>
+                <p class="comment-text">{{ comment.content }}</p>
+              </div>
+              <span class="comment-time">{{
+                formatTime(comment.created_at)
+              }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="!comments || comments.length === 0" class="no-comments">
+            <i class="far fa-comment"></i>
+            <p>{{ "POST.Comments.NoComments" | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="error" class="error-state">
+  <p>{{ error }}</p>
+  <button class="btn-retry" (click)="close()">
+    {{ "COMMON.Close" | translate }}
+  </button>
+</div>

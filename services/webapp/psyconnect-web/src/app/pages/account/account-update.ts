@@ -39,9 +39,6 @@ import { SecuritySectionComponent } from './security/security-update';
       <section id="security">
         <app-security-section></app-security-section>
       </section>
-       <section id="consultation">
-    <app-consultation-profile></app-consultation-profile>
-        </section>
     </div>
   `,
   styles: [

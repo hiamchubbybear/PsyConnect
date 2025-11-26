@@ -1,1 +1,66 @@
-<p>settings works!</p>
+<div class="settings-container">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'PAYMENT.Settings.Title' | translate }}</h1>
+      <p class="subtitle">{{ 'PAYMENT.Settings.Subtitle' | translate }}</p>
+    </div>
+    <button class="btn-primary" (click)="saveSettings()">
+      <i class="fas fa-save"></i>
+      {{ 'COMMON.Save' | translate }}
+    </button>
+  </header>
+
+  <div class="settings-grid">
+    <div class="settings-section">
+      <h3>{{ 'PAYMENT.Settings.General' | translate }}</h3>
+      <div class="setting-item">
+        <label>{{ 'PAYMENT.Settings.Currency' | translate }}</label>
+        <select [(ngModel)]="settings.currency">
+          <option value="USD">USD - US Dollar</option>
+          <option value="EUR">EUR - Euro</option>
+          <option value="GBP">GBP - British Pound</option>
+          <option value="VND">VND - Vietnamese Dong</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label>{{ 'PAYMENT.Settings.TaxRate' | translate }}</label>
+        <input type="number" [(ngModel)]="settings.taxRate" min="0" max="100" />
+        <span class="unit">%</span>
+      </div>
+      <div class="setting-item">
+        <label>{{ 'PAYMENT.Settings.InvoicePrefix' | translate }}</label>
+        <input type="text" [(ngModel)]="settings.invoicePrefix" />
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>{{ 'PAYMENT.Settings.PaymentGateway' | translate }}</h3>
+      <div class="setting-item">
+        <label>{{ 'PAYMENT.Settings.Gateway' | translate }}</label>
+        <select [(ngModel)]="settings.paymentGateway">
+          <option value="stripe">Stripe</option>
+          <option value="paypal">PayPal</option>
+          <option value="square">Square</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>{{ 'PAYMENT.Settings.Automation' | translate }}</h3>
+      <div class="setting-toggle">
+        <label>
+          <input type="checkbox" [(ngModel)]="settings.autoRefund" />
+          <span>{{ 'PAYMENT.Settings.AutoRefund' | translate }}</span>
+        </label>
+        <p class="description">{{ 'PAYMENT.Settings.AutoRefundDesc' | translate }}</p>
+      </div>
+      <div class="setting-toggle">
+        <label>
+          <input type="checkbox" [(ngModel)]="settings.emailNotifications" />
+          <span>{{ 'PAYMENT.Settings.EmailNotifications' | translate }}</span>
+        </label>
+        <p class="description">{{ 'PAYMENT.Settings.EmailNotificationsDesc' | translate }}</p>
+      </div>
+    </div>
+  </div>
+</div>

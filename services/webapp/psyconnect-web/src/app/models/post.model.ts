@@ -21,11 +21,17 @@ export interface Post {
   comment_count: number;
   share_count: number;
 
+  // New vote fields
+  upvote_count?: number;
+  downvote_count?: number;
+  user_vote?: 'upvote' | 'downvote' | null; // Current user's vote
+
   // Control
   is_deleted: boolean;
 
   created_at: string;
   updated_at: string;
+  status?: 'published' | 'draft';
 }
 
 export interface MediaAttachment {

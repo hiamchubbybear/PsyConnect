@@ -712,7 +712,14 @@
         "Comments": {
             "Title": "Bình luận",
             "Placeholder": "Viết bình luận...",
-            "Submit": "Đăng bình luận"
+            "Submit": "Đăng bình luận",
+            "NoComments": "Chưa có bình luận nào. Hãy là người đầu tiên bình luận!"
+        },
+        "Actions": {
+            "Like": "Thích",
+            "Bookmark": "Lưu",
+            "Bookmarked": "Đã lưu",
+            "Share": "Chia sẻ"
         },
         "Like": "Thích",
         "Liked": "Đã thích",

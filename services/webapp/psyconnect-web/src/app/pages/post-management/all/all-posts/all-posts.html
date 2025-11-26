@@ -1,1 +1,140 @@
-<p>all-posts works!</p>
+<div class="all-posts-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-content">
+      <h1>{{ 'POST.AllPosts.Title' | translate }}</h1>
+      <p class="subtitle">{{ 'POST.AllPosts.Subtitle' | translate }}</p>
+    </div>
+    <button class="btn-primary" routerLink="../create">
+      <i class="fas fa-plus"></i>
+      {{ 'POST.AllPosts.CreateNew' | translate }}
+    </button>
+  </header>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <i class="fas fa-file-alt"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">{{ 'POST.AllPosts.Stats.Total' | translate }}</span>
+        <span class="stat-value">{{ stats.total }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon published">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">{{ 'POST.AllPosts.Stats.Published' | translate }}</span>
+        <span class="stat-value">{{ stats.published }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon draft">
+        <i class="fas fa-edit"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">{{ 'POST.AllPosts.Stats.Draft' | translate }}</span>
+        <span class="stat-value">{{ stats.draft }}</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon views">
+        <i class="fas fa-eye"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">{{ 'POST.AllPosts.Stats.Views' | translate }}</span>
+        <span class="stat-value">{{ stats.views }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        [placeholder]="'POST.AllPosts.SearchPlaceholder' | translate"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange($event)"
+      />
+    </div>
+
+    <div class="filters">
+      <select [(ngModel)]="selectedFilter" (ngModelChange)="onFilterChange($event)" class="filter-select">
+        <option value="all">{{ 'POST.AllPosts.Filters.All' | translate }}</option>
+        <option value="published">{{ 'POST.AllPosts.Filters.Published' | translate }}</option>
+        <option value="draft">{{ 'POST.AllPosts.Filters.Draft' | translate }}</option>
+      </select>
+
+      <select [(ngModel)]="selectedSort" (ngModelChange)="onSortChange($event)" class="filter-select">
+        <option value="newest">{{ 'POST.AllPosts.Sort.Newest' | translate }}</option>
+        <option value="oldest">{{ 'POST.AllPosts.Sort.Oldest' | translate }}</option>
+        <option value="popular">{{ 'POST.AllPosts.Sort.Popular' | translate }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Posts Table -->
+  <div class="posts-table-container">
+    <table class="posts-table">
+      <thead>
+        <tr>
+          <th>{{ 'POST.AllPosts.Table.Title' | translate }}</th>
+          <th>{{ 'POST.AllPosts.Table.Type' | translate }}</th>
+          <th>{{ 'POST.AllPosts.Table.Status' | translate }}</th>
+          <th>{{ 'POST.AllPosts.Table.Date' | translate }}</th>
+          <th>{{ 'POST.AllPosts.Table.Views' | translate }}</th>
+          <th>{{ 'POST.AllPosts.Table.Actions' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let post of filteredPosts" class="post-row">
+          <td class="post-title-cell">
+            <div class="post-title-wrapper">
+              <h3>{{ post.title }}</h3>
+              <p class="post-excerpt">{{ post.content | slice:0:100 }}...</p>
+            </div>
+          </td>
+          <td>
+            <span class="badge badge-type">{{ ('POST.Types.' + post.post_type) | translate }}</span>
+          </td>
+          <td>
+            <span class="badge" [class.badge-published]="post.status === 'published'" [class.badge-draft]="post.status === 'draft'">
+              {{ post.status === 'published' ? ('POST.AllPosts.Status.Published' | translate) : ('POST.AllPosts.Status.Draft' | translate) }}
+            </span>
+          </td>
+          <td class="date-cell">{{ formatDate(post.created_at) }}</td>
+          <td class="views-cell">
+            <i class="fas fa-eye"></i>
+            {{ post.view_count || 0 }}
+          </td>
+          <td class="actions-cell">
+            <button class="btn-icon" [routerLink]="['/feed/post', post.id]" [attr.aria-label]="'COMMON.View' | translate">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn-icon" [attr.aria-label]="'COMMON.Edit' | translate">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-icon btn-danger" (click)="deletePost(post.id)" [attr.aria-label]="'COMMON.Delete' | translate">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredPosts.length === 0" class="empty-state">
+      <i class="fas fa-inbox"></i>
+      <h3>{{ 'POST.AllPosts.Empty.Title' | translate }}</h3>
+      <p>{{ 'POST.AllPosts.Empty.Message' | translate }}</p>
+      <button class="btn-primary" routerLink="../create">
+        {{ 'POST.AllPosts.CreateNew' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

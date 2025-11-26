@@ -121,10 +121,18 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'feature/schedule',
+    path: 'feature/consultation',
     component: ConsultationComponent,
     canActivate: [authGuard],
     children: [
+      { path: '', redirectTo: 'discover', pathMatch: 'full' },
+      {
+        path: 'create-profile',
+        loadComponent: () =>
+          import('./pages/consultation/create-profile/create-profile.component').then(
+            (m) => m.CreateConsultationProfileComponent
+          ),
+      },
       {
         path: 'discover',
         loadComponent: () =>
@@ -140,7 +148,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'schedule',
+        path: 'schedules',
         loadComponent: () =>
           import('./pages/consultation/schedules/scheduler').then(
             (m) => m.SchedulerComponent
@@ -163,7 +171,6 @@ export const routes: Routes = [
             (m) => m.ProfileFormClientComponent
           ),
       },
-      { path: '', redirectTo: 'discover', pathMatch: 'full' },
     ],
   },
   { path: 'feature/chat', component: ChatComponent, canActivate: [authGuard] },
@@ -249,6 +256,17 @@ export const routes: Routes = [
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
+  },
+
+  {
+    path: 'schedule',
+    redirectTo: 'feature/schedules',
+    pathMatch: 'full'
+  },
+  {
+    path: 'consultation',
+    redirectTo: 'feature/consultation',
+    pathMatch: 'prefix'
   },
 
   { path: 'start', component: Start },

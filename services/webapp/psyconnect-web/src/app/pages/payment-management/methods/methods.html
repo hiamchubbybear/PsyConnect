@@ -1,1 +1,33 @@
-<p>methods works!</p>
+<div class="methods-container">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'PAYMENT.Methods.Title' | translate }}</h1>
+      <p class="subtitle">{{ 'PAYMENT.Methods.Subtitle' | translate }}</p>
+    </div>
+    <button class="btn-primary">
+      <i class="fas fa-plus"></i>
+      {{ 'PAYMENT.Methods.AddNew' | translate }}
+    </button>
+  </header>
+
+  <div class="methods-grid">
+    <div *ngFor="let method of methods" class="method-card">
+      <div class="method-icon">
+        <i class="fas" [ngClass]="getMethodIcon(method.type)"></i>
+      </div>
+      <div class="method-details">
+        <h3>{{ method.name }}</h3>
+        <p *ngIf="method.expiryDate">{{ 'PAYMENT.Methods.Expires' | translate }}: {{ method.expiryDate }}</p>
+        <span *ngIf="method.isDefault" class="default-badge">{{ 'PAYMENT.Methods.Default' | translate }}</span>
+      </div>
+      <div class="method-actions">
+        <button *ngIf="!method.isDefault" class="btn-secondary" (click)="setDefault(method)">
+          {{ 'PAYMENT.Methods.SetDefault' | translate }}
+        </button>
+        <button class="btn-icon btn-danger" (click)="deleteMethod(method.id)">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

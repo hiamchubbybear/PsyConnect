@@ -1,1 +1,37 @@
-<p>segments works!</p>
+<div class="segments-container">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'PAYMENT.Segments.Title' | translate }}</h1>
+      <p class="subtitle">{{ 'PAYMENT.Segments.Subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="segments-grid">
+    <div *ngFor="let segment of segments" class="segment-card" [style.border-left-color]="segment.color">
+      <div class="segment-header">
+        <div class="segment-icon" [style.background-color]="segment.color + '20'">
+          <i class="fas fa-users" [style.color]="segment.color"></i>
+        </div>
+        <h3>{{ segment.name }}</h3>
+      </div>
+      <div class="segment-stats">
+        <div class="stat">
+          <span class="stat-label">{{ 'PAYMENT.Segments.Customers' | translate }}</span>
+          <span class="stat-value">{{ segment.customerCount }}</span>
+          <span class="stat-percentage">{{ getPercentage(segment).toFixed(1) }}%</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">{{ 'PAYMENT.Segments.Revenue' | translate }}</span>
+          <span class="stat-value">\${{ segment.totalRevenue.toLocaleString() }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">{{ 'PAYMENT.Segments.AvgTransaction' | translate }}</span>
+          <span class="stat-value">\${{ segment.avgTransactionValue.toFixed(2) }}</span>
+        </div>
+      </div>
+      <div class="segment-progress">
+        <div class="progress-bar" [style.width.%]="getPercentage(segment)" [style.background-color]="segment.color"></div>
+      </div>
+    </div>
+  </div>
+</div>

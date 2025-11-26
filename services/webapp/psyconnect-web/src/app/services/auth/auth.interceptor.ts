@@ -79,12 +79,12 @@ export const authInterceptor: HttpInterceptorFn = (
           authService.logout();
           return throwError(() => new Error('No username in storage'));
         }
-        if (err.status === 401) {
-          return refreshTokenAndRetry(req, next, username);
-        }
-        if (err.status === 500 && message.includes('server error')) {
-          return refreshTokenAndRetry(req, next, username);
-        }
+        // if (err.status === 401) {
+        //   return refreshTokenAndRetry(req, next, username);
+        // }
+        // if (err.status === 500 && message.includes('server error')) {
+        //   return refreshTokenAndRetry(req, next, username);
+        // }
         if (err.status === 500) {
           console.error('[AuthInterceptor] 500 error (non-server):', message);
           return throwError(() => err);

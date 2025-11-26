@@ -1,1 +1,55 @@
-<p>transactions works!</p>
+<div class="transactions-container">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'PAYMENT.Transactions.Title' | translate }}</h1>
+      <p class="subtitle">{{ 'PAYMENT.Transactions.Subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()"
+             [placeholder]="'COMMON.Search' | translate" />
+    </div>
+    <div class="filters">
+      <select [(ngModel)]="selectedFilter" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="all">{{ 'PAYMENT.Transactions.AllStatus' | translate }}</option>
+        <option value="completed">{{ 'PAYMENT.Transactions.Completed' | translate }}</option>
+        <option value="pending">{{ 'PAYMENT.Transactions.Pending' | translate }}</option>
+        <option value="failed">{{ 'PAYMENT.Transactions.Failed' | translate }}</option>
+      </select>
+      <select [(ngModel)]="selectedType" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="all">{{ 'PAYMENT.Transactions.AllTypes' | translate }}</option>
+        <option value="payment">{{ 'PAYMENT.Transactions.Payment' | translate }}</option>
+        <option value="refund">{{ 'PAYMENT.Transactions.Refund' | translate }}</option>
+        <option value="subscription">{{ 'PAYMENT.Transactions.Subscription' | translate }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="transactions-list">
+    <div *ngFor="let txn of filteredTransactions" class="transaction-card">
+      <div class="txn-icon" [ngClass]="getTypeIcon(txn.type)">
+        <i class="fas" [ngClass]="getTypeIcon(txn.type)"></i>
+      </div>
+      <div class="txn-details">
+        <h3>{{ txn.description }}</h3>
+        <p class="txn-customer">{{ txn.customer }}</p>
+        <span class="txn-date">{{ formatDate(txn.date) }}</span>
+      </div>
+      <div class="txn-amount" [class.negative]="txn.amount < 0">
+        {{ txn.amount >= 0 ? '+' : '' }}{{ txn.currency }} {{ txn.amount.toFixed(2) }}
+      </div>
+      <span class="txn-status" [ngClass]="getStatusClass(txn.status)">
+        {{ ('PAYMENT.Transactions.' + (txn.status.charAt(0).toUpperCase() + txn.status.slice(1))) | translate }}
+      </span>
+    </div>
+  </div>
+
+  <div *ngIf="filteredTransactions.length === 0" class="empty-state">
+    <i class="fas fa-exchange-alt"></i>
+    <h3>{{ 'PAYMENT.Transactions.NoTransactions' | translate }}</h3>
+    <p>{{ 'PAYMENT.Transactions.NoTransactionsMessage' | translate }}</p>
+  </div>
+</div>

@@ -612,6 +612,17 @@ h4 {
       color: var(--color-text-muted);
     }
 
+    .post-excerpt {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+      line-height: 1.5;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
     &__bio {
       margin: 0;
       font-size: 0.875rem;

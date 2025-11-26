@@ -186,22 +186,42 @@ export class PostDetailComponent implements OnInit {
     this.showReactionPicker = !this.showReactionPicker;
   }
 
-  addReaction(reactionType: ReactionType, event: Event) {
+  // New upvote/downvote methods
+  handleVote(voteType: ReactionType, event: Event) {
     event.stopPropagation();
+
     if (!this.post) return;
 
-    this.reactionService.addReaction(this.post.id, reactionType).subscribe({
+    this.reactionService.toggleVote(this.post.id, voteType).subscribe({
       next: () => {
+        // Update local vote state
         if (this.post) {
-          this.post.like_count++;
+          const currentVote = this.reactionService.getUserVote(this.post.id);
+          this.post.user_vote = currentVote;
+
+          // Reload post to get updated counts from server
+          this.loadPost(this.post.id);
         }
         this.showReactionPicker = false;
       },
       error: (err) => {
-        console.error('Failed to add reaction:', err);
-        this.toastService.error('Error', 'Failed to add reaction');
-      },
+        console.error('Failed to vote:', err);
+        this.toastService.error('Error', 'Failed to vote');
+      }
     });
+  }
+
+  hasUpvoted(): boolean {
+    return this.post ? this.post.user_vote === 'upvote' : false;
+  }
+
+  hasDownvoted(): boolean {
+    return this.post ? this.post.user_vote === 'downvote' : false;
+  }
+
+  // Legacy method - kept for backward compatibility
+  addReaction(reactionType: ReactionType, event: Event) {
+    this.handleVote(reactionType, event);
   }
 
   toggleBookmark() {
@@ -247,7 +267,15 @@ export class PostDetailComponent implements OnInit {
 
 
   getReactionEmoji(type: ReactionType): string {
-    return this.reactionTypes[type];
+    return this.reactionTypes[type] || '';
+  }
+
+  getReactionImage(type: ReactionType): string {
+    const REACTION_IMAGES: Record<ReactionType, string> = {
+      upvote: '/assets/reaction/arrow-big-up-dash.svg',
+      downvote: '/assets/reaction/arrow-big-down-dash.svg'
+    };
+    return REACTION_IMAGES[type] || '';
   }
 
   getReactionKeys(): ReactionType[] {

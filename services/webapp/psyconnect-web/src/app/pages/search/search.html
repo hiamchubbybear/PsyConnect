@@ -1,38 +1,126 @@
-<section class="search-bar">
-  <input
-    id="searchInput"
-    type="text"
-    placeholder="Search..."
-    [(ngModel)]="query"
-  />
-  <select [(ngModel)]="selectedCategory">
-    <option>All categories</option>
-    <option>1 category selected</option>
-  </select>
-  <!-- nút search có thể giữ lại hoặc bỏ -->
-  <button>Search</button>
-</section>
+<div class="search-container">
+  <!-- Search Header -->
+  <header class="search-header">
+    <h1>{{ 'SEARCH.Title' | translate }}</h1>
+    <p class="subtitle">{{ 'SEARCH.Subtitle' | translate }}</p>
+  </header>
 
-<div class="tags" *ngIf="query">
-  <span id="activeTag" class="tag">{{ query }} ✕</span>
-  <button class="clear" (click)="clearTag()">Clear</button>
-</div>
+  <!-- Search Bar -->
+  <div class="search-bar-wrapper">
+    <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="query"
+        (keyup.enter)="onSearch()"
+        [placeholder]="'SEARCH.Placeholder' | translate"
+        class="search-input"
+      />
+      <button *ngIf="query" class="clear-btn" (click)="clearSearch()">
+        <i class="fas fa-times"></i>
+      </button>
+      <button class="search-btn" (click)="onSearch()">
+        {{ 'SEARCH.SearchButton' | translate }}
+      </button>
+    </div>
 
-<section id="results" class="results">
-  <div *ngIf="filtered.length === 0" class="empty">No results found.</div>
-
-  <div class="card" *ngFor="let post of filtered; trackBy: trackByTitle">
-    <img [src]="post.image" [alt]="post.title" />
-    <div class="card-body">
-      <h3>{{ post.title }}</h3>
-      <p>{{ post.author }}</p>
+    <!-- Category Filters -->
+    <div class="category-filters">
+      <button
+        class="category-btn"
+        [class.active]="selectedCategory === 'all'"
+        (click)="onCategoryChange('all')"
+      >
+        {{ 'SEARCH.Categories.All' | translate }}
+      </button>
+      <button
+        class="category-btn"
+        [class.active]="selectedCategory === 'posts'"
+        (click)="onCategoryChange('posts')"
+      >
+        {{ 'SEARCH.Categories.Posts' | translate }}
+      </button>
+      <button
+        class="category-btn"
+        [class.active]="selectedCategory === 'users'"
+        (click)="onCategoryChange('users')"
+      >
+        {{ 'SEARCH.Categories.Users' | translate }}
+      </button>
+      <button
+        class="category-btn"
+        [class.active]="selectedCategory === 'tags'"
+        (click)="onCategoryChange('tags')"
+      >
+        {{ 'SEARCH.Categories.Tags' | translate }}
+      </button>
     </div>
   </div>
-</section>
 
-<div class="footer">
-  <div id="count">{{ resultsCount }} results</div>
-  <button (click)="loadMore()" [disabled]="filtered.length === posts.length">
-    Show me more results →
-  </button>
+  <!-- Recent Searches -->
+  <div class="recent-searches" *ngIf="!query && recentSearches.length > 0">
+    <div class="recent-header">
+      <h3>{{ 'SEARCH.Recent.Title' | translate }}</h3>
+      <button class="clear-recent-btn" (click)="clearRecentSearches()">
+        {{ 'SEARCH.Recent.Clear' | translate }}
+      </button>
+    </div>
+    <div class="recent-list">
+      <button
+        *ngFor="let recent of recentSearches"
+        class="recent-item"
+        (click)="selectRecentSearch(recent)"
+      >
+        <i class="fas fa-history"></i>
+        <span>{{ recent }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>{{ 'COMMON.Loading' | translate }}</p>
+  </div>
+
+  <!-- Search Results -->
+  <div *ngIf="!loading && query && results.length > 0" class="results-container">
+    <div class="results-header">
+      <h2>{{ 'SEARCH.Results.Title' | translate }}</h2>
+      <span class="results-count">{{ results.length }} {{ 'SEARCH.Results.Found' | translate }}</span>
+    </div>
+
+    <div class="results-list">
+      <div *ngFor="let result of results" class="result-item">
+        <div class="result-icon">
+          <i class="fas" [ngClass]="getResultIcon(result.type)"></i>
+        </div>
+        <div class="result-content">
+          <h3 class="result-title">{{ result.title }}</h3>
+          <p class="result-subtitle" *ngIf="result.subtitle">{{ result.subtitle }}</p>
+          <span class="result-type">{{ ('SEARCH.Types.' + result.type) | translate }}</span>
+        </div>
+        <button class="result-action" [routerLink]="result.type === 'post' ? ['/feed/post', result.id] : ['/profile', result.id]">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!loading && query && results.length === 0" class="no-results">
+    <i class="fas fa-search"></i>
+    <h3>{{ 'SEARCH.NoResults.Title' | translate }}</h3>
+    <p>{{ 'SEARCH.NoResults.Message' | translate }} "{{ query }}"</p>
+    <button class="btn-primary" (click)="clearSearch()">
+      {{ 'SEARCH.NoResults.ClearButton' | translate }}
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!query && recentSearches.length === 0" class="empty-state">
+    <i class="fas fa-search"></i>
+    <h3>{{ 'SEARCH.Empty.Title' | translate }}</h3>
+    <p>{{ 'SEARCH.Empty.Message' | translate }}</p>
+  </div>
 </div>

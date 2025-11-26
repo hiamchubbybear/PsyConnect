@@ -7,6 +7,7 @@ import { REACTION_TYPES, ReactionType } from '../../models/reaction.model';
 import { NewsfeedService } from '../../services/newsfeed/newsfeed.service';
 import { ReactionService } from '../../services/newsfeed/reaction.service';
 import { Profile } from '../../services/profile/profile';
+import { PostModalComponent } from './post-modal/post-modal';
 
 interface Therapist {
   name: string;
@@ -24,7 +25,7 @@ interface SupportGroup {
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule],
+  imports: [CommonModule, RouterModule, TranslateModule, PostModalComponent],
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
 })
@@ -43,6 +44,10 @@ export class FeedComponent implements OnInit {
   showAuthorCard: { [postId: string]: boolean } = {};
   hoveredUserId: string | null = null;
   authorCardTimeout: any = null;
+
+  // Post modal state
+  showPostModal = false;
+  selectedPostId: string | null = null;
 
   moodWeek = ['😊', '😐', '🙂', '😕', '😁', '😢', '🙂'];
 
@@ -148,12 +153,30 @@ export class FeedComponent implements OnInit {
 
     this.reactionService.removeReaction(post.id).subscribe({
       next: () => {
-        post.like_count = Math.max(0, post.like_count - 1);
+        post.like_count--;
       },
       error: (err) => {
         console.error('Failed to remove reaction:', err);
       }
     });
+  }
+
+  // Post modal methods
+  openPostModal(postId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.selectedPostId = postId;
+    this.showPostModal = true;
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+  }
+
+  closePostModal() {
+    this.showPostModal = false;
+    this.selectedPostId = null;
+    // Restore body scroll
+    document.body.style.overflow = '';
   }
 
   openPost(post: Post) {

@@ -1,1 +1,59 @@
-<p>refunds works!</p>
+<div class="refunds-container">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'PAYMENT.Refunds.Title' | translate }}</h1>
+      <p class="subtitle">{{ 'PAYMENT.Refunds.Subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <div class="controls-bar">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()"
+             [placeholder]="'COMMON.Search' | translate" />
+    </div>
+    <select [(ngModel)]="selectedFilter" (ngModelChange)="applyFilters()" class="filter-select">
+      <option value="all">{{ 'PAYMENT.Refunds.AllStatus' | translate }}</option>
+      <option value="pending">{{ 'PAYMENT.Refunds.Pending' | translate }}</option>
+      <option value="approved">{{ 'PAYMENT.Refunds.Approved' | translate }}</option>
+      <option value="rejected">{{ 'PAYMENT.Refunds.Rejected' | translate }}</option>
+    </select>
+  </div>
+
+  <div class="refunds-list">
+    <div *ngFor="let refund of filteredRefunds" class="refund-card">
+      <div class="refund-header">
+        <div class="refund-info">
+          <h3>{{ refund.transactionId }}</h3>
+          <p class="customer">{{ refund.customer }}</p>
+        </div>
+        <div class="refund-amount">\${{ refund.amount.toFixed(2) }}</div>
+      </div>
+      <div class="refund-body">
+        <p class="reason"><strong>{{ 'PAYMENT.Refunds.Reason' | translate }}:</strong> {{ refund.reason }}</p>
+        <p class="date"><strong>{{ 'PAYMENT.Refunds.RequestDate' | translate }}:</strong> {{ formatDate(refund.requestDate) }}</p>
+      </div>
+      <div class="refund-footer">
+        <span class="status-badge" [ngClass]="getStatusClass(refund.status)">
+          {{ ('PAYMENT.Refunds.' + (refund.status.charAt(0).toUpperCase() + refund.status.slice(1))) | translate }}
+        </span>
+        <div class="actions" *ngIf="refund.status === 'pending'">
+          <button class="btn-approve" (click)="approveRefund(refund)">
+            <i class="fas fa-check"></i>
+            {{ 'PAYMENT.Refunds.Approve' | translate }}
+          </button>
+          <button class="btn-reject" (click)="rejectRefund(refund)">
+            <i class="fas fa-times"></i>
+            {{ 'PAYMENT.Refunds.Reject' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredRefunds.length === 0" class="empty-state">
+    <i class="fas fa-undo"></i>
+    <h3>{{ 'PAYMENT.Refunds.NoRefunds' | translate }}</h3>
+    <p>{{ 'PAYMENT.Refunds.NoRefundsMessage' | translate }}</p>
+  </div>
+</div>

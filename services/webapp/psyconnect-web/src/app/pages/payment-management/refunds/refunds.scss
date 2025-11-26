@@ -1,0 +1,227 @@
+.refunds-container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+}
+
+.controls-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  .search-box {
+    flex: 1;
+    position: relative;
+
+    i {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+      font-size: 0.875rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+
+      &:focus {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .filter-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--color-bg-secondary);
+    }
+  }
+}
+
+.refunds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.refund-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .refund-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+
+    .refund-info {
+      h3 {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--color-accent);
+        margin: 0 0 0.25rem 0;
+      }
+
+      .customer {
+        font-size: 0.8125rem;
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+    }
+
+    .refund-amount {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #ef4444;
+    }
+  }
+
+  .refund-body {
+    margin-bottom: 0.75rem;
+
+    p {
+      font-size: 0.8125rem;
+      color: var(--color-text);
+      margin: 0 0 0.25rem 0;
+
+      strong {
+        color: var(--color-text-muted);
+        font-weight: 500;
+      }
+    }
+  }
+
+  .refund-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+
+      &.status-approved {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+      }
+
+      &.status-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+      }
+
+      &.status-rejected {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+      }
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.btn-approve {
+          background: rgba(16, 185, 129, 0.1);
+          color: #10b981;
+
+          &:hover {
+            background: #10b981;
+            color: white;
+          }
+        }
+
+        &.btn-reject {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+
+          &:hover {
+            background: #ef4444;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+
+  i {
+    font-size: 3rem;
+    color: var(--color-text-muted);
+    opacity: 0.3;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-text);
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+}

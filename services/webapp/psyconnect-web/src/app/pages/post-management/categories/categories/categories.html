@@ -1,1 +1,67 @@
-<p>categories works!</p>
+<div class="categories-container">
+  <header class="page-header">
+    <div>
+      <h1>{{ 'POST.Categories.Title' | translate }}</h1>
+      <p class="subtitle">{{ 'POST.Categories.Subtitle' | translate }}</p>
+    </div>
+    <button class="btn-primary" (click)="openAddModal()">
+      <i class="fas fa-plus"></i>
+      {{ 'POST.Categories.AddNew' | translate }}
+    </button>
+  </header>
+
+  <div class="search-box">
+    <i class="fas fa-search"></i>
+    <input type="text" [(ngModel)]="searchQuery" [placeholder]="'COMMON.Search' | translate" />
+  </div>
+
+  <div class="categories-grid">
+    <div *ngFor="let category of filteredCategories" class="category-card" [style.border-left-color]="category.color">
+      <div class="category-icon" [style.background-color]="category.color + '20'">
+        <i class="fas" [ngClass]="category.icon" [style.color]="category.color"></i>
+      </div>
+      <div class="category-content">
+        <h3>{{ category.name }}</h3>
+        <p>{{ category.description }}</p>
+        <span class="post-count">{{ category.postCount }} {{ 'POST.Categories.Posts' | translate }}</span>
+      </div>
+      <div class="category-actions">
+        <button class="btn-icon" [attr.aria-label]="'COMMON.Edit' | translate">
+          <i class="fas fa-edit"></i>
+        </button>
+        <button class="btn-icon btn-danger" (click)="deleteCategory(category.id)" [attr.aria-label]="'COMMON.Delete' | translate">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredCategories.length === 0" class="empty-state">
+    <i class="fas fa-folder-open"></i>
+    <h3>{{ 'POST.Categories.Empty.Title' | translate }}</h3>
+    <p>{{ 'POST.Categories.Empty.Message' | translate }}</p>
+  </div>
+
+  <!-- Add Category Modal -->
+  <div *ngIf="showAddModal" class="modal-overlay" (click)="closeAddModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>{{ 'POST.Categories.AddNew' | translate }}</h2>
+      <div class="form-group">
+        <label>{{ 'COMMON.Name' | translate }}</label>
+        <input type="text" [(ngModel)]="newCategory.name" [placeholder]="'POST.Categories.NamePlaceholder' | translate" />
+      </div>
+      <div class="form-group">
+        <label>{{ 'COMMON.Description' | translate }}</label>
+        <textarea [(ngModel)]="newCategory.description" [placeholder]="'POST.Categories.DescriptionPlaceholder' | translate"></textarea>
+      </div>
+      <div class="form-group">
+        <label>{{ 'POST.Categories.Color' | translate }}</label>
+        <input type="color" [(ngModel)]="newCategory.color" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeAddModal()">{{ 'COMMON.Cancel' | translate }}</button>
+        <button class="btn-primary" (click)="saveCategory()">{{ 'COMMON.Save' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>

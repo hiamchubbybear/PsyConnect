@@ -1,117 +1,178 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-interface Invoice {
-  invoiceNumber: string;
-  vendor: string;
-  billingDate: string;
-  status: 'Paid' | 'Unpaid';
-  amount: string;
+interface PaymentStats {
+  totalRevenue: number;
+  monthlyRevenue: number;
+  totalTransactions: number;
+  pendingPayments: number;
 }
 
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './overview.html',
-  styleUrls: ['./overview.scss'],
+  imports: [CommonModule, TranslateModule],
+  template: `
+    <div class="overview-container">
+      <header class="page-header">
+        <h1>{{ 'PAYMENT.Overview.Title' | translate }}</h1>
+        <p class="subtitle">{{ 'PAYMENT.Overview.Subtitle' | translate }}</p>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon revenue">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">{{ 'PAYMENT.Overview.TotalRevenue' | translate }}</span>
+            <span class="stat-value">\${{ stats.totalRevenue.toLocaleString() }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon monthly">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">{{ 'PAYMENT.Overview.MonthlyRevenue' | translate }}</span>
+            <span class="stat-value">\${{ stats.monthlyRevenue.toLocaleString() }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon transactions">
+            <i class="fas fa-exchange-alt"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">{{ 'PAYMENT.Overview.Transactions' | translate }}</span>
+            <span class="stat-value">{{ stats.totalTransactions }}</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon pending">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">{{ 'PAYMENT.Overview.Pending' | translate }}</span>
+            <span class="stat-value">{{ stats.pendingPayments }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-placeholder">
+        <i class="fas fa-chart-line"></i>
+        <p>{{ 'PAYMENT.Overview.ChartComingSoon' | translate }}</p>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .overview-container {
+      padding: var(--spacing-2xl);
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .page-header h1 {
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0 0 var(--spacing-sm) 0;
+    }
+    .subtitle {
+      color: var(--color-text-muted);
+      margin-bottom: var(--spacing-2xl);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--spacing-lg);
+      margin-bottom: var(--spacing-2xl);
+    }
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--border-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .stat-icon.revenue {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+    }
+    .stat-icon.monthly {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+    .stat-icon.transactions {
+      background: rgba(139, 92, 246, 0.1);
+      color: #8b5cf6;
+    }
+    .stat-icon.pending {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+    }
+    .stat-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+    .stat-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      font-weight: 500;
+    }
+    .stat-value {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .chart-placeholder {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-3xl);
+      text-align: center;
+    }
+    .chart-placeholder i {
+      font-size: 4rem;
+      color: var(--color-text-muted);
+      opacity: 0.3;
+      margin-bottom: var(--spacing-lg);
+    }
+    .chart-placeholder p {
+      color: var(--color-text-muted);
+    }
+  `]
 })
-export class Overview {
-  allInvoices: Invoice[] = [
-    {
-      invoiceNumber: '514684654865',
-      vendor: 'Jane Cooper',
-      billingDate: '2/19/21',
-      status: 'Paid',
-      amount: '$500.00',
-    },
-    {
-      invoiceNumber: '5467319467348',
-      vendor: 'Wade Warren',
-      billingDate: '5/7/16',
-      status: 'Paid',
-      amount: '$500.00',
-    },
-    {
-      invoiceNumber: '1345705945446',
-      vendor: 'Esther Howard',
-      billingDate: '9/18/16',
-      status: 'Unpaid',
-      amount: '$500.00',
-    },
-    {
-      invoiceNumber: '5440754979',
-      vendor: 'Cameron Williamson',
-      billingDate: '2/11/12',
-      status: 'Paid',
-      amount: '$500.00',
-    },
-    {
-      invoiceNumber: '1234567984543',
-      vendor: 'Brooklyn Simmons',
-      billingDate: '9/18/16',
-      status: 'Unpaid',
-      amount: '$500.00',
-    },
-    {
-      invoiceNumber: '8454134649707',
-      vendor: 'Leslie Alexander',
-      billingDate: '1/28/17',
-      status: 'Unpaid',
-      amount: '$500.00',
-    },
-    {
-      invoiceNumber: '2130164040451',
-      vendor: 'Jenny Wilson',
-      billingDate: '5/27/15',
-      status: 'Paid',
-      amount: '$500.00',
-    },
-    {
-      invoiceNumber: '043910464504',
-      vendor: 'Guy Hawkins',
-      billingDate: '8/2/19',
-      status: 'Paid',
-      amount: '$500.00',
-    },
+export class Overview implements OnInit {
+  stats: PaymentStats = {
+    totalRevenue: 0,
+    monthlyRevenue: 0,
+    totalTransactions: 0,
+    pendingPayments: 0
+  };
 
-    {
-      invoiceNumber: '88937465231',
-      vendor: 'Marvin McKinney',
-      billingDate: '6/14/20',
-      status: 'Paid',
-      amount: '$400.00',
-    },
-    {
-      invoiceNumber: '98234756234',
-      vendor: 'Courtney Henry',
-      billingDate: '3/3/21',
-      status: 'Unpaid',
-      amount: '$750.00',
-    },
-    {
-      invoiceNumber: '12398745623',
-      vendor: 'Devon Lane',
-      billingDate: '4/25/18',
-      status: 'Paid',
-      amount: '$600.00',
-    },
-  ];
-
-  displayedInvoices: Invoice[] = [];
-  itemsToShow = 6;
-
-  constructor() {
-    this.displayedInvoices = this.allInvoices.slice(0, this.itemsToShow);
+  ngOnInit() {
+    this.loadStats();
   }
 
-  loadMore() {
-    this.itemsToShow += 3;
-    this.displayedInvoices = this.allInvoices.slice(0, this.itemsToShow);
-  }
-
-  canLoadMore(): boolean {
-    return this.displayedInvoices.length < this.allInvoices.length;
+  loadStats() {
+    // Mock data
+    this.stats = {
+      totalRevenue: 45280,
+      monthlyRevenue: 12450,
+      totalTransactions: 156,
+      pendingPayments: 8
+    };
   }
 }

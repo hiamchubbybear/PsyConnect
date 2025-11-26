@@ -709,7 +709,14 @@
         "Comments": {
             "Title": "Comments",
             "Placeholder": "Write a comment...",
-            "Submit": "Post Comment"
+            "Submit": "Post Comment",
+            "NoComments": "No comments yet. Be the first to comment!"
+        },
+        "Actions": {
+            "Like": "Like",
+            "Bookmark": "Bookmark",
+            "Bookmarked": "Bookmarked",
+            "Share": "Share"
         },
         "Like": "Like",
         "Liked": "Liked",
@@ -780,7 +787,9 @@
             "Laugh": "Laugh",
             "Think": "Think",
             "Sad": "Sad",
-            "Angry": "Angry"
+            "Angry": "Angry",
+            "Upvote": "Upvote",
+            "Downvote": "Downvote"
         }
     },
     "FEED": {
@@ -1229,5 +1238,318 @@
         "key_therapist_update_error": "An error occurred while updating therapist",
         "key_load_friends_failed": "Failed to load friends list",
         "error_notification": "Fail to subscribe notification"
+    },
+    "SEARCH": {
+        "Title": "Search",
+        "Subtitle": "Find posts, users, and topics",
+        "Placeholder": "What are you looking for?",
+        "SearchButton": "Search",
+        "Categories": {
+            "All": "All",
+            "Posts": "Posts",
+            "Users": "Users",
+            "Tags": "Tags"
+        },
+        "Recent": {
+            "Title": "Recent Searches",
+            "Clear": "Clear All"
+        },
+        "Results": {
+            "Title": "Search Results",
+            "Found": "results found"
+        },
+        "Types": {
+            "post": "Post",
+            "user": "User",
+            "tag": "Tag"
+        },
+        "NoResults": {
+            "Title": "No Results Found",
+            "Message": "We couldn't find anything matching",
+            "ClearButton": "Clear Search"
+        },
+        "Empty": {
+            "Title": "Start Searching",
+            "Message": "Enter keywords to find posts, users, or topics"
+        }
+    },
+    "POST": {
+        "AllPosts": {
+            "Title": "All Posts",
+            "Subtitle": "Manage your published and draft posts",
+            "CreateNew": "Create New Post",
+            "SearchPlaceholder": "Search posts...",
+            "Stats": {
+                "Total": "Total Posts",
+                "Published": "Published",
+                "Draft": "Drafts",
+                "Views": "Total Views"
+            },
+            "Filters": {
+                "All": "All Posts",
+                "Published": "Published",
+                "Draft": "Drafts"
+            },
+            "Sort": {
+                "Newest": "Newest First",
+                "Oldest": "Oldest First",
+                "Popular": "Most Popular"
+            },
+            "Table": {
+                "Title": "Title",
+                "Type": "Type",
+                "Status": "Status",
+                "Date": "Date",
+                "Views": "Views",
+                "Actions": "Actions"
+            },
+            "Status": {
+                "Published": "Published",
+                "Draft": "Draft"
+            },
+            "Empty": {
+                "Title": "No Posts Found",
+                "Message": "Create your first post to get started"
+            }
+        }
+    },
+    "COMMON": {
+        "Loading": "Loading",
+        "Close": "Close",
+        "View": "View",
+        "Edit": "Edit",
+        "Delete": "Delete",
+        "Back": "Back",
+        "Save": "Save",
+        "Cancel": "Cancel",
+        "Submit": "Submit",
+        "Search": "Search",
+        "Filter": "Filter",
+        "Sort": "Sort",
+        "Actions": "Actions",
+        "Status": "Status",
+        "Date": "Date",
+        "Name": "Name",
+        "Email": "Email",
+        "Phone": "Phone",
+        "Address": "Address",
+        "Description": "Description",
+        "Settings": "Settings",
+        "Profile": "Profile",
+        "Logout": "Logout",
+        "Login": "Login",
+        "Register": "Register",
+        "ForgotPassword": "Forgot Password",
+        "ResetPassword": "Reset Password",
+        "ChangePassword": "Change Password",
+        "UpdateProfile": "Update Profile",
+        "UploadImage": "Upload Image",
+        "RemoveImage": "Remove Image",
+        "SelectFile": "Select File",
+        "DropFile": "Drop file here",
+        "Success": "Success",
+        "Error": "Error",
+        "Warning": "Warning",
+        "Info": "Info",
+        "Confirm": "Confirm",
+        "Yes": "Yes",
+        "No": "No",
+        "OK": "OK",
+        "Apply": "Apply",
+        "Reset": "Reset",
+        "Clear": "Clear",
+        "SelectAll": "Select All",
+        "DeselectAll": "Deselect All",
+        "ShowMore": "Show More",
+        "ShowLess": "Show Less",
+        "LoadMore": "Load More",
+        "Refresh": "Refresh",
+        "Export": "Export",
+        "Import": "Import",
+        "Print": "Print",
+        "Download": "Download",
+        "Upload": "Upload",
+        "Share": "Share",
+        "Copy": "Copy",
+        "Paste": "Paste",
+        "Cut": "Cut",
+        "Undo": "Undo",
+        "Redo": "Redo",
+        "SelectLanguage": "Select Language",
+        "SelectTheme": "Select Theme",
+        "LightMode": "Light Mode",
+        "DarkMode": "Dark Mode",
+        "AutoMode": "Auto Mode",
+        "Notifications": "Notifications",
+        "Messages": "Messages",
+        "Help": "Help",
+        "About": "About",
+        "TermsOfService": "Terms of Service",
+        "PrivacyPolicy": "Privacy Policy",
+        "ContactUs": "Contact Us",
+        "FAQ": "FAQ",
+        "Support": "Support",
+        "Feedback": "Feedback",
+        "ReportBug": "Report Bug",
+        "RequestFeature": "Request Feature",
+        "RateApp": "Rate App",
+        "ShareApp": "Share App",
+        "FollowUs": "Follow Us",
+        "Copyright": "Copyright",
+        "AllRightsReserved": "All Rights Reserved",
+        "Version": "Version",
+        "BuildNumber": "Build Number",
+        "LastUpdated": "Last Updated",
+        "CreatedAt": "Created At",
+        "UpdatedAt": "Updated At",
+        "DeletedAt": "Deleted At",
+        "CreatedBy": "Created By",
+        "UpdatedBy": "Updated By",
+        "DeletedBy": "Deleted By",
+        "ComingSoon": "Coming Soon"
+    },
+    "PAYMENT": {
+        "Sidebar": {
+            "Title": "Payment Management",
+            "Items": {
+                "Overview": "Overview",
+                "Transactions": "Transactions",
+                "Invoices": "Invoices",
+                "Methods": "Payment Methods",
+                "Refunds": "Refunds",
+                "Reports": "Reports",
+                "Segments": "Segments",
+                "Settings": "Settings"
+            }
+        },
+        "Overview": {
+            "Title": "Payment Overview",
+            "Subtitle": "Monitor your revenue and transactions",
+            "TotalRevenue": "Total Revenue",
+            "MonthlyRevenue": "Monthly Revenue",
+            "Transactions": "Total Transactions",
+            "Pending": "Pending Payments",
+            "ChartComingSoon": "Revenue chart coming soon"
+        },
+        "Transactions": {
+            "Title": "Transactions",
+            "Subtitle": "View all payment transactions",
+            "ComingSoonMessage": "Transaction history will be available soon",
+            "AllStatus": "All Status",
+            "Completed": "Completed",
+            "Pending": "Pending",
+            "Failed": "Failed",
+            "AllTypes": "All Types",
+            "Payment": "Payment",
+            "Refund": "Refund",
+            "Subscription": "Subscription",
+            "NoTransactions": "No Transactions Found",
+            "NoTransactionsMessage": "No transactions match your filters"
+        },
+        "Invoices": {
+            "Title": "Invoices",
+            "Subtitle": "Manage your invoices",
+            "ComingSoonMessage": "Invoice management coming soon",
+            "CreateNew": "Create Invoice",
+            "AllStatus": "All Status",
+            "Paid": "Paid",
+            "Unpaid": "Unpaid",
+            "Overdue": "Overdue",
+            "InvoiceNumber": "Invoice #",
+            "Customer": "Customer",
+            "Amount": "Amount",
+            "DueDate": "Due Date",
+            "Status": "Status",
+            "Download": "Download",
+            "NoInvoices": "No Invoices Found",
+            "NoInvoicesMessage": "No invoices match your filters"
+        },
+        "Methods": {
+            "Title": "Payment Methods",
+            "Subtitle": "Manage payment methods",
+            "ComingSoonMessage": "Payment methods configuration coming soon",
+            "AddNew": "Add Payment Method",
+            "Expires": "Expires",
+            "Default": "Default",
+            "SetDefault": "Set as Default"
+        },
+        "Refunds": {
+            "Title": "Refunds",
+            "Subtitle": "Process refund requests",
+            "ComingSoonMessage": "Refund processing coming soon",
+            "AllStatus": "All Status",
+            "Pending": "Pending",
+            "Approved": "Approved",
+            "Rejected": "Rejected",
+            "Reason": "Reason",
+            "RequestDate": "Request Date",
+            "Approve": "Approve",
+            "Reject": "Reject",
+            "NoRefunds": "No Refunds Found",
+            "NoRefundsMessage": "No refund requests match your filters"
+        },
+        "Reports": {
+            "Title": "Financial Reports",
+            "Subtitle": "Generate financial reports",
+            "ComingSoonMessage": "Report generation coming soon",
+            "Export": "Export Report",
+            "TotalRevenue": "Total Revenue",
+            "TotalTransactions": "Total Transactions",
+            "TotalRefunds": "Total Refunds",
+            "NetRevenue": "Net Revenue",
+            "Period": "Period",
+            "Revenue": "Revenue",
+            "Transactions": "Transactions",
+            "Refunds": "Refunds"
+        },
+        "Segments": {
+            "Title": "Customer Segments",
+            "Subtitle": "Analyze customer segments",
+            "ComingSoonMessage": "Segment analysis coming soon",
+            "Customers": "Customers",
+            "Revenue": "Revenue",
+            "AvgTransaction": "Avg. Transaction"
+        },
+        "Settings": {
+            "Title": "Payment Settings",
+            "Subtitle": "Configure payment settings",
+            "ComingSoonMessage": "Payment settings coming soon",
+            "General": "General Settings",
+            "Currency": "Currency",
+            "TaxRate": "Tax Rate",
+            "InvoicePrefix": "Invoice Prefix",
+            "PaymentGateway": "Payment Gateway",
+            "Gateway": "Gateway",
+            "Automation": "Automation",
+            "AutoRefund": "Auto-approve refunds",
+            "AutoRefundDesc": "Automatically approve refunds under $50",
+            "EmailNotifications": "Email Notifications",
+            "EmailNotificationsDesc": "Send email notifications for transactions"
+        }
+    },
+    "POST": {
+        "Categories": {
+            "Title": "Post Categories",
+            "Subtitle": "Organize posts into categories",
+            "AddNew": "Add Category",
+            "Posts": "posts",
+            "Color": "Color",
+            "NamePlaceholder": "Enter category name",
+            "DescriptionPlaceholder": "Enter description",
+            "Empty": {
+                "Title": "No Categories",
+                "Message": "Create your first category"
+            }
+        },
+        "Reviews": {
+            "Title": "Post Reviews",
+            "Subtitle": "Review and moderate posts",
+            "ComingSoonMessage": "Post review system coming soon"
+        },
+        "Settings": {
+            "Title": "Post Settings",
+            "Subtitle": "Configure post settings",
+            "ComingSoonMessage": "Post settings coming soon"
+        }
     }
 }

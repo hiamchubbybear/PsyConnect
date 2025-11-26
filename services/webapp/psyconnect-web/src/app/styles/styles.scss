@@ -363,29 +363,29 @@ a {
 }
 
 .link {
-  color: #3f3f46;
+  color: var(--link-primary);
   text-decoration: none;
   transition: color 0.2s ease, text-shadow 0.2s ease;
 
   &:hover {
-    color: #27272a;
+    color: var(--link-primary-hover);
     text-decoration: underline;
   }
 
   &--subtle {
-    color: #71717a;
+    color: var(--link-secondary);
 
     &:hover {
-      color: #52525b;
+      color: var(--link-secondary-hover);
       text-decoration: none;
     }
   }
 
   &--accent {
-    color: #6d28d9;
+    color: var(--link-accent);
 
     &:hover {
-      color: #5b21b6;
+      color: var(--link-accent-hover);
       text-decoration: underline;
     }
   }
@@ -408,19 +408,19 @@ a {
     display: inline-flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    background: #f4f4f5;
-    color: #3f3f46;
-    border: 1px solid #d4d4d8;
-    border-radius: 6px;
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
     font-weight: 500;
     font-size: 0.875rem;
     transition: all 0.2s ease;
 
     &:hover {
-      background: #e4e4e7;
-      color: #27272a;
+      background: var(--color-bg-hover);
+      color: var(--color-text);
       transform: translateY(-1px);
-      border-color: #a1a1aa;
+      border-color: var(--color-border);
     }
 
     &:active {
@@ -428,14 +428,14 @@ a {
     }
 
     &--dark {
-      background: #27272a;
-      color: #f4f4f5;
-      border-color: #52525b;
+      background: var(--color-surface-high);
+      color: var(--color-text);
+      border-color: var(--color-border);
 
       &:hover {
-        background: #3f3f46;
-        color: #ffffff;
-        border-color: #71717a;
+        background: var(--color-surface-overlay);
+        color: var(--color-text);
+        border-color: var(--color-border);
       }
     }
   }
@@ -445,17 +445,17 @@ a {
     align-items: center;
     padding: 0.5rem 1rem;
     background: transparent;
-    color: #3f3f46;
-    border: 1px solid #d4d4d8;
-    border-radius: 6px;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
     font-weight: 400;
     font-size: 0.875rem;
     transition: all 0.2s ease;
 
     &:hover {
-      background: #f4f4f5;
-      color: #27272a;
-      border-color: #a1a1aa;
+      background: var(--color-bg-secondary);
+      color: var(--color-text);
+      border-color: var(--color-border);
     }
   }
 }
