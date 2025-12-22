@@ -5,7 +5,6 @@ import (
 	"consultationservice/internal/db"
 	handlers "consultationservice/internal/handler"
 	"consultationservice/internal/kafka"
-	"consultationservice/internal/middleware"
 	"consultationservice/internal/redis"
 	"consultationservice/internal/repository"
 	"consultationservice/internal/route"
@@ -16,8 +15,8 @@ import (
 )
 
 func main() {
-	db.InitDB()
 	env := bootstrap.LoadEnv()
+	db.InitDB()
 
 	// Initialize Kafka Logger
 	kafkaBrokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
@@ -41,11 +40,10 @@ func main() {
 
 	redisClient, err := redis.NewRedisStore(env)
 	if err != nil {
-		kafkaLogger.Fatal("Failed to initialize Redis", map[string]interface{}{
+		kafkaLogger.Warn("Failed to initialize Redis (continuing without cache)", map[string]interface{}{
 			"error": err.Error(),
 		})
-		log.Println(err)
-		panic(err)
+		log.Printf("⚠️ Warning: Redis initialization failed: %v", err)
 	}
 	repomanager := repository.NewRepositoryManager(env, redisClient)
 

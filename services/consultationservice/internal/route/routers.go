@@ -2,7 +2,6 @@ package route
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/gin-gonic/gin"
 
@@ -37,7 +36,7 @@ func RouterInit(
 			kafkaLogger.Fatal("Router panic", map[string]interface{}{
 				"error": fmt.Sprintf("%v", err),
 			})
-			log.Fatal(err)
+			// log.Fatal(err)
 		}
 	}()
 

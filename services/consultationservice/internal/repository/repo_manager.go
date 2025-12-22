@@ -17,11 +17,11 @@ type RepositoryManager struct {
 	SwipeRepo     *SwipeRepository
 
 	// Newsfeed repositories
-	PostRepo      PostRepository
-	ReactionRepo  ReactionRepository
-	CommentRepo   CommentRepository
-	FollowRepo    FollowRepository
-	BookmarkRepo  BookmarkRepository
+	PostRepo     PostRepository
+	ReactionRepo ReactionRepository
+	CommentRepo  CommentRepository
+	FollowRepo   FollowRepository
+	BookmarkRepo BookmarkRepository
 
 	GrpcProfile *handler.ProfileGrpc
 	Kafka       *kafka.Producer
@@ -31,27 +31,32 @@ type RepositoryManager struct {
 func NewRepositoryManager(env *bootstrap.Env, redisClient redis.RedisStore) *RepositoryManager {
 	log.Printf("NewRepositoryManager called with env: %+v", env)
 
-	grpcProfile, err := handler.NewProfileGrpc(env.GrpcAdd)
+	grpcAddr := env.GrpcAdd
+	if grpcAddr == "" {
+		grpcAddr = "profileservice:50051"
+	}
+
+	grpcProfile, err := handler.NewProfileGrpc(grpcAddr)
 	if err != nil {
-		log.Fatal("Failed to create grpc: ", err)
+		log.Printf(" Warning: Failed to create grpc client: %v", err)
 	}
 
 	kafkaProducer, err := kafka.NewProducer(env)
 	if err != nil {
-		log.Fatal("Failed to initialize kafka: ", err)
+		log.Printf(" Warning: Failed to initialize kafka: %v", err)
 	}
 
 	log.Printf("Initializing ClientRepository...")
 	clientRepo := NewClientRepository(db.GetClientCollection(), redisClient)
 	if clientRepo == nil {
-		log.Fatal("clientRepo is nil")
+		log.Printf(" Warning: clientRepo is nil")
 	}
 	log.Printf("ClientRepo created: %+v", clientRepo)
 
 	log.Printf("Initializing TherapistRepository...")
 	therapistRepo := NewTherapistRepository(db.GetTherapistCollection(), redisClient)
 	if therapistRepo == nil {
-		log.Fatal("therapistRepo is nil")
+		log.Printf(" Warning: therapistRepo is nil")
 	}
 	log.Printf("TherapistRepo created: %+v", therapistRepo)
 
@@ -60,21 +65,21 @@ func NewRepositoryManager(env *bootstrap.Env, redisClient redis.RedisStore) *Rep
 	log.Printf("Got matchCollection: %+v", matchCollection)
 	matchingRepo := NewMatchRepository(matchCollection, redisClient)
 	if matchingRepo == nil {
-		log.Fatal("matchingRepo is nil after NewMatchRepository")
+		log.Printf(" Warning: matchingRepo is nil after NewMatchRepository")
 	}
 	log.Printf("MatchingRepo created successfully: %+v", matchingRepo)
 
 	log.Printf("Initializing SessionRepository...")
 	sessionRepo := NewSessionRepository(db.GetSessionCollection(), clientRepo, therapistRepo, matchingRepo, redisClient)
 	if sessionRepo == nil {
-		log.Fatal("sessionRepo is nil")
+		log.Printf(" Warning: sessionRepo is nil")
 	}
 	log.Printf("SessionRepo created: %+v", sessionRepo)
 
 	log.Printf("Initializing SwipeRepository...")
 	swipesRepo := NewSwipeRepository(clientRepo, therapistRepo, sessionRepo, db.GetSwipedCollection(), redisClient)
 	if swipesRepo == nil {
-		log.Fatalf("swipesRepo is nil")
+		log.Printf(" Warning: swipesRepo is nil")
 	}
 	log.Printf("SwipesRepo created: %+v", swipesRepo)
 

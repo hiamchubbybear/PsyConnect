@@ -146,7 +146,9 @@ func (l *KafkaLogger) log(level LogLevel, message string, fields map[string]inte
 	})
 
 	if err != nil {
-		fmt.Printf("Failed to write message to Kafka: %v\n", err)
+		// Only print to console once in a while or just once to avoid spam
+		// For now, we just print the error but don't let it block
+		fmt.Printf("⚠️ Kafka Log Error: %v (service continues)\n", err)
 	}
 }
 
@@ -170,9 +172,10 @@ func (l *KafkaLogger) Error(message string, fields map[string]interface{}) {
 	l.log(ERROR, message, fields)
 }
 
-// Fatal logs a fatal message
+// Fatal logs a fatal message - MODIFIED: Does not exit anymore
 func (l *KafkaLogger) Fatal(message string, fields map[string]interface{}) {
 	l.log(FATAL, message, fields)
+	fmt.Printf("🔴 FATAL: %s\n", message)
 }
 
 // Audit logs an audit message

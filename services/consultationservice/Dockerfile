@@ -1,24 +1,26 @@
-# Stage 1: Build
+# Build stage
 FROM golang:1.23-alpine AS builder
-RUN apk add --no-cache git
 
-# Context root
 WORKDIR /app
 
-# Copy go.mod và go.sum của service
-COPY services/consultationservice/go.mod services/consultationservice/go.sum ./consultationservice/
-RUN cd consultationservice && go mod download
+# Install build dependencies
+RUN apk add --no-cache gcc musl-dev
 
-# Copy toàn bộ source code service
-COPY services/consultationservice ./consultationservice
+# Copy go.mod and go.sum first for better caching
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Build từ folder service
-WORKDIR /app/consultationservice
-RUN go build -o consultation-service ./cmd
+# Copy the rest of the source code
+COPY . .
 
-# Stage 2: Production image
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -o consultation-service cmd/main.go
+
+# Runtime stage
 FROM alpine:3.19
 WORKDIR /app
-COPY --from=builder /app/consultationservice/consultation-service .
-EXPOSE 8083
+RUN apk add --no-cache ca-certificates
+COPY --from=builder /app/consultation-service .
+
+EXPOSE 8084
 CMD ["./consultation-service"]

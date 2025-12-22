@@ -13,6 +13,7 @@ import (
 )
 
 type ProfileGrpc struct {
+	profileClient  pb.ProfileServiceClient
 	checkClient    pb.CheckProfileServiceClient
 	matchingClient pb.CreateMatchingRequestClient
 	conn           *grpc.ClientConn
@@ -24,13 +25,38 @@ func NewProfileGrpc(addr string) (*ProfileGrpc, error) {
 		return nil, err
 	}
 	return &ProfileGrpc{
+		profileClient:  pb.NewProfileServiceClient(conn),
 		checkClient:    pb.NewCheckProfileServiceClient(conn),
 		matchingClient: pb.NewCreateMatchingRequestClient(conn),
 		conn:           conn,
 	}, nil
 }
 
-// Deprecated: Replace  RetriveProfileInfo
+func (r *ProfileGrpc) GetProfile(profileId string) (*pb.ProfileData, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if profileId == "" {
+		return nil, errors.New("profile id cannot be empty")
+	}
+
+	req := &pb.GetProfileRequest{
+		ProfileId: profileId,
+	}
+
+	res, err := r.profileClient.GetProfile(ctx, req)
+	if err != nil {
+		log.Printf("gRPC GetProfile error: %v", err)
+		return nil, err
+	}
+
+	if !res.Success {
+		return nil, errors.New(res.ErrorMessage)
+	}
+
+	return res.Profile, nil
+}
+
 func (r *ProfileGrpc) CheckProfileExists(profileId string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -57,6 +83,7 @@ func (r *ProfileGrpc) FriendRequestAccept(clientId, therapistId, message string)
 	}
 	return res.GetSuccess(), nil
 }
+
 func (r *ProfileGrpc) ResponseMatchingRequest(request dto.ResponseMatchingRequest, profileId string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -72,26 +99,27 @@ func (r *ProfileGrpc) ResponseMatchingRequest(request dto.ResponseMatchingReques
 	return res.GetSuccess(), nil
 }
 
+func (r *ProfileGrpc) RetriveProfileInfo(profileId string) (*pb.ProfileResponseV1, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if profileId == "" {
+		return nil, errors.New("profile id cannot be empty")
+	}
+
+	profileRequest := &pb.ProfileRequestV1{
+		ProfileId: profileId,
+	}
+
+	res, err := r.checkClient.CheckProfileExistsV1(ctx, profileRequest)
+	if err != nil || !res.Exists {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (r *ProfileGrpc) Close() {
 	if r.conn != nil {
 		_ = r.conn.Close()
 	}
-}
-
-func (r *ProfileGrpc) RetriveProfileInfo(profileId string) (*pb.ProfileResponseV1, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	res := &pb.ProfileResponseV1{}
-	if profileId == "" {
-		return res, errors.New("profile id can not be nil ")
-	}
-	profileRequest := &pb.ProfileRequestV1{
-		ProfileId: profileId,
-	}
-	defer cancel()
-	res, err := r.checkClient.CheckProfileExistsV1(ctx, profileRequest)
-	if err != nil || !res.Exists {
-		res = nil
-		return res, err
-	}
-	return res, nil
 }

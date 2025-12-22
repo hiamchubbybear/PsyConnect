@@ -41,7 +41,8 @@ func (c *Consumer) initKafkaConsumer(env *bootstrap.Env) error {
 
 	conn, err := kafka.DialLeader(context.Background(), "tcp", address, topic, partition)
 	if err != nil {
-		return fmt.Errorf("failed to connect to Kafka leader: %v", err)
+		log.Printf("⚠️ Warning: Failed to connect to Kafka leader: %v. Running without Kafka consumer.", err)
+		return nil
 	}
 
 	c.conn = conn

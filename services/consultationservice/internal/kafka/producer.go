@@ -3,13 +3,13 @@ package kafka
 import (
 	"consultationservice/bootstrap"
 	"context"
-	"errors"
 	"log"
 
 	"github.com/segmentio/kafka-go"
 )
 
 type Producer struct {
+	brokers            []string
 	defaultTopic       string
 	writer             *kafka.Writer
 	loggingWriter      *kafka.Writer
@@ -18,24 +18,27 @@ type Producer struct {
 
 func NewProducer(env *bootstrap.Env) (*Producer, error) {
 	if env.KafkaAddr == "" || env.KafkaTopic == "" {
-		return nil, errors.New("missing Kafka configuration in environment")
+		log.Println("⚠️ Warning: Kafka configuration missing, running without Kafka producer")
+		return &Producer{}, nil
 	}
+
+	brokers := []string{env.KafkaAddr}
 
 	// Default consultation.test
 	defaultWriter := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  []string{env.KafkaAddr},
+		Brokers:  brokers,
 		Topic:    env.KafkaTopic,
 		Balancer: &kafka.LeastBytes{},
 	})
 	notificationWriter := kafka.NewWriter(
 		kafka.WriterConfig{
-			Brokers:  []string{env.KafkaAddr},
+			Brokers:  brokers,
 			Topic:    env.NotificationTopic,
 			Balancer: &kafka.LeastBytes{},
 		},
 	)
 	loggingWriter := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  []string{env.KafkaAddr},
+		Brokers:  brokers,
 		Topic:    "logging-service",
 		Balancer: &kafka.LeastBytes{},
 	})
@@ -43,6 +46,7 @@ func NewProducer(env *bootstrap.Env) (*Producer, error) {
 	log.Println("Kafka producers initialized with topics:", env.KafkaTopic, "and logging-service")
 
 	return &Producer{
+		brokers:            brokers,
 		writer:             defaultWriter,
 		defaultTopic:       env.KafkaTopic,
 		loggingWriter:      loggingWriter,
@@ -52,7 +56,8 @@ func NewProducer(env *bootstrap.Env) (*Producer, error) {
 
 func (p *Producer) SendMessage(message string) error {
 	if p.writer == nil {
-		return errors.New("default Kafka writer is not initialized")
+		log.Println("⚠️ Kafka producer not initialized, skipping message")
+		return nil
 	}
 
 	err := p.writer.WriteMessages(context.Background(), kafka.Message{
@@ -66,9 +71,11 @@ func (p *Producer) SendMessage(message string) error {
 	log.Printf("Message sent to Kafka topic '%s' successfully", p.defaultTopic)
 	return nil
 }
+
 func (p *Producer) SendNotification(message string) error {
 	if p.notificationWriter == nil {
-		return errors.New("default Kafka writer is not initialized")
+		log.Println("⚠️ Kafka notification producer not initialized, skipping message")
+		return nil
 	}
 
 	err := p.notificationWriter.WriteMessages(context.Background(), kafka.Message{
@@ -82,9 +89,36 @@ func (p *Producer) SendNotification(message string) error {
 	log.Printf("Message sent to Kafka topic '%s' successfully", p.notificationWriter.Topic)
 	return nil
 }
+
+func (p *Producer) SendToTopic(topic string, message string) error {
+	if p.writer == nil {
+		log.Println("⚠️ Kafka producer not initialized, skipping message")
+		return nil
+	}
+
+	writer := kafka.NewWriter(kafka.WriterConfig{
+		Brokers:  p.brokers,
+		Topic:    topic,
+		Balancer: &kafka.LeastBytes{},
+	})
+	defer writer.Close()
+
+	err := writer.WriteMessages(context.Background(), kafka.Message{
+		Value: []byte(message),
+	})
+	if err != nil {
+		log.Printf("Failed to send Kafka message to specific topic %s: %v", topic, err)
+		return err
+	}
+
+	log.Printf("Message sent to specific Kafka topic '%s' successfully", topic)
+	return nil
+}
+
 func (p *Producer) SendLogs(message string) error {
 	if p.loggingWriter == nil {
-		return errors.New("logging Kafka writer is not initialized")
+		log.Println("⚠️ Kafka logging producer not initialized, skipping message")
+		return nil
 	}
 
 	err := p.loggingWriter.WriteMessages(context.Background(), kafka.Message{
