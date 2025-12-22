@@ -182,7 +182,7 @@ public class UserProfileService {
 
     @KafkaListener(topics = "profile.user-create-setting")
     public void handleOnCreateProfile(@Payload String raw) {
-        String profileId = KafkaService.objectMapping(raw, String.class);
+        String profileId = raw;
         userSettingService.resetSettings(profileId);
     }
 
