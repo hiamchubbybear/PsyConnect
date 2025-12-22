@@ -23,12 +23,12 @@ type Server struct {
 
 // HealthResponse represents the health check response
 type HealthResponse struct {
-	Status         string    `json:"status"`
-	Uptime         string    `json:"uptime"`
-	MessagesCount  int64     `json:"messages_count"`
-	ErrorsCount    int64     `json:"errors_count"`
-	Timestamp      time.Time `json:"timestamp"`
-	Version        string    `json:"version"`
+	Status        string    `json:"status"`
+	Uptime        string    `json:"uptime"`
+	MessagesCount int64     `json:"messages_count"`
+	ErrorsCount   int64     `json:"errors_count"`
+	Timestamp     time.Time `json:"timestamp"`
+	Version       string    `json:"version"`
 }
 
 // MetricsResponse represents the metrics response

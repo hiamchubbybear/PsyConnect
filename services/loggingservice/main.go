@@ -41,20 +41,20 @@ func main() {
 		lokiClient = loki.NewClient(config.Loki)
 		lokiClient.Start()
 		defer lokiClient.Stop()
-		consoleLogger.Info("✅ Loki client initialized")
+		consoleLogger.Info("Loki client initialized")
 	} else {
-		consoleLogger.Warn("⚠️  Loki client disabled")
+		consoleLogger.Warn("Loki client disabled")
 	}
 
 	fileLogger := filelogger.NewFileLogger(config.FileLogger)
 	defer fileLogger.Close()
 	if config.FileLogger.Enabled {
-		consoleLogger.Info("✅ File logger initialized",
+		consoleLogger.Info("File logger initialized",
 			zap.String("app_log", config.FileLogger.AppLogPath),
 			zap.String("error_log", config.FileLogger.ErrLogPath),
 		)
 	} else {
-		consoleLogger.Warn("⚠️  File logger disabled")
+		consoleLogger.Warn("File logger disabled")
 	}
 
 	// Initialize HTTP server for health checks
@@ -63,7 +63,7 @@ func main() {
 		consoleLogger.Fatal("Failed to start HTTP server", zap.Error(err))
 	}
 	defer httpServer.Stop()
-	consoleLogger.Info("✅ HTTP server started", zap.Int("port", config.Server.Port))
+	consoleLogger.Info("HTTP server started", zap.Int("port", config.Server.Port))
 
 	// Initialize Kafka consumer
 	kafkaConsumer, err := kafka.NewConsumer(config.Kafka, consoleLogger)
@@ -102,9 +102,9 @@ func main() {
 		return nil
 	})
 
-	consoleLogger.Info("✅ Kafka consumer initialized and handlers registered")
-	consoleLogger.Info("🎯 Logging service is ready to process events")
-	consoleLogger.Info("📊 Health check available at http://localhost:" + fmt.Sprintf("%d", config.Server.Port) + "/health")
+	consoleLogger.Info("Kafka consumer initialized and handlers registered")
+	consoleLogger.Info(" Logging service is ready to process events")
+	consoleLogger.Info(" Health check available at http://localhost:" + fmt.Sprintf("%d", config.Server.Port) + "/health")
 
 	// Start consuming (blocking)
 	if err := kafkaConsumer.Start(); err != nil {

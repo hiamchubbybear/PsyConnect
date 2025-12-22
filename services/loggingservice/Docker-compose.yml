@@ -95,7 +95,7 @@ services:
     env_file:
       - .env.${ENVIRONMENT:-dev}
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS:-kafka:9094}
       - KAFKA_GROUP_ID=logging-service
       - KAFKA_TOPIC=logging-service
       - LOKI_ENABLED=true

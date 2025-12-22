@@ -48,7 +48,7 @@ type ServerConfig struct {
 func LoadConfig() *Config {
 	return &Config{
 		Kafka: KafkaConfig{
-			BootstrapServers: getEnv("KAFKA_BOOTSTRAP_SERVERS", "127.0.0.1:9092"),
+			BootstrapServers: getEnv("KAFKA_BOOTSTRAP_SERVERS", "127.0.0.1:19092"),
 			GroupID:          getEnv("KAFKA_GROUP_ID", "logging-service"),
 			Topics: []string{
 				"logging-service",

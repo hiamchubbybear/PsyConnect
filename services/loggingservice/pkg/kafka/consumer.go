@@ -1,20 +1,21 @@
 package kafka
 
 import (
+	"context"
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
+	"io"
+	"strings"
+	"time"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/loggingservice/pkg/models"
 	"github.com/loggingservice/pkg/settings"
+	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 )
 
 // Consumer represents a Kafka consumer for log events
 type Consumer struct {
-	consumer *kafka.Consumer
+	reader   *kafka.Reader
 	config   settings.KafkaConfig
 	logger   *zap.Logger
 	handlers []LogHandler
@@ -25,23 +26,23 @@ type LogHandler func(*models.LogEvent) error
 
 // NewConsumer creates a new Kafka consumer
 func NewConsumer(config settings.KafkaConfig, logger *zap.Logger) (*Consumer, error) {
-	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": config.BootstrapServers,
-		"group.id":          config.GroupID,
-		"auto.offset.reset": config.AutoOffsetReset,
-		// Performance tuning
-		"session.timeout.ms":          6000,
-		"max.poll.interval.ms":        300000,
-		"enable.auto.commit":          true,
-		"auto.commit.interval.ms":     5000,
-		"go.application.rebalance.enable": true,
+	brokers := strings.Split(config.BootstrapServers, ",")
+
+	reader := kafka.NewReader(kafka.ReaderConfig{
+		Brokers:        brokers,
+		GroupID:        config.GroupID,
+		GroupTopics:    config.Topics,
+		MinBytes:       10e3, // 10KB
+		MaxBytes:       10e6, // 10MB
+		CommitInterval: 1 * time.Second,
+		StartOffset:    kafka.FirstOffset,
+		ErrorLogger: kafka.LoggerFunc(func(msg string, args ...interface{}) {
+			logger.Error(fmt.Sprintf(msg, args...))
+		}),
 	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to create Kafka consumer: %w", err)
-	}
 
 	return &Consumer{
-		consumer: c,
+		reader:   reader,
 		config:   config,
 		logger:   logger,
 		handlers: make([]LogHandler, 0),
@@ -55,63 +56,40 @@ func (c *Consumer) AddHandler(handler LogHandler) {
 
 // Start starts consuming messages from Kafka
 func (c *Consumer) Start() error {
-	// Subscribe to topics
-	err := c.consumer.SubscribeTopics(c.config.Topics, nil)
-	if err != nil {
-		return fmt.Errorf("failed to subscribe to topics: %w", err)
-	}
-
 	c.logger.Info("Kafka consumer started",
 		zap.Strings("topics", c.config.Topics),
 		zap.String("group_id", c.config.GroupID),
 	)
 
-	// Setup signal handling for graceful shutdown
-	sigchan := make(chan os.Signal, 1)
-	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
+	// Context for cancellation
+	ctx := context.Background()
 
-	run := true
-	for run {
-		select {
-		case sig := <-sigchan:
-			c.logger.Info("Received shutdown signal", zap.String("signal", sig.String()))
-			run = false
-
-		default:
-			ev := c.consumer.Poll(100)
-			if ev == nil {
-				continue
+	for {
+		// ReadMessage automatically commits offsets when using consumer groups
+		m, err := c.reader.ReadMessage(ctx)
+		if err != nil {
+			if err == io.EOF {
+				c.logger.Info("Reader closed")
+				return nil
 			}
-
-			switch e := ev.(type) {
-			case *kafka.Message:
-				c.handleMessage(e)
-
-			case kafka.Error:
-				c.logger.Error("Kafka error", zap.Error(e))
-				// Check if it's a fatal error
-				if e.Code() == kafka.ErrAllBrokersDown {
-					c.logger.Fatal("All Kafka brokers are down")
-					run = false
-				}
-
-			default:
-				// Ignore other events
-			}
+			c.logger.Error("Failed to read message", zap.Error(err))
+			// Exponential backoff could be added here
+			time.Sleep(1 * time.Second)
+			continue
 		}
-	}
 
-	return nil
+		c.handleMessage(m)
+	}
 }
 
 // handleMessage processes a Kafka message
-func (c *Consumer) handleMessage(msg *kafka.Message) {
-	topic := *msg.TopicPartition.Topic
+func (c *Consumer) handleMessage(msg kafka.Message) {
+	topic := msg.Topic
 
 	c.logger.Debug("Received message",
 		zap.String("topic", topic),
-		zap.Int32("partition", msg.TopicPartition.Partition),
-		zap.Int64("offset", int64(msg.TopicPartition.Offset)),
+		zap.Int("partition", msg.Partition),
+		zap.Int64("offset", msg.Offset),
 	)
 
 	// Parse log event
@@ -145,5 +123,5 @@ func (c *Consumer) handleMessage(msg *kafka.Message) {
 // Close closes the Kafka consumer
 func (c *Consumer) Close() error {
 	c.logger.Info("Closing Kafka consumer")
-	return c.consumer.Close()
+	return c.reader.Close()
 }
