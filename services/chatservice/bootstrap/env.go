@@ -20,12 +20,17 @@ type Env struct {
 func LoadEnv() *Env {
 	v := viper.New()
 	v.SetConfigName(".env")
-	v.SetConfigType("env")
-	v.AddConfigPath(".")
-	v.AddConfigPath("../")
 	v.AutomaticEnv()
+	v.BindEnv("CHAT_SERVICE_PORT")
+	v.BindEnv("SERVICE_HOST")
+	v.BindEnv("KAFKA_ADDRESS")
+	v.BindEnv("KAFKA_TOPIC")
+	v.BindEnv("KAFKA_PARTITION")
+	v.BindEnv("KAFKA_NOTIFICATION_TOPIC")
+	v.BindEnv("JWT_SIGNER_KEY")
+
 	if err := v.ReadInConfig(); err != nil {
-		log.Printf("Warning: No .env file found, using environment variables only")
+		log.Printf("Note: No .env file found, using system environment variables")
 	}
 	var env Env
 	if err := v.Unmarshal(&env); err != nil {
