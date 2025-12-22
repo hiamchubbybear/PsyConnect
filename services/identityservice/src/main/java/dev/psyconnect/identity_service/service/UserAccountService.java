@@ -3,7 +3,12 @@ package dev.psyconnect.identity_service.service;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 import jakarta.transaction.Transactional;
 
@@ -19,8 +24,23 @@ import org.springframework.stereotype.Service;
 
 import dev.psyconnect.identity_service.dto.LogEvent;
 import dev.psyconnect.identity_service.dto.LogLevel;
-import dev.psyconnect.identity_service.dto.request.*;
-import dev.psyconnect.identity_service.dto.response.*;
+import dev.psyconnect.identity_service.dto.request.ActivateAccountNotificationRequest;
+import dev.psyconnect.identity_service.dto.request.ActivateAccountRequest;
+import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
+import dev.psyconnect.identity_service.dto.request.DeleteAccountConfirmRequest;
+import dev.psyconnect.identity_service.dto.request.DeleteAccountRequest;
+import dev.psyconnect.identity_service.dto.request.PasswordResetRequest;
+import dev.psyconnect.identity_service.dto.request.RequestActivationAccount;
+import dev.psyconnect.identity_service.dto.request.RequestPasswordReset;
+import dev.psyconnect.identity_service.dto.request.UpdateAccountNotificatorRequest;
+import dev.psyconnect.identity_service.dto.request.UpdateAccountRequest;
+import dev.psyconnect.identity_service.dto.request.UserAccountCreationRequest;
+import dev.psyconnect.identity_service.dto.request.UserProfileCreationRequest;
+import dev.psyconnect.identity_service.dto.response.ActivateAccountResponse;
+import dev.psyconnect.identity_service.dto.response.DeleteAccountResponse;
+import dev.psyconnect.identity_service.dto.response.UpdateAccountResponse;
+import dev.psyconnect.identity_service.dto.response.UserAccountCreationResponse;
+import dev.psyconnect.identity_service.dto.response.UserInfoResponse;
 import dev.psyconnect.identity_service.enumeration.Provider;
 import dev.psyconnect.identity_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.identity_service.globalexceptionhandle.ErrorCode;
@@ -28,7 +48,9 @@ import dev.psyconnect.identity_service.grpc.client.ProfileGRPCClient;
 import dev.psyconnect.identity_service.interfaces.IUserAccountService;
 import dev.psyconnect.identity_service.kafka.producer.KafkaService;
 import dev.psyconnect.identity_service.mapper.UserAccountMapper;
-import dev.psyconnect.identity_service.model.*;
+import dev.psyconnect.identity_service.model.Account;
+import dev.psyconnect.identity_service.model.RoleEntity;
+import dev.psyconnect.identity_service.model.Token;
 import dev.psyconnect.identity_service.repository.ActivateRepository;
 import dev.psyconnect.identity_service.repository.RoleRepository;
 import dev.psyconnect.identity_service.repository.TokenRepository;
@@ -110,34 +132,20 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 throw new CustomExceptionHandler(ErrorCode.RUNTIME_ERROR);
             }
         } catch (Exception e) {
-            kafkaService.sendLog(buildLog(
-                    "identity-service",
-                    request.getUsername(),
-                    "Create account",
-                    e.getMessage(),
-                    Map.of("error", e.getMessage()),
-                    LogLevel.ERROR));
             log.info(e.getMessage());
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
         String fullName = request.getFirstName() + " " + request.getLastName();
         if (provider == Provider.ORDINARY) {
-            kafkaService.send(
-                    NOTIFICATION_CREATE_TOPIC,
-                    CreateAccountNotificationRequest.builder()
-                            .code(activationCode)
-                            .username(request.getUsername())
-                            .email(savedAccount.getEmail())
-                            .fullname(fullName)
-                            .build());
+            // kafkaService.send(
+            //         NOTIFICATION_CREATE_TOPIC,
+            //         CreateAccountNotificationRequest.builder()
+            //                 .code(activationCode)
+            //                 .username(request.getUsername())
+            //                 .email(savedAccount.getEmail())
+            //                 .fullname(fullName)
+            //                 .build());
         }
-        kafkaService.sendLog(buildLog(
-                "identity-service",
-                request.getUsername(),
-                "Create account",
-                "Success",
-                Map.of("fullname", fullName, "email", savedAccount.getEmail()),
-                LogLevel.LOG));
 
         return UserAccountCreationResponse.builder()
                 .username(request.getUsername())
@@ -152,22 +160,10 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     public boolean deleteAccountWithoutCheck(UUID accountId) {
         try {
             userAccountRepository.deleteById(accountId);
-            kafkaService.sendLog(buildLog(
-                    "identity-service",
-                    accountId.toString(),
-                    "Delete account (force)",
-                    "Success",
-                    Map.of("status", true),
-                    LogLevel.AUDIT));
+
             return true;
         } catch (Exception e) {
-            kafkaService.sendLog(buildLog(
-                    "identity-service",
-                    accountId.toString(),
-                    "Delete account (force)",
-                    "Failed",
-                    Map.of("error", e.getMessage()),
-                    LogLevel.ERROR));
+
             throw new CustomExceptionHandler(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
@@ -184,14 +180,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         if (!userObject.getToken().getToken().equals(deleteAccountRequest.getToken()))
             throw new CustomExceptionHandler(ErrorCode.TOKEN_INVALID);
-
-        kafkaService.sendLog(buildLog(
-                "identity-service",
-                userObject.getUsername(),
-                "Delete account",
-                "Requested",
-                Map.of("email", deleteAccountRequest.getEmail()),
-                LogLevel.LOG));
 
         return DeleteAccountResponse.builder()
                 .isSuccess(true)
@@ -210,13 +198,7 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
             throw new CustomExceptionHandler(ErrorCode.DELETE_ACCOUNT_FAILED);
         try {
             userAccountRepository.deleteById(uuid);
-            kafkaService.sendLog(buildLog(
-                    "identity-service",
-                    userObject.getUsername(),
-                    "Delete account",
-                    "Success",
-                    Map.of("metadata", true),
-                    LogLevel.LOG));
+
         } catch (Exception e) {
             kafkaService.sendLog(buildLog(
                     "identity-service",
@@ -236,13 +218,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                 .findById((accountId))
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
         if (userAccountRepository.existsByUsernameAndIsActivatedTrue(userResponse.getUsername())) {
-            kafkaService.sendLog(buildLog(
-                    "identity-service",
-                    userResponse.getUsername(),
-                    "Get user account",
-                    "Success",
-                    Map.of("status", true),
-                    LogLevel.LOG));
             return UserInfoResponse.builder()
                     .username(userResponse.getUsername())
                     .accountId(userResponse.getAccountId())
@@ -293,13 +268,6 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                             .email(foundObject.getEmail())
                             .username(foundObject.getUsername())
                             .build());
-            kafkaService.sendLog(buildLog(
-                    "identity-service",
-                    foundObject.getUsername(),
-                    "Update account",
-                    "Success",
-                    Map.of("newEmail", foundObject.getEmail()),
-                    LogLevel.LOG));
         }
         return UpdateAccountResponse.builder()
                 .email(foundObject.getEmail())
@@ -412,12 +380,12 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
             String service, String userId, String action, String message, Map<String, ?> metadata, LogLevel level) {
         return LogEvent.builder()
                 .service(service)
-                .level(level)
+                .level(level.name())
                 .timestamp(Instant.now().toString())
                 .userId(userId)
                 .action(action)
                 .message(message)
-                .metadata(metadata)
+                .metadata((Map<String, Object>) metadata)
                 .build();
     }
 

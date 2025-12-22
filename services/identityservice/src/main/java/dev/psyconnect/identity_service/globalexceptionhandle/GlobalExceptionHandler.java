@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
                 new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Server Error", null);
         kafkaService.sendLog(LogEvent.builder()
                 .service("api-gateway")
-                .level(LogLevel.ERROR)
+                .level(LogLevel.ERROR.name())
                 .action("")
                 .traceId(UUID.randomUUID().toString())
                 .build());
