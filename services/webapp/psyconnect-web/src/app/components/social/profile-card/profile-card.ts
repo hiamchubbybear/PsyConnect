@@ -7,12 +7,13 @@ import { UserProfile } from '../../../models/profile';
 @Component({
   selector: 'app-profile-card',
   standalone: true,
-  imports: [CommonModule , TranslateModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './profile-card.html',
   styleUrls: ['./profile-card.scss'],
 })
 export class ProfileCardComponent {
   @Input() user!: UserProfile;
+  @Input() isOwnProfile: boolean = false;
 
   getInitials(name: string): string {
     return name

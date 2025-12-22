@@ -1,0 +1,276 @@
+<div class="mood-tracker-card">
+  <!-- Header -->
+  <div class="mood-tracker__header">
+    <h3 class="mood-tracker__title">
+      <span class="icon">😊</span>
+      {{ "MOOD.Title" | translate }}
+    </h3>
+    <span class="mood-tracker__streak" *ngIf="currentStreak > 0">
+      🔥 {{ currentStreak }} {{ "MOOD.DayStreak" | translate }}
+    </span>
+  </div>
+
+  <!-- Check-in prompt -->
+  <p class="mood-check-in-prompt">
+    {{ "MOOD.CheckIn" | translate }}
+  </p>
+
+  <!-- Today's Mood Selection -->
+  <div class="mood-selector">
+    <p class="mood-selector__prompt">{{ "MOOD.HowAreYou" | translate }}</p>
+
+    <div class="mood-options">
+      <button
+        *ngFor="let mood of moodOptions"
+        class="mood-option"
+        [class.selected]="selectedMood === mood.value"
+        [class.disabled]="todayMoodLogged"
+        [style.--mood-color]="mood.gradient"
+        (click)="selectMood(mood.value)"
+        [attr.aria-label]="mood.label | translate"
+      >
+        <div class="mood-option__circle">
+          <img
+            [src]="mood.emoji"
+            [alt]="mood.label | translate"
+            class="mood-icon"
+          />
+        </div>
+        <span class="mood-option__label">{{ mood.label | translate }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Optional Note -->
+  <div class="mood-note" *ngIf="selectedMood && !todayMoodLogged">
+    <textarea
+      [(ngModel)]="moodNote"
+      [placeholder]="'MOOD.NotePlaceholder' | translate"
+      maxlength="200"
+      rows="3"
+    >
+    </textarea>
+    <div class="mood-note__actions">
+      <button class="btn btn--secondary" (click)="cancelMood()">
+        {{ "COMMON.Cancel" | translate }}
+      </button>
+      <button class="btn btn--primary" (click)="saveMood()">
+        <span class="icon">✨</span>
+        {{ "MOOD.SaveMood" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Already Logged Today -->
+  <div class="mood-logged" *ngIf="todayMoodLogged">
+    <div class="mood-logged__message">
+      <span class="icon">✅</span>
+      {{ "MOOD.AlreadyLogged" | translate }}
+    </div>
+    <p class="mood-logged__detail">
+      {{ "MOOD.YouFelt" | translate }}
+      <strong>{{ getTodayMood().label | translate }}</strong>
+    </p>
+  </div>
+</div>
+
+<!-- Mood Analysis with Line Chart -->
+<div class="mood-analysis">
+  <div class="mood-analysis__header">
+    <h4>{{ "MOOD.Analysis.Title" | translate }}</h4>
+    <div class="week-nav">
+      <button
+        class="week-nav__btn"
+        (click)="previousWeek()"
+        [disabled]="currentWeekOffset <= -4"
+      >
+        ←
+      </button>
+      <span class="week-nav__label">{{ "MOOD.ThisWeek" | translate }}</span>
+      <button
+        class="week-nav__btn"
+        (click)="nextWeek()"
+        [disabled]="currentWeekOffset >= 0"
+      >
+        →
+      </button>
+    </div>
+  </div>
+
+  <div class="mood-chart-container">
+    <!-- SVG Line Chart -->
+    <svg
+      class="mood-line-chart"
+      viewBox="0 0 400 200"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      <!-- Grid lines (subtle background) -->
+      <line
+        *ngFor="let i of [1, 2, 3, 4]"
+        [attr.x1]="20"
+        [attr.y1]="30 + i * 30"
+        [attr.x2]="380"
+        [attr.y2]="30 + i * 30"
+        stroke="#f0f0f0"
+        stroke-width="1"
+      />
+
+      <!-- Line path connecting moods -->
+      <path
+        *ngIf="moodLinePath"
+        [attr.d]="moodLinePath"
+        class="mood-line"
+        fill="none"
+        stroke="#E0E0E0"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+
+      <!-- Data points (mood circles) -->
+      <g *ngFor="let day of weekDays; let i = index">
+        <circle
+          *ngIf="day.mood"
+          [attr.cx]="getX(i)"
+          [attr.cy]="getY(day.mood)"
+          r="16"
+          [attr.fill]="getMoodColor(day.mood)"
+          class="mood-point"
+          [attr.data-mood]="day.mood"
+        >
+          <title>{{ getMoodLabel(day.mood) | translate }}</title>
+        </circle>
+
+        <!-- SVG icon inside circle -->
+        <image
+          *ngIf="day.mood"
+          [attr.x]="getX(i) - 8"
+          [attr.y]="getY(day.mood) - 8"
+          width="16"
+          height="16"
+          [attr.href]="getMoodEmoji(day.mood)"
+          class="mood-icon-svg"
+          style="filter: brightness(0) invert(1)"
+        />
+
+        <!-- Day labels -->
+        <text
+          [attr.x]="getX(i)"
+          y="190"
+          text-anchor="middle"
+          class="day-label"
+          [class.today]="isToday(day)"
+        >
+          {{ day.name }}
+        </text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- Mood Influences -->
+<div class="mood-influences">
+  <h4>{{ "MOOD.Influences.Title" | translate }}</h4>
+  <p class="mood-influences__subtitle">
+    {{ "MOOD.Influences.Subtitle" | translate }}
+  </p>
+
+  <div class="influence-factors">
+    <button
+      *ngFor="let factor of influenceFactors"
+      class="influence-btn"
+      [class.active]="factor.active"
+      [attr.data-type]="factor.type"
+      (click)="toggleInfluence(factor)"
+    >
+      <img
+        [src]="factor.icon"
+        [alt]="factor.label | translate"
+        class="influence-icon"
+      />
+      <span class="influence-label">{{ factor.label | translate }}</span>
+    </button>
+  </div>
+</div>
+
+<!-- Insights (Collapsible - Optional) -->
+<details class="mood-insights-details" *ngIf="moodStats.length > 0">
+  <summary class="mood-insights-summary">
+    <h4>{{ "MOOD.Insights.Title" | translate }}</h4>
+    <span class="toggle-icon">▼</span>
+  </summary>
+
+  <div class="mood-insights">
+    <!-- Mood distribution -->
+    <div class="insight-card">
+      <div class="insight-card__header">
+        <span class="insight-icon">📊</span>
+        <h5>{{ "MOOD.Insights.Distribution" | translate }}</h5>
+      </div>
+
+      <div class="mood-chart">
+        <div
+          *ngFor="let stat of moodStats"
+          class="mood-bar"
+          [style.--bar-width]="stat.percentage + '%'"
+          [style.--bar-color]="stat.gradient"
+        >
+          <div class="mood-bar__fill"></div>
+          <div class="mood-bar__label">
+            <span>
+              <img
+                [src]="stat.emoji"
+                [alt]="stat.label | translate"
+                class="mood-bar-icon"
+              />
+              {{ stat.label | translate }}
+            </span>
+            <span class="mood-bar__count">{{ stat.count }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Average mood -->
+    <div class="insight-card">
+      <div class="insight-card__header">
+        <span class="insight-icon">📈</span>
+        <h5>{{ "MOOD.Insights.Average" | translate }}</h5>
+      </div>
+
+      <div class="average-mood">
+        <div
+          class="average-mood__circle"
+          [style.background]="averageMoodGradient"
+        >
+          <img
+            [src]="averageMoodEmoji"
+            alt="Average mood"
+            class="average-mood-icon"
+          />
+        </div>
+        <div class="average-mood__text">
+          <p class="average-mood__label">{{ averageMoodLabel | translate }}</p>
+          <p class="average-mood__subtitle">
+            {{ "MOOD.Insights.Last30Days" | translate }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patterns -->
+    <div class="insight-card">
+      <div class="insight-card__header">
+        <span class="insight-icon">💡</span>
+        <h5>{{ "MOOD.Insights.Patterns" | translate }}</h5>
+      </div>
+
+      <ul class="pattern-list">
+        <li *ngFor="let pattern of patterns">
+          <img [src]="pattern.icon" alt="" class="pattern-icon" />
+          <span class="pattern-text">{{ pattern.text | translate }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</details>

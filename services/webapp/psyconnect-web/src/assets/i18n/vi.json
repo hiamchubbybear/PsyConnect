@@ -6,7 +6,16 @@
         "Community": "Cộng đồng",
         "About": "Về chúng tôi",
         "Login": "Đăng nhập",
-        "Sign Up": "Đăng ký"
+        "Sign Up": "Đăng ký",
+        "NOTIFICATIONS": "Thông báo"
+    },
+    "NOTIFICATIONS": {
+        "TITLE": "Thông báo",
+        "EMPTY": "Chưa có thông báo nào",
+        "MARK_READ": "Đánh dấu đã đọc",
+        "UPVOTE": "đã ủng hộ bài viết của bạn",
+        "BOOKMARK": "đã lưu bài viết của bạn",
+        "SHARE": "đã chia sẻ bài viết của bạn"
     },
     "COMMON": {
         "GetStartedFree": "Bắt đầu miễn phí",
@@ -704,16 +713,19 @@
     "POST": {
         "Detail": "Chi tiết bài viết",
         "Types": {
-            "article": "Bài viết",
-            "question": "Câu hỏi",
-            "discussion": "Thảo luận",
-            "event": "Sự kiện"
+            "Article": "Bài viết",
+            "Question": "Câu hỏi",
+            "Discussion": "Thảo luận",
+            "Event": "Sự kiện"
         },
         "Comments": {
             "Title": "Bình luận",
             "Placeholder": "Viết bình luận...",
-            "Submit": "Đăng bình luận",
-            "NoComments": "Chưa có bình luận nào. Hãy là người đầu tiên bình luận!"
+            "Submit": "Đăng",
+            "NoComments": "Chưa có bình luận nào. Hãy là người đầu tiên bình luận!",
+            "Like": "Thích",
+            "Reply": "Trả lời",
+            "Liked": "Đã thích"
         },
         "Actions": {
             "Like": "Thích",
@@ -790,7 +802,9 @@
             "Laugh": "Vui",
             "Think": "Suy nghĩ",
             "Sad": "Buồn",
-            "Angry": "Tức giận"
+            "Angry": "Tức giận",
+            "Upvote": "Đồng tình",
+            "Downvote": "Phản đối"
         }
     },
     "FEED": {
@@ -844,6 +858,47 @@
             "P2": "Phục hồi Trầm cảm",
             "Members": "thành viên",
             "JoinButton": "Tham gia"
+        }
+    },
+    "MOOD": {
+        "Title": "Theo dõi tâm trạng",
+        "CheckIn": "KIỂM TRA LẦN 4",
+        "HowAreYou": "Hôm nay bạn thế nào?",
+        "NotePlaceholder": "Thêm ghi chú về ngày hôm nay (tùy chọn)...",
+        "SaveMood": "Lưu tâm trạng",
+        "AlreadyLogged": "Bạn đã ghi lại tâm trạng hôm nay rồi!",
+        "YouFelt": "Bạn cảm thấy",
+        "DayStreak": "ngày liên tiếp",
+        "ThisWeek": "Tuần này",
+        "ViewAll": "Xem tất cả",
+        "Awful": "RẤT TỆ",
+        "Bad": "TỆ",
+        "Okay": "ỔN",
+        "Good": "TỐT",
+        "Great": "TUYỆT VỜI",
+        "Analysis": {
+            "Title": "Phân tích tâm trạng"
+        },
+        "Insights": {
+            "Title": "Thống kê",
+            "Distribution": "Phân bố tâm trạng",
+            "Average": "Tâm trạng trung bình",
+            "Last30Days": "30 ngày qua",
+            "Patterns": "Xu hướng"
+        },
+        "Influences": {
+            "Title": "Yếu tố ảnh hưởng",
+            "Subtitle": "Khám phá những gì tác động tích cực và tiêu cực đến ngày của bạn",
+            "Exercise": "Tập thể dục",
+            "Sleep": "Chất lượng giấc ngủ",
+            "Social": "Thời gian xã hội",
+            "Work": "Căng thẳng công việc",
+            "Stress": "Căng thẳng chung"
+        },
+        "Patterns": {
+            "ImprovingTrend": "Tâm trạng của bạn đang cải thiện!",
+            "BetterMornings": "Bạn cảm thấy tốt hơn vào buổi sáng",
+            "ConsistentLogging": "Làm tốt lắm! Bạn đang ghi chép đều đặn!"
         }
     },
     "MOBILE_REQUIRED": {

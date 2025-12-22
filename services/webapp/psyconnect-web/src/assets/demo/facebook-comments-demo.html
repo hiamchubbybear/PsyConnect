@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Facebook-Style Comments Demo</title>
+    <style>
+      :root {
+        --color-bg: #ffffff;
+        --color-bg-secondary: #f0f2f5;
+        --color-surface: #ffffff;
+        --color-text: #050505;
+        --color-text-muted: #65676b;
+        --color-primary: #1877f2;
+        --color-primary-hover: #166fe5;
+        --color-on-accent: #ffffff;
+        --color-border: #e4e6eb;
+        --spacing-xs: 4px;
+        --spacing-sm: 8px;
+        --spacing-md: 12px;
+        --spacing-lg: 16px;
+        --spacing-xl: 24px;
+        --font-size-sm: 13px;
+        --font-size-md: 15px;
+        --font-size-lg: 17px;
+        --border-radius-sm: 8px;
+        --border-radius-md: 12px;
+        --border-radius-lg: 16px;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background: var(--color-bg-secondary);
+        margin: 0;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 680px;
+        margin: 0 auto;
+      }
+
+      .comments-section {
+        background: var(--color-bg);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-lg);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      .comments-title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: var(--spacing-md);
+      }
+
+      .comment-form {
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-md);
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+      }
+
+      .comment-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--color-primary);
+        color: var(--color-on-accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+
+      .comment-input-wrapper {
+        flex: 1;
+        display: flex;
+        gap: var(--spacing-xs);
+        align-items: center;
+      }
+
+      .comment-input {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: var(--font-size-sm);
+        font-family: inherit;
+        color: var(--color-text);
+        background: var(--color-bg-secondary);
+        border: 1px solid var(--color-border);
+        border-radius: 18px;
+        resize: none;
+        min-height: 36px;
+        max-height: 120px;
+      }
+
+      .comment-input:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        background: var(--color-surface);
+      }
+
+      .btn-submit {
+        padding: 8px 16px;
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: var(--color-on-accent);
+        background: var(--color-primary);
+        border: none;
+        border-radius: 18px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        height: 36px;
+      }
+
+      .btn-submit:hover {
+        background: var(--color-primary-hover);
+        transform: translateY(-1px);
+      }
+
+      .comments-list {
+        margin-top: var(--spacing-md);
+      }
+
+      .comment {
+        display: flex;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
+      }
+
+      .comment-body {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .comment-bubble {
+        background: var(--color-bg-secondary);
+        border-radius: 18px;
+        padding: 8px 12px;
+        display: inline-block;
+        max-width: 100%;
+        word-wrap: break-word;
+      }
+
+      .comment-header {
+        display: flex;
+        align-items: baseline;
+        gap: var(--spacing-xs);
+        margin-bottom: 2px;
+      }
+
+      .comment-author {
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        color: var(--color-text);
+        cursor: pointer;
+      }
+
+      .comment-author:hover {
+        text-decoration: underline;
+      }
+
+      .comment-date {
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+
+      .comment-content {
+        color: var(--color-text);
+        font-size: var(--font-size-sm);
+        line-height: 1.4;
+      }
+
+      .comment-actions {
+        display: flex;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-xs);
+        padding-left: var(--spacing-md);
+      }
+
+      .comment-actions button {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 12px;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        font-weight: 600;
+        transition: color 0.2s ease;
+      }
+
+      .comment-actions button:hover {
+        color: var(--color-primary);
+      }
+
+      .comment-actions button.liked {
+        color: var(--color-primary);
+      }
+
+      .comment-replies {
+        margin-top: var(--spacing-sm);
+        margin-left: 40px;
+        border-left: 2px solid var(--color-border);
+        padding-left: var(--spacing-md);
+      }
+
+      .like-count {
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="comments-section">
+        <h2 class="comments-title">Comments (5)</h2>
+
+        <!-- Comment Form -->
+        <form class="comment-form">
+          <div class="comment-avatar">Y</div>
+          <div class="comment-input-wrapper">
+            <textarea
+              class="comment-input"
+              placeholder="Write a comment..."
+              rows="1"
+            ></textarea>
+            <button type="submit" class="btn-submit">Post</button>
+          </div>
+        </form>
+
+        <!-- Comments List -->
+        <div class="comments-list">
+          <!-- Comment 1 -->
+          <div class="comment">
+            <div class="comment-avatar">B</div>
+            <div class="comment-body">
+              <div class="comment-bubble">
+                <div class="comment-header">
+                  <span class="comment-author">Bessie Cooper</span>
+                  <span class="comment-date">3h ago</span>
+                </div>
+                <div class="comment-content">
+                  I think for our second campaign we can try to target a
+                  different audience. How does it sound for you?
+                </div>
+              </div>
+              <div class="comment-actions">
+                <button class="liked">
+                  <span class="like-count">👍 2</span>
+                </button>
+                <button>Reply</button>
+              </div>
+
+              <!-- Nested Reply -->
+              <div class="comment-replies">
+                <div class="comment">
+                  <div class="comment-avatar">M</div>
+                  <div class="comment-body">
+                    <div class="comment-bubble">
+                      <div class="comment-header">
+                        <span class="comment-author">Marvin McKinney</span>
+                        <span class="comment-date">2h ago</span>
+                      </div>
+                      <div class="comment-content">
+                        Yes, that sounds good! I can think about this tomorrow.
+                        When do we plan to start that campaign?
+                      </div>
+                    </div>
+                    <div class="comment-actions">
+                      <button class="liked">
+                        <span class="like-count">👍 3</span>
+                      </button>
+                      <button>Reply</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Nested Reply 2 -->
+                <div class="comment">
+                  <div class="comment-avatar">B</div>
+                  <div class="comment-body">
+                    <div class="comment-bubble">
+                      <div class="comment-header">
+                        <span class="comment-author">Bessie Cooper</span>
+                        <span class="comment-date">1 minute ago</span>
+                      </div>
+                      <div class="comment-content">
+                        We plan to run the campaign on Friday – as far as I
+                        know. Do you think you will get this done by Thursday
+                        <span style="color: var(--color-primary)">@Marvin</span
+                        >?
+                      </div>
+                    </div>
+                    <div class="comment-actions">
+                      <button>
+                        <span class="like-count">Like</span>
+                      </button>
+                      <button>Reply</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Reply Input -->
+                <div class="comment" style="margin-top: 8px">
+                  <div class="comment-avatar">Y</div>
+                  <div class="comment-body">
+                    <input
+                      type="text"
+                      class="comment-input"
+                      placeholder="Reply..."
+                      style="width: 100%; padding: 8px 12px"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comment 2 -->
+          <div class="comment">
+            <div class="comment-avatar">M</div>
+            <div class="comment-body">
+              <div class="comment-bubble">
+                <div class="comment-header">
+                  <span class="comment-author">Marvin McKinney</span>
+                  <span class="comment-date">2d ago</span>
+                </div>
+                <div class="comment-content">
+                  The first campaign went smoothly. Please make sure to see all
+                  attachments with the results to understand the flow.
+                </div>
+              </div>
+              <div class="comment-actions">
+                <button class="liked">
+                  <span class="like-count">👍 2</span>
+                </button>
+                <button>Reply</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comment 3 -->
+          <div class="comment">
+            <div class="comment-avatar">S</div>
+            <div class="comment-body">
+              <div class="comment-bubble">
+                <div class="comment-header">
+                  <span class="comment-author">Savannah Nguyen</span>
+                  <span class="comment-date">6d ago</span>
+                </div>
+                <div class="comment-content">
+                  We have just published the first campaign. Let's see the
+                  results in 5 days and we will iterate on this.
+                </div>
+              </div>
+              <div class="comment-actions">
+                <button>
+                  <span class="like-count">Like</span>
+                </button>
+                <button>Reply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

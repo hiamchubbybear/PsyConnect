@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import {
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    HostListener,
-    OnDestroy,
-    OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { Router } from '@angular/router';
@@ -14,14 +14,15 @@ import { Observable, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
 import {
-    UserContextService,
-    UserProfile,
+  UserContextService,
+  UserProfile,
 } from '../../services/profile/profile-service';
 import { ThemeService } from '../../services/theme/theme-service';
 import { TranslationService } from '../../shared/translate/translate-service';
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
 import { DropdownComponent, DropdownOption } from '../dropdown/dropdown';
 import { HeaderStateService } from './header-state';
+import { NotificationDropdownComponent } from './notification-dropdown/notification-dropdown';
 
 @Component({
   selector: 'app-header',
@@ -32,6 +33,7 @@ import { HeaderStateService } from './header-state';
     AvatarMenuComponent,
     TranslateModule,
     DropdownComponent,
+    NotificationDropdownComponent,
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',

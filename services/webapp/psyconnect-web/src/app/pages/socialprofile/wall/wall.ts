@@ -1,13 +1,14 @@
-// src/app/features/profile/profile-page.component.ts
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import {
-    InfoBlockComponent,
-    InfoField,
+  InfoBlockComponent,
+  InfoField,
 } from '../../../components/social/info-block/info-block';
 import { ProfileCardComponent } from '../../../components/social/profile-card/profile-card';
-import { UserProfile } from '../../../models/profile';
+import { Profile } from '../../../services/profile/profile';
+import { UserContextService } from '../../../services/profile/profile-service';
 
 @Component({
   selector: 'app-profile-page',
@@ -21,46 +22,67 @@ import { UserProfile } from '../../../models/profile';
   templateUrl: './wall.html',
   styleUrls: ['./wall.scss'],
 })
-export class ProfilePageComponent {
-  mockUser: UserProfile = {
-    id: '1',
-    name: 'Danielle Pimentel',
-    role: 'Leasing Agent',
-    email: 'daniellepimentel@gmail.com',
-    phone: '555-55-2261',
-    city: 'Los Angeles',
-    accountStatus: 'Account Created',
-    twoFactorAuth: 'Not Set',
-    userType: 'Staff Member',
-    propertyAccess: 'All Property',
-    avatarUrl:
-      'https://i.pinimg.com/736x/09/e4/4f/09e44f60351b96df26652dc3bf775d98.jpg',
-    coverUrl:
-      'https://i.pinimg.com/736x/d0/5d/3a/d05d3a3f0ff18b9002bbd2bc19684fd7.jpg',
-  };
-  staffInfoFields: InfoField[] = [
-    { label: 'Email', value: this.mockUser.email },
-    { label: 'Phone', value: this.mockUser.phone },
-    { label: 'City', value: this.mockUser.city },
-  ];
+export class ProfilePageComponent implements OnInit {
+  userProfile: any = null;
+  isOwnProfile = false;
+  staffInfoFields: InfoField[] = [];
+  websiteFields: InfoField[] = [];
 
-  websiteFields: InfoField[] = [
-    { label: 'Account Status', value: this.mockUser.accountStatus },
-    { label: 'Two Factor Auth', value: this.mockUser.twoFactorAuth },
-    { label: 'Role', value: this.mockUser.role },
-    { label: 'User Type', value: this.mockUser.userType },
-    { label: 'Property Access', value: this.mockUser.propertyAccess },
-  ];
+  constructor(
+    private route: ActivatedRoute,
+    private profileService: Profile,
+    private userContext: UserContextService
+  ) {}
 
-  onEditProfile(): void {
-    console.log('Edit profile clicked');
+  ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      const userId = params['id'];
+      const currentUser = this.userContext.getUser();
+
+      if (!userId || userId === currentUser?.accountId) {
+        this.isOwnProfile = true;
+        this.loadMyProfile();
+      } else {
+        this.isOwnProfile = false;
+        this.loadUserProfile(userId);
+      }
+    });
   }
 
-  onEditStaffInfo(): void {
-    console.log('Edit staff info clicked');
+  loadMyProfile() {
+    this.profileService.getProfile().subscribe({
+      next: (res: any) => {
+        this.userProfile = res.data || res;
+        this.mapFields();
+      },
+    });
   }
 
-  onEditWebsite(): void {
-    console.log('Edit website clicked');
+  loadUserProfile(id: string) {
+    this.profileService.getProfileById(id).subscribe({
+      next: (res: any) => {
+        this.userProfile = res.data || res;
+        this.mapFields();
+      },
+    });
   }
+
+  mapFields() {
+    if (!this.userProfile) return;
+
+    this.staffInfoFields = [
+      { label: 'Email', value: this.userProfile.email || 'N/A' },
+      { label: 'Phone', value: this.userProfile.phone || 'N/A' },
+      { label: 'Address', value: this.userProfile.address || 'N/A' },
+    ];
+
+    this.websiteFields = [
+      { label: 'Gender', value: this.userProfile.gender || 'N/A' },
+      { label: 'DOB', value: this.userProfile.dob || 'N/A' },
+      { label: 'Bio', value: this.userProfile.bio || 'N/A' },
+    ];
+  }
+
+  onEditStaffInfo(): void {}
+  onEditWebsite(): void {}
 }

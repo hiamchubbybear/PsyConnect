@@ -6,7 +6,16 @@
         "Community": "Community",
         "About": "About",
         "Login": "Login",
-        "Sign Up": "Sign"
+        "Sign Up": "Sign",
+        "NOTIFICATIONS": "Notifications"
+    },
+    "NOTIFICATIONS": {
+        "TITLE": "Notifications",
+        "EMPTY": "No notifications yet",
+        "MARK_READ": "Mark as read",
+        "UPVOTE": "upvoted your post",
+        "BOOKMARK": "bookmarked your post",
+        "SHARE": "shared your post"
     },
     "COMMON": {
         "GetStartedFree": "Get Started Free",
@@ -698,80 +707,6 @@
             }
         }
     },
-    "POST": {
-        "Detail": "Post Detail",
-        "Types": {
-            "article": "Article",
-            "question": "Question",
-            "discussion": "Discussion",
-            "event": "Event"
-        },
-        "Comments": {
-            "Title": "Comments",
-            "Placeholder": "Write a comment...",
-            "Submit": "Post Comment",
-            "NoComments": "No comments yet. Be the first to comment!"
-        },
-        "Actions": {
-            "Like": "Like",
-            "Bookmark": "Bookmark",
-            "Bookmarked": "Bookmarked",
-            "Share": "Share"
-        },
-        "Like": "Like",
-        "Liked": "Liked",
-        "Bookmark": "Bookmark",
-        "Bookmarked": "Bookmarked",
-        "Share": "Share",
-        "Sidebar": {
-            "Title": "Post Management",
-            "Items": {
-                "AllPosts": "All Posts",
-                "Create": "Create Post",
-                "Categories": "Categories",
-                "Reviews": "Reviews",
-                "Settings": "Settings"
-            }
-        },
-        "Create": {
-            "Title": "Create New Post",
-            "Subtitle": "Share your knowledge and insights with the community",
-            "Type": "Post Type",
-            "TitleLabel": "Title",
-            "TitlePlaceholder": "Enter a descriptive title for your post",
-            "ContentLabel": "Content",
-            "ContentPlaceholder": "Write your post content here... Share your thoughts, experiences, or professional insights.",
-            "Tags": "Tags",
-            "TagsPlaceholder": "e.g., anxiety, depression, therapy",
-            "TagsHint": "Separate tags with commas. Tags help others find your content.",
-            "Categories": "Categories",
-            "CategoriesPlaceholder": "e.g., Mental Health, Self-Care",
-            "CategoriesHint": "Separate categories with commas",
-            "Media": "Media Attachments",
-            "AddMedia": "Add Images or Videos",
-            "MediaHint": "Maximum 5 files, 5MB each. Supported: images and videos",
-            "Visibility": "Visibility",
-            "Publish": "Publish Post"
-        },
-        "Types": {
-            "Article": "Article",
-            "Question": "Question",
-            "Discussion": "Discussion",
-            "Resource": "Resource"
-        },
-        "Visibility": {
-            "Public": "Public",
-            "Followers": "Followers Only",
-            "Private": "Private"
-        },
-        "Categories": "Categories",
-        "Comments": {
-            "Title": "Comments",
-            "Placeholder": "Write a comment...",
-            "Submit": "Post Comment",
-            "NoComments": "No comments yet. Be the first to comment!"
-        }
-    },
     "NEWSFEED": {
         "FeedTypes": {
             "All": "All",
@@ -843,6 +778,47 @@
             "P2": "Depression Recovery",
             "Members": "members",
             "JoinButton": "Join"
+        }
+    },
+    "MOOD": {
+        "Title": "Mood Tracker",
+        "CheckIn": "4TH CHECK-IN",
+        "HowAreYou": "How are you today?",
+        "NotePlaceholder": "Add a note about your day (optional)...",
+        "SaveMood": "Save Mood",
+        "AlreadyLogged": "You've already logged your mood today!",
+        "YouFelt": "You felt",
+        "DayStreak": "day streak",
+        "ThisWeek": "This week",
+        "ViewAll": "View All",
+        "Awful": "AWFUL",
+        "Bad": "BAD",
+        "Okay": "OKAY",
+        "Good": "GOOD",
+        "Great": "GREAT",
+        "Analysis": {
+            "Title": "Mood Analysis"
+        },
+        "Insights": {
+            "Title": "Insights",
+            "Distribution": "Mood Distribution",
+            "Average": "Average Mood",
+            "Last30Days": "Last 30 days",
+            "Patterns": "Patterns"
+        },
+        "Influences": {
+            "Title": "Mood influences",
+            "Subtitle": "Discover what add's to negative and positive aspects of your day",
+            "Exercise": "Exercise",
+            "Sleep": "Sleep Quality",
+            "Social": "Social Time",
+            "Work": "Work Stress",
+            "Stress": "General Stress"
+        },
+        "Patterns": {
+            "ImprovingTrend": "Your mood is improving!",
+            "BetterMornings": "You feel better in the mornings",
+            "ConsistentLogging": "Great job logging consistently!"
         }
     },
     "MOBILE_REQUIRED": {
@@ -1273,46 +1249,6 @@
             "Message": "Enter keywords to find posts, users, or topics"
         }
     },
-    "POST": {
-        "AllPosts": {
-            "Title": "All Posts",
-            "Subtitle": "Manage your published and draft posts",
-            "CreateNew": "Create New Post",
-            "SearchPlaceholder": "Search posts...",
-            "Stats": {
-                "Total": "Total Posts",
-                "Published": "Published",
-                "Draft": "Drafts",
-                "Views": "Total Views"
-            },
-            "Filters": {
-                "All": "All Posts",
-                "Published": "Published",
-                "Draft": "Drafts"
-            },
-            "Sort": {
-                "Newest": "Newest First",
-                "Oldest": "Oldest First",
-                "Popular": "Most Popular"
-            },
-            "Table": {
-                "Title": "Title",
-                "Type": "Type",
-                "Status": "Status",
-                "Date": "Date",
-                "Views": "Views",
-                "Actions": "Actions"
-            },
-            "Status": {
-                "Published": "Published",
-                "Draft": "Draft"
-            },
-            "Empty": {
-                "Title": "No Posts Found",
-                "Message": "Create your first post to get started"
-            }
-        }
-    },
     "COMMON": {
         "Loading": "Loading",
         "Close": "Close",
@@ -1528,7 +1464,108 @@
         }
     },
     "POST": {
-        "Categories": {
+        "Detail": "Post Detail",
+        "Types": {
+            "Article": "Article",
+            "Question": "Question",
+            "Discussion": "Discussion",
+            "Event": "Event",
+            "Resource": "Resource"
+        },
+        "Comments": {
+            "Title": "Comments",
+            "Placeholder": "Write a comment...",
+            "Submit": "Post",
+            "NoComments": "No comments yet. Be the first to comment!",
+            "Like": "Like",
+            "Reply": "Reply",
+            "Liked": "Liked"
+        },
+        "Actions": {
+            "Like": "Like",
+            "Bookmark": "Bookmark",
+            "Bookmarked": "Bookmarked",
+            "Share": "Share"
+        },
+        "Like": "Like",
+        "Liked": "Liked",
+        "Bookmark": "Bookmark",
+        "Bookmarked": "Bookmarked",
+        "Share": "Share",
+        "Sidebar": {
+            "Title": "Post Management",
+            "Items": {
+                "AllPosts": "All Posts",
+                "Create": "Create Post",
+                "Categories": "Categories",
+                "Reviews": "Reviews",
+                "Settings": "Settings"
+            }
+        },
+        "Create": {
+            "Title": "Create New Post",
+            "Subtitle": "Share your knowledge and insights with the community",
+            "Type": "Post Type",
+            "TitleLabel": "Title",
+            "TitlePlaceholder": "Enter a descriptive title for your post",
+            "ContentLabel": "Content",
+            "ContentPlaceholder": "Write your post content here... Share your thoughts, experiences, or professional insights.",
+            "Tags": "Tags",
+            "TagsPlaceholder": "e.g., anxiety, depression, therapy",
+            "TagsHint": "Separate tags with commas. Tags help others find your content.",
+            "Categories": "Categories",
+            "CategoriesPlaceholder": "e.g., Mental Health, Self-Care",
+            "CategoriesHint": "Separate categories with commas",
+            "Media": "Media Attachments",
+            "AddMedia": "Add Images or Videos",
+            "MediaHint": "Maximum 5 files, 5MB each. Supported: images and videos",
+            "Visibility": "Visibility",
+            "Publish": "Publish Post"
+        },
+        "Visibility": {
+            "Public": "Public",
+            "Followers": "Followers Only",
+            "Private": "Private"
+        },
+        "AllPosts": {
+            "Title": "All Posts",
+            "Subtitle": "Manage your published and draft posts",
+            "CreateNew": "Create New Post",
+            "SearchPlaceholder": "Search posts...",
+            "Stats": {
+                "Total": "Total Posts",
+                "Published": "Published",
+                "Draft": "Drafts",
+                "Views": "Total Views"
+            },
+            "Filters": {
+                "All": "All Posts",
+                "Published": "Published",
+                "Draft": "Drafts"
+            },
+            "Sort": {
+                "Newest": "Newest First",
+                "Oldest": "Oldest First",
+                "Popular": "Most Popular"
+            },
+            "Table": {
+                "Title": "Title",
+                "Type": "Type",
+                "Status": "Status",
+                "Date": "Date",
+                "Views": "Views",
+                "Actions": "Actions"
+            },
+            "Status": {
+                "Published": "Published",
+                "Draft": "Draft"
+            },
+            "Empty": {
+                "Title": "No Posts Found",
+                "Message": "Create your first post to get started"
+            }
+        },
+        "CategoriesSection": {
             "Title": "Post Categories",
             "Subtitle": "Organize posts into categories",
             "AddNew": "Add Category",

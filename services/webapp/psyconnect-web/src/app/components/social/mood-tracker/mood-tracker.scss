@@ -1,0 +1,707 @@
+// ============================================
+// Mood Tracker Component Styles (Redesigned)
+// Based on UI Reference - Solid Colors & Line Chart
+// ============================================
+
+.mood-tracker-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--transition-medium);
+  margin-bottom: var(--spacing-xl);
+
+  &:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+.mood-tracker__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.mood-tracker__title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+
+  .icon {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+.mood-tracker__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+  color: white;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.mood-check-in-prompt {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--spacing-md);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// ============================================
+// Mood Selector (Simplified - Solid Colors)
+// ============================================
+
+.mood-selector {
+  margin-bottom: var(--spacing-xl);
+}
+
+.mood-selector__prompt {
+  text-align: center;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-lg);
+}
+
+.mood-options {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--spacing-md);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.mood-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-medium);
+
+  &:hover:not(.disabled) {
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    .mood-option__circle {
+      border: 3px solid var(--mood-color);
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.mood-option__circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--mood-color); // Solid color, no gradient
+  border: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  transition: all var(--transition-medium);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  .mood-icon {
+    width: 36px;
+    height: 36px;
+    // SVG will be white on colored backgrounds
+    filter: brightness(0) invert(1);
+    pointer-events: none;
+  }
+}
+
+.mood-option__label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// ============================================
+// Mood Note
+// ============================================
+
+.mood-note {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  border-radius: var(--border-radius-lg);
+  animation: slideDown 0.3s ease;
+
+  textarea {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    resize: vertical;
+    transition: border-color var(--transition-medium);
+    background: var(--color-bg);
+    color: var(--color-text);
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+.mood-note__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+// ============================================
+// Mood Logged State
+// ============================================
+
+.mood-logged {
+  text-align: center;
+  padding: var(--spacing-xl);
+  background: linear-gradient(135deg, #e0f7fa 0%, #e1f5fe 100%);
+  border-radius: var(--border-radius-lg);
+  animation: fadeIn 0.5s ease;
+}
+
+.mood-logged__message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: #00796b;
+  margin-bottom: var(--spacing-sm);
+
+  .icon {
+    font-size: var(--font-size-xl);
+  }
+}
+
+.mood-logged__detail {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin: 0;
+
+  strong {
+    color: var(--color-text);
+  }
+}
+
+// ============================================
+// Mood Analysis (Line Chart)
+// ============================================
+
+.mood-analysis {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.mood-analysis__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+
+  h4 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+  }
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.week-nav__btn {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+  transition: all var(--transition-fast);
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.week-nav__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+// Line Chart SVG
+.mood-chart-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.mood-line-chart {
+  width: 100%;
+  height: 200px;
+
+  .mood-line {
+    transition: d 0.3s ease;
+  }
+
+  .mood-point {
+    cursor: pointer;
+    transition: r 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      r: 20;
+      filter: brightness(1.1);
+    }
+  }
+
+  .mood-emoji {
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .day-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--color-text-muted);
+    text-transform: uppercase;
+
+    &.today {
+      fill: var(--color-primary);
+      font-weight: 700;
+    }
+  }
+}
+
+// ============================================
+// Mood Influences
+// ============================================
+
+.mood-influences {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
+
+  h4 {
+    margin: 0 0 var(--spacing-sm);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+  }
+}
+
+.mood-influences__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--spacing-lg);
+}
+
+.influence-factors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.influence-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-full);
+  background: var(--color-bg);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text);
+  transition: all var(--transition-medium);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &[data-type="positive"] {
+    border-color: #6ebf8b;
+
+    &.active {
+      background: #6ebf8b;
+      color: white;
+      border-color: #6ebf8b;
+    }
+  }
+
+  &[data-type="negative"] {
+    border-color: #ee5b5b;
+
+    &.active {
+      background: #ee5b5b;
+      color: white;
+      border-color: #ee5b5b;
+    }
+  }
+}
+
+.influence-icon {
+  width: 18px;
+  height: 18px;
+  // Adapt to theme - use current text color
+  filter: brightness(0) saturate(100%) invert(var(--icon-invert, 0));
+
+  // Override for active state
+  .active & {
+    filter: brightness(0) invert(1); // White when active
+  }
+}
+
+// ============================================
+// Insights (Collapsible)
+// ============================================
+
+.mood-insights-details {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-xl);
+  padding: 0;
+  margin-bottom: var(--spacing-xl);
+
+  &[open] {
+    .toggle-icon {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.mood-insights-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-2xl);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+  }
+
+  .toggle-icon {
+    font-size: var(--font-size-sm);
+    transition: transform var(--transition-medium);
+    color: var(--color-text-muted);
+  }
+
+  &:hover {
+    background: var(--color-bg-hover);
+  }
+}
+
+.mood-insights {
+  padding: 0 var(--spacing-2xl) var(--spacing-2xl);
+}
+
+.insight-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.insight-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+
+  .insight-icon {
+    font-size: var(--font-size-xl);
+  }
+
+  h5 {
+    margin: 0;
+    font-size: var(--font-size-md);
+    font-weight: 600;
+  }
+}
+
+// Mood Chart (Distribution)
+.mood-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.mood-bar {
+  position: relative;
+  height: 40px;
+  background: var(--color-bg);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.mood-bar__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--bar-width);
+  background: var(--bar-color);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fillBar 0.8s ease;
+}
+
+.mood-bar__label {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 0 var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  z-index: 1;
+}
+
+.mood-bar__count {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.mood-bar-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+  // Adapt to current text color
+  filter: brightness(0) saturate(100%) invert(var(--icon-invert, 0));
+}
+
+// Average Mood
+.average-mood {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.average-mood__circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.average-mood__text {
+  flex: 1;
+}
+
+.average-mood__label {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xs);
+}
+
+.average-mood__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+// Patterns
+.pattern-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: var(--color-bg);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+  }
+}
+
+.pattern-icon {
+  width: 20px;
+  height: 20px;
+  // Adapt to theme
+  filter: brightness(0) saturate(100%) invert(var(--icon-invert, 0));
+}
+
+.average-mood__circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .average-mood-icon {
+    width: 40px;
+    height: 40px;
+    // White on colored background
+    filter: brightness(0) invert(1);
+  }
+}
+
+// ============================================
+// Animations
+// ============================================
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fillBar {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--bar-width);
+  }
+}
+
+// ============================================
+// Responsive
+// ============================================
+
+@media (max-width: 768px) {
+  .mood-options {
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .mood-option__circle {
+    width: 56px;
+    height: 56px;
+    font-size: 2rem;
+  }
+
+  .mood-option__label {
+    font-size: 10px;
+  }
+
+  .mood-line-chart {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mood-options {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .mood-tracker-card,
+  .mood-analysis,
+  .mood-influences {
+    padding: var(--spacing-lg);
+  }
+
+  .mood-option__circle {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+
+  .influence-factors {
+    flex-direction: column;
+  }
+
+  .influence-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,73 @@
+<div class="notification-container">
+  <button
+    class="notification-bell"
+    (click)="toggleDropdown($event)"
+    [attr.aria-label]="'HEADER.NOTIFICATIONS' | translate"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="lucide lucide-bell"
+    >
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+    <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+  </button>
+
+  <div class="dropdown-menu" *ngIf="isOpen" (click)="$event.stopPropagation()">
+    <header class="dropdown-header">
+      <h3>{{ "NOTIFICATIONS.TITLE" | translate }}</h3>
+    </header>
+
+    <div
+      class="notifications-list"
+      *ngIf="notifications.length > 0; else empty"
+    >
+      <div
+        *ngFor="let n of notifications"
+        class="notification-item"
+        [class.unread]="!n.isRead"
+        (click)="onNotificationClick(n)"
+      >
+        <div class="notification-icon" [ngSwitch]="n.type">
+          <span *ngSwitchCase="'like'" class="icon-like">❤️</span>
+          <span *ngSwitchCase="'comment'" class="icon-comment">💬</span>
+          <span *ngSwitchCase="'follow'" class="icon-follow">👤</span>
+          <span *ngSwitchDefault class="icon-system">🔔</span>
+        </div>
+        <div class="notification-content">
+          <p class="notification-text">
+            <strong>{{ n.title }}</strong
+            ><br />
+            {{ n.body }}
+          </p>
+          <span class="notification-time">{{
+            n.createdAt | date : "short"
+          }}</span>
+        </div>
+        <button
+          *ngIf="!n.isRead"
+          class="mark-read-btn"
+          (click)="markAsRead($event, n)"
+          [title]="'NOTIFICATIONS.MARK_READ' | translate"
+        >
+          <div class="dot"></div>
+        </button>
+      </div>
+    </div>
+
+    <ng-template #empty>
+      <div class="empty-state">
+        <p>{{ "NOTIFICATIONS.EMPTY" | translate }}</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -1,23 +1,23 @@
 import {
-    HttpContextToken,
-    HttpErrorResponse,
-    HttpEvent,
-    HttpHandlerFn,
-    HttpInterceptorFn,
-    HttpRequest,
+  HttpContextToken,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandlerFn,
+  HttpInterceptorFn,
+  HttpRequest,
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError, timer } from 'rxjs';
 import {
-    catchError,
-    delayWhen,
-    filter,
-    finalize,
-    retryWhen,
-    scan,
-    switchMap,
-    take,
+  catchError,
+  delayWhen,
+  filter,
+  finalize,
+  retryWhen,
+  scan,
+  switchMap,
+  take,
 } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
@@ -48,7 +48,13 @@ export const authInterceptor: HttpInterceptorFn = (
   const token = secureStorage.getItem<string>(ACCESSTOKEN_KEY);
   let authReq = req;
   if (token) {
-    authReq = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+    // Add both Authorization and roles headers
+    authReq = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`,
+        roles: 'client', // Default role, can be dynamic based on user
+      },
+    });
   }
 
   return handleRequest(authReq, next);

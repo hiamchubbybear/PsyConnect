@@ -2,6 +2,7 @@
   <header class="info-block__header">
     <h3 class="info-block__title">{{ title }}</h3>
     <button
+      *ngIf="showEdit"
       class="info-block__edit-btn"
       type="button"
       (click)="onEdit()"

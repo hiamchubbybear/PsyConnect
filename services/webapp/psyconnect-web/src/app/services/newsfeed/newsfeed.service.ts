@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment';
 import { CreatePostRequest, Post } from '../../models/post.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NewsfeedService {
   private apiUrl = `${environment.apiUrl}/v1/consultation/posts`;
@@ -41,7 +41,11 @@ export class NewsfeedService {
   }
 
   // Get user's posts
-  getUserPosts(userId: string, limit: number = 20, skip: number = 0): Observable<Post[]> {
+  getUserPosts(
+    userId: string,
+    limit: number = 20,
+    skip: number = 0
+  ): Observable<Post[]> {
     const params = new HttpParams()
       .set('limit', limit.toString())
       .set('skip', skip.toString());
@@ -55,19 +59,15 @@ export class NewsfeedService {
   }
 
   // Search posts
-  searchPosts(query: string, limit: number = 20, skip: number = 0): Observable<Post[]> {
+  searchPosts(
+    query: string,
+    limit: number = 20,
+    skip: number = 0
+  ): Observable<Post[]> {
     const params = new HttpParams()
       .set('q', query)
       .set('limit', limit.toString())
       .set('skip', skip.toString());
     return this.http.get<Post[]>(`${this.apiUrl}/search`, { params });
-  }
-
-  // Get posts by tag
-  getPostsByTag(tag: string, limit: number = 20, skip: number = 0): Observable<Post[]> {
-    const params = new HttpParams()
-      .set('limit', limit.toString())
-      .set('skip', skip.toString());
-    return this.http.get<Post[]>(`${environment.apiUrl}/v1/consultation/tags/${tag}/posts`, { params });
   }
 }

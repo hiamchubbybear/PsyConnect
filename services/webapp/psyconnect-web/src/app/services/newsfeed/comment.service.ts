@@ -5,29 +5,46 @@ import { environment } from '../../../environments/environment';
 import { Comment, CreateCommentRequest } from '../../models/comment.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CommentService {
   private apiUrl = `${environment.apiUrl}/v1/consultation`;
 
   constructor(private http: HttpClient) {}
 
-  // Get comments for a post
-  getComments(postId: string, limit: number = 20, skip: number = 0): Observable<Comment[]> {
+  // Get comments tree for a post (with nested replies)
+  getComments(
+    postId: string,
+    limit: number = 20,
+    skip: number = 0,
+    depth: number = 2
+  ): Observable<{ comments: Comment[]; total: number }> {
     const params = new HttpParams()
       .set('limit', limit.toString())
-      .set('skip', skip.toString());
-    return this.http.get<Comment[]>(`${this.apiUrl}/posts/${postId}/comments`, { params });
+      .set('skip', skip.toString())
+      .set('depth', depth.toString());
+    return this.http.get<{ comments: Comment[]; total: number }>(
+      `${this.apiUrl}/posts/${postId}/comments`,
+      { params }
+    );
   }
 
   // Create comment
-  createComment(postId: string, comment: CreateCommentRequest): Observable<Comment> {
-    return this.http.post<Comment>(`${this.apiUrl}/posts/${postId}/comments`, comment);
+  createComment(
+    postId: string,
+    comment: CreateCommentRequest
+  ): Observable<Comment> {
+    return this.http.post<Comment>(
+      `${this.apiUrl}/posts/${postId}/comments`,
+      comment
+    );
   }
 
   // Update comment
   updateComment(commentId: string, content: string): Observable<Comment> {
-    return this.http.put<Comment>(`${this.apiUrl}/comments/${commentId}`, { content });
+    return this.http.put<Comment>(`${this.apiUrl}/comments/${commentId}`, {
+      content,
+    });
   }
 
   // Delete comment
@@ -37,6 +54,8 @@ export class CommentService {
 
   // Get replies
   getReplies(commentId: string): Observable<Comment[]> {
-    return this.http.get<Comment[]>(`${this.apiUrl}/comments/${commentId}/replies`);
+    return this.http.get<Comment[]>(
+      `${this.apiUrl}/comments/${commentId}/replies`
+    );
   }
 }

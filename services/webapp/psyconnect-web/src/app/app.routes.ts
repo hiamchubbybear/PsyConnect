@@ -36,6 +36,11 @@ export const routes: Routes = [
   { path: 'auth/login', component: Login, canActivate: [guestGuard] },
   { path: 'oauth2/callback', component: Login, canActivate: [guestGuard] },
 
+  {
+    path: 'profile/:id',
+    component: ProfilePageComponent,
+    canActivate: [authGuard],
+  },
   { path: 'chat-page', component: ChatComponent, canActivate: [authGuard] },
   {
     path: 'chat/:id',
@@ -129,9 +134,9 @@ export const routes: Routes = [
       {
         path: 'create-profile',
         loadComponent: () =>
-          import('./pages/consultation/create-profile/create-profile.component').then(
-            (m) => m.CreateConsultationProfileComponent
-          ),
+          import(
+            './pages/consultation/create-profile/create-profile.component'
+          ).then((m) => m.CreateConsultationProfileComponent),
       },
       {
         path: 'discover',
@@ -261,12 +266,12 @@ export const routes: Routes = [
   {
     path: 'schedule',
     redirectTo: 'feature/schedules',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'consultation',
     redirectTo: 'feature/consultation',
-    pathMatch: 'prefix'
+    pathMatch: 'prefix',
   },
 
   { path: 'start', component: Start },

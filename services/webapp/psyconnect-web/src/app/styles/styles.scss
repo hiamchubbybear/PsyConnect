@@ -1,13 +1,10 @@
-// All @use rules MUST come first
 @use "@angular/material" as mat;
 @use "./variable" as v;
 @use "./form-base" as *;
 
-// Then @import rules
-@import 'css-variables';
-@import 'variable';
+@import "css-variables";
+@import "icons";
 
-// Then other rules
 @include mat.core();
 
 :root {
@@ -113,6 +110,9 @@
   --border-radius-lg: 12px;
 
   --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.12);
+
+  // Icon theme adaptation
+  --icon-invert: 0; // Light mode: black icons
 }
 
 [data-theme="dark"] {
@@ -136,6 +136,9 @@
 
   --color-border: rgba(255, 255, 255, 0.08);
   --color-surface: #111111;
+
+  // Icon theme adaptation
+  --icon-invert: 1; // Dark mode: white icons
 
   --header-bg: #1e1e20;
   --header-text: #fafafa;
@@ -268,7 +271,6 @@ select {
 }
 
 .button {
-
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -1,15 +1,20 @@
-<div class="profile-page">
-  <app-profile-card [user]="mockUser"></app-profile-card>
+<div class="profile-page" *ngIf="userProfile">
+  <app-profile-card
+    [user]="userProfile"
+    [isOwnProfile]="isOwnProfile"
+  ></app-profile-card>
   <div class="profile-page__container">
     <app-info-block
       [title]="'profile.staffInfo.title' | translate"
       [fields]="staffInfoFields"
+      [showEdit]="isOwnProfile"
       (edit)="onEditStaffInfo()"
     ></app-info-block>
 
     <app-info-block
       [title]="'profile.staffWebsite.title' | translate"
       [fields]="websiteFields"
+      [showEdit]="isOwnProfile"
       (edit)="onEditWebsite()"
     ></app-info-block>
   </div>
