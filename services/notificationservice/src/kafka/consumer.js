@@ -1,7 +1,7 @@
 import { Kafka } from "kafkajs";
 import {
-    sendAccountUpdateEmail,
-    sendResetPasswordEmail,
+  sendAccountUpdateEmail,
+  sendResetPasswordEmail,
 } from "../services/account_update.service.js";
 import { sendActivateEmail } from "../services/activate_email.service.js";
 import { NotificationService } from "../services/notification.service.js";
@@ -150,6 +150,62 @@ const pushHandlers = {
   "notification.push.system": async (data) => {
     const { userId, title, message } = data;
     await NotificationService.sendToUser(userId, title, message);
+  },
+
+  // Social Engagement Handlers
+  "notification.social.post-upvote": async (data) => {
+    const { userId, voterName, postId } = data;
+    await NotificationService.sendToUser(
+      userId,
+      "New Upvote! ⬆️",
+      `${voterName || "Someone"} upvoted your post.`,
+      "upvote",
+      { postId }
+    );
+  },
+
+  "notification.social.post-bookmark": async (data) => {
+    const { userId, bookmarkerName, postId } = data;
+    await NotificationService.sendToUser(
+      userId,
+      "Post Bookmarked! 🔖",
+      `${bookmarkerName || "Someone"} saved your post.`,
+      "bookmark",
+      { postId }
+    );
+  },
+
+  "notification.social.post-share": async (data) => {
+    const { userId, sharerName, postId } = data;
+    await NotificationService.sendToUser(
+      userId,
+      "Post Shared! 🔗",
+      `${sharerName || "Someone"} shared your post.`,
+      "share",
+      { postId }
+    );
+  },
+
+  "notification.social.post-comment": async (data) => {
+    const { userId, commenterName, postId, commentId } = data;
+    await NotificationService.sendToUser(
+      userId,
+      "New Comment! 💬",
+      `${commenterName || "Someone"} commented on your post.`,
+      "comment",
+      { postId, commentId }
+    );
+  },
+
+  "notification.social.user-follow": async (data) => {
+    const { userId, followerName, followerId } = data;
+    await NotificationService.sendToUser(
+      userId,
+      "New Follower! 👤",
+      `${followerName || "Someone"} started following you.`,
+      "follow",
+      { followerId }
+    );
   },
 };
 

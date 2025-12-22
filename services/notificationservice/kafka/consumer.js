@@ -1,9 +1,9 @@
-const { Kafka } = require("kafkajs");
-const sendActivateEmail = require("../service/activate_email");
-const {
+import { Kafka } from "kafkajs";
+import {
   sendAccountUpdateEmail,
   sendResetPasswordEmail,
-} = require("../service/account_update");
+} from "../service/account_update.js";
+import { sendActivateEmail } from "../service/activate_email.js";
 
 const kafka = new Kafka({
   clientId: "notification-service",
@@ -23,13 +23,27 @@ const topicHandlers = {
     await sendAccountUpdateEmail(data);
   },
   "notification.user-reset": async (data) => {
-	  console.log(data);
+    console.log(data);
     await sendResetPasswordEmail(data);
   },
 };
 
 const startConsumer = async () => {
-  await consumer.connect();
+  let connected = false;
+  while (!connected) {
+    try {
+      await consumer.connect();
+      connected = true;
+      console.log("Connected to Kafka");
+    } catch (err) {
+      console.error(
+        "Failed to connect to Kafka, retrying in 5s...",
+        err.message
+      );
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  }
+
   for (const topic of Object.keys(topicHandlers)) {
     await consumer.subscribe({ topic, fromBeginning: true });
   }
@@ -50,4 +64,4 @@ const startConsumer = async () => {
   });
 };
 
-module.exports = startConsumer;
+export default startConsumer;

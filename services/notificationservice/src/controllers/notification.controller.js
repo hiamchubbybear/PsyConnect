@@ -42,4 +42,33 @@ export const NotificationController = {
       res.status(500).json({ message: "Failed to send mock notification" });
     }
   },
+
+  async getMyNotifications(req, res) {
+    try {
+      const userId = req.headers["x-profile-id"] || req.query.userId;
+      if (!userId) return res.status(400).json({ message: "Missing userId" });
+
+      const notifications = await NotificationService.getNotifications(
+        userId,
+        req.query.limit,
+        req.query.skip
+      );
+      res.json(notifications);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
+
+  async markAsRead(req, res) {
+    try {
+      const { id } = req.params;
+      const userId = req.headers["x-profile-id"];
+      if (!userId) return res.status(400).json({ message: "Missing userId" });
+
+      await NotificationService.markAsRead(id, userId);
+      res.json({ message: "Notification marked as read" });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
 };
