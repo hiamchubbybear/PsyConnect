@@ -24,10 +24,15 @@ type Post struct {
 	PostType   string `bson:"post_type" json:"post_type"`   // article, question, discussion, resource
 
 	// Engagement metrics
-	ViewCount    int `bson:"view_count" json:"view_count"`
-	LikeCount    int `bson:"like_count" json:"like_count"`
-	CommentCount int `bson:"comment_count" json:"comment_count"`
-	ShareCount   int `bson:"share_count" json:"share_count"`
+	ViewCount     int `bson:"view_count" json:"view_count"`
+	UpvoteCount   int `bson:"upvote_count" json:"upvote_count"`
+	DownvoteCount int `bson:"downvote_count" json:"downvote_count"`
+	CommentCount  int `bson:"comment_count" json:"comment_count"`
+	ShareCount    int `bson:"share_count" json:"share_count"`
+
+	// User-specific state (not stored in DB, populated at runtime)
+	UserVote     *string `bson:"-" json:"user_vote,omitempty"`     // "up", "down", or null
+	UserBookmark bool    `bson:"-" json:"user_bookmark,omitempty"` // true if user bookmarked
 
 	// Control
 	IsDeleted bool `bson:"is_deleted" json:"is_deleted"`

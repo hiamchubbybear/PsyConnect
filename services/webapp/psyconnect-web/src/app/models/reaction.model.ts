@@ -6,25 +6,25 @@ export interface Reaction {
   created_at: string;
 }
 
-// Simplified to upvote/downvote only
-export type ReactionType = 'upvote' | 'downvote';
+// Simplified to up/down only to match backend constants
+export type ReactionType = 'up' | 'down';
 
 // Reaction images using existing SVG assets
 export const REACTION_IMAGES: Record<ReactionType, string> = {
-  upvote: '/assets/reaction/arrow-big-up-dash.svg',
-  downvote: '/assets/reaction/arrow-big-down-dash.svg'
+  up: '/assets/reaction/arrow-big-up-dash.svg',
+  down: '/assets/reaction/arrow-big-down-dash.svg',
 };
 
 // Action icons
 export const ACTION_ICONS = {
   comment: '/assets/reaction/message-circle.svg',
-  share: '/assets/reaction/share.svg'
+  share: '/assets/reaction/share.svg',
 };
 
-// For backward compatibility
-export const REACTION_EMOJIS: Record<ReactionType, string> = {
-  upvote: '👍',
-  downvote: '👎'
+// Fallback text (simple arrows instead of emoji)
+export const REACTION_FALLBACK: Record<ReactionType, string> = {
+  up: '↑',
+  down: '↓',
 };
 
-export const REACTION_TYPES = REACTION_EMOJIS;
+export const REACTION_TYPES = REACTION_FALLBACK;

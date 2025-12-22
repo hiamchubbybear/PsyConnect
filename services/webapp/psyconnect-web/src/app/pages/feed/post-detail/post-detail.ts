@@ -1,11 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Comment } from '../../../models/comment.model';
 import { Post } from '../../../models/post.model';
-import { REACTION_TYPES, ReactionType } from '../../../models/reaction.model';
+import {
+  REACTION_IMAGES,
+  REACTION_TYPES,
+  ReactionType,
+} from '../../../models/reaction.model';
 import { SocialService } from '../../../services/consultation/social.service';
 import { LoaderService } from '../../../services/loader/loader';
 import { CommentService } from '../../../services/newsfeed/comment.service';
@@ -29,6 +38,11 @@ export class PostDetailComponent implements OnInit {
   commentForm!: FormGroup;
   submittingComment = false;
 
+  // Reply functionality
+  replyingToCommentId: string | null = null;
+  replyingToUsername: string | null = null;
+  replyForm!: FormGroup;
+
   showReactionPicker = false;
   reactionTypes = REACTION_TYPES;
   isBookmarked = false;
@@ -39,6 +53,8 @@ export class PostDetailComponent implements OnInit {
   showAuthorCard = false;
   authorCardTimeout: any = null;
   hoveredUserId: string | null = null;
+
+  currentUserProfile: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -55,6 +71,8 @@ export class PostDetailComponent implements OnInit {
 
   ngOnInit() {
     this.initCommentForm();
+    this.initReplyForm();
+    this.loadCurrentUserProfile();
     const postId = this.route.snapshot.paramMap.get('id');
     if (postId) {
       this.loadPost(postId);
@@ -62,9 +80,45 @@ export class PostDetailComponent implements OnInit {
     }
   }
 
+  loadCurrentUserProfile() {
+    this.profileService.getProfile().subscribe({
+      next: (response: any) => {
+        this.currentUserProfile = response.data || response;
+        if (this.currentUserProfile?.userId) {
+          this.profileCache.set(
+            this.currentUserProfile.userId,
+            this.currentUserProfile
+          );
+        }
+      },
+      error: (err) =>
+        console.error('Failed to load current user profile:', err),
+    });
+  }
+
   initCommentForm() {
     this.commentForm = this.fb.group({
-      content: ['', [Validators.required, Validators.minLength(1)]],
+      content: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(1),
+          Validators.maxLength(500),
+        ],
+      ],
+    });
+  }
+
+  initReplyForm() {
+    this.replyForm = this.fb.group({
+      content: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(1),
+          Validators.maxLength(500),
+        ],
+      ],
     });
   }
 
@@ -90,18 +144,30 @@ export class PostDetailComponent implements OnInit {
   }
 
   loadAuthorProfile(authorId: string) {
-    this.loadProfile(authorId).then(profile => {
+    this.loadProfile(authorId).then((profile) => {
       this.authorProfile = profile;
     });
   }
 
   // Generic profile loading with caching
+  private ensureProfileLoaded(comment: any) {
+    if (comment.author_id && !this.profileCache.has(comment.author_id)) {
+      this.loadProfile(comment.author_id);
+    }
+    if (comment.replies && comment.replies.length > 0) {
+      comment.replies.forEach((reply: any) => this.ensureProfileLoaded(reply));
+    }
+  }
+
   loadProfile(userId: string): Promise<any> {
     console.log('📥 loadProfile called for:', userId);
     return new Promise((resolve) => {
       // Check cache first
       if (this.profileCache.has(userId)) {
-        console.log('💾 Profile found in cache:', this.profileCache.get(userId));
+        console.log(
+          '💾 Profile found in cache:',
+          this.profileCache.get(userId)
+        );
         resolve(this.profileCache.get(userId));
         return;
       }
@@ -122,7 +188,7 @@ export class PostDetailComponent implements OnInit {
             firstName: 'Unknown',
             lastName: 'User',
             profileId: userId,
-            username: userId
+            username: userId,
           };
           this.profileCache.set(userId, fallback);
           resolve(fallback);
@@ -132,19 +198,63 @@ export class PostDetailComponent implements OnInit {
   }
 
   loadComments(postId: string) {
-    this.commentService.getComments(postId).subscribe({
-      next: (comments) => {
-        this.comments = comments || []; // Ensure array is initialized
+    this.commentService.getComments(postId, 20, 0, 2).subscribe({
+      next: (response: any) => {
+        // Handle both response formats: array or {comments, total}
+        if (Array.isArray(response)) {
+          // Old format: direct array
+          this.comments = response;
+        } else if (response && response.comments) {
+          // New format: {comments: [], total: N}
+          this.comments = response.comments;
+        } else {
+          this.comments = [];
+        }
+
+        // Add mock comments for demo if needed
+        if (this.comments.length === 0) {
+          const now = new Date().toISOString();
+          this.comments = [
+            {
+              id: 'mock-1',
+              post_id: postId,
+              user_id: 'user-1',
+              author_id: 'user-1',
+              content:
+                'I think for our second campaign we can try to target a different audience. How does it sound for you?',
+              like_count: 2,
+              is_deleted: false,
+              created_at: now,
+              updated_at: now,
+              isLiked: true,
+              replies: [
+                {
+                  id: 'mock-1-1',
+                  post_id: postId,
+                  user_id: 'user-2',
+                  author_id: 'user-2',
+                  content:
+                    'Yes, that sounds good! I can think about this tomorrow. When do we plan to start that campaign?',
+                  like_count: 3,
+                  is_deleted: false,
+                  created_at: now,
+                  updated_at: now,
+                  isLiked: true,
+                  parent_comment_id: 'mock-1',
+                },
+              ],
+            },
+          ];
+        }
+
         // Load profiles for all comment authors
-        comments?.forEach(comment => {
-          if (comment.author_id && !this.profileCache.has(comment.author_id)) {
-            this.loadProfile(comment.author_id);
-          }
+        this.comments.forEach((comment) => {
+          this.ensureProfileLoaded(comment);
         });
       },
       error: (err: any) => {
         console.error('Failed to load comments:', err);
-        this.comments = []; // Initialize empty array on error
+        this.comments = [];
       },
     });
   }
@@ -155,6 +265,14 @@ export class PostDetailComponent implements OnInit {
     this.submittingComment = true;
     const content = this.commentForm.value.content;
 
+    // DEBUG: Log what we're sending
+    console.log('=== SUBMIT COMMENT DEBUG ===');
+    console.log('Form value:', this.commentForm.value);
+    console.log('Content:', content);
+    console.log('Payload:', { content });
+    console.log('JSON:', JSON.stringify({ content }));
+    console.log('============================');
+
     this.commentService.createComment(this.post.id, { content }).subscribe({
       next: (comment) => {
         if (!this.comments) {
@@ -164,7 +282,7 @@ export class PostDetailComponent implements OnInit {
 
         // Load profile for the new comment (current user)
         if (comment.author_id) {
-           this.loadProfile(comment.author_id);
+          this.loadProfile(comment.author_id);
         }
 
         this.commentForm.reset();
@@ -175,10 +293,98 @@ export class PostDetailComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Failed to submit comment:', err);
-        this.toastService.error('Error', 'Failed to submit comment');
+        console.error('Error status:', err.status);
+        console.error('Error message:', err.message);
+        console.error('Error body:', err.error);
+        console.error('Full error object:', JSON.stringify(err, null, 2));
+
+        // Show user-friendly error
+        const errorMsg =
+          err.error?.error || err.message || 'Failed to submit comment';
+        this.toastService.error('Error', errorMsg);
         this.submittingComment = false;
       },
     });
+  }
+
+  // Reply functionality methods
+  startReply(comment: Comment) {
+    console.log('🔵 START REPLY CALLED!', comment);
+    this.replyingToCommentId = comment.id;
+    // Get author name from profile cache
+    const profile = this.profileCache.get(comment.user_id);
+    this.replyingToUsername = profile
+      ? `${profile.first_name} ${profile.last_name}`
+      : 'User';
+    this.replyForm.reset();
+  }
+
+  cancelReply() {
+    this.replyingToCommentId = null;
+    this.replyingToUsername = null;
+    this.replyForm.reset();
+  }
+
+  submitReply(parentCommentId: string) {
+    if (this.replyForm.invalid || !this.post) return;
+
+    const content = this.replyForm.value.content;
+
+    this.commentService
+      .createComment(this.post.id, {
+        content,
+        parent_comment_id: parentCommentId,
+      })
+      .subscribe({
+        next: (reply) => {
+          // Add reply to parent's replies array
+          this.addReplyToComment(this.comments, parentCommentId, reply);
+
+          // Load profile for reply author
+          if (reply.user_id) {
+            this.loadProfile(reply.user_id);
+          }
+
+          this.cancelReply();
+          this.toastService.success('Success', 'Reply posted');
+        },
+        error: (err) => {
+          console.error('Failed to post reply:', err);
+          const errorMsg = err.error?.error || 'Failed to post reply';
+          this.toastService.error('Error', errorMsg);
+        },
+      });
+  }
+
+  addReplyToComment(
+    comments: Comment[],
+    parentId: string,
+    reply: Comment
+  ): boolean {
+    for (const comment of comments) {
+      if (comment.id === parentId) {
+        if (!comment.replies) {
+          comment.replies = [];
+        }
+        comment.replies.unshift(reply);
+        return true;
+      }
+      if (comment.replies && comment.replies.length > 0) {
+        if (this.addReplyToComment(comment.replies, parentId, reply)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  canReply(comment: Comment): boolean {
+    const depth = comment.depth ?? 0; // Default to 0 if undefined
+    return depth < 2; // Max 3 levels (0, 1, 2)
+  }
+
+  getReplyCharCount(): number {
+    return this.replyForm.get('content')?.value?.length || 0;
   }
 
   toggleReactionPicker(event: Event) {
@@ -207,16 +413,16 @@ export class PostDetailComponent implements OnInit {
       error: (err) => {
         console.error('Failed to vote:', err);
         this.toastService.error('Error', 'Failed to vote');
-      }
+      },
     });
   }
 
   hasUpvoted(): boolean {
-    return this.post ? this.post.user_vote === 'upvote' : false;
+    return this.post ? this.post.user_vote === 'up' : false;
   }
 
   hasDownvoted(): boolean {
-    return this.post ? this.post.user_vote === 'downvote' : false;
+    return this.post ? this.post.user_vote === 'down' : false;
   }
 
   // Legacy method - kept for backward compatibility
@@ -263,18 +469,11 @@ export class PostDetailComponent implements OnInit {
     });
   }
 
-
-
-
   getReactionEmoji(type: ReactionType): string {
     return this.reactionTypes[type] || '';
   }
 
   getReactionImage(type: ReactionType): string {
-    const REACTION_IMAGES: Record<ReactionType, string> = {
-      upvote: '/assets/reaction/arrow-big-up-dash.svg',
-      downvote: '/assets/reaction/arrow-big-down-dash.svg'
-    };
     return REACTION_IMAGES[type] || '';
   }
 
@@ -303,7 +502,7 @@ export class PostDetailComponent implements OnInit {
     this.hoveredUserId = userId;
     this.authorCardTimeout = setTimeout(() => {
       console.log('⏰ Timeout triggered, loading profile...');
-      this.loadProfile(userId).then(profile => {
+      this.loadProfile(userId).then((profile) => {
         console.log('✅ Profile loaded:', profile);
         console.log('🎯 hoveredUserId:', this.hoveredUserId, 'userId:', userId);
         if (this.hoveredUserId === userId) {
@@ -341,7 +540,11 @@ export class PostDetailComponent implements OnInit {
       return lastName;
     }
 
-    return this.authorProfile.username || this.authorProfile.display_name || 'Unknown User';
+    return (
+      this.authorProfile.username ||
+      this.authorProfile.display_name ||
+      'Unknown User'
+    );
   }
 
   getUserName(userId: string): string {
@@ -354,5 +557,17 @@ export class PostDetailComponent implements OnInit {
 
   getAvatarUrl(profile: any): string | null {
     return profile?.avatarUri || null;
+  }
+
+  // Auto-resize textarea as user types
+  autoResizeTextarea(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+  }
+
+  // Get current character count
+  getCharCount(): number {
+    return this.commentForm.get('content')?.value?.length || 0;
   }
 }

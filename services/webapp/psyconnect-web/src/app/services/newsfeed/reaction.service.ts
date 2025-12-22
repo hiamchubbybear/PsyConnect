@@ -28,7 +28,10 @@ export class ReactionService {
   /**
    * Toggle vote - if same type clicked, remove vote. If different type, change vote.
    */
-  toggleVote(postId: string, voteType: ReactionType): Observable<Reaction | void> {
+  toggleVote(
+    postId: string,
+    voteType: ReactionType
+  ): Observable<Reaction | void> {
     const currentVote = this.userVotes.get(postId);
 
     // If clicking same vote type, remove it
@@ -68,14 +71,14 @@ export class ReactionService {
    * Check if user upvoted
    */
   hasUpvoted(postId: string): boolean {
-    return this.userVotes.get(postId) === 'upvote';
+    return this.userVotes.get(postId) === 'up';
   }
 
   /**
    * Check if user downvoted
    */
   hasDownvoted(postId: string): boolean {
-    return this.userVotes.get(postId) === 'downvote';
+    return this.userVotes.get(postId) === 'down';
   }
 
   addReaction(

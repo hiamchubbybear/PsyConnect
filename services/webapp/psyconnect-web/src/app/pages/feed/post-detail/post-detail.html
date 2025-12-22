@@ -3,19 +3,22 @@
   <!-- Header -->
   <div class="post-detail__header">
     <button class="btn-back-modern" (click)="goBack()">
-      <i class="fas fa-arrow-left"></i>
+      <img src="/assets/icon/arrow-left.svg" alt="Back" class="icon-svg" />
     </button>
-    <h1 class="header-title">{{ 'POST.Detail' | translate }}</h1>
+    <h1 class="header-title">{{ "POST.Detail" | translate }}</h1>
   </div>
 
   <!-- Post Content -->
   <article class="post-content">
     <header class="post-content__header">
       <div class="post-meta">
-        <span class="post-type">{{ ('POST.Types.' + post.post_type) | translate }}</span>
+        <span class="post-type">{{
+          "POST.Types." +
+            (post.post_type.charAt(0).toUpperCase() + post.post_type.slice(1))
+            | translate
+        }}</span>
         <span class="post-date">{{ formatTime(post.created_at) }}</span>
       </div>
-
 
       <!-- Author Info with Hover Card -->
       <div class="post-author-container">
@@ -25,7 +28,11 @@
           (mouseleave)="hideAuthorCard()"
         >
           <div class="post-author-avatar">
-            <img *ngIf="authorProfile?.avatarUri" [src]="authorProfile.avatarUri" [alt]="getAuthorName()" />
+            <img
+              *ngIf="authorProfile?.avatarUri"
+              [src]="authorProfile.avatarUri"
+              [alt]="getAuthorName()"
+            />
             <div *ngIf="!authorProfile?.avatarUri" class="avatar-placeholder">
               {{ getAuthorName().charAt(0).toUpperCase() }}
             </div>
@@ -34,15 +41,23 @@
         </div>
 
         <!-- Author Profile Card -->
-        <div class="author-card"
-             *ngIf="showAuthorCard && authorProfile && hoveredUserId === post.author_id"
-             (mouseenter)="showAuthorCardWithDelay(post.author_id)"
-             (mouseleave)="hideAuthorCard()">
+        <div
+          class="author-card"
+          *ngIf="
+            showAuthorCard && authorProfile && hoveredUserId === post.author_id
+          "
+          (mouseenter)="showAuthorCardWithDelay(post.author_id)"
+          (mouseleave)="hideAuthorCard()"
+        >
           <div class="author-card__cover"></div>
 
           <div class="author-card__avatar-wrapper">
             <div class="author-card__avatar">
-              <img *ngIf="authorProfile.avatarUri" [src]="authorProfile.avatarUri" [alt]="getAuthorName()" />
+              <img
+                *ngIf="authorProfile.avatarUri"
+                [src]="authorProfile.avatarUri"
+                [alt]="getAuthorName()"
+              />
               <div *ngIf="!authorProfile.avatarUri" class="avatar-placeholder">
                 {{ getAuthorName().charAt(0).toUpperCase() }}
               </div>
@@ -52,30 +67,56 @@
           <div class="author-card__content">
             <div class="author-card__header">
               <h4 class="author-card__name">{{ getAuthorName() }}</h4>
-              <span class="author-card__username">@{{ authorProfile.username || post.author_id }}</span>
+              <span class="author-card__username"
+                >@{{ authorProfile.username || post.author_id }}</span
+              >
             </div>
 
-            <p class="author-card__bio" *ngIf="authorProfile.bio || authorProfile.address">
+            <p
+              class="author-card__bio"
+              *ngIf="authorProfile.bio || authorProfile.address"
+            >
               {{ authorProfile.bio || authorProfile.address }}
             </p>
 
             <div class="author-card__details">
-              <div class="author-card__detail-item" *ngIf="authorProfile.address">
-                <i class="fas fa-map-marker-alt"></i>
+              <div
+                class="author-card__detail-item"
+                *ngIf="authorProfile.address"
+              >
+                <img
+                  src="/assets/icon/map-marker.svg"
+                  alt="Location"
+                  class="detail-icon"
+                />
                 <span>{{ authorProfile.address }}</span>
               </div>
-              <div class="author-card__detail-item" *ngIf="authorProfile.gender">
-                <i class="fas fa-user"></i>
+              <div
+                class="author-card__detail-item"
+                *ngIf="authorProfile.gender"
+              >
+                <img
+                  src="/assets/icon/user-circle.svg"
+                  alt="Gender"
+                  class="detail-icon"
+                />
                 <span>{{ authorProfile.gender }}</span>
               </div>
               <div class="author-card__detail-item" *ngIf="authorProfile.dob">
-                <i class="fas fa-birthday-cake"></i>
+                <img
+                  src="/assets/icon/birthday-cake.svg"
+                  alt="Birthday"
+                  class="detail-icon"
+                />
                 <span>{{ authorProfile.dob }}</span>
               </div>
             </div>
 
             <div class="author-card__actions">
-              <a [routerLink]="['/profile', post.author_id]" class="author-card__btn author-card__btn--primary">
+              <a
+                [routerLink]="['/profile', post.author_id]"
+                class="author-card__btn author-card__btn--primary"
+              >
                 View Profile
               </a>
               <button class="author-card__btn author-card__btn--secondary">
@@ -97,8 +138,16 @@
     <!-- Media -->
     <div class="post-media" *ngIf="post.media && post.media.length > 0">
       <div *ngFor="let media of post.media" class="media-item">
-        <img *ngIf="media.type === 'image'" [src]="media.url" [alt]="media.caption || post.title" />
-        <video *ngIf="media.type === 'video'" [src]="media.url" controls></video>
+        <img
+          *ngIf="media.type === 'image'"
+          [src]="media.url"
+          [alt]="media.caption || post.title"
+        />
+        <video
+          *ngIf="media.type === 'video'"
+          [src]="media.url"
+          controls
+        ></video>
         <p *ngIf="media.caption" class="media-caption">{{ media.caption }}</p>
       </div>
     </div>
@@ -107,31 +156,56 @@
     <div class="post-body" [innerHTML]="post.content"></div>
 
     <!-- Categories -->
-    <div class="post-categories" *ngIf="post.categories && post.categories.length > 0">
-      <span class="category-label">{{ 'POST.Categories' | translate }}:</span>
-      <span *ngFor="let category of post.categories" class="category">{{ category }}</span>
+    <div
+      class="post-categories"
+      *ngIf="post.categories && post.categories.length > 0"
+    >
+      <span class="category-label">{{ "POST.Categories" | translate }}:</span>
+      <span *ngFor="let category of post.categories" class="category">{{
+        category
+      }}</span>
     </div>
 
     <!-- Engagement Stats -->
     <div class="post-stats">
       <span class="stat">
-        <img src="/assets/reaction/message-circle.svg" alt="Views" class="stat-icon-img" />
+        <img
+          src="/assets/icon/trending-up.svg"
+          alt="Views"
+          class="stat-icon-img"
+        />
         <span class="stat-count">{{ post.view_count }}</span>
       </span>
       <span class="stat">
-        <img src="/assets/reaction/arrow-big-up-dash.svg" alt="Upvotes" class="stat-icon-img" />
+        <img
+          src="/assets/reaction/arrow-big-up-dash.svg"
+          alt="Upvotes"
+          class="stat-icon-img"
+        />
         <span class="stat-count">{{ post.upvote_count || 0 }}</span>
       </span>
       <span class="stat">
-        <img src="/assets/reaction/arrow-big-down-dash.svg" alt="Downvotes" class="stat-icon-img" />
+        <img
+          src="/assets/reaction/arrow-big-down-dash.svg"
+          alt="Downvotes"
+          class="stat-icon-img"
+        />
         <span class="stat-count">{{ post.downvote_count || 0 }}</span>
       </span>
       <span class="stat">
-        <img src="/assets/reaction/message-circle.svg" alt="Comments" class="stat-icon-img" />
+        <img
+          src="/assets/reaction/message-circle.svg"
+          alt="Comments"
+          class="stat-icon-img"
+        />
         <span class="stat-count">{{ post.comment_count }}</span>
       </span>
       <span class="stat">
-        <img src="/assets/reaction/share.svg" alt="Shares" class="stat-icon-img" />
+        <img
+          src="/assets/reaction/share.svg"
+          alt="Shares"
+          class="stat-icon-img"
+        />
         <span class="stat-count">{{ post.share_count }}</span>
       </span>
     </div>
@@ -139,35 +213,74 @@
     <!-- Actions -->
     <div class="post-actions">
       <!-- Upvote Button -->
-      <button class="action-btn" [class.active]="hasUpvoted()" (click)="handleVote('upvote', $event)">
-        <img src="/assets/reaction/arrow-big-up-dash.svg" alt="Upvote" class="action-icon-img" />
-        {{ 'NEWSFEED.Reactions.Upvote' | translate }}
+      <button
+        class="action-btn"
+        [class.active]="hasUpvoted()"
+        (click)="handleVote('up', $event)"
+      >
+        <img
+          src="/assets/reaction/arrow-big-up-dash.svg"
+          alt="Upvote"
+          class="action-icon-img"
+        />
+        {{ "NEWSFEED.Reactions.Upvote" | translate }}
       </button>
 
       <!-- Downvote Button -->
-      <button class="action-btn" [class.active]="hasDownvoted()" (click)="handleVote('downvote', $event)">
-        <img src="/assets/reaction/arrow-big-down-dash.svg" alt="Downvote" class="action-icon-img" />
-        {{ 'NEWSFEED.Reactions.Downvote' | translate }}
+      <button
+        class="action-btn"
+        [class.active]="hasDownvoted()"
+        (click)="handleVote('down', $event)"
+      >
+        <img
+          src="/assets/reaction/arrow-big-down-dash.svg"
+          alt="Downvote"
+          class="action-icon-img"
+        />
+        {{ "NEWSFEED.Reactions.Downvote" | translate }}
       </button>
 
       <!-- Comment Button -->
       <button class="action-btn">
-        <img src="/assets/reaction/message-circle.svg" alt="Comment" class="action-icon-img" />
-        {{ 'COMMON.Comment' | translate }}
+        <img
+          src="/assets/reaction/message-circle.svg"
+          alt="Comment"
+          class="action-icon-img"
+        />
+        {{ "COMMON.Comment" | translate }}
       </button>
 
       <!-- Bookmark Button -->
-      <button class="action-btn" [class.active]="isBookmarked" (click)="toggleBookmark()">
-        <img [src]="isBookmarked ? '/assets/reaction/message-circle-off.svg' : '/assets/reaction/message-circle.svg'"
-             [alt]="isBookmarked ? 'Bookmarked' : 'Bookmark'"
-             class="action-icon-img" />
-        {{ (isBookmarked ? 'CONSULTATION.SOCIAL.Bookmarked' : 'CONSULTATION.SOCIAL.Bookmark') | translate }}
+      <button
+        class="action-btn"
+        [class.active]="isBookmarked"
+        (click)="toggleBookmark()"
+      >
+        <img
+          [src]="
+            isBookmarked
+              ? '/assets/icon/bookmark-filled.svg'
+              : '/assets/icon/bookmark.svg'
+          "
+          [alt]="isBookmarked ? 'Bookmarked' : 'Bookmark'"
+          class="action-icon-img"
+        />
+        {{
+          (isBookmarked
+            ? "CONSULTATION.SOCIAL.Bookmarked"
+            : "CONSULTATION.SOCIAL.Bookmark"
+          ) | translate
+        }}
       </button>
 
       <!-- Share Button -->
       <button class="action-btn" (click)="sharePost()">
-        <img src="/assets/reaction/share.svg" alt="Share" class="action-icon-img" />
-        {{ 'CONSULTATION.SOCIAL.Share' | translate }}
+        <img
+          src="/assets/reaction/share.svg"
+          alt="Share"
+          class="action-icon-img"
+        />
+        {{ "CONSULTATION.SOCIAL.Share" | translate }}
       </button>
     </div>
   </article>
@@ -175,68 +288,165 @@
   <!-- Comments Section -->
   <section class="comments-section">
     <h2 class="comments-title">
-      {{ 'POST.Comments.Title' | translate }} ({{ post.comment_count }})
+      {{ "POST.Comments.Title" | translate }} ({{ post.comment_count }})
     </h2>
 
     <!-- Comment Form -->
-    <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
-      <textarea
-        formControlName="content"
-        class="comment-input"
-        [placeholder]="'POST.Comments.Placeholder' | translate"
-        rows="3"
-      ></textarea>
-      <button
-        type="submit"
-        class="btn-submit"
-        [disabled]="commentForm.invalid || submittingComment"
-      >
-        {{ submittingComment ? ('COMMON.Loading' | translate) : ('POST.Comments.Submit' | translate) }}
-      </button>
+    <form
+      [formGroup]="commentForm"
+      (ngSubmit)="submitComment()"
+      class="comment-form"
+    >
+      <div class="comment-avatar">
+        <img
+          *ngIf="currentUserProfile?.avatarUri"
+          [src]="currentUserProfile.avatarUri"
+          alt="Current User"
+        />
+        <div *ngIf="!currentUserProfile?.avatarUri" class="avatar-placeholder">
+          {{ (currentUserProfile?.firstName || "?").charAt(0).toUpperCase() }}
+        </div>
+      </div>
+      <div class="comment-input-wrapper">
+        <textarea
+          formControlName="content"
+          class="comment-input"
+          [placeholder]="'POST.Comments.Placeholder' | translate"
+          rows="1"
+        ></textarea>
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="commentForm.invalid || submittingComment"
+        >
+          {{
+            submittingComment
+              ? ("COMMON.Loading" | translate)
+              : ("POST.Comments.Submit" | translate)
+          }}
+        </button>
+      </div>
     </form>
 
     <!-- Comments List -->
     <div class="comments-list">
-      <div *ngFor="let comment of comments" class="comment">
-        <div class="comment-header">
-          <div
-            class="comment-author-wrapper"
-            (mouseenter)="comment.author_id && showAuthorCardWithDelay(comment.author_id)"
-            (mouseleave)="hideAuthorCard()"
-          >
-            <div class="comment-avatar">
-              {{ (getUserName(comment.author_id) || '?').charAt(0).toUpperCase() }}
-            </div>
-            <span class="comment-author">{{ getUserName(comment.author_id) || 'Unknown' }}</span>
-          </div>
-          <span class="comment-date">{{ formatTime(comment.created_at) }}</span>
+      <!-- Main Comments -->
+      <ng-container *ngFor="let comment of comments">
+        <!-- Recursive Template -->
+        <ng-container
+          *ngTemplateOutlet="commentTemplate; context: { $implicit: comment }"
+        >
+        </ng-container>
+      </ng-container>
 
-          <!-- Comment Author Card -->
-          <div class="author-card" *ngIf="comment.author_id && showAuthorCard && hoveredUserId === comment.author_id">
-            <div class="author-card__avatar">
-              <img *ngIf="profileCache.get(comment.author_id)?.avatarUri"
-                   [src]="profileCache.get(comment.author_id).avatarUri"
-                   [alt]="getUserName(comment.author_id)" />
-              <div *ngIf="!profileCache.get(comment.author_id)?.avatarUri" class="avatar-placeholder">
-                {{ (getUserName(comment.author_id) || '?').charAt(0).toUpperCase() }}
+      <ng-template #commentTemplate let-comment>
+        <div class="comment">
+          <div class="comment-avatar">
+            <img
+              *ngIf="profileCache.get(comment.author_id)?.avatarUri"
+              [src]="profileCache.get(comment.author_id).avatarUri"
+              [alt]="getUserName(comment.author_id)"
+            />
+            <div
+              *ngIf="!profileCache.get(comment.author_id)?.avatarUri"
+              class="avatar-placeholder"
+            >
+              {{
+                (getUserName(comment.author_id) || "?").charAt(0).toUpperCase()
+              }}
+            </div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-bubble">
+              <div class="comment-header">
+                <span class="comment-author">
+                  {{ getUserName(comment.author_id) || "Unknown" }}
+                </span>
+                <span class="comment-date">{{
+                  formatTime(comment.created_at)
+                }}</span>
+              </div>
+              <div class="comment-content">{{ comment.content }}</div>
+            </div>
+            <div class="comment-actions">
+              <button type="button" [class.liked]="comment.isLiked">
+                {{
+                  (comment.isLiked
+                    ? "POST.Comments.Liked"
+                    : "POST.Comments.Like"
+                  ) | translate
+                }}
+                <span *ngIf="comment.like_count > 0"
+                  >({{ comment.like_count }})</span
+                >
+              </button>
+              <button type="button" (click)="startReply(comment)">
+                {{ "POST.Comments.Reply" | translate }}
+                <span
+                  *ngIf="comment.reply_count && comment.reply_count > 0"
+                  style="opacity: 0.7"
+                >
+                  ({{ comment.reply_count }})
+                </span>
+              </button>
+            </div>
+
+            <!-- Replying Indicator -->
+            <div
+              *ngIf="replyingToCommentId === comment.id"
+              class="replying-indicator"
+            >
+              Đang trả lời @{{ replyingToUsername }}...
+            </div>
+
+            <!-- Reply Form -->
+            <div *ngIf="replyingToCommentId === comment.id" class="reply-form">
+              <textarea
+                [formControl]="$any(replyForm.get('content'))"
+                [placeholder]="'Reply to @' + replyingToUsername + '...'"
+                maxlength="500"
+                rows="2"
+              ></textarea>
+              <div class="reply-form-actions">
+                <span
+                  class="char-counter"
+                  [class.warning]="getReplyCharCount() > 450"
+                >
+                  {{ getReplyCharCount() }}/500
+                </span>
+                <div>
+                  <button type="button" (click)="cancelReply()">Cancel</button>
+                  <button
+                    type="button"
+                    (click)="submitReply(comment.id)"
+                    [disabled]="replyForm.invalid"
+                  >
+                    Reply
+                  </button>
+                </div>
               </div>
             </div>
-            <div class="author-card__info">
-              <h4 class="author-card__name">{{ getUserName(comment.author_id) }}</h4>
-              <p class="author-card__bio" *ngIf="profileCache.get(comment.author_id)?.address">
-                {{ profileCache.get(comment.author_id).address }}
-              </p>
-              <div class="author-card__stats" *ngIf="profileCache.get(comment.author_id)?.gender">
-                <span>{{ profileCache.get(comment.author_id).gender }}</span>
-              </div>
+
+            <!-- Nested Replies -->
+            <div
+              class="comment-replies"
+              *ngIf="comment.replies && comment.replies.length > 0"
+            >
+              <ng-container *ngFor="let reply of comment.replies">
+                <ng-container
+                  *ngTemplateOutlet="
+                    commentTemplate;
+                    context: { $implicit: reply }
+                  "
+                ></ng-container>
+              </ng-container>
             </div>
           </div>
         </div>
-        <p class="comment-content">{{ comment.content }}</p>
-      </div>
+      </ng-template>
 
-      <div *ngIf="!comments || comments.length === 0" class="no-comments">
-        {{ 'POST.Comments.NoComments' | translate }}
+      <div *ngIf="comments.length === 0" class="no-comments">
+        {{ "POST.Comments.NoComments" | translate }}
       </div>
     </div>
   </section>
@@ -245,5 +455,7 @@
 <!-- Error State -->
 <div *ngIf="error" class="error-state">
   <p>{{ error }}</p>
-  <button class="btn-retry" (click)="goBack()">{{ 'COMMON.Back' | translate }}</button>
+  <button class="btn-retry" (click)="goBack()">
+    {{ "COMMON.Back" | translate }}
+  </button>
 </div>

@@ -10,7 +10,6 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Comment } from '../../../models/comment.model';
 import { Post } from '../../../models/post.model';
-import { REACTION_TYPES, ReactionType } from '../../../models/reaction.model';
 import { SocialService } from '../../../services/consultation/social.service';
 import { LoaderService } from '../../../services/loader/loader';
 import { CommentService } from '../../../services/newsfeed/comment.service';
@@ -36,9 +35,14 @@ export class PostModalComponent implements OnInit {
   commentForm!: FormGroup;
   submittingComment = false;
 
-  showReactionPicker = false;
-  reactionTypes = REACTION_TYPES;
-  isBookmarked = false;
+  // Loading state
+  isInitialized = false;
+  currentUserProfile: any = null;
+
+  // Reply functionality
+  replyingToCommentId: string | null = null;
+  replyingToUsername: string | null = null;
+  replyForm!: FormGroup;
 
   profileCache: Map<string, any> = new Map();
   authorProfile: any = null;
@@ -59,41 +63,71 @@ export class PostModalComponent implements OnInit {
 
   ngOnInit() {
     this.initCommentForm();
+    this.initReplyForm();
+    this.loadCurrentUserProfile();
     if (this.postId) {
-      this.loadPost(this.postId);
-      this.loadComments(this.postId);
+      this.loadInitialData();
     }
   }
 
-  initCommentForm() {
-    this.commentForm = this.fb.group({
-      content: ['', [Validators.required, Validators.minLength(1)]],
+  loadCurrentUserProfile() {
+    this.profileService.getProfile().subscribe({
+      next: (response: any) => {
+        this.currentUserProfile = response.data || response;
+        if (this.currentUserProfile?.userId) {
+          this.profileCache.set(
+            this.currentUserProfile.userId,
+            this.currentUserProfile
+          );
+        }
+      },
     });
   }
 
-  loadPost(id: string) {
-    this.loaderService.show();
+  loadInitialData() {
+    this.isInitialized = false;
     this.error = null;
 
-    this.newsfeedService.getPost(id).subscribe({
+    this.newsfeedService.getPost(this.postId).subscribe({
       next: (post) => {
         this.post = post;
-        this.loaderService.hide();
-        if (post.author_id) {
-          this.loadAuthorProfile(post.author_id);
-        }
+        this.loadProfile(post.author_id).then((profile) => {
+          this.authorProfile = profile;
+        });
+        this.loadComments(this.postId, () => {
+          this.isInitialized = true;
+        });
       },
       error: (err) => {
         console.error('Failed to load post:', err);
         this.error = 'Failed to load post';
-        this.loaderService.hide();
       },
     });
   }
 
-  loadAuthorProfile(authorId: string) {
-    this.loadProfile(authorId).then((profile) => {
-      this.authorProfile = profile;
+  initCommentForm() {
+    this.commentForm = this.fb.group({
+      content: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(1),
+          Validators.maxLength(500),
+        ],
+      ],
+    });
+  }
+
+  initReplyForm() {
+    this.replyForm = this.fb.group({
+      content: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(1),
+          Validators.maxLength(500),
+        ],
+      ],
     });
   }
 
@@ -106,22 +140,15 @@ export class PostModalComponent implements OnInit {
 
       this.profileService.getProfileById(userId).subscribe({
         next: (response: any) => {
-          const profile = response.data || {
-            profileId: userId,
-            firstName: 'Unknown',
-            lastName: 'User',
-            username: userId,
-          };
+          const profile = response.data || response;
           this.profileCache.set(userId, profile);
           resolve(profile);
         },
         error: (err) => {
-          console.error('Failed to load profile:', err);
           const fallback = {
             profileId: userId,
-            firstName: 'Unknown',
-            lastName: 'User',
-            username: userId,
+            firstName: 'User',
+            lastName: '',
           };
           this.profileCache.set(userId, fallback);
           resolve(fallback);
@@ -130,179 +157,249 @@ export class PostModalComponent implements OnInit {
     });
   }
 
-  loadComments(postId: string) {
-    this.commentService.getComments(postId).subscribe({
-      next: (comments) => {
+  loadComments(postId: string, done?: () => void) {
+    this.commentService.getComments(postId, 20, 0, 2).subscribe({
+      next: (response: any) => {
+        const comments = Array.isArray(response)
+          ? response
+          : response.comments || [];
         this.comments = comments;
-        comments.forEach((comment) => {
-          if (comment.author_id) {
-            this.loadProfile(comment.author_id);
-          }
+
+        // Load profiles for all authors
+        const profilePromises = comments.map((c: any) =>
+          this.ensureProfileLoadedPromise(c)
+        );
+        Promise.all(profilePromises).then(() => {
+          if (done) done();
         });
       },
       error: (err) => {
         console.error('Failed to load comments:', err);
+        if (done) done();
       },
     });
   }
 
+  private ensureProfileLoadedPromise(comment: any): Promise<any> {
+    const promises: Promise<any>[] = [];
+    if (comment.author_id && !this.profileCache.has(comment.author_id)) {
+      promises.push(this.loadProfile(comment.author_id));
+    }
+    if (comment.replies && comment.replies.length > 0) {
+      comment.replies.forEach((reply: any) =>
+        promises.push(this.ensureProfileLoadedPromise(reply))
+      );
+    }
+    return Promise.all(promises);
+  }
+
   submitComment() {
     if (this.commentForm.invalid || !this.post) return;
-
     this.submittingComment = true;
     const content = this.commentForm.value.content;
 
-    this.commentService.createComment(this.post.id, content).subscribe({
+    this.commentService.createComment(this.post.id, { content }).subscribe({
       next: (comment) => {
         this.comments.unshift(comment);
         this.commentForm.reset();
         this.submittingComment = false;
-        this.toastService.success('Success', 'Comment posted successfully');
-        if (this.post) {
-          this.post.comment_count++;
-        }
-        if (comment.author_id) {
-          this.loadProfile(comment.author_id);
-        }
+        if (this.post) this.post.comment_count++;
+        this.loadProfile(comment.author_id);
       },
       error: (err) => {
-        console.error('Failed to post comment:', err);
         this.toastService.error('Error', 'Failed to post comment');
         this.submittingComment = false;
       },
     });
   }
 
-  toggleReactionPicker(event: Event) {
-    event.stopPropagation();
-    this.showReactionPicker = !this.showReactionPicker;
+  startReply(comment: Comment) {
+    this.replyingToCommentId = comment.id;
+    const userId = comment.author_id || comment.user_id;
+    const profile = this.profileCache.get(userId);
+    this.replyingToUsername = profile
+      ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
+      : 'User';
+    this.replyForm.reset();
   }
 
-  addReaction(type: ReactionType, event: Event) {
+  cancelReply() {
+    this.replyingToCommentId = null;
+    this.replyingToUsername = null;
+    this.replyForm.reset();
+  }
+
+  submitReply(parentCommentId: string) {
+    if (this.replyForm.invalid || !this.post) return;
+    const content = this.replyForm.value.content;
+
+    this.commentService
+      .createComment(this.post.id, {
+        content,
+        parent_comment_id: parentCommentId,
+      })
+      .subscribe({
+        next: (reply) => {
+          this.addReplyToComment(this.comments, parentCommentId, reply);
+          this.cancelReply();
+          if (this.post) this.post.comment_count++;
+        },
+        error: (err) => {
+          this.toastService.error('Error', 'Failed to post reply');
+        },
+      });
+  }
+
+  private addReplyToComment(
+    comments: Comment[],
+    parentId: string,
+    reply: Comment
+  ): boolean {
+    for (const comment of comments) {
+      if (comment.id === parentId) {
+        if (!comment.replies) comment.replies = [];
+        comment.replies.unshift(reply);
+        return true;
+      }
+      if (
+        comment.replies &&
+        this.addReplyToComment(comment.replies, parentId, reply)
+      )
+        return true;
+    }
+    return false;
+  }
+
+  getReplyCharCount(): number {
+    return this.replyForm.get('content')?.value?.length || 0;
+  }
+
+  // Voting and Engagement
+  upvotePost(event: Event) {
     event.stopPropagation();
     if (!this.post) return;
 
-    this.reactionService.addReaction(this.post.id, type).subscribe({
-      next: () => {
-        this.showReactionPicker = false;
-        this.toastService.success('Success', 'Reaction added');
-      },
-      error: (err) => {
-        console.error('Failed to add reaction:', err);
-        this.toastService.error('Error', 'Failed to add reaction');
-      },
+    // If already upvoted, remove the vote
+    if (this.post.user_vote === 'up') {
+      this.post.upvote_count--;
+      this.post.user_vote = null;
+
+      this.reactionService.removeReaction(this.post.id).subscribe({
+        error: (err) => console.error('Failed to remove upvote:', err),
+      });
+      return;
+    }
+
+    // Otherwise, add/switch to upvote
+    if (this.post.user_vote === 'down') this.post.downvote_count--;
+    this.post.upvote_count++;
+    this.post.user_vote = 'up';
+
+    this.reactionService.addReaction(this.post.id, 'up').subscribe({
+      error: (err) => console.error('Failed to upvote:', err),
+    });
+  }
+
+  downvotePost(event: Event) {
+    event.stopPropagation();
+    if (!this.post) return;
+
+    // If already downvoted, remove the vote
+    if (this.post.user_vote === 'down') {
+      this.post.downvote_count--;
+      this.post.user_vote = null;
+
+      this.reactionService.removeReaction(this.post.id).subscribe({
+        error: (err) => console.error('Failed to remove downvote:', err),
+      });
+      return;
+    }
+
+    // Otherwise, add/switch to downvote
+    if (this.post.user_vote === 'up') this.post.upvote_count--;
+    this.post.downvote_count++;
+    this.post.user_vote = 'down';
+
+    this.reactionService.addReaction(this.post.id, 'down').subscribe({
+      error: (err) => console.error('Failed to downvote:', err),
     });
   }
 
   toggleBookmark() {
     if (!this.post) return;
+    const isBookmarked = this.post.user_bookmark;
 
-    const action = this.isBookmarked
+    const action = isBookmarked
       ? this.socialService.removeBookmark(this.post.id)
       : this.socialService.addBookmark(this.post.id);
 
     action.subscribe({
       next: () => {
-        this.isBookmarked = !this.isBookmarked;
+        if (this.post) this.post.user_bookmark = !isBookmarked;
         this.toastService.success(
           'Success',
-          this.isBookmarked ? 'Post bookmarked' : 'Bookmark removed'
+          isBookmarked ? 'Bookmark removed' : 'Post bookmarked'
         );
       },
-      error: (err) => {
-        console.error('Failed to toggle bookmark:', err);
-        this.toastService.error('Error', 'Failed to update bookmark');
-      },
+      error: (err) => console.error('Failed to toggle bookmark:', err),
     });
   }
 
   sharePost() {
     if (!this.post) return;
-
     this.socialService.sharePost(this.post.id).subscribe({
       next: () => {
-        this.toastService.success('Success', 'Post shared successfully');
-        if (this.post) {
-          this.post.share_count++;
-        }
+        if (this.post) this.post.share_count++;
+        this.toastService.success('Success', 'Post shared');
       },
-      error: (err) => {
-        console.error('Failed to share post:', err);
-        this.toastService.error('Error', 'Failed to share post');
-      },
+      error: (err) => console.error('Failed to share:', err),
     });
   }
 
-  getReactionKeys(): ReactionType[] {
-    return Object.keys(this.reactionTypes) as ReactionType[];
-  }
-
-  getReactionEmoji(type: ReactionType): string {
-    return this.reactionTypes[type];
-  }
-
+  // Utils
   getUserName(userId: string): string {
     const profile = this.profileCache.get(userId);
-    if (!profile) return 'Unknown User';
-
-    const firstName = profile.firstName || '';
-    const lastName = profile.lastName || '';
-    const fullName = `${firstName} ${lastName}`.trim();
-
+    if (!profile) return 'User';
     return (
-      fullName ||
+      `${profile.firstName || ''} ${profile.lastName || ''}`.trim() ||
       profile.username ||
-      profile.display_name ||
-      profile.profileId ||
-      'Unknown User'
+      'User'
     );
   }
 
   getAuthorName(): string {
-    if (!this.post) return 'Unknown';
-    return this.getUserName(this.post.author_id);
+    return this.post ? this.getUserName(this.post.author_id) : 'Author';
   }
 
   showAuthorCardWithDelay(userId: string) {
     this.hoveredUserId = userId;
     this.authorCardTimeout = setTimeout(() => {
       if (this.hoveredUserId === userId) {
-        this.loadProfile(userId).then((profile) => {
-          this.authorProfile = profile;
-          this.showAuthorCard = this.hoveredUserId === userId;
+        this.loadProfile(userId).then((p) => {
+          this.authorProfile = p;
+          this.showAuthorCard = true;
         });
       }
     }, 500);
   }
 
   hideAuthorCard() {
-    if (this.authorCardTimeout) {
-      clearTimeout(this.authorCardTimeout);
-    }
+    clearTimeout(this.authorCardTimeout);
     this.showAuthorCard = false;
     this.hoveredUserId = null;
   }
 
   formatTime(timestamp: string): string {
     const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const seconds = Math.floor(diff / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+    const diff = new Date().getTime() - date.getTime();
+    const mins = Math.floor(diff / 60000);
+    const hrs = Math.floor(mins / 60);
+    const days = Math.floor(hrs / 24);
 
-    if (days > 7) {
-      return date.toLocaleDateString();
-    } else if (days > 0) {
-      return `${days}d ago`;
-    } else if (hours > 0) {
-      return `${hours}h ago`;
-    } else if (minutes > 0) {
-      return `${minutes}m ago`;
-    } else {
-      return 'Just now';
-    }
+    if (days > 0) return `${days}d ago`;
+    if (hrs > 0) return `${hrs}h ago`;
+    if (mins > 0) return `${mins}m ago`;
+    return 'Just now';
   }
 
   close() {

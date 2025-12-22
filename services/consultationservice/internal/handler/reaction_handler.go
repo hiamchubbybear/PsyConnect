@@ -6,6 +6,7 @@ import (
 	"consultationservice/internal/redis"
 	"consultationservice/internal/repository"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -29,34 +30,27 @@ func NewReactionHandler(env *bootstrap.Env, repoManager *repository.RepositoryMa
 
 func (h *ReactionHandler) AddReaction(c *gin.Context) {
 	postID := c.Param("id")
-	userID := c.GetString("userID") // From auth middleware
+	userID := c.GetString("userID")
 
 	var req struct {
-		ReactionType string `json:"reaction_type" binding:"required"`
+		ReactionType string `json:"reaction_type" binding:"required"` // "up" or "down"
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Reaction type is required"})
 		return
 	}
 
-	// Validate reaction type
-	validReactions := map[string]bool{
-		model.ReactionLike:  true,
-		model.ReactionLove:  true,
-		model.ReactionLaugh: true,
-		model.ReactionThink: true,
-		model.ReactionSad:   true,
-		model.ReactionAngry: true,
-	}
-
-	if !validReactions[req.ReactionType] {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid reaction type"})
+	if req.ReactionType != model.VoteUp && req.ReactionType != model.VoteDown {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid reaction type. Use 'up' or 'down'"})
 		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	// Get existing reaction to check if we are switching
+	existing, err := h.repoManager.ReactionRepo.GetUserReaction(ctx, postID, userID)
 
 	reaction := &model.Reaction{
 		PostID:       postID,
@@ -64,23 +58,55 @@ func (h *ReactionHandler) AddReaction(c *gin.Context) {
 		ReactionType: req.ReactionType,
 	}
 
-	err := h.repoManager.ReactionRepo.AddReaction(ctx, reaction)
+	err = h.repoManager.ReactionRepo.AddReaction(ctx, reaction)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add reaction"})
 		return
 	}
 
-	// Update post like count
-	err = h.repoManager.PostRepo.UpdateEngagementCount(ctx, postID, "like_count", 1)
-	if err != nil {
-		fmt.Printf("Failed to update like count: %v\n", err)
-	}
+	// Update post engagement counts
+	go func() {
+		bgCtx := context.Background()
+		if existing == nil {
+			// New reaction
+			field := "upvote_count"
+			if req.ReactionType == model.VoteDown {
+				field = "downvote_count"
+			}
+			h.repoManager.PostRepo.UpdateEngagementCount(bgCtx, postID, field, 1)
+		} else if existing.ReactionType != req.ReactionType {
+			// Switched reaction
+			if req.ReactionType == model.VoteUp {
+				h.repoManager.PostRepo.UpdateEngagementCount(bgCtx, postID, "upvote_count", 1)
+				h.repoManager.PostRepo.UpdateEngagementCount(bgCtx, postID, "downvote_count", -1)
+			} else {
+				h.repoManager.PostRepo.UpdateEngagementCount(bgCtx, postID, "upvote_count", -1)
+				h.repoManager.PostRepo.UpdateEngagementCount(bgCtx, postID, "downvote_count", 1)
+			}
+		}
 
-	// Invalidate cache
-	cacheKey := fmt.Sprintf("post:%s", postID)
-	h.redisClient.Delete(ctx, cacheKey)
+		// Emit notification only for Upvotes
+		if req.ReactionType == model.VoteUp && (existing == nil || existing.ReactionType != model.VoteUp) {
+			post, err := h.repoManager.PostRepo.GetPostByID(bgCtx, postID)
+			if err == nil && post != nil && post.AuthorID != userID {
+				voterProfile, _ := h.repoManager.GrpcProfile.GetProfile(userID)
+				voterName := "Someone"
+				if voterProfile != nil {
+					voterName = fmt.Sprintf("%s %s", voterProfile.FirstName, voterProfile.LastName)
+				}
 
-	c.JSON(http.StatusCreated, reaction)
+				notificationData := map[string]interface{}{
+					"userId":    post.AuthorID,
+					"voterName": voterName,
+					"postId":    postID,
+				}
+				jsonData, _ := json.Marshal(notificationData)
+				h.repoManager.Kafka.SendToTopic("notification.social.post-upvote", string(jsonData))
+			}
+		}
+	}()
+
+	c.JSON(http.StatusOK, reaction)
 }
 
 func (h *ReactionHandler) RemoveReaction(c *gin.Context) {
@@ -90,21 +116,27 @@ func (h *ReactionHandler) RemoveReaction(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err := h.repoManager.ReactionRepo.RemoveReaction(ctx, postID, userID)
-	if err != nil {
+	// Get existing reaction to know which count to decrement
+	existing, err := h.repoManager.ReactionRepo.GetUserReaction(ctx, postID, userID)
+	if err != nil || existing == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reaction not found"})
 		return
 	}
 
-	// Update post like count
-	err = h.repoManager.PostRepo.UpdateEngagementCount(ctx, postID, "like_count", -1)
+	err = h.repoManager.ReactionRepo.RemoveReaction(ctx, postID, userID)
 	if err != nil {
-		fmt.Printf("Failed to update like count: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove reaction"})
+		return
 	}
 
-	// Invalidate cache
-	cacheKey := fmt.Sprintf("post:%s", postID)
-	h.redisClient.Delete(ctx, cacheKey)
+	// Update post engagement count
+	go func() {
+		field := "upvote_count"
+		if existing.ReactionType == model.VoteDown {
+			field = "downvote_count"
+		}
+		h.repoManager.PostRepo.UpdateEngagementCount(context.Background(), postID, field, -1)
+	}()
 
 	c.JSON(http.StatusOK, gin.H{"message": "Reaction removed"})
 }

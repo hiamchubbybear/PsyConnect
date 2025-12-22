@@ -64,7 +64,8 @@ func (r *postRepo) CreatePost(ctx context.Context, post *model.Post) error {
 	}
 
 	post.ViewCount = 0
-	post.LikeCount = 0
+	post.UpvoteCount = 0
+	post.DownvoteCount = 0
 	post.CommentCount = 0
 	post.ShareCount = 0
 	post.IsDeleted = false
@@ -225,7 +226,7 @@ func (r *postRepo) GetTrendingPosts(ctx context.Context, limit int64) ([]model.P
 	// Sort by engagement score (approximation using MongoDB)
 	opts := options.Find().
 		SetSort(bson.D{
-			{Key: "like_count", Value: -1},
+			{Key: "upvote_count", Value: -1},
 			{Key: "comment_count", Value: -1},
 			{Key: "created_at", Value: -1},
 		}).
@@ -349,8 +350,8 @@ func extractHashtags(content string) []string {
 }
 
 func calculateTrendingScore(post model.Post) model.Post {
-	// Score = (likes * 1 + comments * 2 + shares * 3) / (age_in_hours + 2)^1.5
-	engagement := float64(post.LikeCount + post.CommentCount*2 + post.ShareCount*3)
+	// Score = (upvotes * 1 + comments * 2 + shares * 3) / (age_in_hours + 2)^1.5
+	engagement := float64(post.UpvoteCount + post.CommentCount*2 + post.ShareCount*3)
 	ageHours := time.Since(post.CreatedAt).Hours()
 	score := engagement / math.Pow(ageHours+2, 1.5)
 

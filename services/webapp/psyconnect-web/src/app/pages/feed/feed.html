@@ -23,15 +23,8 @@
         </button>
       </div>
 
-      <div class="mood-card card">
-        <h3>{{ "FEED.Mood.Title" | translate }}</h3>
-        <div class="mood-list">
-          <button class="mood-btn" *ngFor="let m of moodWeek">{{ m }}</button>
-        </div>
-        <button class="btn btn--primary" (click)="toggleMoodLog()">
-          {{ "FEED.Mood.LogButton" | translate }}
-        </button>
-      </div>
+      <!-- Modern Mood Tracker -->
+      <app-mood-tracker></app-mood-tracker>
 
       <div class="section-title-row">
         <h2>{{ "FEED.Community.Title" | translate }}</h2>
@@ -40,9 +33,29 @@
         </button>
       </div>
 
-      <div *ngIf="loading" class="loading-state">
-        <div class="spinner"></div>
-        <p>{{ "COMMON.Loading" | translate }}</p>
+      <!-- Post Card Skeletons -->
+      <div *ngIf="loading" class="posts">
+        <div class="post-card-skeleton" *ngFor="let i of [1, 2, 3]">
+          <div class="skeleton-header">
+            <div class="skeleton skeleton-avatar"></div>
+            <div class="skeleton-meta">
+              <div class="skeleton skeleton-name"></div>
+              <div class="skeleton skeleton-time"></div>
+            </div>
+          </div>
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton-excerpt">
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line medium"></div>
+            <div class="skeleton skeleton-line short"></div>
+          </div>
+          <div class="skeleton skeleton-media"></div>
+          <div class="skeleton-footer">
+            <div class="skeleton skeleton-btn"></div>
+            <div class="skeleton skeleton-btn"></div>
+            <div class="skeleton skeleton-btn"></div>
+          </div>
+        </div>
       </div>
 
       <div *ngIf="error && !loading" class="error-state">
@@ -55,13 +68,26 @@
       <section class="posts" *ngIf="!loading && !error">
         <article class="post-card card" *ngFor="let p of posts">
           <header class="post-head">
-            <div class="avatar">
-              <div class="avatar-placeholder">
+            <div
+              class="avatar"
+              (click)="viewProfile(p.author_id)"
+              style="cursor: pointer"
+            >
+              <img
+                *ngIf="profileCache.get(p.author_id)?.avatarUri"
+                [src]="profileCache.get(p.author_id).avatarUri"
+                [alt]="getUserName(p.author_id)"
+              />
+              <div
+                *ngIf="!profileCache.get(p.author_id)?.avatarUri"
+                class="avatar-placeholder"
+              >
                 {{ getUserName(p.author_id).charAt(0).toUpperCase() }}
               </div>
             </div>
             <div
               class="meta"
+              (click)="viewProfile(p.author_id)"
               (mouseenter)="showAuthorCardWithDelay(p.id, p.author_id)"
               (mouseleave)="hideAuthorCard(p.id)"
               style="position: relative; cursor: pointer"
@@ -123,21 +149,33 @@
                       class="author-card__detail-item"
                       *ngIf="profileCache.get(p.author_id)?.address"
                     >
-                      <i class="fas fa-map-marker-alt"></i>
+                      <img
+                        src="/assets/icon/map-marker.svg"
+                        alt="Location"
+                        class="detail-icon"
+                      />
                       <span>{{ profileCache.get(p.author_id).address }}</span>
                     </div>
                     <div
                       class="author-card__detail-item"
                       *ngIf="profileCache.get(p.author_id)?.gender"
                     >
-                      <i class="fas fa-user"></i>
+                      <img
+                        src="/assets/icon/user-circle.svg"
+                        alt="Gender"
+                        class="detail-icon"
+                      />
                       <span>{{ profileCache.get(p.author_id).gender }}</span>
                     </div>
                     <div
                       class="author-card__detail-item"
                       *ngIf="profileCache.get(p.author_id)?.dob"
                     >
-                      <i class="fas fa-birthday-cake"></i>
+                      <img
+                        src="/assets/icon/birthday-cake.svg"
+                        alt="Birthday"
+                        class="detail-icon"
+                      />
                       <span>{{ profileCache.get(p.author_id).dob }}</span>
                     </div>
                   </div>
@@ -174,33 +212,64 @@
           </div>
 
           <footer class="post-footer">
-            <div class="reaction-wrapper">
+            <div class="engagement-group">
               <button
-                class="icon-btn reaction-btn"
-                (click)="toggleReactionPicker(p.id, $event)"
+                class="vote-btn up"
+                [class.active]="p.user_vote === 'up'"
+                (click)="upvotePost(p, $event)"
               >
-                ♡ {{ p.like_count }}
+                <img
+                  src="/assets/reaction/arrow-big-up-dash.svg"
+                  class="action-icon-img"
+                />
+                <span class="count">{{ p.upvote_count }}</span>
               </button>
-
-              <div
-                class="reaction-picker"
-                *ngIf="showReactionPicker[p.id]"
-                (click)="$event.stopPropagation()"
+              <button
+                class="vote-btn down"
+                [class.active]="p.user_vote === 'down'"
+                (click)="downvotePost(p, $event)"
               >
-                <button
-                  *ngFor="let type of getReactionKeys()"
-                  class="reaction-option"
-                  (click)="addReaction(p, type, $event)"
-                  [title]="type"
-                >
-                  {{ getReactionEmoji(type) }}
-                </button>
-              </div>
+                <img
+                  src="/assets/reaction/arrow-big-down-dash.svg"
+                  class="action-icon-img"
+                />
+                <span class="count">{{ p.downvote_count }}</span>
+              </button>
             </div>
 
-            <button class="icon-btn">💬 {{ p.comment_count }}</button>
-            <button class="icon-btn">↗ {{ p.share_count }}</button>
-            <button class="icon-btn">👁 {{ p.view_count }}</button>
+            <button class="icon-btn" (click)="openPostModal(p.id, $event)">
+              <img
+                src="/assets/reaction/message-circle.svg"
+                alt="Comments"
+                class="action-icon-img"
+              />
+              {{ p.comment_count }}
+            </button>
+
+            <button
+              class="icon-btn"
+              [class.active]="p.user_bookmark"
+              (click)="toggleBookmark(p, $event)"
+            >
+              <img
+                [src]="
+                  p.user_bookmark
+                    ? '/assets/icon/bookmark-filled.svg'
+                    : '/assets/icon/bookmark.svg'
+                "
+                alt="Bookmark"
+                class="action-icon-img"
+              />
+            </button>
+
+            <button class="icon-btn" (click)="sharePost(p, $event)">
+              <img
+                src="/assets/reaction/share.svg"
+                alt="Share"
+                class="action-icon-img"
+              />
+              {{ p.share_count }}
+            </button>
           </footer>
         </article>
 
@@ -214,20 +283,7 @@
     </main>
 
     <aside class="feed-side">
-      <div class="card small">
-        <h4>{{ "FEED.Mood.Title" | translate }}</h4>
-        <div class="mood-tracker">
-          <div class="days">
-            <div *ngFor="let d of moodWeek; let i = index" class="day">
-              <div class="dot">{{ d }}</div>
-              <div class="day-label">{{ "FEED.Days." + i | translate }}</div>
-            </div>
-          </div>
-          <button class="btn btn--primary small" (click)="toggleMoodLog()">
-            {{ "FEED.Mood.LogButton" | translate }}
-          </button>
-        </div>
-      </div>
+      <!-- Mood tracker moved to main feed area -->
 
       <div class="card small">
         <div class="card-row">

@@ -17,14 +17,12 @@ export interface Post {
 
   // Engagement metrics
   view_count: number;
-  like_count: number;
+  upvote_count: number;
+  downvote_count: number;
   comment_count: number;
   share_count: number;
-
-  // New vote fields
-  upvote_count?: number;
-  downvote_count?: number;
-  user_vote?: 'upvote' | 'downvote' | null; // Current user's vote
+  user_vote?: 'up' | 'down' | null;
+  user_bookmark?: boolean;
 
   // Control
   is_deleted: boolean;

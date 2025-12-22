@@ -2,8 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { MoodTrackerComponent } from '../../components/social/mood-tracker/mood-tracker';
 import { Post } from '../../models/post.model';
-import { REACTION_TYPES, ReactionType } from '../../models/reaction.model';
+import {
+  REACTION_IMAGES,
+  REACTION_TYPES,
+  ReactionType,
+} from '../../models/reaction.model';
+import { SocialService } from '../../services/consultation/social.service';
 import { NewsfeedService } from '../../services/newsfeed/newsfeed.service';
 import { ReactionService } from '../../services/newsfeed/reaction.service';
 import { Profile } from '../../services/profile/profile';
@@ -25,7 +31,13 @@ interface SupportGroup {
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, PostModalComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    TranslateModule,
+    MoodTrackerComponent,
+    PostModalComponent,
+  ],
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
 })
@@ -38,6 +50,7 @@ export class FeedComponent implements OnInit {
   // Reaction picker state
   showReactionPicker: { [postId: string]: boolean } = {};
   reactionTypes = REACTION_TYPES;
+  reactionImages = REACTION_IMAGES;
 
   // Profile hover state
   profileCache: Map<string, any> = new Map();
@@ -77,7 +90,8 @@ export class FeedComponent implements OnInit {
     private router: Router,
     private newsfeedService: NewsfeedService,
     private reactionService: ReactionService,
-    private profileService: Profile
+    private profileService: Profile,
+    private socialService: SocialService
   ) {}
 
   ngOnInit() {
@@ -88,16 +102,17 @@ export class FeedComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    const feedObservable = this.feedType === 'trending'
-      ? this.newsfeedService.getTrendingPosts(20)
-      : this.newsfeedService.getFeed(20, 0);
+    const feedObservable =
+      this.feedType === 'trending'
+        ? this.newsfeedService.getTrendingPosts(20)
+        : this.newsfeedService.getFeed(20, 0);
 
     feedObservable.subscribe({
       next: (posts) => {
         this.posts = posts;
         this.loading = false;
         // Load profiles for all post authors
-        posts.forEach(post => {
+        posts.forEach((post) => {
           if (post.author_id && !this.profileCache.has(post.author_id)) {
             this.loadProfile(post.author_id);
           }
@@ -107,7 +122,7 @@ export class FeedComponent implements OnInit {
         console.error('Failed to load feed:', err);
         this.error = 'Failed to load feed';
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -128,23 +143,90 @@ export class FeedComponent implements OnInit {
     this.router.navigate(['/feature/article/create']);
   }
 
-  // Reaction methods
-  toggleReactionPicker(postId: string, event: Event) {
+  // Social Engagement methods
+  upvotePost(post: Post, event: Event) {
     event.stopPropagation();
-    this.showReactionPicker[postId] = !this.showReactionPicker[postId];
+
+    // If already upvoted, remove the vote
+    if (post.user_vote === 'up') {
+      post.upvote_count--;
+      post.user_vote = null;
+
+      this.reactionService.removeReaction(post.id).subscribe({
+        error: (err) => {
+          console.error('Failed to remove upvote:', err);
+          this.loadFeed(); // Revert on error
+        },
+      });
+      return;
+    }
+
+    // Otherwise, add/switch to upvote
+    if (post.user_vote === 'down') post.downvote_count--;
+    post.upvote_count++;
+    post.user_vote = 'up';
+
+    this.reactionService.addReaction(post.id, 'up').subscribe({
+      error: (err) => {
+        console.error('Failed to upvote:', err);
+        this.loadFeed(); // Revert on error
+      },
+    });
   }
 
-  addReaction(post: Post, reactionType: ReactionType, event: Event) {
+  downvotePost(post: Post, event: Event) {
     event.stopPropagation();
 
-    this.reactionService.addReaction(post.id, reactionType).subscribe({
-      next: () => {
-        post.like_count++;
-        this.showReactionPicker[post.id] = false;
-      },
+    // If already downvoted, remove the vote
+    if (post.user_vote === 'down') {
+      post.downvote_count--;
+      post.user_vote = null;
+
+      this.reactionService.removeReaction(post.id).subscribe({
+        error: (err) => {
+          console.error('Failed to remove downvote:', err);
+          this.loadFeed(); // Revert on error
+        },
+      });
+      return;
+    }
+
+    // Otherwise, add/switch to downvote
+    if (post.user_vote === 'up') post.upvote_count--;
+    post.downvote_count++;
+    post.user_vote = 'down';
+
+    this.reactionService.addReaction(post.id, 'down').subscribe({
       error: (err) => {
-        console.error('Failed to add reaction:', err);
-      }
+        console.error('Failed to downvote:', err);
+        this.loadFeed(); // Revert on error
+      },
+    });
+  }
+
+  sharePost(post: Post, event: Event) {
+    event.stopPropagation();
+    this.socialService.sharePost(post.id).subscribe({
+      next: () => {
+        post.share_count++;
+      },
+      error: (err) => console.error('Failed to share:', err),
+    });
+  }
+
+  toggleBookmark(post: Post, event: Event) {
+    event.stopPropagation();
+    const isBookmarked = post.user_bookmark; // Assuming we add this to model or track it
+
+    const action = isBookmarked
+      ? this.socialService.removeBookmark(post.id)
+      : this.socialService.addBookmark(post.id);
+
+    action.subscribe({
+      next: () => {
+        post.user_bookmark = !isBookmarked;
+      },
+      error: (err) => console.error('Failed to toggle bookmark:', err),
     });
   }
 
@@ -153,11 +235,13 @@ export class FeedComponent implements OnInit {
 
     this.reactionService.removeReaction(post.id).subscribe({
       next: () => {
-        post.like_count--;
+        if (post.user_vote === 'up') post.upvote_count--;
+        else if (post.user_vote === 'down') post.downvote_count--;
+        post.user_vote = null;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to remove reaction:', err);
-      }
+      },
     });
   }
 
@@ -185,6 +269,10 @@ export class FeedComponent implements OnInit {
 
   getReactionEmoji(type: ReactionType): string {
     return this.reactionTypes[type];
+  }
+
+  getReactionImage(type: ReactionType): string {
+    return this.reactionImages[type];
   }
 
   getReactionKeys(): ReactionType[] {
@@ -221,7 +309,11 @@ export class FeedComponent implements OnInit {
           resolve(profileData);
         },
         error: (err: any) => {
-          const fallback = { firstName: userId, lastName: '', profileId: userId };
+          const fallback = {
+            firstName: userId,
+            lastName: '',
+            profileId: userId,
+          };
           this.profileCache.set(userId, fallback);
           resolve(fallback);
         },
@@ -254,5 +346,9 @@ export class FeedComponent implements OnInit {
     }
     this.showAuthorCard[postId] = false;
     this.hoveredUserId = null;
+  }
+
+  viewProfile(userId: string) {
+    this.router.navigate(['/profile', userId]);
   }
 }

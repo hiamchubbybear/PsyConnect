@@ -16,6 +16,10 @@ type Reaction struct {
 
 // Reaction types constants
 const (
+	VoteUp   = "up"
+	VoteDown = "down"
+
+	// Deprecated: emotional reactions
 	ReactionLike  = "like"
 	ReactionLove  = "love"
 	ReactionLaugh = "laugh"
