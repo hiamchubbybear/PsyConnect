@@ -1,26 +1,28 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
-    AfterViewInit,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    OnInit,
-    ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CloudinaryService } from '../../services/cloudinary/cloudinary.service';
+import { LoaderService } from '../../services/loader/loader';
 import {
-    RegisterRequest,
-    RegisterService,
+  RegisterRequest,
+  RegisterService,
 } from '../../services/signup/register';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
@@ -33,55 +35,27 @@ import { ToastService } from '../../shared/toast/toast.service';
   imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule],
 })
 export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
-  @ViewChild('emailInput') emailInputRef!: ElementRef;
-  @ViewChild('usernameInput') usernameInputRef!: ElementRef;
   @ViewChild('imageInput') imageInputRef!: ElementRef;
-  @ViewChild('dobInput') dobInputRef!: ElementRef;
-  @ViewChild('addressInput') addressInputRef!: ElementRef;
-  @ViewChild('firstnameInput') firstnameInput!: ElementRef;
+
   ngAfterViewInit() {
-    this.focusCurrentStepInput();
-  }
-  focusCurrentStepInput() {
-    console.log(this.currentStep);
+    // Auto-focus first input
     setTimeout(() => {
-      switch (this.currentStep) {
-        case 1:
-          this.imageInputRef?.nativeElement.focus();
-          break;
-        case 2:
-          this.firstnameInput.nativeElement.focus();
-          break;
-        case 3:
-          this.dobInputRef.nativeElement.focus();
-          break;
-        case 4:
-          this.addressInputRef.nativeElement.focus();
-          break;
-        case 5:
-          this.emailInputRef.nativeElement.focus();
-          break;
-        case 6:
-          this.usernameInputRef.nativeElement.focus();
-          break;
-      }
-    });
+      const firstInput = document.querySelector(
+        'input:not([type="file"])'
+      ) as HTMLElement;
+      firstInput?.focus();
+    }, 100);
   }
-  currentStep = 0;
-  totalSteps = 7;
+
   isLoading = false;
   selectedImage: File | null = null;
   imagePreview: string | null = null;
   addressSuggestions: String[] = [];
+  isLoadingAddress = false;
+  shakeErrors = false;
 
-  selectedIndex: number = -1;
-  avatarForm!: FormGroup;
-  nameForm!: FormGroup;
-  personalForm!: FormGroup;
-  addressForm!: FormGroup;
-  emailForm!: FormGroup;
-  roleForm!: FormGroup;
-  credentialsForm!: FormGroup;
+  // Combined form
+  registerForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
@@ -89,29 +63,16 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     private registerService: RegisterService,
     private toastService: ToastService,
     private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router,
+    private loaderService: LoaderService
   ) {}
 
   ngOnInit() {
-    this.initializeForms();
-    this.addressForm
-      .get('address')!
-      .valueChanges.pipe(debounceTime(500), distinctUntilChanged())
-      .subscribe((query: string) => {
-        if (query && query.length > 2) {
-          const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-            query
-          )}&format=json&addressdetails=1&limit=10`;
-
-          this.http.get<any[]>(url).subscribe((data) => {
-            this.addressSuggestions = data.map((item) => item.display_name);
-          });
-        } else {
-          this.addressSuggestions = [];
-        }
-      });
+    this.initializeForm();
+    this.setupAddressAutocomplete();
+    this.setupProgressTracking();
   }
-  shakeErrors = false;
 
   private triggerShake() {
     this.shakeErrors = false;
@@ -120,35 +81,31 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
       setTimeout(() => (this.shakeErrors = false), 320);
     });
   }
-  initializeForms() {
-    this.avatarForm = this.fb.group({
-      avatar: [''],
-    });
 
-    this.nameForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
-    });
-
-    this.personalForm = this.fb.group({
-      dateOfBirth: ['', Validators.required],
-      gender: ['', Validators.required],
-    });
-
-    this.addressForm = this.fb.group({
-      address: ['', Validators.required],
-    });
-
-    this.emailForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-    });
-
-    this.roleForm = this.fb.group({
-      role: ['', Validators.required],
-    });
-
-    this.credentialsForm = this.fb.group(
+  initializeForm() {
+    this.registerForm = this.fb.group(
       {
+        // Avatar (optional)
+        avatar: [''],
+
+        // Name fields
+        firstName: ['', [Validators.required, Validators.minLength(2)]],
+        lastName: ['', [Validators.required, Validators.minLength(2)]],
+
+        // Personal info
+        dateOfBirth: ['', Validators.required],
+        gender: ['', Validators.required],
+
+        // Address
+        address: ['', Validators.required],
+
+        // Email
+        email: ['', [Validators.required, Validators.email]],
+
+        // Role
+        role: ['', Validators.required],
+
+        // Credentials
         username: ['', [Validators.required, Validators.minLength(4)]],
         password: [
           '',
@@ -163,6 +120,41 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
       },
       { validators: this.passwordMatchValidator }
     );
+  }
+
+  setupAddressAutocomplete() {
+    this.registerForm
+      .get('address')!
+      .valueChanges.pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe((query: string) => {
+        if (query && query.length > 2) {
+          this.isLoadingAddress = true;
+          const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+            query
+          )}&format=json&addressdetails=1&limit=10`;
+
+          this.http.get<any[]>(url).subscribe({
+            next: (data) => {
+              this.addressSuggestions = data.map((item) => item.display_name);
+              this.isLoadingAddress = false;
+            },
+            error: () => {
+              this.isLoadingAddress = false;
+              this.addressSuggestions = [];
+            },
+          });
+        } else {
+          this.addressSuggestions = [];
+          this.isLoadingAddress = false;
+        }
+      });
+  }
+
+  setupProgressTracking() {
+    // Track form changes to update progress
+    this.registerForm.valueChanges.subscribe(() => {
+      this.cdr.detectChanges();
+    });
   }
 
   passwordValidator(control: any) {
@@ -193,37 +185,6 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     return null;
   }
 
-  getCurrentForm(): FormGroup {
-    const forms = [
-      this.avatarForm,
-      this.nameForm,
-      this.personalForm,
-      this.addressForm,
-      this.emailForm,
-      this.roleForm,
-      this.credentialsForm,
-    ];
-    return forms[this.currentStep];
-  }
-
-  nextStep() {
-    if (this.currentStep < this.totalSteps - 1) {
-      if (this.getCurrentForm().valid) {
-        this.currentStep++;
-      } else {
-        this.getCurrentForm().markAllAsTouched();
-        this.triggerShake();
-        this.scrollToFirstInvalid();
-      }
-    }
-  }
-
-  previousStep() {
-    if (this.currentStep > 0) {
-      this.currentStep--;
-    }
-  }
-
   onImageSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -242,45 +203,31 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     const age = today.getFullYear() - selectedDate.getFullYear();
 
     if (age < 18) {
-      this.personalForm.get('dateOfBirth')?.setErrors({ underAge: true });
-    }
-  }
-
-  onAddressInput(event: any) {
-    const query = event.target.value;
-    if (query.length > 2) {
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        query
-      )}&format=json&addressdetails=1&limit=10`;
-
-      this.http.get<any[]>(url).subscribe((data) => {
-        this.addressSuggestions = data.map((item) => item.display_name);
-        this.selectedIndex = -1;
-      });
-    } else {
-      this.addressSuggestions = [];
-      this.selectedIndex = -1;
+      this.registerForm.get('dateOfBirth')?.setErrors({ underAge: true });
     }
   }
 
   selectAddress(address: String) {
-    this.addressForm.get('address')?.setValue(address);
+    this.registerForm.get('address')?.setValue(address);
     this.addressSuggestions = [];
   }
-  async submitFinalRegister() {
-    if (this.getCurrentForm().invalid) {
-      this.getCurrentForm().markAllAsTouched();
+
+  async submitRegister() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       this.triggerShake();
+      this.scrollToFirstInvalid();
       return;
     }
 
+    this.loaderService.show();
     this.isLoading = true;
 
     let avatarUri = '';
     if (this.selectedImage) {
       const uploadedUrl = await this.cloudinaryService.uploadImage(
         this.selectedImage,
-        this.credentialsForm.value.username
+        this.registerForm.value.username
       );
       if (!uploadedUrl) {
         this.toastService.show(
@@ -295,79 +242,172 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     }
 
     const request: RegisterRequest = {
-      username: this.credentialsForm.value.username.toLowerCase(),
-      password: this.credentialsForm.value.password,
-      firstName: this.nameForm.value.firstName,
-      lastName: this.nameForm.value.lastName,
-      address: this.addressForm.value.address,
-      gender: this.personalForm.value.gender,
-      email: this.emailForm.value.email,
-      role: this.roleForm.value.role,
+      username: this.registerForm.value.username.toLowerCase(),
+      password: this.registerForm.value.password,
+      firstName: this.registerForm.value.firstName,
+      lastName: this.registerForm.value.lastName,
+      address: this.registerForm.value.address,
+      gender: this.registerForm.value.gender,
+      email: this.registerForm.value.email,
+      role: this.registerForm.value.role,
       avatarUri,
-      dob: this.personalForm.value.dateOfBirth,
+      dob: this.registerForm.value.dateOfBirth,
     };
 
     this.registerService.register(request).subscribe({
       next: (res) => {
         if (res.code === 200) {
           this.toastService.show(
-            'toast.register_success',
-            'toast.success',
+            'register.success.message',
+            'register.success.title',
             ToastType.Success
           );
+          // Redirect to activate page after 1.5 seconds
+          setTimeout(() => {
+            this.loaderService.hide();
+            this.router.navigate(['/activate'], {
+              queryParams: { email: this.registerForm.value.email },
+            });
+          }, 1500);
         }
       },
       error: (err) => {
+        console.log('=== Registration Error Details ===');
+        console.log('Full error object:', err);
+        console.log('Error type:', typeof err);
+        console.log('Error constructor:', err.constructor.name);
+        console.log('Error keys:', Object.keys(err));
+        console.log('Error values:', Object.values(err));
+        console.log('Error message property:', err.message);
+        console.log('Error name property:', err.name);
+        console.log('Status:', err.status);
+        console.log('Status text:', err.statusText);
+        console.log('Error body:', err.error);
+        console.log('Error body type:', typeof err.error);
+        console.log('Error code:', err.error?.code);
+        console.log('Error message:', err.error?.message);
+        console.log('Headers:', err.headers);
+        console.log('URL:', err.url);
+
+        // Log all enumerable properties
+        console.log('All properties:');
+        for (let key in err) {
+          console.log(`  ${key}:`, err[key]);
+        }
+
+        // Try to parse if it's a string
+        if (typeof err.error === 'string') {
+          try {
+            const parsed = JSON.parse(err.error);
+            console.log('Parsed error:', parsed);
+          } catch (e) {
+            console.log('Could not parse error as JSON');
+          }
+        }
+        console.log('==================================');
         const status = err.status;
+
         if (status === 409) {
-          const errorMessage = err.error.message || 'Register failed';
-          const errorCode = err.error.code;
+          const errorCode = err.error?.code;
+          const errorMessage = err.error?.message;
+
+          console.log(
+            'Handling 409 Conflict - Code:',
+            errorCode,
+            'Message:',
+            errorMessage
+          );
+
+          if (errorCode === 202) {
+            const control = this.registerForm.get('username');
+            control?.setErrors({
+              ...control.errors,
+              exists: true,
+            });
+            control?.markAsTouched();
+            this.toastService.show(
+              'register.error.usernameExists',
+              'register.error.title',
+              ToastType.Error
+            );
+          } else if (errorCode === 201) {
+            const control = this.registerForm.get('email');
+            control?.setErrors({
+              ...control.errors,
+              exists: true,
+            });
+            control?.markAsTouched();
+            this.toastService.show(
+              'register.error.emailExists',
+              'register.error.title',
+              ToastType.Error
+            );
+          } else {
+            // Other conflict errors
+            this.toastService.show(
+              'register.error.conflict',
+              'register.error.title',
+              ToastType.Error
+            );
+          }
+          this.scrollToFirstInvalid();
+          this.cdr.detectChanges();
+        } else if (status === 400) {
+          // Bad request
           this.toastService.show(
-            'toast.error_message',
-            'toast.error',
+            'register.error.invalidData',
+            'register.error.title',
             ToastType.Error
           );
-          if (errorCode === 202) {
-            const control = this.credentialsForm.get('username');
-            const currentErrors = control?.errors || {};
-            control?.setErrors({
-              ...currentErrors,
-              exists: errorMessage || 'Username already exists',
-            });
-            this.emailForm.markAllAsTouched();
-            this.cdr.detectChanges();
-          } else if (errorCode === 201) {
-            this.currentStep -= 2;
-            const control = this.emailForm.get('email');
-            const currentErrors = control?.errors || {};
-            control?.setErrors({
-              ...currentErrors,
-              exists: errorMessage || 'Email already exists',
-            });
-            this.emailForm.markAllAsTouched();
-            this.cdr.detectChanges();
-          }
-          this.isLoading = false;
         } else {
           this.toastService.show(
-            'toast.unexpected_error',
-            'toast.error',
+            'register.error.unexpected',
+            'register.error.title',
             ToastType.Error
           );
-          this.isLoading = false;
         }
+        this.loaderService.hide();
+        this.isLoading = false;
       },
       complete: () => {
+        this.loaderService.hide();
         this.isLoading = false;
       },
     });
   }
+
   get progressPercentage(): number {
-    return ((this.currentStep + 1) / this.totalSteps) * 100;
+    const fields = [
+      'firstName',
+      'lastName',
+      'dateOfBirth',
+      'gender',
+      'address',
+      'email',
+      'role',
+      'username',
+      'password',
+      'confirmPassword',
+      'acceptTerms',
+    ];
+
+    const validFields = fields.filter((field) => {
+      const control = this.registerForm.get(field);
+      return control?.valid && control?.value;
+    });
+
+    return (validFields.length / fields.length) * 100;
   }
+
+  get canSubmit(): boolean {
+    return this.registerForm.valid && !this.isLoading;
+  }
+
   private scrollToFirstInvalid() {
     setTimeout(() => {
-      const el = document.querySelector('.form-input.error');
+      const el = document.querySelector(
+        '.form-input.error, .form-select.error'
+      );
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 0);
   }

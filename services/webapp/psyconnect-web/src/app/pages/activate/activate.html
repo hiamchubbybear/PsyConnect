@@ -1,0 +1,124 @@
+<div class="activate-container">
+  <div class="activate-card">
+    <div class="header">
+      <h1 class="title">{{ "activate.title" | translate }}</h1>
+      <p class="subtitle">{{ "activate.subtitle" | translate }}</p>
+    </div>
+
+    <form
+      [formGroup]="activateForm"
+      (ngSubmit)="onActivate()"
+      class="activate-form"
+    >
+      <!-- Email Field -->
+      <div class="form-group">
+        <label class="form-label">{{ "activate.email" | translate }}</label>
+        <div class="input-with-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            class="icon"
+          >
+            <path
+              d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+            ></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="{{ 'activate.emailPlaceholder' | translate }}"
+            class="form-input with-icon"
+            [class.error]="
+              activateForm.get('email')?.invalid &&
+              activateForm.get('email')?.touched
+            "
+            readonly
+          />
+        </div>
+        <div
+          *ngIf="
+            activateForm.get('email')?.invalid &&
+            activateForm.get('email')?.touched
+          "
+          class="error-text"
+        >
+          <span *ngIf="activateForm.get('email')?.errors?.['required']">
+            {{ "activate.emailRequired" | translate }}
+          </span>
+          <span *ngIf="activateForm.get('email')?.errors?.['email']">
+            {{ "activate.emailInvalid" | translate }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Token Field - 5 Digit Code -->
+      <div class="form-group">
+        <label class="form-label">{{ "activate.token" | translate }}</label>
+        <div class="code-inputs">
+          <input
+            *ngFor="let digit of [0, 1, 2, 3, 4]; let i = index"
+            type="text"
+            inputmode="numeric"
+            maxlength="1"
+            class="code-input"
+            (input)="onCodeInput($event, i)"
+            (keydown)="onCodeKeyDown($event, i)"
+            (paste)="onCodePaste($event)"
+            [class.error]="
+              activateForm.get('token')?.invalid &&
+              activateForm.get('token')?.touched
+            "
+          />
+        </div>
+        <div
+          *ngIf="
+            activateForm.get('token')?.invalid &&
+            activateForm.get('token')?.touched
+          "
+          class="error-text"
+        >
+          <span *ngIf="activateForm.get('token')?.errors?.['required']">
+            {{ "activate.tokenRequired" | translate }}
+          </span>
+          <span *ngIf="activateForm.get('token')?.errors?.['minlength']">
+            {{ "activate.tokenMinLength" | translate }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="activateForm.invalid || isLoading"
+        >
+          {{ "activate.buttons.activate" | translate }}
+        </button>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="onResendCode()"
+          [disabled]="isLoading"
+        >
+          {{ "activate.buttons.resend" | translate }}
+        </button>
+      </div>
+
+      <!-- Help Text -->
+      <div class="help-text">
+        <p>{{ "activate.helpText" | translate }}</p>
+        <a [routerLink]="['/auth/login']" class="link">
+          {{ "activate.backToLogin" | translate }}
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

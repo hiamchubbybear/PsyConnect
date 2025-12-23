@@ -868,15 +868,24 @@
     },
     "register": {
         "title": "Create Account",
+        "subtitle": "Join PsyConnect today",
+        "complete": "complete",
+        "haveAccount": "Already have an account?",
+        "loginLink": "Login here",
         "step": "Step {{current}} of {{total}}",
         "step0": {
             "title": "Choose Your Profile Picture",
             "subtitle": "This helps others recognize you",
-            "tapToAddPhoto": "Tap to add photo"
+            "tapToAddPhoto": "Tap to add photo",
+            "optional": "Optional - You can skip this step"
         },
         "step1": {
             "title": "What's Your Name?",
             "subtitle": "Let us know how to address you",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "firstNamePlaceholder": "Enter your first name",
+            "lastNamePlaceholder": "Enter your last name",
             "firstNameRequired": "First name is required",
             "firstNameMin": "First name must be at least 2 characters",
             "lastNameRequired": "Last name is required",
@@ -885,6 +894,8 @@
         "step2": {
             "title": "Personal Information",
             "subtitle": "Tell us your date of birth and gender",
+            "dob": "Date of Birth",
+            "gender": "Gender",
             "dobRequired": "Date of birth is required",
             "underAge": "You must be 18 years or older",
             "genderLabel": "Gender",
@@ -897,12 +908,14 @@
         "step3": {
             "title": "Where Are You Located?",
             "subtitle": "This helps us provide better services",
+            "address": "Your Address",
             "addressPlaceholder": "Enter your full address",
             "addressRequired": "Address is required"
         },
         "step4": {
             "title": "Email Address",
             "subtitle": "We'll use this to send you important updates",
+            "email": "Email",
             "emailPlaceholder": "your.email@example.com",
             "emailRequired": "Email is required",
             "emailInvalid": "Please enter a valid email address",
@@ -920,6 +933,9 @@
         "step6": {
             "title": "Create Your Account",
             "subtitle": "Choose a username and secure password",
+            "username": "Username",
+            "password": "Password",
+            "confirmPassword": "Confirm Password",
             "usernameRequired": "Username is required",
             "usernameMin": "Username must be at least 4 characters",
             "usernameExists": "Username already exists",
@@ -936,7 +952,52 @@
             "back": "Back",
             "continue": "Continue",
             "create": "Create Account"
+        },
+        "success": {
+            "title": "Success!",
+            "message": "Account created successfully! Redirecting to login..."
+        },
+        "error": {
+            "title": "Registration Error",
+            "emailExists": "This email is already registered",
+            "usernameExists": "This username is already taken",
+            "conflict": "Account already exists",
+            "invalidData": "Please check your information and try again",
+            "unexpected": "An unexpected error occurred. Please try again"
         }
+    },
+    "activate": {
+        "title": "Activate Your Account",
+        "subtitle": "Enter the activation code sent to your email",
+        "email": "Email Address",
+        "emailPlaceholder": "your.email@example.com",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "token": "Activation Code",
+        "tokenPlaceholder": "Enter 5-digit code",
+        "tokenRequired": "Activation code is required",
+        "tokenMinLength": "Code must be 5 digits",
+        "buttons": {
+            "activate": "Activate Account",
+            "resend": "Resend Code"
+        },
+        "success": {
+            "title": "Success!",
+            "message": "Account activated successfully! Redirecting to login..."
+        },
+        "error": {
+            "title": "Activation Error",
+            "tokenExpired": "Activation code has expired. Please request a new one",
+            "alreadyActivated": "This account is already activated",
+            "unexpected": "An error occurred. Please try again",
+            "emailRequired": "Please enter your email address"
+        },
+        "resend": {
+            "success": "A new activation code has been sent to your email",
+            "error": "Failed to send activation code. Please try again"
+        },
+        "helpText": "Didn't receive the code? Check your spam folder or click Resend Code",
+        "backToLogin": "Back to Login"
     },
     "SOCIAL": {
         "sidebar": {

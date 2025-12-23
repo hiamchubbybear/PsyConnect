@@ -1,0 +1,243 @@
+@use "../../styles/variable" as v;
+@use "../../styles/mixins" as f;
+
+.activate-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: v.$spacing-xl;
+  background: var(--color-bg);
+
+  .activate-card {
+    width: 100%;
+    max-width: 480px;
+    padding: v.$spacing-3xl;
+    background: var(--color-surface-low);
+    border-radius: v.$border-radius-lg;
+    box-shadow: var(--shadow-card);
+
+    @media (max-width: v.$breakpoint-sm) {
+      padding: v.$spacing-xl;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: v.$spacing-2xl;
+
+      .title {
+        font-size: v.$font-size-3xl;
+        font-weight: 700;
+        margin-bottom: v.$spacing-sm;
+        background: linear-gradient(
+          135deg,
+          var(--color-text),
+          var(--color-accent)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        font-size: v.$font-size-md;
+        color: var(--color-text-muted);
+      }
+    }
+
+    .activate-form {
+      .form-group {
+        margin-bottom: v.$spacing-xl;
+
+        .form-label {
+          display: block;
+          font-size: v.$font-size-sm;
+          font-weight: 600;
+          margin-bottom: v.$spacing-sm;
+          color: var(--color-text);
+        }
+
+        .input-with-icon {
+          position: relative;
+          display: flex;
+          align-items: center;
+
+          .icon {
+            position: absolute;
+            left: v.$spacing-md;
+            color: var(--color-text-muted);
+            pointer-events: none;
+          }
+
+          .form-input {
+            width: 100%;
+            padding: v.$spacing-md v.$spacing-md v.$spacing-md 2.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: v.$border-radius-md;
+            background: var(--color-surface);
+            color: var(--color-text);
+            font-size: v.$font-size-md;
+            transition: all v.$transition-fast;
+
+            &:focus {
+              outline: none;
+              border-color: var(--color-accent);
+              box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.1);
+            }
+
+            &.error {
+              border-color: var(--color-error);
+            }
+
+            &[readonly] {
+              background: var(--color-surface-mid);
+              cursor: not-allowed;
+            }
+
+            &::placeholder {
+              color: var(--color-text-muted);
+            }
+          }
+        }
+
+        .error-text {
+          margin-top: v.$spacing-xs;
+          font-size: v.$font-size-sm;
+          color: var(--color-error);
+        }
+
+        .code-inputs {
+          display: flex;
+          gap: v.$spacing-md;
+          justify-content: center;
+          margin: v.$spacing-lg 0;
+
+          .code-input {
+            width: 56px;
+            height: 64px;
+            text-align: center;
+            font-size: v.$font-size-2xl;
+            font-weight: 600;
+            border: 2px solid var(--color-border);
+            border-radius: v.$border-radius-md;
+            background: var(--color-surface);
+            color: var(--color-text);
+            transition: all v.$transition-medium;
+            caret-color: var(--color-accent);
+
+            &:focus {
+              outline: none;
+              border-color: var(--color-accent);
+              box-shadow: 0 0 0 4px rgba(var(--color-accent-rgb), 0.1);
+              transform: translateY(-2px);
+            }
+
+            &.error {
+              border-color: var(--color-error);
+              animation: shake 0.4s ease-in-out;
+            }
+
+            &:not(:placeholder-shown) {
+              border-color: var(--color-accent);
+              background: var(--color-surface-mid);
+            }
+
+            @media (max-width: v.$breakpoint-sm) {
+              width: 48px;
+              height: 56px;
+              font-size: v.$font-size-xl;
+            }
+          }
+        }
+      }
+
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: v.$spacing-md;
+        margin-top: v.$spacing-2xl;
+
+        .btn-primary,
+        .btn-secondary {
+          @include f.button-base;
+          width: 100%;
+          padding: v.$spacing-md v.$spacing-xl;
+          font-size: v.$font-size-md;
+          font-weight: 600;
+          transition: all v.$transition-medium;
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+
+        .btn-primary {
+          background: var(--color-text);
+          color: var(--color-bg);
+          border: 1px solid var(--color-text);
+
+          &:hover:not(:disabled) {
+            background: var(--color-text-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-button);
+          }
+        }
+
+        .btn-secondary {
+          background: transparent;
+          color: var(--color-text);
+          border: 1px solid var(--color-border);
+
+          &:hover:not(:disabled) {
+            background: var(--color-surface-hover);
+            border-color: var(--color-text);
+          }
+        }
+      }
+
+      .help-text {
+        margin-top: v.$spacing-xl;
+        text-align: center;
+        font-size: v.$font-size-sm;
+        color: var(--color-text-muted);
+
+        p {
+          margin-bottom: v.$spacing-sm;
+        }
+
+        .link {
+          color: var(--color-accent);
+          text-decoration: none;
+          font-weight: 600;
+          transition: color v.$transition-fast;
+
+          &:hover {
+            color: var(--color-accent-hover);
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}

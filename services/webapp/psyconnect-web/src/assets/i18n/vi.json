@@ -768,24 +768,12 @@
             "Visibility": "Hiển thị",
             "Publish": "Đăng bài"
         },
-        "Types": {
-            "Article": "Bài viết",
-            "Question": "Câu hỏi",
-            "Discussion": "Thảo luận",
-            "Resource": "Tài nguyên"
-        },
         "Visibility": {
             "Public": "Công khai",
             "Followers": "Chỉ người theo dõi",
             "Private": "Riêng tư"
         },
-        "Categories": "Danh mục",
-        "Comments": {
-            "Title": "Bình luận",
-            "Placeholder": "Viết bình luận...",
-            "Submit": "Đăng bình luận",
-            "NoComments": "Chưa có bình luận nào. Hãy là người đầu tiên bình luận!"
-        }
+        "Categories": "Danh mục"
     },
     "NEWSFEED": {
         "FeedTypes": {
@@ -946,15 +934,24 @@
     },
     "register": {
         "title": "Tạo tài khoản",
+        "subtitle": "Tham gia PsyConnect ngay hôm nay",
+        "complete": "hoàn thành",
+        "haveAccount": "Đã có tài khoản?",
+        "loginLink": "Đăng nhập tại đây",
         "step": "Bước {{current}} trên {{total}}",
         "step0": {
             "title": "Chọn ảnh đại diện của bạn",
             "subtitle": "Giúp người khác nhận ra bạn dễ dàng hơn",
-            "tapToAddPhoto": "Chạm để thêm ảnh"
+            "tapToAddPhoto": "Chạm để thêm ảnh",
+            "optional": "Tùy chọn - Bạn có thể bỏ qua bước này"
         },
         "step1": {
             "title": "Tên của bạn là gì?",
             "subtitle": "Hãy cho chúng tôi biết cách xưng hô với bạn",
+            "firstName": "Tên",
+            "lastName": "Họ",
+            "firstNamePlaceholder": "Nhập tên của bạn",
+            "lastNamePlaceholder": "Nhập họ của bạn",
             "firstNameRequired": "Vui lòng nhập tên",
             "firstNameMin": "Tên phải có ít nhất 2 ký tự",
             "lastNameRequired": "Vui lòng nhập họ",
@@ -963,6 +960,8 @@
         "step2": {
             "title": "Thông tin cá nhân",
             "subtitle": "Hãy cho biết ngày sinh và giới tính của bạn",
+            "dob": "Ngày sinh",
+            "gender": "Giới tính",
             "dobRequired": "Vui lòng nhập ngày sinh",
             "underAge": "Bạn phải từ 18 tuổi trở lên",
             "genderLabel": "Giới tính",
@@ -975,12 +974,14 @@
         "step3": {
             "title": "Bạn đang sống ở đâu?",
             "subtitle": "Giúp chúng tôi cung cấp dịch vụ tốt hơn",
+            "address": "Địa chỉ của bạn",
             "addressPlaceholder": "Nhập địa chỉ đầy đủ của bạn",
             "addressRequired": "Vui lòng nhập địa chỉ"
         },
         "step4": {
             "title": "Địa chỉ email",
             "subtitle": "Chúng tôi sẽ gửi các thông tin quan trọng qua email này",
+            "email": "Email",
             "emailPlaceholder": "ten.email@vi.du",
             "emailRequired": "Vui lòng nhập email",
             "emailInvalid": "Email không hợp lệ",
@@ -998,6 +999,9 @@
         "step6": {
             "title": "Tạo tài khoản của bạn",
             "subtitle": "Chọn tên đăng nhập và mật khẩu an toàn",
+            "username": "Tên đăng nhập",
+            "password": "Mật khẩu",
+            "confirmPassword": "Xác nhận mật khẩu",
             "usernameRequired": "Vui lòng nhập tên đăng nhập",
             "usernameMin": "Tên đăng nhập phải có ít nhất 4 ký tự",
             "usernameExists": "Tên đăng nhập đã tồn tại",
@@ -1014,7 +1018,52 @@
             "back": "Quay lại",
             "continue": "Tiếp tục",
             "create": "Tạo tài khoản"
+        },
+        "success": {
+            "title": "Thành công!",
+            "message": "Tạo tài khoản thành công! Đang chuyển đến trang đăng nhập..."
+        },
+        "error": {
+            "title": "Lỗi đăng ký",
+            "emailExists": "Email này đã được đăng ký",
+            "usernameExists": "Tên đăng nhập này đã được sử dụng",
+            "conflict": "Tài khoản đã tồn tại",
+            "invalidData": "Vui lòng kiểm tra lại thông tin và thử lại",
+            "unexpected": "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại"
         }
+    },
+    "activate": {
+        "title": "Kích hoạt tài khoản",
+        "subtitle": "Nhập mã kích hoạt đã gửi đến email của bạn",
+        "email": "Địa chỉ email",
+        "emailPlaceholder": "ten.email@vi.du",
+        "emailRequired": "Vui lòng nhập email",
+        "emailInvalid": "Email không hợp lệ",
+        "token": "Mã kích hoạt",
+        "tokenPlaceholder": "Nhập mã 5 chữ số",
+        "tokenRequired": "Vui lòng nhập mã kích hoạt",
+        "tokenMinLength": "Mã phải có 5 chữ số",
+        "buttons": {
+            "activate": "Kích hoạt tài khoản",
+            "resend": "Gửi lại mã"
+        },
+        "success": {
+            "title": "Thành công!",
+            "message": "Kích hoạt tài khoản thành công! Đang chuyển đến trang đăng nhập..."
+        },
+        "error": {
+            "title": "Lỗi kích hoạt",
+            "tokenExpired": "Mã kích hoạt đã hết hạn. Vui lòng yêu cầu mã mới",
+            "alreadyActivated": "Tài khoản này đã được kích hoạt",
+            "unexpected": "Đã xảy ra lỗi. Vui lòng thử lại",
+            "emailRequired": "Vui lòng nhập địa chỉ email"
+        },
+        "resend": {
+            "success": "Mã kích hoạt mới đã được gửi đến email của bạn",
+            "error": "Không thể gửi mã kích hoạt. Vui lòng thử lại"
+        },
+        "helpText": "Không nhận được mã? Kiểm tra thư mục spam hoặc nhấp Gửi lại mã",
+        "backToLogin": "Quay lại đăng nhập"
     },
     "SOCIAL": {
         "sidebar": {

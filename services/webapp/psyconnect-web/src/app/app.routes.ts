@@ -9,6 +9,7 @@ import { UpdateAccountComponent } from './pages/account/account-update';
 import { PaymentSessionComponent } from './pages/account/payment/payment';
 import { ProfileSectionComponent } from './pages/account/profile/profile-update';
 import { SecuritySectionComponent } from './pages/account/security/security-update';
+import { ActivateComponent } from './pages/activate/activate';
 import { ChatComponent } from './pages/chat/chatpage/chatpage';
 import { ConsultationComponent } from './pages/consultation/consultation';
 import { FeedComponent } from './pages/feed/feed';
@@ -31,6 +32,11 @@ export const routes: Routes = [
   {
     path: 'auth/signup',
     component: MultiStepRegisterComponent,
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'activate',
+    component: ActivateComponent,
     canActivate: [guestGuard],
   },
   { path: 'auth/login', component: Login, canActivate: [guestGuard] },
