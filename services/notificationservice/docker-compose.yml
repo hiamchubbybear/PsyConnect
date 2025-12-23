@@ -1,0 +1,96 @@
+version: "3.8"
+
+services:
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: psyconnect-notification-go
+    ports:
+      - "8082:8082"
+    environment:
+      # SMTP Configuration
+      - SMPT_HOST=smtp.gmail.com
+      - SMPT_PORT=587
+      - SMPT_MAIL=${SMPT_MAIL}
+      - SMPT_APP_PASS=${SMPT_APP_PASS}
+
+      # Kafka Configuration
+      - KAFKA_BROKERS=kafka:9094
+      - KAFKA_GROUP_ID=notification-group
+
+      # Database Configuration
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=notification_db
+
+      # Firebase Configuration (optional)
+      - FIREBASE_CREDENTIALS=/app/firebase-credentials.json
+
+      # Server Configuration
+      - PORT=8082
+      - ENVIRONMENT=production
+
+    volumes:
+      # Mount Firebase credentials if available
+      - ./firebase-credentials.json:/app/firebase-credentials.json:ro
+
+    depends_on:
+      - kafka
+      - mysql
+
+    restart: unless-stopped
+
+    networks:
+      - psyconnect-network
+
+  # MySQL database (if not already defined)
+  mysql:
+    image: mysql:8.0
+    container_name: psyconnect-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=notification_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - psyconnect-network
+
+  # Kafka (if not already defined)
+  kafka:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: psyconnect-kafka
+    ports:
+      - "19092:29094"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9094,PLAINTEXT_HOST://localhost:19092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    networks:
+      - psyconnect-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    container_name: psyconnect-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - psyconnect-network
+
+volumes:
+  mysql-data:
+
+networks:
+  psyconnect-network:
+    driver: bridge
