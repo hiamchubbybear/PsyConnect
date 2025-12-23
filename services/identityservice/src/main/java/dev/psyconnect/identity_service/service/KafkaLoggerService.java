@@ -98,18 +98,30 @@ public class KafkaLoggerService {
             }
 
             String json = objectMapper.writeValueAsString(event);
+            log.debug("[KAFKA-LOGGER] Attempting to send log to topic: {}, size: {} bytes", topic, json.length());
 
             // Send to Kafka asynchronously
             CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, json);
 
             future.whenComplete((result, ex) -> {
                 if (ex != null) {
-                    log.error("Failed to send log to Kafka: {}", ex.getMessage());
+                    log.error(
+                            "[KAFKA-LOGGER] ❌ Failed to send log - Topic: {}, Error: {}, Cause: {}",
+                            topic,
+                            ex.getMessage(),
+                            ex.getCause() != null ? ex.getCause().getMessage() : "N/A");
+                } else {
+                    log.debug(
+                            "[KAFKA-LOGGER] ✅ Log sent - Topic: {}, Partition: {}, Offset: {}",
+                            topic,
+                            result.getRecordMetadata().partition(),
+                            result.getRecordMetadata().offset());
                 }
             });
 
         } catch (Exception e) {
-            log.error("Failed to create log event: {}", e.getMessage());
+            log.error(
+                    "[KAFKA-LOGGER] ❌ Failed to create log event: {}, Stack: {}", e.getMessage(), e.getStackTrace()[0]);
         }
     }
 

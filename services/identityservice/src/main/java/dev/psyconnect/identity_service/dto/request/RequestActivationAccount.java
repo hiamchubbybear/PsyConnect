@@ -9,6 +9,4 @@ import lombok.*;
 @Builder
 public class RequestActivationAccount {
     String email;
-    String username;
-    String fullname;
 }

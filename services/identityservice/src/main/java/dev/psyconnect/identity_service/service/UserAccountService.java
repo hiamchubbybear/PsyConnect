@@ -27,6 +27,7 @@ import dev.psyconnect.identity_service.dto.LogLevel;
 import dev.psyconnect.identity_service.dto.request.ActivateAccountNotificationRequest;
 import dev.psyconnect.identity_service.dto.request.ActivateAccountRequest;
 import dev.psyconnect.identity_service.dto.request.AuthenticationFilterRequest;
+import dev.psyconnect.identity_service.dto.request.CreateAccountNotificationRequest;
 import dev.psyconnect.identity_service.dto.request.DeleteAccountConfirmRequest;
 import dev.psyconnect.identity_service.dto.request.DeleteAccountRequest;
 import dev.psyconnect.identity_service.dto.request.PasswordResetRequest;
@@ -137,14 +138,14 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         }
         String fullName = request.getFirstName() + " " + request.getLastName();
         if (provider == Provider.ORDINARY) {
-            // kafkaService.send(
-            //         NOTIFICATION_CREATE_TOPIC,
-            //         CreateAccountNotificationRequest.builder()
-            //                 .code(activationCode)
-            //                 .username(request.getUsername())
-            //                 .email(savedAccount.getEmail())
-            //                 .fullname(fullName)
-            //                 .build());
+            kafkaService.send(
+                    NOTIFICATION_CREATE_TOPIC,
+                    CreateAccountNotificationRequest.builder()
+                            .code(activationCode)
+                            .username(request.getUsername())
+                            .email(savedAccount.getEmail())
+                            .fullname(fullName)
+                            .build());
         }
 
         return UserAccountCreationResponse.builder()
@@ -281,15 +282,22 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
         String email = request.getEmail();
         String activateToken = request.getToken();
 
+        log.info("Attempting to activate account - Email: {}, Token: {}", email, activateToken);
+
         if (userAccountRepository.existsByEmailAndIsActivatedTrue(email)) {
             throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
         }
         if (!userAccountRepository.existsByEmail(email)) {
             throw new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND);
         }
-        var foundObject = activateRepository
-                .findByToken(activateToken)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.ACTIVATION_FAILED));
+
+        log.info("Looking up token in database: {}", activateToken);
+        var foundObject = activateRepository.findByToken(activateToken).orElseThrow(() -> {
+            log.error("Token not found in database: {}", activateToken);
+            return new CustomExceptionHandler(ErrorCode.ACTIVATION_FAILED);
+        });
+
+        log.info("Token found: {}", foundObject);
 
         if (foundObject.getExpires().before(new Date())) {
             kafkaService.sendLog(buildLog(
@@ -323,24 +331,27 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     }
 
     public Boolean requestActivateAccount(RequestActivationAccount requestActivationAccount) {
-        if (accountRepository.existsByUsernameAndIsActivatedTrue(requestActivationAccount.getUsername()))
-            throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
+        // Find user by email
+        Account account = accountRepository
+                .findByEmail(requestActivationAccount.getEmail())
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
+
+        // Check if already activated
+        if (account.isActivated()) throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
+
+        // Build notification request with data from database
         ActivateAccountNotificationRequest req = ActivateAccountNotificationRequest.builder()
-                .email(requestActivationAccount.getEmail())
-                .fullname(requestActivationAccount.getFullname())
+                .email(account.getEmail())
+                .fullname(account.getUsername())
                 .code(generateActivationCode())
-                .username(requestActivationAccount.getUsername())
+                .username(account.getUsername())
                 .build();
+
         kafkaService.send((NOTIFICATION_CREATE_TOPIC), req);
-        sendNotification(
-                ActivateAccountNotificationRequest.builder()
-                        .username(requestActivationAccount.getUsername())
-                        .email(requestActivationAccount.getEmail())
-                        .build(),
-                Provider.ORDINARY);
+        sendNotification(req, Provider.ORDINARY);
         kafkaService.sendLog(buildLog(
                 "identity-service",
-                requestActivationAccount.getUsername(),
+                account.getUsername(),
                 "Request account activation",
                 "Success",
                 Map.of("metadata", req),
@@ -410,11 +421,15 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
                         .provider(provider.toString())
                         .revoked(false)
                         .build());
-        log.info("Token saved {}", token);
         token.setToken(activationCode);
         token.setRevoked(false);
         token.setExpires(Timestamp.from(Instant.now().plus(MINUTE_EXPIRED, ChronoUnit.MINUTES)));
-        return tokenRepository.save(token);
+
+        log.info("Saving token for username: {}, token: {}, expires: {}", username, activationCode, token.getExpires());
+
+        Token savedToken = tokenRepository.save(token);
+        log.info("Token saved successfully: {}", savedToken);
+        return savedToken;
     }
 
     public Boolean resetPassword(PasswordResetRequest passwordResetRequest) {

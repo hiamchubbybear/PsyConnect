@@ -24,15 +24,30 @@ public class KafkaService {
     public void send(String topic, Object payload) {
         try {
             String json = objectMapper.writeValueAsString(payload);
+            log.info("[KAFKA] Attempting to send message to topic: {}, payload size: {} bytes", topic, json.length());
 
             kafkaTemplate.send(topic, json).whenComplete((result, ex) -> {
                 if (ex != null) {
-                    log.error("Kafka send error - Topic: {}, Error: {}", topic, ex.getMessage());
+                    log.error(
+                            "[KAFKA] ❌ Send FAILED - Topic: {}, Error: {}, Cause: {}",
+                            topic,
+                            ex.getMessage(),
+                            ex.getCause() != null ? ex.getCause().getMessage() : "N/A");
+                } else {
+                    log.info(
+                            "[KAFKA] ✅ Send SUCCESS - Topic: {}, Partition: {}, Offset: {}",
+                            topic,
+                            result.getRecordMetadata().partition(),
+                            result.getRecordMetadata().offset());
                 }
             });
 
         } catch (Exception e) {
-            log.error("Kafka serialization error - Payload: {}, Error: {}", payload, e.getMessage());
+            log.error(
+                    "[KAFKA] ❌ Serialization FAILED - Payload: {}, Error: {}, Stack: {}",
+                    payload.getClass().getSimpleName(),
+                    e.getMessage(),
+                    e.getStackTrace()[0]);
         }
     }
 

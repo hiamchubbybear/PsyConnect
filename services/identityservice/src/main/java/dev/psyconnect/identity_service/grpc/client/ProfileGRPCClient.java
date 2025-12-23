@@ -23,11 +23,11 @@ public class ProfileGRPCClient {
     public ProfileGRPCClient(
             UserAccountMapper userAccountMapper,
             @Value("${baseUriProfileService:localhost}") String profileServiceHost) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(profileServiceHost, 9091)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(profileServiceHost, 50051)
                 .usePlaintext()
                 .build();
         stub = ProfileCreationServiceGrpc.newBlockingStub(channel);
-        log.info("gRPC Profile Service connected to: {}:9091", profileServiceHost);
+        log.info("gRPC Profile Service connected to: {}:50051", profileServiceHost);
         this.userAccountMapper = userAccountMapper;
     }
 
