@@ -1,0 +1,267 @@
+{
+    "version": "1.0.0",
+    "emotes": [
+        {
+            "id": "happy",
+            "name": "Happy",
+            "file": "happy.svg",
+            "category": "emotions",
+            "keywords": [
+                "happy",
+                "smile",
+                "joy"
+            ],
+            "shortcode": ":happy:"
+        },
+        {
+            "id": "love",
+            "name": "Love",
+            "file": "love.svg",
+            "category": "emotions",
+            "keywords": [
+                "love",
+                "heart",
+                "adore"
+            ],
+            "shortcode": ":love:"
+        },
+        {
+            "id": "sad",
+            "name": "Sad",
+            "file": "sad.svg",
+            "category": "emotions",
+            "keywords": [
+                "sad",
+                "cry",
+                "tears"
+            ],
+            "shortcode": ":sad:"
+        },
+        {
+            "id": "laughing",
+            "name": "Laughing",
+            "file": "laughing.svg",
+            "category": "emotions",
+            "keywords": [
+                "lol",
+                "laugh",
+                "funny",
+                "haha"
+            ],
+            "shortcode": ":lol:"
+        },
+        {
+            "id": "surprised",
+            "name": "Surprised",
+            "file": "surprised.svg",
+            "category": "emotions",
+            "keywords": [
+                "surprised",
+                "shock",
+                "wow"
+            ],
+            "shortcode": ":surprised:"
+        },
+        {
+            "id": "sleepy",
+            "name": "Sleepy",
+            "file": "sleepy.svg",
+            "category": "emotions",
+            "keywords": [
+                "sleepy",
+                "tired",
+                "zzz"
+            ],
+            "shortcode": ":sleepy:"
+        },
+        {
+            "id": "angry",
+            "name": "Angry",
+            "file": "angry.svg",
+            "category": "emotions",
+            "keywords": [
+                "angry",
+                "mad",
+                "frustrated"
+            ],
+            "shortcode": ":angry:"
+        },
+        {
+            "id": "thinking",
+            "name": "Thinking",
+            "file": "thinking.svg",
+            "category": "emotions",
+            "keywords": [
+                "thinking",
+                "hmm",
+                "wonder"
+            ],
+            "shortcode": ":thinking:"
+        },
+        {
+            "id": "worried",
+            "name": "Worried",
+            "file": "worried.svg",
+            "category": "emotions",
+            "keywords": [
+                "worried",
+                "anxious",
+                "nervous"
+            ],
+            "shortcode": ":worried:"
+        },
+        {
+            "id": "cool",
+            "name": "Cool",
+            "file": "cool.svg",
+            "category": "emotions",
+            "keywords": [
+                "cool",
+                "confident",
+                "awesome"
+            ],
+            "shortcode": ":cool:"
+        },
+        {
+            "id": "shy",
+            "name": "Shy",
+            "file": "shy.svg",
+            "category": "emotions",
+            "keywords": [
+                "shy",
+                "embarrassed",
+                "blush"
+            ],
+            "shortcode": ":shy:"
+        },
+        {
+            "id": "relieved",
+            "name": "Relieved",
+            "file": "relieved.svg",
+            "category": "emotions",
+            "keywords": [
+                "relieved",
+                "phew",
+                "relief"
+            ],
+            "shortcode": ":relieved:"
+        },
+        {
+            "id": "thumbs-up",
+            "name": "Thumbs Up",
+            "file": "thumbs-up.svg",
+            "category": "reactions",
+            "keywords": [
+                "thumbs",
+                "up",
+                "like",
+                "approve"
+            ],
+            "shortcode": ":thumbsup:"
+        },
+        {
+            "id": "thumbs-down",
+            "name": "Thumbs Down",
+            "file": "thumbs-down.svg",
+            "category": "reactions",
+            "keywords": [
+                "thumbs",
+                "down",
+                "dislike"
+            ],
+            "shortcode": ":thumbsdown:"
+        },
+        {
+            "id": "clapping",
+            "name": "Clapping",
+            "file": "clapping.svg",
+            "category": "reactions",
+            "keywords": [
+                "clap",
+                "applause",
+                "bravo"
+            ],
+            "shortcode": ":clap:"
+        },
+        {
+            "id": "party",
+            "name": "Party",
+            "file": "party.svg",
+            "category": "reactions",
+            "keywords": [
+                "party",
+                "celebrate",
+                "yay"
+            ],
+            "shortcode": ":party:"
+        },
+        {
+            "id": "strong",
+            "name": "Strong",
+            "file": "strong.svg",
+            "category": "reactions",
+            "keywords": [
+                "strong",
+                "muscle",
+                "power"
+            ],
+            "shortcode": ":strong:"
+        },
+        {
+            "id": "sparkle",
+            "name": "Sparkle",
+            "file": "sparkle.svg",
+            "category": "reactions",
+            "keywords": [
+                "sparkle",
+                "magic",
+                "shine"
+            ],
+            "shortcode": ":sparkle:"
+        },
+        {
+            "id": "calm",
+            "name": "Calm",
+            "file": "calm.svg",
+            "category": "support",
+            "keywords": [
+                "calm",
+                "peace",
+                "meditation"
+            ],
+            "shortcode": ":calm:"
+        },
+        {
+            "id": "hug",
+            "name": "Hug",
+            "file": "hug.svg",
+            "category": "support",
+            "keywords": [
+                "hug",
+                "support",
+                "comfort"
+            ],
+            "shortcode": ":hug:"
+        }
+    ],
+    "categories": [
+        {
+            "id": "emotions",
+            "name": "Emotions",
+            "icon": "😊",
+            "description": "Express your feelings"
+        },
+        {
+            "id": "reactions",
+            "name": "Reactions",
+            "icon": "👍",
+            "description": "React to messages"
+        },
+        {
+            "id": "support",
+            "name": "Support",
+            "icon": "💚",
+            "description": "Show care and support"
+        }
+    ]
+}

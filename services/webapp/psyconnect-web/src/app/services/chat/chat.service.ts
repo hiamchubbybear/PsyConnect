@@ -186,12 +186,15 @@ export class ChatService {
     }
 
     const payload = {
+      type: 'chat', // Message type for backend routing
       conversationId: msg.conversationId,
       senderId: msg.senderId,
-      text: msg.content,
+      data: {
+        text: msg.content,
+      },
     };
 
-    console.log('Sending clean payload:', payload);
+    console.log('Sending chat message:', payload);
     this.socket$.next(payload);
   }
 

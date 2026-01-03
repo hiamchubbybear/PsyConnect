@@ -79,7 +79,7 @@
       type="text"
       [placeholder]="'CHAT.EXAMPLE.placeholder' | translate"
       [(ngModel)]="messageText"
-      (keyup.enter)="onSendMessage()"
+      (keyup.enter)="onSendMessage(); $event.preventDefault()"
     />
 
     <button class="attach-btn" title="Attach file">
@@ -115,6 +115,7 @@
       class="send-btn"
       (click)="onSendMessage()"
       [disabled]="!messageText.trim()"
+      type="button"
     >
       <svg
         width="20"
@@ -130,115 +131,10 @@
   </div>
 
   <div class="files-sidebar">
-    <button class="file-btn" title="Files">
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-        <polyline points="13 2 13 9 20 9" />
-      </svg>
-      <span>{{ "CHAT.EXAMPLE.files" | translate }}</span>
-    </button>
-
-    <button
-      class="file-btn"
-      title="Documents"
-      style="background: #dbeafe; color: #1e40af"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-        <polyline points="10 9 9 9 8 9" />
-      </svg>
-      <span>{{ "CHAT.EXAMPLE.documents" | translate }}</span>
-    </button>
-
-    <button
-      class="file-btn"
-      title="Images"
-      style="background: #fef3c7; color: #92400e"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-        <circle cx="8.5" cy="8.5" r="1.5" />
-        <polyline points="21 15 16 10 5 21" />
-      </svg>
-      <span>{{ "CHAT.EXAMPLE.images" | translate }}</span>
-    </button>
-
-    <button
-      class="file-btn"
-      title="Videos"
-      style="background: #cffafe; color: #155e75"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <polygon points="23 7 16 12 23 17 23 7" />
-        <rect x="2" y="5" width="14" height="14" rx="2" ry="2" />
-      </svg>
-      <span>{{ "CHAT.EXAMPLE.videos" | translate }}</span>
-    </button>
-
-    <button
-      class="file-btn"
-      title="Links"
-      style="background: #fecaca; color: #991b1b"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-        <path
-          d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-        />
-      </svg>
-      <span>{{ "CHAT.EXAMPLE.links" | translate }}</span>
-    </button>
-
-    <button
-      class="file-btn"
-      title="More"
-      style="background: #d4f4dd; color: #166534"
-    >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-      >
-        <circle cx="12" cy="12" r="1" />
-        <circle cx="19" cy="12" r="1" />
-        <circle cx="5" cy="12" r="1" />
-      </svg>
-      <span>{{ "CHAT.EXAMPLE.more" | translate }}</span>
-    </button>
+    <!-- Call options menu -->
+    <app-call-options-menu
+      *ngIf="selectedFriend"
+      (callTypeSelected)="startCall($event)"
+    ></app-call-options-menu>
   </div>
 </div>

@@ -1,0 +1,310 @@
+<div
+  class="video-call-container"
+  [class.fullscreen]="isFullscreen"
+  [class.pip-mode]="isPipMode"
+>
+  <div class="remote-video-wrapper">
+    <video
+      #remoteVideo
+      autoplay
+      playsinline
+      class="remote-video"
+      [class.hidden]="!callState.remoteStream"
+    ></video>
+
+    <div class="video-placeholder" *ngIf="!callState.remoteStream">
+      <div class="placeholder-content">
+        <div class="avatar-placeholder mascot-pulse">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+            <circle
+              cx="40"
+              cy="40"
+              r="35"
+              fill="var(--emote-primary)"
+              opacity="0.3"
+            />
+            <circle cx="40" cy="40" r="25" fill="var(--emote-primary)" />
+          </svg>
+        </div>
+        <p class="placeholder-text" *ngIf="callState.isCalling">Đang gọi...</p>
+        <p class="placeholder-text" *ngIf="callState.isReceivingCall">
+          Đang kết nối...
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="local-video-wrapper"
+    [class.hidden]="!callState.localStream"
+    [class.minimized]="isLocalVideoMinimized"
+    (mousedown)="startDrag($event)"
+    [style.left.px]="localVideoPosition.x"
+    [style.top.px]="localVideoPosition.y"
+  >
+    <button
+      class="minimize-btn"
+      (click)="toggleLocalVideoSize($event)"
+      title="Thu nhỏ/Phóng to"
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <rect
+          *ngIf="!isLocalVideoMinimized"
+          x="9"
+          y="9"
+          width="13"
+          height="13"
+          rx="2"
+          ry="2"
+        ></rect>
+        <path
+          *ngIf="!isLocalVideoMinimized"
+          d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+        ></path>
+        <polyline
+          *ngIf="isLocalVideoMinimized"
+          points="15 3 21 3 21 9"
+        ></polyline>
+        <polyline
+          *ngIf="isLocalVideoMinimized"
+          points="9 21 3 21 3 15"
+        ></polyline>
+      </svg>
+    </button>
+    <video #localVideo autoplay muted playsinline class="local-video"></video>
+  </div>
+
+  <div class="call-controls">
+    <button
+      class="control-btn"
+      [class.active]="isVideoEnabled"
+      (click)="toggleVideo()"
+      title="Camera"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        *ngIf="isVideoEnabled"
+      >
+        <path d="M23 7L16 12L23 17V7Z" fill="currentColor" />
+        <rect x="2" y="5" width="12" height="14" rx="2" fill="currentColor" />
+      </svg>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        *ngIf="!isVideoEnabled"
+      >
+        <path
+          d="M2 2L22 22M16 16V19C16 20.1 15.1 21 14 21H4C2.9 21 2 20.1 2 19V9C2 7.9 2.9 7 4 7H7M23 7L16 12L23 17V7Z"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+
+    <button
+      class="control-btn"
+      [class.active]="isAudioEnabled"
+      (click)="toggleAudio()"
+      title="Microphone"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        *ngIf="isAudioEnabled"
+      >
+        <rect x="9" y="2" width="6" height="12" rx="3" fill="currentColor" />
+        <path
+          d="M5 10V12C5 16 8 19 12 19C16 19 19 16 19 12V10M12 19V22M8 22H16"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        *ngIf="!isAudioEnabled"
+      >
+        <path
+          d="M2 2L22 22M15 9V5C15 3.3 13.7 2 12 2C10.3 2 9 3.3 9 5V10M12 19C8 19 5 16 5 12V10M12 19V22M8 22H16"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+
+    <button class="control-btn" (click)="togglePipMode()" title="Thu nhỏ">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <rect
+          *ngIf="!isPipMode"
+          x="9"
+          y="9"
+          width="13"
+          height="13"
+          rx="2"
+          ry="2"
+        ></rect>
+        <path
+          *ngIf="!isPipMode"
+          d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+        ></path>
+        <polyline *ngIf="isPipMode" points="15 3 21 3 21 9"></polyline>
+        <polyline *ngIf="isPipMode" points="9 21 3 21 3 15"></polyline>
+      </svg>
+    </button>
+
+    <button
+      class="control-btn end-call-btn"
+      (click)="endCall()"
+      title="End call"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M3 9C3 6 5 4 8 4H16C19 4 21 6 21 9V11C21 12 20 13 19 13H17C16 13 15 12 15 11V9H9V11C9 12 8 13 7 13H5C4 13 3 12 3 11V9Z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
+
+    <button class="control-btn" (click)="toggleFullscreen()" title="Fullscreen">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        *ngIf="!isFullscreen"
+      >
+        <path
+          d="M8 3H5C3.9 3 3 3.9 3 5V8M21 8V5C21 3.9 20.1 3 19 3H16M16 21H19C20.1 21 21 20.1 21 19V16M3 16V19C3 20.1 3.9 21 5 21H8"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        *ngIf="isFullscreen"
+      >
+        <path
+          d="M4 14H7V17M20 14H17V17M17 7H20V10M7 7H4V10"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+
+    <button class="control-btn" (click)="toggleSettings()" title="Settings">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="12" cy="12" r="3"></circle>
+        <path
+          d="M12 1v6m0 6v6M5.6 5.6l4.2 4.2m4.2 4.2l4.2 4.2M1 12h6m6 0h6M5.6 18.4l4.2-4.2m4.2-4.2l4.2-4.2"
+        ></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Settings Menu -->
+  <div
+    class="settings-menu"
+    *ngIf="showSettings"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="settings-header">
+      <h3>Settings</h3>
+      <button class="close-btn" (click)="toggleSettings()">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="settings-content">
+      <div class="setting-group">
+        <label>Camera</label>
+        <select
+          [value]="selectedCameraId"
+          (change)="onCameraChange($any($event.target).value)"
+        >
+          <option
+            *ngFor="let camera of availableCameras"
+            [value]="camera.deviceId"
+          >
+            {{
+              camera.label || "Camera " + (availableCameras.indexOf(camera) + 1)
+            }}
+          </option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label>Microphone</label>
+        <select
+          [value]="selectedMicrophoneId"
+          (change)="onMicrophoneChange($any($event.target).value)"
+        >
+          <option
+            *ngFor="let mic of availableMicrophones"
+            [value]="mic.deviceId"
+          >
+            {{
+              mic.label ||
+                "Microphone " + (availableMicrophones.indexOf(mic) + 1)
+            }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="call-status"
+    *ngIf="callState.isCalling || callState.isReceivingCall"
+  >
+    <div class="status-indicator mascot-pulse"></div>
+    <span>{{ callState.isCalling ? "Đang gọi..." : "Đang kết nối..." }}</span>
+  </div>
+</div>

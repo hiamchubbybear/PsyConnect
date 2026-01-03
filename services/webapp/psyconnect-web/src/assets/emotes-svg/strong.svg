@@ -1,0 +1,32 @@
+<!-- Strong/Motivated Emote -->
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ghost body -->
+  <path d="M32 8C20 8 12 16 12 28C12 36 12 44 12 52C12 54 14 56 16 56C18 56 18 54 20 54C22 54 22 56 24 56C26 56 26 54 28 54C30 54 30 56 32 56C34 56 34 54 36 54C38 54 38 56 40 56C42 56 42 54 44 54C46 54 46 56 48 56C50 56 52 54 52 52C52 44 52 36 52 28C52 16 44 8 32 8Z"
+        fill="var(--emote-primary, #C4B5FD)"
+        class="emote-body"/>
+
+  <!-- Determined eyes -->
+  <circle cx="24" cy="26" r="3" fill="var(--emote-eyes, #6366F1)"/>
+  <circle cx="40" cy="26" r="3" fill="var(--emote-eyes, #6366F1)"/>
+
+  <!-- Confident smile -->
+  <path d="M24 34C24 34 27 38 32 38C37 38 40 34 40 34"
+        stroke="var(--emote-mouth, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Flexing arm -->
+  <g transform="translate(48, 32)">
+    <!-- Upper arm -->
+    <ellipse cx="0" cy="0" rx="3" ry="8" fill="var(--emote-secondary, #BFDBFE)" transform="rotate(30)"/>
+    <!-- Bicep -->
+    <circle cx="2" cy="-4" r="5" fill="var(--emote-secondary, #BFDBFE)"/>
+    <!-- Forearm -->
+    <ellipse cx="4" cy="-8" rx="2.5" ry="6" fill="var(--emote-secondary, #BFDBFE)" transform="rotate(-30)"/>
+  </g>
+
+  <!-- Sparkles -->
+  <circle cx="54" cy="24" r="2" fill="var(--emote-sparkle, #FDE047)" opacity="0.8"/>
+  <circle cx="58" cy="28" r="1.5" fill="var(--emote-sparkle, #FDE047)" opacity="0.6"/>
+</svg>

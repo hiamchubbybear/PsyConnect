@@ -1,0 +1,41 @@
+<!-- Party/Celebration Emote -->
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ghost body -->
+  <path d="M32 8C20 8 12 16 12 28C12 36 12 44 12 52C12 54 14 56 16 56C18 56 18 54 20 54C22 54 22 56 24 56C26 56 26 54 28 54C30 54 30 56 32 56C34 56 34 54 36 54C38 54 38 56 40 56C42 56 42 54 44 54C46 54 46 56 48 56C50 56 52 54 52 52C52 44 52 36 52 28C52 16 44 8 32 8Z"
+        fill="var(--emote-primary, #C4B5FD)"
+        class="emote-body"/>
+
+  <!-- Party hat -->
+  <path d="M32 4L26 14L38 14Z"
+        fill="var(--emote-hat, #F472B6)"
+        class="emote-hat"/>
+  <circle cx="32" cy="4" r="2" fill="var(--emote-hat-pom, #FDE047)" class="emote-pom"/>
+
+  <!-- Happy eyes -->
+  <path d="M20 26C20 26 22 24 24 24C26 24 28 26 28 26"
+        stroke="var(--emote-eyes, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"
+        class="emote-eyes"/>
+  <path d="M36 26C36 26 38 24 40 24C42 24 44 26 44 26"
+        stroke="var(--emote-eyes, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"
+        class="emote-eyes"/>
+
+  <!-- Big smile -->
+  <path d="M22 34C22 34 26 40 32 40C38 40 42 34 42 34"
+        stroke="var(--emote-mouth, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"
+        class="emote-mouth"/>
+
+  <!-- Confetti -->
+  <circle cx="14" cy="18" r="2" fill="var(--emote-confetti-1, #FDE047)" opacity="0.8"/>
+  <circle cx="50" cy="20" r="2" fill="var(--emote-confetti-2, #F472B6)" opacity="0.8"/>
+  <rect x="18" y="14" width="3" height="3" fill="var(--emote-confetti-3, #60A5FA)" opacity="0.8"/>
+  <rect x="46" y="16" width="3" height="3" fill="var(--emote-confetti-4, #34D399)" opacity="0.8"/>
+</svg>

@@ -1,0 +1,139 @@
+<div class="emote-picker">
+  <!-- Header -->
+  <div class="emote-picker-header">
+    <h3>Emotes</h3>
+    <button class="close-btn" (click)="close()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path
+          d="M15 5L5 15M5 5L15 15"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="emote-search">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      class="search-icon"
+    >
+      <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" />
+      <path
+        d="M11 11L14 14"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+      />
+    </svg>
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      placeholder="Search emotes..."
+      class="search-input"
+    />
+  </div>
+
+  <!-- Category tabs -->
+  <div class="category-tabs">
+    <button
+      class="category-tab"
+      [class.active]="selectedCategory === 'all'"
+      (click)="selectCategory('all')"
+    >
+      All
+    </button>
+    <button
+      *ngFor="let cat of categories"
+      class="category-tab"
+      [class.active]="selectedCategory === cat.id"
+      (click)="selectCategory(cat.id)"
+    >
+      {{ cat.icon }} {{ cat.name }}
+    </button>
+  </div>
+
+  <!-- Emote grid -->
+  <div class="emote-content">
+    <!-- Recent emotes -->
+    <div
+      class="emote-section"
+      *ngIf="
+        recentEmotes.length > 0 && selectedCategory === 'all' && !searchQuery
+      "
+    >
+      <div class="section-title">Recently Used</div>
+      <div class="emote-grid">
+        <button
+          *ngFor="let emote of recentEmotes"
+          class="emote-btn"
+          (click)="selectEmote(emote)"
+          [title]="emote.name + ' ' + emote.shortcode"
+        >
+          <img
+            [src]="getEmotePath(emote)"
+            [alt]="emote.name"
+            class="emote-img"
+          />
+        </button>
+      </div>
+    </div>
+
+    <!-- All emotes or filtered -->
+    <div
+      class="emote-section"
+      *ngIf="selectedCategory === 'all' || searchQuery"
+    >
+      <div class="section-title" *ngIf="!searchQuery">All Emotes</div>
+      <div class="section-title" *ngIf="searchQuery">
+        Search Results ({{ filteredEmotes.length }})
+      </div>
+      <div class="emote-grid">
+        <button
+          *ngFor="let emote of filteredEmotes"
+          class="emote-btn"
+          (click)="selectEmote(emote)"
+          [title]="emote.name + ' ' + emote.shortcode"
+        >
+          <img
+            [src]="getEmotePath(emote)"
+            [alt]="emote.name"
+            class="emote-img"
+          />
+        </button>
+      </div>
+      <div class="no-results" *ngIf="filteredEmotes.length === 0">
+        No emotes found
+      </div>
+    </div>
+
+    <!-- Category sections -->
+    <div *ngIf="selectedCategory !== 'all' && !searchQuery">
+      <div *ngFor="let cat of categories" class="emote-section">
+        <ng-container *ngIf="selectedCategory === cat.id">
+          <div class="section-title">{{ cat.icon }} {{ cat.name }}</div>
+          <div class="section-description">{{ cat.description }}</div>
+          <div class="emote-grid">
+            <button
+              *ngFor="let emote of emotesByCategory[cat.id]"
+              class="emote-btn"
+              (click)="selectEmote(emote)"
+              [title]="emote.name + ' ' + emote.shortcode"
+            >
+              <img
+                [src]="getEmotePath(emote)"
+                [alt]="emote.name"
+                class="emote-img"
+              />
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

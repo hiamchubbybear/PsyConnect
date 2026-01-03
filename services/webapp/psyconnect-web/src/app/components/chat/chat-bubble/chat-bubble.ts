@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 import { Message } from '../../../models/chat.models';
 
 @Component({
@@ -11,6 +11,17 @@ import { Message } from '../../../models/chat.models';
 })
 export class MessageBubbleComponent {
   @Input() message!: Message;
+
+  @HostBinding('class.first-in-group')
+  get isFirstInGroup() {
+    return this.message?.isFirstInGroup;
+  }
+
+  @HostBinding('class.last-in-group')
+  get isLastInGroup() {
+    return this.message?.isLastInGroup;
+  }
+
   hasReaction = true;
 
   formatTime(date: any): string {

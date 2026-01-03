@@ -1,0 +1,43 @@
+<div class="chat-layout">
+  <div class="chat-sidebar">
+    <app-chat-skeleton *ngIf="isLoadingFriends"></app-chat-skeleton>
+    <app-chat-list
+      *ngIf="!isLoadingFriends"
+      [currentUser]="currentUser"
+      [friends]="friends"
+      [selectedFriendId]="selectedFriend()?.profileId || null"
+      (friendSelected)="onFriendSelected($event, true)"
+    ></app-chat-list>
+  </div>
+
+  <app-chat-main
+    [selectedFriend]="selectedFriend()"
+    [messages]="messages()"
+    [conversationId]="conversationId()"
+    [currentUserId]="currentUser.profileId"
+    [currentUserName]="currentUser.name"
+    [currentUserAvatar]="currentUser.avatar"
+    [isLoadingMessages]="isLoadingMessages"
+    (callRequested)="handleCallRequest($event)"
+  ></app-chat-main>
+
+  <!-- Video call overlay -->
+  <app-video-call
+    *ngIf="showVideoCall"
+    [conversationId]="conversationId()"
+    [remoteUserId]="selectedFriend()?.profileId || ''"
+    [currentUserId]="currentUser.profileId"
+    (callEnded)="onCallEnded()"
+    (offer)="onOffer($event)"
+    (answer)="onAnswer($event)"
+    (iceCandidate)="onICECandidate($event)"
+  ></app-video-call>
+
+  <!-- Incoming call notification -->
+  <app-incoming-call
+    *ngIf="incomingCall"
+    [call]="incomingCall"
+    (accept)="acceptIncomingCall()"
+    (reject)="rejectIncomingCall()"
+  ></app-incoming-call>
+</div>

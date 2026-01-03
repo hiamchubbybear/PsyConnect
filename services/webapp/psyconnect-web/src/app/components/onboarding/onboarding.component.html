@@ -1,0 +1,81 @@
+<div class="onboarding-overlay">
+  <div class="onboarding-container">
+    <!-- Progress bar -->
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progress"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="onboarding-content">
+      <!-- Mascot image -->
+      <div class="mascot-container mascot-float">
+        <img
+          [src]="currentStepData.image"
+          [alt]="currentStepData.title"
+          class="mascot-image"
+        />
+      </div>
+
+      <!-- Text content -->
+      <div class="text-content">
+        <h2 class="step-title">{{ currentStepData.title }}</h2>
+        <p class="step-description">{{ currentStepData.description }}</p>
+      </div>
+
+      <!-- Step indicators -->
+      <div class="step-indicators">
+        <div
+          *ngFor="let step of steps; let i = index"
+          class="step-dot"
+          [class.active]="i === currentStep"
+          [class.completed]="i < currentStep"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="onboarding-footer">
+      <button class="btn btn-text" (click)="skip()" *ngIf="!isLastStep">
+        Bỏ qua
+      </button>
+
+      <div class="nav-buttons">
+        <button
+          class="btn btn-secondary"
+          (click)="previousStep()"
+          *ngIf="!isFirstStep"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M12 4L6 10L12 16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Quay lại
+        </button>
+
+        <button class="btn btn-primary" (click)="nextStep()">
+          {{ isLastStep ? "Bắt đầu" : "Tiếp theo" }}
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            *ngIf="!isLastStep"
+          >
+            <path
+              d="M8 4L14 10L8 16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

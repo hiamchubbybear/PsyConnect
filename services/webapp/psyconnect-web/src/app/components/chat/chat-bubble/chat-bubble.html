@@ -1,19 +1,41 @@
-<div class="message-wrapper" [class.mine]="message.isMine">
-  <div class="message-avatar" *ngIf="!message.isMine">
+<div
+  class="message-wrapper"
+  [class.mine]="message.isMine"
+  [class.first-in-group]="message.isFirstInGroup"
+  [class.last-in-group]="message.isLastInGroup"
+>
+  <!-- Avatar: only for first message in group -->
+  <div class="message-avatar" *ngIf="!message.isMine && message.isFirstInGroup">
     <img [src]="message.userAvatar" [alt]="message.userName" />
   </div>
 
+  <!-- Spacer for grouped messages (maintains alignment) -->
+  <div
+    class="avatar-spacer"
+    *ngIf="!message.isMine && !message.isFirstInGroup"
+  ></div>
+
   <div class="message-content">
-    <div class="message-header" *ngIf="!message.isMine">
+    <!-- Name and Timestamp: only for first message in group -->
+    <div
+      class="message-header"
+      *ngIf="!message.isMine && message.isFirstInGroup"
+    >
       <span class="message-author">{{ message.userName }}</span>
-      <span class="message-time">{{ formatTime(message.timestamp) }}</span>
+      <span class="message-time" *ngIf="message.showTimestamp">
+        {{ formatTime(message.timestamp) }}
+      </span>
     </div>
 
     <div class="message-bubble" [class.mine]="message.isMine">
       <p>{{ message.content }}</p>
     </div>
 
-    <div class="message-time-mine" *ngIf="message.isMine">
+    <!-- Timestamp for my messages: below bubble -->
+    <div
+      class="message-time-mine"
+      *ngIf="message.isMine && message.showTimestamp"
+    >
       {{ formatTime(message.timestamp) }}
     </div>
   </div>

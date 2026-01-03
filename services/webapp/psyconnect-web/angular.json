@@ -29,6 +29,11 @@
                                 "input": "src/assets",
                                 "output": "assets"
                             },
+                            {
+                                "glob": "**/*",
+                                "input": "public",
+                                "output": "/"
+                            },
                             "src/favicon.ico",
                             "src/firebase-messaging-sw.js"
                         ],
@@ -106,6 +111,9 @@
         }
     },
     "cli": {
-        "analytics": false
+        "analytics": false,
+        "cache": {
+            "enabled": false
+        }
     }
 }

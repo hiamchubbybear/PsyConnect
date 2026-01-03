@@ -1,0 +1,188 @@
+/* PsyConnect Mascot Animations */
+
+/* Floating animation - gentle up and down movement */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.mascot-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Bounce animation - playful bounce */
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+.mascot-bounce {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+/* Wave animation - side to side */
+@keyframes wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+.mascot-wave {
+  animation: wave 2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Pulse animation - gentle scale */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.mascot-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Sparkle animation - for decorative elements */
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.mascot-sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mascot-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Wiggle animation - playful shake */
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+.mascot-wiggle {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* Hover effects */
+.mascot-hover {
+  transition: transform 0.3s ease, filter 0.3s ease;
+  cursor: pointer;
+}
+
+.mascot-hover:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+/* Combined float + pulse for extra cuteness */
+.mascot-float-pulse {
+  animation: float 3s ease-in-out infinite, pulse 2s ease-in-out infinite;
+}
+
+/* Rotate animation - for loading states */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mascot-rotate {
+  animation: rotate 2s linear infinite;
+}
+
+/* Slide in from bottom */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mascot-slide-in-up {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+/* Heartbeat animation - for love/like reactions */
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  10%,
+  30% {
+    transform: scale(1.1);
+  }
+  20%,
+  40% {
+    transform: scale(1);
+  }
+}
+
+.mascot-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}

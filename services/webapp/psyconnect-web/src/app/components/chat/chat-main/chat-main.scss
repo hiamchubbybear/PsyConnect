@@ -1,50 +1,23 @@
 .chat-main {
   font-family: "Quicksand", sans-serif;
 }
+
 .files-sidebar {
   position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 2.5rem; // Move further inside
+  top: 5.5rem; // Move lower
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-.file-btn {
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  font-size: 0.625rem;
-  font-weight: 500;
-  gap: 0.125rem;
-}
-
-.file-btn:hover {
-  transform: translateX(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.file-btn span {
-  display: block;
-  margin-top: 0.125rem;
+  z-index: 10;
 }
 .chat-main {
   flex: 1;
   background: var(--color-surface);
-  border-radius: 24px;
   display: flex;
   flex-direction: column;
-  width: 90vh;
-  height: 80vh;
-  box-shadow: var(--shadow-card);
+  height: 100%; // Fill parent height
+  width: 100%; // Fill parent width
   position: relative;
   overflow: hidden;
   min-width: 0;
@@ -288,4 +261,43 @@
 .load-more-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+// Empty state styling
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.empty-state-illustration {
+  width: 280px;
+  height: 280px;
+  margin-bottom: 2rem;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.9;
+  }
+}
+
+.empty-state-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.75rem 0;
+}
+
+.empty-state-message {
+  font-size: 1rem;
+  color: #9ca3af;
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.6;
 }

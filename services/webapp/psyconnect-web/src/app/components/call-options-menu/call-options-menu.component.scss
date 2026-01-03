@@ -1,0 +1,136 @@
+.call-options-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.5rem;
+}
+
+.call-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: #667eea;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  transition: all var(--transition-fast);
+  font-size: 0.625rem;
+  font-weight: 500;
+  position: relative;
+
+  &:hover {
+    transform: translateX(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg:first-child {
+    width: 20px;
+    height: 20px;
+  }
+
+  .dropdown-icon {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+  }
+
+  span {
+    display: block;
+    margin-top: 0.125rem;
+  }
+}
+
+.call-menu {
+  position: absolute;
+  top: 0;
+  right: calc(100% + 8px);
+  background: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-xl);
+  padding: 8px;
+  min-width: 180px;
+  z-index: 1000;
+  animation: slideLeft 0.2s ease;
+
+  @keyframes slideLeft {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+.menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-family: var(--font-primary);
+
+  &:hover {
+    background: var(--color-surface-low);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+    text-align: left;
+  }
+}
+
+// Dark mode support
+:host-context([data-theme="dark"]) {
+  .call-btn {
+    background: #7c3aed;
+
+    &:hover {
+      background: #8b5cf6;
+    }
+  }
+
+  .call-menu {
+    background: #1f2937;
+    border: 1px solid #374151;
+  }
+
+  .menu-item {
+    color: #f3f4f6;
+
+    &:hover {
+      background: #374151;
+    }
+  }
+}

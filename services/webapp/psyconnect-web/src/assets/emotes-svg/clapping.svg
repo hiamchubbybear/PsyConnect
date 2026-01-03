@@ -1,0 +1,40 @@
+<!-- Clapping/Applause Emote -->
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ghost body -->
+  <path d="M32 8C20 8 12 16 12 28C12 36 12 44 12 52C12 54 14 56 16 56C18 56 18 54 20 54C22 54 22 56 24 56C26 56 26 54 28 54C30 54 30 56 32 56C34 56 34 54 36 54C38 54 38 56 40 56C42 56 42 54 44 54C46 54 46 56 48 56C50 56 52 54 52 52C52 44 52 36 52 28C52 16 44 8 32 8Z"
+        fill="var(--emote-primary, #C4B5FD)"
+        class="emote-body"/>
+
+  <!-- Happy eyes -->
+  <path d="M20 26C20 26 22 24 24 24C26 24 28 26 28 26"
+        stroke="var(--emote-eyes, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"/>
+  <path d="M36 26C36 26 38 24 40 24C42 24 44 26 44 26"
+        stroke="var(--emote-eyes, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Smile -->
+  <path d="M24 34C24 34 27 38 32 38C37 38 40 34 40 34"
+        stroke="var(--emote-mouth, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Clapping hands -->
+  <g transform="translate(10, 38)">
+    <ellipse cx="0" cy="0" rx="4" ry="6" fill="var(--emote-secondary, #BFDBFE)" transform="rotate(-20)"/>
+    <ellipse cx="8" cy="0" rx="4" ry="6" fill="var(--emote-secondary, #BFDBFE)" transform="rotate(20)"/>
+  </g>
+  <g transform="translate(46, 38)">
+    <ellipse cx="0" cy="0" rx="4" ry="6" fill="var(--emote-secondary, #BFDBFE)" transform="rotate(-20)"/>
+    <ellipse cx="8" cy="0" rx="4" ry="6" fill="var(--emote-secondary, #BFDBFE)" transform="rotate(20)"/>
+  </g>
+
+  <!-- Clap lines -->
+  <path d="M12 36L10 34M16 36L18 34" stroke="var(--emote-sparkle, #A78BFA)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <path d="M52 36L54 34M48 36L46 34" stroke="var(--emote-sparkle, #A78BFA)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+</svg>

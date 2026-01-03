@@ -1,0 +1,36 @@
+<div class="incoming-call-overlay mascot-fade-in">
+  <div class="incoming-call-card mascot-bounce">
+    <!-- Caller avatar/mascot -->
+    <div class="caller-avatar mascot-pulse">
+      <img src="assets/mascot/psy-purple.png" alt="Caller" />
+    </div>
+
+    <!-- Caller info -->
+    <h3 class="caller-name">{{ call.callerName }}</h3>
+    <p class="call-type">Cuộc gọi video đến...</p>
+
+    <!-- Call actions -->
+    <div class="call-actions">
+      <button class="action-btn reject-btn" (click)="onReject()">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path
+            d="M4 10C4 7 6 5 9 5H19C22 5 24 7 24 10V12C24 13 23 14 22 14H20C19 14 18 13 18 12V10H10V12C10 13 9 14 8 14H6C5 14 4 13 4 12V10Z"
+            fill="currentColor"
+          />
+        </svg>
+        <span>Từ chối</span>
+      </button>
+
+      <button class="action-btn accept-btn" (click)="onAccept()">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path
+            d="M4 10C4 7 6 5 9 5H19C22 5 24 7 24 10V12C24 13 23 14 22 14H20C19 14 18 13 18 12V10H10V12C10 13 9 14 8 14H6C5 14 4 13 4 12V10Z"
+            fill="currentColor"
+            transform="rotate(180 14 9.5)"
+          />
+        </svg>
+        <span>Chấp nhận</span>
+      </button>
+    </div>
+  </div>
+</div>

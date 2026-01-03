@@ -1,7 +1,39 @@
 .chat-layout {
   display: flex;
-  height: 100vh; /* full chiều cao màn hình */
-  max-width: 1400px;
-  margin: 0 auto;
-  gap: 1rem;
+  height: calc(100vh - 2rem); // Leave space for padding
+  width: 100%;
+  max-width: 1600px; // Contained width
+  margin: 1rem auto; // Center with margin
+  gap: 1rem; // Gap between sidebar and main
+  padding: 0;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.chat-sidebar {
+  width: 360px;
+  min-width: 360px;
+  max-width: 360px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--color-surface);
+  border-radius: 0.75rem; // Rounded corners
+  box-shadow: var(--shadow-card); // Add shadow
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+app-chat-main {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+  border-radius: 0.75rem; // Rounded corners
+  box-shadow: var(--shadow-card); // Add shadow
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }

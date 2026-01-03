@@ -1,0 +1,27 @@
+<!-- Thumbs Up Emote -->
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ghost body -->
+  <path d="M32 8C20 8 12 16 12 28C12 36 12 44 12 52C12 54 14 56 16 56C18 56 18 54 20 54C22 54 22 56 24 56C26 56 26 54 28 54C30 54 30 56 32 56C34 56 34 54 36 54C38 54 38 56 40 56C42 56 42 54 44 54C46 54 46 56 48 56C50 56 52 54 52 52C52 44 52 36 52 28C52 16 44 8 32 8Z"
+        fill="var(--emote-primary, #C4B5FD)"
+        class="emote-body"/>
+
+  <!-- Happy eyes -->
+  <circle cx="24" cy="24" r="3" fill="var(--emote-eyes, #6366F1)" class="emote-eyes"/>
+  <circle cx="40" cy="24" r="3" fill="var(--emote-eyes, #6366F1)" class="emote-eyes"/>
+
+  <!-- Smile -->
+  <path d="M24 32C24 32 27 36 32 36C37 36 40 32 40 32"
+        stroke="var(--emote-mouth, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"
+        class="emote-mouth"/>
+
+  <!-- Thumbs up gesture -->
+  <g transform="translate(44, 36)">
+    <!-- Thumb -->
+    <rect x="0" y="0" width="4" height="8" rx="2" fill="var(--emote-secondary, #BFDBFE)" class="emote-hand"/>
+    <!-- Fist -->
+    <rect x="-6" y="4" width="10" height="8" rx="2" fill="var(--emote-secondary, #BFDBFE)" class="emote-hand"/>
+  </g>
+</svg>

@@ -1,0 +1,33 @@
+<!-- Sad/Crying Emote -->
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ghost body -->
+  <path d="M32 8C20 8 12 16 12 28C12 36 12 44 12 52C12 54 14 56 16 56C18 56 18 54 20 54C22 54 22 56 24 56C26 56 26 54 28 54C30 54 30 56 32 56C34 56 34 54 36 54C38 54 38 56 40 56C42 56 42 54 44 54C46 54 46 56 48 56C50 56 52 54 52 52C52 44 52 36 52 28C52 16 44 8 32 8Z" 
+        fill="var(--emote-primary, #C4B5FD)" 
+        class="emote-body"/>
+  
+  <!-- Sad eyes -->
+  <path d="M22 26C22 26 24 24 26 26" 
+        stroke="var(--emote-eyes, #6366F1)" 
+        stroke-width="2.5" 
+        stroke-linecap="round"
+        fill="none"
+        class="emote-eyes"/>
+  <path d="M38 26C38 26 40 24 42 26" 
+        stroke="var(--emote-eyes, #6366F1)" 
+        stroke-width="2.5" 
+        stroke-linecap="round"
+        fill="none"
+        class="emote-eyes"/>
+  
+  <!-- Sad mouth -->
+  <path d="M26 40C26 40 28 36 32 36C36 36 38 40 38 40" 
+        stroke="var(--emote-mouth, #6366F1)" 
+        stroke-width="2.5" 
+        stroke-linecap="round"
+        fill="none"
+        class="emote-mouth"/>
+  
+  <!-- Tears -->
+  <ellipse cx="22" cy="32" rx="2" ry="4" fill="var(--emote-tear, #60A5FA)" opacity="0.7" class="emote-tear"/>
+  <ellipse cx="42" cy="32" rx="2" ry="4" fill="var(--emote-tear, #60A5FA)" opacity="0.7" class="emote-tear"/>
+</svg>

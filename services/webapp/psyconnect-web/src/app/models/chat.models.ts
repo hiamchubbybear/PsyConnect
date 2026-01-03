@@ -29,6 +29,10 @@ export interface Message {
   content: string;
   timestamp: Date;
   isMine: boolean;
+  // Message grouping fields
+  isFirstInGroup?: boolean;
+  isLastInGroup?: boolean;
+  showTimestamp?: boolean;
 }
 
 export interface Chat {

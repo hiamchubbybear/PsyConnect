@@ -1,0 +1,31 @@
+<!-- Sparkle/Magic Emote -->
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ghost body -->
+  <path d="M32 8C20 8 12 16 12 28C12 36 12 44 12 52C12 54 14 56 16 56C18 56 18 54 20 54C22 54 22 56 24 56C26 56 26 54 28 54C30 54 30 56 32 56C34 56 34 54 36 54C38 54 38 56 40 56C42 56 42 54 44 54C46 54 46 56 48 56C50 56 52 54 52 52C52 44 52 36 52 28C52 16 44 8 32 8Z"
+        fill="var(--emote-primary, #C4B5FD)"
+        class="emote-body"/>
+
+  <!-- Amazed eyes -->
+  <circle cx="24" cy="26" r="4" fill="var(--emote-eyes, #6366F1)"/>
+  <circle cx="40" cy="26" r="4" fill="var(--emote-eyes, #6366F1)"/>
+  <circle cx="24" cy="26" r="2" fill="white" opacity="0.8"/>
+  <circle cx="40" cy="26" r="2" fill="white" opacity="0.8"/>
+
+  <!-- Amazed smile -->
+  <path d="M26 36C26 36 28 40 32 40C36 40 38 36 38 36"
+        stroke="var(--emote-mouth, #6366F1)"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Big sparkles -->
+  <g transform="translate(14, 18)">
+    <path d="M0,-6L1,-1L6,0L1,1L0,6L-1,1L-6,0L-1,-1Z" fill="var(--emote-sparkle, #FDE047)" opacity="0.9"/>
+  </g>
+  <g transform="translate(50, 20)">
+    <path d="M0,-5L0.8,-0.8L5,0L0.8,0.8L0,5L-0.8,0.8L-5,0L-0.8,-0.8Z" fill="var(--emote-sparkle, #A78BFA)" opacity="0.8"/>
+  </g>
+  <g transform="translate(48, 14)">
+    <path d="M0,-3L0.5,-0.5L3,0L0.5,0.5L0,3L-0.5,0.5L-3,0L-0.5,-0.5Z" fill="var(--emote-sparkle, #60A5FA)" opacity="0.7"/>
+  </g>
+</svg>

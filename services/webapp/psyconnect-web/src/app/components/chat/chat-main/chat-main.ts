@@ -1,26 +1,38 @@
 import { CommonModule } from '@angular/common';
 import {
-    AfterViewInit,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    OnChanges,
-    Output,
-    SimpleChanges,
-    ViewChild,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { Friend, Message } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat/chat.service';
+import {
+  CallOptionsMenuComponent,
+  CallType,
+} from '../../call-options-menu/call-options-menu.component';
 import { MessageBubbleComponent } from '../chat-bubble/chat-bubble';
+import { ChatSkeletonComponent } from '../chat-skeleton/chat-skeleton';
 
 @Component({
   selector: 'app-chat-main',
   standalone: true,
-  imports: [CommonModule, FormsModule, MessageBubbleComponent, TranslateModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MessageBubbleComponent,
+    ChatSkeletonComponent,
+    CallOptionsMenuComponent,
+    TranslateModule,
+  ],
   templateUrl: './chat-main.html',
   styleUrls: ['./chat-main.scss'],
 })
@@ -31,7 +43,9 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   @Input() currentUserId: string = '';
   @Input() currentUserName: string = '';
   @Input() currentUserAvatar: string = '';
+  @Input() isLoadingMessages = false;
   @Output() messagesChange = new EventEmitter<Message[]>();
+  @Output() callRequested = new EventEmitter<CallType>();
   @ViewChild('messagesContainer')
   messagesContainer!: ElementRef<HTMLDivElement>;
   showLoadOlderButton = false;
@@ -103,9 +117,12 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
         const enriched = olderMsgs.map((m) => this.enrichMessage(m, friend!));
 
+        // Merge and re-group all messages
         const merged = [...enriched, ...this.messages];
-        this.messages = merged;
-        this.messagesChange.emit(merged);
+        const grouped = this.groupMessages(merged);
+
+        this.messages = grouped;
+        this.messagesChange.emit(grouped);
       });
   }
 
@@ -135,5 +152,36 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   }
   trackByMessageId(index: number, message: any): string {
     return message.id || index;
+  }
+
+  private groupMessages(messages: Message[]): Message[] {
+    const GROUPING_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+
+    return messages.map((msg, index) => {
+      const prev = messages[index - 1];
+      const next = messages[index + 1];
+
+      const isFirstInGroup =
+        !prev ||
+        prev.senderId !== msg.senderId ||
+        msg.timestamp.getTime() - prev.timestamp.getTime() > GROUPING_THRESHOLD;
+
+      const isLastInGroup =
+        !next ||
+        next.senderId !== msg.senderId ||
+        next.timestamp.getTime() - msg.timestamp.getTime() > GROUPING_THRESHOLD;
+
+      return {
+        ...msg,
+        isFirstInGroup,
+        isLastInGroup,
+        showTimestamp: isFirstInGroup || isLastInGroup,
+      };
+    });
+  }
+
+  startCall(callType: CallType) {
+    console.log('📞 Starting', callType, 'call...');
+    this.callRequested.emit(callType);
   }
 }

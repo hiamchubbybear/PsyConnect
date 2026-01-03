@@ -43,7 +43,7 @@ func main() {
 		kafkaLogger.Warn("Failed to initialize Redis (continuing without cache)", map[string]interface{}{
 			"error": err.Error(),
 		})
-		log.Printf("⚠️ Warning: Redis initialization failed: %v", err)
+		log.Printf("Warning: Redis initialization failed: %v", err)
 	}
 	repomanager := repository.NewRepositoryManager(env, redisClient)
 

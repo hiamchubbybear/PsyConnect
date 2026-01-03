@@ -1,0 +1,36 @@
+<!-- Worried/Anxious Emote -->
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ghost body -->
+  <path d="M32 8C20 8 12 16 12 28C12 36 12 44 12 52C12 54 14 56 16 56C18 56 18 54 20 54C22 54 22 56 24 56C26 56 26 54 28 54C30 54 30 56 32 56C34 56 34 54 36 54C38 54 38 56 40 56C42 56 42 54 44 54C46 54 46 56 48 56C50 56 52 54 52 52C52 44 52 36 52 28C52 16 44 8 32 8Z"
+        fill="var(--emote-primary, #C4B5FD)"
+        class="emote-body"/>
+
+  <!-- Worried eyebrows -->
+  <path d="M20 20C20 20 22 22 24 22C26 22 28 20 28 20"
+        stroke="var(--emote-eyes, #6366F1)"
+        stroke-width="2"
+        stroke-linecap="round"
+        fill="none"
+        class="emote-eyebrow"/>
+  <path d="M36 20C36 20 38 22 40 22C42 22 44 20 44 20"
+        stroke="var(--emote-eyes, #6366F1)"
+        stroke-width="2"
+        stroke-linecap="round"
+        fill="none"
+        class="emote-eyebrow"/>
+
+  <!-- Worried eyes -->
+  <circle cx="24" cy="26" r="3" fill="var(--emote-eyes, #6366F1)" class="emote-eyes"/>
+  <circle cx="40" cy="26" r="3" fill="var(--emote-eyes, #6366F1)" class="emote-eyes"/>
+
+  <!-- Wavy worried mouth -->
+  <path d="M24 36C24 36 26 38 28 38C30 38 30 36 32 36C34 36 34 38 36 38C38 38 40 36 40 36"
+        stroke="var(--emote-mouth, #6366F1)"
+        stroke-width="2"
+        stroke-linecap="round"
+        fill="none"
+        class="emote-mouth"/>
+
+  <!-- Sweat drop -->
+  <ellipse cx="18" cy="30" rx="2" ry="3" fill="var(--emote-tear, #60A5FA)" opacity="0.7" class="emote-sweat"/>
+</svg>
