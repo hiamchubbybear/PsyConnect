@@ -1,10 +1,10 @@
 package db
 
 import (
+	"chatservice/bootstrap"
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"sync"
 	"time"
 
@@ -18,32 +18,18 @@ var (
 	once        sync.Once
 )
 
-func InitDB() *mongo.Client {
+func InitDB(env *bootstrap.Env) *mongo.Client {
 	once.Do(func() {
-		mongoURI := os.Getenv("MONGO_URI")
+		mongoURI := env.DatabaseMongoUri
 		if mongoURI == "" {
-			dbUser := os.Getenv("MONGO_USER")
-			if dbUser == "" {
-				dbUser = os.Getenv("DB_USER")
-			}
-			dbPass := os.Getenv("MONGO_PASSWORD")
-			if dbPass == "" {
-				dbPass = os.Getenv("DB_PASS")
-			}
-			dbHost := os.Getenv("DB_HOST")
-			dbPort := os.Getenv("DB_PORT")
+			dbUser := env.DatabaseUser
+			dbPass := env.DatabasePassword
+			dbHost := env.DatabaseHost
+			dbPort := env.DatabasePort
 
 			log.Println("DB_USER =", dbUser)
 			log.Println("DB_HOST =", dbHost)
 			log.Println("DB_PORT =", dbPort)
-
-			if dbHost == "" {
-				dbHost = "mongodb"
-			}
-			if dbPort == "" {
-				dbPort = "27017"
-			}
-
 			if dbUser == "" || dbPass == "" {
 				log.Println("Warning: DB_USER or DB_PASS not set, connecting without auth")
 				mongoURI = fmt.Sprintf("mongodb://%s:%s/", dbHost, dbPort)
@@ -52,7 +38,7 @@ func InitDB() *mongo.Client {
 			}
 		}
 
-		dbName = os.Getenv("DB_NAME")
+		dbName = env.DatabaseName
 		if dbName == "" {
 			log.Fatal("DB_NAME is required")
 		}
@@ -84,12 +70,12 @@ func InitDB() *mongo.Client {
 	return mongoClient
 }
 
-func GetChatCollection() *mongo.Collection {
-	chat := InitDB()
+func GetChatCollection(env *bootstrap.Env) *mongo.Collection {
+	chat := InitDB(env)
 	return chat.Database(dbName).Collection("chat")
 }
-func GetConversationCollection() *mongo.Collection {
-	chat := InitDB()
+func GetConversationCollection(env *bootstrap.Env) *mongo.Collection {
+	chat := InitDB(env)
 	return chat.Database(dbName).Collection("conversation")
 }
 func CloseDB() {

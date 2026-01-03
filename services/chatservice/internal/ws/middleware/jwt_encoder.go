@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -28,7 +27,6 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		secret := bootstrap.LoadEnv().JwtSecret
-		log.Println("This is secret", secret)
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method")

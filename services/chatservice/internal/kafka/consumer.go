@@ -2,8 +2,8 @@ package kafka
 
 import (
 	"chatservice/bootstrap"
-	"chatservice/internal/model"
-	"chatservice/internal/repository"
+	"chatservice/internal/chat/model/model"
+	"chatservice/internal/chat/repository/repository"
 	"chatservice/internal/utils"
 	"context"
 	"encoding/json"

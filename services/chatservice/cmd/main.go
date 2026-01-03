@@ -1,33 +1,34 @@
 package main
 
 import (
+	"chatservice/internal/chat/repository/repository"
+	"chatservice/internal/chat/service"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"chatservice/bootstrap"
 	"chatservice/internal/db"
 	"chatservice/internal/handler"
 	"chatservice/internal/middleware"
-	"chatservice/internal/repository"
+	"chatservice/internal/signaling"
 	"chatservice/internal/ws"
 	wsmiddleware "chatservice/internal/ws/middleware"
 	"chatservice/pkg/logger"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db.InitDB()
 
 	env := bootstrap.LoadEnv()
-
+	db.InitDB(env)
 	kafkaBrokers := strings.Split(os.Getenv("KAFKA_BROKERS"), ",")
 	if len(kafkaBrokers) == 0 || kafkaBrokers[0] == "" {
-		kafkaBrokers = []string{"localhost:9092"}
+		kafkaBrokers = []string{"kafka:9094"}
 	}
 
 	kafkaLogger := logger.NewKafkaLogger(logger.Config{
@@ -46,14 +47,31 @@ func main() {
 
 	repoManager := repository.NewRepositoryManager(env)
 
-	hub := ws.NewHub(repoManager.MessageRepo)
+	hub := ws.NewHub()
 	go hub.Run()
 
-	kafkaLogger.Info("WebSocket hub initialized", nil)
+	// Initialize WebRTC signaling service
+	signalingService := signaling.NewSignalingService(hub)
+	log.Printf("📞 WebRTC signaling service initialized")
+
+	// Start session cleanup routine
+	go func() {
+		ticker := time.NewTicker(30 * time.Minute)
+		defer ticker.Stop()
+		for range ticker.C {
+			signalingService.CleanupOldSessions()
+		}
+	}()
+
+	chatService := service.NewChatService(repoManager.MessageRepo)
+	hub.RegisterHandler("chat", func(hub *ws.Hub, msg ws.Message) {
+		chatService.HandleChatMessage(hub, msg)
+	})
+
+	kafkaLogger.Info("WebSocket hub initialized with handlers", nil)
 
 	router := gin.New()
 	router.Use(gin.Recovery())
-	router.Use(cors.Default())
 
 	router.Use(middleware.LoggingMiddleware(kafkaLogger))
 
@@ -83,9 +101,8 @@ func main() {
 		"uri": uri,
 	})
 
-	log.Printf("🚀 Chat Service (REST + WebSocket) running at %s", uri)
-	log.Printf("   📡 REST API endpoints: http://%s/chats, /conversations", uri)
-	log.Printf("   🔌 WebSocket endpoint: ws://%s/ws", uri)
-
+	log.Printf("Chat Service (REST + WebSocket) running at %s", uri)
+	log.Printf("REST API endpoints: http://%s/chats, /conversations", uri)
+	log.Printf("WebSocket endpoint: ws://%s/ws", uri)
 	router.Run(uri)
 }

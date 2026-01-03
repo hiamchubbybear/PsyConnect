@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"chatservice/internal/chat/model/model"
+	"chatservice/internal/chat/repository/repository"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -9,8 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"chatservice/bootstrap"
-	"chatservice/internal/model"
-	"chatservice/internal/repository"
+
 	encoder "chatservice/internal/utils/conversation"
 	"chatservice/pkg/apiresponse"
 )
@@ -174,7 +175,7 @@ func (h *ChatHandler) CreateConversation(c *gin.Context) {
 		return
 	}
 	conversation := model.Conversation{
-		Id:           conversationUUID,
+		ID:           conversationUUID,
 		Participants: req.UserIds,
 		CreatedAt:    time.Now(),
 	}

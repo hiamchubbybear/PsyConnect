@@ -1,14 +1,14 @@
 package handler
 
 import (
+	"chatservice/internal/chat/model/model"
+	"chatservice/internal/chat/repository/repository"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"chatservice/bootstrap"
-	"chatservice/internal/model"
-	"chatservice/internal/repository"
 	encoder "chatservice/internal/utils/conversation"
 )
 
@@ -42,7 +42,7 @@ func (h *ConversationHandler) GetConversationByUsers(c *gin.Context) {
 	}
 	if conv == nil {
 		newConv := &model.Conversation{
-			Id:           conversationID,
+			ID:           conversationID,
 			Participants: []string{user1, user2},
 			CreatedAt:    model.NowUTC(),
 		}

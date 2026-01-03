@@ -2,7 +2,7 @@ package ws
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 
 	"github.com/gorilla/websocket"
 )
@@ -25,23 +25,21 @@ func (c *Client) ReadPump() {
 	for {
 		_, raw, err := c.Conn.ReadMessage()
 		if err != nil {
-			break
-		}
-		var incoming map[string]interface{}
-		if err := json.Unmarshal(raw, &incoming); err != nil {
-			if incoming["_system"] == true {
-				continue
-			}
-			fmt.Println("Invalid JSON payload:", string(raw))
-			continue
+			return
 		}
 
-		text, _ := incoming["text"].(string)
-		c.Hub.Broadcast <- Message{
-			ConversationID: c.ConversationID,
-			SenderID:       c.ProfileID,
-			Content:        []byte(text),
+		var msg Message
+		if err := json.Unmarshal(raw, &msg); err != nil {
+			log.Println("Invalid message:", err)
+			continue
 		}
+		msg.SenderID = c.ProfileID
+
+		if msg.ConversationID == "" {
+			msg.ConversationID = c.ConversationID
+		}
+
+		c.Hub.Broadcast <- msg
 	}
 }
 
