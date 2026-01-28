@@ -13,7 +13,7 @@
         <module>identityservice</module>
         <module>profileservice</module>
         <module>apigateway</module>
-        <module>grpccommon</module> 
+        <module>grpccommon</module>
 
     </modules>
 

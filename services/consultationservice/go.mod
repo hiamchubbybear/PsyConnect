@@ -6,7 +6,6 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/segmentio/kafka-go v0.4.47
 	github.com/spf13/viper v1.20.0
-	github.com/subosito/gotenv v1.6.0
 	github.com/willf/bloom v2.0.3+incompatible
 	go.mongodb.org/mongo-driver v1.17.4
 	google.golang.org/grpc v1.71.0
@@ -19,6 +18,7 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/redis/go-redis/extra/rediscmd/v9 v9.12.1 // indirect
+	github.com/subosito/gotenv v1.6.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel v1.34.0 // indirect
 	go.opentelemetry.io/otel/metric v1.34.0 // indirect

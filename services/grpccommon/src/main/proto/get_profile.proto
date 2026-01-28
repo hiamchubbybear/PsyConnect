@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package profile;
+
+option java_package = "dev.psyconnect.grpc.profile";
+option java_multiple_files = true;
+option go_package = "consultationservice/internal/grpc/gprc.grpc_generated;gprc_grpc_generated";
+
+service ProfileService {
+  rpc GetProfile (GetProfileRequest) returns (GetProfileResponse);
+  rpc GetProfileBatch (GetProfileBatchRequest) returns (GetProfileBatchResponse);
+}
+
+message GetProfileRequest {
+  string profile_id = 1;
+}
+
+message GetProfileResponse {
+  bool success = 1;
+  string error_message = 2;
+  ProfileData profile = 3;
+}
+
+message ProfileData {
+  string profile_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string avatar = 4;
+  string email = 5;
+  string phone = 6;
+  string gender = 7;
+  string date_of_birth = 8;
+}
+
+message GetProfileBatchRequest {
+  repeated string profile_ids = 1;
+}
+
+message GetProfileBatchResponse {
+  bool success = 1;
+  string error_message = 2;
+  repeated ProfileData profiles = 3;
+}
