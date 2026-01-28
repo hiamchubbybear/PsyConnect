@@ -109,6 +109,20 @@
     flex: 1;
     text-align: left;
   }
+
+  &.consultation {
+    border-top: 1px solid var(--color-border);
+    margin-top: 4px;
+    padding-top: 16px;
+
+    svg {
+      color: var(--color-accent, #ed8936);
+    }
+
+    &:hover {
+      background: rgba(237, 137, 54, 0.1);
+    }
+  }
 }
 
 // Dark mode support
@@ -131,6 +145,10 @@
 
     &:hover {
       background: #374151;
+    }
+
+    &.consultation:hover {
+      background: rgba(237, 137, 54, 0.15);
     }
   }
 }

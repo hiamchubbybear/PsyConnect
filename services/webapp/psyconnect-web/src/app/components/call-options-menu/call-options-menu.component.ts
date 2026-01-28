@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 
-export type CallType = 'audio' | 'video';
+export type CallType = 'audio' | 'video' | 'consultation';
 
 @Component({
   selector: 'app-call-options-menu',

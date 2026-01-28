@@ -17,13 +17,6 @@ const (
 	MessageTypeLeave  MessageType = "leave"
 )
 
-//	type Message struct {
-//		Type           MessageType            `json:"type"`
-//		ConversationID string                 `json:"conversationId"`
-//		SenderID       string                 `json:"senderId"`
-//		ReceiverID     string                 `json:"receiverId,omitempty"`
-//		Data           map[string]interface{} `json:"data"`
-//	}
 type Message struct {
 	Type           MessageType     `json:"type"`
 	ConversationID string          `json:"conversationId"`

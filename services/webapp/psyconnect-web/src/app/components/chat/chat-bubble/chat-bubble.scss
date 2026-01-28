@@ -75,11 +75,12 @@
 }
 
 .message-bubble {
-  background: #f3f4f6;
+  background: var(--color-surface);
+  color: var(--color-text);
   padding: 0.625rem 0.875rem;
   border-radius: 18px;
   border-bottom-left-radius: 4px;
-  border: 1px solid #e5e7eb; // Border for visibility
+  border: 1px solid var(--color-border);
   position: relative;
   word-wrap: break-word;
   word-break: break-word;

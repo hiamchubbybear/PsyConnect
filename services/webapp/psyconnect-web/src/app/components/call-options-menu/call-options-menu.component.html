@@ -23,6 +23,14 @@
 
   <!-- Dropdown menu -->
   <div class="call-menu" *ngIf="showMenu" (clickOutside)="closeMenu()">
+    <button class="menu-item" (click)="selectCallType('video')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M19 6L14 10L19 14V6Z" fill="currentColor" />
+        <rect x="2" y="4" width="10" height="12" rx="2" fill="currentColor" />
+      </svg>
+      <span>Video Call</span>
+    </button>
+
     <button class="menu-item" (click)="selectCallType('audio')">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <rect x="7" y="2" width="6" height="10" rx="3" fill="currentColor" />
@@ -33,15 +41,25 @@
           stroke-linecap="round"
         />
       </svg>
-      <span>Audio Call</span>
+      <span>Voice Call</span>
     </button>
 
-    <button class="menu-item" (click)="selectCallType('video')">
+    <button
+      class="menu-item consultation"
+      (click)="selectCallType('consultation')"
+    >
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M19 6L14 10L19 14V6Z" fill="currentColor" />
-        <rect x="2" y="4" width="10" height="12" rx="2" fill="currentColor" />
+        <path
+          d="M10 2C5.58 2 2 5.58 2 10C2 11.85 2.63 13.55 3.68 14.9L2.5 18.5L6.1 17.32C7.45 18.37 9.15 19 11 19C15.42 19 19 15.42 19 11C19 6.58 15.42 2 11 2Z"
+          stroke="currentColor"
+          stroke-width="1.5"
+          fill="none"
+        />
+        <circle cx="7" cy="10" r="1" fill="currentColor" />
+        <circle cx="10" cy="10" r="1" fill="currentColor" />
+        <circle cx="13" cy="10" r="1" fill="currentColor" />
       </svg>
-      <span>Video Call</span>
+      <span>Consultation</span>
     </button>
   </div>
 </div>

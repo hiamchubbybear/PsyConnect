@@ -4,15 +4,15 @@ import (
 	"chatservice/internal/ws"
 	"encoding/json"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-// WebRTC signaling data structures
 type SDPData struct {
 	SDP  string `json:"sdp"`
-	Type string `json:"type"` // "offer" or "answer"
+	Type string `json:"type"`
 }
 
 type ICECandidateData struct {
@@ -21,6 +21,14 @@ type ICECandidateData struct {
 	SDPMLineIndex int    `json:"sdpMLineIndex"`
 }
 
+type CallStatus string
+
+const (
+	CallStatusRinging CallStatus = "ringing"
+	CallStatusActive  CallStatus = "active"
+	CallStatusEnded   CallStatus = "ended"
+)
+
 type CallSession struct {
 	SessionID      string     `json:"sessionId"`
 	ConversationID string     `json:"conversationId"`
@@ -28,12 +36,13 @@ type CallSession struct {
 	CalleeID       string     `json:"calleeId"`
 	StartTime      time.Time  `json:"startTime"`
 	EndTime        *time.Time `json:"endTime,omitempty"`
-	Status         string     `json:"status"` // "ringing", "active", "ended"
+	Status         CallStatus `json:"status"`
 }
 
 type SignalingService struct {
 	hub      *ws.Hub
-	sessions map[string]*CallSession // sessionId -> CallSession
+	sessions map[string]*CallSession
+	mu       sync.RWMutex
 }
 
 func NewSignalingService(hub *ws.Hub) *SignalingService {
@@ -42,28 +51,37 @@ func NewSignalingService(hub *ws.Hub) *SignalingService {
 		sessions: make(map[string]*CallSession),
 	}
 
-	// Register WebRTC message handlers
 	hub.RegisterHandler(ws.MessageTypeOffer, service.HandleOffer)
 	hub.RegisterHandler(ws.MessageTypeAnswer, service.HandleAnswer)
 	hub.RegisterHandler(ws.MessageTypeICE, service.HandleICECandidate)
 	hub.RegisterHandler(ws.MessageTypeLeave, service.HandleLeave)
 
-	log.Println("✅ Signaling service initialized with WebRTC handlers")
+	go service.startCleanupScheduler()
+
+	log.Println("📞 Signaling service initialized with WebRTC handlers")
 	return service
 }
 
-// HandleOffer - Caller sends offer to callee
-func (s *SignalingService) HandleOffer(hub *ws.Hub, message ws.Message) {
-	log.Printf("📞 Handling offer from %s to %s", message.SenderID, message.ReceiverID)
+func (s *SignalingService) startCleanupScheduler() {
+	ticker := time.NewTicker(10 * time.Minute)
+	defer ticker.Stop()
 
-	// Parse SDP offer
+	log.Println("Cleanup scheduler started (runs every 10 minutes)")
+	for range ticker.C {
+		log.Println("Running session cleanup...")
+		s.CleanupOldSessions()
+	}
+}
+
+func (s *SignalingService) HandleOffer(hub *ws.Hub, message ws.Message) {
+	log.Printf(" Handling offer from %s to %s", message.SenderID, message.ReceiverID)
+
 	var sdpData SDPData
 	if err := json.Unmarshal(message.Data, &sdpData); err != nil {
-		log.Printf("❌ Error parsing SDP offer: %v", err)
+		log.Printf(" Error parsing SDP offer: %v", err)
 		return
 	}
 
-	// Create call session
 	sessionID := uuid.New().String()
 	session := &CallSession{
 		SessionID:      sessionID,
@@ -71,11 +89,13 @@ func (s *SignalingService) HandleOffer(hub *ws.Hub, message ws.Message) {
 		CallerID:       message.SenderID,
 		CalleeID:       message.ReceiverID,
 		StartTime:      time.Now(),
-		Status:         "ringing",
+		Status:         CallStatusRinging,
 	}
-	s.sessions[sessionID] = session
 
-	// Forward offer to callee
+	s.mu.Lock()
+	s.sessions[sessionID] = session
+	s.mu.Unlock()
+
 	offerMessage := ws.Message{
 		Type:           ws.MessageTypeOffer,
 		ConversationID: message.ConversationID,
@@ -84,7 +104,6 @@ func (s *SignalingService) HandleOffer(hub *ws.Hub, message ws.Message) {
 		Data:           message.Data,
 	}
 
-	// Add session ID to data
 	dataWithSession := map[string]interface{}{
 		"sdp":       sdpData.SDP,
 		"type":      sdpData.Type,
@@ -94,33 +113,47 @@ func (s *SignalingService) HandleOffer(hub *ws.Hub, message ws.Message) {
 	offerMessage.Data = dataBytes
 
 	hub.SendToClient(message.ConversationID, message.ReceiverID, offerMessage)
-	log.Printf("✅ Offer forwarded to %s, session: %s", message.ReceiverID, sessionID)
+	log.Printf(" Offer forwarded to %s, session: %s", message.ReceiverID, sessionID)
 }
 
-// HandleAnswer - Callee sends answer to caller
 func (s *SignalingService) HandleAnswer(hub *ws.Hub, message ws.Message) {
-	log.Printf("📞 Handling answer from %s to %s", message.SenderID, message.ReceiverID)
+	log.Printf(" Handling answer from %s to %s", message.SenderID, message.ReceiverID)
 
-	// Parse answer data
 	var answerData map[string]interface{}
 	if err := json.Unmarshal(message.Data, &answerData); err != nil {
-		log.Printf("❌ Error parsing answer: %v", err)
+		log.Printf(" Error parsing answer: %v", err)
 		return
 	}
 
 	sessionID, ok := answerData["sessionId"].(string)
 	if !ok {
-		log.Printf("❌ No session ID in answer")
+		log.Printf("No session ID in answer")
 		return
 	}
 
-	// Update session status
-	if session, exists := s.sessions[sessionID]; exists {
-		session.Status = "active"
-		log.Printf("✅ Call session %s is now active", sessionID)
+	s.mu.Lock()
+	session, exists := s.sessions[sessionID]
+	if !exists {
+		s.mu.Unlock()
+		log.Printf("Session %s not found", sessionID)
+		return
 	}
 
-	// Forward answer to caller
+	if session.ConversationID != message.ConversationID {
+		s.mu.Unlock()
+		log.Printf("Session conversation mismatch")
+		return
+	}
+	if message.SenderID != session.CalleeID {
+		s.mu.Unlock()
+		log.Printf("Answer sender is not callee")
+		return
+	}
+
+	session.Status = CallStatusActive
+	s.mu.Unlock()
+	log.Printf(" Call session %s is now active", sessionID)
+
 	answerMessage := ws.Message{
 		Type:           ws.MessageTypeAnswer,
 		ConversationID: message.ConversationID,
@@ -130,14 +163,12 @@ func (s *SignalingService) HandleAnswer(hub *ws.Hub, message ws.Message) {
 	}
 
 	hub.SendToClient(message.ConversationID, message.ReceiverID, answerMessage)
-	log.Printf("✅ Answer forwarded to %s", message.ReceiverID)
+	log.Printf(" Answer forwarded to %s", message.ReceiverID)
 }
 
-// HandleICECandidate - Exchange ICE candidates
 func (s *SignalingService) HandleICECandidate(hub *ws.Hub, message ws.Message) {
-	log.Printf("🧊 Handling ICE candidate from %s to %s", message.SenderID, message.ReceiverID)
+	log.Printf("Handling ICE candidate from %s to %s", message.SenderID, message.ReceiverID)
 
-	// Forward ICE candidate to peer
 	iceMessage := ws.Message{
 		Type:           ws.MessageTypeICE,
 		ConversationID: message.ConversationID,
@@ -147,34 +178,44 @@ func (s *SignalingService) HandleICECandidate(hub *ws.Hub, message ws.Message) {
 	}
 
 	hub.SendToClient(message.ConversationID, message.ReceiverID, iceMessage)
-	log.Printf("✅ ICE candidate forwarded to %s", message.ReceiverID)
+	log.Printf(" ICE candidate forwarded to %s", message.ReceiverID)
 }
 
-// HandleLeave - End call
 func (s *SignalingService) HandleLeave(hub *ws.Hub, message ws.Message) {
-	log.Printf("👋 Handling leave from %s", message.SenderID)
+	log.Printf(" Handling leave from %s", message.SenderID)
 
-	// Parse leave data
 	var leaveData map[string]interface{}
 	if err := json.Unmarshal(message.Data, &leaveData); err != nil {
-		log.Printf("❌ Error parsing leave data: %v", err)
+		log.Printf(" Error parsing leave data: %v", err)
 		return
 	}
 
 	sessionID, ok := leaveData["sessionId"].(string)
 	if !ok {
-		log.Printf("⚠️  No session ID in leave message")
+		log.Printf("No session ID in leave message")
 	} else {
-		// End session
-		if session, exists := s.sessions[sessionID]; exists {
+
+		s.mu.Lock()
+		session, exists := s.sessions[sessionID]
+		if !exists {
+			s.mu.Unlock()
+			log.Printf("Session %s not found", sessionID)
+		} else {
+
+			if message.SenderID != session.CallerID && message.SenderID != session.CalleeID {
+				s.mu.Unlock()
+				log.Printf("Leave sender not authorized")
+				return
+			}
+
 			now := time.Now()
 			session.EndTime = &now
-			session.Status = "ended"
-			log.Printf("✅ Call session %s ended", sessionID)
+			session.Status = CallStatusEnded
+			s.mu.Unlock()
+			log.Printf(" Call session %s ended", sessionID)
 		}
 	}
 
-	// Notify peer
 	leaveMessage := ws.Message{
 		Type:           ws.MessageTypeLeave,
 		ConversationID: message.ConversationID,
@@ -184,31 +225,36 @@ func (s *SignalingService) HandleLeave(hub *ws.Hub, message ws.Message) {
 	}
 
 	hub.SendToClient(message.ConversationID, message.ReceiverID, leaveMessage)
-	log.Printf("✅ Leave notification sent to %s", message.ReceiverID)
+	log.Printf(" Leave notification sent to %s", message.ReceiverID)
 }
 
-// GetActiveSession - Get active call session for conversation
 func (s *SignalingService) GetActiveSession(conversationID string) *CallSession {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	for _, session := range s.sessions {
-		if session.ConversationID == conversationID && session.Status == "active" {
+		if session.ConversationID == conversationID && session.Status == CallStatusActive {
 			return session
 		}
 	}
 	return nil
 }
 
-// GetSession - Get session by ID
 func (s *SignalingService) GetSession(sessionID string) *CallSession {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	return s.sessions[sessionID]
 }
 
-// CleanupOldSessions - Remove ended sessions older than 1 hour
 func (s *SignalingService) CleanupOldSessions() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	cutoff := time.Now().Add(-1 * time.Hour)
 	for id, session := range s.sessions {
-		if session.Status == "ended" && session.EndTime != nil && session.EndTime.Before(cutoff) {
+		if session.Status == CallStatusEnded && session.EndTime != nil && session.EndTime.Before(cutoff) {
 			delete(s.sessions, id)
-			log.Printf("🧹 Cleaned up old session: %s", id)
+			log.Printf("Cleaned up old session: %s", id)
 		}
 	}
 }

@@ -55,6 +55,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   isLoadingOld = false;
   messageText = '';
   isTyping = false;
+  isSending = false; // Guard against duplicate sends
   private autoScrollPending = false;
 
   constructor(private chatService: ChatService) {}
@@ -86,6 +87,14 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       return;
     }
 
+    // Guard against multiple sends
+    if (this.isSending) {
+      console.warn('⚠️ Already sending, ignoring duplicate');
+      return;
+    }
+
+    this.isSending = true;
+
     this.chatService.sendMessage({
       conversationId: this.conversationId,
       content: text,
@@ -93,6 +102,11 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
     });
 
     this.messageText = '';
+
+    // Reset guard after delay
+    setTimeout(() => {
+      this.isSending = false;
+    }, 500);
   }
 
   loadOlderMessages() {
