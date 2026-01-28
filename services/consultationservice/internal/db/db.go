@@ -54,7 +54,7 @@ func InitDB() *mongo.Client {
 
 		dbName = os.Getenv("DB_NAME")
 		if dbName == "" {
-			log.Printf("⚠️ Warning: DB_NAME is required, but missing. Using 'consultationservice' as default.")
+			log.Printf("⚠️  Warning: DB_NAME is required, but missing. Using 'consultationservice' as default.")
 			dbName = "consultationservice"
 		}
 
@@ -66,8 +66,7 @@ func InitDB() *mongo.Client {
 
 		client, err := mongo.Connect(context.TODO(), opts)
 		if err != nil {
-			log.Printf("⚠️ Warning: MongoDB connection error: %v", err)
-			return
+			log.Fatalf("❌ FATAL: MongoDB connection error: %v", err)
 		}
 
 		// Verify connection
@@ -75,13 +74,12 @@ func InitDB() *mongo.Client {
 		defer cancel()
 		err = client.Ping(ctx, nil)
 		if err != nil {
-			log.Printf("⚠️ Warning: Failed to ping MongoDB: %v", err)
-			return
+			log.Fatalf("❌ FATAL: Failed to ping MongoDB: %v", err)
 		}
 
 		log.Println("DB_NAME =", dbName)
 		mongoClient = client
-		log.Println("Successfully connected and pinged MongoDB!")
+		log.Println("✅ Successfully connected and pinged MongoDB!")
 	})
 
 	return mongoClient
@@ -103,7 +101,7 @@ func GetSwipedCollection() *mongo.Collection {
 	client := InitDB()
 	return client.Database(dbName).Collection("swipes")
 }
-func GetMatchedCollection() *mongo.Collection {
+func GetMatchCollection() *mongo.Collection {
 	client := InitDB()
 	return client.Database(dbName).Collection("match")
 }

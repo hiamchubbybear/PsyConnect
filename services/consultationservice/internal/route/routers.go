@@ -6,24 +6,35 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"consultationservice/bootstrap"
-	handlers "consultationservice/internal/handler"
+	clientHTTP "consultationservice/internal/client/transport/http"
+	httpHandler "consultationservice/internal/consultation/transport/http"
+	matchHTTP "consultationservice/internal/matching/transport/http"
 	"consultationservice/internal/middleware"
+	commentHTTP "consultationservice/internal/newsfeed/comment/transport/http"
+	postHTTP "consultationservice/internal/newsfeed/post/transport/http"
+	reactionHTTP "consultationservice/internal/newsfeed/reaction/transport/http"
+	socialHTTP "consultationservice/internal/newsfeed/social/transport/http"
+	swipeHTTP "consultationservice/internal/swipe/transport/http"
+	therapistHTTP "consultationservice/internal/therapist/transport/http"
 	"consultationservice/pkg/logger"
 )
 
 func RouterInit(
 	env *bootstrap.Env,
 	kafkaLogger *logger.KafkaLogger,
-	clientHandler *handlers.ClientHandler,
-	therapistHandler *handlers.TherapistHandler,
-	matchingHandler *handlers.MatchHandler,
-	sessionHandler *handlers.SessionHandler,
-	swipeHandler *handlers.SwipeHandler,
+
+	// DDD Handlers
+	clientHandler *clientHTTP.Handler,
+	therapistHandler *therapistHTTP.Handler,
+	matchingHandler *matchHTTP.Handler,
+	sessionHandler *httpHandler.Handler,
+	swipeHandler *swipeHTTP.Handler,
+
 	// Newsfeed handlers
-	postHandler *handlers.PostHandler,
-	reactionHandler *handlers.ReactionHandler,
-	commentHandler *handlers.CommentHandler,
-	socialHandler *handlers.SocialHandler,
+	postHandler *postHTTP.Handler, // DDD Handler
+	reactionHandler *reactionHTTP.Handler, // DDD Handler
+	commentHandler *commentHTTP.Handler, // DDD Handler
+	socialHandler *socialHTTP.Handler, // DDD Handler
 ) {
 	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 	router := gin.Default()
@@ -43,18 +54,18 @@ func RouterInit(
 	therapistGroup := router.Group("/consultation/therapist")
 	therapistGroup.Use(middleware.RoleRequire("therapist"))
 	{
-		therapistGroup.GET("/", therapistHandler.GetTherapistHandler)                        // Deprecated
-		therapistGroup.POST("/", therapistHandler.PostTherapistHandler)                      // Deprecated
-		therapistGroup.PUT("/", therapistHandler.PutTherapistHandler)                        // Deprecated
-		therapistGroup.PUT("/status/:status", therapistHandler.ChangeTherapistProfileStatus) // Deprecated
+		therapistGroup.GET("/", therapistHandler.GetTherapist)
+		therapistGroup.POST("/", therapistHandler.CreateTherapist)
+		therapistGroup.PUT("/", therapistHandler.UpdateTherapist)
+		therapistGroup.PATCH("/status", therapistHandler.UpdateAvailability)
 	}
 
 	clientGroup := router.Group("/consultation/client")
 	clientGroup.Use(middleware.RoleRequire("client"))
 	{
-		clientGroup.GET("/", clientHandler.GetClientHandler)   // Deprecated
-		clientGroup.POST("/", clientHandler.PostClientHandler) // Deprecated
-		clientGroup.PUT("/", clientHandler.PutClientHandler)   // Deprecated
+		clientGroup.GET("/", clientHandler.GetClient)     // Deprecated
+		clientGroup.POST("/", clientHandler.CreateClient) // Deprecated
+		clientGroup.PUT("/", clientHandler.UpdateClient)  // Deprecated
 
 		clientGroup.POST("/recommend", swipeHandler.TriggerUpdate) // Deprecated
 		clientGroup.GET("/recommend/top", swipeHandler.PopTop5)    // Deprecated
@@ -77,17 +88,17 @@ func RouterInit(
 	userSessionGroup := router.Group("/consultation/session")
 	userSessionGroup.Use(middleware.RoleRequire(""))
 	{
-		userSessionGroup.GET("/all", sessionHandler.GetAllSessionByID)           // Deprecated
-		userSessionGroup.POST("/", sessionHandler.CreateNewSessionHandler)       // Deprecated
-		userSessionGroup.DELETE("/", sessionHandler.DeleteCurrentSessionHandler) // Deprecated
-		userSessionGroup.GET("/:id", sessionHandler.GetSessionByID)              // Deprecated
+		userSessionGroup.GET("/all", sessionHandler.GetSessionsByProfile) // Deprecated
+		userSessionGroup.POST("/", sessionHandler.CreateSession)          // Deprecated
+		userSessionGroup.DELETE("/", sessionHandler.DeleteSession)        // Deprecated
+		userSessionGroup.GET("/:id", sessionHandler.GetSession)           // Deprecated
 	}
 
 	uncategoryGroup := router.Group("/consultation")
 	uncategoryGroup.Use(middleware.RoleRequire(""))
 	{
-		uncategoryGroup.GET("/therapist/:id", therapistHandler.GetTherapistByIdHandlerV1) // Deprecated
-		uncategoryGroup.GET("/client/:id", clientHandler.GetClientByIdHandler)            // Deprecated
+		uncategoryGroup.GET("/therapist/:id", therapistHandler.GetTherapistByID) // Deprecated
+		uncategoryGroup.GET("/client/:id", clientHandler.GetClientByID)          // Deprecated
 	}
 
 	api := router.Group("/v1/consultation")
@@ -96,22 +107,22 @@ func RouterInit(
 	therapist := api.Group("/therapists")
 	therapist.Use(middleware.RoleRequire("therapist"))
 	{
-		therapist.GET("/me", therapistHandler.GetTherapistHandlerV1)
-		therapist.POST("/me", therapistHandler.PostTherapistHandlerV1)
-		therapist.PUT("/me", therapistHandler.PutTherapistHandlerV1)
-		therapist.PUT("/me/status/:status", therapistHandler.ChangeTherapistProfileStatus)
+		therapist.GET("/me", therapistHandler.GetTherapist)
+		therapist.POST("/me", therapistHandler.CreateTherapist)
+		therapist.PUT("/me", therapistHandler.UpdateTherapist)
+		therapist.PATCH("/me/availability", therapistHandler.UpdateAvailability)
 
 		// admin / public
-		therapist.GET("/:id", therapistHandler.GetTherapistByIdHandlerV1)
+		therapist.GET("/:id", therapistHandler.GetTherapistByID)
 	}
 
 	// Clients
 	client := api.Group("/clients")
 	client.Use(middleware.RoleRequire("client"))
 	{
-		client.GET("/me", clientHandler.GetClientHandler)
-		client.POST("/me", clientHandler.PostClientHandler)
-		client.PUT("/me", clientHandler.PutClientHandler)
+		client.GET("/me", clientHandler.GetClient)
+		client.POST("/me", clientHandler.CreateClient)
+		client.PUT("/me", clientHandler.UpdateClient)
 
 		client.POST("/me/recommend", swipeHandler.TriggerUpdateV1)
 		client.GET("/me/recommend/top", swipeHandler.PopTop5V1)
@@ -119,16 +130,16 @@ func RouterInit(
 		client.POST("/me/swipe", swipeHandler.SwipeTherapist)
 
 		// admin / public
-		client.GET("/:id", clientHandler.GetClientByIdHandler)
+		client.GET("/:id", clientHandler.GetClientByID)
 	}
 
 	// Sessions
 	session := api.Group("/sessions")
 	{
-		session.GET("/me", sessionHandler.GetAllSessionByID)
-		session.POST("/me", sessionHandler.CreateNewSessionHandler)
-		session.DELETE("/:id", sessionHandler.DeleteCurrentSessionHandler)
-		session.GET("/:id", sessionHandler.GetSessionByID) // admin / public
+		session.GET("/me", sessionHandler.GetSessionsByProfile)
+		session.POST("/me", sessionHandler.CreateSession)
+		session.DELETE("/:id", sessionHandler.DeleteSession)
+		session.GET("/:id", sessionHandler.GetSession) // admin / public
 	}
 
 	// Admin sessions
@@ -149,21 +160,20 @@ func RouterInit(
 	uncategoryGroupV1 := router.Group("/v1/consultation")
 	uncategoryGroup.Use(middleware.RoleRequire(""))
 	{
-		uncategoryGroupV1.GET("/therapist/:id", therapistHandler.GetTherapistByIdHandlerV1)
+		uncategoryGroupV1.GET("/therapist/:id", therapistHandler.GetTherapistByID)
 		uncategoryGroupV1.GET("/me/recommend/top", swipeHandler.PopTop5V1)
-		uncategoryGroupV1.GET("/client/:id", clientHandler.GetClientByIdHandler)
+		uncategoryGroupV1.GET("/client/:id", clientHandler.GetClientByID)
 	}
-
 
 	// Posts
 	posts := api.Group("/posts")
 	posts.Use(middleware.RoleRequire("")) // All authenticated users
 	{
 		posts.POST("/", postHandler.CreatePost)
-		posts.GET("/", postHandler.GetFeed)                          // Personalized feed
-		posts.GET("/trending", postHandler.GetTrendingPosts)         // Trending posts
-		posts.GET("/search", postHandler.SearchPosts)                // Search query
-		posts.GET("/user/:userId", postHandler.GetUserPosts)         // User's posts
+		posts.GET("/", postHandler.GetFeed)                  // Personalized feed
+		posts.GET("/trending", postHandler.GetTrendingPosts) // Trending posts
+		posts.GET("/search", postHandler.SearchPosts)        // Search query
+		posts.GET("/user/:userId", postHandler.GetUserPosts) // User's posts
 		posts.GET("/:id", postHandler.GetPostByID)
 		posts.PUT("/:id", postHandler.UpdatePost)
 		posts.DELETE("/:id", postHandler.DeletePost)
