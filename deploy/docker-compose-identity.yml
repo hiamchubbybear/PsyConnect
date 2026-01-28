@@ -25,36 +25,13 @@ services:
     container_name: identityservice
     ports:
       - "8080:8080"
-    depends_on:
-      db:
-        condition: service_started
+
     networks:
       - psyconnect-network
     env_file:
       - .env
     restart: unless-stopped
 
-  # MySQL
-  db:
-    image: mysql:8
-    container_name: mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: identityservice
-    platform: linux/amd64
-    ports:
-      - "3306:3306"
-    volumes:
-      - db-data:/var/lib/mysql
-    networks:
-      - psyconnect-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "db", "-uroot", "-p123456"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
   dozzle:
     image: amir20/dozzle:latest
     container_name: dozzle
@@ -66,8 +43,6 @@ services:
       - psyconnect-network
     restart: unless-stopped
 volumes:
-  db-data:
-    driver: local
 
 networks:
   psyconnect-network:

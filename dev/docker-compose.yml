@@ -1,78 +1,12 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # MySQL for Identity Service
-  mysql:
-    image: mysql:8
-    container_name: psyconnect-mysql-dev
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-12345678}
-      MYSQL_DATABASE: identityservice
-    volumes:
-      - ./init/mysql:/docker-entrypoint-initdb.d
-      - mysql-data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  # Neo4j for Profile Service
-  neo4j:
-    image: neo4j:5
-    container_name: psyconnect-neo4j-dev
-    ports:
-      - "7474:7474"  # HTTP
-      - "7687:7687"  # Bolt
-    environment:
-      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-12345678}
-      NEO4J_dbms_memory_pagecache_size: 512M
-      NEO4J_dbms_memory_heap_initial__size: 512M
-      NEO4J_dbms_memory_heap_max__size: 1G
-    volumes:
-      - neo4j-data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  # MongoDB for Consultation/Chat Services
-  mongodb:
-    image: mongo:7
-    container_name: psyconnect-mongodb-dev
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-root}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-123456}
-    volumes:
-      - mongodb-data:/data/db
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  # Redis for caching
+  # Redis for caching (Local-only utility)
   redis:
     image: redis:7-alpine
     container_name: psyconnect-redis-dev
     ports:
       - "6379:6379"
-    volumes:
-      - redis-data:/data
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-12345678}
-    healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
     restart: unless-stopped
 
   # Zookeeper for Kafka
@@ -90,118 +24,163 @@ services:
     image: confluentinc/cp-kafka:7.3.0
     container_name: psyconnect-kafka-dev
     ports:
-      - "9092:9092"
+      - "19092:29094" # Host:Container - avoid Colima SSH conflict
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9094,PLAINTEXT_HOST://localhost:19092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094,PLAINTEXT_HOST://0.0.0.0:29094
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_MESSAGE_MAX_BYTES: 1000000000
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 1000000000
+      KAFKA_MAX_REQUEST_SIZE: 1000000000
     depends_on:
       - zookeeper
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      test:
+        [
+          "CMD",
+          "kafka-broker-api-versions",
+          "--bootstrap-server",
+          "localhost:9094",
+        ]
       interval: 10s
       timeout: 10s
       retries: 5
       start_period: 30s
     restart: unless-stopped
 
-  # # Loki - Log aggregation
-  # loki:
-  #   image: grafana/loki:2.9.3
-  #   container_name: psyconnect-loki-dev
-  #   ports:
-  #     - "3100:3100"
-  #   command: -config.file=/etc/loki/local-config.yaml
-  #   volumes:
-  #     - loki-data:/loki
-  #   restart: unless-stopped
+  # Notification Service (Go)
+  notification-service:
+    build:
+      context: ../services/notificationservice
+      dockerfile: Dockerfile
+    container_name: psyconnect-notification-go-dev
+    ports:
+      - "8082:8082"
+    environment:
+      # SMTP Configuration
+      - SMPT_HOST=smtp.gmail.com
+      - SMPT_PORT=587
+      - SMPT_MAIL=codemail.noreply@gmail.com
+      - SMPT_APP_PASS=pxvd mmkx gzvu nshn
 
-  # # Grafana - Visualization
-  # grafana:
-  #   image: grafana/grafana:10.3.1
-  #   container_name: psyconnect-grafana-dev
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - GF_SECURITY_ADMIN_USER=admin
-  #     - GF_SECURITY_ADMIN_PASSWORD=16032004
-  #     - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
-  #   volumes:
-  #     - grafana-data:/var/lib/grafana
-  #     - ../services/loggingservice/grafana/provisioning:/etc/grafana/provisioning
-  #     - ../services/loggingservice/grafana/dashboards:/var/lib/grafana/dashboards
-  #   depends_on:
-  #     - loki
-  #     - prometheus
-  #   restart: unless-stopped
+      # Kafka Configuration
+      - KAFKA_BROKERS=kafka:9094
+      - KAFKA_GROUP_ID=notification-group
 
-  # # Prometheus - Metrics
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   container_name: psyconnect-prometheus-dev
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - ../services/loggingservice/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #     - prometheus-data:/prometheus
-  #   command:
-  #     - '--config.file=/etc/prometheus/prometheus.yml'
-  #     - '--storage.tsdb.path=/prometheus'
-  #   restart: unless-stopped
+      # Database Configuration (optional - for notification history)
+      # Uncomment if you want to use MySQL for notification persistence
+      # - DB_USER=root
+      # - DB_PASSWORD=your-password
+      # - DB_HOST=mysql
+      # - DB_PORT=3306
+      # - DB_NAME=notification_db
 
-  # # Tempo - Distributed tracing
-  # tempo:
-  #   image: grafana/tempo:latest
-  #   container_name: psyconnect-tempo-dev
-  #   ports:
-  #     - "3200:3200"
-  #     - "4317:4317"
-  #     - "4318:4318"
-  #   command: [ "-config.file=/etc/tempo.yaml" ]
-  #   volumes:
-  #     - ../services/loggingservice/tempo/tempo.yaml:/etc/tempo.yaml
-  #     - tempo-data:/tmp/tempo
-  #   restart: unless-stopped
+      # Firebase Configuration (optional - for push notifications)
+      # Uncomment and provide path to firebase credentials
+      # - FIREBASE_CREDENTIALS=/app/firebase-credentials.json
 
-  # # Logging Service
-  # logging-service:
-  #   build:
-  #     context: ../services/loggingservice
-  #     dockerfile: Dockerfile
-  #   container_name: psyconnect-logging-service-dev
-  #   environment:
-  #     - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  #     - KAFKA_GROUP_ID=logging-service
-  #     - KAFKA_TOPIC=logging-service
-  #     - LOKI_ENABLED=true
-  #     - LOKI_URL=http://loki:3100
-  #     - FILE_LOGGER_ENABLED=true
-  #     - APP_LOG_PATH=./logs/app.log
-  #     - ERROR_LOG_PATH=./logs/error.log
-  #     - SERVER_PORT=8080
-  #     - ENVIRONMENT=development
-  #   ports:
-  #     - "8085:8080"
-  #   volumes:
-  #     - ../services/loggingservice/logs:/app/logs
-  #   depends_on:
-  #     - kafka
-  #     - loki
-  #   restart: unless-stopped
+      # Server Configuration
+      - PORT=8082
+      - ENVIRONMENT=development
+
+    # Uncomment if using Firebase
+    # volumes:
+    #   - ./firebase-credentials.json:/app/firebase-credentials.json:ro
+
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8082/health",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+    restart: unless-stopped
+
+  # Loki - Log aggregation
+  loki:
+    image: grafana/loki:2.9.3
+    container_name: psyconnect-loki-dev
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+    restart: unless-stopped
+
+  # Grafana - Visualization
+  grafana:
+    image: grafana/grafana:10.3.1
+    container_name: psyconnect-grafana-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=16032004
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ../services/loggingservice/grafana/provisioning:/etc/grafana/provisioning
+      - ../services/loggingservice/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - loki
+      - prometheus
+    restart: unless-stopped
+
+  # Prometheus - Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: psyconnect-prometheus-dev
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../services/loggingservice/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    restart: unless-stopped
+
+  # Tempo - Distributed tracing
+  tempo:
+    image: grafana/tempo:latest
+    container_name: psyconnect-tempo-dev
+    user: "0" # Fix permission denied for /tmp/tempo
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+      - "4318:4318"
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ../services/loggingservice/tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/tmp/tempo
+    restart: unless-stopped
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: psyconnect-dozzle-dev
+    ports:
+      - "9999:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
 
 volumes:
-  mysql-data:
-    driver: local
-  neo4j-data:
-    driver: local
-  mongodb-data:
-    driver: local
-  redis-data:
-    driver: local
   loki-data:
     driver: local
   grafana-data:

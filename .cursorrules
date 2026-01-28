@@ -1,0 +1,888 @@
+# PsyConnect Platform - Development Rules & Standards
+
+## 🎯 Project Overview
+
+**PsyConnect** is a comprehensive mental health platform connecting users with therapists through consultations, chat, and community features.
+
+### Tech Stack
+- **Backend**: Java Spring Boot (microservices), Go (logging, notification)
+- **Frontend**: Angular (webapp), Flutter (mobile)
+- **Infrastructure**: Kafka, MySQL, Redis, Docker
+- **Monitoring**: Grafana, Prometheus, Loki, Tempo
+
+### AI Assistant Rules
+- **DO NOT** create documentation files (`.md`, `rules.md`, etc.) unless explicitly requested
+- **DO NOT** create summary files automatically
+- **ONLY** create files when user specifically asks for them
+- Focus on code implementation, not documentation generation
+
+---
+
+## 🏗️ Architecture
+
+### Microservices Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    API Gateway (8888)                    │
+│              Spring Cloud Gateway + JWT                  │
+└───────────────┬─────────────────────────────────────────┘
+                │
+    ┌───────────┴───────────┬──────────────┬──────────────┐
+    │                       │              │              │
+┌───▼────┐  ┌──────▼──────┐ ┌─────▼─────┐ ┌────▼────────┐
+│Identity│  │   Profile   │ │Consultation│ │    Chat     │
+│ (8080) │  │   (8081)    │ │   (8083)   │ │   (8084)    │
+└────────┘  └─────────────┘ └────────────┘ └─────────────┘
+     │             │              │              │
+     └─────────────┴──────────────┴──────────────┘
+                   │
+            ┌──────▼──────┐
+            │    Kafka    │
+            │   (19092)   │
+            └──────┬──────┘
+                   │
+     ┌─────────────┴──────────────┐
+     │                            │
+┌────▼────────┐         ┌────────▼─────┐
+│  Logging    │         │ Notification │
+│   (Go)      │         │    (Go)      │
+│  (8085)     │         │   (8082)     │
+└─────────────┘         └──────────────┘
+```
+
+---
+
+## 🔌 Port Allocation
+
+### Services
+| Service | Port | Protocol | Description |
+|---------|------|----------|-------------|
+| **API Gateway** | 8888 | HTTP | Main entry point |
+| **Identity Service** | 8080 | HTTP | Authentication & Authorization |
+| **Profile Service** | 8081 | HTTP | User profiles & social |
+| **Notification Service** | 8082 | HTTP | Email & push notifications |
+| **Consultation Service** | 8083 | HTTP | Therapist consultations |
+| **Chat Service** | 8084 | HTTP/WS | Real-time messaging |
+| **Logging Service** | 8085 | HTTP | Centralized logging |
+| **Recommendation Service** | 8086 | HTTP | Content recommendations |
+
+### Infrastructure
+| Service | Port | Description |
+|---------|------|-------------|
+| **MySQL** | 3306 | Database |
+| **Redis** | 6379 | Caching |
+| **Kafka** | 19092 | Message broker (host) |
+| **Kafka** | 9094 | Message broker (Docker) |
+| **Zookeeper** | 2181 | Kafka coordination |
+| **Grafana** | 3000 | Monitoring dashboard |
+| **Prometheus** | 9090 | Metrics collection |
+| **Loki** | 3100 | Log aggregation |
+| **Tempo** | 3200 | Distributed tracing |
+| **Kafka UI** | 8090 | Kafka management |
+| **Dozzle** | 9999 | Docker logs viewer |
+
+### Frontend
+| Service | Port | Description |
+|---------|------|-------------|
+| **Angular Webapp** | 4200 | Web application |
+| **Flutter Mobile** | 8100 | Mobile app (dev) |
+
+---
+
+## 📁 Project Structure
+
+```
+PsyConnect/
+├── services/
+│   ├── apigateway/           # Spring Cloud Gateway (8888)
+│   ├── identityservice/      # Auth service (8080)
+│   ├── profileservice/       # Profile & social (8081)
+│   ├── notificationservice/  # Go notification (8082)
+│   ├── consultationservice/  # Consultation (8083)
+│   ├── chatservice/          # Chat & messaging (8084)
+│   ├── loggingservice/       # Go logging (8085)
+│   ├── recommendationservice/# Recommendations (8086)
+│   ├── webapp/               # Angular frontend
+│   └── mobileflutter/        # Flutter mobile
+├── dev/
+│   └── docker-compose.yml    # Development environment
+└── .agent/
+    └── rules.md              # This file
+```
+
+---
+
+## 🎨 Frontend Standards
+
+### Angular (Webapp)
+
+#### Component Structure
+```typescript
+// Use standalone components
+@Component({
+  selector: 'app-feature',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './feature.component.html',
+  styleUrls: ['./feature.component.css']
+})
+```
+
+#### CSS/SCSS Standards
+```scss
+// Use CSS variables for theming
+:root {
+  // Primary colors
+  --primary-color: #667eea;
+  --primary-dark: #5a67d8;
+  --primary-light: #7f9cf5;
+
+  // Secondary colors
+  --secondary-color: #48bb78;
+  --accent-color: #ed8936;
+
+  // Neutrals
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  // Spacing
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  // Border radius
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  // Shadows
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+// Component-specific styles
+.component {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+
+  &__header {
+    color: var(--gray-900);
+    font-weight: 600;
+  }
+
+  &__content {
+    color: var(--gray-700);
+  }
+}
+```
+
+#### Naming Conventions
+- **Components**: `feature-name.component.ts` (kebab-case)
+- **Services**: `feature-name.service.ts`
+- **Models**: `feature-name.model.ts`
+- **CSS Classes**: BEM methodology (`block__element--modifier`)
+
+#### State Management
+- Use **RxJS** for reactive state
+- Use **Signals** for local component state
+- Avoid global state unless necessary
+
+#### Icons & Graphics - CRITICAL RULES ⚠️
+
+**NEVER use icon libraries (Font Awesome, Material Icons, etc.)**
+
+**ALWAYS use inline SVG instead**
+
+##### ❌ WRONG - Never do this:
+```html
+<!-- DON'T use icon libraries -->
+<i class="fa fa-user"></i>
+<mat-icon>home</mat-icon>
+<ion-icon name="heart"></ion-icon>
+```
+
+```typescript
+// DON'T import icon libraries
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { MatIconModule } from '@angular/material/icon';
+```
+
+##### ✅ CORRECT - Always do this:
+```html
+<!-- Use inline SVG -->
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="currentColor"/>
+</svg>
+
+<!-- Or create reusable SVG components -->
+<app-icon-user></app-icon-user>
+<app-icon-heart></app-icon-heart>
+```
+
+```typescript
+// Create SVG icon components
+@Component({
+  selector: 'app-icon-user',
+  standalone: true,
+  template: `
+    <svg [attr.width]="size" [attr.height]="size" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10..." [attr.fill]="color"/>
+    </svg>
+  `
+})
+export class IconUserComponent {
+  @Input() size = 24;
+  @Input() color = 'currentColor';
+}
+```
+
+##### Why inline SVG?
+1. **No external dependencies** - Reduces bundle size
+2. **Full control** - Customize colors, sizes, animations
+3. **Performance** - No font loading, instant rendering
+4. **Accessibility** - Better screen reader support
+5. **Reliability** - No CDN failures or network issues
+
+##### SVG Best Practices:
+```scss
+// Make SVG responsive
+svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+// Use currentColor for theme support
+.icon {
+  svg path {
+    fill: currentColor;
+  }
+}
+
+// Size variants
+.icon--sm svg { width: 16px; height: 16px; }
+.icon--md svg { width: 24px; height: 24px; }
+.icon--lg svg { width: 32px; height: 32px; }
+```
+
+##### API Responses - No Icon References:
+```json
+// ❌ WRONG - Don't send icon names
+{
+  "status": "success",
+  "icon": "fa-check-circle"  // DON'T DO THIS
+}
+
+// ✅ CORRECT - Send semantic data only
+{
+  "status": "success",
+  "type": "success"  // Frontend decides which SVG to show
+}
+```
+
+---
+
+## 🔧 Backend Standards
+
+### Java Spring Boot
+
+#### Package Structure
+```
+com.psyconnect.servicename/
+├── config/           # Configuration classes
+├── controller/       # REST controllers
+├── dto/             # Data Transfer Objects
+├── entity/          # JPA entities
+├── repository/      # Data access layer
+├── service/         # Business logic
+├── exception/       # Custom exceptions
+└── util/            # Utility classes
+```
+
+#### Naming Conventions
+- **Controllers**: `FeatureController.java`
+- **Services**: `FeatureService.java`
+- **Repositories**: `FeatureRepository.java`
+- **DTOs**: `FeatureRequest.java`, `FeatureResponse.java`
+- **Entities**: `Feature.java`
+
+#### REST API Standards
+```java
+@RestController
+@RequestMapping("/v1/feature")
+@RequiredArgsConstructor
+public class FeatureController {
+
+    private final FeatureService service;
+
+    // GET - Retrieve
+    @GetMapping("/{id}")
+    public ResponseEntity<FeatureResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
+    // POST - Create
+    @PostMapping
+    public ResponseEntity<FeatureResponse> create(@Valid @RequestBody FeatureRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(service.create(request));
+    }
+
+    // PUT - Update
+    @PutMapping("/{id}")
+    public ResponseEntity<FeatureResponse> update(
+        @PathVariable Long id,
+        @Valid @RequestBody FeatureRequest request
+    ) {
+        return ResponseEntity.ok(service.update(id, request));
+    }
+
+    // DELETE - Remove
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}
+```
+
+#### Error Handling
+```java
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(ValidationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new ErrorResponse(ex.getMessage()));
+    }
+}
+```
+
+### Go Services
+
+#### Package Structure
+```
+service/
+├── cmd/
+│   └── main.go          # Entry point
+├── pkg/
+│   ├── api/            # HTTP handlers
+│   ├── config/         # Configuration
+│   ├── database/       # Database layer
+│   ├── kafka/          # Kafka consumers/producers
+│   ├── models/         # Data models
+│   └── handlers/       # Business logic
+├── go.mod
+└── Dockerfile
+```
+
+#### Naming Conventions
+- **Files**: `snake_case.go`
+- **Packages**: `lowercase`
+- **Functions**: `PascalCase` (exported), `camelCase` (private)
+- **Constants**: `PascalCase` or `SCREAMING_SNAKE_CASE`
+
+#### Code Style
+```go
+// Use structured logging
+log.Printf("✅ Service started on port %s", port)
+log.Printf("❌ Error: %v", err)
+log.Printf("⚠️  Warning: %s", message)
+log.Printf("📨 Kafka message received")
+log.Printf("📧 Email sent to %s", email)
+
+// Error handling
+if err != nil {
+    log.Printf("❌ Failed to connect: %v", err)
+    return fmt.Errorf("connection failed: %w", err)
+}
+
+// Configuration
+type Config struct {
+    ServerPort  string
+    KafkaBrokers []string
+    DatabaseDSN string
+}
+
+func Load() *Config {
+    return &Config{
+        ServerPort:   getEnv("PORT", "8080"),
+        KafkaBrokers: strings.Split(getEnv("KAFKA_BROKERS", "localhost:19092"), ","),
+        DatabaseDSN:  getEnv("DATABASE_DSN", ""),
+    }
+}
+```
+
+---
+
+## 🔐 Security Standards
+
+### Authentication & Authorization
+
+#### JWT Token Structure
+```json
+{
+  "sub": "user-id",
+  "email": "user@example.com",
+  "role": "USER|THERAPIST|ADMIN",
+  "iat": 1234567890,
+  "exp": 1234567890
+}
+```
+
+#### API Security
+- **All endpoints** require JWT except `/v1/identity/register`, `/v1/identity/login`
+- **Role-based access**: `@PreAuthorize("hasRole('ADMIN')")`
+- **CORS**: Allow `localhost:4200`, `localhost:8100`, production domains
+- **Rate limiting**: 100 requests/minute per IP
+
+### Password Requirements
+- Minimum 8 characters
+- At least 1 uppercase letter
+- At least 1 lowercase letter
+- At least 1 number
+- BCrypt hashing with strength 12
+
+---
+
+## 📡 Kafka Topics
+
+### Naming Convention
+`service-name.event-type`
+
+### Topics List
+```yaml
+# Logging
+- logging-service              # All service logs
+
+# Notifications
+- notification.user-create     # User registration
+- notification.user-activate   # Account activation
+- notification.user-reset      # Password reset
+- notification.account-change  # Account updates
+- notification.therapist-approve
+- notification.therapist-reject
+- notification.push.new-message
+- notification.push.consultation-created
+- notification.push.consultation-updated
+- notification.push.consultation-reminder
+- notification.push.consultation-completed
+- notification.push.profile-update
+- notification.push.profile-approved
+- notification.push.profile-rejected
+- notification.push.new-review
+- notification.push.new-client
+- notification.push.system
+- notification.social.post-upvote
+- notification.social.post-bookmark
+- notification.social.post-share
+- notification.social.post-comment
+- notification.social.user-follow
+
+# Events
+- user.created
+- user.updated
+- consultation.created
+- consultation.updated
+- message.sent
+```
+
+### Message Format
+```json
+{
+  "eventId": "uuid",
+  "timestamp": "2025-12-23T10:00:00Z",
+  "service": "identity-service",
+  "eventType": "user.created",
+  "data": {
+    "userId": "123",
+    "email": "user@example.com",
+    "username": "johndoe"
+  }
+}
+```
+
+---
+
+## 🗄️ Database Standards
+
+### Naming Conventions
+- **Tables**: `snake_case` (e.g., `user_accounts`, `consultation_sessions`)
+- **Columns**: `snake_case` (e.g., `created_at`, `user_id`)
+- **Primary Keys**: `id` (BIGINT AUTO_INCREMENT)
+- **Foreign Keys**: `{table}_id` (e.g., `user_id`, `therapist_id`)
+- **Timestamps**: `created_at`, `updated_at`, `deleted_at` (soft delete)
+
+### Common Columns
+```sql
+CREATE TABLE example (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    INDEX idx_deleted_at (deleted_at)
+);
+```
+
+### Indexes
+- Add indexes on foreign keys
+- Add indexes on frequently queried columns
+- Use composite indexes for multi-column queries
+
+---
+
+## 🐳 Docker & Deployment
+
+### Environment Variables
+
+#### Development (.env)
+```bash
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=psyconnect_dev
+DB_USER=root
+DB_PASSWORD=password
+
+# Kafka
+KAFKA_BROKERS=127.0.0.1:19092  # Local
+# KAFKA_BROKERS=kafka:9094      # Docker
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# JWT
+JWT_SECRET=your-secret-key
+JWT_EXPIRATION=86400000
+
+# SMTP
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+```
+
+#### Docker Compose
+```yaml
+services:
+  service-name:
+    build:
+      context: ../services/servicename
+    container_name: psyconnect-servicename-dev
+    ports:
+      - "8080:8080"
+    environment:
+      - KAFKA_BROKERS=kafka:9094
+      - DB_HOST=mysql
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+```
+
+---
+
+## 📝 Code Quality Standards
+
+### General Rules
+1. **DRY** (Don't Repeat Yourself)
+2. **SOLID** principles
+3. **Clean Code** - meaningful names, small functions
+4. **Comments** - explain WHY, not WHAT
+5. **Error Handling** - always handle errors gracefully
+6. **Logging** - use structured logging with emojis for visibility
+
+### Testing
+- **Unit Tests**: 80%+ coverage
+- **Integration Tests**: Critical paths
+- **E2E Tests**: Main user flows
+
+### Git Commit Messages
+```
+feat(service): add new feature
+fix(service): fix bug in feature
+refactor(service): refactor code
+docs(service): update documentation
+test(service): add tests
+chore(service): update dependencies
+```
+
+---
+
+## 🚀 Development Workflow
+
+### Local Development
+```bash
+# Start infrastructure
+cd dev
+docker-compose up -d kafka mysql redis
+
+# Run service
+cd ../services/servicename
+./mvnw spring-boot:run  # Java
+go run cmd/main.go      # Go
+npm start               # Angular
+flutter run             # Flutter
+```
+
+### Docker Development
+```bash
+cd dev
+docker-compose up -d
+docker logs -f psyconnect-servicename-dev
+```
+
+### Building
+```bash
+# Java
+./mvnw clean package
+
+# Go
+go build -o service cmd/main.go
+
+# Angular
+npm run build
+
+# Flutter
+flutter build apk
+```
+
+---
+
+## 🔍 Monitoring & Logging
+
+### Log Levels
+- **DEBUG**: Development details
+- **INFO**: General information (✅, 📨, 📧)
+- **WARN**: Warnings (⚠️)
+- **ERROR**: Errors (❌)
+- **FATAL**: Critical errors
+
+### Metrics to Track
+- Request count
+- Response time
+- Error rate
+- Database query time
+- Kafka message lag
+- Memory usage
+- CPU usage
+
+### Dashboards
+- **Grafana**: http://localhost:3000
+- **Prometheus**: http://localhost:9090
+- **Kafka UI**: http://localhost:8090
+- **Dozzle**: http://localhost:9999
+
+---
+
+## 🎯 Performance Standards
+
+### API Response Times
+- **GET**: < 100ms
+- **POST/PUT**: < 200ms
+- **Complex queries**: < 500ms
+- **File uploads**: < 2s
+
+### Database
+- Use connection pooling
+- Optimize queries with EXPLAIN
+- Add appropriate indexes
+- Use caching for frequently accessed data
+
+### Frontend
+- Lazy loading for routes
+- Image optimization
+- Code splitting
+- Service workers for PWA
+
+---
+
+## 📚 Documentation Standards
+
+### API Documentation
+- Use **Swagger/OpenAPI** for REST APIs
+- Document all endpoints
+- Include request/response examples
+- Document error codes
+
+### Code Documentation
+```java
+/**
+ * Creates a new user account.
+ *
+ * @param request User registration details
+ * @return Created user response
+ * @throws ValidationException if validation fails
+ */
+public UserResponse createUser(UserRequest request) {
+    // Implementation
+}
+```
+
+### README.md Structure
+```markdown
+# Service Name
+
+## Description
+Brief description of the service
+
+## Features
+- Feature 1
+- Feature 2
+
+## Tech Stack
+- Technology 1
+- Technology 2
+
+## Getting Started
+### Prerequisites
+### Installation
+### Running
+
+## API Endpoints
+### Endpoint 1
+### Endpoint 2
+
+## Configuration
+## Testing
+## Deployment
+## Contributing
+```
+
+---
+
+## 🔄 CI/CD Pipeline
+
+### Build Steps
+1. Lint code
+2. Run tests
+3. Build artifacts
+4. Build Docker image
+5. Push to registry
+6. Deploy to environment
+
+### Environments
+- **Development**: Auto-deploy on push to `dev` branch
+- **Staging**: Auto-deploy on push to `staging` branch
+- **Production**: Manual approval required
+
+---
+
+## 🎨 UI/UX Guidelines
+
+### Design Principles
+1. **Consistency**: Use design system
+2. **Accessibility**: WCAG 2.1 AA compliance
+3. **Responsiveness**: Mobile-first design
+4. **Performance**: Fast loading times
+5. **User Feedback**: Loading states, error messages
+
+### Color Palette
+- **Primary**: #667eea (Purple)
+- **Success**: #48bb78 (Green)
+- **Warning**: #ed8936 (Orange)
+- **Error**: #f56565 (Red)
+- **Info**: #4299e1 (Blue)
+
+### Typography
+- **Headings**: Inter, Roboto, or system fonts
+- **Body**: -apple-system, BlinkMacSystemFont, "Segoe UI"
+- **Code**: "Fira Code", "Courier New", monospace
+
+---
+
+## 🛡️ Error Handling
+
+### HTTP Status Codes
+- **200**: OK
+- **201**: Created
+- **204**: No Content
+- **400**: Bad Request
+- **401**: Unauthorized
+- **403**: Forbidden
+- **404**: Not Found
+- **409**: Conflict
+- **422**: Unprocessable Entity
+- **500**: Internal Server Error
+- **503**: Service Unavailable
+
+### Error Response Format
+```json
+{
+  "timestamp": "2025-12-23T10:00:00Z",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "path": "/v1/users",
+  "errors": [
+    {
+      "field": "email",
+      "message": "Email is required"
+    }
+  ]
+}
+```
+
+---
+
+## 📞 Support & Resources
+
+### Documentation
+- **Architecture**: `/docs/architecture.md`
+- **API Docs**: `/docs/api/`
+- **Deployment**: `/docs/deployment.md`
+
+### Contacts
+- **Tech Lead**: [Contact]
+- **DevOps**: [Contact]
+- **Support**: support@psyconnect.dev
+
+---
+
+## ✅ Checklist for New Features
+
+- [ ] Design approved
+- [ ] API contract defined
+- [ ] Database schema updated
+- [ ] Unit tests written
+- [ ] Integration tests written
+- [ ] Documentation updated
+- [ ] Code reviewed
+- [ ] Security reviewed
+- [ ] Performance tested
+- [ ] Deployed to staging
+- [ ] QA tested
+- [ ] Deployed to production
+
+---
+
+**Last Updated**: December 23, 2025
+**Version**: 1.0.0
+**Maintained by**: PsyConnect Development Team

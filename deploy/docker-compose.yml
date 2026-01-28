@@ -10,19 +10,13 @@ services:
     image: hiamchubbybear/identityservice:latest
     ports:
       - "8080:8080"
-    depends_on:
-      db:
-        condition: service_healthy
+
 
   profileservice:
     image: hiamchubbybear/profileservice:latest
     ports:
       - "8081:8081"
-    depends_on:
-      # neo4j:
-      #   condition: service_healthy
-      db:
-        condition: service_healthy
+
   notificationservice:
     image: hiamchubbybear/notificationservice:latest
     ports:
@@ -36,8 +30,6 @@ services:
       - KAFKA_BROKERS=kafka:9092
       - ENVIRONMENT=production
     depends_on:
-      mongodb:
-        condition: service_healthy
       kafka:
         condition: service_healthy
 
@@ -49,8 +41,6 @@ services:
       - KAFKA_BROKERS=kafka:9092
       - ENVIRONMENT=production
     depends_on:
-      mongodb:
-        condition: service_healthy
       kafka:
         condition: service_healthy
 
@@ -111,57 +101,8 @@ services:
     restart: unless-stopped
 
   # -------------------------
-  # DATABASES
+  # INFRASTRUCTURE
   # -------------------------
-  db:
-    image: mysql:8.0
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: identityservice
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ../dev/db_message_caching_docker/mysql-init:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  mongodb:
-    image: mongo:7
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: consultationservice
-      MONGO_INITDB_ROOT_PASSWORD: 123456
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 8
-
-  neo4j:
-    image: neo4j:5
-    restart: always
-    environment:
-      NEO4J_AUTH: neo4j/12345678
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-    healthcheck:
-      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "12345678", "RETURN 1;"]
-      interval: 10s
-      timeout: 5s
-      retries: 8
 
   zookeeper:
     image: zookeeper:latest
@@ -225,10 +166,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
-  mysql_data:
-  mongo_data:
-  neo4j_data:
-  neo4j_logs:
   loki-data:
   grafana-data:
   prometheus-data:
