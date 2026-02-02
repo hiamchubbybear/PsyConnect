@@ -109,6 +109,7 @@ export class Login implements OnInit {
       this.auth.exchangeOAuth2Code(code, email, provider, platform).subscribe({
         next: (res) => {
           this.secureStorage.setItem(this.ACCESSTOKEN_KEY, res.data.token);
+          this.secureStorage.setItem(this.USERNAME_KEY, email);
           this.loadUserProfile();
         },
         error: (err) => {

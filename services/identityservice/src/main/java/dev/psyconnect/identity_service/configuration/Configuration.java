@@ -60,7 +60,8 @@ public class Configuration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)) // Ensure session for OAuth2 state
                 .authenticationProvider(authenticationProvider(userAccountService))
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests(requests -> requests.requestMatchers(
@@ -120,9 +121,13 @@ public class Configuration {
                                     avatarUri = (String) user.getAttribute("picture");
                                     email = (String) user.getAttribute("email");
                                 }
+                                var preLoginResponse = oAuth2Service.processOAuth2PreLogin(
+                                        email, avatarUri, authentication, registrationId);
+                                String code = preLoginResponse.getToken();
+
                                 redirectUrl = String.format(
-                                        "%s/oauth2/userInfo?provider=%s&email=%s&avatar=%s&platform=%s",
-                                        oauth2RedirectBase, registrationId, email, avatarUri, platform);
+                                        "%s/oauth2/callback?provider=%s&email=%s&avatar=%s&platform=%s&code=%s",
+                                        oauth2RedirectBase, registrationId, email, avatarUri, platform, code);
                                 response.sendRedirect(redirectUrl);
                             } catch (Exception e) {
                                 log.error("OAuth2 success handler error", e);
