@@ -10,8 +10,10 @@
   gap: 0.5rem; // 8px
   cursor: pointer;
   padding: 0.5rem 0.75rem; // 8px 12px
-  border-radius: v.$btn-border-radius;
-  transition: background 0.2s ease, transform 0.2s ease;
+  border-radius: v.$border-radius-md;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
@@ -45,9 +47,11 @@
   right: 0;
   width: 240px;
   background: var(--dropdown-bg);
-  border: v.$btn-border-width solid var(--dropdown-border);
-  border-radius: v.$btn-border-radius;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: v.$border-width solid var(--dropdown-border);
+  border-radius: v.$border-radius-md;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   z-index: 1000;
   animation: fadeIn 0.2s ease;
@@ -95,7 +99,9 @@
       font-weight: 400;
       color: var(--color-text);
       text-decoration: none;
-      transition: background 0.2s ease, color 0.2s ease;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease;
 
       &:hover {
         background: rgba(0, 0, 0, 0.04);

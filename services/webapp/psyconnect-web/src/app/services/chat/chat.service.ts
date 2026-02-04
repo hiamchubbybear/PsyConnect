@@ -27,13 +27,13 @@ export class ChatService {
     private http: HttpClient,
     private userContext: UserContextService,
     private profileService: Profile,
-    private secureStorage: SecureStorageService
+    private secureStorage: SecureStorageService,
   ) {}
   private readonly AccessTokenKey = environment.accessTokenKey;
   getCurrentUser(): Observable<UserProfile | null> {
     return this.profileService.getProfile().pipe(
       map((res) => res.data ?? null),
-      catchError(() => of(null))
+      catchError(() => of(null)),
     );
   }
 
@@ -41,16 +41,15 @@ export class ChatService {
     conversationId: string,
     currentUserId: string,
     limit = 10,
-    before?: Date
+    before?: Date,
   ): Observable<Message[]> {
     let params: any = { limit };
     if (before) params.before = before.toISOString();
 
     return this.http
-      .get<{ data: ChatFromApi[] }>(
-        `${this.apiUrl}/chats/conversation/${conversationId}`,
-        { params }
-      )
+      .get<{
+        data: ChatFromApi[];
+      }>(`${this.apiUrl}/chats/conversation/${conversationId}`, { params })
       .pipe(
         map((res) => {
           const rawChats = res.data ?? [];
@@ -83,7 +82,7 @@ export class ChatService {
         }),
         catchError((err) => {
           return of([] as Message[]);
-        })
+        }),
       );
   }
 
@@ -97,16 +96,33 @@ export class ChatService {
   createChat(chat: Partial<Chat>): Observable<Chat | null> {
     return this.http.post<{ data: Chat }>(this.apiUrl, chat).pipe(
       map((res) => res.data),
-      catchError(() => of(null))
+      catchError(() => of(null)),
     );
   }
 
   deleteChat(id: string): Observable<boolean> {
     return this.http.delete(`${this.apiUrl}/${id}`).pipe(
       map(() => true),
-      catchError(() => of(false))
+      catchError(() => of(false)),
     );
   }
+
+  startCall(payload: {
+    conversationId: string;
+    callerId: string;
+    callerName: string;
+    receiverId: string;
+    sessionId?: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/chats/call/start`, payload).pipe(
+      tap((res) => console.log('✅ Call started:', res)),
+      catchError((err) => {
+        console.error('❌ Failed to start call:', err);
+        return of(null);
+      }),
+    );
+  }
+
   private isConnected = false;
 
   connect(receiverId: string, conversationId: string): Observable<Message> {
@@ -143,7 +159,7 @@ export class ChatService {
     return this.socket$.asObservable().pipe(
       tap({
         error: (err) => console.error('ebSocket error:', err),
-      })
+      }),
     );
   }
   private tryReconnect(receiverId: string, conversationId: string) {
@@ -158,7 +174,7 @@ export class ChatService {
     console.log(
       ` Attempting reconnect #${this.reconnectAttempts} after ${
         delayMs / 1000
-      }s`
+      }s`,
     );
 
     setTimeout(() => {
@@ -213,14 +229,15 @@ export class ChatService {
   }
   getOrCreateConversation(
     user1Id: string,
-    user2Id: string
+    user2Id: string,
   ): Observable<{ id: string }> {
     console.log('getOrCreateConversation response~!!!:');
     return this.http
-      .get<{ code: number; message: string; data: { id: string } }>(
-        `${this.apiUrl}/conversations/by-users`,
-        { params: { user1: user1Id, user2: user2Id } }
-      )
+      .get<{
+        code: number;
+        message: string;
+        data: { id: string };
+      }>(`${this.apiUrl}/conversations/by-users`, { params: { user1: user1Id, user2: user2Id } })
       .pipe(
         tap((res) => console.log('getOrCreateConversation response:', res)),
         map((res) => {
@@ -232,12 +249,12 @@ export class ChatService {
         catchError((err) => {
           console.error('getOrCreateConversation error:', err);
           return of({ id: '' });
-        })
+        }),
       );
   }
 
   attachProfilesToChatList(
-    chats: Chat[]
+    chats: Chat[],
   ): Observable<(Chat & { user?: UserProfile })[]> {
     return new Observable((observer) => {
       const enriched: (Chat & { user?: UserProfile })[] = [];

@@ -1,36 +1,75 @@
-<div class="incoming-call-overlay mascot-fade-in">
-  <div class="incoming-call-card mascot-bounce">
-    <!-- Caller avatar/mascot -->
-    <div class="caller-avatar mascot-pulse">
-      <img src="assets/mascot/psy-purple.png" alt="Caller" />
-    </div>
+<div class="incoming-call-toast">
+  <!-- Avatar -->
+  <div class="avatar-wrapper">
+    <img src="assets/mascot/psy-purple.png" alt="Caller" class="avatar" />
+    <span class="status-dot"></span>
+  </div>
 
-    <!-- Caller info -->
-    <h3 class="caller-name">{{ call.callerName }}</h3>
-    <p class="call-type">Cuộc gọi video đến...</p>
+  <!-- Info -->
+  <div class="info">
+    <h4 class="caller-name">{{ call.callerName }}</h4>
+    <p class="call-status">Incoming Call...</p>
+  </div>
 
-    <!-- Call actions -->
-    <div class="call-actions">
-      <button class="action-btn reject-btn" (click)="onReject()">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <path
-            d="M4 10C4 7 6 5 9 5H19C22 5 24 7 24 10V12C24 13 23 14 22 14H20C19 14 18 13 18 12V10H10V12C10 13 9 14 8 14H6C5 14 4 13 4 12V10Z"
-            fill="currentColor"
-          />
-        </svg>
-        <span>Từ chối</span>
-      </button>
+  <!-- Actions -->
+  <div class="actions">
+    <!-- Remind / Snooze -->
+    <button
+      class="btn-icon snooze"
+      (click)="onRemind()"
+      title="Remind me later"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+    </button>
 
-      <button class="action-btn accept-btn" (click)="onAccept()">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <path
-            d="M4 10C4 7 6 5 9 5H19C22 5 24 7 24 10V12C24 13 23 14 22 14H20C19 14 18 13 18 12V10H10V12C10 13 9 14 8 14H6C5 14 4 13 4 12V10Z"
-            fill="currentColor"
-            transform="rotate(180 14 9.5)"
-          />
-        </svg>
-        <span>Chấp nhận</span>
-      </button>
-    </div>
+    <!-- Reject -->
+    <button class="btn-icon reject" (click)="onReject()" title="Decline">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M10.68 13.31a16 16 0 0 0 3.01 3.01l2.17-2.17a2 2 0 0 1 2.83 0l2.6 2.6a2 2 0 0 1 0 2.83l-.5.5C19.7 20.3 7 13 4 4l.5-.5a2 2 0 0 1 2.83 0l2.6 2.6a2 2 0 0 1 0 2.83l-2.17 2.17z"
+          transform="rotate(135 12 12)"
+        />
+      </svg>
+    </button>
+
+    <!-- Accept -->
+    <button class="btn-icon accept" (click)="onAccept()" title="Accept">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+        ></path>
+      </svg>
+    </button>
   </div>
 </div>

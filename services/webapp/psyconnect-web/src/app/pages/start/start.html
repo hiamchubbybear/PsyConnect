@@ -1,12 +1,126 @@
-<div class="gallery">
-  <img src="../../../assets/starts-images/image3.jpg" class="small" alt="" />
-  <img src="../../../assets/starts-images/image2.jpg" class="medium" alt="" />
-  <img src="../../../assets/starts-images/image1.jpg" class="big" alt="" />
-  <img src="../../../assets/starts-images/image4.jpg" class="medium" alt="" />
-  <img src="../../../assets/starts-images/image5.jpg" class="small" alt="" />
-</div>
+<div class="landing-page">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero__content">
+      <h1 class="hero__title">
+        Your Journey to
+        <span class="text-gradient">Mental Wellness</span> Starts Here
+      </h1>
+      <p class="hero__subtitle">
+        Connect with licensed therapists, join a supportive community, and find
+        peace of mind through professional guidance and peer support.
+      </p>
+      <div class="hero__actions">
+        <a routerLink="/auth/signup" class="btn btn--primary">
+          Get Started
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14"></path>
+            <path d="M12 5l7 7-7 7"></path>
+          </svg>
+        </a>
+        <a routerLink="/auth/login" class="btn btn--secondary">Login</a>
+      </div>
+    </div>
 
-<div class="message-box">
-  <p>With you through the tough days!!</p>
-  <button routerLink="/auth/login">Start now!</button>
+    <div class="hero__visual">
+      <!-- Abstract decorative visual using CSS radial gradients in SCSS -->
+      <div class="glow glow--1"></div>
+      <div class="glow glow--2"></div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Why PsyConnect?</h2>
+
+      <div class="features__grid">
+        <!-- Feature 1: Consultation -->
+        <div class="card feature-card">
+          <div class="feature-card__icon feature-card__icon--primary">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Professional Consultation</h3>
+          <p class="feature-card__desc">
+            Book sessions with experienced therapists tailored to your needs.
+            Validated experts at your fingertips.
+          </p>
+        </div>
+
+        <!-- Feature 2: Community -->
+        <div class="card feature-card">
+          <div class="feature-card__icon feature-card__icon--success">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Supportive Community</h3>
+          <p class="feature-card__desc">
+            Share your journey on your wall, connect with friends, and find
+            support in a safe environment.
+          </p>
+        </div>
+
+        <!-- Feature 3: Real-time Chat -->
+        <div class="card feature-card">
+          <div class="feature-card__icon feature-card__icon--accent">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Real-time Connection</h3>
+          <p class="feature-card__desc">
+            Instantly chat with your therapists or friends. Stay connected when
+            it matters most.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>

@@ -39,9 +39,11 @@
       border: 1px solid v.$color-primary;
       color: v.$color-primary;
       text-decoration: none;
-      border-radius: v.$btn-border-radius;
+      border-radius: v.$border-radius-md;
       font-weight: 600;
-      transition: background 0.3s ease, color 0.3s ease;
+      transition:
+        background 0.3s ease,
+        color 0.3s ease;
 
       &:hover {
         cursor: pointer;

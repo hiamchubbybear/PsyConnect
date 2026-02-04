@@ -18,7 +18,9 @@
   padding: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
   /* ensure it doesn't overlay header if used at left: match --app-header-height in layout */
 }
 
@@ -53,7 +55,9 @@
   font-size: v.$font-size-sm;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.18s ease, transform 0.18s ease;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
 }
 
 /* icon */
@@ -87,7 +91,7 @@
 
 /* active state (selected) */
 .sub-menu__item--active .sub-menu__link {
-  background: v.$color-gray-light;
+  background: v.$color-gray-100;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   color: v.$color-primary;
 }

@@ -13,6 +13,7 @@ export class IncomingCallComponent {
   @Input() call!: IncomingCall;
   @Output() accept = new EventEmitter<void>();
   @Output() reject = new EventEmitter<void>();
+  @Output() remind = new EventEmitter<void>();
 
   onAccept() {
     this.accept.emit();
@@ -20,5 +21,10 @@ export class IncomingCallComponent {
 
   onReject() {
     this.reject.emit();
+  }
+
+  onRemind() {
+    // Emit remind event
+    this.remind.emit();
   }
 }

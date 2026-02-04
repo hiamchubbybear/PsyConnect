@@ -1,44 +1,26 @@
-$font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+// --- Typography ---
+$font-primary:
+  "Inter",
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  sans-serif;
 
-$color-white: #fff;
-
-@use "sass:color" as c;
-
+$font-size-2xs: 0.625rem;
 $font-size-xs: 0.75rem;
 $font-size-sm: 0.875rem;
 $font-size-md: 1rem;
 $font-size-lg: 1.125rem;
 $font-size-xl: 1.25rem;
+$font-size-2xl: 1.5rem;
+$font-size-3xl: 1.875rem;
 
-$spacing-xs: 0.25rem;
-$spacing-sm: 0.5rem;
-$spacing-md: 0.75rem;
-$spacing-lg: 1rem;
-$spacing-xl: 1.5rem;
-$spacing-2xl: 2rem;
-$spacing-3xl: 2.5rem;
-$spacing-4xl: 3rem;
-$spacing-5xl: 6rem;
-$spacing-6xl: 10rem;
+// --- Colors: Palette ---
+$color-white: #ffffff;
+$color-black: #000000;
 
-$space-1: 0.25rem;
-$space-2: 0.5rem;
-$space-3: 0.75rem;
-$space-4: 1rem;
-$space-5: 1.25rem;
-$space-6: 1.5rem;
-$space-7: 1.75rem;
-$space-8: 2rem;
-$space-xl: 1.5rem;
-$space-xxl: 2rem;
-
-$color-primary: #18181b;
-$color-primary-hover: #27272a;
-$color-text: #09090b;
-$color-text-muted: #71717a;
-$color-accent: #525252;
-$color-accent-hover: #404040;
-$color-white: #f3f4f6;
+// Grays (Zinc-like)
 $color-gray-50: #fafafa;
 $color-gray-100: #f4f4f5;
 $color-gray-200: #e4e4e7;
@@ -49,93 +31,87 @@ $color-gray-600: #52525b;
 $color-gray-700: #3f3f46;
 $color-gray-800: #27272a;
 $color-gray-900: #18181b;
-$color-gray: $color-gray-300;
-$color-bg: $color-white;
-$color-bg-cta: $color-primary;
-$color-primary-text: $color-white;
 
-$border-radius-sm: 4px;
-$border-radius-md: 6px;
-$border-radius-lg: 8px;
+// Semantic Colors (Cleaned up)
+$color-primary: $color-gray-900;
+$color-primary-hover: $color-gray-800;
 
-$border-width: 1px;
-$border-color: rgba(0, 0, 0, 0.08);
-$border-color-dark: rgba(255, 255, 255, 0.08);
+$color-text: $color-gray-900;
+$color-text-muted: $color-gray-500;
+$color-text-inverse: $color-white;
 
-$btn-border-width: $border-width;
-$btn-border-radius: $border-radius-md;
-$btn-border-color: $border-color;
-
-$color-gray-light: $color-gray-100;
-
-$color-text: #171717;
-
-$color-bg: $color-white;
-$color-bg-secondary: $color-gray-50;
-
-$border-color: $color-gray-200;
+$color-accent: $color-gray-900; // Minimal Black
+$color-accent-hover: $color-black;
+$color-accent-bg: rgba(0, 0, 0, 0.05);
 
 $color-success: #16a34a;
 $color-error: #dc2626;
 $color-warning: #ca8a04;
 
-$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
-$shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+// Backgrounds
+$color-bg: $color-white;
+$color-bg-secondary: $color-gray-50;
 
-$shadow: $shadow-md;
+// Borders
+$border-width: 1px;
+$border-color: rgba(0, 0, 0, 0.1);
+$border-color-dark: rgba(255, 255, 255, 0.1);
 
-$transition-fast: 0.15s ease;
-$transition-medium: 0.2s ease;
+// --- Spacing ---
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 0.75rem;
+$spacing-lg: 1rem;
+$spacing-xl: 1.5rem;
+$spacing-2xl: 2rem;
+$spacing-3xl: 2.5rem;
+$spacing-4xl: 3rem;
+$spacing-5xl: 6rem;
+$spacing-6xl: 10rem; // Large section padding
 
+// --- Shapes ---
+$border-radius-sm: 0.25rem; // 4px
+$border-radius-md: 0.5rem; // 8px
+$border-radius-lg: 1rem; // 16px - Premium Feel
+
+// --- Shadows (Premium) ---
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md:
+  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+$shadow-card-hover:
+  0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+$shadow-button-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+// --- Animation ---
+$transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-medium: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+// --- Breakpoints ---
 $breakpoint-sm: 640px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 1024px;
 $breakpoint-xl: 1280px;
 
-$header-bg-light: $color-gray-50;
-$header-bg-dark: $color-gray-800;
+// --- Legacy / Component Specific (Preserved for compatibility) ---
+$header-bg-light: $color-white;
+$header-bg-dark: $color-gray-900;
 $header-text-light: $color-gray-900;
 $header-text-dark: $color-white;
-$header-border-light: $color-gray-200;
-$header-border-dark: $color-gray-700;
+$header-border-light: $border-color;
+$header-border-dark: $border-color-dark;
 
-$header-link-text-light: $color-gray-700;
-$header-link-text-dark: $color-gray-100;
+$header-link-text-light: $color-gray-600;
+$header-link-text-dark: $color-gray-300;
 $header-link-hover-light: $color-primary;
-$header-link-hover-dark: $color-primary-hover;
-$header-link-arrow-light: $color-gray-400;
-$header-link-arrow-dark: $color-gray-500;
+$header-link-hover-dark: $color-white;
 
 $dropdown-bg-light: $color-white;
-$dropdown-bg-dark: $color-gray-800;
-$dropdown-border-light: $color-gray-200;
-$dropdown-border-dark: $color-gray-700;
-$dropdown-shadow: $shadow-md;
+$dropdown-bg-dark: $color-gray-900;
+$dropdown-border-light: $border-color;
+$dropdown-border-dark: $border-color-dark;
 
-$dropdown-text-light: $color-gray-900;
-$dropdown-text-dark: $color-white;
-$dropdown-item-hover-bg-light: $color-gray-50;
-$dropdown-item-hover-bg-dark: $color-gray-700;
-$dropdown-item-hover-text-light: $color-primary;
-$dropdown-item-hover-text-dark: $color-primary-hover;
-
-$dropdown-badge-bg: $color-accent;
-$dropdown-badge-bg-hover: $color-accent-hover;
-$dropdown-badge-text: $color-white;
-
-$header-shadow: $shadow-sm;
-$dropdown-layer-shadow: $shadow-md;
-
-$footer-a: #666;
-
-$font-size-2xs: 0.625rem;
-$font-size-2xl: 1.5rem;
-$font-size-3xl: 1.875rem;
-
-$shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-  0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-  0 4px 6px -2px rgba(0, 0, 0, 0.05);
-$shadow-dropdown: 0 10px 25px rgba(0, 0, 0, 0.15);
-$shadow-button-hover: 0 4px 12px rgba(59, 130, 246, 0.4);
+$footer-a: $color-text-muted;

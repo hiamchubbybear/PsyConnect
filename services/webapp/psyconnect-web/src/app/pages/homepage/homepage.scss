@@ -130,7 +130,7 @@
 .cta {
   text-align: center;
   padding: 4rem 0;
-  background-color: v.$color-bg-cta;
+  background-color: v.$color-primary;
   h2 {
     font-family: v.$font-primary;
     font-size: v.$font-size-xl;
@@ -148,28 +148,30 @@
 }
 .btn {
   padding: 0.75rem 1.5rem;
-  border-radius: v.$btn-border-radius;
+  border-radius: v.$border-radius-md;
   font-weight: 600;
   text-decoration: none;
   font-family: v.$font-primary;
   font-size: v.$font-size-md;
   cursor: pointer;
-  transition: background 0.3s, color 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s;
 
   &.primary {
     color: v.$color-text;
     background-color: v.$color-white;
-    border: v.$btn-border-width solid v.$btn-border-color;
+    border: v.$border-width solid v.$border-color;
 
     &:hover {
-      background: v.$color-gray;
+      background: v.$color-gray-300;
     }
   }
 
   &.secondary {
     background: transparent;
     color: v.$color-white;
-    border: v.$btn-border-width solid v.$color-white;
+    border: v.$border-width solid v.$color-white;
 
     &:hover {
       background: rgba(255, 255, 255, 0.05);
@@ -179,7 +181,7 @@
   &.start {
     color: v.$color-white;
     background-color: v.$color-primary;
-    border: v.$btn-border-width solid v.$color-primary;
+    border: v.$border-width solid v.$color-primary;
 
     &:hover {
       background: c.adjust(v.$color-primary, $lightness: -5%);
@@ -189,10 +191,10 @@
   &.about {
     color: v.$color-text;
     background-color: v.$color-white;
-    border: v.$btn-border-width solid v.$color-gray;
+    border: v.$border-width solid v.$color-gray-300;
 
     &:hover {
-      background: v.$color-gray;
+      background: v.$color-gray-300;
       color: v.$color-text;
     }
   }
