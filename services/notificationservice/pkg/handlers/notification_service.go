@@ -79,7 +79,7 @@ func (ns *NotificationService) SendToUser(userID, title, body, notifType string,
 	if ns.fcm != nil {
 		token, err := ns.db.GetFCMToken(userID)
 		if err != nil {
-			log.Printf("⚠️  No FCM token for user %s, notification only persisted", userID)
+			log.Printf("  No FCM token for user %s, notification only persisted", userID)
 			return nil
 		}
 
@@ -107,7 +107,7 @@ func (ns *NotificationService) SendToUser(userID, title, body, notifType string,
 // SendToUserWithSpamCheck sends notification with spam prevention
 func (ns *NotificationService) SendToUserWithSpamCheck(userID, title, body, notifType string, metadata map[string]interface{}) error {
 	if !ns.spamPrevention.CanSend(userID, notifType) {
-		log.Printf("⚠️  Spam prevention: skipping notification for user %s, type %s", userID, notifType)
+		log.Printf("  Spam prevention: skipping notification for user %s, type %s", userID, notifType)
 		return nil
 	}
 
@@ -124,7 +124,37 @@ func (ns *NotificationService) MarkAsRead(notificationID uint, userID string) er
 	return ns.db.MarkAsRead(notificationID, userID)
 }
 
-// SaveFCMToken saves FCM token for a user
+// HandleIncomingCall sends a high priority data message for VoIP calls
+func (ns *NotificationService) HandleIncomingCall(receiverID string, payload interface{}) error {
+	if ns.fcm == nil {
+		log.Println(" FCM not configured, skipping call notification")
+		return nil
+	}
+
+	token, err := ns.db.GetFCMToken(receiverID)
+	if err != nil {
+		log.Printf(" No FCM token for user %s, cannot send call notification", receiverID)
+		return nil
+	}
+
+	// Prepare data map for FCM
+	dataMap := make(map[string]string)
+
+	// Marshal the payload (caller info, session id, etc.) into a JSON string
+	payloadBytes, err := json.Marshal(payload)
+	if err == nil {
+		dataMap["call_payload"] = string(payloadBytes)
+	}
+
+	dataMap["type"] = "consultation.incoming_call"
+	// Valid for VOIP triggers related
+	dataMap["uuid"] = receiverID
+
+	// Title/Body might not be shown if it's a data-only message handled by client,
+	// but useful fallbacks.
+	return ns.fcm.SendPushNotification(token, "Incoming Call", "You have an incoming consultation call", dataMap)
+}
+
 func (ns *NotificationService) SaveFCMToken(userID, token string) error {
 	return ns.db.SaveFCMToken(userID, token)
 }

@@ -38,7 +38,7 @@ func NewFCMService(credentialsPath string) (*FCMService, error) {
 		return nil, fmt.Errorf("failed to get messaging client: %w", err)
 	}
 
-	log.Println("✅ Firebase/FCM initialized")
+	log.Println("Firebase/FCM initialized")
 
 	return &FCMService{
 		client: client,
@@ -70,7 +70,7 @@ func (f *FCMService) SendPushNotification(token, title, body string, data map[st
 		return fmt.Errorf("failed to send FCM message: %w", err)
 	}
 
-	log.Printf("✅ Push notification sent: %s", response)
+	log.Printf("Push notification sent: %s", response)
 	return nil
 }
 
@@ -90,6 +90,6 @@ func (f *FCMService) SendMulticast(tokens []string, title, body string, data map
 		return fmt.Errorf("failed to send multicast message: %w", err)
 	}
 
-	log.Printf("✅ Multicast sent: %d success, %d failure", response.SuccessCount, response.FailureCount)
+	log.Printf("Multicast sent: %d success, %d failure", response.SuccessCount, response.FailureCount)
 	return nil
 }

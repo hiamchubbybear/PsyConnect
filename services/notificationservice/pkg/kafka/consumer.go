@@ -142,6 +142,9 @@ func (c *Consumer) processMessage(msg kafka.Message) error {
 	case "notification.push.system":
 		return c.handleSystem(msg.Value)
 
+	case "consultation.incoming_call":
+		return c.handleIncomingCall(msg.Value)
+
 	// Social topics
 	case "notification.social.post-upvote":
 		return c.handlePostUpvote(msg.Value)
