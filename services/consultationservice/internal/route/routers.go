@@ -140,6 +140,7 @@ func RouterInit(
 		session.POST("/me", sessionHandler.CreateSession)
 		session.DELETE("/:id", sessionHandler.DeleteSession)
 		session.GET("/:id", sessionHandler.GetSession) // admin / public
+		session.POST("/:id/call/start", sessionHandler.StartCall)
 	}
 
 	// Admin sessions

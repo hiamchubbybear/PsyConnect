@@ -37,7 +37,7 @@ type Session struct {
 	SessionUserCode string `json:"session-user-code" bson:"session-user-code"`
 	// Consultation detail
 	Mode      ConsultationMode `json:"mode" bson:"mode"`
-	StartTime time.Time        `json:	"start_time" bson:"start_time"`
+	StartTime time.Time        `json:"start_time" bson:"start_time"`
 	EndTime   time.Time        `json:"end_time" bson:"end_time"`
 	Status    SessionStatus    `json:"status" bson:"status"`
 	Timezone  string           `bson:"timezone" json:"timezone"`

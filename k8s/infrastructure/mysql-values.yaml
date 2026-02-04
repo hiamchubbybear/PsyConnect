@@ -1,0 +1,17 @@
+# Bitnami MySQL Helm Chart Values
+# Repo: https://charts.bitnami.com/bitnami
+# Cmd: helm install mysql bitnami/mysql -f k8s/infrastructure/mysql-values.yaml
+
+auth:
+  rootPassword: "CHANGE_ME_IN_PROD"
+  database: "psyconnect_dev"
+
+primary:
+  persistence:
+    enabled: true
+    size: 8Gi
+  service:
+    type: ClusterIP
+    port: 3306
+
+architecture: standalone # For Dev/Single Node

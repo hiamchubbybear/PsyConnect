@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consultation-service
+  namespace: psyconnect
+  labels:
+    app: consultation-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consultation-service
+  template:
+    metadata:
+      labels:
+        app: consultation-service
+    spec:
+      containers:
+        - name: consultation-service
+          image: ghcr.io/hiamchubbybear/psyconnect-consultation-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: psyconnect-config
+            - secretRef:
+                name: psyconnect-secrets
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

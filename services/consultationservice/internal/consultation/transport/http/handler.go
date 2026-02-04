@@ -14,17 +14,20 @@ type Handler struct {
 	createSessionUC *usecase.CreateSessionUseCase
 	getSessionUC    *usecase.GetSessionUseCase
 	deleteSessionUC *usecase.DeleteSessionUseCase
+	startCallUC     *usecase.StartCallUseCase
 }
 
 func NewHandler(
 	createSessionUC *usecase.CreateSessionUseCase,
 	getSessionUC *usecase.GetSessionUseCase,
 	deleteSessionUC *usecase.DeleteSessionUseCase,
+	startCallUC *usecase.StartCallUseCase,
 ) *Handler {
 	return &Handler{
 		createSessionUC: createSessionUC,
 		getSessionUC:    getSessionUC,
 		deleteSessionUC: deleteSessionUC,
+		startCallUC:     startCallUC,
 	}
 }
 

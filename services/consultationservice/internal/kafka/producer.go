@@ -3,6 +3,7 @@ package kafka
 import (
 	"consultationservice/bootstrap"
 	"context"
+	"encoding/json"
 	"log"
 
 	"github.com/segmentio/kafka-go"
@@ -146,4 +147,31 @@ func (p *Producer) Close() error {
 		return err1
 	}
 	return err2
+}
+
+func (p *Producer) SendIncomingCallEvent(payload interface{}) error {
+	// 1. Wrap payload in standard Event structure
+	event := struct {
+		Key   string      `json:"key"`
+		Value interface{} `json:"value"`
+	}{
+		Key: "consultation_event", // Or receiver_id if dynamic
+		Value: struct {
+			Type    string      `json:"type"`
+			Payload interface{} `json:"payload"`
+		}{
+			Type:    "consultation.incoming_call",
+			Payload: payload,
+		},
+	}
+
+	// 2. Serialize to JSON
+	data, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("❌ Failed to marshal incoming call event: %v", err)
+		return err
+	}
+
+	// 3. Send to Notification Topic use existing notificationWriter
+	return p.SendNotification(string(data))
 }

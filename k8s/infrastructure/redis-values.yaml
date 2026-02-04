@@ -1,0 +1,16 @@
+# Bitnami Redis Helm Chart Values
+# Repo: https://charts.bitnami.com/bitnami
+# Cmd: helm install redis bitnami/redis -f k8s/infrastructure/redis-values.yaml
+
+auth:
+  enabled: false # Easier for dev, enable password in prod
+
+architecture: standalone
+
+master:
+  persistence:
+    enabled: true
+    size: 2Gi
+  service:
+    type: ClusterIP
+    port: 6379

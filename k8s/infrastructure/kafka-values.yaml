@@ -1,0 +1,25 @@
+# Bitnami Kafka Helm Chart Values
+# Repo: https://charts.bitnami.com/bitnami
+# Cmd: helm install kafka bitnami/kafka -f k8s/infrastructure/kafka-values.yaml
+
+zookeeper:
+  enabled: true
+
+replicaCount: 1 # For Dev/Single Node
+
+persistence:
+  enabled: true
+  size: 8Gi
+
+# Expose Kafka for internal K8s access
+service:
+  type: ClusterIP
+  ports:
+    client: 9092
+
+# Use PLAINTEXT for internal communication to save hassle in Dev
+listeners:
+  client:
+    protocol: PLAINTEXT
+  interbroker:
+    protocol: PLAINTEXT

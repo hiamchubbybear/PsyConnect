@@ -1,0 +1,66 @@
+name: Build and Deploy (Self-Hosted)
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  # IMAGE_NAME: ${{ github.repository }} # Can't use this directly in cross-stage easily without parsing
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Note: Since runs-on is self-hosted, we assume Docker and Kubectl are already installed on the machine.
+      # If these are separate environments, we might need setup steps, but usually self-hosted means "ready-to-go".
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Identity Service
+        run: |
+          cd services/identityservice
+          # Grant execute permission if needed
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
+          docker build . --tag ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-identity-service:latest
+          docker push ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-identity-service:latest
+
+      - name: Build and Push Profile Service
+        run: |
+          cd services/profileservice
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
+          docker build . --tag ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-profile-service:latest
+          docker push ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-profile-service:latest
+
+      - name: Build and Push Webapp
+        run: |
+          cd services/webapp
+          # Assuming Dockerfile handles the build
+          docker build . --tag ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-webapp:latest
+          docker push ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-webapp:latest
+
+      - name: Deploy to K8s (Local)
+        run: |
+          # Since runner is on the same machine as K8s (or has kubeconfig set up)
+          # We just run apply/rollout
+
+          # Optional: Update base configs if changed
+          # kubectl apply -f k8s/base/
+
+          # Rolling restart to pick up new latest images
+          kubectl rollout restart deployment identity-service -n psyconnect
+          kubectl rollout restart deployment profile-service -n psyconnect
+          kubectl rollout restart deployment webapp -n psyconnect
+
+          # Note: Add other services here as they are implemented

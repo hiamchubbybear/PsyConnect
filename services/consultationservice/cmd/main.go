@@ -102,13 +102,14 @@ func main() {
 	createSessionUC := usecase.NewCreateSessionUseCase(sessionRepo)
 	getSessionUC := usecase.NewGetSessionUseCase(sessionRepo)
 	deleteSessionUC := usecase.NewDeleteSessionUseCase(sessionRepo)
-	// activateSessionUC := usecase.NewActivateSessionUseCase(sessionRepo) // TODO: Add activate endpoint
+	startCallUC := usecase.NewStartCallUseCase(sessionRepo, kafkaProducer)
 
 	// Initialize DDD HTTP Handler
 	sessionHandler := httpHandler.NewHandler(
 		createSessionUC,
 		getSessionUC,
 		deleteSessionUC,
+		startCallUC,
 	)
 	// ===== End DDD Session Components =====
 
