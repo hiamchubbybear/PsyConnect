@@ -16,13 +16,18 @@ import (
 	"chatservice/pkg/apiresponse"
 )
 
+	"chatservice/internal/chat/service"
+)
+
 type ChatHandler struct {
 	RepoManager *repository.RepositoryManager
+    ChatService *service.ChatService
 }
 
-func NewChatHandler(env *bootstrap.Env, repoManager *repository.RepositoryManager) *ChatHandler {
+func NewChatHandler(env *bootstrap.Env, repoManager *repository.RepositoryManager, chatService *service.ChatService) *ChatHandler {
 	return &ChatHandler{
 		RepoManager: repoManager,
+        ChatService: chatService,
 	}
 }
 
@@ -204,4 +209,30 @@ func (s *ChatHandler) GetOrCreateConversation(user1ID, user2ID string) (*model.C
 		return nil, err
 	}
 	return newConv, nil
+}
+
+func (h *ChatHandler) StartCall(c *gin.Context) {
+	var req model.StartCallPayload
+	if err := c.ShouldBindJSON(&req); err != nil {
+		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Invalid input")
+		return
+	}
+
+    // Basic validation
+    if req.CallerID == "" || req.ReceiverID == "" || req.ConversationID == "" {
+        apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing required fields")
+        return
+    }
+
+    // Generate SessionID if not present
+    if req.SessionID == "" {
+        req.SessionID = model.NewUUID()
+    }
+
+	if err := h.ChatService.StartCall(&req); err != nil {
+		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	apiresponse.NewApiResponse(c, gin.H{"sessionId": req.SessionID, "status": "initiated"})
 }

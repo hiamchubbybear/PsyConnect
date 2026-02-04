@@ -3,6 +3,7 @@ package service
 import (
 	"chatservice/internal/chat/model/model"
 	"chatservice/internal/chat/repository/repository"
+	"chatservice/internal/kafka"
 	"chatservice/internal/ws"
 	"encoding/json"
 	"log"
@@ -11,11 +12,13 @@ import (
 
 type ChatService struct {
 	chatRepo *repository.ChatRepository
+	producer *kafka.Producer
 }
 
-func NewChatService(chatRepo *repository.ChatRepository) *ChatService {
+func NewChatService(chatRepo *repository.ChatRepository, producer *kafka.Producer) *ChatService {
 	return &ChatService{
 		chatRepo: chatRepo,
+		producer: producer,
 	}
 }
 
@@ -81,6 +84,38 @@ func (s *ChatService) GetChatHistory(conversationID string, limit int, before ti
 	return s.chatRepo.FindChatsByConversation(conversationID, limit, before)
 }
 
-func (s *ChatService) DeleteChat(chatID string) (int64, error) {
 	return s.chatRepo.DeleteChatByID(chatID)
+}
+
+func (s *ChatService) StartCall(payload *model.StartCallPayload) error {
+	log.Printf("Starting call in conversation %s from %s", payload.ConversationID, payload.CallerID)
+
+	// Construct Kafka event
+	event := map[string]interface{}{
+		"eventId":   model.NewUUID(),
+		"timestamp": time.Now().UTC(),
+		"service":   "chat-service",
+		"eventType": "consultation.incoming_call",
+		"data": map[string]interface{}{
+			"sessionId":      payload.SessionID,
+			"conversationId": payload.ConversationID,
+			"callerId":       payload.CallerID,
+			"callerName":     payload.CallerName,
+			"recipientId":    payload.ReceiverID,
+		},
+	}
+
+	eventBytes, err := json.Marshal(event)
+	if err != nil {
+		log.Printf("Failed to marshal call event: %v", err)
+		return err
+	}
+
+	// Send to notification topic (as per producer.go's logic, SendNotification uses env.NotificationTopic)
+	if err := s.producer.SendNotification(string(eventBytes)); err != nil {
+		log.Printf("Failed to send notification event: %v", err)
+		return err
+	}
+
+	return nil
 }

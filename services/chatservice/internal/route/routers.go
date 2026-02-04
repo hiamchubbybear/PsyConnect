@@ -2,12 +2,15 @@ package route
 
 import (
 	"chatservice/internal/chat/repository/repository"
+	"chatservice/internal/handler"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 
 	"chatservice/bootstrap"
-	"chatservice/internal/handler"
+	"chatservice/internal/chat/service"
+	"chatservice/internal/kafka"
+	"log"
 )
 
 func RouterInit(env *bootstrap.Env, repoManager *repository.RepositoryManager) {
@@ -16,9 +19,19 @@ func RouterInit(env *bootstrap.Env, repoManager *repository.RepositoryManager) {
 	router := gin.New()
 	router.Use(gin.Recovery())
 
-	chatHandler := handler.NewChatHandler(env, repoManager)
+	// Initialize Kafka Producer
+	producer, err := kafka.NewProducer(env)
+	if err != nil {
+		log.Fatalf("Failed to initialize Kafka producer: %v", err)
+	}
+	// Defer close? Usually RouterInit runs forever, but resource management is tricky here.
+	// Ideally producer lifecycle follows app. For now we initialize it here.
+
+	chatService := service.NewChatService(repoManager.MessageRepo, producer)
+	chatHandler := handler.NewChatHandler(env, repoManager, chatService)
 	conversationHandler := handler.NewConversationHandler(env, repoManager)
 
+	router.POST("/chats/call/start", chatHandler.StartCall)
 	router.POST("/chats", chatHandler.CreateChat)
 	router.GET("/chats/:id", chatHandler.GetChatByID)
 	router.GET("/chats/conversation/:conversationId", chatHandler.GetChatsByConversation)
