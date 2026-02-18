@@ -3,6 +3,7 @@ package handler
 import (
 	"chatservice/internal/chat/model/model"
 	"chatservice/internal/chat/repository/repository"
+	"chatservice/pkg/apiresponse"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -12,22 +13,19 @@ import (
 
 	"chatservice/bootstrap"
 
-	encoder "chatservice/internal/utils/conversation"
-	"chatservice/pkg/apiresponse"
-)
-
 	"chatservice/internal/chat/service"
+	encoder "chatservice/internal/utils/conversation"
 )
 
 type ChatHandler struct {
 	RepoManager *repository.RepositoryManager
-    ChatService *service.ChatService
+	ChatService *service.ChatService
 }
 
 func NewChatHandler(env *bootstrap.Env, repoManager *repository.RepositoryManager, chatService *service.ChatService) *ChatHandler {
 	return &ChatHandler{
 		RepoManager: repoManager,
-        ChatService: chatService,
+		ChatService: chatService,
 	}
 }
 
@@ -218,16 +216,16 @@ func (h *ChatHandler) StartCall(c *gin.Context) {
 		return
 	}
 
-    // Basic validation
-    if req.CallerID == "" || req.ReceiverID == "" || req.ConversationID == "" {
-        apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing required fields")
-        return
-    }
+	// Basic validation
+	if req.CallerID == "" || req.ReceiverID == "" || req.ConversationID == "" {
+		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing required fields")
+		return
+	}
 
-    // Generate SessionID if not present
-    if req.SessionID == "" {
-        req.SessionID = model.NewUUID()
-    }
+	// Generate SessionID if not present
+	if req.SessionID == "" {
+		req.SessionID = model.NewUUID()
+	}
 
 	if err := h.ChatService.StartCall(&req); err != nil {
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, err.Error())

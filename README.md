@@ -1,169 +1,146 @@
-# 🧠 PsyConnect - Mental Health Consultation Platform
+# PsyConnect - Mental Health Consultation Platform
 
-![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
-![Angular](https://img.shields.io/badge/angular-%23DD0031.svg?style=flat&logo=angular&logoColor=white)
-![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat&logo=Flutter&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-%236DB33F.svg?style=flat&logo=spring-boot&logoColor=white)
-![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=flat&logo=go&logoColor=white)
+PsyConnect is a comprehensive mental health platform designed to bridge the gap between clients and mental health professionals. Built on a robust microservices architecture, it ensures scalability, security, and a seamless user experience across web and mobile platforms.
 
-**PsyConnect** is a comprehensive, modern mental health platform designed to bridge the gap between clients and mental health professionals. Built on a robust microservices architecture, it ensures scalability, security, and a seamless user experience across web and mobile platforms.
+## Build Status
 
----
+| Service                | Tech Stack                    |
+| ---------------------- | ----------------------------- |
+| API Gateway            | Java / Spring Cloud Gateway   |
+| Identity Service       | Java / Spring Boot 3 / MySQL  |
+| Profile Service        | Java / Spring Boot 3 / Neo4j  |
+| Consultation Service   | Go / Gin / MongoDB            |
+| Chat Service           | Go / MongoDB / WebSocket      |
+| Notification Service   | Go / Kafka Consumer           |
+| Recommendation Service | Python / Flask / Scikit-learn |
+| **Mobile Application** | **Flutter / Dart**            |
+| **Web Application**    | Angular 17+ / TypeScript      |
 
-## 🚀 Build Status
-
-| Service | Status | Tech Stack |
-|---------|--------|------------|
-| **API Gateway** | ![Build](https://img.shields.io/badge/build-passing-success) | Java / Spring Cloud Gateway |
-| **Identity Service** | ![Build](https://img.shields.io/badge/build-passing-success) | Java / Spring Boot / MySQL |
-| **Profile Service** | ![Build](https://img.shields.io/badge/build-passing-success) | Java / Spring Boot / Neo4j |
-| **Consultation Service** | ![Build](https://img.shields.io/badge/build-passing-success) | Go / Gin / MongoDB |
-| **Chat Service** | ![Build](https://img.shields.io/badge/build-passing-success) | Go / MongoDB / WebSocket |
-| **Notification Service** | ![Build](https://img.shields.io/badge/build-passing-success) | Node.js / Express |
-| **Recommendation Service** | ![Build](https://img.shields.io/badge/build-passing-success) | Python / Flask / Scikit-learn |
-
----
-
-## ✨ Key Features
-
-### 👤 For Clients
-- **Smart Therapist Matching**: AI-driven recommendation system based on specialization, language, and availability.
-- **Secure Consultations**: Private, secure channels for booking and managing therapy sessions.
-- **Real-time Chat**: Instant messaging with therapists using WebSocket technology.
-- **Mood Tracking**: Daily mood logging and analysis to track mental well-being.
-- **Social Community**: Safe space to share experiences and connect with peers (Feed, Friends).
-- **Cross-Platform**: Seamless experience on both Web (Angular) and Mobile (Flutter).
-
-### 👨‍⚕️ For Therapists
-- **Professional Profile**: Customizable profiles highlighting expertise and experience.
-- **Schedule Management**: Flexible availability settings and session tracking.
-- **Patient Management**: Tools to manage client interactions and history.
-
-### ⚙️ System Capabilities
-- **Centralized Authentication**: OAuth2/OIDC compliant identity management.
-- **Real-time Notifications**: Email and push notifications for appointments and messages.
-- **High Performance**: Caching with Redis and asynchronous processing with Kafka.
-- **Observability**: Centralized logging (ELK) and monitoring (Prometheus/Grafana).
-
----
-
-## 🏗 Architecture
-
-PsyConnect employs a **Microservices Architecture** to ensure loose coupling and independent scalability.
-
-### 🔌 Communication
-- **Synchronous**: REST API (Client-facing), gRPC (Inter-service).
-- **Asynchronous**: Apache Kafka (Event-driven architecture for notifications, logging, and data sync).
-
-### 💾 Data Persistence
-- **Relational**: MySQL (Identity/Auth data).
-- **Graph**: Neo4j (Social connections, Profile relationships).
-- **Document**: MongoDB (Chat history, Consultation records, Feeds).
-- **In-Memory**: Redis (Caching, Session management).
-
----
-
-## 🛠 Technology Stack
+## Technology Stack
 
 ### Backend Services
-- **Identity Service**: Spring Boot 3, Spring Security, OAuth2.
-- **Profile Service**: Spring Boot 3, Spring Data Neo4j.
-- **Consultation Service**: Golang, Gin Framework.
-- **Chat Service**: Golang, Gorilla WebSocket.
-- **Notification Service**: Node.js.
-- **Recommendation Service**: Python, Pandas, Scikit-learn.
-- **API Gateway**: Spring Cloud Gateway.
 
-### Frontend
-- **Web**: Angular 17+, RxJS, TailwindCSS/Material.
-- **Mobile**: Flutter (Dart).
+- **Communication**: gRPC (Inter-service), REST API (Client-facing).
+- **API Gateway**: Java, Spring Cloud Gateway.
+- **Identity Service**: Java, Spring Boot 3, Spring Security, OAuth2.
+- **Profile Service**: Java, Spring Boot 3, Spring Data Neo4j.
+- **Consultation Service**: Go (Golang), Gin Framework.
+- **Chat Service**: Go (Golang), Gorilla WebSocket.
+- **Notification Service**: Go (Golang).
+- **Recommendation Service**: Python, Flask, Scikit-learn, Pandas.
 
-### DevOps & Infrastructure
+### Frontend Applications
+
+- **Mobile App**: **Flutter (Dart)** for iOS and Android.
+- **Web Portal**: Angular 17+, RxJS, TailwindCSS, Angular Material.
+
+### Data & Storage
+
+- **Relational**: MySQL (Identity/Auth).
+- **Graph**: Neo4j (Social Connections).
+- **Document**: MongoDB (Chat History, Consultations).
+- **Caching**: Redis.
+
+### DevOps & Observability
+
 - **Containerization**: Docker, Docker Compose.
-- **Message Broker**: Apache Kafka, Zookeeper.
-- **Monitoring**: Prometheus, Grafana, ELK Stack (Elasticsearch, Logstash, Kibana).
-- **CI/CD**: GitHub Actions.
+- **Orchestration**: Kubernetes (K3s/MiniKube/Cloud).
+- **CI/CD**: GitHub Actions (Self-hosted runners).
+- **Message Broker**: Apache Kafka.
+- **Monitoring**: Prometheus, Grafana.
+- **Logging**: ELK Stack (Elasticsearch, Logstash, Kibana).
+- **Tunneling**: Cloudflare Tunnel.
 
----
+## System Architecture
 
-## 🚀 Getting Started
+PsyConnect employs a Microservices Architecture governed by Kubernetes.
+
+### Core Components
+
+- **API Gateway (8888)**: Entry point for client requests, handling routing and initial authorization.
+- **Identity Service (8080)**: Manages authentication, user accounts, and OAuth2 integration.
+- **Profile Service (8081)**: Handles user profiles and social graph connections (Neo4j).
+- **Consultation Service (8083)**: Manages therapy sessions, bookings, and payments.
+- **Chat Service (8084)**: Real-time messaging using WebSockets.
+- **Notification Service (8082)**: Handles email and push notifications via Kafka events.
+
+## Getting Started
 
 ### Prerequisites
-- Docker & Docker Compose
+
+- Docker & Docker Compose (for local infra)
+- Kubernetes Cluster (K3s recommended) or Minikube
 - Java JDK 17+
 - Go 1.21+
-- Node.js 18+
+- Node.js 18+ (for Webapp build)
 - Python 3.9+
 
-### Installation & Setup
+### Configuration
+
+The project uses **Environment Variables** for configuration, injected via Kubernetes ConfigMaps and Secrets.
+
+**Key Configuration Files:**
+
+- `k8s/base/configmaps.yaml`: Service URLs, Hostnames, Ports.
+- `k8s/base/secrets.yaml`: Sensitive credentials (DB passwords, API keys). _Note: This file is not git-tracked. Use `secrets-dev.yaml` as a reference._
+
+### Installation & Deployment
 
 1.  **Clone the repository**
+
     ```bash
     git clone https://github.com/hiamchubbybear/PsyConnect.git
     cd PsyConnect
     ```
 
-2.  **Configure Environment Variables**
+2.  **Infrastructure Setup**
+    Ensure your Kubernetes cluster is running.
 
-    The project uses a hierarchical configuration system. You need to set up the root `.env` for infrastructure and individual `.env` files for each service.
-
-    **Step 1: Root Configuration**
     ```bash
-    cp .env.example .env
-    # Edit .env to set your local passwords for MySQL, Neo4j, etc.
+    # Apply Infrastructure (Namespace, ConfigMaps, Secrets)
+    kubectl apply -f k8s/base/namespace.yaml
+    kubectl apply -f k8s/base/configmaps.yaml
+    # See "Secrets Management" below for applying secrets
     ```
 
-    **Step 2: Service Configuration**
-    Copy the example config for each service:
+3.  **Secrets Management**
+    Copy the development secrets template and populate it with your credentials:
+
     ```bash
-    cp services/identityservice/.env.example services/identityservice/.env
-    cp services/profileservice/.env.example services/profileservice/.env
-    cp services/notificationservice/.env.example services/notificationservice/.env
-    cp services/consultationservice/.env.example services/consultationservice/.env
-    cp services/chatservice/.env.example services/chatservice/.env
-    cp services/apigateway/.env.example services/apigateway/.env
-    cp services/recommendationservice/.env.example services/recommendationservice/.env
+    cp k8s/base/secrets-dev.yaml k8s/base/secrets.yaml
+    # Edit k8s/base/secrets.yaml with real values
+    kubectl apply -f k8s/base/secrets.yaml
     ```
 
-3.  **Run with Docker Compose**
+4.  **Deploy Services**
+    You can deploy services individually or all at once using the provided K8s manifests in `k8s/services/`.
     ```bash
-    # Start infrastructure (DBs, Kafka, Redis) and Services
-    docker-compose up -d --build
+    kubectl apply -f k8s/services/identity/
+    kubectl apply -f k8s/services/apigateway/
+    # ... apply other services
     ```
 
-4.  **Access the Application**
-    - **Web App**: `http://localhost:4200` (if running locally) or via Gateway.
-    - **API Gateway**: `http://localhost:8888`
-    - **Eureka/Consul** (if applicable): `http://localhost:8761`
-
----
-
-## 📂 Directory Structure
+## Directory Structure
 
 ```
 PsyConnect/
 ├── .github/            # CI/CD Workflows
-├── dev/                # Development infrastructure (docker-compose, init scripts)
-├── services/           # Microservices source code
+├── k8s/                # Kubernetes Manifests
+│   ├── base/           # Common Configs (ConfigMap, Secret, Namespace)
+│   ├── infrastructure/ # Db/Kafka setup
+│   └── services/       # Per-service Deployments
+├── services/           # Microservices Source Code
 │   ├── apigateway/
 │   ├── identityservice/
 │   ├── profileservice/
 │   ├── consultationservice/
 │   ├── chatservice/
 │   ├── notificationservice/
-│   ├── recommendationservice/
-│   ├── mobileflutter/  # Mobile App
-│   └── webapp/         # Web App
+│   └── ...
 └── README.md           # Project Documentation
 ```
 
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
+## Contributing
 
 1.  Fork the repository.
 2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
@@ -171,16 +148,11 @@ We welcome contributions! Please follow these steps:
 4.  Push to the branch (`git push origin feature/AmazingFeature`).
 5.  Open a Pull Request.
 
----
+## License
 
-## 📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 📞 Contact
+## Contact
 
 - **Project Lead**: Chessy
-- **Email**: tranvanhuy16032004@gmail.com
-- **Repository**: [github.com/hiamchubbybear/PsyConnect](https://github.com/hiamchubbybear/PsyConnect)
+- **Repository**: https://github.com/hiamchubbybear/PsyConnect

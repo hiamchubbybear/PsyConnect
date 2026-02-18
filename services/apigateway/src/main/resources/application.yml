@@ -1,0 +1,105 @@
+server:
+  port: 8888
+
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowedHeaders: "*"
+            allowCredentials: false
+      routes:
+        - id: public_routes
+          uri: ${IDENTITY_SERVICE_URL:http://identityservice:8080}
+          predicates:
+            - Path=/auth/login,/auth/register
+          filters:
+            - RemoveRequestHeader=Authorization
+            - RemoveRequestHeader=Forwarded
+
+        - id: identity_service
+          uri: ${IDENTITY_SERVICE_URL:http://identityservice:8080}
+          predicates:
+            - Path=/identity/**,/auth/**,/oauth2/**,/account/**,/v1/identity/**,/v1/auth/**
+
+        - id: profile_service
+          uri: ${PROFILE_SERVICE_URL:http://profileservice:8081}
+          predicates:
+            - Path=/profile/**,/profile/friends/**,/mood/**,/user-setting/**,/v1/profile/**,/v1/profile/friends/**,/v1/mood/**,/v1/user-setting/**
+
+        - id: notification_service
+          uri: ${NOTIFICATION_SERVICE_URL:http://notificationservice:8082}
+          predicates:
+            - Path=/noti/**,/notification/**
+
+        - id: chat_service
+          uri: ${CHAT_SERVICE_URL:http://chatservice:8083}
+          predicates:
+            - Path=/chats/**,/conversations/**
+
+        - id: consultation_service
+          uri: ${CONSULTATION_SERVICE_URL:http://consultationservice:8084}
+          predicates:
+            - Path=/consultation/**,/v1/consultation/**
+
+        - id: static_delete_data
+          uri: http://localhost:8888
+          predicates:
+            - Path=/delete-data
+
+  kafka:
+    producer:
+      acks: 0
+      retries: 0
+      bootstrap-servers: ${KAFKA_BROKERS:localhost:19092}
+      properties:
+        request.timeout.ms: 3000
+        delivery.timeout.ms: 3000
+        linger.ms: 0
+        max.in.flight.requests.per.connection: 1
+        max.block.ms: 100
+
+logging:
+  level:
+    org.apache.kafka.clients.NetworkClient: OFF
+
+base:
+  url: ${BASE_URL:http://identityservice}
+
+identity:
+  port: 8080
+
+profile:
+  port: 8081
+
+baseUriNotificationService: ${NOTIFICATION_SERVICE_URL:http://notificationservice}
+baseUriProfileService: ${PROFILE_SERVICE_URL:http://profileservice}
+
+SIGNER_KEY: ${SIGNER_KEY}
+BOOTSTRAP_ADDRESS: ${KAFKA_BROKERS:localhost:19092}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true

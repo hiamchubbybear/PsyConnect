@@ -15,9 +15,11 @@ spec:
       labels:
         app: identity-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: identity-service
-          image: ghcr.io/hiamchubbybear/psyconnect-identity-service:latest
+          image: hiamchubbybear/psyconnect-identity-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

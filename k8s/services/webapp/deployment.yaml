@@ -15,9 +15,11 @@ spec:
       labels:
         app: webapp
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: webapp
-          image: ghcr.io/hiamchubbybear/psyconnect-webapp:latest
+          image: hiamchubbybear/psyconnect-webapp:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80

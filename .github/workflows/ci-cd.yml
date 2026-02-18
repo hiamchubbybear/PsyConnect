@@ -1,66 +1,134 @@
-name: Build and Deploy (Self-Hosted)
+name: Build and Deploy (Modular)
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "develop"]
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-  # IMAGE_NAME: ${{ github.repository }} # Can't use this directly in cross-stage easily without parsing
-
 jobs:
-  build-and-deploy:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+  # 1. Security Check (Reusable Gitleaks)
+  security-audit:
+    uses: ./.github/workflows/reusable-security-scan.yml
+    secrets: inherit
 
-      # Note: Since runs-on is self-hosted, we assume Docker and Kubectl are already installed on the machine.
-      # If these are separate environments, we might need setup steps, but usually self-hosted means "ready-to-go".
+  # 2. Build Services (Parallel)
+  build-api-gateway:
+    needs: security-audit
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "API Gateway"
+      context_path: "services/apigateway"
+      image_name: "hiamchubbybear/psyconnect-api-gateway"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+  build-identity-service:
+    needs: security-audit
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Identity Service"
+      context_path: "services/identityservice"
+      image_name: "hiamchubbybear/psyconnect-identity-service"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Identity Service
-        run: |
-          cd services/identityservice
-          # Grant execute permission if needed
-          chmod +x mvnw
-          ./mvnw clean package -DskipTests
-          docker build . --tag ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-identity-service:latest
-          docker push ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-identity-service:latest
+  build-profile-service:
+    needs: security-audit
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Profile Service"
+      context_path: "services/profileservice"
+      image_name: "hiamchubbybear/psyconnect-profile-service"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Profile Service
-        run: |
-          cd services/profileservice
-          chmod +x mvnw
-          ./mvnw clean package -DskipTests
-          docker build . --tag ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-profile-service:latest
-          docker push ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-profile-service:latest
+  build-consultation-service:
+    needs: security-audit
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Consultation Service"
+      context_path: "services/consultationservice"
+      image_name: "hiamchubbybear/psyconnect-consultation-service"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Webapp
-        run: |
-          cd services/webapp
-          # Assuming Dockerfile handles the build
-          docker build . --tag ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-webapp:latest
-          docker push ${{ env.REGISTRY }}/hiamchubbybear/psyconnect-webapp:latest
+  build-chat-service:
+    needs: security-audit
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Chat Service"
+      context_path: "services/chatservice"
+      image_name: "hiamchubbybear/psyconnect-chat-service"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Deploy to K8s (Local)
-        run: |
-          # Since runner is on the same machine as K8s (or has kubeconfig set up)
-          # We just run apply/rollout
+  build-notification-service:
+    needs: security-audit
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Notification Service"
+      context_path: "services/notificationservice"
+      image_name: "hiamchubbybear/psyconnect-notification-service"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-          # Optional: Update base configs if changed
-          # kubectl apply -f k8s/base/
+  build-webapp:
+    needs: security-audit
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Web App"
+      context_path: "services/webapp/psyconnect-web"
+      image_name: "hiamchubbybear/psyconnect-webapp"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-          # Rolling restart to pick up new latest images
-          kubectl rollout restart deployment identity-service -n psyconnect
-          kubectl rollout restart deployment profile-service -n psyconnect
-          kubectl rollout restart deployment webapp -n psyconnect
-
-          # Note: Add other services here as they are implemented
+  # 3. Deploy to K8s (Run after all builds succeed)
+  deploy:
+    needs:
+      - build-api-gateway
+      - build-identity-service
+      - build-profile-service
+      - build-consultation-service
+      - build-chat-service
+      - build-notification-service
+      - build-webapp
+    uses: ./.github/workflows/reusable-deploy.yml
+    secrets:
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      CHAT_MONGO_URI: ${{ secrets.CHAT_MONGO_URI }}
+      CONSULTATION_MONGO_URI: ${{ secrets.CONSULTATION_MONGO_URI }}
+      SPRING_NEO4J_AUTHENTICATION_USERNAME: ${{ secrets.SPRING_NEO4J_AUTHENTICATION_USERNAME }}
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD: ${{ secrets.SPRING_NEO4J_AUTHENTICATION_PASSWORD }}
+      CONSULTATION_REDIS_PASSWORD: ${{ secrets.CONSULTATION_REDIS_PASSWORD }}
+      SPRING_DATA_REDIS_PASSWORD: ${{ secrets.SPRING_DATA_REDIS_PASSWORD }}
+      SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
+      JWT_SIGNER_KEY: ${{ secrets.JWT_SIGNER_KEY }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
+      # Custom Mappings
+      FACEBOOK_CLIENT_ID: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_ID }}
+      FACEBOOK_CLIENT_SECRET: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_SECRET }}
+      GOOGLE_CLIENT_ID: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}
+      # SMTP
+      SMPT_HOST: ${{ secrets.SMPT_HOST }}
+      SMPT_PORT: ${{ secrets.SMPT_PORT }}
+      SMPT_MAIL: ${{ secrets.SMPT_MAIL }}
+      SMPT_APP_PASS: ${{ secrets.SMPT_APP_PASS }}

@@ -15,9 +15,11 @@ spec:
       labels:
         app: chat-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: chat-service
-          image: ghcr.io/hiamchubbybear/psyconnect-chat-service:latest
+          image: hiamchubbybear/psyconnect-chat-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8084
@@ -26,6 +28,12 @@ spec:
                 name: psyconnect-config
             - secretRef:
                 name: psyconnect-secrets
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: psyconnect-secrets
+                  key: CHAT_MONGO_URI
           readinessProbe:
             httpGet:
               path: /actuator/health

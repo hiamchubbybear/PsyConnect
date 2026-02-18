@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/psyconnect/notificationservice/pkg/email"
-	"github.com/psyconnect/notificationservice/pkg/handlers"
+	"notificationservice/pkg/email"
+	"notificationservice/pkg/handlers"
 )
 
 type API struct {

@@ -6,10 +6,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/psyconnect/notificationservice/pkg/config"
-	"github.com/psyconnect/notificationservice/pkg/email"
-	"github.com/psyconnect/notificationservice/pkg/handlers"
-	"github.com/psyconnect/notificationservice/pkg/models"
+	"notificationservice/pkg/config"
+	"notificationservice/pkg/email"
+	"notificationservice/pkg/handlers"
+	"notificationservice/pkg/models"
 	"github.com/segmentio/kafka-go"
 )
 

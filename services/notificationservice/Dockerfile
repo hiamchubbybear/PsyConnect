@@ -1,32 +1,36 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
-# Install build dependencies
-RUN apk add --no-cache git gcc musl-dev
+# Force enable Go modules
+ENV GO111MODULE=on
+
+# Use official Go proxy to avoid network issues
+ENV GOPROXY=https://proxy.golang.org,direct
 
 WORKDIR /app
 
 # Copy go mod files
 COPY go.mod go.sum ./
-
-# Download dependencies
 RUN go mod download
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o notification-service ./cmd/main.go
+# Verify module setup and build
+RUN ls -la && \
+    cat go.mod && \
+    go list -m && \
+    CGO_ENABLED=0 GOOS=linux go build -v -o notification-service ./cmd/...
 
 # Runtime stage
-FROM alpine:latest
+FROM alpine:3.19
 
-# Install ca-certificates for HTTPS, tzdata for timezones, wget for health check, and netcat for Kafka check
-RUN apk --no-cache add ca-certificates tzdata wget netcat-openbsd
+WORKDIR /app
 
-WORKDIR /root/
+# Install ca-certificates for HTTPS, tzdata for timezones, wget for health check
+RUN apk add --no-cache ca-certificates tzdata wget netcat-openbsd
 
-# Copy the binary from builder
+# Copy binary from builder
 COPY --from=builder /app/notification-service .
 
 # Copy templates
@@ -36,10 +40,6 @@ COPY --from=builder /app/templates ./templates
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Copy .env file (optional, can use env vars from docker-compose)
-COPY .env .env
-
-# Expose HTTP port
 EXPOSE 8082
 
 # Health check

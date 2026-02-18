@@ -6,7 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/psyconnect/notificationservice/pkg/config"
+	"notificationservice/pkg/config"
+
 	"gopkg.in/gomail.v2"
 )
 

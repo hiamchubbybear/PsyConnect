@@ -2,41 +2,34 @@ package kafka
 
 import (
 	"encoding/json"
+	"log"
 )
 
 func (c *Consumer) handleIncomingCall(data []byte) error {
-	// Define temporary struct to match the event format from Consultation Service
+	// Define the event structure that matches what Chat Service sends
 	type IncomingCallEvent struct {
-		ReceiverID string      `json:"receiver_id"`
-		Payload    interface{} `json:"payload"`
+		EventID   string `json:"eventId"`
+		EventType string `json:"eventType"`
+		Data      struct {
+			SessionID      string `json:"sessionId"`
+			ConversationID string `json:"conversationId"`
+			CallerID       string `json:"callerId"`
+			CallerName     string `json:"callerName"`
+			RecipientID    string `json:"recipientId"`
+		} `json:"data"`
 	}
 
 	var event IncomingCallEvent
-
-	// Attempt to unmarshal as the "Wrapper" first, as Consultation Service sends { Key, Value: { Type, Payload } }
-	// But wait, the Reader reads msg.Value.
-	// In Consultation Producer: p.SendNotification(string(data)).
-	// data is json.Marshal(event) where event is the Wrapper.
-	// So msg.Value IS the Wrapper.
-
-	type Wrapper struct {
-		Key   string `json:"key"`
-		Value struct {
-			Type    string            `json:"type"`
-			Payload IncomingCallEvent `json:"payload"`
-		} `json:"value"`
-	}
-
-	var w Wrapper
-	if err := json.Unmarshal(data, &w); err != nil {
-		// Fallback or log error
-		// It might be possible that we receive clean payload if using different producer method, but currently it sends wrapper.
+	if err := json.Unmarshal(data, &event); err != nil {
+		log.Printf("Failed to unmarshal incoming call event: %v", err)
 		return err
 	}
 
-	// Extract the actual payload
-	targetPayload := w.Value.Payload
+	// Log for debugging
+	log.Printf("Received incoming call event: %s from %s to %s", event.EventID, event.Data.CallerID, event.Data.RecipientID)
 
-	// Now call the service
-	return c.notifSvc.HandleIncomingCall(targetPayload.ReceiverID, targetPayload.Payload)
+	// Call the notification service to send FCM
+	// We pass the whole Data struct as payload, or map it to what HandleIncomingCall expects
+	// Assuming HandleIncomingCall takes (receiverID string, payload interface{})
+	return c.notifSvc.HandleIncomingCall(event.Data.RecipientID, event.Data)
 }

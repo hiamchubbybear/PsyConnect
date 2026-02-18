@@ -1,32 +1,43 @@
-# Git
+# Version control
 .git
 .gitignore
 
-# Documentation
-*.md
-docs/
-
-# IDE
-.vscode/
-.idea/
+# IDEs and Editors
+.idea
+.vscode
 *.swp
-*.swo
+*.iml
 
-# OS
+# Dependencies and Build Artifacts
+node_modules
+target
+dist
+build
+bin
+obj
+vendor/
+notification-service
+chat-service
+
+# Logs and Data
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+redis-data
+loki-data
+grafana-data
+prometheus-data
+tempo-data
+db-data
+
+# Environment Variables
+.env
+.env.*
+!*.example
+!*.sample
+
+# OS Generated
 .DS_Store
 Thumbs.db
-
-# Build artifacts
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-
-# Test files
-*_test.go
-test/
-
-# Temporary files
-tmp/
-temp/

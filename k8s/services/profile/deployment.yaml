@@ -15,9 +15,11 @@ spec:
       labels:
         app: profile-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: profile-service
-          image: ghcr.io/hiamchubbybear/psyconnect-profile-service:latest
+          image: hiamchubbybear/psyconnect-profile-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8081

@@ -1,6 +1,8 @@
-module github.com/psyconnect/notificationservice
+module notificationservice
 
-go 1.21
+go 1.23.0
+
+toolchain go1.24.2
 
 require (
 	firebase.google.com/go/v4 v4.13.0

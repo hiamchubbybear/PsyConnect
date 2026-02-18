@@ -1,0 +1,118 @@
+name: Reusable Deploy to K8s
+
+on:
+  workflow_call:
+    secrets:
+      # Pass all secrets needed for secrets.yaml generation
+      SPRING_DATASOURCE_USERNAME:
+        required: true
+      SPRING_DATASOURCE_PASSWORD:
+        required: true
+      DB_USER:
+        required: true
+      DB_PASSWORD:
+        required: true
+      CHAT_MONGO_URI:
+        required: true
+      CONSULTATION_MONGO_URI:
+        required: true
+      SPRING_NEO4J_AUTHENTICATION_USERNAME:
+        required: true
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD:
+        required: true
+      CONSULTATION_REDIS_PASSWORD:
+        required: true
+      SPRING_DATA_REDIS_PASSWORD:
+        required: true
+      SIGNER_KEY:
+        required: true
+      JWT_SIGNER_KEY:
+        required: true
+      JWT_SECRET:
+        required: true
+      JWT_EXPIRATION:
+        required: true
+      FACEBOOK_CLIENT_ID:
+        required: true
+      FACEBOOK_CLIENT_SECRET:
+        required: true
+      GOOGLE_CLIENT_ID:
+        required: true
+      GOOGLE_CLIENT_SECRET:
+        required: true
+      SMPT_HOST:
+        required: true
+      SMPT_PORT:
+        required: true
+      SMPT_MAIL:
+        required: true
+      SMPT_APP_PASS:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy to K8s
+        env:
+          # Export secrets as env vars for envsubst
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          CHAT_MONGO_URI: ${{ secrets.CHAT_MONGO_URI }}
+          CONSULTATION_MONGO_URI: ${{ secrets.CONSULTATION_MONGO_URI }}
+          SPRING_NEO4J_AUTHENTICATION_USERNAME: ${{ secrets.SPRING_NEO4J_AUTHENTICATION_USERNAME }}
+          SPRING_NEO4J_AUTHENTICATION_PASSWORD: ${{ secrets.SPRING_NEO4J_AUTHENTICATION_PASSWORD }}
+          CONSULTATION_REDIS_PASSWORD: ${{ secrets.CONSULTATION_REDIS_PASSWORD }}
+          SPRING_DATA_REDIS_PASSWORD: ${{ secrets.SPRING_DATA_REDIS_PASSWORD }}
+          SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
+          JWT_SIGNER_KEY: ${{ secrets.JWT_SIGNER_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
+          FACEBOOK_CLIENT_ID: ${{ secrets.FACEBOOK_CLIENT_ID }}
+          FACEBOOK_CLIENT_SECRET: ${{ secrets.FACEBOOK_CLIENT_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SMPT_HOST: ${{ secrets.SMPT_HOST }}
+          SMPT_PORT: ${{ secrets.SMPT_PORT }}
+          SMPT_MAIL: ${{ secrets.SMPT_MAIL }}
+          SMPT_APP_PASS: ${{ secrets.SMPT_APP_PASS }}
+        run: |
+          # Since runner is on the same machine as K8s (or has kubeconfig set up)
+          export KUBECONFIG=$HOME/.kube/config
+
+          echo "=== Debug Kubeconfig ==="
+          ls -l $KUBECONFIG || echo "File not found at $KUBECONFIG"
+          echo "========================"
+
+          # GENERATE SECRETS CONFIG (Secure Injection)
+          echo "Generating secrets.yaml from template..."
+          envsubst < k8s/base/secrets.template.yaml > k8s/base/secrets.yaml
+
+          echo "Verifying secrets.yaml generation (masking content)..."
+          ls -l k8s/base/secrets.yaml
+
+          # Update base configs
+          kubectl apply -f k8s/base/namespace.yaml
+          kubectl apply -f k8s/base/
+
+          # Apply Services
+          kubectl apply -R -f k8s/services/ &>/dev/null || kubectl apply -R -f k8s/services/
+
+          # Apply Ingress
+          if [ -f k8s/ingress.yaml ]; then
+             kubectl apply -f k8s/ingress.yaml
+          fi
+
+          # Rolling restart
+          kubectl rollout restart deployment api-gateway -n psyconnect || true
+          kubectl rollout restart deployment identity-service -n psyconnect || true
+          kubectl rollout restart deployment profile-service -n psyconnect || true
+          kubectl rollout restart deployment consultation-service -n psyconnect || true
+          kubectl rollout restart deployment chat-service -n psyconnect || true
+          kubectl rollout restart deployment notification-service -n psyconnect || true
+          kubectl rollout restart deployment webapp -n psyconnect || true

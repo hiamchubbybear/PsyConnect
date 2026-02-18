@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/psyconnect/notificationservice/pkg/database"
-	"github.com/psyconnect/notificationservice/pkg/firebase"
+	"notificationservice/pkg/database"
+	"notificationservice/pkg/firebase"
 )
 
 type NotificationService struct {

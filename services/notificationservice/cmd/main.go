@@ -8,13 +8,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/psyconnect/notificationservice/pkg/api"
-	"github.com/psyconnect/notificationservice/pkg/config"
-	"github.com/psyconnect/notificationservice/pkg/database"
-	"github.com/psyconnect/notificationservice/pkg/email"
-	"github.com/psyconnect/notificationservice/pkg/firebase"
-	"github.com/psyconnect/notificationservice/pkg/handlers"
-	"github.com/psyconnect/notificationservice/pkg/kafka"
+	"notificationservice/pkg/api"
+	"notificationservice/pkg/config"
+	"notificationservice/pkg/database"
+	"notificationservice/pkg/email"
+	"notificationservice/pkg/firebase"
+	"notificationservice/pkg/handlers"
+	"notificationservice/pkg/kafka"
 )
 
 func main() {

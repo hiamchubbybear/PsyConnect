@@ -84,9 +84,6 @@ func (s *ChatService) GetChatHistory(conversationID string, limit int, before ti
 	return s.chatRepo.FindChatsByConversation(conversationID, limit, before)
 }
 
-	return s.chatRepo.DeleteChatByID(chatID)
-}
-
 func (s *ChatService) StartCall(payload *model.StartCallPayload) error {
 	log.Printf("Starting call in conversation %s from %s", payload.ConversationID, payload.CallerID)
 

@@ -22,12 +22,18 @@ public class ProfileGRPCClient {
 
     public ProfileGRPCClient(
             UserAccountMapper userAccountMapper,
-            @Value("${baseUriProfileService:localhost}") String profileServiceHost) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(profileServiceHost, 50051)
+            @Value("${baseUriProfileService:localhost}") String profileServiceUrl) {
+        // Extract host from URL (e.g. http://profile-service:8081 -> profile-service)
+        String host = profileServiceUrl.replace("http://", "").replace("https://", "");
+        if (host.contains(":")) {
+            host = host.split(":")[0];
+        }
+
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, 50051)
                 .usePlaintext()
                 .build();
         stub = ProfileCreationServiceGrpc.newBlockingStub(channel);
-        log.info("gRPC Profile Service connected to: {}:50051", profileServiceHost);
+        log.info("gRPC Profile Service connected to: {}:50051 (Original URL: {})", host, profileServiceUrl);
         this.userAccountMapper = userAccountMapper;
     }
 

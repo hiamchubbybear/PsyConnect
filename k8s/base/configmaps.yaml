@@ -4,17 +4,28 @@ metadata:
   name: psyconnect-config
   namespace: psyconnect
 data:
-  # Common Configuration
   SPRING_PROFILES_ACTIVE: "k8s"
 
-  # Service Discovery / Connectivity
-  KAFKA_BROKERS: "kafka-service.psyconnect.svc.cluster.local:9092"
-  DB_HOST: "mysql-service.psyconnect.svc.cluster.local"
-  DB_PORT: "3306"
-  REDIS_HOST: "redis-service.psyconnect.svc.cluster.local"
-  REDIS_PORT: "6379"
+  KAFKA_BROKERS: "172.17.0.1:19092"
+  KAFKA_ADDRESS: "172.17.0.1:19092"
 
-  # Service URLs (for inter-service communication if needed)
+  REDIS_HOST: "172.17.0.1"
+  REDIS_PORT: "6379"
+  CONSULTATION_REDIS_ADDRESS: "172.17.0.1:6379"
+
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-3528d4f7-mysql2.g.aivencloud.com:10788/identityservice?sslMode=REQUIRED&allowPublicKeyRetrieval=true"
+
+  DB_HOST: "mysql-3528d4f7-mysql2.g.aivencloud.com"
+  DB_PORT: "10788"
+  DB_NAME: "notification_db"
+
+  SPRING_NEO4J_URI: "neo4j+s://256e7888.databases.neo4j.io"
+
   IDENTITY_SERVICE_URL: "http://identity-service.psyconnect.svc.cluster.local:8080"
   PROFILE_SERVICE_URL: "http://profile-service.psyconnect.svc.cluster.local:8081"
   NOTIFICATION_SERVICE_URL: "http://notification-service.psyconnect.svc.cluster.local:8082"
+
+  BASE_URI_NOTIFICATION_SERVICE: "http://notification-service.psyconnect.svc.cluster.local:8082"
+  BASE_URI_PROFILE_SERVICE: "http://profile-service.psyconnect.svc.cluster.local:8081"
+
+  BASE_URL: "http://identity-service.psyconnect.svc.cluster.local:8080"

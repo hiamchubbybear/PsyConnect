@@ -2,21 +2,43 @@
 # 🔧 IDEs & Editors
 # ===============================
 .idea/
+.vscode/
 *.iml
 *.iws
 *.ipr
-.vscode/
 *.code-workspace
-mongo-data/
-identityservice/.metadata/
+.project
+.classpath
+.settings/
+.factorypath
+
 # ===============================
+# 📄 Documentation & Scripts (Legacy)
+# ===============================
+# Ignore all Markdown files except README.md
+*.md
+!README.md
+K8S_SETUP.md
+
+# Ignore all Shell scripts (moved to K8s)
+*.sh
+!entrypoint.sh
+!scripts/security-check.sh
+/dev/
+dotenv
+
+
+
+
+
+
 # 🐘 Java / Spring Boot
 # ===============================
 target/
 *.jar
 *.war
 *.ear
-.mvn/
+# .mvn/
 # ===============================
 # 🐹 Go
 # ===============================
@@ -178,12 +200,10 @@ services/webapp/psyconnect-web/src/firebase-messaging-sw.js
 *.config.js
 *.config.ts
 *.config.json
-application-*.properties
-application-*.yml
-application.yml
-application.properties
-.env
-.env.dev
-.env.cicd
-config/
-.settings
+# Kubernetes Secrets (Sensitive!)
+k8s/base/secrets.yaml
+k8s/base/secrets-dev.yaml
+
+# Keep application code config, but ignore local overrides if needed
+# application-*.properties (Commented out to allow committing structure files)
+# application-*.yml

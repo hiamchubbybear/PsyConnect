@@ -15,9 +15,11 @@ spec:
       labels:
         app: notification-service
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: notification-service
-          image: ghcr.io/hiamchubbybear/psyconnect-notification-service:latest
+          image: hiamchubbybear/psyconnect-notification-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8082

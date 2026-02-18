@@ -3,6 +3,7 @@ package main
 import (
 	"chatservice/internal/chat/repository/repository"
 	"chatservice/internal/chat/service"
+
 	"fmt"
 	"log"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"chatservice/bootstrap"
 	"chatservice/internal/db"
 	"chatservice/internal/handler"
+	"chatservice/internal/kafka"
 	"chatservice/internal/middleware"
 	"chatservice/internal/signaling"
 	"chatservice/internal/ws"
@@ -63,7 +65,14 @@ func main() {
 		}
 	}()
 
-	chatService := service.NewChatService(repoManager.MessageRepo)
+	// Initialize Kafka Producer
+	kafkaProducer, err := kafka.NewProducer(env)
+	if err != nil {
+		log.Fatalf("Failed to initialize Kafka producer: %v", err)
+	}
+	defer kafkaProducer.Close()
+
+	chatService := service.NewChatService(repoManager.MessageRepo, kafkaProducer)
 	hub.RegisterHandler("chat", func(hub *ws.Hub, msg ws.Message) {
 		chatService.HandleChatMessage(hub, msg)
 	})
@@ -75,7 +84,7 @@ func main() {
 
 	router.Use(middleware.LoggingMiddleware(kafkaLogger))
 
-	chatHandler := handler.NewChatHandler(env, repoManager)
+	chatHandler := handler.NewChatHandler(env, repoManager, chatService)
 	conversationHandler := handler.NewConversationHandler(env, repoManager)
 
 	router.POST("/chats", chatHandler.CreateChat)
