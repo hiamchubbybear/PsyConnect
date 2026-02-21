@@ -3,23 +3,32 @@
 # Cmd: helm install kafka bitnami/kafka -f k8s/infrastructure/kafka-values.yaml
 
 zookeeper:
-  enabled: true
+  enabled: false # Use Kraft
 
-replicaCount: 1 # For Dev/Single Node
+image:
+  tag: latest
 
-persistence:
-  enabled: true
-  size: 8Gi
+controller:
+  replicaCount: 1
+  resourcesPreset: "micro"
 
-# Expose Kafka for internal K8s access
-service:
-  type: ClusterIP
-  ports:
-    client: 9092
+broker:
+  replicaCount: 1
+  resourcesPreset: "micro"
 
-# Use PLAINTEXT for internal communication to save hassle in Dev
 listeners:
   client:
     protocol: PLAINTEXT
   interbroker:
     protocol: PLAINTEXT
+  controller:
+    protocol: PLAINTEXT
+
+service:
+  type: ClusterIP
+  ports:
+    client: 9092
+
+persistence:
+  enabled: true
+  size: 2Gi

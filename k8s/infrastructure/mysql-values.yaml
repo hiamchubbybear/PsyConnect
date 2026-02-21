@@ -6,12 +6,16 @@ auth:
   rootPassword: "CHANGE_ME_IN_PROD"
   database: "psyconnect_dev"
 
+image:
+  tag: latest
+
 primary:
   persistence:
     enabled: true
-    size: 8Gi
+    size: 2Gi
   service:
     type: ClusterIP
     port: 3306
+  resourcesPreset: "micro"
 
 architecture: standalone # For Dev/Single Node

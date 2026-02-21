@@ -5,12 +5,19 @@
 auth:
   enabled: false # Easier for dev, enable password in prod
 
+image:
+  tag: latest
+
 architecture: standalone
 
 master:
   persistence:
     enabled: true
-    size: 2Gi
+    size: 1Gi
   service:
     type: ClusterIP
     port: 6379
+  resourcesPreset: "micro"
+
+metrics:
+  enabled: false # Save resources
