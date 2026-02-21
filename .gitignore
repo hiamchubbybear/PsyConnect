@@ -204,6 +204,13 @@ services/webapp/psyconnect-web/src/firebase-messaging-sw.js
 k8s/base/secrets.yaml
 k8s/base/secrets-dev.yaml
 
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+
 # Keep application code config, but ignore local overrides if needed
 # application-*.properties (Commented out to allow committing structure files)
 # application-*.yml
+services/webapp/psyconnect-web/src/environments/environment.secret.ts
