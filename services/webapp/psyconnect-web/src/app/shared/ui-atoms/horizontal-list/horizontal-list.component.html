@@ -1,0 +1,29 @@
+<section class="horizontal-list">
+  <div class="horizontal-list__header" *ngIf="title">
+    <h2 class="horizontal-list__title">{{ title }}</h2>
+
+    <div class="horizontal-list__nav" *ngIf="showNav && !isEmpty">
+      <button class="horizontal-list__nav-btn" (click)="scrollLeft()">
+        <lucide-icon name="chevron-left"></lucide-icon>
+      </button>
+      <button class="horizontal-list__nav-btn" (click)="scrollRight()">
+        <lucide-icon name="chevron-right"></lucide-icon>
+      </button>
+    </div>
+  </div>
+
+  <div
+    #scrollContainer
+    class="horizontal-list__row"
+    *ngIf="!isEmpty; else emptyState"
+  >
+    <ng-content></ng-content>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="horizontal-list__empty">
+      <p>{{ emptyText }}</p>
+      <ng-content select="[empty-content]"></ng-content>
+    </div>
+  </ng-template>
+</section>

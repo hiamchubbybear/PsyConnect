@@ -26,6 +26,8 @@
   --color-text-muted: #{v.$color-text-muted};
   --color-text-hover: #b7b7ba;
 
+  --header-height: 50px; // Defined global header height
+
   --color-primary: #{v.$color-primary};
   --color-primary-hover: #{v.$color-primary-hover};
   --color-accent: #{v.$color-accent};
@@ -116,75 +118,77 @@
 }
 
 [data-theme="dark"] {
+  // Slate/Navy Palette for Dark Mode
   --color-bg-contrast: #fff;
-  --color-bg: #1a1a1b;
-  --color-bg-secondary: #151515;
-  --color-surface-low: #151515;
-  --color-surface-mid: #1e1e20;
-  --color-surface-high: #27272a;
-  --color-surface-overlay: #2f2f33;
+  --color-bg: #0f172a; // Slate 900 - Deep Blue-Gray
+  --color-bg-secondary: #1e293b; // Slate 800 - Lighter than bg for cards
 
-  --color-text: #fafafa;
-  --color-text-muted: #a1a1aa;
-  --color-text-hover: #292930;
+  --color-surface-low: #0f172a;
+  --color-surface-mid: #1e293b; // Slate 800
+  --color-surface-high: #334155; // Slate 700
+  --color-surface-overlay: #475569; // Slate 600
 
-  --color-primary: #fafafa;
-  --color-primary-hover: #f5f5f5;
-  --color-accent: #d4d4d4;
-  --color-accent-hover: #e5e5e5;
-  --color-accent-bg: #{rgba(255, 255, 255, 0.05)};
+  --color-text: #f8fafc; // Slate 50
+  --color-text-muted: #94a3b8; // Slate 400
+  --color-text-hover: #e2e8f0; // Slate 200
 
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-surface: #111111;
+  // Primary & Accent handling
+  --color-primary: #3b82f6; // Blue 500 - Clear on dark
+  --color-primary-hover: #2563eb; // Blue 600
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  --color-accent-bg: rgba(59, 130, 246, 0.15);
+
+  --color-border: rgba(148, 163, 184, 0.1); // Slate-based border
+  --color-surface: #1e293b; // Slate 800
 
   // Icon theme adaptation
-  --icon-invert: 1; // Dark mode: white icons
+  --icon-invert: 1;
 
-  --header-bg: #1e1e20;
-  --header-text: #fafafa;
-  --header-border: #3f3f46;
-  --header-link-text: #d4d4d8;
-  --header-link-hover: #e5e5f7;
-  --header-link-arrow: #71717a;
+  --header-bg: #1e293b; // Slate 800
+  --header-text: #f8fafc;
+  --header-border: #334155; // Slate 700
+  --header-link-text: #cbd5e1; // Slate 300
+  --header-link-hover: #60a5fa; // Blue 400 (Light Blue for links)
+  --header-link-arrow: #64748b; // Slate 500
   --header-shadow: #{v.$shadow-sm};
-  --footer-a: #d4d4d8;
-  --footer-line: #3d3d43;
+  --footer-a: #94a3b8;
+  --footer-line: #334155;
 
-  --dropdown-bg: #1e1e20;
-  --dropdown-border: #3f3f46;
-  --dropdown-text: #fafafa;
-  --dropdown-item-hover-bg: #27272a;
-  --dropdown-item-hover-text: #f4f4f5;
-  --dropdown-shadow: #{v.$shadow-md};
-  --dropdown-badge-bg: #3b82f6;
-  --dropdown-badge-bg-hover: #2563eb;
+  --dropdown-bg: #1e293b;
+  --dropdown-border: #334155;
+  --dropdown-text: #f8fafc;
+  --dropdown-item-hover-bg: #334155;
+  --dropdown-item-hover-text: #3b82f6;
+  --dropdown-shadow: #{v.$shadow-lg}; // Deeper shadow for dark mode
+  --dropdown-badge-bg: #2563eb;
+  --dropdown-badge-bg-hover: #1d4ed8;
   --dropdown-badge-text: #ffffff;
 
-  --color-border: #{rgba(255, 255, 255, 0.08)};
-
-  --color-success-bg: #0f1419;
+  // Alerts
+  --color-success-bg: #052e16; // Deep Green
   --color-success-text: #4ade80;
-  --color-success-border: #166534;
+  --color-success-border: #14532d;
 
-  --color-error-bg: #1c0b0b;
+  --color-error-bg: #450a0a; // Deep Red
   --color-error-text: #f87171;
   --color-error-border: #7f1d1d;
 
-  --color-warning-bg: #1a1206;
+  --color-warning-bg: #422006; // Deep Orange
   --color-warning-text: #fbbf24;
-  --color-warning-border: #92400e;
+  --color-warning-border: #78350f;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 
   --icon-theme-color: brightness(0) invert(1);
-  --overlay-bg: rgba(0, 0, 0, 0.7);
+  --overlay-bg: rgba(15, 23, 42, 0.8); // Slate 900 based overlay
   --color-on-accent: #000000;
-  --color-icon: #a1a1aa;
-  --color-icon-hover: #ffffff;
-  --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.6);
+  --color-icon: #94a3b8;
+  --color-icon-hover: #f8fafc;
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 
   --color-text-secondary: var(--color-text-muted);
   --border-radius-sm: 4px;
@@ -212,13 +216,23 @@ body {
 
 body {
   font-family: v.$font-primary;
-  font-size: v.$font-size-md;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.4286; // 20px / 14px
   color: var(--color-text);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-optical-sizing: auto;
+  // Inter OpenType alternates — rounder glyphs like Figma
+  // cv11 = single-storey 'a', cv02 = alternate 'g', cv03 = alternate 'y'
+  font-feature-settings:
+    "cv11" 1,
+    "cv02" 1,
+    "cv03" 1,
+    "cv04" 1;
+  letter-spacing: -0.01em;
 }
 a {
   color: var(--color-primary);
@@ -505,39 +519,158 @@ a {
   text-decoration: none;
   white-space: nowrap;
   user-select: none;
-}
-.btn {
-  @include button-base;
-  padding: v.$spacing-md v.$spacing-xl;
-  font-size: v.$font-size-md;
-  font-weight: 500;
-  border-radius: v.$border-radius-md;
-  transition: all v.$transition-medium;
   cursor: pointer;
-  border: 1px solid var(--color-accent);
+  transition: all v.$transition-medium;
+  border-radius: v.$border-radius-md;
+  font-weight: 500;
+  font-size: v.$font-size-md;
+  line-height: 1.5;
+  gap: 0.5rem; // Space between icon and text
 
-  &:focus {
-    outline: 1px solid #525252;
+  &:disabled,
+  &.disabled {
+    opacity: 0.65;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
+}
+
+.btn {
+  @include button-base;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: 9999px; // Pill shape for modern look
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Sizes
+  &.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: v.$font-size-sm;
+  }
+
+  &.btn-lg {
+    padding: 1rem 2rem;
+    font-size: v.$font-size-lg;
+  }
+
+  // Variants
   &.btn-primary {
-    background: var(--color-primary);
-    color: var(--color-bg);
-    border: 2px solid var(--color-primary);
+    background: var(--color-primary); // Fallback
+    background: linear-gradient(135deg, var(--color-primary) 0%, #8b5cf6 100%);
+    color: white !important; // Ensure text is white
+    border: none;
+    box-shadow:
+      0 4px 6px -1px rgba(var(--color-primary-rgb), 0.1),
+      0 2px 4px -1px rgba(var(--color-primary-rgb), 0.06);
 
     &:hover:not(:disabled) {
-      background: var(--color-primary-hover);
-      border-color: var(--color-primary-hover);
-      color: var(--color-bg);
+      background: linear-gradient(
+        135deg,
+        var(--color-primary-hover) 0%,
+        #7c3aed 100%
+      );
+      transform: translateY(-2px);
+      box-shadow:
+        0 10px 15px -3px rgba(var(--color-primary-rgb), 0.2),
+        0 4px 6px -2px rgba(var(--color-primary-rgb), 0.1);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 4px 6px -1px rgba(var(--color-primary-rgb), 0.1);
+    }
+  }
+
+  &.btn-secondary {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+
+    &:hover:not(:disabled) {
+      background: var(--color-surface);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    [data-theme="dark"] & {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: var(--color-text);
+
+      &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--color-primary);
+      }
+    }
+  }
+
+  &.btn-outline {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+
+    &:hover:not(:disabled) {
+      background: rgba(var(--color-primary-rgb), 0.05);
       transform: translateY(-1px);
-      box-shadow: var(--shadow-button-hover);
+    }
+  }
+
+  &.btn-ghost {
+    background: transparent;
+    color: var(--color-text-muted);
+    border-color: transparent;
+    box-shadow: none;
+
+    &:hover:not(:disabled) {
+      background: var(--color-surface-hover);
+      color: var(--color-primary);
+    }
+  }
+
+  &.btn-danger {
+    background: var(--color-error-bg);
+    color: var(--color-error-text);
+    border: 1px solid var(--color-error-border);
+
+    &:hover:not(:disabled) {
+      background: var(--color-error-text);
+      color: white;
+      border-color: var(--color-error-text);
     }
   }
 }
+
 .content {
-  padding-top: v.$spacing-6xl;
-  padding-left: v.$spacing-6xl;
-  padding-right: v.$spacing-4xl;
+  flex: 1;
+  box-sizing: border-box;
+  padding-top: 70px; // Header height (50px) + spacing
+  padding-left: v.$spacing-lg;
+  padding-right: v.$spacing-lg;
+
+  @media (min-width: v.$breakpoint-md) {
+    padding-left: v.$spacing-xl;
+    padding-right: v.$spacing-xl;
+  }
+
+  // When sidebar is visible (applied to parent .app-layout)
+  .app-layout.sidebar-visible & {
+    padding-left: 88px; // Sidebar (68px) + Gap (20px)
+
+    @media (min-width: v.$breakpoint-md) {
+      padding-left: 100px;
+    }
+  }
 }
 .dropdown__trigger {
   appearance: none !important;
@@ -568,3 +701,31 @@ a {
 }
 @import "mascot-animations";
 @import "emote-theme";
+
+// Micro-interactions
+@keyframes bounce-scale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.vote-btn,
+.icon-btn {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Bouncy transition
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  &.active {
+    img {
+      animation: bounce-scale 0.4s ease;
+    }
+  }
+}

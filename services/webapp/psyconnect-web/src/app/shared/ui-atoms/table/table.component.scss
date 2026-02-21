@@ -1,0 +1,90 @@
+@use "sass:color";
+@use "../../../styles/variable" as v;
+
+.app-table-container {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  width: 100%;
+
+  .table-scroll {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: v.$font-primary;
+
+    thead {
+      background: var(--color-bg-secondary);
+      border-bottom: 1px solid var(--color-border);
+
+      th {
+        padding: var(--spacing-md) var(--spacing-lg);
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid var(--color-border);
+        transition: background 0.2s ease;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background: var(--color-surface-hover);
+        }
+
+        td {
+          padding: var(--spacing-md) var(--spacing-lg);
+          font-size: 0.875rem;
+          color: var(--color-text);
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+
+  .loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+
+    [data-theme="dark"] & {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

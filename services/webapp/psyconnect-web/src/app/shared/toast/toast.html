@@ -1,7 +1,6 @@
 <div class="toast" @toastAnimation>
   <span class="material-icons icon" [ngClass]="type">{{ icon }}</span>
   <div class="toast-content">
-    <div class="title">{{ title | translate }}</div>
     <div class="message">{{ message | translate }}</div>
   </div>
   <span class="material-icons close" (click)="handleClose()">close</span>

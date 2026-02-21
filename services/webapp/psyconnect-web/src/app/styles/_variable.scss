@@ -7,42 +7,50 @@ $font-primary:
   Roboto,
   sans-serif;
 
-$font-size-2xs: 0.625rem;
-$font-size-xs: 0.75rem;
-$font-size-sm: 0.875rem;
-$font-size-md: 1rem;
-$font-size-lg: 1.125rem;
-$font-size-xl: 1.25rem;
-$font-size-2xl: 1.5rem;
-$font-size-3xl: 1.875rem;
+// Base: 14px / 20px (Inter 400) — as per design spec
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$line-height-base: 1.4286; // 20px / 14px
+
+// Font size scale (base = 14px)
+$font-size-2xs: 0.625rem; // 10px
+$font-size-xs: 0.714rem; // ~10px
+$font-size-sm: 0.857rem; // 12px
+$font-size-md: 0.875rem; // 14px  ← base
+$font-size-lg: 1rem; // 16px
+$font-size-xl: 1.125rem; // 18px
+$font-size-2xl: 1.286rem; // ~18px
+$font-size-3xl: 1.5rem; // 24px
 
 // --- Colors: Palette ---
 $color-white: #ffffff;
 $color-black: #000000;
 
-// Grays (Zinc-like)
-$color-gray-50: #fafafa;
-$color-gray-100: #f4f4f5;
-$color-gray-200: #e4e4e7;
-$color-gray-300: #d4d4d8;
-$color-gray-400: #a1a1aa;
-$color-gray-500: #71717a;
-$color-gray-600: #52525b;
-$color-gray-700: #3f3f46;
-$color-gray-800: #27272a;
-$color-gray-900: #18181b;
+// Grays (Slate - Blueish Gray for Modern Feel)
+$color-gray-50: #f8fafc;
+$color-gray-100: #f1f5f9;
+$color-gray-200: #e2e8f0;
+$color-gray-300: #cbd5e1;
+$color-gray-400: #94a3b8;
+$color-gray-500: #64748b;
+$color-gray-600: #475569;
+$color-gray-700: #334155;
+$color-gray-800: #1e293b;
+$color-gray-900: #0f172a;
 
-// Semantic Colors (Cleaned up)
-$color-primary: $color-gray-900;
-$color-primary-hover: $color-gray-800;
+// Semantic Colors (Modern Blue Theme)
+$color-primary: #2563eb; // Blue 600 - Balanced & Professional
+$color-primary-hover: #1d4ed8; // Blue 700
 
 $color-text: $color-gray-900;
 $color-text-muted: $color-gray-500;
 $color-text-inverse: $color-white;
 
-$color-accent: $color-gray-900; // Minimal Black
-$color-accent-hover: $color-black;
-$color-accent-bg: rgba(0, 0, 0, 0.05);
+$color-accent: #2563eb;
+$color-accent-hover: #1d4ed8;
+$color-accent-bg: rgba(37, 99, 235, 0.1);
 
 $color-success: #16a34a;
 $color-error: #dc2626;
@@ -50,7 +58,7 @@ $color-warning: #ca8a04;
 
 // Backgrounds
 $color-bg: $color-white;
-$color-bg-secondary: $color-gray-50;
+$color-bg-secondary: $color-gray-100; // Increased contrast from gray-50
 
 // Borders
 $border-width: 1px;
@@ -85,6 +93,9 @@ $shadow-card-hover:
   0 10px 10px -5px rgba(0, 0, 0, 0.04);
 $shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 $shadow-button-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+$shadow-lg:
+  0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
 // --- Animation ---
 $transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);

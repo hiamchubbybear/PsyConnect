@@ -1,0 +1,18 @@
+<div class="app-table-container">
+  <div class="table-scroll" *ngIf="!isEmpty || loading">
+    <ng-content></ng-content>
+  </div>
+
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <app-empty-state
+    *ngIf="!loading && isEmpty"
+    [title]="emptyTitle"
+    [description]="emptyDescription"
+    [icon]="emptyIcon"
+  >
+    <ng-content select="[empty-actions]"></ng-content>
+  </app-empty-state>
+</div>

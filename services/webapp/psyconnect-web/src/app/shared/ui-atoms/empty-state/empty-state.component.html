@@ -1,0 +1,12 @@
+<div class="empty-state">
+  <div class="empty-state__icon" *ngIf="icon">
+    <!-- Check if icon is svg or class -->
+    <i [class]="icon" *ngIf="!icon.includes('/')"></i>
+    <img [src]="icon" *ngIf="icon.includes('/')" alt="Empty state icon" />
+  </div>
+  <h3 class="empty-state__title" *ngIf="title">{{ title }}</h3>
+  <p class="empty-state__description" *ngIf="description">{{ description }}</p>
+  <div class="empty-state__actions">
+    <ng-content></ng-content>
+  </div>
+</div>

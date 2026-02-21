@@ -1,0 +1,15 @@
+<button
+  [type]="type"
+  [class]="classes"
+  [disabled]="disabled || loading"
+  (click)="handleClick($event)"
+>
+  <span *ngIf="loading" class="spinner"></span>
+  <span *ngIf="!loading && icon" class="icon-slot">
+    <!-- You can use ng-content or a specific icon component here -->
+    <ng-content select="[icon]"></ng-content>
+  </span>
+  <span [class.invisible]="loading">
+    <ng-content></ng-content>
+  </span>
+</button>

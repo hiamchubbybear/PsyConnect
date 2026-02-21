@@ -1,0 +1,100 @@
+@use "sass:color";
+
+.form-group {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--color-text, #374151);
+  font-size: 0.875rem;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border, #d1d5db);
+  background: var(--color-bg, #ffffff);
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--color-primary, #1d4ed8);
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+  }
+
+  &.has-error {
+    border-color: var(--color-error, #ef4444);
+
+    &:focus-within {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+  }
+
+  &.disabled {
+    background: var(--color-bg-secondary, #f3f4f6);
+    cursor: not-allowed;
+
+    input {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--color-text, #111827);
+  font-size: 0.95rem;
+  outline: none;
+  font-family: inherit;
+
+  &::placeholder {
+    color: var(--color-text-muted, #9ca3af);
+  }
+}
+
+.input-icon {
+  padding-left: 0.75rem;
+  color: var(--color-text-muted, #9ca3af);
+  display: flex;
+  align-items: center;
+
+  + .form-control {
+    padding-left: 0.5rem;
+  }
+}
+
+.password-toggle {
+  background: none;
+  border: none;
+  padding: 0 0.75rem;
+  cursor: pointer;
+  color: var(--color-text-muted, #9ca3af);
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: var(--color-text, #374151);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.error-feedback {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--color-error, #ef4444);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
