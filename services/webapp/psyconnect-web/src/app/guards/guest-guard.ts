@@ -8,7 +8,7 @@ export const guestGuard: CanActivateFn = () => {
   if (!auth.isLoggedIn()) {
     return true;
   } else {
-    router.navigate(['/notfound']);
+    router.navigate(['/feature/feed']);
     return false;
   }
 };

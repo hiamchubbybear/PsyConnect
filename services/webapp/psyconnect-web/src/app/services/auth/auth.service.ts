@@ -85,11 +85,11 @@ export class AuthService {
     this.secureService.setItem(this.ROLE_KEY, role);
   }
 
-  /**
-   * Get user role from localStorage
-   */
   getRole(): 'therapist' | 'client' | null {
-    return this.secureService.getItem(this.ROLE_KEY) as 'therapist' | 'client' | null;
+    return this.secureService.getItem(this.ROLE_KEY) as
+      | 'therapist'
+      | 'client'
+      | null;
   }
 
   /**
@@ -106,9 +106,6 @@ export class AuthService {
     return this.getRole() === 'client';
   }
 
-  /**
-   * Get current JWT payload
-   */
   getCurrentUser(): JWTPayload | null {
     const token = this.getToken();
     if (!token) {

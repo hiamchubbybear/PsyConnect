@@ -13,8 +13,9 @@ export class AuthStateService {
   ACCESSTOKEN_KEY = environment.accessTokenKey;
   constructor(private secureStorage: SecureStorageService) {
     const token = this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
-    this.loggedIn.next(!!token);
-    this.sidebarVisible.next(!!token);
+    const isLogged = !!token;
+    this.loggedIn.next(isLogged);
+    this.sidebarVisible.next(isLogged);
   }
 
   setLoggedIn(value: boolean) {

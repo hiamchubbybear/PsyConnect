@@ -17,7 +17,7 @@ export class Auth {
   THERAPIST_KEY = environment.therapistsKey;
   constructor(
     private http: HttpClient,
-    private secureStorage: SecureStorageService
+    private secureStorage: SecureStorageService,
   ) {}
 
   login(credentials: {
@@ -31,7 +31,7 @@ export class Auth {
         credentials,
         {
           withCredentials: false,
-        }
+        },
       )
       .pipe(
         tap((res) => {
@@ -42,7 +42,7 @@ export class Auth {
             this.secureStorage.setItem(this.ACCESSTOKEN_KEY, resToken);
             this.secureStorage.setItem(this.refreshKey, refreshToken);
           }
-        })
+        }),
       );
   }
 
@@ -97,7 +97,7 @@ export class Auth {
   refreshToken(username: string): Observable<string> {
     const refreshToken = this.secureStorage.getItem<string>(this.refreshKey);
     console.log(refreshToken);
-    console.log("User name" + username);
+    console.log('User name' + username);
     const params = new HttpParams()
       .set('provider', 'NORMAL')
       .set('platform', 'web')
@@ -109,13 +109,17 @@ export class Auth {
         code: number;
         message: string;
         data: { token: string; refreshToken: string; successful: boolean };
-      }>(`${this.apiUrl}/${this.apiVersion}/auth/refresh`, {}, { params, context: new HttpContext().set(SKIP_AUTH, true), })
+      }>(
+        `${this.apiUrl}/${this.apiVersion}/auth/refresh`,
+        {},
+        { params, context: new HttpContext().set(SKIP_AUTH, true) },
+      )
       .pipe(
         tap((res) => {
           this.secureStorage.setItem(this.ACCESSTOKEN_KEY, res.data.token);
           this.secureStorage.setItem(this.refreshKey, res.data.refreshToken);
         }),
-        map((res) => res.data.token)
+        map((res) => res.data.token),
       );
   }
 
@@ -123,7 +127,7 @@ export class Auth {
     code: string,
     email: string,
     provider: string,
-    plateform: string
+    plateform: string,
   ): Observable<any> {
     const params = {
       code: code,
