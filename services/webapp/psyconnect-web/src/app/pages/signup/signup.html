@@ -10,22 +10,27 @@
       <div class="progress-fill" [style.width.%]="progressPercentage"></div>
     </div>
     <p class="progress-text">
-      {{ progressPercentage | number : "1.0-0" }}%
+      {{ progressPercentage | number: "1.0-0" }}%
       {{ "register.complete" | translate }}
     </p>
   </div>
 
-  <!-- Single Form with 2-Column Layout -->
   <form
     [formGroup]="registerForm"
     (ngSubmit)="submitRegister()"
     class="register-form"
   >
-    <!-- Avatar Section (Full Width) -->
+    <!-- Avatar Section -->
     <div class="form-section full-width">
-      <h2 class="section-title">{{ "register.step0.title" | translate }}</h2>
+      <span class="section-title">{{
+        "register.step0.title" | translate
+      }}</span>
       <div class="avatar-section">
-        <div class="avatar-container" (click)="imageInput.click()">
+        <label
+          class="avatar-container"
+          tabindex="0"
+          (keydown.enter)="imageInput.click()"
+        >
           <div class="avatar-circle" [class.has-image]="imagePreview">
             <img
               *ngIf="imagePreview"
@@ -36,185 +41,81 @@
             <div *ngIf="!imagePreview" class="avatar-placeholder">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
+                width="40"
+                height="40"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
+                stroke-width="1.5"
               >
-                <path
-                  d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
-                ></path>
-                <circle cx="12" cy="13" r="4"></circle>
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
               </svg>
             </div>
           </div>
-        </div>
-        <input
-          #imageInput
-          type="file"
-          accept="image/*"
-          (change)="onImageSelected($event)"
-          class="hidden-input"
-        />
+          <span class="avatar-label-text">{{
+            imagePreview
+              ? ("register.step0.change" | translate)
+              : ("register.step0.upload" | translate)
+          }}</span>
+          <input
+            #imageInput
+            type="file"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            class="hidden-input"
+            hidden
+          />
+        </label>
         <p class="helper-text">{{ "register.step0.optional" | translate }}</p>
       </div>
     </div>
 
-    <!-- First Name -->
-    <div class="form-section">
-      <h2 class="section-title">
-        {{ "register.step1.firstName" | translate }}
-      </h2>
-      <div class="form-group">
-        <div class="input-with-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon"
-          >
-            <path d="M20 21a8 8 0 0 0-16 0" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <input
-            type="text"
-            formControlName="firstName"
-            placeholder="{{
-              'register.step1.firstNamePlaceholder' | translate
-            }}"
-            class="form-input with-icon"
-            [class.error]="
-              registerForm.get('firstName')?.invalid &&
-              registerForm.get('firstName')?.touched
-            "
-          />
-        </div>
-        <div
-          *ngIf="
-            registerForm.get('firstName')?.invalid &&
-            registerForm.get('firstName')?.touched
-          "
-          class="error-text"
-        >
-          <span *ngIf="registerForm.get('firstName')?.errors?.['required']">{{
-            "register.step1.firstNameRequired" | translate
-          }}</span>
-          <span *ngIf="registerForm.get('firstName')?.errors?.['minlength']">{{
-            "register.step1.firstNameMin" | translate
-          }}</span>
-        </div>
-      </div>
+    <!-- Personal Info -->
+    <div class="form-section multi-col">
+      <app-input
+        [label]="'register.step1.firstName' | translate"
+        [placeholder]="'register.step1.firstNamePlaceholder' | translate"
+        formControlName="firstName"
+        [control]="$any(registerForm.get('firstName'))"
+        [errorMessages]="{
+          required: 'register.step1.firstNameRequired',
+          minlength: 'register.step1.firstNameMin',
+        }"
+      ></app-input>
+
+      <app-input
+        [label]="'register.step1.lastName' | translate"
+        [placeholder]="'register.step1.lastNamePlaceholder' | translate"
+        formControlName="lastName"
+        [control]="$any(registerForm.get('lastName'))"
+        [errorMessages]="{
+          required: 'register.step1.lastNameRequired',
+          minlength: 'register.step1.lastNameMin',
+        }"
+      ></app-input>
     </div>
 
-    <!-- Last Name -->
-    <div class="form-section">
-      <h2 class="section-title">{{ "register.step1.lastName" | translate }}</h2>
-      <div class="form-group">
-        <div class="input-with-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon"
-          >
-            <path d="M20 21a8 8 0 0 0-16 0" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <input
-            type="text"
-            formControlName="lastName"
-            placeholder="{{ 'register.step1.lastNamePlaceholder' | translate }}"
-            class="form-input with-icon"
-            [class.error]="
-              registerForm.get('lastName')?.invalid &&
-              registerForm.get('lastName')?.touched
-            "
-          />
-        </div>
-        <div
-          *ngIf="
-            registerForm.get('lastName')?.invalid &&
-            registerForm.get('lastName')?.touched
-          "
-          class="error-text"
-        >
-          <span *ngIf="registerForm.get('lastName')?.errors?.['required']">{{
-            "register.step1.lastNameRequired" | translate
-          }}</span>
-          <span *ngIf="registerForm.get('lastName')?.errors?.['minlength']">{{
-            "register.step1.lastNameMin" | translate
-          }}</span>
-        </div>
-      </div>
-    </div>
+    <!-- DOB & Gender -->
+    <div class="form-section multi-col">
+      <app-input
+        type="date"
+        [label]="'register.step2.dob' | translate"
+        formControlName="dateOfBirth"
+        [control]="$any(registerForm.get('dateOfBirth'))"
+        (change)="onDateChange($event)"
+        [errorMessages]="{
+          required: 'register.step2.dobRequired',
+          underAge: 'register.step2.underAge',
+        }"
+      ></app-input>
 
-    <!-- Date of Birth -->
-    <div class="form-section">
-      <h2 class="section-title">{{ "register.step2.dob" | translate }}</h2>
       <div class="form-group">
-        <div class="input-with-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon"
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-          </svg>
-          <input
-            type="date"
-            formControlName="dateOfBirth"
-            class="form-input with-icon"
-            (change)="onDateChange($event)"
-            [class.error]="
-              registerForm.get('dateOfBirth')?.invalid &&
-              registerForm.get('dateOfBirth')?.touched
-            "
-          />
-        </div>
-        <div
-          *ngIf="
-            registerForm.get('dateOfBirth')?.invalid &&
-            registerForm.get('dateOfBirth')?.touched
-          "
-          class="error-text"
-        >
-          <span *ngIf="registerForm.get('dateOfBirth')?.errors?.['required']">{{
-            "register.step2.dobRequired" | translate
-          }}</span>
-          <span *ngIf="registerForm.get('dateOfBirth')?.errors?.['underAge']">{{
-            "register.step2.underAge" | translate
-          }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Gender -->
-    <div class="form-section">
-      <h2 class="section-title">{{ "register.step2.gender" | translate }}</h2>
-      <div class="form-group">
-        <div class="custom-select-wrapper">
-          <select
-            formControlName="gender"
-            class="form-select"
-            [class.error]="
-              registerForm.get('gender')?.invalid &&
-              registerForm.get('gender')?.touched
-            "
-          >
+        <label class="form-label">{{
+          "register.step2.gender" | translate
+        }}</label>
+        <div class="select-wrapper">
+          <select formControlName="gender" class="form-control">
             <option value="" disabled selected>
               {{ "register.step2.genderSelect" | translate }}
             </option>
@@ -228,203 +129,81 @@
               {{ "register.step2.genderNone" | translate }}
             </option>
           </select>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="select-arrow"
-          >
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
         </div>
         <div
           *ngIf="
-            registerForm.get('gender')?.invalid &&
-            registerForm.get('gender')?.touched
+            registerForm.get('gender')?.touched &&
+            registerForm.get('gender')?.invalid
           "
-          class="error-text"
+          class="error-feedback"
         >
-          <span *ngIf="registerForm.get('gender')?.errors?.['required']">{{
-            "register.step2.genderRequired" | translate
-          }}</span>
+          {{ "register.step2.genderRequired" | translate }}
         </div>
       </div>
     </div>
 
-    <!-- Address (Full Width) -->
-    <div class="form-section full-width">
-      <h2 class="section-title">{{ "register.step3.title" | translate }}</h2>
-      <div class="form-group address-group">
-        <div class="input-with-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon"
-          >
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-          <input
-            type="text"
-            formControlName="address"
-            placeholder="{{ 'register.step3.addressPlaceholder' | translate }}"
-            class="form-input with-icon"
-            [class.error]="
-              registerForm.get('address')?.invalid &&
-              registerForm.get('address')?.touched
-            "
-          />
-        </div>
-        <div *ngIf="isLoadingAddress" class="address-loading">
-          <svg
-            class="spinner-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-          </svg>
-          <span>Searching addresses...</span>
-        </div>
-        <div *ngIf="addressSuggestions.length > 0" class="suggestions-dropdown">
-          <div
-            *ngFor="let suggestion of addressSuggestions"
-            class="suggestion-item"
-            (click)="selectAddress(suggestion)"
-          >
-            {{ suggestion }}
-          </div>
-        </div>
+    <!-- Address -->
+    <div class="form-section full-width" style="position: relative">
+      <app-input
+        [label]="'register.step3.title' | translate"
+        [placeholder]="'register.step3.addressPlaceholder' | translate"
+        formControlName="address"
+        [control]="$any(registerForm.get('address'))"
+        [errorMessages]="{ required: 'register.step3.addressRequired' }"
+      ></app-input>
+      <div *ngIf="isLoadingAddress" class="loading-text">Searching...</div>
+      <div *ngIf="addressSuggestions.length > 0" class="suggestions-dropdown">
         <div
-          *ngIf="
-            registerForm.get('address')?.invalid &&
-            registerForm.get('address')?.touched
-          "
-          class="error-text"
+          *ngFor="let suggestion of addressSuggestions"
+          class="suggestion-item"
+          (click)="selectAddress(suggestion)"
         >
-          <span *ngIf="registerForm.get('address')?.errors?.['required']">{{
-            "register.step3.addressRequired" | translate
-          }}</span>
+          {{ suggestion }}
         </div>
       </div>
     </div>
 
     <!-- Email -->
-    <div class="form-section">
-      <h2 class="section-title">{{ "register.step4.title" | translate }}</h2>
-      <div class="form-group">
-        <div class="input-with-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon"
-          >
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path>
-          </svg>
-          <input
-            type="email"
-            formControlName="email"
-            placeholder="your.email@example.com"
-            class="form-input with-icon"
-            [class.error]="
-              registerForm.get('email')?.invalid &&
-              registerForm.get('email')?.touched
-            "
-          />
-        </div>
-        <div
-          *ngIf="
-            registerForm.get('email')?.invalid &&
-            registerForm.get('email')?.touched
-          "
-          class="error-text"
-        >
-          <span *ngIf="registerForm.get('email')?.errors?.['required']">{{
-            "register.step4.emailRequired" | translate
-          }}</span>
-          <span *ngIf="registerForm.get('email')?.errors?.['email']">{{
-            "register.step4.emailInvalid" | translate
-          }}</span>
-          <span *ngIf="registerForm.get('email')?.errors?.['exists']">{{
-            "register.step4.emailExists" | translate
-          }}</span>
-        </div>
-      </div>
+    <div class="form-section full-width">
+      <app-input
+        type="email"
+        [label]="'register.step4.title' | translate"
+        placeholder="your.email@example.com"
+        formControlName="email"
+        [control]="$any(registerForm.get('email'))"
+        [errorMessages]="{
+          required: 'register.step4.emailRequired',
+          email: 'register.step4.emailInvalid',
+          exists: 'register.step4.emailExists',
+        }"
+      ></app-input>
     </div>
 
     <!-- Username -->
-    <div class="form-section">
-      <h2 class="section-title">{{ "register.step6.username" | translate }}</h2>
-      <div class="form-group">
-        <div class="input-with-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon"
-          >
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          <input
-            type="text"
-            formControlName="username"
-            placeholder="Username"
-            class="form-input with-icon"
-            [class.error]="
-              registerForm.get('username')?.invalid &&
-              registerForm.get('username')?.touched
-            "
-          />
-        </div>
-        <div
-          *ngIf="
-            registerForm.get('username')?.invalid &&
-            registerForm.get('username')?.touched
-          "
-          class="error-text"
-        >
-          <span *ngIf="registerForm.get('username')?.errors?.['required']">{{
-            "register.step6.usernameRequired" | translate
-          }}</span>
-          <span *ngIf="registerForm.get('username')?.errors?.['minlength']">{{
-            "register.step6.usernameMin" | translate
-          }}</span>
-          <span *ngIf="registerForm.get('username')?.errors?.['exists']">{{
-            "register.step6.usernameExists" | translate
-          }}</span>
-        </div>
-      </div>
+    <div class="form-section full-width">
+      <app-input
+        [label]="'register.step6.username' | translate"
+        placeholder="Username"
+        formControlName="username"
+        [control]="$any(registerForm.get('username'))"
+        [errorMessages]="{
+          required: 'register.step6.usernameRequired',
+          minlength: 'register.step6.usernameMin',
+          exists: 'register.step6.usernameExists',
+        }"
+      ></app-input>
     </div>
 
-    <!-- Role Section (Full Width) -->
+    <!-- Role Selection -->
     <div class="form-section full-width">
-      <h2 class="section-title">{{ "register.step5.title" | translate }}</h2>
+      <span class="section-title">{{
+        "register.step5.title" | translate
+      }}</span>
       <div class="role-options">
-        <label class="role-option">
+        <label
+          class="role-option"
+          [class.selected]="registerForm.get('role')?.value === 'Client'"
+        >
           <input
             type="radio"
             formControlName="role"
@@ -432,11 +211,27 @@
             class="radio-input"
           />
           <div class="role-card">
+            <div class="role-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
             <h3>{{ "register.step5.clientTitle" | translate }}</h3>
             <p>{{ "register.step5.clientDesc" | translate }}</p>
           </div>
         </label>
-        <label class="role-option">
+        <label
+          class="role-option"
+          [class.selected]="registerForm.get('role')?.value === 'Therapist'"
+        >
           <input
             type="radio"
             formControlName="role"
@@ -444,6 +239,20 @@
             class="radio-input"
           />
           <div class="role-card">
+            <div class="role-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
             <h3>{{ "register.step5.therapistTitle" | translate }}</h3>
             <p>{{ "register.step5.therapistDesc" | translate }}</p>
           </div>
@@ -451,144 +260,77 @@
       </div>
       <div
         *ngIf="
-          registerForm.get('role')?.invalid && registerForm.get('role')?.touched
+          registerForm.get('role')?.touched && registerForm.get('role')?.invalid
         "
-        class="error-text"
+        class="error-feedback"
+        style="font-size: 0.78rem; color: #f56565; margin-top: 0.25rem"
       >
-        <span *ngIf="registerForm.get('role')?.errors?.['required']">{{
-          "register.step5.roleRequired" | translate
-        }}</span>
+        {{ "register.step5.roleRequired" | translate }}
       </div>
     </div>
 
-    <!-- Password -->
-    <div class="form-section">
-      <h2 class="section-title">{{ "register.step6.password" | translate }}</h2>
-      <div class="form-group">
-        <div class="input-with-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon"
-          >
-            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
-          <input
-            type="password"
-            formControlName="password"
-            placeholder="Password"
-            class="form-input with-icon"
-            [class.error]="
-              registerForm.get('password')?.invalid &&
-              registerForm.get('password')?.touched
-            "
-          />
-        </div>
-        <div
-          *ngIf="
-            registerForm.get('password')?.invalid &&
-            registerForm.get('password')?.touched
-          "
-          class="error-text"
-        >
-          <span *ngIf="registerForm.get('password')?.errors?.['required']">{{
-            "register.step6.passwordRequired" | translate
-          }}</span>
-          <span *ngIf="registerForm.get('password')?.errors?.['minlength']">{{
-            "register.step6.passwordMin" | translate
-          }}</span>
-          <span
-            *ngIf="registerForm.get('password')?.errors?.['passwordStrength']"
-            >{{ "register.step6.passwordWeak" | translate }}</span
-          >
-        </div>
-      </div>
+    <!-- Passwords -->
+    <div class="form-section multi-col">
+      <app-input
+        type="password"
+        [label]="'register.step6.password' | translate"
+        placeholder="Password"
+        formControlName="password"
+        [control]="$any(registerForm.get('password'))"
+        [errorMessages]="{
+          required: 'register.step6.passwordRequired',
+          minlength: 'register.step6.passwordMin',
+          passwordStrength: 'register.step6.passwordWeak',
+        }"
+      ></app-input>
+
+      <app-input
+        type="password"
+        [label]="'register.step6.confirmPassword' | translate"
+        placeholder="Confirm Password"
+        formControlName="confirmPassword"
+        [control]="$any(registerForm.get('confirmPassword'))"
+        [errorMessages]="{
+          required: 'register.step6.confirmRequired',
+          passwordMismatch: 'register.step6.passwordMismatch',
+        }"
+      ></app-input>
     </div>
 
-    <!-- Confirm Password -->
-    <div class="form-section">
-      <h2 class="section-title">
-        {{ "register.step6.confirmPassword" | translate }}
-      </h2>
-      <div class="form-group">
-        <div class="input-with-icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon"
-          >
-            <circle cx="12" cy="16" r="1" />
-            <rect x="3" y="10" width="18" height="12" rx="2" />
-            <path d="M7 10V7a5 5 0 0 1 10 0v3" />
-          </svg>
-          <input
-            type="password"
-            formControlName="confirmPassword"
-            placeholder="Confirm Password"
-            class="form-input with-icon"
-            [class.error]="(registerForm.get('confirmPassword')?.invalid || registerForm.errors?.['passwordMismatch']) && registerForm.get('confirmPassword')?.touched"
-          />
-        </div>
-        <div
-          *ngIf="(registerForm.get('confirmPassword')?.invalid || registerForm.errors?.['passwordMismatch']) && registerForm.get('confirmPassword')?.touched"
-          class="error-text"
-        >
-          <span
-            *ngIf="registerForm.get('confirmPassword')?.errors?.['required']"
-            >{{ "register.step6.confirmRequired" | translate }}</span
-          >
-          <span *ngIf="registerForm.errors?.['passwordMismatch']">{{
-            "register.step6.passwordMismatch" | translate
-          }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Terms & Submit (Full Width) -->
+    <!-- Terms and Submit -->
     <div class="submit-section">
-      <div class="form-group terms">
-        <label class="checkbox">
-          <input type="checkbox" formControlName="acceptTerms" />
-          <span>
-            {{ "register.step6.acceptTerms" | translate }}
-            <a href="/terms" target="_blank">{{
-              "register.step6.termsLink" | translate
-            }}</a>
-          </span>
-        </label>
-        <div
-          *ngIf="
-            registerForm.get('acceptTerms')?.invalid &&
-            registerForm.get('acceptTerms')?.touched
-          "
-          class="error-text"
-        >
-          {{ "register.step6.mustAccept" | translate }}
-        </div>
+      <app-checkbox
+        formControlName="acceptTerms"
+        [control]="$any(registerForm.get('acceptTerms'))"
+      >
+        {{ "register.step6.acceptTerms" | translate }}
+        <a href="/terms" target="_blank">{{
+          "register.step6.termsLink" | translate
+        }}</a>
+      </app-checkbox>
+
+      <div
+        *ngIf="
+          registerForm.get('acceptTerms')?.touched &&
+          registerForm.get('acceptTerms')?.invalid
+        "
+        class="error-feedback"
+        style="margin-top: 0.5rem"
+      >
+        {{ "register.step6.mustAccept" | translate }}
       </div>
 
-      <button
+      <app-button
         type="submit"
-        class="btn btn-primary btn-submit"
+        variant="primary"
+        size="lg"
+        [block]="true"
+        [loading]="isLoading"
         [disabled]="!canSubmit"
-        [class.loading]="isLoading"
+        style="margin-top: 1.5rem"
       >
-        <ng-container *ngIf="!isLoading">{{
-          "register.buttons.create" | translate
-        }}</ng-container>
-        <div *ngIf="isLoading" class="loading-spinner"></div>
-      </button>
+        {{ "register.buttons.create" | translate }}
+      </app-button>
 
       <p class="login-link">
         {{ "register.haveAccount" | translate }}

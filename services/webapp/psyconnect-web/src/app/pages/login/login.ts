@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
-    Validators,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,11 +17,14 @@ import { AuthStateService } from '../../services/auth/auth-state.service';
 import { LoaderService } from '../../services/loader/loader';
 import { Profile } from '../../services/profile/profile';
 import {
-    UserContextService,
-    UserProfile,
+  UserContextService,
+  UserProfile,
 } from '../../services/profile/profile-service';
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
+
+import { PsyButtonComponent } from '../../shared/ui-atoms/button/psy-button.component';
+import { InputComponent } from '../../shared/ui-atoms/input/input.component';
 
 @Component({
   selector: 'app-login',
@@ -32,6 +35,8 @@ import { ToastService } from '../../shared/toast/toast.service';
     FormsModule,
     RouterModule,
     TranslateModule,
+    InputComponent,
+    PsyButtonComponent,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -44,6 +49,8 @@ export class Login implements OnInit {
   loading = false;
   apiUrl = environment.apiUrl;
   shakeErrors = false;
+  showEmailForm = false; // State to toggle between method selection and email form
+
   constructor(
     private fb: FormBuilder,
     private auth: Auth,
@@ -53,7 +60,7 @@ export class Login implements OnInit {
     private loaderService: LoaderService,
     private toastService: ToastService,
     private authState: AuthStateService,
-    private secureStorage: SecureStorageService
+    private secureStorage: SecureStorageService,
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(6)]],
@@ -63,6 +70,10 @@ export class Login implements OnInit {
 
   ngOnInit(): void {
     this.checkOAuth2Callback();
+  }
+
+  toggleEmailForm(): void {
+    this.showEmailForm = !this.showEmailForm;
   }
 
   onSubmit(): void {
@@ -79,16 +90,15 @@ export class Login implements OnInit {
         this.loadUserProfile();
         this.secureStorage.setItem(
           this.USERNAME_KEY,
-          this.loginForm.value.username
+          this.loginForm.value.username,
         );
 
         const username = this.secureStorage.getItem(this.USERNAME_KEY);
       },
       error: () => {
-        this.authState.showSidebar();
         this.setError('Invalid email or password.');
         this.setLoading(false);
-        this.toastService.show(`${this.error}`, 'Failed', ToastType.Error);
+        this.toastService.show('', `${this.error}`, ToastType.Error);
       },
     });
   }
@@ -115,7 +125,7 @@ export class Login implements OnInit {
         error: (err) => {
           console.error('OAuth2 exchange failed', err);
           this.setLoading(false);
-          this.toastService.show(`${err}`, 'Failed', ToastType.Error);
+          this.toastService.show('', `${err}`, ToastType.Error);
         },
       });
     }
@@ -136,11 +146,7 @@ export class Login implements OnInit {
         };
 
         this.userContext.setUser(userProfile);
-        this.toastService.show(
-          'TOAST.login_success',
-          'TOAST.success',
-          ToastType.Success
-        );
+        this.toastService.show('', 'TOAST.login_success', ToastType.Success);
         this.setLoading(false);
         this.router.navigate(['/feature/feed']);
         this.authState.setLoggedIn(true);
@@ -148,11 +154,7 @@ export class Login implements OnInit {
       error: (err) => {
         console.error('Get profile error', err);
         this.setLoading(false);
-        this.toastService.show(
-          'TOAST.error_generic',
-          'TOAST.error',
-          ToastType.Error
-        );
+        this.toastService.show('', 'TOAST.error_generic', ToastType.Error);
       },
     });
   }

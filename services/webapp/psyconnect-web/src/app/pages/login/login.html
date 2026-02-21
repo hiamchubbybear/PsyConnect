@@ -1,115 +1,170 @@
 <main class="login-page">
+  <!-- Immersive Background (handled in CSS) -->
   <div class="login-container">
-    <div class="login-form">
-      <div class="form-header">
-        <h2>{{ "LOGIN.Header.Title" | translate }}</h2>
-        <p>{{ "LOGIN.Header.Subtitle" | translate }}</p>
+    <!-- METHOD SELECTION VIEW (Bottom Sheet Style) -->
+    <div *ngIf="!showEmailForm" class="method-selection fade-in-up">
+      <div class="logo-area">
+        <!-- Logo removed as requested -->
       </div>
 
-      <form
-        [formGroup]="loginForm"
-        (ngSubmit)="onSubmit()"
-        [class.shake-errors]="shakeErrors"
-      >
-        <div class="form-group">
-          <label for="username">{{ "LOGIN.Form.Username" | translate }}</label>
-          <div class="input-with-error" [class.shake-errors]="shakeErrors">
-            <input
-              type="text"
-              id="username"
-              formControlName="username"
-              placeholder="{{ 'LOGIN.Form.UsernamePlaceholder' | translate }}"
-              required
-              [class.error]="
-                loginForm.get('username')?.touched &&
-                loginForm.get('username')?.invalid
-              "
-            />
-            <div
-              class="error-text"
-              *ngIf="
-                loginForm.get('username')?.touched &&
-                loginForm.get('username')?.invalid
-              "
-            >
-              <span *ngIf="loginForm.get('username')?.errors?.['required']">
-                {{ "LOGIN.Form.UsernameRequired" | translate }}
-              </span>
-              <span *ngIf="loginForm.get('username')?.errors?.['minlength']">
-                {{ "LOGIN.Form.UsernameMinLength" | translate }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="password">{{ "LOGIN.Form.Password" | translate }}</label>
-          <div class="input-with-error" [class.shake-errors]="shakeErrors">
-            <input
-              type="password"
-              id="password"
-              formControlName="password"
-              placeholder="{{ 'LOGIN.Form.PasswordPlaceholder' | translate }}"
-              required
-              [class.error]="
-                loginForm.get('password')?.touched &&
-                loginForm.get('password')?.invalid
-              "
-            />
-            <div
-              class="error-text"
-              *ngIf="
-                loginForm.get('password')?.touched &&
-                loginForm.get('password')?.invalid
-              "
-            >
-              <span *ngIf="loginForm.get('password')?.errors?.['required']">
-                {{ "LOGIN.Form.PasswordRequired" | translate }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-options">
-          <label>
-            <input type="checkbox" />
-            {{ "LOGIN.Form.RememberMe" | translate }}
-          </label>
-          <a routerLink="/auth/request-reset">
-            {{ "LOGIN.Form.ForgotPassword" | translate }}
-          </a>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-          {{ "LOGIN.Form.SignIn" | translate }}
-        </button>
-
-        <div class="divider">
-          <span>{{ "LOGIN.Form.DividerText" | translate }}</span>
-        </div>
-
-        <div class="social-login">
+      <div class="action-buttons">
+        <div class="social-row">
           <button
-            type="button"
-            class="btn btn-google btn-primary"
+            class="btn-social btn-google"
             (click)="handleOAuth2('google')"
           >
-            {{ "LOGIN.Form.SocialGoogle" | translate }}
+            <span class="social-icon">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335"
+                />
+              </svg>
+            </span>
+            <span class="btn-text">Google</span>
           </button>
+
           <button
-            type="button"
-            class="btn btn-apple btn-primary"
+            class="btn-social btn-facebook"
             (click)="handleOAuth2('facebook')"
           >
-            {{ "LOGIN.Form.SocialFacebook" | translate }}
+            <span class="social-icon">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02z"
+                />
+              </svg>
+            </span>
+            <span class="btn-text">Facebook</span>
           </button>
         </div>
+      </div>
 
-        <p class="signup-text">
-          {{ "LOGIN.Form.NoAccount" | translate }}
-          <a routerLink="/auth/signup">{{ "LOGIN.Form.CreateAccount" | translate }}</a>
-        </p>
-      </form>
+      <div class="divider-text">
+        <span>{{ "Or" | translate }}</span>
+      </div>
+
+      <div class="secondary-actions">
+        <!-- Circular Mail Button -->
+        <button class="btn-circle-mail" (click)="toggleEmailForm()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+        </button>
+      </div>
+
+      <p class="terms-text">
+        By continuing, you agree to our <a href="#">Terms</a> and
+        <a href="#">Privacy Policy</a>.
+      </p>
+    </div>
+
+    <!-- EMAIL FORM VIEW (Overlay/Modal Style) -->
+    <div *ngIf="showEmailForm" class="email-form-container fade-in">
+      <div class="login-form">
+        <div class="form-header">
+          <button type="button" class="back-btn" (click)="toggleEmailForm()">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <h2>{{ "Welcome Back" | translate }}</h2>
+        </div>
+
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="onSubmit()"
+          [class.shake-errors]="shakeErrors"
+        >
+          <app-input
+            [label]="'LOGIN.Form.Username' | translate"
+            [placeholder]="'LOGIN.Form.UsernamePlaceholder' | translate"
+            formControlName="username"
+            [control]="$any(loginForm.get('username'))"
+            [errorMessages]="{
+              required: 'LOGIN.Form.UsernameRequired',
+              minlength: 'LOGIN.Form.UsernameMinLength',
+            }"
+          ></app-input>
+
+          <app-input
+            [label]="'LOGIN.Form.Password' | translate"
+            [placeholder]="'LOGIN.Form.PasswordPlaceholder' | translate"
+            type="password"
+            formControlName="password"
+            [control]="$any(loginForm.get('password'))"
+            [errorMessages]="{
+              required: 'LOGIN.Form.PasswordRequired',
+            }"
+          ></app-input>
+
+          <div class="form-options">
+            <a routerLink="/auth/request-reset" class="forgot-password">
+              {{ "LOGIN.Form.ForgotPassword" | translate }}
+            </a>
+          </div>
+
+          <app-button
+            type="submit"
+            variant="primary"
+            [block]="true"
+            [loading]="loading"
+          >
+            {{ "LOGIN.Form.SignIn" | translate }}
+          </app-button>
+
+          <p class="signup-text">
+            {{ "LOGIN.Form.NoAccount" | translate }}
+            <a routerLink="/auth/signup">{{
+              "LOGIN.Form.CreateAccount" | translate
+            }}</a>
+          </p>
+        </form>
+      </div>
     </div>
   </div>
 </main>

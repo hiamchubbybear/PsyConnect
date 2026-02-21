@@ -27,12 +27,24 @@ import {
 import { ToastType } from '../../shared/toast/toast.model';
 import { ToastService } from '../../shared/toast/toast.service';
 
+import { PsyButtonComponent } from '../../shared/ui-atoms/button/psy-button.component';
+import { CheckboxComponent } from '../../shared/ui-atoms/checkbox/checkbox.component';
+import { InputComponent } from '../../shared/ui-atoms/input/input.component';
+
 @Component({
   standalone: true,
   selector: 'signup',
   templateUrl: './signup.html',
   styleUrls: ['./signup.scss'],
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    TranslateModule,
+    InputComponent,
+    CheckboxComponent,
+    PsyButtonComponent,
+  ],
 })
 export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   @ViewChild('imageInput') imageInputRef!: ElementRef;
@@ -41,7 +53,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     // Auto-focus first input
     setTimeout(() => {
       const firstInput = document.querySelector(
-        'input:not([type="file"])'
+        'input:not([type="file"])',
       ) as HTMLElement;
       firstInput?.focus();
     }, 100);
@@ -65,7 +77,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private http: HttpClient,
     private router: Router,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
   ) {}
 
   ngOnInit() {
@@ -118,7 +130,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
         confirmPassword: ['', Validators.required],
         acceptTerms: [false, Validators.requiredTrue],
       },
-      { validators: this.passwordMatchValidator }
+      { validators: this.passwordMatchValidator },
     );
   }
 
@@ -130,7 +142,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
         if (query && query.length > 2) {
           this.isLoadingAddress = true;
           const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-            query
+            query,
           )}&format=json&addressdetails=1&limit=10`;
 
           this.http.get<any[]>(url).subscribe({
@@ -227,13 +239,13 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     if (this.selectedImage) {
       const uploadedUrl = await this.cloudinaryService.uploadImage(
         this.selectedImage,
-        this.registerForm.value.username
+        this.registerForm.value.username,
       );
       if (!uploadedUrl) {
         this.toastService.show(
           'toast.image_upload_failed',
           'toast.error',
-          ToastType.Error
+          ToastType.Error,
         );
         this.isLoading = false;
         return;
@@ -260,7 +272,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
           this.toastService.show(
             'register.success.message',
             'register.success.title',
-            ToastType.Success
+            ToastType.Success,
           );
           // Redirect to activate page after 1.5 seconds
           setTimeout(() => {
@@ -315,7 +327,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
             'Handling 409 Conflict - Code:',
             errorCode,
             'Message:',
-            errorMessage
+            errorMessage,
           );
 
           if (errorCode === 202) {
@@ -328,7 +340,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
             this.toastService.show(
               'register.error.usernameExists',
               'register.error.title',
-              ToastType.Error
+              ToastType.Error,
             );
           } else if (errorCode === 201) {
             const control = this.registerForm.get('email');
@@ -340,14 +352,14 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
             this.toastService.show(
               'register.error.emailExists',
               'register.error.title',
-              ToastType.Error
+              ToastType.Error,
             );
           } else {
             // Other conflict errors
             this.toastService.show(
               'register.error.conflict',
               'register.error.title',
-              ToastType.Error
+              ToastType.Error,
             );
           }
           this.scrollToFirstInvalid();
@@ -357,13 +369,13 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
           this.toastService.show(
             'register.error.invalidData',
             'register.error.title',
-            ToastType.Error
+            ToastType.Error,
           );
         } else {
           this.toastService.show(
             'register.error.unexpected',
             'register.error.title',
-            ToastType.Error
+            ToastType.Error,
           );
         }
         this.loaderService.hide();
@@ -406,7 +418,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   private scrollToFirstInvalid() {
     setTimeout(() => {
       const el = document.querySelector(
-        '.form-input.error, .form-select.error'
+        '.form-input.error, .form-select.error',
       );
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 0);

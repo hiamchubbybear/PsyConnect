@@ -1,245 +1,161 @@
 @use "../../styles/variable" as v;
 @use "sass:color";
-@mixin button-base {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: v.$font-primary;
-  text-decoration: none;
-  white-space: nowrap;
-  user-select: none;
-}
 
 .login-page {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - var(--header-height));
+  position: relative;
+  height: 100vh; // Fixed height to prevent scrolling
+  width: 100%;
+  padding-top: var(--header-height); // Offset for fixed header
   background: var(--color-bg);
-
-  padding: 2rem 1rem;
-  font-family: v.$font-primary;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Prevent scrollbars
+  box-sizing: border-box; // Ensure padding is included in height
 }
 
 .login-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.5rem;
   width: 100%;
   max-width: 400px;
-  background: var(--color-surface-low);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 40px 32px;
-
-  @media (max-width: 480px) {
-    padding: 32px 24px;
-    margin: 16px;
-  }
+  margin: 0 auto;
+  box-sizing: border-box;
 }
-.input-with-icon {
+
+// --- Method Selection View ---
+.method-selection {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  position: relative;
+  gap: 1.25rem; // Compact gap
+  width: 100%;
+  animation: fadeIn 0.4s ease-out;
 
-  .icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
-    color: var(--color-bg-contrast);
-    pointer-events: none;
-  }
+  .logo-area {
+    margin-bottom: 0.5rem; // Minimal margin since logo is gone
+    text-align: center;
 
-  .form-input {
-    padding-left: 2.5rem;
-  }
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: v.$spacing-sm;
+    .app-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--color-primary); // Use brand color
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
 
-  .form-label {
-    font-size: v.$font-size-sm;
-    font-weight: 500;
-    color: var(--color-text);
-    margin-bottom: 2px;
-  }
-
-  .error-text {
-    font-size: v.$font-size-xs;
-    color: var(--color-error-text);
-    margin-top: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    &::before {
-      content: "⚠";
-      font-size: 12px;
+    p {
+      color: var(--color-text-muted);
+      margin-top: 0.5rem;
     }
   }
-}
 
-.form-header {
-  text-align: center;
-  margin-bottom: 32px;
-
-  h2 {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--color-bg-contrast);
-    margin: 0 0 6px 0;
-    letter-spacing: -0.02em;
-  }
-
-  p {
-    font-size: 14px;
-    color: var(--bg-color-constrast);
-    margin: 0;
-    font-weight: 400;
-    line-height: 1.4;
-  }
-}
-
-.login-form form {
-  display: flex;
-  flex-direction: column;
-
-  label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--bg-color-constrast);
-    margin: 0 0 6px 0;
-    letter-spacing: -0.01em;
-
-    &:not(:first-of-type) {
-      margin-top: 20px;
-    }
-  }
-  //   .error {
-  //     color: var(--color-error-bg);
-  //     border-color: var(--color-error-border);
-  //     box-shadow: 0 0 0 2px var(--bg-color-constrast);
-  //   }
-
-  &::placeholder {
-    color: var(--color-text-muted);
-    font-family: v.$font-primary;
-    display: flex;
-  }
-  input {
-    padding-left: 2.5rem;
-    padding: 12px;
+  .action-buttons {
     width: 100%;
-    box-sizing: border-box;
-    border: 1px solid #525252;
-    border-radius: 4px;
-    font-size: 15px;
-    color: var(--bg-color-constrast);
-    background: var(--color-bg);
-    font-family: v.$font-primary;
-    font-weight: 500;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    margin-bottom: 4px;
-
-    &::placeholder {
-      color: var(--bg-color-constrast);
-      font-family: v.$font-primary;
-      font-size: 14px;
-      font-weight: 400;
-    }
-
-    &:focus {
-      outline: none;
-      border-color: var(--color-accent);
-      box-shadow: 0 0 0 1px var(--color-text-hover);
-    }
-
-    &[type="password"] {
-      font-size: 14px;
-      letter-spacing: 0.05em;
-    }
-  }
-
-  .form-options {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    margin: 20px 0 24px 0;
-    font-size: 13px;
+    gap: 1rem;
 
-    label {
+    .social-row {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--bg-color-constrast);
-      margin: 0;
-      cursor: pointer;
-
-      input[type="checkbox"] {
-        width: 14px;
-        height: 14px;
-        margin: 0;
-        accent-color: var(--color-text-muted);
-      }
+      justify-content: center;
+      gap: 1rem;
     }
 
-    a {
-      color: var(--bg-color-constrast);
-      text-decoration: none;
-      font-weight: 400;
-      transition: color 0.15s ease;
+    .btn-social {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      max-width: 52px; // use max-width so both directions animate
+      height: 52px;
+      border-radius: 26px;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      transition:
+        max-width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        border-radius 0.5s ease,
+        box-shadow 0.3s ease;
+      padding: 0;
+      gap: 0;
+      white-space: nowrap;
+
+      .social-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 52px;
+        width: 52px;
+        height: 52px;
+        flex-shrink: 0;
+
+        svg {
+          display: block;
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .btn-text {
+        opacity: 0;
+        max-width: 0;
+        overflow: hidden;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition:
+          opacity 0.3s ease 0.15s,
+          max-width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+          padding 0.3s ease;
+      }
 
       &:hover {
-        color: var(--color-text-muted);
-        text-decoration: underline;
+        max-width: 200px; // large enough to fit any text
+        border-radius: 26px;
+        box-shadow: var(--shadow-md);
+
+        .btn-text {
+          opacity: 1;
+          max-width: 120px;
+          padding-right: 1.25rem;
+        }
+      }
+
+      &.btn-google {
+        background: #ffffff;
+        border: 1.5px solid #e0e0e0;
+        color: #333;
+
+        &:hover {
+          border-color: #bbb;
+        }
+      }
+
+      &.btn-facebook {
+        background: #1877f2;
+        color: #ffffff;
+
+        &:hover {
+          background: #166fe5;
+        }
       }
     }
   }
 
-  .btn {
-    @include button-base;
-    padding: v.$spacing-md v.$spacing-xl;
-    font-size: v.$font-size-md;
-    font-weight: 500;
-    border-radius: v.$border-radius-md;
-    transition: all v.$transition-medium;
-    cursor: pointer;
-    border: 1px solid var(--color-accent);
-
-    &:focus {
-      outline: 1px solid #525252;
-      outline-offset: 2px;
-    }
-    &.btn-primary {
-      background: var(--color-bg);
-      color: var(--color-white);
-      border: 2px solid var(--color-border);
-
-      &:hover:not(:disabled) {
-        background: var(--color-accent-hover);
-        border-color: var(--color-accent-hover);
-        color: var(--color-text-hover);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-button-hover);
-      }
-    }
-  }
-
-  .divider {
+  .divider-text {
     position: relative;
+    width: 100%;
     text-align: center;
-    margin: 24px 0;
+    margin: 1rem 0;
 
     span {
-      font-size: 13px;
-      color: var(--color-bg-contrast);
       background: var(--color-bg);
-      padding: 0 12px;
-      font-weight: 400;
+      padding: 0 1rem;
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
       position: relative;
       z-index: 1;
     }
@@ -251,97 +167,172 @@
       left: 0;
       right: 0;
       height: 1px;
-      background: var(--color-bg-contrast);
+      background: var(--color-border);
+      z-index: 0;
     }
   }
 
-  .social-login {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-
-    .btn {
-      flex: 1;
-      padding: v.$spacing-md v.$spacing-sm;
-      font-size: v.$font-size-md;
-      font-weight: 500;
-      border-radius: v.$border-radius-md;
-      transition: all v.$transition-medium;
+  .secondary-actions {
+    .btn-circle-mail {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 50%;
+      background: var(--color-surface-mid);
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      border: 1px solid var(--color-accent);
-      background: var(--color-bg);
       color: var(--color-text);
-      border: 2px solid var(--color-border);
-      &.btn-primary {
-        background: var(--color-bg);
-        color: var(--color-white);
-        border: 2px solid var(--color-border);
+      transition: all 0.2s ease;
 
-        &:hover:not(:disabled) {
-          background: var(--color-accent-hover);
-          border-color: var(--color-accent-hover);
-          color: var(--color-text-hover);
-          transform: translateY(-1px);
-          box-shadow: var(--shadow-button-hover);
-        }
-      }
-      &:focus {
-        outline: 1px solid #525252;
-        outline-offset: 2px;
-      }
       &:hover {
-        background: var(--color-surface-hover);
-        border-color: var(co);
+        background: var(--color-surface-high);
+        color: var(--color-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
       }
 
-      &.btn-google {
-      }
-
-      &.btn-apple {
+      svg {
+        width: 1.5rem;
+        height: 1.5rem;
       }
     }
   }
 
-  .signup-text {
+  .terms-text {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
     text-align: center;
-    font-size: 13px;
-    color: var(--color-bg-contrast);
-    margin: 0;
-    font-weight: 400;
-    line-height: 1.4;
+    max-width: 320px;
+    margin-top: 2rem;
+    line-height: 1.5;
 
     a {
-      color: var(--bg-color-constrast);
+      color: var(--color-primary);
       text-decoration: none;
       font-weight: 500;
-      transition: color 0.15s ease;
 
       &:hover {
-        color: var(--color-text-muted);
         text-decoration: underline;
       }
     }
   }
 }
-@keyframes shake-once {
-  0% {
-    transform: translateX(0);
+
+// --- Email Form View (Overlay) ---
+.email-form-container {
+  width: 100%;
+  animation: fadeIn 0.3s ease-out;
+
+  .login-form {
+    width: 100%;
+
+    .form-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem; // Reduced margin
+
+      .back-btn {
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+        color: var(--color-text-muted);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        margin-right: 0.5rem;
+
+        &:hover {
+          background: var(--color-surface-mid);
+          color: var(--color-primary);
+        }
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--color-text);
+      }
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+
+      .form-options {
+        display: flex;
+        justify-content: flex-end;
+
+        .forgot-password {
+          color: var(--color-primary);
+          text-decoration: none;
+          font-size: 0.9rem;
+          font-weight: 500;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .signup-text {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--color-text-muted);
+        font-size: 0.95rem;
+
+        a {
+          color: var(--color-primary);
+          font-weight: 600;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
   }
-  25% {
-    transform: translateX(-4px);
+}
+
+// --- Animations ---
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  50% {
-    transform: translateX(4px);
-  }
-  75% {
-    transform: translateX(-2px);
-  }
-  100% {
-    transform: translateX(0);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .shake-errors {
-  display: inline-block;
-  animation: shake-once 0.25s ease;
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
