@@ -49,24 +49,35 @@
         "Saving": "Đang lưu..."
     },
     "HOME": {
-        "Tagline": "Chăm sóc tâm trí của bạn, từng bước một",
-        "Description": "Kết nối với các chuyên gia tâm lý có giấy phép, theo dõi tâm trạng của bạn và tham gia cộng đồng hỗ trợ trên hành trình sức khỏe tinh thần của bạn.",
+        "Badge": "🌱 Nền tảng Sức khỏe Tâm thần",
+        "Tagline": "Hành trình đến với sức khỏe tâm thần bắt đầu từ đây",
+        "Description": "Kết nối với các chuyên gia tâm lý có giấy phép, tham gia cộng đồng hỗ trợ và tìm sự bình an thông qua hướng dẫn chuyên nghiệp.",
+        "NoCreditCard": "Bắt đầu miễn phí · Không cần thẻ tín dụng",
+        "TrustedBy": "Được tin dùng bởi hàng ngàn người",
         "IllustrationTitle": "Minh họa sức khỏe tinh thần",
         "SectionTitle": "Mọi thứ bạn cần để cải thiện sức khỏe tinh thần",
         "SectionDescription": "Công cụ và hỗ trợ toàn diện để giúp bạn phát triển",
+        "Popular": "Phổ biến nhất",
+        "LearnMore": "Tìm hiểu thêm",
+        "Stats": {
+            "Users": "Người dùng hoạt động",
+            "Therapists": "Chuyên gia có giấy phép",
+            "Satisfaction": "Tỷ lệ hài lòng"
+        },
         "TherapyBooking": {
             "Title": "Đặt lịch trị liệu",
             "Description": "Đặt lịch với các chuyên gia tâm lý có giấy phép, chuyên về nhu cầu của bạn. Có sẵn 24/7."
         },
         "MoodTracking": {
             "Title": "Theo dõi tâm trạng",
-            "Description": "Theo dõi các mẫu cảm xúc và tiến triển của bạn với các công cụ theo dõi tâm trạng trực quan của chúng tôi."
+            "Description": "Theo dõi các mẫu cảm xúc và tiến triển của bạn với các công cụ theo dõi tâm trạng trực quan."
         },
         "CommunitySupport": {
             "Title": "Hỗ trợ cộng đồng",
             "Description": "Kết nối với những người có hành trình tương tự trong các không gian cộng đồng an toàn, được kiểm duyệt."
         },
         "AppPreview": {
+            "Label": "✨ Có sẵn ngay bây giờ",
             "Title": "Xem trước giao diện ứng dụng",
             "Subtitle": "Sức khỏe tinh thần của bạn, đơn giản hóa",
             "Features": {
@@ -253,6 +264,13 @@
             "DOB": "Ngày sinh",
             "Address": "Địa chỉ",
             "Gender": "Giới tính",
+            "Fields": {
+                "Id": "Mã tài khoản",
+                "Name": "Họ và tên",
+                "Dob": "Ngày sinh",
+                "Address": "Địa chỉ",
+                "Gender": "Giới tính"
+            },
             "GenderOptions": {
                 "Male": "Nam",
                 "Female": "Nữ",

@@ -3,15 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
-    Event,
-    NavigationCancel,
-    NavigationEnd,
-    NavigationStart,
-    Router,
-    RouterModule,
-    RouterOutlet,
+  Event,
+  NavigationCancel,
+  NavigationEnd,
+  NavigationStart,
+  Router,
+  RouterModule,
+  RouterOutlet,
 } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
+import { AuthHeaderComponent } from './components/auth-header/auth-header';
 import { Footer } from './components/footer/footer';
 import { Header } from './components/header/header';
 import { SidebarComponent } from './components/sidebar/sidebar';
@@ -23,8 +24,8 @@ import { LoaderService } from './services/loader/loader';
 import { LoaderComponent } from './services/loader/loader.component';
 import { NotificationService } from './services/notification/notification.service';
 import {
-    UserContextService,
-    UserProfile,
+  UserContextService,
+  UserProfile,
 } from './services/profile/profile-service';
 import { ThemeService } from './services/theme/theme-service';
 import { ToastContainerComponent } from './shared/toast/toast-container';
@@ -37,6 +38,7 @@ import { ToastService } from './shared/toast/toast.service';
   imports: [
     RouterOutlet,
     Header,
+    AuthHeaderComponent,
     Footer,
     LoaderComponent,
     FormsModule,
@@ -54,9 +56,10 @@ export class App implements OnInit {
   showSidebar: boolean = false;
   showFooter = true;
 
-  minWidth = 1235;
-  minHeight = 277;
+  minWidth = 320; // Support mobile/small screens
+  minHeight = 400;
   screenOk = true;
+  isAuthRoute = false;
 
   constructor(
     private themeService: ThemeService,
@@ -67,7 +70,7 @@ export class App implements OnInit {
     private router: Router,
     private loader: LoaderService,
     private notification: NotificationService,
-    private toastService: ToastService
+    private toastService: ToastService,
   ) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -75,6 +78,8 @@ export class App implements OnInit {
         const url = event.urlAfterRedirects;
         this.showFooter =
           url === '/' || url.startsWith('/about') || url.startsWith('/contact');
+
+        this.isAuthRoute = url.startsWith('/auth') || url.startsWith('/oauth2');
       });
   }
 
@@ -90,13 +95,7 @@ export class App implements OnInit {
       this.showSidebar = visible;
     });
 
-    const token = this.auth.getToken();
-    if (token) {
-      this.authState.showSidebar();
-      this.fetchUserProfile();
-    } else {
-      this.authState.hideSidebar();
-    }
+    this.fetchUserProfile();
 
     this.loader.loading$.subscribe((v) => (this.isLoading = v));
     const profileId = this.userContext.getUser()?.profileId;
@@ -116,13 +115,13 @@ export class App implements OnInit {
       this.toastService.show(
         'TOAST.error_generic',
         'TOAST.error_notification',
-        ToastType.Error
+        ToastType.Error,
       );
     } else {
       this.toastService.show(
         'TOAST.error_generic',
         'TOAST.error_notification',
-        ToastType.Error
+        ToastType.Error,
       );
     }
   }

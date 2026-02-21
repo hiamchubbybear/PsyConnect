@@ -1,29 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Psyconnect</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Inter variable font — all weights 100-900 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="stylesheet"
-      href="https://unpkg.com/lucide-static@latest/font/lucide.css"
-    />
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-
+    <!-- Material Icons (needed for component icons) -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
@@ -35,15 +24,6 @@
       type="image/svg+xml"
       href="./assets/sig-logo/iconic-logo-light.svg"
     />
-
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
   </head>
 
   <body>
@@ -54,7 +34,7 @@
 
         function updateFavicon() {
           const isDark = window.matchMedia(
-            "(prefers-color-scheme: dark)"
+            "(prefers-color-scheme: dark)",
           ).matches;
           favicon.href = isDark
             ? "./assets/sig-logo/iconic-logo-dark.svg"

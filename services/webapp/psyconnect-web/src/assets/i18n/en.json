@@ -51,11 +51,21 @@
         "Title": "Title"
     },
     "HOME": {
-        "Tagline": "Take care of your mind, one step at a time",
-        "Description": "Connect with licensed therapists, track your mood, and join a supportive community on your mental health journey.",
+        "Badge": "🌱 Mental Health Platform",
+        "Tagline": "Your Journey to Mental Wellness Starts Here",
+        "Description": "Connect with licensed therapists, join a supportive community, and find peace of mind through professional guidance and peer support.",
+        "NoCreditCard": "Free to start · No credit card required",
+        "TrustedBy": "Trusted by thousands",
         "IllustrationTitle": "Mental Health Illustration",
         "SectionTitle": "Everything you need for better mental health",
         "SectionDescription": "Comprehensive tools and support to help you thrive",
+        "Popular": "Most Popular",
+        "LearnMore": "Learn more",
+        "Stats": {
+            "Users": "Active Users",
+            "Therapists": "Licensed Therapists",
+            "Satisfaction": "Satisfaction Rate"
+        },
         "TherapyBooking": {
             "Title": "Therapy Booking",
             "Description": "Schedule sessions with licensed therapists who specialize in your needs. Available 24/7."
@@ -69,6 +79,7 @@
             "Description": "Connect with others on similar journeys in our safe, moderated community spaces."
         },
         "AppPreview": {
+            "Label": "✨ Now available",
             "Title": "App Interface Preview",
             "Subtitle": "Your mental health, simplified",
             "Features": {
@@ -252,6 +263,13 @@
             "DOB": "Date of Birth",
             "Address": "Address",
             "Gender": "Gender",
+            "Fields": {
+                "Id": "Account ID",
+                "Name": "Full Name",
+                "Dob": "Date of Birth",
+                "Address": "Address",
+                "Gender": "Gender"
+            },
             "GenderOptions": {
                 "Male": "Male",
                 "Female": "Female",
@@ -873,11 +891,20 @@
         "haveAccount": "Already have an account?",
         "loginLink": "Login here",
         "step": "Step {{current}} of {{total}}",
+        "panel": {
+            "title": "Your well-being starts here.",
+            "description": "Connect with licensed therapists, track your mood, and find support in our caring community.",
+            "feature1": "Access to 500+ licensed therapists",
+            "feature2": "Private & secure — HIPAA compliant",
+            "feature3": "Free to start, no credit card needed"
+        },
         "step0": {
-            "title": "Choose Your Profile Picture",
+            "title": "Profile Photo",
             "subtitle": "This helps others recognize you",
             "tapToAddPhoto": "Tap to add photo",
-            "optional": "Optional - You can skip this step"
+            "upload": "Upload photo",
+            "change": "Change photo",
+            "optional": "Optional — you can skip this step"
         },
         "step1": {
             "title": "What's Your Name?",

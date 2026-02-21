@@ -1,8 +1,9 @@
 <ng-container *ngIf="screenOk; else mobileApp">
-  <app-header></app-header>
   <app-loader></app-loader>
+  <app-header *ngIf="!isAuthRoute"></app-header>
+  <app-auth-header *ngIf="isAuthRoute"></app-auth-header>
 
-  <div class="app-layout">
+  <div class="app-layout" [class.sidebar-visible]="showSidebar">
     <app-sidebar *ngIf="showSidebar" class="sidebar"></app-sidebar>
 
     <main
