@@ -1,4 +1,4 @@
-name: PsyConnect CI/CD Pipeline
+name: Build and Deploy (Modular)
 
 on:
   push:
@@ -6,16 +6,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  # === PHASE 1: Security ===
-  security-scan:
-    name: "Phase 1 - Security Scan"
+  security-audit:
     uses: ./.github/workflows/reusable-security-scan.yml
     secrets: inherit
 
-  # === PHASE 2: Build Core Backend (Java) ===
   build-api-gateway:
-    name: "Phase 2 - API Gateway"
-    needs: security-scan
+    needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "API Gateway"
@@ -27,8 +23,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-identity-service:
-    name: "Phase 2 - Identity Service"
-    needs: security-scan
+    needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Identity Service"
@@ -40,8 +35,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-profile-service:
-    name: "Phase 2 - Profile Service"
-    needs: security-scan
+    needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Profile Service"
@@ -52,10 +46,8 @@ jobs:
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  # === PHASE 3: Build Specialized Services ===
   build-consultation-service:
-    name: "Phase 3 - Consultation Service"
-    needs: [build-api-gateway, build-identity-service, build-profile-service]
+    needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Consultation Service"
@@ -67,8 +59,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-chat-service:
-    name: "Phase 3 - Chat Service"
-    needs: [build-api-gateway, build-identity-service, build-profile-service]
+    needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Chat Service"
@@ -80,8 +71,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-notification-service:
-    name: "Phase 3 - Notification Service"
-    needs: [build-api-gateway, build-identity-service, build-profile-service]
+    needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Notification Service"
@@ -92,15 +82,8 @@ jobs:
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  # === PHASE 4: Build Frontend ===
   build-webapp:
-    name: "Phase 4 - Webapp"
-    needs:
-      [
-        build-consultation-service,
-        build-chat-service,
-        build-notification-service,
-      ]
+    needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Web App"
@@ -113,10 +96,15 @@ jobs:
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
 
-  # === PHASE 5: Deploy ===
   deploy:
-    name: "Phase 5 - Deploy to K3s"
-    needs: [build-webapp]
+    needs:
+      - build-api-gateway
+      - build-identity-service
+      - build-profile-service
+      - build-consultation-service
+      - build-chat-service
+      - build-notification-service
+      - build-webapp
     uses: ./.github/workflows/reusable-deploy.yml
     secrets:
       SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
