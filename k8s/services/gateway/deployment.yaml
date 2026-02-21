@@ -29,6 +29,9 @@ spec:
                 name: psyconnect-config
             - secretRef:
                 name: psyconnect-secrets
+          env:
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m"
           readinessProbe:
             httpGet:
               path: /actuator/health

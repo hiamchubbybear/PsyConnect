@@ -213,4 +213,3 @@ k8s/base/secrets-dev.yaml
 # Keep application code config, but ignore local overrides if needed
 # application-*.properties (Commented out to allow committing structure files)
 # application-*.yml
-services/webapp/psyconnect-web/src/environments/environment.secret.ts

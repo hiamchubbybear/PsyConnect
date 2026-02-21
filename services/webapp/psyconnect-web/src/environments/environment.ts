@@ -2,8 +2,6 @@ export const environment = {
   production: false,
   apiUrl: 'https://api.chessy.dev',
   wsUrl: 'wss://ws.chessy.dev/ws',
-  //   apiUrl: 'http://localhost:8888',
-  //   wsUrl: 'ws://localhost:8083/ws',
   key_theme: 'KEY_THEME',
   apiVersion: 'v1',
   refreshKey: 'X9fG2kLp',
@@ -23,4 +21,8 @@ export const environment = {
     appId: '1:130716148033:web:bafc7ed2934cf9768241c0',
     measurementId: 'G-EREPPG37PL',
   },
+  cloudName: 'dohfd2ns8',
+  uploadPreset: 'avatar_preset',
+  cloudinaryApiKey: 'PLACEHOLDER_API_KEY',
+  cloudinaryApiSecret: 'PLACEHOLDER_API_SECRET',
 };

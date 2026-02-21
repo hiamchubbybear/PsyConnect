@@ -1,16 +1,16 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as crypto from 'crypto-js';
-import { environment_secret } from '../../../environments/environment.secret';
+import { environment } from '../../../environments/environment';
 import { SKIP_AUTH } from '../auth/auth.interceptor';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CloudinaryService {
-  private cloudName = `${environment_secret.cloudName}`;
-  private apiKey = `${environment_secret.cloudinaryApiKey}`;
-  private apiSecret = `${environment_secret.cloudinaryApiSecret}`;
+  private cloudName = `${environment.cloudName}`;
+  private apiKey = `${environment.cloudinaryApiKey}`;
+  private apiSecret = `${environment.cloudinaryApiSecret}`;
 
   constructor(private http: HttpClient) {}
 
@@ -60,7 +60,7 @@ export class CloudinaryService {
 
       if (!response || !response.secure_url) {
         throw new Error(
-          'Invalid response from Cloudinary - missing secure_url'
+          'Invalid response from Cloudinary - missing secure_url',
         );
       }
 

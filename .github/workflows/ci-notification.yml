@@ -1,0 +1,22 @@
+name: "🔔 Notification Service"
+
+on:
+  push:
+    branches: ["main", "develop"]
+    paths:
+      - "services/notificationservice/**"
+      - ".github/workflows/ci-notification.yml"
+      - ".github/workflows/reusable-build-push.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Notification Service"
+      context_path: "services/notificationservice"
+      image_name: "hiamchubbybear/psyconnect-notification-service"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}

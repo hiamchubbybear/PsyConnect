@@ -1,0 +1,22 @@
+name: "🌐 API Gateway"
+
+on:
+  push:
+    branches: ["main", "develop"]
+    paths:
+      - "services/apigateway/**"
+      - ".github/workflows/ci-gateway.yml"
+      - ".github/workflows/reusable-build-push.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "API Gateway"
+      context_path: "services/apigateway"
+      image_name: "hiamchubbybear/psyconnect-api-gateway"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}

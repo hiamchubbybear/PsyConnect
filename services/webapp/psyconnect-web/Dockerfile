@@ -10,6 +10,14 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
+# ===== Build Args: Key bí mật được truyền vào lúc build =====
+ARG CLOUDINARY_API_KEY=PLACEHOLDER_API_KEY
+ARG CLOUDINARY_API_SECRET=PLACEHOLDER_API_SECRET
+
+# Thay thế placeholder trong environment.ts bằng giá trị thật
+RUN sed -i "s|PLACEHOLDER_API_KEY|${CLOUDINARY_API_KEY}|g" src/environments/environment.ts && \
+    sed -i "s|PLACEHOLDER_API_SECRET|${CLOUDINARY_API_SECRET}|g" src/environments/environment.ts
+
 # Build the application for production
 RUN npm run build -- --configuration production
 

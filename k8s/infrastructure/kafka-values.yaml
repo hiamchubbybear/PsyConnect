@@ -1,20 +1,32 @@
-# Bitnami Kafka Helm Chart Values
+# Bitnami Kafka Helm Chart Values (Tối ưu cho VPS giá rẻ)
 # Repo: https://charts.bitnami.com/bitnami
-# Cmd: helm install kafka bitnami/kafka -f k8s/infrastructure/kafka-values.yaml
+# Cmd: helm install kafka bitnami/kafka -n psyconnect -f k8s/infrastructure/kafka-values.yaml
 
+# ===== Bỏ Zookeeper, xài KRaft =====
 zookeeper:
-  enabled: false # Use Kraft
+  enabled: false
+
+kraft:
+  enabled: true
+  clusterId: "MkU3OEVBNTcwNTJENDM2Qk"
 
 image:
   tag: latest
 
+# ===== Gộp Controller + Broker vào 1 Pod (Tiết kiệm RAM) =====
 controller:
   replicaCount: 1
-  resourcesPreset: "micro"
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "200m"
+    limits:
+      memory: "768Mi"
+      cpu: "500m"
+  heapOpts: "-Xmx512M -Xms256M"
 
 broker:
-  replicaCount: 1
-  resourcesPreset: "micro"
+  replicaCount: 0 # Gộp chung vào controller, không cần broker riêng
 
 listeners:
   client:
@@ -32,3 +44,12 @@ service:
 persistence:
   enabled: true
   size: 2Gi
+
+# ===== Tắt các tính năng không cần thiết =====
+provisioning:
+  enabled: false
+metrics:
+  kafka:
+    enabled: false
+  jmx:
+    enabled: false

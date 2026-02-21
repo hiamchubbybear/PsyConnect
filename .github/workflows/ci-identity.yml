@@ -1,0 +1,22 @@
+name: "🔑 Identity Service"
+
+on:
+  push:
+    branches: ["main", "develop"]
+    paths:
+      - "services/identityservice/**"
+      - ".github/workflows/ci-identity.yml"
+      - ".github/workflows/reusable-build-push.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Identity Service"
+      context_path: "services/identityservice"
+      image_name: "hiamchubbybear/psyconnect-identity-service"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}

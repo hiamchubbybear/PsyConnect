@@ -1,0 +1,23 @@
+name: "🖥️ Webapp"
+
+on:
+  push:
+    branches: ["main", "develop"]
+    paths:
+      - "services/webapp/**"
+      - ".github/workflows/ci-webapp.yml"
+      - ".github/workflows/reusable-build-push.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Web App"
+      context_path: "services/webapp/psyconnect-web"
+      image_name: "hiamchubbybear/psyconnect-webapp"
+      registry: "docker.io"
+      username: "hiamchubbybear"
+      docker_build_args: "--build-arg CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }} --build-arg CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}

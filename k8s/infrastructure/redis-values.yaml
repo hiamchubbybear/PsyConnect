@@ -1,14 +1,14 @@
-# Bitnami Redis Helm Chart Values
+# Bitnami Redis Helm Chart Values (Tối ưu cho VPS giá rẻ)
 # Repo: https://charts.bitnami.com/bitnami
-# Cmd: helm install redis bitnami/redis -f k8s/infrastructure/redis-values.yaml
+# Cmd: helm install redis bitnami/redis -n psyconnect -f k8s/infrastructure/redis-values.yaml
 
 auth:
-  enabled: false # Easier for dev, enable password in prod
+  enabled: false # Dev mode, khi lên Prod nên bật password
 
 image:
-  tag: latest
+  tag: "7-alpine" # Image nhẹ nhất có thể
 
-architecture: standalone
+architecture: standalone # Không cần Sentinel/Cluster cho single node
 
 master:
   persistence:
@@ -17,7 +17,17 @@ master:
   service:
     type: ClusterIP
     port: 6379
-  resourcesPreset: "micro"
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "300Mi"
+      cpu: "200m"
+  # Cấu hình giới hạn bộ nhớ Redis
+  configuration: |
+    maxmemory 256mb
+    maxmemory-policy allkeys-lru
 
 metrics:
-  enabled: false # Save resources
+  enabled: false # Tắt metrics để tiết kiệm tài nguyên

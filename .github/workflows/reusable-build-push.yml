@@ -16,6 +16,10 @@ on:
         required: false
         type: string
         default: "Dockerfile"
+      docker_build_args:
+        required: false
+        type: string
+        default: ""
       registry:
         required: false
         type: string
@@ -63,5 +67,9 @@ jobs:
           fi
 
           # Build with --no-cache to ensure fresh build
-          docker build --no-cache -f ${{ inputs.dockerfile }} . --tag ${{ inputs.registry }}/${{ inputs.image_name }}:latest
+          ARGS=""
+          if [ -n "${{ inputs.docker_build_args }}" ]; then
+            ARGS="${{ inputs.docker_build_args }}"
+          fi
+          docker build --no-cache $ARGS -f ${{ inputs.dockerfile }} . --tag ${{ inputs.registry }}/${{ inputs.image_name }}:latest
           docker push ${{ inputs.registry }}/${{ inputs.image_name }}:latest
