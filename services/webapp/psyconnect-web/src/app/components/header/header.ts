@@ -3,14 +3,15 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  HostBinding,
   HostListener,
   OnDestroy,
   OnInit,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { Observable, Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
 import { LoaderService } from '../../services/loader/loader';
 import {
@@ -19,8 +20,11 @@ import {
 } from '../../services/profile/profile-service';
 import { ThemeService } from '../../services/theme/theme-service';
 import { TranslationService } from '../../shared/translate/translate-service';
+import {
+  DropdownComponent,
+  DropdownOption,
+} from '../../shared/ui-atoms/dropdown/dropdown';
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
-import { DropdownComponent, DropdownOption } from '../dropdown/dropdown';
 import { HeaderStateService } from './header-state';
 import { NotificationDropdownComponent } from './notification-dropdown/notification-dropdown';
 
@@ -58,10 +62,13 @@ export class Header implements OnInit, OnDestroy {
   isMenuOpen = false;
   isHidden = false;
   lastScrollTop = 30;
-  loading$!: Observable<boolean>;
   isDark = false;
 
   private userSubscription?: Subscription;
+
+  @HostBinding('class.host-hidden') get isHostHidden() {
+    return this.isHidden;
+  }
 
   constructor(
     public headerState: HeaderStateService,
@@ -71,24 +78,29 @@ export class Header implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private themeService: ThemeService,
-    private translateService: TranslationService
+    private translateService: TranslationService,
   ) {
     this.translateService.currentLanguage$.subscribe((lang) => {
       this.currentLang = lang;
       this.displayLang = lang === 'en' ? 'English' : 'Vietnamese';
     });
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.cdr.markForCheck();
+      });
   }
   ngOnInit() {
     this.userSubscription = this.headerState.isMini$.subscribe((value) => {
       this.isMini = value;
       this.cdr.markForCheck();
     });
-    this.loading$ = this.loaderService.loading$;
     this.userSubscription = this.userContext.user$.subscribe(
       (user: UserProfile | null) => {
         this.updateUserInfo(user);
         this.cdr.detectChanges();
-      }
+      },
     );
 
     setTimeout(() => {
@@ -141,16 +153,22 @@ export class Header implements OnInit, OnDestroy {
   }
   onLanguageChange(option: DropdownOption | null) {
     if (option) {
-      this.translateService.setLanguage(option.value);
-      this.selectedLanguage = option.value;
+      this.setLanguage(option.value);
     }
+  }
+
+  setLanguage(lang: string) {
+    this.translateService.setLanguage(lang);
+    this.selectedLanguage = lang;
   }
   @HostListener('window:scroll', [])
   onScroll() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    if (scrollTop > this.lastScrollTop + 1) {
+    if (scrollTop > this.lastScrollTop + 10 && scrollTop > 60) {
+      this.isHidden = true;
       this.headerState.setMini(true);
-    } else if (scrollTop < this.lastScrollTop - 10) {
+    } else if (scrollTop < this.lastScrollTop - 5) {
+      this.isHidden = false;
       this.headerState.setMini(false);
     }
     this.lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;

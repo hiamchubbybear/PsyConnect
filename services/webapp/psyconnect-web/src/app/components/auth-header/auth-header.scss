@@ -1,0 +1,133 @@
+@use "../../styles/variable" as v;
+
+.auth-header {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: auto;
+  max-width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  z-index: 1000;
+  transition:
+    max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    border-radius 0.35s ease,
+    padding 0.35s ease;
+
+  .header-left {
+    min-width: 44px;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    .auth-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      svg {
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  .header-right {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition:
+      opacity 0.25s ease,
+      max-width 0.35s ease,
+      margin 0.35s ease;
+  }
+
+  /* Hover state to expand the pill */
+  &:hover {
+    max-width: 300px;
+    border-radius: 22px;
+    padding-right: 0.75rem;
+
+    .header-right {
+      opacity: 1;
+      max-width: 250px;
+      margin-left: 0.5rem;
+      overflow: visible;
+    }
+  }
+
+  /* Theme toggle styling inside the pill */
+  .theme-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    margin-left: 0.25rem;
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--color-text-muted);
+    }
+
+    &:hover {
+      background: var(--color-bg-hover, rgba(0, 0, 0, 0.05));
+      color: var(--color-primary);
+
+      svg {
+        stroke: var(--color-primary);
+      }
+    }
+  }
+
+  ::ng-deep app-dropdown {
+    .dropdown {
+      min-width: 0;
+      font-size: 0.85rem;
+    }
+    .dropdown__trigger {
+      padding: 0.35rem 0.5rem;
+      border: none;
+      border-radius: 100px;
+      background: transparent;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+    .dropdown__value {
+      font-size: 0.85rem !important;
+      font-weight: 500 !important;
+      color: var(--color-text-muted) !important;
+    }
+  }
+}

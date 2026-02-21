@@ -2,7 +2,6 @@
   <!-- Avatar button -->
   <div class="avatar-trigger" (click)="toggleMenu()">
     <img [src]="userAvatarUrl" alt="Avatar" class="avatar-img" />
-    <!-- <span class="user-name">{{ userName }}</span> -->
   </div>
 
   <!-- Dropdown -->
@@ -17,26 +16,10 @@
     </div>
     <hr />
 
-    <!-- Account -->
+    <!-- Main Actions -->
     <div class="dropdown-section">
-      <a routerLink="/payment">{{ "AVATAR_MENU.Payment" | translate }}</a>
       <a routerLink="/account">{{ "AVATAR_MENU.Account" | translate }}</a>
-      <a routerLink="/activity">{{ "AVATAR_MENU.Activity" | translate }}</a>
-      <a routerLink="/history">{{ "AVATAR_MENU.History" | translate }}</a>
-    </div>
-    <hr />
-
-    <!-- Notifications -->
-    <div class="dropdown-section">
-      <a routerLink="/notifications">{{ "AVATAR_MENU.Notifications" | translate }}</a>
-    </div>
-    <hr />
-
-    <!-- Settings -->
-    <div class="dropdown-section">
       <a routerLink="/settings">{{ "AVATAR_MENU.Settings" | translate }}</a>
-      <a routerLink="/help">{{ "AVATAR_MENU.HelpSupport" | translate }}</a>
-      <a routerLink="/privacy">{{ "AVATAR_MENU.PrivacySecurity" | translate }}</a>
     </div>
     <hr />
 

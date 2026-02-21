@@ -10,11 +10,12 @@ import { Auth } from '../../services/auth/auth';
   imports: [RouterModule],
 })
 export class SidebarComponent {
-  isCollapsed = true;
-
   private observer?: IntersectionObserver;
 
-  constructor(private elementRef: ElementRef, public authService: Auth) {}
+  constructor(
+    private elementRef: ElementRef,
+    public authService: Auth,
+  ) {}
 
   get showSidebar(): boolean {
     return this.authService.isLoggedIn();

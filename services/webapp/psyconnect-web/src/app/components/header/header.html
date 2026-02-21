@@ -1,16 +1,9 @@
 <header class="header" [ngClass]="{ mini: isMini, full: !isMini }">
   <div class="loader-bar" *ngIf="loaderService.loading$ | async"></div>
 
-  <!-- Logo -->
-  <div class="header-left">
-    <a href="/" class="logo">{{ "APP_NAME" | translate }}</a>
-  </div>
-
-  <!-- Navigation -->
   <nav class="header-center">
     <a href="/feature">{{ "HEADER.Feature" | translate }}</a>
     <a href="/therapist">{{ "HEADER.Therapist" | translate }}</a>
-    <a href="/community">{{ "HEADER.Community" | translate }}</a>
     <a href="/about-us">{{ "HEADER.About" | translate }}</a>
   </nav>
 
@@ -95,6 +88,4 @@
       }}</a>
     </ng-template>
   </div>
-
-  <div class="route-loader" *ngIf="loading$ | async"></div>
 </header>
