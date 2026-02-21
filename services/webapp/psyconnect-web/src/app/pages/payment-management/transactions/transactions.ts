@@ -2,14 +2,25 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { MockDataService, MockTransaction } from '../../../services/mock-data.service';
+import {
+  MockDataService,
+  MockTransaction,
+} from '../../../services/mock-data.service';
+import { PsyEmptyStateComponent } from '../../../shared/ui-atoms/empty-state/psy-empty-state.component';
+import { TableComponent } from '../../../shared/ui-atoms/table/table.component';
 
 @Component({
   selector: 'app-transactions',
   standalone: true,
-  imports: [CommonModule, TranslateModule, FormsModule],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    FormsModule,
+    TableComponent,
+    PsyEmptyStateComponent,
+  ],
   templateUrl: './transactions.html',
-  styleUrl: './transactions.scss'
+  styleUrl: './transactions.scss',
 })
 export class Transactions implements OnInit {
   transactions: MockTransaction[] = [];
@@ -25,7 +36,7 @@ export class Transactions implements OnInit {
   }
 
   loadTransactions() {
-    this.mockDataService.getTransactions().subscribe(transactions => {
+    this.mockDataService.getTransactions().subscribe((transactions) => {
       this.transactions = transactions;
       this.applyFilters();
     });
@@ -35,18 +46,19 @@ export class Transactions implements OnInit {
     let filtered = [...this.transactions];
 
     if (this.selectedFilter !== 'all') {
-      filtered = filtered.filter(t => t.status === this.selectedFilter);
+      filtered = filtered.filter((t) => t.status === this.selectedFilter);
     }
 
     if (this.selectedType !== 'all') {
-      filtered = filtered.filter(t => t.type === this.selectedType);
+      filtered = filtered.filter((t) => t.type === this.selectedType);
     }
 
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(t =>
-        t.description.toLowerCase().includes(query) ||
-        t.customer.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (t) =>
+          t.description.toLowerCase().includes(query) ||
+          t.customer.toLowerCase().includes(query),
       );
     }
 
@@ -55,19 +67,27 @@ export class Transactions implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status) {
-      case 'completed': return 'status-completed';
-      case 'pending': return 'status-pending';
-      case 'failed': return 'status-failed';
-      default: return '';
+      case 'completed':
+        return 'status-completed';
+      case 'pending':
+        return 'status-pending';
+      case 'failed':
+        return 'status-failed';
+      default:
+        return '';
     }
   }
 
   getTypeIcon(type: string): string {
     switch (type) {
-      case 'payment': return 'fa-arrow-down';
-      case 'refund': return 'fa-undo';
-      case 'subscription': return 'fa-sync';
-      default: return 'fa-circle';
+      case 'payment':
+        return 'fa-arrow-down';
+      case 'refund':
+        return 'fa-undo';
+      case 'subscription':
+        return 'fa-sync';
+      default:
+        return 'fa-circle';
     }
   }
 
@@ -75,7 +95,7 @@ export class Transactions implements OnInit {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 }

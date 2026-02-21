@@ -99,125 +99,60 @@
   }
 }
 
-.invoices-table {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  overflow: hidden;
+// Content specific styles inside the table
+.invoice-number {
+  font-weight: 500;
+  color: var(--color-accent);
+}
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
+.amount {
+  font-weight: 600;
+}
 
-    thead {
-      background: var(--color-bg-secondary);
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block;
 
-      th {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--color-text-muted);
-        text-transform: uppercase;
-      }
-    }
+  &.status-paid {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
 
-    tbody {
-      tr {
-        border-top: 1px solid var(--color-border);
-        transition: background 0.2s ease;
+  &.status-unpaid {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
 
-        &:hover {
-          background: rgba(0, 0, 0, 0.02);
-        }
-
-        td {
-          padding: 1rem;
-          font-size: 0.875rem;
-          color: var(--color-text);
-        }
-
-        .invoice-number {
-          font-weight: 500;
-          color: var(--color-accent);
-        }
-
-        .amount {
-          font-weight: 600;
-        }
-
-        .status-badge {
-          padding: 0.25rem 0.75rem;
-          border-radius: 4px;
-          font-size: 0.75rem;
-          font-weight: 500;
-          text-transform: uppercase;
-
-          &.status-paid {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-          }
-
-          &.status-unpaid {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-          }
-
-          &.status-overdue {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-          }
-        }
-
-        .actions {
-          display: flex;
-          gap: 0.5rem;
-
-          .btn-icon {
-            width: 32px;
-            height: 32px;
-            border: 1px solid var(--color-border);
-            background: transparent;
-            border-radius: 6px;
-            color: var(--color-text);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            &:hover {
-              background: var(--color-bg-secondary);
-              border-color: var(--color-accent);
-            }
-          }
-        }
-      }
-    }
+  &.status-overdue {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
   }
 }
 
-.empty-state {
-  text-align: center;
-  padding: 3rem 1.5rem;
+.actions {
+  display: flex !important; // override default td if needed
+  gap: 0.5rem;
 
-  i {
-    font-size: 3rem;
-    color: var(--color-text-muted);
-    opacity: 0.3;
-    margin-bottom: 1rem;
-  }
-
-  h3 {
-    font-size: 1.125rem;
-    font-weight: 500;
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    border-radius: 6px;
     color: var(--color-text);
-    margin: 0 0 0.5rem 0;
-  }
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  p {
-    font-size: 0.875rem;
-    color: var(--color-text-muted);
-    margin: 0;
+    &:hover {
+      background: var(--color-bg-secondary);
+      border-color: var(--color-accent);
+    }
   }
 }

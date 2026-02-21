@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import {
-    CollapsibleSidebarComponent,
-    SidebarItem,
+  CollapsibleSidebarComponent,
+  SidebarItem,
 } from '../../components/collapsible-sidebar/collapsible-sidebar';
-import { ProfileFormClientComponent } from "../consultation/consultation/consultation";
 import { ProfileSectionComponent } from './profile/profile-update';
 import { SecuritySectionComponent } from './security/security-update';
 
@@ -16,8 +15,7 @@ import { SecuritySectionComponent } from './security/security-update';
     CollapsibleSidebarComponent,
     ProfileSectionComponent,
     SecuritySectionComponent,
-    ProfileFormClientComponent
-],
+  ],
   template: `
     <app-collapsible-sidebar
       [title]="'Account Management'"

@@ -28,7 +28,7 @@
 
       <div class="section-title-row">
         <h2>{{ "FEED.Community.Title" | translate }}</h2>
-        <button class="btn btn--secondary tiny" (click)="newPost()">
+        <button class="btn btn-secondary btn-sm" (click)="newPost()">
           {{ "FEED.Community.NewPost" | translate }}
         </button>
       </div>
@@ -60,225 +60,31 @@
 
       <div *ngIf="error && !loading" class="error-state">
         <p>{{ error }}</p>
-        <button class="btn btn--primary" (click)="loadFeed()">
+        <button class="btn btn-primary" (click)="loadFeed()">
           {{ "NEWSFEED.RetryLoad" | translate }}
         </button>
       </div>
 
       <section class="posts" *ngIf="!loading && !error">
-        <article class="post-card card" *ngFor="let p of posts">
-          <header class="post-head">
-            <div
-              class="avatar"
-              (click)="viewProfile(p.author_id)"
-              style="cursor: pointer"
-            >
-              <img
-                *ngIf="profileCache.get(p.author_id)?.avatarUri"
-                [src]="profileCache.get(p.author_id).avatarUri"
-                [alt]="getUserName(p.author_id)"
-              />
-              <div
-                *ngIf="!profileCache.get(p.author_id)?.avatarUri"
-                class="avatar-placeholder"
-              >
-                {{ getUserName(p.author_id).charAt(0).toUpperCase() }}
-              </div>
-            </div>
-            <div
-              class="meta"
-              (click)="viewProfile(p.author_id)"
-              (mouseenter)="showAuthorCardWithDelay(p.id, p.author_id)"
-              (mouseleave)="hideAuthorCard(p.id)"
-              style="position: relative; cursor: pointer"
-            >
-              <div class="author">
-                {{ getUserName(p.author_id) }}
-              </div>
-              <div class="time">{{ formatTime(p.created_at) }}</div>
+        <app-post-card
+          *ngFor="let p of posts"
+          [post]="p"
+          (upvote)="upvotePost(p, $event)"
+          (downvote)="downvotePost(p, $event)"
+          (share)="sharePost(p, $event)"
+          (bookmark)="toggleBookmark(p, $event)"
+          (openPost)="openPost(p)"
+          (openProfile)="viewProfile($event)"
+        ></app-post-card>
 
-              <div
-                class="author-card"
-                *ngIf="showAuthorCard[p.id] && hoveredUserId === p.author_id"
-              >
-                <div class="author-card__cover"></div>
-
-                <div class="author-card__avatar-wrapper">
-                  <div class="author-card__avatar">
-                    <img
-                      *ngIf="profileCache.get(p.author_id)?.avatarUri"
-                      [src]="profileCache.get(p.author_id).avatarUri"
-                      [alt]="getUserName(p.author_id)"
-                    />
-                    <div
-                      *ngIf="!profileCache.get(p.author_id)?.avatarUri"
-                      class="avatar-placeholder"
-                    >
-                      {{ getUserName(p.author_id).charAt(0).toUpperCase() }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="author-card__content">
-                  <div class="author-card__header">
-                    <h4 class="author-card__name">
-                      {{ getUserName(p.author_id) }}
-                    </h4>
-                    <span class="author-card__username"
-                      >@{{
-                        profileCache.get(p.author_id)?.username || p.author_id
-                      }}</span
-                    >
-                  </div>
-
-                  <p
-                    class="author-card__bio"
-                    *ngIf="
-                      profileCache.get(p.author_id)?.bio ||
-                      profileCache.get(p.author_id)?.address
-                    "
-                  >
-                    {{
-                      profileCache.get(p.author_id)?.bio ||
-                        profileCache.get(p.author_id)?.address
-                    }}
-                  </p>
-
-                  <div class="author-card__details">
-                    <div
-                      class="author-card__detail-item"
-                      *ngIf="profileCache.get(p.author_id)?.address"
-                    >
-                      <img
-                        src="/assets/icon/map-marker.svg"
-                        alt="Location"
-                        class="detail-icon"
-                      />
-                      <span>{{ profileCache.get(p.author_id).address }}</span>
-                    </div>
-                    <div
-                      class="author-card__detail-item"
-                      *ngIf="profileCache.get(p.author_id)?.gender"
-                    >
-                      <img
-                        src="/assets/icon/user-circle.svg"
-                        alt="Gender"
-                        class="detail-icon"
-                      />
-                      <span>{{ profileCache.get(p.author_id).gender }}</span>
-                    </div>
-                    <div
-                      class="author-card__detail-item"
-                      *ngIf="profileCache.get(p.author_id)?.dob"
-                    >
-                      <img
-                        src="/assets/icon/birthday-cake.svg"
-                        alt="Birthday"
-                        class="detail-icon"
-                      />
-                      <span>{{ profileCache.get(p.author_id).dob }}</span>
-                    </div>
-                  </div>
-
-                  <div class="author-card__actions">
-                    <a
-                      [routerLink]="['/profile', p.author_id]"
-                      class="author-card__btn author-card__btn--primary"
-                    >
-                      View Profile
-                    </a>
-                    <button
-                      class="author-card__btn author-card__btn--secondary"
-                    >
-                      Message
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <h3 class="post-title" (click)="openPostModal(p.id, $event)">
-            {{ p.title }}
-          </h3>
-          <p class="post-excerpt">{{ p.content }}</p>
-
-          <div class="post-tags" *ngIf="p.tags && p.tags.length > 0">
-            <span class="tag" *ngFor="let tag of p.tags">#{{ tag }}</span>
-          </div>
-
-          <div class="post-media" *ngIf="p.media && p.media.length > 0">
-            <img [src]="p.media[0].url" [alt]="p.media[0].caption || p.title" />
-          </div>
-
-          <footer class="post-footer">
-            <div class="engagement-group">
-              <button
-                class="vote-btn up"
-                [class.active]="p.user_vote === 'up'"
-                (click)="upvotePost(p, $event)"
-              >
-                <img
-                  src="/assets/reaction/arrow-big-up-dash.svg"
-                  class="action-icon-img"
-                />
-                <span class="count">{{ p.upvote_count }}</span>
-              </button>
-              <button
-                class="vote-btn down"
-                [class.active]="p.user_vote === 'down'"
-                (click)="downvotePost(p, $event)"
-              >
-                <img
-                  src="/assets/reaction/arrow-big-down-dash.svg"
-                  class="action-icon-img"
-                />
-                <span class="count">{{ p.downvote_count }}</span>
-              </button>
-            </div>
-
-            <button class="icon-btn" (click)="openPostModal(p.id, $event)">
-              <img
-                src="/assets/reaction/message-circle.svg"
-                alt="Comments"
-                class="action-icon-img"
-              />
-              {{ p.comment_count }}
-            </button>
-
-            <button
-              class="icon-btn"
-              [class.active]="p.user_bookmark"
-              (click)="toggleBookmark(p, $event)"
-            >
-              <img
-                [src]="
-                  p.user_bookmark
-                    ? '/assets/icon/bookmark-filled.svg'
-                    : '/assets/icon/bookmark.svg'
-                "
-                alt="Bookmark"
-                class="action-icon-img"
-              />
-            </button>
-
-            <button class="icon-btn" (click)="sharePost(p, $event)">
-              <img
-                src="/assets/reaction/share.svg"
-                alt="Share"
-                class="action-icon-img"
-              />
-              {{ p.share_count }}
-            </button>
-          </footer>
-        </article>
-
-        <div class="empty-state" *ngIf="posts.length === 0">
-          <p>{{ "NEWSFEED.NoPosts" | translate }}</p>
-          <button class="btn btn--primary" (click)="newPost()">
+        <app-empty-state
+          *ngIf="posts.length === 0"
+          [title]="'NEWSFEED.NoPosts' | translate"
+        >
+          <app-button variant="primary" (onClick)="newPost()">
             {{ "FEED.Community.NewPost" | translate }}
-          </button>
-        </div>
+          </app-button>
+        </app-empty-state>
       </section>
     </main>
 
@@ -306,7 +112,8 @@
           </div>
         </div>
         <button
-          class="btn btn--secondary"
+          class="btn btn-secondary btn-sm"
+          style="width: 100%"
           (click)="bookTherapist(therapists[0])"
         >
           {{ "FEED.Therapists.BookButton" | translate }}

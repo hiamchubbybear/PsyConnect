@@ -1,66 +1,234 @@
-<section class="hero container">
-  <div class="hero-content">
-    <h1>{{ "HOME.Tagline" | translate }}</h1>
-    <p>{{ "HOME.Description" | translate }}</p>
-    <div class="hero-buttons">
-      <a class="btn start" routerLink="auth/signup">
-        {{ "COMMON.GetStartedFree" | translate }}
-      </a>
-      <a class="btn about" routerLink="/about">
-        {{ "COMMON.LearnMore" | translate }}
-      </a>
-    </div>
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
   </div>
-  <div class="hero-image">
-    <img
-      src="assets/images/logo.png"
-      alt="{{ 'HOME.IllustrationTitle' | translate }}"
-    />
+
+  <div class="container hero-inner">
+    <div class="hero-content fade-up">
+      <span class="badge">{{ "HOME.Badge" | translate }}</span>
+      <h1>{{ "HOME.Tagline" | translate }}</h1>
+      <p class="lead">{{ "HOME.Description" | translate }}</p>
+      <div class="hero-buttons">
+        <a class="btn btn-primary btn-lg" routerLink="/auth/signup">
+          {{ "COMMON.GetStartedFree" | translate }}
+        </a>
+        <a class="btn btn-ghost btn-lg" routerLink="/about-us">
+          {{ "COMMON.LearnMore" | translate }}
+        </a>
+      </div>
+      <p class="hero-note">{{ "HOME.NoCreditCard" | translate }}</p>
+    </div>
+
+    <div class="hero-visual fade-up delay-1">
+      <div class="phone-mockup">
+        <img
+          [src]="bannerUrl"
+          alt="{{ 'HOME.IllustrationTitle' | translate }}"
+        />
+      </div>
+    </div>
   </div>
 </section>
 
+<!-- ═══════ TRUST BAR ═══════ -->
+<div class="trust-bar">
+  <div class="container trust-inner">
+    <span class="trust-label">{{ "HOME.TrustedBy" | translate }}</span>
+    <div class="trust-stats">
+      <div class="stat">
+        <strong>10K+</strong>
+        <span>{{ "HOME.Stats.Users" | translate }}</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <strong>500+</strong>
+        <span>{{ "HOME.Stats.Therapists" | translate }}</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <strong>98%</strong>
+        <span>{{ "HOME.Stats.Satisfaction" | translate }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ FEATURES ═══════ -->
 <section class="features container">
-  <h2>{{ "HOME.SectionTitle" | translate }}</h2>
-  <p>{{ "HOME.SectionDescription" | translate }}</p>
+  <div class="section-header">
+    <h2>{{ "HOME.SectionTitle" | translate }}</h2>
+    <p>{{ "HOME.SectionDescription" | translate }}</p>
+  </div>
+
   <div class="feature-cards">
-    <div class="card">
+    <!-- Therapy Booking -->
+    <div class="feature-card">
+      <div class="feature-icon icon-purple">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
       <h3>{{ "HOME.TherapyBooking.Title" | translate }}</h3>
       <p>{{ "HOME.TherapyBooking.Description" | translate }}</p>
+      <a class="feature-link" routerLink="/consultation">
+        {{ "HOME.LearnMore" | translate }}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M5 12h14M12 5l7 7-7 7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
     </div>
-    <div class="card">
+
+    <!-- Mood Tracking -->
+    <div class="feature-card featured">
+      <div class="feature-badge">{{ "HOME.Popular" | translate }}</div>
+      <div class="feature-icon icon-green">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm0 0V9a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10m-6 0a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
       <h3>{{ "HOME.MoodTracking.Title" | translate }}</h3>
       <p>{{ "HOME.MoodTracking.Description" | translate }}</p>
+      <a class="feature-link" routerLink="/feed">
+        {{ "HOME.LearnMore" | translate }}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M5 12h14M12 5l7 7-7 7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
     </div>
-    <div class="card">
+
+    <!-- Community -->
+    <div class="feature-card">
+      <div class="feature-icon icon-blue">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" />
+          <path
+            d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
       <h3>{{ "HOME.CommunitySupport.Title" | translate }}</h3>
       <p>{{ "HOME.CommunitySupport.Description" | translate }}</p>
+      <a class="feature-link" routerLink="/feed">
+        {{ "HOME.LearnMore" | translate }}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M5 12h14M12 5l7 7-7 7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
     </div>
   </div>
 </section>
 
-<section class="app-preview container">
-  <div class="preview-image">
-    <img [src]="bannerUrl" alt="{{ 'HOME.AppPreview.Title' | translate }}" />
-  </div>
-  <div class="preview-content">
-    <h2>{{ "HOME.AppPreview.Subtitle" | translate }}</h2>
-    <ul>
-      <li>{{ "HOME.AppPreview.Features.ProfessionalSupport" | translate }}</li>
-      <li>{{ "HOME.AppPreview.Features.PrivacyFirst" | translate }}</li>
-      <li>{{ "HOME.AppPreview.Features.Availability" | translate }}</li>
-    </ul>
+<!-- ═══════ APP PREVIEW ═══════ -->
+<section class="app-preview">
+  <div class="container preview-inner">
+    <div class="preview-image">
+      <img [src]="bannerUrl" alt="{{ 'HOME.AppPreview.Title' | translate }}" />
+    </div>
+    <div class="preview-content">
+      <span class="badge badge-green">{{
+        "HOME.AppPreview.Label" | translate
+      }}</span>
+      <h2>{{ "HOME.AppPreview.Subtitle" | translate }}</h2>
+      <ul class="check-list">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M20 6 9 17l-5-5"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          {{ "HOME.AppPreview.Features.ProfessionalSupport" | translate }}
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M20 6 9 17l-5-5"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          {{ "HOME.AppPreview.Features.PrivacyFirst" | translate }}
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none">
+            <path
+              d="M20 6 9 17l-5-5"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          {{ "HOME.AppPreview.Features.Availability" | translate }}
+        </li>
+      </ul>
+      <div class="preview-actions">
+        <a class="btn btn-primary" routerLink="/auth/signup">
+          {{ "COMMON.GetStartedFree" | translate }}
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
+<!-- ═══════ CTA ═══════ -->
 <section class="cta">
-  <div class="cta-inner">
+  <div class="cta-inner container">
     <h2>{{ "HOME.AppPreview.CallToAction" | translate }}</h2>
     <p>{{ "HOME.AppPreview.JoinUsers" | translate }}</p>
     <div class="cta-buttons">
-      <a class="btn primary" routerLink="auth/signup">
+      <a class="btn btn-white btn-lg" routerLink="/auth/signup">
         {{ "COMMON.SignUpFree" | translate }}
       </a>
-      <a class="btn secondary" routerLink="auth/login">
+      <a class="btn btn-outline-white btn-lg" routerLink="/auth/login">
         {{ "COMMON.Login" | translate }}
       </a>
     </div>

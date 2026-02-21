@@ -29,43 +29,39 @@
       </p>
     </div>
 
-    <app-profile-field-dropdown
-      label="ID"
-      [displayValue]="form.value.profile_id || profile?.profileId"
+    <app-field-row
+      [label]="'ACCOUNT_MANAGEMENT.Profile.Fields.Id' | translate"
+      [displayValue]="profile?.profileId || ''"
       [editable]="false"
       [copyable]="true"
-      field="profile_id"
       (copyRequested)="copyToClipboard($event)"
-    ></app-profile-field-dropdown>
+    ></app-field-row>
 
     <div class="account-section__group">
-      <app-profile-field-dropdown
-        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Name' | translate }}"
+      <app-field-row
+        [label]="'ACCOUNT_MANAGEMENT.Profile.Fields.Name' | translate"
         [displayValue]="getDisplayValue('name')"
-        field="name"
+        [field]="'name'"
         (editRequested)="openEdit('name')"
-      ></app-profile-field-dropdown>
-
-      <app-profile-field-dropdown
-        label="{{ 'ACCOUNT_MANAGEMENT.Profile.DOB' | translate }}"
+      ></app-field-row>
+      <app-field-row
+        [label]="'ACCOUNT_MANAGEMENT.Profile.Fields.Dob' | translate"
         [displayValue]="getDisplayValue('dob')"
-        field="dob"
+        [field]="'dob'"
         (editRequested)="openEdit('dob')"
-      ></app-profile-field-dropdown>
-
-      <app-profile-field-dropdown
-        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Address' | translate }}"
+      ></app-field-row>
+      <app-field-row
+        [label]="'ACCOUNT_MANAGEMENT.Profile.Fields.Address' | translate"
         [displayValue]="getDisplayValue('address')"
-        field="address"
+        [field]="'address'"
         (editRequested)="openEdit('address')"
-      ></app-profile-field-dropdown>
-
-      <app-profile-field-dropdown
-        label="{{ 'ACCOUNT_MANAGEMENT.Profile.Gender' | translate }}"
+      ></app-field-row>
+      <app-field-row
+        [label]="'ACCOUNT_MANAGEMENT.Profile.Fields.Gender' | translate"
         [displayValue]="getDisplayValue('gender')"
-        field="gender"
+        [field]="'gender'"
         (editRequested)="openEdit('gender')"
-      ></app-profile-field-dropdown>
+      ></app-field-row>
     </div>
 
     <div class="update-warning" *ngIf="!canConfirm">

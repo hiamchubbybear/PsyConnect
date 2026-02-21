@@ -1,68 +1,97 @@
 <div class="invoices-container">
   <header class="page-header">
     <div>
-      <h1>{{ 'PAYMENT.Invoices.Title' | translate }}</h1>
-      <p class="subtitle">{{ 'PAYMENT.Invoices.Subtitle' | translate }}</p>
+      <h1>{{ "PAYMENT.Invoices.Title" | translate }}</h1>
+      <p class="subtitle">{{ "PAYMENT.Invoices.Subtitle" | translate }}</p>
     </div>
     <button class="btn-primary">
       <i class="fas fa-plus"></i>
-      {{ 'PAYMENT.Invoices.CreateNew' | translate }}
+      {{ "PAYMENT.Invoices.CreateNew" | translate }}
     </button>
   </header>
 
   <div class="controls-bar">
     <div class="search-box">
       <i class="fas fa-search"></i>
-      <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()"
-             [placeholder]="'COMMON.Search' | translate" />
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="applyFilters()"
+        [placeholder]="'COMMON.Search' | translate"
+      />
     </div>
-    <select [(ngModel)]="selectedFilter" (ngModelChange)="applyFilters()" class="filter-select">
-      <option value="all">{{ 'PAYMENT.Invoices.AllStatus' | translate }}</option>
-      <option value="paid">{{ 'PAYMENT.Invoices.Paid' | translate }}</option>
-      <option value="unpaid">{{ 'PAYMENT.Invoices.Unpaid' | translate }}</option>
-      <option value="overdue">{{ 'PAYMENT.Invoices.Overdue' | translate }}</option>
+    <select
+      [(ngModel)]="selectedFilter"
+      (ngModelChange)="applyFilters()"
+      class="filter-select"
+    >
+      <option value="all">
+        {{ "PAYMENT.Invoices.AllStatus" | translate }}
+      </option>
+      <option value="paid">{{ "PAYMENT.Invoices.Paid" | translate }}</option>
+      <option value="unpaid">
+        {{ "PAYMENT.Invoices.Unpaid" | translate }}
+      </option>
+      <option value="overdue">
+        {{ "PAYMENT.Invoices.Overdue" | translate }}
+      </option>
     </select>
   </div>
 
-  <div class="invoices-table">
-    <table>
-      <thead>
-        <tr>
-          <th>{{ 'PAYMENT.Invoices.InvoiceNumber' | translate }}</th>
-          <th>{{ 'PAYMENT.Invoices.Customer' | translate }}</th>
-          <th>{{ 'PAYMENT.Invoices.Amount' | translate }}</th>
-          <th>{{ 'PAYMENT.Invoices.DueDate' | translate }}</th>
-          <th>{{ 'PAYMENT.Invoices.Status' | translate }}</th>
-          <th>{{ 'COMMON.Actions' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let invoice of filteredInvoices">
-          <td class="invoice-number">{{ invoice.invoiceNumber }}</td>
-          <td>{{ invoice.customer }}</td>
-          <td class="amount">\${{ invoice.amount.toFixed(2) }}</td>
-          <td>{{ formatDate(invoice.dueDate) }}</td>
-          <td>
-            <span class="status-badge" [ngClass]="getStatusClass(invoice.status)">
-              {{ ('PAYMENT.Invoices.' + (invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1))) | translate }}
-            </span>
-          </td>
-          <td class="actions">
-            <button class="btn-icon" (click)="downloadInvoice(invoice)" [attr.aria-label]="'PAYMENT.Invoices.Download' | translate">
-              <i class="fas fa-download"></i>
-            </button>
-            <button class="btn-icon" [attr.aria-label]="'COMMON.View' | translate">
-              <i class="fas fa-eye"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div *ngIf="filteredInvoices.length === 0" class="empty-state">
-    <i class="fas fa-file-invoice"></i>
-    <h3>{{ 'PAYMENT.Invoices.NoInvoices' | translate }}</h3>
-    <p>{{ 'PAYMENT.Invoices.NoInvoicesMessage' | translate }}</p>
+  <div class="invoices-table-wrapper">
+    <app-table
+      [isEmpty]="filteredInvoices.length === 0"
+      [emptyTitle]="'PAYMENT.Invoices.NoInvoices' | translate"
+      [emptyDescription]="'PAYMENT.Invoices.NoInvoicesMessage' | translate"
+      emptyIcon="fas fa-file-invoice"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>{{ "PAYMENT.Invoices.InvoiceNumber" | translate }}</th>
+            <th>{{ "PAYMENT.Invoices.Customer" | translate }}</th>
+            <th>{{ "PAYMENT.Invoices.Amount" | translate }}</th>
+            <th>{{ "PAYMENT.Invoices.DueDate" | translate }}</th>
+            <th>{{ "PAYMENT.Invoices.Status" | translate }}</th>
+            <th>{{ "COMMON.Actions" | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let invoice of filteredInvoices">
+            <td class="invoice-number">{{ invoice.invoiceNumber }}</td>
+            <td>{{ invoice.customer }}</td>
+            <td class="amount">\${{ invoice.amount.toFixed(2) }}</td>
+            <td>{{ formatDate(invoice.dueDate) }}</td>
+            <td>
+              <span
+                class="status-badge"
+                [ngClass]="getStatusClass(invoice.status)"
+              >
+                {{
+                  "PAYMENT.Invoices." +
+                    (invoice.status.charAt(0).toUpperCase() +
+                      invoice.status.slice(1)) | translate
+                }}
+              </span>
+            </td>
+            <td class="actions">
+              <button
+                class="btn-icon"
+                (click)="downloadInvoice(invoice)"
+                [attr.aria-label]="'PAYMENT.Invoices.Download' | translate"
+              >
+                <i class="fas fa-download"></i>
+              </button>
+              <button
+                class="btn-icon"
+                [attr.aria-label]="'COMMON.View' | translate"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </app-table>
   </div>
 </div>

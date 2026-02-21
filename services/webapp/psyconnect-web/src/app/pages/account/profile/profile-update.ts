@@ -1,21 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
-    ChangeDetectorRef,
-    Component,
-    HostListener,
-    OnInit,
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnInit,
 } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { map, Observable, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { ProfileFieldDropdownComponent } from '../../../components/field-row/field-row';
 import { SingleButton } from '../../../components/single-button/single-button';
 import { SecureStorageService } from '../../../encrypt/secure';
 import { UserProfileUpdateRequest } from '../../../models/profile';
@@ -23,11 +22,12 @@ import { CloudinaryService } from '../../../services/cloudinary/cloudinary.servi
 import { LoaderService } from '../../../services/loader/loader';
 import { Profile } from '../../../services/profile/profile';
 import {
-    UserContextService,
-    UserProfile,
+  UserContextService,
+  UserProfile,
 } from '../../../services/profile/profile-service';
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { FieldRowComponent } from '../../../shared/ui-atoms/field-row/field-row.component';
 import { ProfileModel } from './profile-model';
 import { ProfileOverlayComponent } from './profile-overlay';
 @Component({
@@ -41,7 +41,7 @@ import { ProfileOverlayComponent } from './profile-overlay';
     TranslateModule,
     ProfileOverlayComponent,
     SingleButton,
-    ProfileFieldDropdownComponent,
+    FieldRowComponent,
   ],
   templateUrl: './profile-update.html',
   styleUrls: ['./profile-update.scss'],
@@ -81,7 +81,7 @@ export class ProfileSectionComponent implements OnInit {
         this.toastService.show(
           'TOAST.invalid_image',
           'TOAST.error',
-          ToastType.Error
+          ToastType.Error,
         );
         return;
       }
@@ -89,7 +89,7 @@ export class ProfileSectionComponent implements OnInit {
         this.toastService.show(
           'TOAST.image_too_large',
           'TOAST.error',
-          ToastType.Error
+          ToastType.Error,
         );
 
         return;
@@ -113,7 +113,7 @@ export class ProfileSectionComponent implements OnInit {
       if (this.isUploadImage && this.selectedImage) {
         const uploadedUrl = await this.cloudinaryService.uploadImage(
           this.selectedImage,
-          this.username || ''
+          this.username || '',
         );
 
         if (!uploadedUrl || uploadedUrl.trim() === '') {
@@ -130,7 +130,7 @@ export class ProfileSectionComponent implements OnInit {
       this.toastService.show(
         'TOAST.upload_failed',
         'TOAST.error',
-        ToastType.Error
+        ToastType.Error,
       );
 
       this.resetUploadStates();
@@ -164,7 +164,7 @@ export class ProfileSectionComponent implements OnInit {
     private userContext: UserContextService,
     private cdr: ChangeDetectorRef,
     private http: HttpClient,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -196,7 +196,7 @@ export class ProfileSectionComponent implements OnInit {
     });
   }
   private prepareCompleteProfileUpdate(
-    avatarUri?: string
+    avatarUri?: string,
   ): UserProfileUpdateRequest {
     const currentFormValues = this.form.value;
 
@@ -225,7 +225,7 @@ export class ProfileSectionComponent implements OnInit {
         this.toastService.show(
           'TOAST.profile_update_success',
           'TOAST.success',
-          ToastType.Success
+          ToastType.Success,
         );
         this.profile = {
           ...this.profile,
@@ -252,7 +252,7 @@ export class ProfileSectionComponent implements OnInit {
         this.toastService.show(
           'TOAST.profile_update_failed',
           'TOAST.error',
-          ToastType.Error
+          ToastType.Error,
         );
       },
     });
@@ -293,7 +293,7 @@ export class ProfileSectionComponent implements OnInit {
   onAddressInput(query: string) {
     if (query && query.length > 2) {
       const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        query
+        query,
       )}&format=json&limit=5`;
       this.http.get<any[]>(url).subscribe((data) => {
         this.addressSuggestions = data.map((item) => item.display_name);
@@ -385,7 +385,7 @@ export class ProfileSectionComponent implements OnInit {
       this.toastService.show(
         'TOAST.id_copied',
         'TOAST.success',
-        ToastType.Success
+        ToastType.Success,
       );
     });
   }

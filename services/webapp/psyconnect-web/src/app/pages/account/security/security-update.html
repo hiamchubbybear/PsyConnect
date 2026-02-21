@@ -5,14 +5,14 @@
   </p>
 
   <div class="account-section__group">
-    <app-profile-field-dropdown
+    <app-field-row
       *ngFor="let item of securityItems"
       [label]="item.label | translate"
       [displayValue]="getFieldDisplay(item.key)"
       [editable]="true"
       [copyable]="false"
       (editRequested)="openEdit(item.key)"
-    ></app-profile-field-dropdown>
+    ></app-field-row>
   </div>
 
   <h3 class="account-section__subheading">
@@ -23,14 +23,14 @@
   </p>
 
   <div class="account-section__group">
-    <app-profile-field-dropdown
+    <app-field-row
       *ngFor="let item of securityCheckItems"
       [label]="item.label | translate"
       [displayValue]="getFieldDisplay(item.key)"
       [editable]="true"
       [copyable]="false"
       (editRequested)="openEdit(item.key)"
-    ></app-profile-field-dropdown>
+    ></app-field-row>
   </div>
 
   <!-- Overlay chung -->
@@ -49,15 +49,20 @@
               </p>
 
               <div class="overlay-actions">
-                <button
-                  (click)="sendPasswordReset()"
+                <app-button
+                  (onClick)="sendPasswordReset()"
                   [disabled]="submittingReset"
+                  variant="primary"
                 >
                   {{ submittingReset ? "Đang gửi..." : "Gửi email" }}
-                </button>
-                <button (click)="cancel()" [disabled]="submittingReset">
+                </app-button>
+                <app-button
+                  (onClick)="cancel()"
+                  [disabled]="submittingReset"
+                  variant="secondary"
+                >
                   Hủy
-                </button>
+                </app-button>
               </div>
             </div>
           </div>
@@ -71,24 +76,27 @@
               }}
             </p>
             <div class="button-group">
-              <button class="button" (click)="enable2FA('authApp')">
+              <app-button variant="outline" (onClick)="enable2FA('authApp')">
                 {{ "ACCOUNT_MANAGEMENT.Security.Overlay.AuthApp" | translate }}
-              </button>
-              <button class="button" (click)="enable2FA('sms')">
+              </app-button>
+              <app-button variant="outline" (onClick)="enable2FA('sms')">
                 {{ "ACCOUNT_MANAGEMENT.Security.Overlay.SMS" | translate }}
-              </button>
-              <button class="button" (click)="enable2FA('securityKey')">
+              </app-button>
+              <app-button
+                variant="outline"
+                (onClick)="enable2FA('securityKey')"
+              >
                 {{
                   "ACCOUNT_MANAGEMENT.Security.Overlay.SecurityKey" | translate
                 }}
-              </button>
+              </app-button>
             </div>
           </div>
 
           <!-- Recent Logins / Logged Devices / Suspicious / Linked Emails / Third Party Apps -->
           <div *ngSwitchCase="'recentLogins'" class="form">
             <div *ngFor="let login of recentLogins" class="login-row">
-              <span>{{ login.time | date : "short" }}</span>
+              <span>{{ login.time | date: "short" }}</span>
               <span>{{ login.device }}</span>
               <span>{{ login.location }}</span>
             </div>
@@ -97,35 +105,55 @@
           <div *ngSwitchCase="'loggedDevices'" class="form">
             <div *ngFor="let device of loggedDevices" class="device-row">
               <span>{{ device.name }}</span>
-              <span>{{ device.lastActive | date : "short" }}</span>
-              <button (click)="logoutDevice(device)">
+              <span>{{ device.lastActive | date: "short" }}</span>
+              <app-button
+                size="sm"
+                variant="danger"
+                (onClick)="logoutDevice(device)"
+              >
                 {{ "SECURITY.Logout" | translate }}
-              </button>
+              </app-button>
             </div>
           </div>
 
           <div *ngSwitchCase="'suspiciousActivity'" class="form">
             <div *ngFor="let alert of suspiciousActivities">
-              <p>{{ alert.message }} - {{ alert.time | date : "short" }}</p>
-              <button (click)="resolveAlert(alert)">
+              <p>{{ alert.message }} - {{ alert.time | date: "short" }}</p>
+              <app-button
+                size="sm"
+                variant="primary"
+                (onClick)="resolveAlert(alert)"
+              >
                 {{ "SECURITY.Verify" | translate }}
-              </button>
+              </app-button>
             </div>
           </div>
 
           <div *ngSwitchCase="'linkedEmails'" class="form">
             <div *ngFor="let email of linkedEmails" class="email-row">
               <span>{{ email.address }}</span>
-              <button (click)="removeEmail(email)">
+              <app-button
+                size="sm"
+                variant="danger"
+                (onClick)="removeEmail(email)"
+              >
                 {{ "COMMON.Remove" | translate }}
-              </button>
+              </app-button>
             </div>
-            <input
-              type="email"
-              [placeholder]="'SECURITY.AddNewEmail' | translate"
-              [(ngModel)]="newEmail"
-            />
-            <button (click)="addEmail()">{{ "COMMON.Add" | translate }}</button>
+            <div
+              class="add-email-row"
+              style="display: flex; gap: 0.5rem; align-items: flex-end"
+            >
+              <app-input
+                type="email"
+                [placeholder]="'SECURITY.AddNewEmail' | translate"
+                [(ngModel)]="newEmail"
+                style="flex: 1"
+              ></app-input>
+              <app-button (onClick)="addEmail()">{{
+                "COMMON.Add" | translate
+              }}</app-button>
+            </div>
           </div>
 
           <div *ngSwitchCase="'thirdPartyApps'" class="form">
@@ -135,39 +163,46 @@
                 >{{ "SECURITY.Permissions" | translate }}:
                 {{ app.permissions.join(", ") }}</span
               >
-              <button (click)="revokeApp(app)">
+              <app-button
+                size="sm"
+                variant="secondary"
+                (onClick)="revokeApp(app)"
+              >
                 {{ "SECURITY.RevokePermissions" | translate }}
-              </button>
+              </app-button>
             </div>
           </div>
 
           <!-- Security Methods -->
           <div *ngSwitchCase="'securityMethods'" class="form">
-            <label>{{ "SECURITY.RecoveryEmail" | translate }}:</label>
-            <input type="email" [(ngModel)]="securityMethods.email" />
-            <label>{{ "SECURITY.AuthPhone" | translate }}:</label>
-            <input type="tel" [(ngModel)]="securityMethods.phone" />
-            <label>{{ "SECURITY.PhysicalSecurityKey" | translate }}:</label>
-            <input type="text" [(ngModel)]="securityMethods.key" />
+            <app-input
+              label="{{ 'SECURITY.RecoveryEmail' | translate }}"
+              type="email"
+              [(ngModel)]="securityMethods.email"
+            ></app-input>
+
+            <app-input
+              label="{{ 'SECURITY.AuthPhone' | translate }}"
+              type="tel"
+              [(ngModel)]="securityMethods.phone"
+            ></app-input>
+
+            <app-input
+              label="{{ 'SECURITY.PhysicalSecurityKey' | translate }}"
+              type="text"
+              [(ngModel)]="securityMethods.key"
+            ></app-input>
           </div>
         </ng-container>
 
         <!-- Overlay Actions -->
         <div class="overlay-actions">
-          <button
-            type="button"
-            class="button button--secondary"
-            (click)="closeOverlay()"
-          >
+          <app-button variant="secondary" (onClick)="closeOverlay()">
             {{ "COMMON.Cancel" | translate }}
-          </button>
-          <button
-            type="button"
-            class="button button--primary"
-            (click)="saveOverlay()"
-          >
+          </app-button>
+          <app-button variant="primary" (onClick)="saveOverlay()">
             {{ "COMMON.SaveChanges" | translate }}
-          </button>
+          </app-button>
         </div>
       </div>
     </div>

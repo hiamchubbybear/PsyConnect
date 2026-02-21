@@ -1,28 +1,37 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
-    Component,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import {
-    Subject,
-    Subscription,
-    debounceTime,
-    distinctUntilChanged,
-    of,
-    switchMap,
+  Subject,
+  Subscription,
+  debounceTime,
+  distinctUntilChanged,
+  of,
+  switchMap,
 } from 'rxjs';
+import { PsyButtonComponent } from '../../../shared/ui-atoms/button/psy-button.component';
+import { InputComponent } from '../../../shared/ui-atoms/input/input.component';
 
 @Component({
   selector: 'app-profile-overlay',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    TranslateModule,
+    InputComponent,
+    PsyButtonComponent,
+  ],
   templateUrl: './profile-overlay.html',
   styleUrls: ['./profile-overlay.scss'],
 })
@@ -61,13 +70,13 @@ export class ProfileOverlayComponent implements OnInit, OnDestroy {
         switchMap((query) => {
           if (query.length > 2) {
             const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-              query
+              query,
             )}&format=json&addressdetails=1&limit=10`;
             return this.http.get<any[]>(url);
           } else {
             return of([]);
           }
-        })
+        }),
       )
       .subscribe((data) => {
         this.addressSuggestions = data.map((item: any) => item.display_name);

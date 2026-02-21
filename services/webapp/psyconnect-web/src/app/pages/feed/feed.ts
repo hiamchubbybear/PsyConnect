@@ -13,6 +13,9 @@ import { SocialService } from '../../services/consultation/social.service';
 import { NewsfeedService } from '../../services/newsfeed/newsfeed.service';
 import { ReactionService } from '../../services/newsfeed/reaction.service';
 import { Profile } from '../../services/profile/profile';
+import { PsyButtonComponent as AppButtonComponent } from '../../shared/ui-atoms/button/psy-button.component';
+import { PsyEmptyStateComponent as EmptyStateComponent } from '../../shared/ui-atoms/empty-state/psy-empty-state.component';
+import { PostCardComponent } from '../../shared/ui-atoms/post-card/post-card.component';
 import { PostModalComponent } from './post-modal/post-modal';
 
 interface Therapist {
@@ -37,6 +40,9 @@ interface SupportGroup {
     TranslateModule,
     MoodTrackerComponent,
     PostModalComponent,
+    PostCardComponent,
+    EmptyStateComponent,
+    AppButtonComponent,
   ],
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
@@ -91,7 +97,7 @@ export class FeedComponent implements OnInit {
     private newsfeedService: NewsfeedService,
     private reactionService: ReactionService,
     private profileService: Profile,
-    private socialService: SocialService
+    private socialService: SocialService,
   ) {}
 
   ngOnInit() {

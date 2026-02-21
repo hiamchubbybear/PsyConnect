@@ -2,42 +2,35 @@
   <div class="overlay-content">
     <h3>{{ "ACCOUNT_MANAGEMENT.Profile.Name" | translate }}</h3>
     <div class="form">
-      <input
-        type="text"
+      <app-input
         [(ngModel)]="draftData.firstName"
         name="firstName"
-        placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.FirstName' | translate }}"
-      />
-      <input
-        type="text"
+        [placeholder]="'ACCOUNT_MANAGEMENT.Profile.FirstName' | translate"
+      ></app-input>
+
+      <app-input
         [(ngModel)]="draftData.middleName"
         name="middleName"
-        placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.MiddleName' | translate }}"
-      />
-      <input
-        type="text"
+        [placeholder]="'ACCOUNT_MANAGEMENT.Profile.MiddleName' | translate"
+      ></app-input>
+
+      <app-input
         [(ngModel)]="draftData.lastName"
         name="lastName"
-        placeholder="{{ 'ACCOUNT_MANAGEMENT.Profile.LastName' | translate }}"
-      />
+        [placeholder]="'ACCOUNT_MANAGEMENT.Profile.LastName' | translate"
+      ></app-input>
+
       <p class="notice">
         {{ "ACCOUNT_MANAGEMENT.Profile.Notices.NameChangeWarning" | translate }}
       </p>
+
       <div class="overlay-actions">
-        <button
-          type="button"
-          class="button button--secondary"
-          (click)="cancel.emit()"
-        >
+        <app-button variant="secondary" (onClick)="cancel.emit()">
           {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel" | translate }}
-        </button>
-        <button
-          type="button"
-          class="button button--primary"
-          (click)="saveName.emit()"
-        >
+        </app-button>
+        <app-button variant="primary" (onClick)="saveName.emit()">
           {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges" | translate }}
-        </button>
+        </app-button>
       </div>
     </div>
   </div>
@@ -49,22 +42,19 @@
     <h3>{{ "ACCOUNT_MANAGEMENT.Profile.DOB" | translate }}</h3>
     <p>{{ "ACCOUNT_MANAGEMENT.Profile.Notices.DOBInfo" | translate }}</p>
     <div class="form">
-      <input type="date" [(ngModel)]="editValue" name="dobField" />
+      <app-input
+        type="date"
+        [(ngModel)]="editValue"
+        name="dobField"
+      ></app-input>
+
       <div class="overlay-actions">
-        <button
-          type="button"
-          class="button button--secondary"
-          (click)="cancel.emit()"
-        >
+        <app-button variant="secondary" (onClick)="cancel.emit()">
           {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel" | translate }}
-        </button>
-        <button
-          type="button"
-          class="button button--primary"
-          (click)="onSaveField('dob')"
-        >
+        </app-button>
+        <app-button variant="primary" (onClick)="onSaveField('dob')">
           {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges" | translate }}
-        </button>
+        </app-button>
       </div>
     </div>
   </div>
@@ -77,13 +67,12 @@
     <p>{{ "ACCOUNT_MANAGEMENT.Profile.Notices.AddressInfo" | translate }}</p>
 
     <div class="form">
-      <input
-        type="text"
+      <app-input
         [(ngModel)]="editValue"
         name="addressField"
         (ngModelChange)="onAddressInput($event)"
         placeholder="Enter your full address"
-      />
+      ></app-input>
 
       <!-- Suggestion dropdown -->
       <div *ngIf="addressSuggestions.length > 0" class="suggestions-dropdown">
@@ -97,20 +86,12 @@
       </div>
 
       <div class="overlay-actions">
-        <button
-          type="button"
-          class="button button--secondary"
-          (click)="cancel.emit()"
-        >
+        <app-button variant="secondary" (onClick)="cancel.emit()">
           {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel" | translate }}
-        </button>
-        <button
-          type="button"
-          class="button button--primary"
-          (click)="onSaveField('address')"
-        >
+        </app-button>
+        <app-button variant="primary" (onClick)="onSaveField('address')">
           {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges" | translate }}
-        </button>
+        </app-button>
       </div>
     </div>
   </div>
@@ -152,20 +133,12 @@
     </div>
 
     <div class="overlay-actions">
-      <button
-        type="button"
-        class="button button--secondary"
-        (click)="cancel.emit()"
-      >
+      <app-button variant="secondary" (onClick)="cancel.emit()">
         {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.Cancel" | translate }}
-      </button>
-      <button
-        type="button"
-        class="button button--primary"
-        (click)="onSaveField('gender')"
-      >
+      </app-button>
+      <app-button variant="primary" (onClick)="onSaveField('gender')">
         {{ "ACCOUNT_MANAGEMENT.Profile.Buttons.SaveChanges" | translate }}
-      </button>
+      </app-button>
     </div>
   </div>
 </div>

@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import {
-    FormBuilder,
-    FormGroup,
-    FormsModule,
-    ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '../../../../environments/environment';
-import { ProfileFieldDropdownComponent } from '../../../components/field-row/field-row';
 import { SecureStorageService } from '../../../encrypt/secure';
 import { PasswordService } from '../../../services/auth/password.service';
 import { ToastType } from '../../../shared/toast/toast.model';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { PsyButtonComponent } from '../../../shared/ui-atoms/button/psy-button.component';
+import { FieldRowComponent } from '../../../shared/ui-atoms/field-row/field-row.component';
+import { InputComponent } from '../../../shared/ui-atoms/input/input.component';
 import { ProfileModel } from '../profile/profile-model';
 
 interface PasswordData {
@@ -34,8 +36,10 @@ interface SecurityMethods {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ProfileFieldDropdownComponent,
+    FieldRowComponent,
     TranslateModule,
+    InputComponent,
+    PsyButtonComponent,
   ],
   templateUrl: './security-update.html',
   styleUrls: ['./security-update.scss'],
@@ -124,7 +128,7 @@ export class SecuritySectionComponent implements OnInit {
     private fb: FormBuilder,
     private toastService: ToastService,
     private passwordService: PasswordService,
-    private secureStorage: SecureStorageService
+    private secureStorage: SecureStorageService,
   ) {}
 
   ngOnInit(): void {
@@ -182,7 +186,7 @@ export class SecuritySectionComponent implements OnInit {
       this.toastService.show(
         'TOAST.no_email_to_reset',
         'TOAST.error',
-        ToastType.Error
+        ToastType.Error,
       );
       return;
     }
@@ -198,14 +202,14 @@ export class SecuritySectionComponent implements OnInit {
             this.toastService.show(
               'TOAST.reset_email_sent',
               'TOAST.success',
-              ToastType.Success
+              ToastType.Success,
             );
             this.editing = null;
           } else {
             this.toastService.show(
               'TOAST.error_generic',
               'TOAST.error',
-              ToastType.Error
+              ToastType.Error,
             );
           }
         },
@@ -215,7 +219,7 @@ export class SecuritySectionComponent implements OnInit {
           this.toastService.show(
             'TOAST.error_generic',
             'TOAST.error',
-            ToastType.Error
+            ToastType.Error,
           );
         },
       });
@@ -225,7 +229,7 @@ export class SecuritySectionComponent implements OnInit {
     this.toastService.show(
       'TOAST.security_method_updated',
       'TOAST.success',
-      ToastType.Success
+      ToastType.Success,
     );
     this.editing = null;
   }
@@ -234,7 +238,7 @@ export class SecuritySectionComponent implements OnInit {
     this.toastService.show(
       'TOAST.2fa_enabled',
       'TOAST.success',
-      ToastType.Success
+      ToastType.Success,
     );
     this.editing = null;
   }
@@ -243,7 +247,7 @@ export class SecuritySectionComponent implements OnInit {
     this.toastService.show(
       'TOAST.device_logged_out',
       'TOAST.success',
-      ToastType.Success
+      ToastType.Success,
     );
     this.loggedDevices = this.loggedDevices.filter((d) => d !== device);
   }
@@ -252,10 +256,10 @@ export class SecuritySectionComponent implements OnInit {
     this.toastService.show(
       'TOAST.alert_verified',
       'TOAST.success',
-      ToastType.Success
+      ToastType.Success,
     );
     this.suspiciousActivities = this.suspiciousActivities.filter(
-      (a) => a !== alert
+      (a) => a !== alert,
     );
   }
 
@@ -267,7 +271,7 @@ export class SecuritySectionComponent implements OnInit {
       this.toastService.show(
         'TOAST.email_added',
         'TOAST.success',
-        ToastType.Success
+        ToastType.Success,
       );
     }
   }
@@ -277,7 +281,7 @@ export class SecuritySectionComponent implements OnInit {
     this.toastService.show(
       'TOAST.email_deleted',
       'TOAST.success',
-      ToastType.Success
+      ToastType.Success,
     );
   }
 
@@ -287,7 +291,7 @@ export class SecuritySectionComponent implements OnInit {
     this.toastService.show(
       'TOAST.app_permission_revoked',
       'TOAST.success',
-      ToastType.Success
+      ToastType.Success,
     );
   }
 
@@ -330,7 +334,7 @@ export class SecuritySectionComponent implements OnInit {
     this.toastService.show(
       'TOAST.password_updated',
       'TOAST.success',
-      ToastType.Success
+      ToastType.Success,
     );
     this.editing = null;
   }
@@ -346,14 +350,14 @@ export class SecuritySectionComponent implements OnInit {
         this.toastService.show(
           'TOAST.2fa_updated',
           'TOAST.success',
-          ToastType.Success
+          ToastType.Success,
         );
         break;
       default:
         this.toastService.show(
           'TOAST.update_success',
           'TOAST.success',
-          ToastType.Success
+          ToastType.Success,
         );
         break;
     }

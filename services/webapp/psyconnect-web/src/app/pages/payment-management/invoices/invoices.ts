@@ -2,14 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { MockDataService, MockInvoice } from '../../../services/mock-data.service';
+import {
+  MockDataService,
+  MockInvoice,
+} from '../../../services/mock-data.service';
+import { TableComponent } from '../../../shared/ui-atoms/table/table.component';
 
 @Component({
   selector: 'app-invoices',
   standalone: true,
-  imports: [CommonModule, TranslateModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslateModule, TableComponent],
   templateUrl: './invoices.html',
-  styleUrl: './invoices.scss'
+  styleUrl: './invoices.scss',
 })
 export class Invoices implements OnInit {
   invoices: MockInvoice[] = [];
@@ -24,7 +28,7 @@ export class Invoices implements OnInit {
   }
 
   loadInvoices() {
-    this.mockDataService.getInvoices().subscribe(invoices => {
+    this.mockDataService.getInvoices().subscribe((invoices) => {
       this.invoices = invoices;
       this.applyFilters();
     });
@@ -34,14 +38,15 @@ export class Invoices implements OnInit {
     let filtered = [...this.invoices];
 
     if (this.selectedFilter !== 'all') {
-      filtered = filtered.filter(i => i.status === this.selectedFilter);
+      filtered = filtered.filter((i) => i.status === this.selectedFilter);
     }
 
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(i =>
-        i.invoiceNumber.toLowerCase().includes(query) ||
-        i.customer.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (i) =>
+          i.invoiceNumber.toLowerCase().includes(query) ||
+          i.customer.toLowerCase().includes(query),
       );
     }
 
@@ -50,10 +55,14 @@ export class Invoices implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status) {
-      case 'paid': return 'status-paid';
-      case 'unpaid': return 'status-unpaid';
-      case 'overdue': return 'status-overdue';
-      default: return '';
+      case 'paid':
+        return 'status-paid';
+      case 'unpaid':
+        return 'status-unpaid';
+      case 'overdue':
+        return 'status-overdue';
+      default:
+        return '';
     }
   }
 
@@ -61,7 +70,7 @@ export class Invoices implements OnInit {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 
