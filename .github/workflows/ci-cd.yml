@@ -1,18 +1,25 @@
-name: "🔨 Build All Services"
-
-# Workflow này dùng để build TẤT CẢ services cùng lúc (khi cần)
-# Mỗi service riêng lẻ đã có workflow riêng (ci-*.yml) chạy tự động khi code thay đổi
+name: "🔄 PsyConnect CI/CD Pipeline"
 
 on:
+  push:
+    branches: ["main", "develop"]
   workflow_dispatch:
 
 jobs:
-  security-audit:
+  # ╔══════════════════════════════════════════╗
+  # ║  PHASE 1: 🔒 Security Scan              ║
+  # ╚══════════════════════════════════════════╝
+  security-scan:
+    name: "🔒 Security Scan"
     uses: ./.github/workflows/reusable-security-scan.yml
     secrets: inherit
 
+  # ╔══════════════════════════════════════════╗
+  # ║  PHASE 2: ☕ Build Java Backend          ║
+  # ╚══════════════════════════════════════════╝
   build-api-gateway:
-    needs: security-audit
+    name: "🌐 API Gateway"
+    needs: security-scan
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "API Gateway"
@@ -24,7 +31,8 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-identity-service:
-    needs: security-audit
+    name: "🔑 Identity Service"
+    needs: security-scan
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Identity Service"
@@ -36,7 +44,8 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-profile-service:
-    needs: security-audit
+    name: "👤 Profile Service"
+    needs: security-scan
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Profile Service"
@@ -47,8 +56,12 @@ jobs:
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+  # ╔══════════════════════════════════════════╗
+  # ║  PHASE 3: 🔧 Build Go + Specialized     ║
+  # ╚══════════════════════════════════════════╝
   build-consultation-service:
-    needs: security-audit
+    name: "🩺 Consultation Service"
+    needs: [build-api-gateway, build-identity-service, build-profile-service]
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Consultation Service"
@@ -60,7 +73,8 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-chat-service:
-    needs: security-audit
+    name: "💬 Chat Service"
+    needs: [build-api-gateway, build-identity-service, build-profile-service]
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Chat Service"
@@ -72,7 +86,8 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-notification-service:
-    needs: security-audit
+    name: "🔔 Notification Service"
+    needs: [build-api-gateway, build-identity-service, build-profile-service]
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Notification Service"
@@ -83,8 +98,17 @@ jobs:
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+  # ╔══════════════════════════════════════════╗
+  # ║  PHASE 4: 🖥️ Build Frontend              ║
+  # ╚══════════════════════════════════════════╝
   build-webapp:
-    needs: security-audit
+    name: "🖥️ Webapp"
+    needs:
+      [
+        build-consultation-service,
+        build-chat-service,
+        build-notification-service,
+      ]
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Web App"
@@ -95,3 +119,34 @@ jobs:
       docker_build_args: "--build-arg CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }} --build-arg CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  # ╔══════════════════════════════════════════╗
+  # ║  PHASE 5: 🚀 Deploy to K3s              ║
+  # ╚══════════════════════════════════════════╝
+  deploy:
+    name: "🚀 Deploy to K3s"
+    needs: [build-webapp]
+    uses: ./.github/workflows/reusable-deploy.yml
+    secrets:
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      CHAT_MONGO_URI: ${{ secrets.CHAT_MONGO_URI }}
+      CONSULTATION_MONGO_URI: ${{ secrets.CONSULTATION_MONGO_URI }}
+      SPRING_NEO4J_AUTHENTICATION_USERNAME: ${{ secrets.SPRING_NEO4J_AUTHENTICATION_USERNAME }}
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD: ${{ secrets.SPRING_NEO4J_AUTHENTICATION_PASSWORD }}
+      CONSULTATION_REDIS_PASSWORD: ${{ secrets.CONSULTATION_REDIS_PASSWORD }}
+      SPRING_DATA_REDIS_PASSWORD: ${{ secrets.SPRING_DATA_REDIS_PASSWORD }}
+      SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
+      JWT_SIGNER_KEY: ${{ secrets.JWT_SIGNER_KEY }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
+      FACEBOOK_CLIENT_ID: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_ID }}
+      FACEBOOK_CLIENT_SECRET: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_FACEBOOK_CLIENT_SECRET }}
+      GOOGLE_CLIENT_ID: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET }}
+      SMPT_HOST: ${{ secrets.SMPT_HOST }}
+      SMPT_PORT: ${{ secrets.SMPT_PORT }}
+      SMPT_MAIL: ${{ secrets.SMPT_MAIL }}
+      SMPT_APP_PASS: ${{ secrets.SMPT_APP_PASS }}
