@@ -1,4 +1,4 @@
-<div class="chat-layout">
+<div class="chat-layout" [class.mobile-chat-active]="!!selectedFriend()">
   <div class="chat-sidebar">
     <app-chat-skeleton *ngIf="isLoadingFriends"></app-chat-skeleton>
     <app-chat-list
@@ -19,6 +19,7 @@
     [currentUserAvatar]="currentUser.avatar"
     [isLoadingMessages]="isLoadingMessages"
     (callRequested)="handleCallRequest($event)"
+    (back)="onBack()"
   ></app-chat-main>
 
   <!-- Video call overlay -->

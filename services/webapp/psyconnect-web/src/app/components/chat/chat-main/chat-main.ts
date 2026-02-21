@@ -15,12 +15,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { Friend, Message } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat/chat.service';
+import { ChatInputComponent } from '../../../shared/ui-atoms/chat-input/chat-input.component';
+import { MessageBubbleComponent } from '../../../shared/ui-atoms/message-bubble/message-bubble.component';
 import {
   CallOptionsMenuComponent,
   CallType,
 } from '../../call-options-menu/call-options-menu.component';
-import { MessageBubbleComponent } from '../chat-bubble/chat-bubble';
-import { ChatSkeletonComponent } from '../chat-skeleton/chat-skeleton';
 
 @Component({
   selector: 'app-chat-main',
@@ -29,7 +29,7 @@ import { ChatSkeletonComponent } from '../chat-skeleton/chat-skeleton';
     CommonModule,
     FormsModule,
     MessageBubbleComponent,
-    ChatSkeletonComponent,
+    ChatInputComponent,
     CallOptionsMenuComponent,
     TranslateModule,
   ],
@@ -46,6 +46,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   @Input() isLoadingMessages = false;
   @Output() messagesChange = new EventEmitter<Message[]>();
   @Output() callRequested = new EventEmitter<CallType>();
+  @Output() back = new EventEmitter<void>();
   @ViewChild('messagesContainer')
   messagesContainer!: ElementRef<HTMLDivElement>;
   showLoadOlderButton = false;
@@ -53,7 +54,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
 
   isLoadingOld = false;
-  messageText = '';
+
   isTyping = false;
   isSending = false; // Guard against duplicate sends
   private autoScrollPending = false;
@@ -77,9 +78,8 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
     const threshold = 50;
     this.showLoadOlderButton = container.scrollTop <= threshold;
   }
-  onSendMessage() {
+  onSendMessage(text: string) {
     const friend = this.selectedFriend;
-    const text = this.messageText.trim();
     if (!text || !friend) return;
 
     if (!this.conversationId || !this.currentUserId) {
@@ -101,8 +101,6 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       senderId: this.currentUserId,
     });
 
-    this.messageText = '';
-
     // Reset guard after delay
     setTimeout(() => {
       this.isSending = false;
@@ -123,7 +121,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
         this.conversationId,
         this.currentUserId,
         10,
-        oldestTime
+        oldestTime,
       )
       .pipe(finalize(() => (this.isLoadingOld = false)))
       .subscribe((olderMsgs) => {

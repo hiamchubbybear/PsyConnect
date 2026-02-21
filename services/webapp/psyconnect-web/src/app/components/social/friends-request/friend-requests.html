@@ -1,32 +1,14 @@
-<section class="friend-requests">
-  <div class="friend-requests__header">
-    <h2 class="friend-requests__title">
-      {{ "friends.requests.title" | translate }}
-    </h2>
-
-    <div class="friend-requests__nav" *ngIf="requests.length > 4">
-      <button class="friend-requests__nav-btn" (click)="scrollLeft()">
-        <lucide-icon name="chevron-left"></lucide-icon>
-      </button>
-      <button class="friend-requests__nav-btn" (click)="scrollRight()">
-        <lucide-icon name="chevron-right"></lucide-icon>
-      </button>
-    </div>
-  </div>
-
-  <div #scrollContainer class="friend-requests__row">
-    <app-friend-card
-      *ngFor="let request of requests"
-      [friend]="request"
-      [cardType]="'request'"
-      (accept)="onAccept($event)"
-      (decline)="onDecline($event)"
-    ></app-friend-card>
-  </div>
-
-  <ng-template #noRequests>
-    <p class="friend-requests__empty">
-      {{ "friends.requests.empty" | translate }}
-    </p>
-  </ng-template>
-</section>
+<app-horizontal-list
+  [title]="'friends.requests.title' | translate"
+  [emptyText]="'friends.requests.empty' | translate"
+  [showNav]="requests.length > 4"
+  [isEmpty]="requests.length === 0"
+>
+  <app-friend-card
+    *ngFor="let request of requests"
+    [friend]="request"
+    [cardType]="'request'"
+    (accept)="onAccept($event)"
+    (decline)="onDecline($event)"
+  ></app-friend-card>
+</app-horizontal-list>

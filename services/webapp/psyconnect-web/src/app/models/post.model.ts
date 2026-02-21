@@ -30,6 +30,11 @@ export interface Post {
   created_at: string;
   updated_at: string;
   status?: 'published' | 'draft';
+
+  // UI Display fields (optional/populated)
+  author_name?: string;
+  author_avatar?: string;
+  image_url?: string;
 }
 
 export interface MediaAttachment {

@@ -183,6 +183,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.stopOutgoingTone();
   }
 
+  onBack() {
+    this.selectedFriend.set(null);
+    this.router.navigate(['/chat']); // Clear route param
+  }
+
   onFriendSelected(friend: Friend, updateUrl = false) {
     // Cleanup previous WebSocket subscription
     this.wsSubscription?.unsubscribe();
