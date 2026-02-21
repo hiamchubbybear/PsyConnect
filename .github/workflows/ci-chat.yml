@@ -1,4 +1,4 @@
-name: "💬 Chat Service"
+name: "CI - Chat Service"
 
 on:
   push:

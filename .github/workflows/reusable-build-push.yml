@@ -16,10 +16,6 @@ on:
         required: false
         type: string
         default: "Dockerfile"
-      docker_build_args:
-        required: false
-        type: string
-        default: ""
       registry:
         required: false
         type: string
@@ -30,6 +26,10 @@ on:
     secrets:
       password:
         required: true
+      CLOUDINARY_API_KEY:
+        required: false
+      CLOUDINARY_API_SECRET:
+        required: false
 
 jobs:
   build-push:
@@ -46,7 +46,7 @@ jobs:
             echo "::error::DOCKERHUB_TOKEN is EMPTY! Please check Settings > Secrets > Actions."
             exit 1
           else
-            echo "✅ DOCKERHUB_TOKEN is set. Length: ${#DOCKER_PASSWORD}"
+            echo "DOCKERHUB_TOKEN is set. Length: ${#DOCKER_PASSWORD}"
           fi
         env:
           DOCKER_PASSWORD: ${{ secrets.password }}
@@ -66,10 +66,13 @@ jobs:
             ./mvnw clean package -DskipTests
           fi
 
-          # Build with --no-cache to ensure fresh build
-          ARGS=""
-          if [ -n "${{ inputs.docker_build_args }}" ]; then
-            ARGS="${{ inputs.docker_build_args }}"
+          # Build Docker image
+          BUILD_ARGS=""
+          if [ -n "$CLOUDINARY_API_KEY" ]; then
+            BUILD_ARGS="--build-arg CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY --build-arg CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET"
           fi
-          docker build --no-cache $ARGS -f ${{ inputs.dockerfile }} . --tag ${{ inputs.registry }}/${{ inputs.image_name }}:latest
+          docker build --no-cache $BUILD_ARGS -f ${{ inputs.dockerfile }} . --tag ${{ inputs.registry }}/${{ inputs.image_name }}:latest
           docker push ${{ inputs.registry }}/${{ inputs.image_name }}:latest
+        env:
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}

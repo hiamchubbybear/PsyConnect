@@ -1,4 +1,4 @@
-name: "🚀 Deploy to K3s"
+name: "CD - Deploy to K3s"
 
 on:
   # Chạy thủ công khi muốn deploy lên K3s

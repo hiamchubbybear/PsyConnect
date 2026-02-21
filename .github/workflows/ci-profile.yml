@@ -1,4 +1,4 @@
-name: "👤 Profile Service"
+name: "CI - Profile Service"
 
 on:
   push:

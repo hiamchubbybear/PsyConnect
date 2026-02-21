@@ -1,4 +1,4 @@
-name: "🔄 PsyConnect CI/CD Pipeline"
+name: PsyConnect CI/CD Pipeline
 
 on:
   push:
@@ -6,19 +6,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ╔══════════════════════════════════════════╗
-  # ║  PHASE 1: 🔒 Security Scan              ║
-  # ╚══════════════════════════════════════════╝
+  # === PHASE 1: Security ===
   security-scan:
-    name: "🔒 Security Scan"
+    name: "Phase 1 - Security Scan"
     uses: ./.github/workflows/reusable-security-scan.yml
     secrets: inherit
 
-  # ╔══════════════════════════════════════════╗
-  # ║  PHASE 2: ☕ Build Java Backend          ║
-  # ╚══════════════════════════════════════════╝
+  # === PHASE 2: Build Core Backend (Java) ===
   build-api-gateway:
-    name: "🌐 API Gateway"
+    name: "Phase 2 - API Gateway"
     needs: security-scan
     uses: ./.github/workflows/reusable-build-push.yml
     with:
@@ -31,7 +27,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-identity-service:
-    name: "🔑 Identity Service"
+    name: "Phase 2 - Identity Service"
     needs: security-scan
     uses: ./.github/workflows/reusable-build-push.yml
     with:
@@ -44,7 +40,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-profile-service:
-    name: "👤 Profile Service"
+    name: "Phase 2 - Profile Service"
     needs: security-scan
     uses: ./.github/workflows/reusable-build-push.yml
     with:
@@ -56,11 +52,9 @@ jobs:
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  # ╔══════════════════════════════════════════╗
-  # ║  PHASE 3: 🔧 Build Go + Specialized     ║
-  # ╚══════════════════════════════════════════╝
+  # === PHASE 3: Build Specialized Services ===
   build-consultation-service:
-    name: "🩺 Consultation Service"
+    name: "Phase 3 - Consultation Service"
     needs: [build-api-gateway, build-identity-service, build-profile-service]
     uses: ./.github/workflows/reusable-build-push.yml
     with:
@@ -73,7 +67,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-chat-service:
-    name: "💬 Chat Service"
+    name: "Phase 3 - Chat Service"
     needs: [build-api-gateway, build-identity-service, build-profile-service]
     uses: ./.github/workflows/reusable-build-push.yml
     with:
@@ -86,7 +80,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-notification-service:
-    name: "🔔 Notification Service"
+    name: "Phase 3 - Notification Service"
     needs: [build-api-gateway, build-identity-service, build-profile-service]
     uses: ./.github/workflows/reusable-build-push.yml
     with:
@@ -98,11 +92,9 @@ jobs:
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  # ╔══════════════════════════════════════════╗
-  # ║  PHASE 4: 🖥️ Build Frontend              ║
-  # ╚══════════════════════════════════════════╝
+  # === PHASE 4: Build Frontend ===
   build-webapp:
-    name: "🖥️ Webapp"
+    name: "Phase 4 - Webapp"
     needs:
       [
         build-consultation-service,
@@ -116,15 +108,14 @@ jobs:
       image_name: "hiamchubbybear/psyconnect-webapp"
       registry: "docker.io"
       username: "hiamchubbybear"
-      docker_build_args: "--build-arg CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }} --build-arg CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
 
-  # ╔══════════════════════════════════════════╗
-  # ║  PHASE 5: 🚀 Deploy to K3s              ║
-  # ╚══════════════════════════════════════════╝
+  # === PHASE 5: Deploy ===
   deploy:
-    name: "🚀 Deploy to K3s"
+    name: "Phase 5 - Deploy to K3s"
     needs: [build-webapp]
     uses: ./.github/workflows/reusable-deploy.yml
     secrets:

@@ -1,4 +1,4 @@
-name: "🔔 Notification Service"
+name: "CI - Notification Service"
 
 on:
   push:

@@ -1,4 +1,4 @@
-name: "🩺 Consultation Service"
+name: "CI - Consultation Service"
 
 on:
   push:
