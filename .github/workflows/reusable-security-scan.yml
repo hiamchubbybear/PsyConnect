@@ -7,6 +7,9 @@ jobs:
   scan:
     runs-on: self-hosted
     steps:
+      - name: Cleanup stale temp files
+        run: rm -f /tmp/gitleaks.tmp
+
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
