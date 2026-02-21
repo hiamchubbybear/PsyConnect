@@ -10,6 +10,7 @@ jobs:
     uses: ./.github/workflows/reusable-security-scan.yml
     secrets: inherit
 
+  # Build tuần tự từng service, tránh nghẽn runner
   build-api-gateway:
     needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
@@ -23,7 +24,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-identity-service:
-    needs: security-audit
+    needs: build-api-gateway
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Identity Service"
@@ -35,7 +36,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-profile-service:
-    needs: security-audit
+    needs: build-identity-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Profile Service"
@@ -47,7 +48,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-consultation-service:
-    needs: security-audit
+    needs: build-profile-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Consultation Service"
@@ -59,7 +60,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-chat-service:
-    needs: security-audit
+    needs: build-consultation-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Chat Service"
@@ -71,7 +72,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-notification-service:
-    needs: security-audit
+    needs: build-chat-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Notification Service"
@@ -83,7 +84,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-webapp:
-    needs: security-audit
+    needs: build-notification-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Web App"
@@ -97,14 +98,7 @@ jobs:
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
 
   deploy:
-    needs:
-      - build-api-gateway
-      - build-identity-service
-      - build-profile-service
-      - build-consultation-service
-      - build-chat-service
-      - build-notification-service
-      - build-webapp
+    needs: build-webapp
     uses: ./.github/workflows/reusable-deploy.yml
     secrets:
       SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
