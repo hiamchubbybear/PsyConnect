@@ -11,6 +11,9 @@ data:
   KAFKA_TOPIC: "consultation.test"
   KAFKA_NOTIFICATION_TOPIC: "notification.push.system"
   KAFKA_PARTITION: "0"
+  CONSUMER_GROUP: "consultation-group"
+
+  GRPC_ADDRESS: "profile-service.psyconnect.svc.cluster.local:50051"
 
   REDIS_HOST: "redis"
   REDIS_PORT: "6379"
