@@ -28,6 +28,11 @@ spec:
                 name: psyconnect-config
             - secretRef:
                 name: psyconnect-secrets
+          env:
+            - name: SERVICE_PORT
+              value: "8082"
+            - name: SERVICE_HOST
+              value: "0.0.0.0"
           # Go service might act different for health check, assuming standard /health
           readinessProbe:
             httpGet:

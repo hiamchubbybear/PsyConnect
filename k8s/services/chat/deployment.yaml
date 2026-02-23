@@ -34,8 +34,10 @@ spec:
                 secretKeyRef:
                   name: psyconnect-secrets
                   key: CHAT_MONGO_URI
-            - name: JAVA_OPTS
-              value: "-Xms256m -Xmx512m -Djava.net.preferIPv4Stack=true"
+            - name: SERVICE_PORT
+              value: "8084"
+            - name: SERVICE_HOST
+              value: "0.0.0.0"
           readinessProbe:
             httpGet:
               path: /actuator/health
