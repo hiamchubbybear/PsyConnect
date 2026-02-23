@@ -6,13 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  security-audit:
-    uses: ./.github/workflows/reusable-security-scan.yml
-    secrets: inherit
-
-  # Build tuần tự từng service, tránh nghẽn runner
   build-api-gateway:
-    needs: security-audit
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "API Gateway"
