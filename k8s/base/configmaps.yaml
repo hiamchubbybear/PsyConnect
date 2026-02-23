@@ -35,3 +35,4 @@ data:
   BASE_URI_PROFILE_SERVICE: "http://profile-service.psyconnect.svc.cluster.local:8081"
 
   BASE_URL: "http://identity-service.psyconnect.svc.cluster.local:8080"
+  APP_OAUTH2_REDIRECT_BASE: "https://psyconnect.dev"
