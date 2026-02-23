@@ -35,7 +35,7 @@ spec:
                   name: psyconnect-secrets
                   key: CONSULTATION_MONGO_URI
             - name: JAVA_OPTS
-              value: "-Xms256m -Xmx512m"
+              value: "-Xms256m -Xmx512m -Djava.net.preferIPv4Stack=true"
           readinessProbe:
             httpGet:
               path: /actuator/health

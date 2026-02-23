@@ -36,4 +36,4 @@ data:
 
   BASE_URL: "http://identity-service.psyconnect.svc.cluster.local:8080"
   API_OAUTH2_REDIRECT_BASE: "https://api.chessy.dev"
-  FRONTEND_OAUTH2_REDIRECT_BASE: "https://psyconnect.dev"
+  FRONTEND_OAUTH2_REDIRECT_BASE: "https://psyconnect.chessy.dev"
