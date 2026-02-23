@@ -57,6 +57,13 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
+      - name: Install Common Dependencies (grpccommon)
+        if: ${{ hashFiles(format('{0}/mvnw', inputs.context_path)) != '' && hashFiles('services/grpccommon/pom.xml') != '' }}
+        run: |
+          cd services/grpccommon
+          chmod +x mvnw
+          ./mvnw clean install -DskipTests
+
       - name: Build with Maven
         if: ${{ hashFiles(format('{0}/mvnw', inputs.context_path)) != '' }}
         run: |
