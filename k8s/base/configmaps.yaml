@@ -13,11 +13,11 @@ data:
   REDIS_PORT: "6379"
   CONSULTATION_REDIS_ADDRESS: "redis:6379"
 
-  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/psyconnect_dev?sslMode=DISABLED&allowPublicKeyRetrieval=true"
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql-3528d4f7-mysql2.g.aivencloud.com:10788/defaultdb?sslMode=REQUIRED"
 
-  DB_HOST: "mysql"
-  DB_PORT: "3306"
-  DB_NAME: "psyconnect_dev"
+  DB_HOST: "mysql-3528d4f7-mysql2.g.aivencloud.com"
+  DB_PORT: "10788"
+  DB_NAME: "defaultdb"
 
   SPRING_NEO4J_URI: "neo4j+s://256e7888.databases.neo4j.io"
 
