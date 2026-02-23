@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Builds chạy song song trên GitHub-hosted runners (ubuntu-latest)
   build-api-gateway:
     uses: ./.github/workflows/reusable-build-push.yml
     with:
@@ -18,7 +19,6 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-identity-service:
-    needs: build-api-gateway
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Identity Service"
@@ -30,7 +30,6 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-profile-service:
-    needs: build-identity-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Profile Service"
@@ -42,7 +41,6 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-consultation-service:
-    needs: build-profile-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Consultation Service"
@@ -54,7 +52,6 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-chat-service:
-    needs: build-consultation-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Chat Service"
@@ -66,7 +63,6 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-notification-service:
-    needs: build-chat-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Notification Service"
@@ -78,7 +74,6 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-webapp:
-    needs: build-notification-service
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Web App"
@@ -91,8 +86,16 @@ jobs:
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
 
+  # Deploy chỉ chạy trên self-hosted (cần kubectl trên VPS)
   deploy:
-    needs: build-webapp
+    needs:
+      - build-api-gateway
+      - build-identity-service
+      - build-profile-service
+      - build-consultation-service
+      - build-chat-service
+      - build-notification-service
+      - build-webapp
     uses: ./.github/workflows/reusable-deploy.yml
     secrets:
       SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
