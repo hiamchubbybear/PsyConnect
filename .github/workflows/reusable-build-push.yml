@@ -61,7 +61,9 @@ jobs:
         if: ${{ hashFiles(format('{0}/mvnw', inputs.context_path)) != '' }}
         run: |
           if [ -f "services/grpccommon/pom.xml" ]; then
-            cd services/grpccommon
+            cd services
+            mvn -N clean install
+            cd grpccommon
             mvn clean install -DskipTests
           fi
 
