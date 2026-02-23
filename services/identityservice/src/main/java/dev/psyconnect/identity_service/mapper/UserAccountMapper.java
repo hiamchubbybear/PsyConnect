@@ -10,7 +10,11 @@ import dev.psyconnect.identity_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.identity_service.dto.response.UserProfileCreationResponse;
 import dev.psyconnect.identity_service.model.Account;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        nullValueCheckStrategy = org.mapstruct.NullValueCheckStrategy.ALWAYS,
+        nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE
+)
 public interface UserAccountMapper {
     @Mapping(target = "role", ignore = true)
     UserProfileCreationRequest toAccountResponse(UserAccountCreationRequest userAccount);

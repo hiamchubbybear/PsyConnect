@@ -38,6 +38,7 @@ public class Configuration {
     OAuth2Service oAuth2Service;
     JwtAuthFilter authFilter;
     UserAccountService userAccountService;
+    HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository;
     private final String oauth2RedirectBase;
 
     @Autowired
@@ -45,10 +46,12 @@ public class Configuration {
             OAuth2Service oAuth2Service,
             JwtAuthFilter authFilter,
             UserAccountService userAccountService,
+            HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository,
             @Value("${app.oauth2.redirect-base}") String oauth2RedirectBase) {
         this.oAuth2Service = oAuth2Service;
         this.authFilter = authFilter;
         this.userAccountService = userAccountService;
+        this.cookieAuthorizationRequestRepository = cookieAuthorizationRequestRepository;
         this.oauth2RedirectBase = oauth2RedirectBase;
     }
 
@@ -97,7 +100,9 @@ public class Configuration {
                             response.sendRedirect("/oauth2/authorization/google");
                         })))
                 .oauth2Login(oauth2 -> oauth2.loginPage("/oauth2/authorization")
-                        .authorizationEndpoint(config -> config.baseUri("/oauth2/authorization"))
+                        .authorizationEndpoint(config -> config
+                                .baseUri("/oauth2/authorization")
+                                .authorizationRequestRepository(cookieAuthorizationRequestRepository))
                         .redirectionEndpoint(config -> config.baseUri("/oauth2/callback/*"))
                         .successHandler((request, response, authentication) -> {
                             try {
@@ -128,6 +133,8 @@ public class Configuration {
                                 redirectUrl = String.format(
                                         "%s/oauth2/callback?provider=%s&email=%s&avatar=%s&platform=%s&code=%s",
                                         oauth2RedirectBase, registrationId, email, avatarUri, platform, code);
+
+                                cookieAuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
                                 response.sendRedirect(redirectUrl);
                             } catch (Exception e) {
                                 log.error("OAuth2 success handler error", e);
@@ -135,6 +142,7 @@ public class Configuration {
                             }
                         })
                         .failureHandler((request, response, exception) -> {
+                            cookieAuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
                             log.error("OAuth2 login failed: {}", exception.getMessage());
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("{\"error\": \"OAuth2 login failed\"}");
