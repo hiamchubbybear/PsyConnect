@@ -49,7 +49,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ github.token }}
 
       - name: Set up JDK 21
         if: ${{ hashFiles(format('{0}/mvnw', inputs.context_path)) != '' }}
