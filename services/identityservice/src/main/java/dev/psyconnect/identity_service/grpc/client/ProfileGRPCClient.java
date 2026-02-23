@@ -29,9 +29,8 @@ public class ProfileGRPCClient {
             host = host.split(":")[0];
         }
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress(host, 50051)
-                .usePlaintext()
-                .build();
+        ManagedChannel channel =
+                ManagedChannelBuilder.forAddress(host, 50051).usePlaintext().build();
         stub = ProfileCreationServiceGrpc.newBlockingStub(channel);
         log.info("gRPC Profile Service connected to: {}:50051 (Original URL: {})", host, profileServiceUrl);
         this.userAccountMapper = userAccountMapper;
