@@ -36,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -43,12 +44,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
         with:
-          registry: ${{ inputs.registry }}
+          registry: docker.io
           username: ${{ inputs.username }}
           password: ${{ secrets.password }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up JDK 21
         if: ${{ hashFiles(format('{0}/mvnw', inputs.context_path)) != '' }}
@@ -80,7 +88,9 @@ jobs:
           context: ${{ inputs.context_path }}
           file: ${{ inputs.context_path }}/${{ inputs.dockerfile }}
           push: true
-          tags: ${{ inputs.registry }}/${{ inputs.image_name }}:latest
+          tags: |
+            docker.io/${{ inputs.image_name }}:latest
+            ghcr.io/${{ inputs.image_name }}:latest
           build-args: |
             CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
             CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
