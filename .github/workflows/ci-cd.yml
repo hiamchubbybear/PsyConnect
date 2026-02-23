@@ -8,6 +8,9 @@ on:
 jobs:
   # Builds chạy song song trên GitHub-hosted runners (ubuntu-latest)
   build-api-gateway:
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "API Gateway"
@@ -17,6 +20,9 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-identity-service:
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Identity Service"
@@ -26,6 +32,9 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-profile-service:
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Profile Service"
@@ -35,6 +44,9 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-consultation-service:
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Consultation Service"
@@ -44,6 +56,9 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-chat-service:
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Chat Service"
@@ -53,6 +68,9 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-notification-service:
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Notification Service"
@@ -62,6 +80,9 @@ jobs:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
   build-webapp:
+    permissions:
+      contents: read
+      packages: write
     uses: ./.github/workflows/reusable-build-push.yml
     with:
       service_name: "Web App"
