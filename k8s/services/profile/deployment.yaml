@@ -23,6 +23,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
+            - containerPort: 50051
           envFrom:
             - configMapRef:
                 name: psyconnect-config
