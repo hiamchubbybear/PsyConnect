@@ -58,10 +58,12 @@ jobs:
           distribution: "temurin"
 
       - name: Install Common Dependencies (grpccommon)
-        if: ${{ hashFiles(format('{0}/mvnw', inputs.context_path)) != '' && hashFiles('services/grpccommon/pom.xml') != '' }}
+        if: ${{ hashFiles(format('{0}/mvnw', inputs.context_path)) != '' }}
         run: |
-          cd services/grpccommon
-          mvn clean install -DskipTests
+          if [ -f "services/grpccommon/pom.xml" ]; then
+            cd services/grpccommon
+            mvn clean install -DskipTests
+          fi
 
       - name: Build with Maven
         if: ${{ hashFiles(format('{0}/mvnw', inputs.context_path)) != '' }}
