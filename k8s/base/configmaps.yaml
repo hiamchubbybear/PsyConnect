@@ -8,6 +8,9 @@ data:
 
   KAFKA_BROKERS: "kafka:9092"
   KAFKA_ADDRESS: "kafka:9092"
+  KAFKA_TOPIC: "consultation.test"
+  KAFKA_NOTIFICATION_TOPIC: "notification.push.system"
+  KAFKA_PARTITION: "0"
 
   REDIS_HOST: "redis"
   REDIS_PORT: "6379"
