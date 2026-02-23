@@ -16,21 +16,16 @@ public class TokenValidateService {
 
     private final RestTemplate restTemplate;
     private final String identityServiceUrl;
-    private final String identityServicePort;
+
     @Autowired
-    public TokenValidateService(RestTemplate restTemplate 
-    		,@Value("${base.url}") String identityServiceUrl,
-            @Value("${identity.port}") String identityServicePort
-            ) {
+    public TokenValidateService(RestTemplate restTemplate,
+            @Value("${IDENTITY_SERVICE_URL:http://identityservice:8080}") String identityServiceUrl) {
         this.restTemplate = restTemplate;
         this.identityServiceUrl = identityServiceUrl;
-        this.identityServicePort = identityServicePort;
-//        	this.identityServiceUrl = "localhost";
-//        	this.identityServicePort = "8080";
-        
     }
+
     public boolean isTokenValid(String token) {
-        String url = identityServiceUrl + ":" + identityServicePort + "/auth/internal/valid";
+        String url = identityServiceUrl + "/auth/internal/valid";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(token, headers);
