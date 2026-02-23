@@ -17,7 +17,7 @@ type Database struct {
 // Notification model
 type Notification struct {
 	ID        uint           `gorm:"primaryKey" json:"id"`
-	UserID    string         `gorm:"index;not null" json:"userId"`
+	UserID    string         `gorm:"index;type:varchar(255);not null" json:"userId"`
 	Title     string         `gorm:"not null" json:"title"`
 	Body      string         `gorm:"type:text;not null" json:"body"`
 	Type      string         `gorm:"default:'system'" json:"type"`
@@ -31,8 +31,8 @@ type Notification struct {
 // FCMToken model
 type FCMToken struct {
 	ID        uint           `gorm:"primaryKey" json:"id"`
-	UserID    string         `gorm:"uniqueIndex;not null" json:"userId"`
-	Token     string         `gorm:"not null" json:"token"`
+	UserID    string         `gorm:"uniqueIndex;type:varchar(255);not null" json:"userId"`
+	Token     string         `gorm:"type:varchar(512);not null" json:"token"`
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
