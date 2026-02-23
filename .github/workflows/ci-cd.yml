@@ -13,8 +13,6 @@ jobs:
       service_name: "API Gateway"
       context_path: "services/apigateway"
       image_name: "hiamchubbybear/psyconnect-api-gateway"
-      registry: "docker.io"
-      username: "hiamchubbybear"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -24,8 +22,6 @@ jobs:
       service_name: "Identity Service"
       context_path: "services/identityservice"
       image_name: "hiamchubbybear/psyconnect-identity-service"
-      registry: "docker.io"
-      username: "hiamchubbybear"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -35,8 +31,6 @@ jobs:
       service_name: "Profile Service"
       context_path: "services/profileservice"
       image_name: "hiamchubbybear/psyconnect-profile-service"
-      registry: "docker.io"
-      username: "hiamchubbybear"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -46,8 +40,6 @@ jobs:
       service_name: "Consultation Service"
       context_path: "services/consultationservice"
       image_name: "hiamchubbybear/psyconnect-consultation-service"
-      registry: "docker.io"
-      username: "hiamchubbybear"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -57,8 +49,6 @@ jobs:
       service_name: "Chat Service"
       context_path: "services/chatservice"
       image_name: "hiamchubbybear/psyconnect-chat-service"
-      registry: "docker.io"
-      username: "hiamchubbybear"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -68,8 +58,6 @@ jobs:
       service_name: "Notification Service"
       context_path: "services/notificationservice"
       image_name: "hiamchubbybear/psyconnect-notification-service"
-      registry: "docker.io"
-      username: "hiamchubbybear"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -79,8 +67,6 @@ jobs:
       service_name: "Web App"
       context_path: "services/webapp/psyconnect-web"
       image_name: "hiamchubbybear/psyconnect-webapp"
-      registry: "docker.io"
-      username: "hiamchubbybear"
     secrets:
       password: ${{ secrets.DOCKERHUB_TOKEN }}
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}

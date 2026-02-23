@@ -16,13 +16,6 @@ on:
         required: false
         type: string
         default: "Dockerfile"
-      registry:
-        required: false
-        type: string
-        default: "docker.io"
-      username:
-        required: true
-        type: string
     secrets:
       password:
         required: true
@@ -48,7 +41,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: docker.io
-          username: ${{ inputs.username }}
+          username: "hiamchubbybear"
           password: ${{ secrets.password }}
 
       - name: Log in to GitHub Container Registry
