@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { SwipeDeckComponent } from '../../swipe/swipe-deck';
 
 @Component({
   selector: 'consultation-discover',
-  imports: [CommonModule, SwipeDeckComponent],
+  imports: [CommonModule],
   templateUrl: './discover.html',
   styleUrls: ['./discover.scss'],
 })

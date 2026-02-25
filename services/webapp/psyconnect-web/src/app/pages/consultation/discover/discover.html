@@ -1,3 +1,246 @@
-<div class="deck">
-  <app-swipe-deck></app-swipe-deck>
+<div class="dashboard-wrapper">
+  <!-- Top Left: Hero Cards -->
+  <div class="hero-grid">
+    <div class="dash-card">
+      <div class="card-icon">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h3>Payment Schedule</h3>
+        <p>5 pending invoices</p>
+      </div>
+    </div>
+
+    <div class="dash-card dash-card--soft">
+      <div class="card-icon">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M2 12A10 10 0 0 0 15 21.54A10 10 0 0 1 15 2.46A10 10 0 0 0 2 12Z"
+          />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h3>Dream Analytic</h3>
+        <p>1 week ago</p>
+      </div>
+    </div>
+
+    <div class="dash-card dash-card--primary">
+      <div class="card-icon">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h3>My Consultations</h3>
+        <p>4 upcoming appointments</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Left: Community Box and Schedule List -->
+  <div class="content-row">
+    <!-- Community Volunteer Promo -->
+    <div class="promo-card">
+      <h4 class="promo-card__subtitle">Community</h4>
+      <h3 class="promo-card__title">Join our medicine volunteer network</h3>
+
+      <div class="promo-card__details">
+        <div class="detail-item">
+          <span class="detail-label">PLACE</span>
+          <span class="detail-value">Mon - Fri</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">TIME</span>
+          <span class="detail-value">3:00 PM</span>
+        </div>
+      </div>
+
+      <div class="promo-card__details mt-3">
+        <div class="detail-item">
+          <span class="detail-label">GOALS</span>
+          <span class="detail-value">Help people</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">CONDITION</span>
+          <span class="detail-value">Be available</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary mt-4 w-100">Join Now</button>
+    </div>
+
+    <!-- Upcoming Schedules List -->
+    <div class="schedule-list">
+      <div class="schedule-list__header">
+        <h3>View all schedule</h3>
+        <button class="icon-btn">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="1"></circle>
+            <circle cx="19" cy="12" r="1"></circle>
+            <circle cx="5" cy="12" r="1"></circle>
+          </svg>
+        </button>
+      </div>
+
+      <div class="schedule-item">
+        <div class="avatar bg-success">HC</div>
+        <div class="schedule-info">
+          <h4>Hirurgy</h4>
+          <p>Ann Curgy</p>
+        </div>
+        <div class="schedule-action">></div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="avatar bg-warning">CA</div>
+        <div class="schedule-info">
+          <h4>Cardiology</h4>
+          <p>Alise Pirsen</p>
+        </div>
+        <div class="schedule-action">></div>
+      </div>
+
+      <div class="schedule-item">
+        <div class="avatar bg-info">TE</div>
+        <div class="schedule-info">
+          <h4>Therapy</h4>
+          <p>Andry Willson</p>
+        </div>
+        <div class="schedule-action">></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Sidebar: Calendar and Illustration -->
+  <div class="right-rail">
+    <!-- Mini Calendar -->
+    <div class="calendar-widget">
+      <div class="calendar-header">
+        <div class="month-title">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            class="mr-2"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          July 2026
+        </div>
+        <div class="calendar-nav">
+          <button>&lt;</button>
+          <button>&gt;</button>
+        </div>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="day-name">Mon</div>
+        <div class="day-name">Tue</div>
+        <div class="day-name">Wed</div>
+        <div class="day-name">Thu</div>
+        <div class="day-name">Fri</div>
+        <div class="day-name">Sat</div>
+        <div class="day-name">Sun</div>
+        <!-- Mock Days -->
+        <div class="day">1</div>
+        <div class="day highlighted-soft">2</div>
+        <div class="day">3</div>
+        <div class="day">4</div>
+        <div class="day">5</div>
+        <div class="day">6</div>
+        <div class="day highlighted-soft">7</div>
+        <div class="day">8</div>
+        <div class="day">9</div>
+        <div class="day">10</div>
+        <div class="day">11</div>
+        <div class="day">12</div>
+        <div class="day">13</div>
+        <div class="day">14</div>
+        <div class="day">15</div>
+        <div class="day">16</div>
+        <div class="day">17</div>
+        <div class="day">18</div>
+        <div class="day highlighted">19</div>
+        <div class="day">20</div>
+        <div class="day">21</div>
+        <div class="day">22</div>
+        <div class="day">23</div>
+        <div class="day">24</div>
+        <div class="day">25</div>
+        <div class="day">26</div>
+        <div class="day">27</div>
+        <div class="day">28</div>
+        <div class="day">29</div>
+        <div class="day">30</div>
+        <div class="day">31</div>
+        <div class="day disabled">1</div>
+        <div class="day disabled">2</div>
+        <div class="day disabled">3</div>
+        <div class="day disabled">4</div>
+      </div>
+    </div>
+
+    <!-- Illustration Widget -->
+    <div class="illustration-widget">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <path
+          fill="var(--color-primary-light)"
+          opacity="0.1"
+          d="M38.1,-48.6C52.7,-38.7,69.9,-30.4,75.4,-16.6C81,-2.8,74.9,16.5,63.1,30.8C51.2,45.1,33.5,54.5,15.6,60.2C-2.4,66,-20.6,68,-33.5,59.9C-46.3,51.8,-53.8,33.6,-59.1,15.5C-64.4,-2.7,-67.4,-20.8,-59.6,-33.4C-51.8,-46,-33,-53.2,-17.1,-55.8C-1.3,-58.4,11.5,-56.3,23.5,-58.5Z"
+          transform="translate(100 100) scale(1.1)"
+        />
+        <circle cx="100" cy="80" r="30" fill="var(--color-primary)" />
+        <path d="M70 180 Q100 110 130 180 Z" fill="var(--color-primary)" />
+        <circle
+          cx="180"
+          cy="50"
+          r="10"
+          fill="var(--color-accent)"
+          opacity="0.6"
+        />
+        <path
+          d="M10 100 l15 -15 l15 15 Z"
+          fill="var(--color-success)"
+          opacity="0.5"
+        />
+      </svg>
+    </div>
+  </div>
 </div>

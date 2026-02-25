@@ -18,7 +18,7 @@ export const consultationRoutes: Routes = [
         path: 'therapist-profile',
         loadComponent: () =>
           import('./therapist-profile/therapist-profile').then(
-            (m) => m.TherapistProfileComponent
+            (m) => m.TherapistProfileComponent,
           ),
       },
       { path: 'history', component: History },

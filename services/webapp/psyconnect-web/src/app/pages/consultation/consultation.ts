@@ -1,81 +1,36 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import {
-    CollapsibleSidebarComponent,
-    SidebarItem,
-} from '../../components/collapsible-sidebar/collapsible-sidebar';
+import { RouterModule, RouterOutlet } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-consultation',
   standalone: true,
-  imports: [CollapsibleSidebarComponent, CommonModule, RouterOutlet],
-  template: `
-    <app-collapsible-sidebar
-      [title]="'Consultation'"
-      [titleTranslateKey]="'CONSULTATION.Sidebar.Title'"
-      [items]="sidebarItems"
-      [width]="'240px'"
-      [(collapsed)]="isSidebarCollapsed"
-      (itemClick)="onSidebarItemClick($event)"
-    />
-
-    <div
-      class="main-content"
-      [style.margin-left]="isSidebarCollapsed ? '-30px' : '240px'"
-    >
-      <router-outlet></router-outlet>
-    </div>
-  `,
-  styles: [
-    `
-      .main-content {
-        margin-left: 360px;
-        padding: 2rem;
-        transition: margin-left 0.3s ease;
-      }
-    `,
-  ],
+  imports: [CommonModule, RouterModule, RouterOutlet, TranslateModule],
+  templateUrl: './consultation.html',
+  styleUrls: ['./consultation.scss'],
 })
 export class ConsultationComponent {
-  isSidebarCollapsed = false;
-
-  sidebarItems: SidebarItem[] = [
+  navItems = [
     {
-      label: 'Discover',
-      route: 'discover',
-      translateKey: 'CONSULTATION.Sidebar.Items.Discover',
-
-      exact: true,
+      label: 'Overview',
+      route: '/feature/consultation/discover',
+      translateKey: 'CONSULTATION.Tabs.Overview',
     },
     {
-      label: 'Sessions',
-      route: 'sessions',
-      translateKey: 'CONSULTATION.Sidebar.Items.Sessions',
+      label: 'My Sessions',
+      route: '/feature/consultation/sessions',
+      translateKey: 'CONSULTATION.Tabs.Sessions',
     },
     {
-      label: 'Schedule',
-      route: 'schedule',
-      translateKey: 'CONSULTATION.Sidebar.Items.Schedule',
+      label: 'Calendar',
+      route: '/feature/consultation/schedules',
+      translateKey: 'CONSULTATION.Tabs.Schedule',
     },
     {
-      label: 'History',
-      route: 'history',
-      translateKey: 'CONSULTATION.Sidebar.Items.History',
-    },
-    {
-      label: 'Reviews',
-      route: 'reviews',
-      translateKey: 'CONSULTATION.Sidebar.Items.Reviews',
-    },
-    {
-      label: 'Settings',
-      route: 'settings',
-      translateKey: 'CONSULTATION.Sidebar.Items.Settings',
+      label: 'Consultators',
+      route: '/feature/search',
+      translateKey: 'CONSULTATION.Tabs.Consultators',
     },
   ];
-
-  onSidebarItemClick(item: SidebarItem) {
-    console.log('Sidebar item clicked:', item);
-  }
 }
