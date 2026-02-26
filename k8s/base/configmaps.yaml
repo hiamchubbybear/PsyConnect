@@ -30,6 +30,8 @@ data:
   IDENTITY_SERVICE_URL: "http://identity-service.psyconnect.svc.cluster.local:8080"
   PROFILE_SERVICE_URL: "http://profile-service.psyconnect.svc.cluster.local:8081"
   NOTIFICATION_SERVICE_URL: "http://notification-service.psyconnect.svc.cluster.local:8082"
+  CONSULTATION_SERVICE_URL: "http://consultation-service.psyconnect.svc.cluster.local:8083"
+  CHAT_SERVICE_URL: "http://chat-service.psyconnect.svc.cluster.local:8084"
 
   BASE_URI_NOTIFICATION_SERVICE: "http://notification-service.psyconnect.svc.cluster.local:8082"
   BASE_URI_PROFILE_SERVICE: "http://profile-service.psyconnect.svc.cluster.local:8081"
