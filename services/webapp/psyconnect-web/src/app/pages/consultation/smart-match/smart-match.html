@@ -1,0 +1,171 @@
+<div class="discover-container fade-in">
+  <!-- Discover Header -->
+  <div class="discover-header">
+    <div class="header-text">
+      <h2>Recommended for You</h2>
+      <p>
+        Based on your profile, we've carefully selected these therapists to help
+        you.
+      </p>
+    </div>
+    <div class="filter-controls">
+      <button class="btn btn-outline btn-sm">Filter</button>
+      <button class="btn btn-outline btn-sm">Sort By: Best Match</button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Finding the perfect therapists for you...</p>
+  </div>
+
+  <!-- Smart Matches Grid -->
+  <ng-container *ngIf="!isLoading">
+    <div
+      class="matches-grid"
+      *ngIf="recommendedTherapists.length > 0; else noMatches"
+    >
+      <!-- Iterating over AI recommendations -->
+      <div
+        class="match-card card"
+        *ngFor="let therapist of recommendedTherapists"
+      >
+        <!-- Therapist Identity -->
+        <div class="card-body">
+          <div class="therapist-profile">
+            <img
+              [src]="therapist.avatarOverride || 'assets/default-therapist.png'"
+              alt="Avatar"
+              class="avatar-lg"
+            />
+            <div class="info">
+              <h3>{{ therapist.name }}</h3>
+              <p class="title">
+                {{
+                  therapist.professionalInfo?.title?.display ||
+                    "Mental Health Professional"
+                }}
+              </p>
+            </div>
+          </div>
+
+          <!-- AI Reasoning (If API provides points/reasons, can render here. Using placeholder since API definition doesn't guarantee reasons/points in Therapist type) -->
+          <div class="ai-reasons">
+            <p class="section-title">Why they're a good fit:</p>
+            <ul class="reason-list">
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="check-icon"
+                >
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Matched specialization
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="check-icon"
+                >
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                {{ therapist.experience || 0 }}+ years of experience
+              </li>
+            </ul>
+          </div>
+
+          <!-- Therapist Tags (Specialization & Languages) -->
+          <div class="tags-container">
+            <span class="badge" *ngFor="let spec of therapist.specialization">{{
+              spec
+            }}</span>
+            <span
+              class="badge badge-accent"
+              *ngFor="let mode of therapist.consultationModes"
+              >{{ mode }}</span
+            >
+          </div>
+
+          <!-- Availability Snippet -->
+          <div class="availability">
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span *ngIf="therapist.isAvailable; else notAvail"
+              >Accepting new clients</span
+            >
+            <ng-template #notAvail>Schedule currently full</ng-template>
+          </div>
+        </div>
+
+        <!-- Professional Call To Actions -->
+        <div class="card-actions">
+          <button
+            class="btn btn-outline"
+            (click)="onSwipePass(therapist.profileId)"
+          >
+            Pass
+          </button>
+          <button
+            class="btn btn-primary btn-connect"
+            (click)="onSwipeMatch(therapist.profileId)"
+          >
+            Connect & View Schedule
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noMatches>
+      <div class="empty-state card">
+        <svg
+          viewBox="0 0 24 24"
+          width="48"
+          height="48"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <h3>You've reviewed all suggestions</h3>
+        <p>
+          We are searching for more therapists that match your preferences.
+          Please check back later!
+        </p>
+        <button class="btn btn-primary mt-4" (click)="fetchRecommendations()">
+          Refresh Suggestions
+        </button>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>

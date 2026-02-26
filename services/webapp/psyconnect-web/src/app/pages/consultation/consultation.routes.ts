@@ -5,12 +5,14 @@ import { Reviews } from './reviews/reviews';
 import { SchedulerComponent } from './schedules/scheduler';
 import { Sessions } from './sessions/sessions';
 import { Settings } from './settings/settings';
+import { SmartMatchComponent } from './smart-match/smart-match';
 
 export const consultationRoutes: Routes = [
   {
     path: '',
     component: ConsultationComponent,
     children: [
+      { path: 'smart-match', component: SmartMatchComponent },
       { path: 'discover', component: Discover },
       { path: 'sessions', component: Sessions },
       { path: 'schedule', component: SchedulerComponent },

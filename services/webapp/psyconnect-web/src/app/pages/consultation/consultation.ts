@@ -29,7 +29,7 @@ export class ConsultationComponent {
     },
     {
       label: 'Consultators',
-      route: '/feature/search',
+      route: '/feature/consultation/smart-match',
       translateKey: 'CONSULTATION.Tabs.Consultators',
     },
   ];

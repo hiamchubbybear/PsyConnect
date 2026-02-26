@@ -84,7 +84,7 @@ export const routes: Routes = [
     path: 'feed/post/:id',
     loadComponent: () =>
       import('./pages/feed/post-detail/post-detail').then(
-        (m) => m.PostDetailComponent
+        (m) => m.PostDetailComponent,
       ),
     canActivate: [authGuard],
   },
@@ -97,36 +97,36 @@ export const routes: Routes = [
         path: 'all',
         loadComponent: () =>
           import('../app/pages/post-management/all/all-posts/all-posts').then(
-            (m) => m.AllPosts
+            (m) => m.AllPosts,
           ),
       },
       {
         path: 'create',
         loadComponent: () =>
           import('./pages/post-management/create/create-post').then(
-            (m) => m.CreatePostComponent
+            (m) => m.CreatePostComponent,
           ),
       },
       {
         path: 'categories',
         loadComponent: () =>
-          import(
-            '../app/pages/post-management/categories/categories/categories'
-          ).then((m) => m.Categories),
+          import('../app/pages/post-management/categories/categories/categories').then(
+            (m) => m.Categories,
+          ),
       },
       {
         path: 'reviews',
         loadComponent: () =>
           import('../app/pages/post-management/reviews/reviews/reviews').then(
-            (m) => m.Reviews
+            (m) => m.Reviews,
           ),
       },
       {
         path: 'settings',
         loadComponent: () =>
-          import(
-            '../app/pages/post-management/settings/settings/settings'
-          ).then((m) => m.Settings),
+          import('../app/pages/post-management/settings/settings/settings').then(
+            (m) => m.Settings,
+          ),
       },
       { path: '', redirectTo: 'all', pathMatch: 'full' },
     ],
@@ -138,31 +138,38 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'discover', pathMatch: 'full' },
       {
+        path: 'smart-match',
+        loadComponent: () =>
+          import('./pages/consultation/smart-match/smart-match').then(
+            (m) => m.SmartMatchComponent,
+          ),
+      },
+      {
         path: 'create-profile',
         loadComponent: () =>
-          import(
-            './pages/consultation/create-profile/create-profile.component'
-          ).then((m) => m.CreateConsultationProfileComponent),
+          import('./pages/consultation/create-profile/create-profile.component').then(
+            (m) => m.CreateConsultationProfileComponent,
+          ),
       },
       {
         path: 'discover',
         loadComponent: () =>
           import('./pages/consultation/discover/discover').then(
-            (m) => m.Discover
+            (m) => m.Discover,
           ),
       },
       {
         path: 'sessions',
         loadComponent: () =>
           import('./pages/consultation/sessions/sessions').then(
-            (m) => m.Sessions
+            (m) => m.Sessions,
           ),
       },
       {
         path: 'schedules',
         loadComponent: () =>
           import('./pages/consultation/schedules/scheduler').then(
-            (m) => m.SchedulerComponent
+            (m) => m.SchedulerComponent,
           ),
       },
       {
@@ -179,7 +186,7 @@ export const routes: Routes = [
         path: 'settings',
         loadComponent: () =>
           import('./pages/consultation/consultation/consultation').then(
-            (m) => m.ProfileFormClientComponent
+            (m) => m.ProfileFormClientComponent,
           ),
       },
     ],
@@ -206,63 +213,63 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () =>
           import('./pages/payment-management/dashboard/payment-dashboard').then(
-            (m) => m.DashboardComponent
+            (m) => m.DashboardComponent,
           ),
       },
       {
         path: 'overview',
         loadComponent: () =>
           import('./pages/payment-management/overview/overview').then(
-            (m) => m.Overview
+            (m) => m.Overview,
           ),
       },
       {
         path: 'invoices',
         loadComponent: () =>
           import('./pages/payment-management/invoices/invoices').then(
-            (m) => m.Invoices
+            (m) => m.Invoices,
           ),
       },
       {
         path: 'methods',
         loadComponent: () =>
           import('./pages/payment-management/methods/methods').then(
-            (m) => m.Methods
+            (m) => m.Methods,
           ),
       },
       {
         path: 'refunds',
         loadComponent: () =>
           import('./pages/payment-management/refunds/refunds').then(
-            (m) => m.Refunds
+            (m) => m.Refunds,
           ),
       },
       {
         path: 'reports',
         loadComponent: () =>
           import('./pages/payment-management/reports/reports').then(
-            (m) => m.Reports
+            (m) => m.Reports,
           ),
       },
       {
         path: 'segments',
         loadComponent: () =>
           import('./pages/payment-management/segments/segments').then(
-            (m) => m.Segments
+            (m) => m.Segments,
           ),
       },
       {
         path: 'transactions',
         loadComponent: () =>
           import('./pages/payment-management/transactions/transactions').then(
-            (m) => m.Transactions
+            (m) => m.Transactions,
           ),
       },
       {
         path: 'settings',
         loadComponent: () =>
           import('./pages/payment-management/settings/settings').then(
-            (m) => m.Settings
+            (m) => m.Settings,
           ),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

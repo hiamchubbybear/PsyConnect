@@ -1,20 +1,23 @@
 <div class="consultation-layout">
-  <!-- Top Navigation Tabs -->
-  <nav class="top-tabs-nav">
-    <div class="tabs-container">
-      <a
-        *ngFor="let item of navItems"
-        [routerLink]="item.route"
-        routerLinkActive="active"
-        class="tab-link"
-      >
-        {{ item.translateKey | translate }}
-      </a>
+  <!-- Top Horizontal Navigation -->
+  <nav class="top-nav">
+    <div class="nav-container">
+      <ul class="nav-list">
+        <li *ngFor="let item of navItems">
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            class="nav-link"
+          >
+            <span>{{ item.translateKey | translate }}</span>
+          </a>
+        </li>
+      </ul>
     </div>
   </nav>
 
   <!-- Main Content Dashboard Area -->
-  <main class="dashboard-container fade-in">
+  <main class="main-content fade-in">
     <router-outlet></router-outlet>
   </main>
 </div>

@@ -374,6 +374,12 @@
         "Punjabi": "Tiếng Punjab"
     },
     "CONSULTATION": {
+        "Tabs": {
+            "Overview": "Tổng quan",
+            "Sessions": "Phiên tư vấn",
+            "Schedule": "Lịch hẹn",
+            "Consultators": "Chuyên gia"
+        },
         "Sidebar": {
             "Title": "Tư vấn",
             "Items": {

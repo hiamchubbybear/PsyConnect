@@ -1,0 +1,291 @@
+.discover-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+
+  .discover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    .header-text {
+      h2 {
+        font-family: var(--font-heading, "Inter", sans-serif);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--color-text);
+        margin: 0 0 var(--spacing-xs) 0;
+      }
+      p {
+        color: var(--color-text-muted);
+        font-size: 1rem;
+        margin: 0;
+      }
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: var(--spacing-md);
+    }
+  }
+
+  /* Grid Layout for Match Cards */
+  .matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: var(--spacing-xl);
+    align-items: start;
+
+    .match-card {
+      background: var(--color-surface);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--color-border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      /* AI Badge Header */
+      .match-badge {
+        background: rgba(var(--color-primary-rgb), 0.1);
+        color: var(--color-primary);
+        padding: var(--spacing-sm) var(--spacing-md);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-weight: 600;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--color-border);
+
+        .star-icon {
+          color: #eab308; // Gold for highlighting
+          flex-shrink: 0;
+        }
+      }
+
+      .card-body {
+        padding: var(--spacing-lg);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+
+        .therapist-profile {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-md);
+
+          .avatar-lg {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--color-border);
+          }
+
+          .info {
+            h3 {
+              margin: 0 0 4px 0;
+              font-size: 1.25rem;
+              color: var(--color-text);
+              font-weight: 600;
+            }
+            .title {
+              margin: 0;
+              color: var(--color-text-muted);
+              font-size: 0.9rem;
+            }
+          }
+        }
+
+        .ai-reasons {
+          background: var(--color-bg-secondary);
+          padding: var(--spacing-sm) var(--spacing-md);
+          border-radius: var(--border-radius-md);
+
+          .section-title {
+            margin: 0 0 var(--spacing-sm) 0;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-text-muted);
+            font-weight: 600;
+          }
+
+          ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+
+            li {
+              display: flex;
+              align-items: flex-start;
+              gap: 8px;
+              color: var(--color-text);
+              font-size: 0.95rem;
+
+              .check-icon {
+                color: var(--color-success);
+                flex-shrink: 0;
+                margin-top: 2px;
+              }
+            }
+          }
+        }
+
+        .tags-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--spacing-xs);
+
+          .badge {
+            background: var(--color-border-light, #f1f5f9);
+            color: var(--color-text-muted);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+          }
+        }
+
+        .availability {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: var(--color-text-muted);
+          font-size: 0.9rem;
+          margin-top: var(--spacing-xs);
+
+          svg {
+            color: var(--color-info, #3b82f6);
+          }
+        }
+      }
+
+      /* Actions area attached to bottom */
+      .card-actions {
+        padding: var(--spacing-md);
+        border-top: 1px solid var(--color-border);
+        background: var(--color-bg-secondary);
+        display: flex;
+        gap: var(--spacing-md);
+        margin-top: auto; // pushed to bottom
+
+        button {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 48px;
+          font-weight: 600;
+          border-radius: var(--border-radius-md);
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &.btn-outline {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-muted);
+
+            &:hover {
+              background: var(--color-surface-hover, rgba(0, 0, 0, 0.05));
+              color: var(--color-text);
+            }
+          }
+
+          &.btn-connect {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+
+            &:hover {
+              background: var(--color-primary-dark);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    padding: var(--spacing-2xl);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--color-text-muted);
+
+    svg {
+      margin-bottom: var(--spacing-lg);
+      opacity: 0.5;
+    }
+    h3 {
+      color: var(--color-text);
+      font-size: 1.5rem;
+      margin: 0 0 var(--spacing-sm) 0;
+    }
+    p {
+      max-width: 400px;
+      margin: 0;
+    }
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   LOADING STATE
+   ========================================= */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--color-text-muted);
+
+  p {
+    margin-top: 16px;
+    font-size: 15px;
+  }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(var(--color-primary-rgb), 0.2);
+  border-radius: 50%;
+  border-top-color: var(--color-primary);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

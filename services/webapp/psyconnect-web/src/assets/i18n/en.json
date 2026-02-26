@@ -371,6 +371,12 @@
         "Punjabi": "Punjabi"
     },
     "CONSULTATION": {
+        "Tabs": {
+            "Overview": "Overview",
+            "Sessions": "Sessions",
+            "Schedule": "Schedule",
+            "Consultators": "Consultators"
+        },
         "Sidebar": {
             "Title": "Consultation",
             "Items": {
