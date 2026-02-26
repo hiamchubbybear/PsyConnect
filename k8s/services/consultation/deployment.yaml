@@ -34,6 +34,10 @@ spec:
                 secretKeyRef:
                   name: psyconnect-secrets
                   key: CONSULTATION_MONGO_URI
+            - name: SERVICE_PORT
+              value: "8083"
+            - name: SERVICE_HOST
+              value: "0.0.0.0"
             - name: JAVA_OPTS
               value: "-Xms256m -Xmx512m -Djava.net.preferIPv4Stack=true"
           readinessProbe:
