@@ -42,16 +42,12 @@ func (h *Handler) SwipeTherapist(c *gin.Context) {
 		return
 	}
 
-	// Use header profile ID if not in body
 	profileID := c.GetHeader("X-Profile-Id")
-	if profileID != "" {
-		req.ClientID = profileID
-	}
-
-	if req.ClientID == "" {
-		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing client ID")
+	if profileID == "" {
+		apiresponse.ErrorHandler(c, http.StatusUnauthorized, "Missing profile ID header")
 		return
 	}
+	req.ClientID = profileID
 
 	err := h.insertSwipeUC.Execute(c.Request.Context(), req.ClientID, req.TherapistID, req.Points, req.Reasons)
 	if err != nil {

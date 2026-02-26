@@ -33,7 +33,7 @@ func NewHandler(
 
 type CreateSessionRequest struct {
 	TherapistID string                  `json:"therapist_id" binding:"required"`
-	ClientID    string                  `json:"client_id" binding:"required"`
+	ClientID    string                  `json:"client_id"`
 	Mode        domain.ConsultationMode `json:"mode" binding:"required"`
 	StartTime   time.Time               `json:"start_time" binding:"required"`
 	EndTime     time.Time               `json:"end_time" binding:"required"`
@@ -53,6 +53,8 @@ func (h *Handler) CreateSession(c *gin.Context) {
 		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Invalid request: "+err.Error())
 		return
 	}
+
+	req.ClientID = userId
 
 	ucReq := usecase.CreateSessionRequest{
 		TherapistID: req.TherapistID,
