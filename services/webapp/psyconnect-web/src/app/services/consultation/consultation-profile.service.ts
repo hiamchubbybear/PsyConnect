@@ -105,13 +105,13 @@ export class ConsultationProfileService {
    * Create client profile
    */
   createClientProfile(data: any): Observable<ConsultationProfile> {
-    return this.http.post<ConsultationProfile>(`${this.apiUrl}/clients`, data);
+    return this.http.post<ConsultationProfile>(`${this.apiUrl}/clients/me`, data);
   }
 
   /**
    * Create therapist profile
    */
   createTherapistProfile(data: any): Observable<ConsultationProfile> {
-    return this.http.post<ConsultationProfile>(`${this.apiUrl}/therapists`, data);
+    return this.http.post<ConsultationProfile>(`${this.apiUrl}/therapists/me`, data);
   }
 }
