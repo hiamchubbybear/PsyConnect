@@ -31,7 +31,7 @@ func NewHandler(
 }
 
 type CreateClientRequest struct {
-	ProfileID         string   `json:"profile_id" binding:"required"`
+	ProfileID         string   `json:"profile_id"`
 	Address           string   `json:"address" binding:"required"`
 	Languages         []string `json:"languages" binding:"required"`
 	IssueDetail       []string `json:"issue_detail"`
@@ -56,6 +56,13 @@ func (h *Handler) CreateClient(c *gin.Context) {
 		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Invalid request: "+err.Error())
 		return
 	}
+
+	profileID := c.GetHeader("X-Profile-Id")
+	if profileID == "" {
+		apiresponse.ErrorHandler(c, http.StatusUnauthorized, "Profile ID is required in header")
+		return
+	}
+	req.ProfileID = profileID
 
 	ucReq := usecase.CreateClientRequest{
 		ProfileID:                  req.ProfileID,

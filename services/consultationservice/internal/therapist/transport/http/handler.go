@@ -56,7 +56,7 @@ type ProfessionalInfoDTO struct {
 }
 
 type CreateTherapistRequest struct {
-	ProfileID         string   `json:"profile_id" binding:"required"`
+	ProfileID         string   `json:"profile_id"`
 	Address           string   `json:"address" binding:"required"`
 	Languages         []string `json:"languages" binding:"required"`
 	Specialization    []string `json:"specialization" binding:"required"`
@@ -81,6 +81,13 @@ func (h *Handler) CreateTherapist(c *gin.Context) {
 		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Invalid request: "+err.Error())
 		return
 	}
+
+	profileID := c.GetHeader("X-Profile-Id")
+	if profileID == "" {
+		apiresponse.ErrorHandler(c, http.StatusUnauthorized, "Profile ID is required in header")
+		return
+	}
+	req.ProfileID = profileID
 
 	ucReq := usecase.CreateTherapistRequest{
 		ProfileID:             req.ProfileID,
