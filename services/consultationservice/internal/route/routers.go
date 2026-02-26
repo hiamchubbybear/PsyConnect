@@ -164,8 +164,9 @@ func RouterInit(
 
 	// Uncategorize Routes
 	uncategoryGroupV1 := router.Group("/v1/consultation")
-	uncategoryGroup.Use(middleware.RoleRequire(""))
+	uncategoryGroupV1.Use(middleware.RoleRequire(""))
 	{
+		uncategoryGroupV1.GET("/clients", clientHandler.GetAllClients)
 		uncategoryGroupV1.GET("/therapist/:id", therapistHandler.GetTherapistByID)
 		uncategoryGroupV1.GET("/me/recommend/top", swipeHandler.PopTop5V1)
 		uncategoryGroupV1.GET("/client/:id", clientHandler.GetClientByID)

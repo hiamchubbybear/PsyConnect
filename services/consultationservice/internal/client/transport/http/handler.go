@@ -100,6 +100,21 @@ func (h *Handler) GetClient(c *gin.Context) {
 	apiresponse.NewApiResponse(c, client)
 }
 
+func (h *Handler) GetAllClients(c *gin.Context) {
+	clients, err := h.getClientUC.ExecuteAll(c.Request.Context())
+	if err != nil {
+		apiresponse.ErrorHandler(c, http.StatusInternalServerError, "Failed to retrieve clients")
+		return
+	}
+
+	var response []map[string]interface{}
+	for _, client := range clients {
+		response = append(response, domainToResponse(client))
+	}
+
+	apiresponse.NewApiResponse(c, response)
+}
+
 func (h *Handler) GetClientByID(c *gin.Context) {
 	profileID := c.Param("id")
 	if profileID == "" {
