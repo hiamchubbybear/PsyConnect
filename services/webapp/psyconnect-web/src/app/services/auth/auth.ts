@@ -39,6 +39,8 @@ export class Auth {
           let resToken = res?.data.token;
           let refreshToken = res?.data.refreshToken;
           if (resToken != null && resToken != '') {
+            console.log('Token: ' + resToken);
+            console.log('Refresh Token: ' + refreshToken);
             this.secureStorage.setItem(this.ACCESSTOKEN_KEY, resToken);
             this.secureStorage.setItem(this.refreshKey, refreshToken);
           }
@@ -72,8 +74,12 @@ export class Auth {
   }
   isTokenExpired(token: string): boolean {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const exp = payload.exp * 1000;
+      const parts = token.split('.');
+      if (parts.length !== 3) return true;
+      let payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const pad = payload.length % 4 === 0 ? '' : '='.repeat(4 - (payload.length % 4));
+      const decodedInfo = JSON.parse(atob(payload + pad));
+      const exp = decodedInfo.exp * 1000;
       return Date.now() > exp;
     } catch (e) {
       return true;

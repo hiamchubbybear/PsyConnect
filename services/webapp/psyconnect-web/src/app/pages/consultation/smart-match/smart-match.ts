@@ -16,6 +16,7 @@ import { SwipeService } from '../../../services/swipe/swipe.service';
 export class SmartMatchComponent implements OnInit {
   recommendedTherapists: Therapist[] = [];
   isLoading = true;
+  missingProfile = false;
 
   constructor(
     private swipeService: SwipeService,
@@ -29,6 +30,7 @@ export class SmartMatchComponent implements OnInit {
 
   fetchRecommendations() {
     this.isLoading = true;
+    this.missingProfile = false;
     this.swipeService.getSwipeData().subscribe({
       next: (res) => {
         this.recommendedTherapists = res.data || [];
@@ -36,9 +38,16 @@ export class SmartMatchComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load recommendations', err);
+        if (err.status === 503) {
+          this.missingProfile = true;
+        }
         this.isLoading = false;
       },
     });
+  }
+
+  goToCreateProfile() {
+    this.router.navigate(['/feature/consultation/create-profile']);
   }
 
   onSwipeMatch(therapistId: string) {

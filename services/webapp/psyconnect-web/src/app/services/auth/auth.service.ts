@@ -57,8 +57,9 @@ export class AuthService {
         return null;
       }
 
-      const payload = parts[1];
-      const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      let payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const pad = payload.length % 4 === 0 ? '' : '='.repeat(4 - (payload.length % 4));
+      const decoded = atob(payload + pad);
       return JSON.parse(decoded) as JWTPayload;
     } catch (error) {
       console.error('Failed to decode JWT:', error);
@@ -71,10 +72,10 @@ export class AuthService {
    * Example: "role.therapist:permission ..." -> "therapist"
    */
   private extractRoleFromScope(scope: string): 'therapist' | 'client' | null {
-    const roleMatch = scope.match(/role\.(therapist|client)/);
-    if (roleMatch && roleMatch[1]) {
-      return roleMatch[1] as 'therapist' | 'client';
-    }
+    if (!scope) return null;
+    const s = scope.toLowerCase();
+    if (s.includes('therapist')) return 'therapist';
+    if (s.includes('client') || s.includes('user')) return 'client';
     return null;
   }
 
@@ -86,10 +87,19 @@ export class AuthService {
   }
 
   getRole(): 'therapist' | 'client' | null {
-    return this.secureService.getItem(this.ROLE_KEY) as
-      | 'therapist'
-      | 'client'
-      | null;
+    const role = this.secureService.getItem(this.ROLE_KEY) as 'therapist' | 'client' | null;
+    if (role) return role;
+
+    // Fallback: extract directly from token if possible
+    const payload = this.getCurrentUser();
+    if (payload && payload.scope) {
+      const extractedRole = this.extractRoleFromScope(payload.scope);
+      if (extractedRole) {
+        this.saveRole(extractedRole);
+        return extractedRole;
+      }
+    }
+    return null;
   }
 
   /**

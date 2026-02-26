@@ -14,6 +14,32 @@
     </div>
   </div>
 
+  <!-- Missing Profile State -->
+  <div *ngIf="missingProfile" class="empty-state card fade-in">
+    <svg
+      viewBox="0 0 24 24"
+      width="48"
+      height="48"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      style="color: var(--color-warning); margin-bottom: 1rem;"
+    >
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <h3>Missing Consultation Profile</h3>
+    <p>
+      We need to know a little more about you to find the perfect therapist match. Let's set up your profile!
+    </p>
+    <button class="btn btn-primary mt-4" (click)="goToCreateProfile()">
+      Create Profile
+    </button>
+  </div>
+
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
     <div class="spinner"></div>
@@ -21,7 +47,7 @@
   </div>
 
   <!-- Smart Matches Grid -->
-  <ng-container *ngIf="!isLoading">
+  <ng-container *ngIf="!isLoading && !missingProfile">
     <div
       class="matches-grid"
       *ngIf="recommendedTherapists.length > 0; else noMatches"
