@@ -8,12 +8,12 @@ import { DeleteSessionRequest, Session, SessionRequest } from '../../models/cons
   providedIn: 'root',
 })
 export class SessionService {
-  private readonly baseUrl = `${environment.apiUrl}/${environment.apiVersion}/consultation/session`;
+  private readonly baseUrl = `${environment.apiUrl}/${environment.apiVersion}/consultation/sessions`;
 
   constructor(private http: HttpClient) {}
 
   getAllSessions(): Observable<Session[]> {
-    return this.http.get<Session[]>(`${this.baseUrl}/all`);
+    return this.http.get<Session[]>(`${this.baseUrl}/me`);
   }
 
   getSessionById(id: string): Observable<Session> {
@@ -21,16 +21,16 @@ export class SessionService {
   }
 
   createSession(data: SessionRequest): Observable<Session> {
-    return this.http.post<Session>(this.baseUrl, data);
+    return this.http.post<Session>(`${this.baseUrl}/me`, data);
   }
 
-  deleteSession(data: DeleteSessionRequest): Observable<void> {
-    return this.http.delete<void>(this.baseUrl, { body: data });
+  deleteSession(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
   getAllSessionsAdmin(): Observable<Session[]> {
     return this.http.get<Session[]>(
-      `${environment.apiUrl}/${environment.apiVersion}/consultation/admin/session`
+      `${environment.apiUrl}/${environment.apiVersion}/consultation/admin/sessions`
     );
   }
 }

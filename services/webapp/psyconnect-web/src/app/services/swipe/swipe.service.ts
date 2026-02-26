@@ -75,7 +75,7 @@ export class SwipeService {
   }
   getUpdateTherapistHandler(): Observable<boolean> {
     const token = this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
-    const url = `${this.apiUrl}/consultation/client/recommend`;
+    const url = `${this.apiUrl}/${this.version}/consultation/clients/me/recommend`;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,

@@ -8,7 +8,7 @@ import { MatchRequest, MatchResponse } from '../../models/consultation.model';
   providedIn: 'root',
 })
 export class MatchingService {
-  private readonly baseUrl = `${environment.apiUrl}/${environment.apiVersion}/consultation/therapist/match`;
+  private readonly baseUrl = `${environment.apiUrl}/${environment.apiVersion}/consultation/matches`;
 
   constructor(private http: HttpClient) {}
 
