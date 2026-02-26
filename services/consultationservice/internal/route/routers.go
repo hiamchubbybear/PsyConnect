@@ -39,6 +39,11 @@ func RouterInit(
 	urI := fmt.Sprintf("%v:%v", env.Addr, env.Port)
 	router := gin.Default()
 
+	// Healthcheck endpoint
+	router.GET("/actuator/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "UP"})
+	})
+
 	// Add logging middleware
 	router.Use(middleware.LoggingMiddleware(kafkaLogger))
 
