@@ -163,8 +163,9 @@ func main() {
 	swipeRepository := swipeRepo.NewMongoSwipeRepository(db.GetSwipedCollection(), matchRepository, redisClient)
 	insertSwipeUC := swipeUseCase.NewInsertSwipeUseCase(swipeRepository)
 	swipeAndMatchUC := swipeUseCase.NewSwipeAndMatchUseCase(swipeRepository)
+	recommendUC := swipeUseCase.NewRecommendUseCase(clientRepository, therapistRepository, swipeRepository)
 
-	swipeHandler := swipeHTTP.NewHandler(insertSwipeUC, swipeAndMatchUC)
+	swipeHandler := swipeHTTP.NewHandler(insertSwipeUC, swipeAndMatchUC, recommendUC)
 	// ===== End DDD Swipe Components =====
 
 	// ===== DDD Reaction Components =====

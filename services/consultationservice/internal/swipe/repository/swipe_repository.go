@@ -15,4 +15,10 @@ type SwipeRepository interface {
 	// SwipeAndMatch converts a swipe to a match
 	// This deletes the swipe and creates a match record
 	SwipeAndMatch(ctx context.Context, clientID, therapistID string, points float32, reasons []string) error
+
+	// GetTopSwipes retrieves the top swipes for a client
+	GetTopSwipes(ctx context.Context, clientID string, limit int) ([]*domain.Swipe, error)
+
+	// DeleteSwipesByClient deletes all pending swipes for a client
+	DeleteSwipesByClient(ctx context.Context, clientID string) error
 }

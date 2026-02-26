@@ -13,6 +13,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoSwipeRepository struct {
@@ -87,5 +88,40 @@ func (r *MongoSwipeRepository) SwipeAndMatch(ctx context.Context, clientID, ther
 	}
 
 	log.Printf("Swipe matched: client %s -> therapist %s", clientID, therapistID)
+	return nil
+}
+
+func (r *MongoSwipeRepository) GetTopSwipes(ctx context.Context, clientID string, limit int) ([]*domain.Swipe, error) {
+	opts := options.Find().SetSort(bson.D{{Key: "points", Value: -1}}).SetLimit(int64(limit))
+	filter := bson.M{
+		"client_id": clientID,
+		"status":    domain.SwipeStatusPending,
+	}
+
+	cursor, err := r.collection.Find(ctx, filter, opts)
+	if err != nil {
+		log.Printf("Failed to finding top swipes: %v", err)
+		return nil, errors.New("failed to find top swipes")
+	}
+	defer cursor.Close(ctx)
+
+	var swipes []*domain.Swipe
+	if err = cursor.All(ctx, &swipes); err != nil {
+		return nil, errors.New("failed to decode top swipes")
+	}
+
+	return swipes, nil
+}
+
+func (r *MongoSwipeRepository) DeleteSwipesByClient(ctx context.Context, clientID string) error {
+	filter := bson.M{
+		"client_id": clientID,
+		"status":    domain.SwipeStatusPending,
+	}
+	_, err := r.collection.DeleteMany(ctx, filter)
+	if err != nil {
+		log.Printf("Failed to delete pending swipes: %v", err)
+		return errors.New("failed to delete pending swipes")
+	}
 	return nil
 }

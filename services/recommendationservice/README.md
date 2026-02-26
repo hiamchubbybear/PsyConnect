@@ -37,7 +37,7 @@ This service uses a `.env` file for configuration.
    cp .env.example .env
    ```
 2. Update the variables in `.env`:
-   - `PORT`: Service port (default: 5000)
+   - `PORT`: Service port (default: 8086)
    - `FLASK_ENV`: development/production
 
 ## 🚀 Installation & Run
@@ -61,7 +61,7 @@ python api/main.py
 ### Docker Run
 ```bash
 docker build -t psyconnect/recommendationservice .
-docker run -p 5000:5000 --env-file .env psyconnect/recommendationservice
+docker run -p 8086:8086 --env-file .env psyconnect/recommendationservice
 ```
 
 ## 🤝 Contributing

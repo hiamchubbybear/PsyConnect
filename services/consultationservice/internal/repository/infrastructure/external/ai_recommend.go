@@ -8,11 +8,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 // Deprecated:Replace RecommendationApi instead
 func RecommendationApi(data dto.FilterRawData) ([]model.ClientSwipe, error) {
-	url := "http://127.0.0.1:5000/recommend"
+	url := os.Getenv("RECOMMENDATION_SERVICE_URL")
+	if url == "" {
+		url = "http://127.0.0.1:8086/recommend"
+	}
 	jsonData, err := json.Marshal(data)
 	log.Printf(string(jsonData))
 	if err != nil {
@@ -44,7 +48,10 @@ func RecommendationApi(data dto.FilterRawData) ([]model.ClientSwipe, error) {
 }
 
 func RecommendationApiV1(data dto.FilterRawDataV1) ([]model.ClientSwipeV1, error) {
-	url := "http://127.0.0.1:5000/recommend"
+	url := os.Getenv("RECOMMENDATION_SERVICE_URL")
+	if url == "" {
+		url = "http://127.0.0.1:8086/recommend"
+	}
 	jsonData, err := json.Marshal(data)
 	log.Printf(string(jsonData))
 	if err != nil {

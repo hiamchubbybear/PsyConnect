@@ -12,15 +12,18 @@ import (
 type Handler struct {
 	insertSwipeUC   *usecase.InsertSwipeUseCase
 	swipeAndMatchUC *usecase.SwipeAndMatchUseCase
+	recommendUC     *usecase.RecommendUseCase
 }
 
 func NewHandler(
 	insertSwipeUC *usecase.InsertSwipeUseCase,
 	swipeAndMatchUC *usecase.SwipeAndMatchUseCase,
+	recommendUC *usecase.RecommendUseCase,
 ) *Handler {
 	return &Handler{
 		insertSwipeUC:   insertSwipeUC,
 		swipeAndMatchUC: swipeAndMatchUC,
+		recommendUC:     recommendUC,
 	}
 }
 
@@ -65,9 +68,22 @@ func (h *Handler) TriggerUpdate(c *gin.Context) {
 	apiresponse.ErrorHandler(c, http.StatusServiceUnavailable, "Recommendation feature temporarily disabled during migration")
 }
 
-// TriggerUpdateV1 - DISABLED: Recommendation feature temporarily disabled
+// TriggerUpdateV1 fetches and triggers matching update
 func (h *Handler) TriggerUpdateV1(c *gin.Context) {
-	apiresponse.ErrorHandler(c, http.StatusServiceUnavailable, "Recommendation feature temporarily disabled during migration")
+	profileID := c.GetHeader("X-Profile-Id")
+	if profileID == "" {
+		apiresponse.ErrorHandler(c, http.StatusUnauthorized, "Missing profile ID")
+		return
+	}
+
+	err := h.recommendUC.TriggerUpdateV1(c.Request.Context(), profileID)
+	if err != nil {
+		log.Print("Failed to trigger update:", err)
+		apiresponse.ErrorHandler(c, http.StatusInternalServerError, "Failed to get recommendations")
+		return
+	}
+
+	apiresponse.NewApiResponse(c, true)
 }
 
 // PopTop5 - DISABLED: Recommendation feature temporarily disabled
@@ -75,7 +91,20 @@ func (h *Handler) PopTop5(c *gin.Context) {
 	apiresponse.ErrorHandler(c, http.StatusServiceUnavailable, "Recommendation feature temporarily disabled during migration")
 }
 
-// PopTop5V1 - DISABLED: Recommendation feature temporarily disabled
+// PopTop5V1 fetches top 5 swipes from the DB
 func (h *Handler) PopTop5V1(c *gin.Context) {
-	apiresponse.ErrorHandler(c, http.StatusServiceUnavailable, "Recommendation feature temporarily disabled during migration")
+	profileID := c.GetHeader("X-Profile-Id")
+	if profileID == "" {
+		apiresponse.ErrorHandler(c, http.StatusUnauthorized, "Missing profile ID")
+		return
+	}
+
+	swipes, err := h.recommendUC.PopTop5V1(c.Request.Context(), profileID)
+	if err != nil {
+		log.Print("Failed to pop top 5:", err)
+		apiresponse.ErrorHandler(c, http.StatusInternalServerError, "Failed to get top recommendations")
+		return
+	}
+
+	apiresponse.NewApiResponse(c, swipes)
 }

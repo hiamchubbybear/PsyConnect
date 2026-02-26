@@ -93,6 +93,18 @@ jobs:
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
 
+  build-recommendation-service:
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/reusable-build-push.yml
+    with:
+      service_name: "Recommendation Service"
+      context_path: "services/recommendationservice"
+      image_name: "hiamchubbybear/psyconnect-recommendation-service"
+    secrets:
+      password: ${{ secrets.DOCKERHUB_TOKEN }}
+
   # Deploy chỉ chạy trên self-hosted (cần kubectl trên VPS)
   deploy:
     needs:
@@ -103,6 +115,7 @@ jobs:
       - build-chat-service
       - build-notification-service
       - build-webapp
+      - build-recommendation-service
     uses: ./.github/workflows/reusable-deploy.yml
     secrets:
       SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
