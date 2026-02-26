@@ -44,12 +44,12 @@ spring:
             - Path=/noti/**,/notification/**
 
         - id: chat_service
-          uri: ${CHAT_SERVICE_URL:http://chatservice:8083}
+          uri: ${CHAT_SERVICE_URL:http://chatservice:8084}
           predicates:
             - Path=/chats/**,/conversations/**
 
         - id: consultation_service
-          uri: ${CONSULTATION_SERVICE_URL:http://consultationservice:8084}
+          uri: ${CONSULTATION_SERVICE_URL:http://consultationservice:8083}
           predicates:
             - Path=/consultation/**,/v1/consultation/**
 
