@@ -35,8 +35,10 @@ func RoleRequire(required string) gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		expectedRole := fmt.Sprintf("role.%s:permission", required)
-		if role == "role.admin:permission" || role == expectedRole {
+		expectedRole := strings.ToLower(fmt.Sprintf("role.%s:permission", required))
+		lowerRole := strings.ToLower(role)
+
+		if lowerRole == "role.admin:permission" || lowerRole == expectedRole || lowerRole == fmt.Sprintf("role.%s", strings.ToLower(required)) {
 			c.Next()
 			return
 		}
