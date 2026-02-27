@@ -87,8 +87,11 @@ export class AuthService {
   }
 
   getRole(): 'therapist' | 'client' | null {
-    const role = this.secureService.getItem(this.ROLE_KEY) as 'therapist' | 'client' | null;
-    if (role) return role;
+    const role = this.secureService.getItem(this.ROLE_KEY) as string | null;
+    if (role) {
+      const extracted = this.extractRoleFromScope(role);
+      if (extracted) return extracted;
+    }
 
     // Fallback: extract directly from token if possible
     const payload = this.getCurrentUser();
