@@ -33,8 +33,34 @@ export class SmartMatchComponent implements OnInit {
     this.missingProfile = false;
     this.swipeService.getSwipeData().subscribe({
       next: (res) => {
-        this.recommendedTherapists = res.data || [];
-        this.isLoading = false;
+        const therapists = res.data || [];
+        if (therapists.length === 0) {
+          console.log('No recommendations found, triggering rescore...');
+          this.swipeService.triggerUpdate().subscribe({
+            next: () => {
+              this.swipeService.getSwipeData().subscribe({
+                next: (retryRes) => {
+                  this.recommendedTherapists = retryRes.data || [];
+                  this.isLoading = false;
+                },
+                error: (retryErr) => {
+                  console.error('Failed to load recommendations after rescore', retryErr);
+                  this.isLoading = false;
+                }
+              });
+            },
+            error: (triggerErr) => {
+              console.error('Failed to trigger recommendation update', triggerErr);
+              if (triggerErr.status === 503 || triggerErr.status === 500 || triggerErr.status === 404 || triggerErr.status === 401) {
+                this.missingProfile = true;
+              }
+              this.isLoading = false;
+            }
+          });
+        } else {
+          this.recommendedTherapists = therapists;
+          this.isLoading = false;
+        }
       },
       error: (err) => {
         console.error('Failed to load recommendations', err);

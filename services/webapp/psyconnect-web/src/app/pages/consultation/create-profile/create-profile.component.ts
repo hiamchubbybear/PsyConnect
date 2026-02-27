@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { Subject, of } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { AuthService } from '../../../services/auth/auth.service';
 import { ConsultationProfileService } from '../../../services/consultation/consultation-profile.service';
 import { ToastService } from '../../../shared/toast/toast.service';
@@ -28,7 +31,7 @@ import { ToastService } from '../../../shared/toast/toast.service';
                 <svg *ngIf="currentStep > 1" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 <span *ngIf="currentStep <= 1">1</span>
               </div>
-              <span class="step-label">Configuration</span>
+              <span class="step-label">{{ 'CONSULTATION.CreateProfile.StepConfig' | translate }}</span>
             </div>
             
             <div class="step-item" [class.active]="currentStep === 2" [class.completed]="currentStep > 2" (click)="goToStep(2)">
@@ -36,14 +39,22 @@ import { ToastService } from '../../../shared/toast/toast.service';
                 <svg *ngIf="currentStep > 2" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 <span *ngIf="currentStep <= 2">2</span>
               </div>
-              <span class="step-label">Attributes</span>
+              <span class="step-label">{{ 'CONSULTATION.CreateProfile.StepAttributes' | translate }}</span>
             </div>
 
             <div class="step-item" [class.active]="currentStep === 3" [class.completed]="currentStep > 3" (click)="goToStep(3)">
               <div class="step-indicator">
+                <svg *ngIf="currentStep > 3" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 <span *ngIf="currentStep <= 3">3</span>
               </div>
-              <span class="step-label">Details</span>
+              <span class="step-label">{{ 'CONSULTATION.CreateProfile.StepDetails' | translate }}</span>
+            </div>
+
+            <div class="step-item" *ngIf="role === 'therapist'" [class.active]="currentStep === 4" [class.completed]="currentStep > 4" (click)="goToStep(4)">
+              <div class="step-indicator">
+                <span *ngIf="currentStep <= 4">4</span>
+              </div>
+              <span class="step-label">{{ 'CONSULTATION.THERAPIST.ProfessionalInfo' | translate }}</span>
             </div>
 
             <!-- Animated sliding highlight for active step -->
@@ -55,12 +66,12 @@ import { ToastService } from '../../../shared/toast/toast.service';
         <main class="wizard-content">
           <form [formGroup]="profileForm" (ngSubmit)="createProfile()">
             <div class="content-header">
-              <h2>{{ getStepTitle() }}</h2>
+              <h2>{{ getStepTitle() | translate }}</h2>
               <div class="header-actions">
-                <button type="button" class="btn-cancel" (click)="goBack()">Cancel</button>
-                <button *ngIf="currentStep < 3" type="button" class="btn-next" (click)="nextStep()">Continue &rsaquo;</button>
-                <button *ngIf="currentStep === 3" type="submit" class="btn-next" [disabled]="profileForm.invalid || creating">
-                  {{ creating ? 'Saving...' : (isEditing ? 'Update Profile' : 'Save & Finish') }}
+                <button type="button" class="btn-cancel" (click)="goBack()">{{ 'COMMON.Cancel' | translate }}</button>
+                <button *ngIf="currentStep < (role === 'therapist' ? 4 : 3)" type="button" class="btn-next" (click)="nextStep()">{{ 'COMMON.Next' | translate }} &rsaquo;</button>
+                <button *ngIf="currentStep === (role === 'therapist' ? 4 : 3)" type="submit" class="btn-next" [disabled]="profileForm.invalid || creating">
+                  {{ creating ? ('COMMON.Saving' | translate) : (isEditing ? ('COMMON.Update' | translate) : ('COMMON.SaveProfile' | translate)) }}
                 </button>
               </div>
             </div>
@@ -68,8 +79,8 @@ import { ToastService } from '../../../shared/toast/toast.service';
             <!-- Step 1: Configuration (Modes & Price) -->
             <div class="step-pane" [class.active-pane]="currentStep === 1">
               <div class="section-group" style="--anim-delay: 1">
-                <h4>Consultation Modes</h4>
-                <p class="section-desc">Choose how you would like to conduct consultations.</p>
+                <h4>{{ 'CONSULTATION.THERAPIST.ConsultationModes' | translate }}</h4>
+                <p class="section-desc">{{ 'CONSULTATION.CreateProfile.ConsultationModesDesc' | translate }}</p>
                 <div class="card-grid">
                   <div *ngFor="let mode of availableModes" 
                        class="selectable-card" 
@@ -77,44 +88,49 @@ import { ToastService } from '../../../shared/toast/toast.service';
                        (click)="toggleMode(mode.id)">
                     <div class="selection-ring"></div>
                     <div class="card-icon" [innerHTML]="mode.icon"></div>
-                    <span class="card-title">{{ mode.label }}</span>
+                    <span class="card-title">{{ mode.label | translate }}</span>
                   </div>
                 </div>
               </div>
 
               <div class="section-group" style="--anim-delay: 2">
-                <h4>Budget / Rate (per hour)</h4>
-                <p class="section-desc">Enter your expected {{ role === 'therapist' ? 'hourly rate' : 'budget' }} in USD.</p>
-                <input type="number" formControlName="rage_price" class="form-input" placeholder="Amount (e.g. 50)" />
+                <h4>{{ 'CONSULTATION.THERAPIST.Price' | translate }}</h4>
+                <p class="section-desc">{{ role === 'therapist' ? ('CONSULTATION.THERAPIST.PriceDesc' | translate) : ('CONSULTATION.CLIENT.BudgetDesc' | translate) }}</p>
+                <div style="display: flex; gap: 1rem; max-width: 400px;">
+                  <input type="number" formControlName="rage_price" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.AmountPlaceholder' | translate" style="flex: 2;"/>
+                  <select *ngIf="role === 'therapist'" formControlName="currency" class="form-input" style="flex: 1;">
+                    <option *ngFor="let cur of availableCurrencies" [value]="cur.id">{{ cur.label }}</option>
+                  </select>
+                </div>
               </div>
             </div>
 
             <!-- Step 2: Attributes (Languages & Specializations) -->
             <div class="step-pane" [class.active-pane]="currentStep === 2">
               <div class="section-group" style="--anim-delay: 1">
-                <h4>Languages</h4>
-                <p class="section-desc">Select the languages you are comfortable with.</p>
+                <h4>{{ 'CONSULTATION.THERAPIST.Languages' | translate }}</h4>
+                <p class="section-desc">{{ 'CONSULTATION.CreateProfile.LanguagesDesc' | translate }}</p>
                 <div class="card-grid">
                   <div *ngFor="let lang of availableLanguages" 
                        class="selectable-card" 
                        [class.selected]="isLanguageSelected(lang.id)"
                        (click)="toggleLanguage(lang.id)">
                     <div class="selection-ring"></div>
-                    <span class="card-title">{{ lang.label }}</span>
+                    <span class="card-title">{{ lang.label | translate }}</span>
                   </div>
                 </div>
               </div>
 
               <div class="section-group" style="--anim-delay: 2">
-                <h4>{{ role === 'therapist' ? 'Specializations' : 'Issues' }}</h4>
-                <p class="section-desc">Select relevant areas of focus.</p>
+                <h4>{{ role === 'therapist' ? ('CONSULTATION.THERAPIST.Specialization' | translate) : ('CONSULTATION.CLIENT.IssueDetail' | translate) }}</h4>
+                <p class="section-desc">{{ 'CONSULTATION.CreateProfile.SpecializationDesc' | translate }}</p>
                 <div class="card-grid columns-3">
                   <div *ngFor="let topic of availableTopics" 
                        class="selectable-card" 
                        [class.selected]="isTopicSelected(topic.id)"
                        (click)="toggleTopic(topic.id)">
                     <div class="selection-ring"></div>
-                    <span class="card-title">{{ topic.label }}</span>
+                    <span class="card-title">{{ topic.label | translate }}</span>
                   </div>
                 </div>
               </div>
@@ -123,19 +139,76 @@ import { ToastService } from '../../../shared/toast/toast.service';
             <!-- Step 3: Details (Address & Experience) -->
             <div class="step-pane" [class.active-pane]="currentStep === 3">
               <div class="section-group" style="--anim-delay: 1">
-                <h4>Location Details</h4>
-                <p class="section-desc">Enter your current city or regional address.</p>
-                <input type="text" formControlName="address" class="form-input" placeholder="City, Country" />
+                <h4>{{ role === 'therapist' ? ('CONSULTATION.THERAPIST.BasicDetails' | translate) : ('CONSULTATION.CreateProfile.LocationDetails' | translate) }}</h4>
+                <p class="section-desc">{{ role === 'therapist' ? ('CONSULTATION.THERAPIST.BasicDetailsDesc' | translate) : ('CONSULTATION.CreateProfile.LocationDesc' | translate) }}</p>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                  <input *ngIf="role === 'therapist'" type="text" formControlName="name" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.Name' | translate" />
+                  <input type="text" formControlName="address" class="form-input" [placeholder]="'CONSULTATION.CreateProfile.CityCountry' | translate" />
+                </div>
               </div>
 
               <div class="section-group" style="--anim-delay: 2" *ngIf="role === 'therapist'">
-                <h4>Experience</h4>
-                <p class="section-desc">Years of professional experience.</p>
-                <input type="number" formControlName="experience" class="form-input" placeholder="e.g. 5" />
+                <h4>{{ 'CONSULTATION.THERAPIST.ProfessionalTitleAndExperience' | translate }}</h4>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                  <select formControlName="professional_title_code" class="form-input" style="flex: 2;">
+                    <option value="">{{ 'CONSULTATION.THERAPIST.SelectTitle' | translate }}</option>
+                    <option *ngFor="let title of availableTitles" [value]="title.code">{{ title.display }}</option>
+                  </select>
+                  <input type="number" formControlName="experience" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.ExperienceYears' | translate" style="flex: 1;" />
+                </div>
+                <input type="text" formControlName="professional_title_display" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.CustomTitle' | translate" />
+              </div>
+
+              <div class="summary-box" style="--anim-delay: 3" *ngIf="role === 'client'">
+                <p [innerHTML]="'CONSULTATION.CreateProfile.AlmostDoneClient' | translate"></p>
+              </div>
+            </div>
+
+            <!-- Step 4: Professional Info (Degrees & Certifications for Therapist) -->
+            <div class="step-pane" [class.active-pane]="currentStep === 4" *ngIf="role === 'therapist'">
+              <div class="section-group" style="--anim-delay: 1">
+                <h4>{{ 'CONSULTATION.THERAPIST.Degrees' | translate }}</h4>
+                <p class="section-desc">{{ 'CONSULTATION.THERAPIST.DegreesDesc' | translate }}</p>
+                <div formArrayName="degrees" class="array-list">
+                  <div *ngFor="let deg of degrees.controls; let i = index" [formGroupName]="i" class="array-item">
+                    <button type="button" class="btn-remove" (click)="removeDegree(i)">&times;</button>
+                    <select formControlName="type" class="form-input">
+                      <option value="">{{ 'CONSULTATION.THERAPIST.DegreeType' | translate }}</option>
+                      <option *ngFor="let type of availableDegreeTypes" [value]="type">{{ type }}</option>
+                    </select>
+                    <input type="text" formControlName="field" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.FieldOfStudy' | translate" />
+                    
+                    <div style="position: relative; flex: 1; min-width: 200px;">
+                      <input type="text" formControlName="institution" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.Institution' | translate" (input)="onInstitutionSearch($event, i)" (focus)="activeDegreeIndex = i" (blur)="onInstitutionBlur()" autocomplete="off" style="width: 100%;" />
+                      <div class="autocomplete-dropdown" *ngIf="activeDegreeIndex === i && universityResults.length > 0">
+                        <div class="autocomplete-item" *ngFor="let uni of universityResults" (mousedown)="selectUniversity(uni.name, i)">
+                          {{ uni.name }} <small *ngIf="uni.country">({{ uni.country }})</small>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <input type="number" formControlName="year" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.Year' | translate" style="max-width: 100px;" />
+                  </div>
+                </div>
+                <button type="button" class="btn-add" (click)="addDegree()">{{ 'CONSULTATION.THERAPIST.AddDegree' | translate }}</button>
+              </div>
+
+              <div class="section-group" style="--anim-delay: 2">
+                <h4>{{ 'CONSULTATION.THERAPIST.Certifications' | translate }}</h4>
+                <p class="section-desc">{{ 'CONSULTATION.THERAPIST.CertificationsDesc' | translate }}</p>
+                <div formArrayName="certifications" class="array-list">
+                  <div *ngFor="let cert of certifications.controls; let i = index" [formGroupName]="i" class="array-item">
+                    <button type="button" class="btn-remove" (click)="removeCertification(i)">&times;</button>
+                    <input type="text" formControlName="name" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.CertificationName' | translate" />
+                    <input type="text" formControlName="issuer" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.Issuer' | translate" />
+                    <input type="number" formControlName="year" class="form-input" [placeholder]="'CONSULTATION.THERAPIST.Year' | translate" style="max-width: 100px;" />
+                  </div>
+                </div>
+                <button type="button" class="btn-add" (click)="addCertification()">{{ 'CONSULTATION.THERAPIST.AddCertification' | translate }}</button>
               </div>
 
               <div class="summary-box" style="--anim-delay: 3">
-                <p>You are almost done! Review your information and click <strong>Save & Finish</strong> to complete your profile.</p>
+                <p [innerHTML]="'CONSULTATION.CreateProfile.AlmostDoneTherapist' | translate"></p>
               </div>
             </div>
 
@@ -267,6 +340,66 @@ import { ToastService } from '../../../shared/toast/toast.service';
       z-index: 1;
       transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       pointer-events: none;
+    }
+
+    /* Dynamic Form Array Styles */
+    .array-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .array-item {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: var(--color-bg);
+      border: 1px dashed var(--color-border);
+      border-radius: 6px;
+      position: relative;
+    }
+
+    .array-item .form-input {
+      flex: 1 1 200px;
+    }
+
+    .btn-remove {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-error, #ef4444);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .btn-add {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid var(--color-primary);
+      color: var(--color-primary);
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-add:hover {
+      background: rgba(var(--color-primary-rgb, 102,126,234), 0.08);
     }
 
     /* Main Content Area */
@@ -550,30 +683,46 @@ export class CreateConsultationProfileComponent implements OnInit {
   profileForm: FormGroup;
   currentStep = 1;
 
+  // --- Search Subscriptions ---
+  private institutionSearch$ = new Subject<{term: string, index: number}>();
+  universityResults: any[] = [];
+  activeDegreeIndex: number | null = null;
+
   // Data for cards
   availableModes = [
-    { id: 'online', label: 'Online', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>' },
-    { id: 'in-person', label: 'In-person', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' },
-    { id: 'chat', label: 'Chat', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' },
-    { id: 'phone', label: 'Phone', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>' }
+    { id: 'online', label: 'CONSULTATION.Modes.Online', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>' },
+    { id: 'in-person', label: 'CONSULTATION.Modes.InPerson', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' },
+    { id: 'chat', label: 'CONSULTATION.Modes.Chat', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>' },
+    { id: 'phone', label: 'CONSULTATION.Modes.Phone', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>' }
   ];
 
   availableLanguages = [
-    { id: 'en', label: 'English' },
-    { id: 'vi', label: 'Vietnamese' },
-    { id: 'zh', label: 'Chinese' },
-    { id: 'ja', label: 'Japanese' }
+    { id: 'en', label: 'CONSULTATION.Languages.English' },
+    { id: 'vi', label: 'CONSULTATION.Languages.Vietnamese' },
+    { id: 'zh', label: 'CONSULTATION.Languages.Chinese' },
+    { id: 'ja', label: 'CONSULTATION.Languages.Japanese' }
   ];
 
-  /* Example topics for specialization/issues */
   availableTopics = [
-    { id: 'anxiety', label: 'Anxiety' },
-    { id: 'depression', label: 'Depression' },
-    { id: 'stress', label: 'Stress' },
-    { id: 'relationship', label: 'Relationships' },
-    { id: 'trauma', label: 'Trauma' },
-    { id: 'career', label: 'Career' },
+    { id: 'anxiety', label: 'CONSULTATION.Topics.Anxiety' },
+    { id: 'depression', label: 'CONSULTATION.Topics.Depression' },
+    { id: 'stress', label: 'CONSULTATION.Topics.Stress' },
+    { id: 'relationship', label: 'CONSULTATION.Topics.Relationships' },
+    { id: 'trauma', label: 'CONSULTATION.Topics.Trauma' },
+    { id: 'career', label: 'CONSULTATION.Topics.Career' },
   ];
+
+  availableTitles = [
+    { code: 'phd', display: 'Doctor of Philosophy (Ph.D)' },
+    { code: 'psyd', display: 'Doctor of Psychology (Psy.D)' },
+    { code: 'ms', display: 'Master of Science (MS)' },
+    { code: 'ma', display: 'Master of Arts (MA)' },
+    { code: 'lcsw', display: 'Licensed Clinical Social Worker (LCSW)' },
+    { code: 'lpc', display: 'Licensed Professional Counselor (LPC)' }
+  ];
+
+  availableDegreeTypes = ['Bachelors', 'Masters', 'Doctorate', 'MD', 'Other'];
+  availableCurrencies = [{ id: 'VND', label: 'VND' }, { id: 'USD', label: 'USD' }];
 
   constructor(
     private router: Router,
@@ -581,7 +730,8 @@ export class CreateConsultationProfileComponent implements OnInit {
     private authService: AuthService,
     private consultationProfileService: ConsultationProfileService,
     private toastService: ToastService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private http: HttpClient
   ) {
     this.profileForm = this.fb.group({
       address: ['', Validators.required],
@@ -590,7 +740,13 @@ export class CreateConsultationProfileComponent implements OnInit {
       consultation_modes: [[]],
       issue_detail: [[]], // Client
       specialization: [[]], // Therapist
-      experience: [null]
+      experience: [null], // Therapist
+      name: [''], // Therapist
+      currency: ['USD'], // Therapist
+      professional_title_code: [''], // Therapist
+      professional_title_display: [''], // Therapist
+      degrees: this.fb.array([]), // Therapist
+      certifications: this.fb.array([]) // Therapist
     });
   }
 
@@ -604,9 +760,62 @@ export class CreateConsultationProfileComponent implements OnInit {
         this.router.navigate(['/login']);
       } else {
         this.role = (rawRole as string).toLowerCase() as 'therapist' | 'client';
+        // Add one initial empty degree/cert if therapist
+        if (this.role === 'therapist') {
+          // Initialize empty state is fine, user can click Add
+        }
         this.loadExistingProfile();
       }
     });
+
+    // Subscribe to institution searching
+    this.institutionSearch$.pipe(
+      debounceTime(300),
+      distinctUntilChanged((prev, curr) => prev.term === curr.term && prev.index === curr.index),
+      switchMap(request => {
+        if (!request.term || request.term.length < 2) {
+          return of([]);
+        }
+        return this.http.get<any[]>(`http://universities.hipolabs.com/search?name=${encodeURIComponent(request.term)}`).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe(results => {
+      this.universityResults = results.slice(0, 15);
+    });
+  }
+
+  get degrees() {
+    return this.profileForm.get('degrees') as FormArray;
+  }
+
+  get certifications() {
+    return this.profileForm.get('certifications') as FormArray;
+  }
+
+  addDegree() {
+    this.degrees.push(this.fb.group({
+      type: [''],
+      field: [''],
+      institution: [''],
+      year: [new Date().getFullYear()]
+    }));
+  }
+
+  removeDegree(index: number) {
+    this.degrees.removeAt(index);
+  }
+
+  addCertification() {
+    this.certifications.push(this.fb.group({
+      name: [''],
+      issuer: [''],
+      year: [new Date().getFullYear()]
+    }));
+  }
+
+  removeCertification(index: number) {
+    this.certifications.removeAt(index);
   }
 
   loadExistingProfile() {
@@ -621,17 +830,47 @@ export class CreateConsultationProfileComponent implements OnInit {
             languages: profile.languages || [],
             consultation_modes: profile.consultation_modes || [],
             experience: profile.experience || null,
+            name: profile.name || '',
+            currency: profile.currency || 'USD'
           });
           
-          if (this.role === 'therapist' && profile.specialization) {
-            this.profileForm.patchValue({ specialization: profile.specialization });
+          if (this.role === 'therapist') {
+            if (profile.specialization) {
+              this.profileForm.patchValue({ specialization: profile.specialization });
+            }
+            if (profile.professional_info) {
+              if (profile.professional_info.title) {
+                 this.profileForm.patchValue({
+                   professional_title_code: profile.professional_info.title.code || '',
+                   professional_title_display: profile.professional_info.title.display || '',
+                 });
+              }
+              if (profile.professional_info.degrees && Array.isArray(profile.professional_info.degrees)) {
+                 profile.professional_info.degrees.forEach((deg: any) => {
+                    this.degrees.push(this.fb.group({
+                      type: [deg.type || ''],
+                      field: [deg.field || ''],
+                      institution: [deg.institution || ''],
+                      year: [deg.year || new Date().getFullYear()]
+                    }));
+                 });
+              }
+              if (profile.professional_info.certifications && Array.isArray(profile.professional_info.certifications)) {
+                 profile.professional_info.certifications.forEach((cert: any) => {
+                    this.certifications.push(this.fb.group({
+                      name: [cert.name || ''],
+                      issuer: [cert.issuer || ''],
+                      year: [cert.year || new Date().getFullYear()]
+                    }));
+                 });
+              }
+            }
           } else if (this.role === 'client' && profile.issue_detail) {
              this.profileForm.patchValue({ issue_detail: profile.issue_detail });
           }
         }
       },
       error: (err) => {
-         // Profile doesn't exist or unauthorized, just proceed with empty form
          console.warn('Could not load existing profile, assuming creation flow.', err);
       }
     });
@@ -640,16 +879,18 @@ export class CreateConsultationProfileComponent implements OnInit {
   // --- Step Navigation ---
   getStepTitle(): string {
     switch (this.currentStep) {
-      case 1: return 'Configuration';
-      case 2: return 'Attributes';
-      case 3: return 'Details';
+      case 1: return 'CONSULTATION.CreateProfile.StepConfig';
+      case 2: return 'CONSULTATION.CreateProfile.StepAttributes';
+      case 3: return 'CONSULTATION.CreateProfile.StepDetails';
+      case 4: return 'CONSULTATION.THERAPIST.ProfessionalInfo';
       default: return '';
     }
   }
 
   nextStep() {
     // Optional: add step validation here
-    if (this.currentStep < 3) {
+    const maxSteps = this.role === 'therapist' ? 4 : 3;
+    if (this.currentStep < maxSteps) {
       this.currentStep++;
     }
   }
@@ -734,8 +975,19 @@ export class CreateConsultationProfileComponent implements OnInit {
     let profileData: any = { ...baseData };
 
     if (this.role === 'therapist') {
+      profileData.name = formVal.name;
+      profileData.currency = formVal.currency;
       profileData.experience = Number(formVal.experience) || 0;
       profileData.specialization = formVal.specialization;
+      profileData.professional_info = {
+        title: {
+          code: formVal.professional_title_code,
+          display: formVal.professional_title_display || formVal.professional_title_code // Fallback name
+        },
+        experience_years: Number(formVal.experience) || 0,
+        degrees: formVal.degrees || [],
+        certifications: formVal.certifications || []
+      };
     } else {
       profileData.issue_detail = formVal.issue_detail;
     }
@@ -762,5 +1014,27 @@ export class CreateConsultationProfileComponent implements OnInit {
         this.creating = false;
       }
     });
+  }
+
+  // --- University Autocomplete Methods ---
+  onInstitutionSearch(event: any, index: number) {
+    this.activeDegreeIndex = index;
+    this.institutionSearch$.next({ term: event.target.value, index });
+  }
+
+  selectUniversity(uniName: string, index: number) {
+    const degrees = this.profileForm.get('degrees') as FormArray;
+    const group = degrees.at(index) as FormGroup;
+    group.patchValue({ institution: uniName });
+    this.universityResults = [];
+    this.activeDegreeIndex = null;
+  }
+
+  onInstitutionBlur() {
+    // Delay hiding to allow mousedown to fire on the list item first
+    setTimeout(() => {
+      this.activeDegreeIndex = null;
+      this.universityResults = [];
+    }, 200);
   }
 }

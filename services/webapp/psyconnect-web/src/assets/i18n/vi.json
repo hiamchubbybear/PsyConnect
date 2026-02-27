@@ -404,6 +404,45 @@
             "Share": "Chia sẻ",
             "Shared": "Đã chia sẻ thành công"
         },
+        "CreateProfile": {
+            "Title": "Tạo Hồ sơ Tư vấn",
+            "ConsultationModes": "Hình thức Tư vấn",
+            "ConsultationModesDesc": "Chọn các hình thức tư vấn bạn có thể hỗ trợ.",
+            "LanguagesDesc": "Chọn ngôn ngữ bạn có thể sử dụng thành thạo.",
+            "SpecializationDesc": "Chọn lĩnh vực chuyên môn hoặc vấn đề mà bạn phụ trách.",
+            "LocationDetails": "Thông tin Vị trí",
+            "LocationDesc": "Vui lòng cung cấp nơi bạn đang làm việc để tiện hiển thị.",
+            "CityCountry": "Thành phố, Quốc gia",
+            "StepConfig": "Cấu hình",
+            "StepAttributes": "Thuộc tính",
+            "StepDetails": "Chi tiết",
+            "AlmostDoneClient": "Bạn sắp xong rồi! Hãy kiểm tra lại và nhấn <strong>Lưu & Hoàn thành</strong>.",
+            "AlmostDoneTherapist": "Bạn sắp xong rồi! Hãy kiểm tra lại và nhấn <strong>Lưu & Hoàn thành</strong>."
+        },
+        "CLIENT": {
+            "BudgetDesc": "Nhập mức ngân sách dự kiến của bạn.",
+            "IssueDetail": "Vấn đề quan tâm"
+        },
+        "Modes": {
+            "Online": "Trực tuyến",
+            "InPerson": "Trực tiếp",
+            "Chat": "Nhắn tin",
+            "Phone": "Điện thoại"
+        },
+        "Topics": {
+            "Anxiety": "Lo âu",
+            "Depression": "Trầm cảm",
+            "Stress": "Căng thẳng",
+            "Relationships": "Các mối quan hệ",
+            "Trauma": "Sang chấn tâm lý",
+            "Career": "Sự nghiệp"
+        },
+        "Languages": {
+            "English": "Tiếng Anh",
+            "Vietnamese": "Tiếng Việt",
+            "Chinese": "Tiếng Trung",
+            "Japanese": "Tiếng Nhật"
+        },
         "THERAPIST": {
             "Title": "Hồ sơ Chuyên gia",
             "Create": "Tạo hồ sơ Chuyên gia",
@@ -412,13 +451,31 @@
             "Available": "Sẵn sàng",
             "Unavailable": "Không khả dụng",
             "ProfessionalInfo": "Thông tin chuyên môn",
+            "Name": "Họ tên Chuyên gia",
+            "BasicDetails": "Thông tin cơ bản",
+            "BasicDetailsDesc": "Nhập thông tin chính của bạn.",
+            "ProfessionalTitleAndExperience": "Chức danh & Kinh nghiệm",
+            "SelectTitle": "-- Chọn chức danh --",
+            "CustomTitle": "Chức danh khác (nếu không có trong danh sách)",
             "Degrees": "Bằng cấp",
+            "DegreesDesc": "Thêm thông tin về bằng đại học/sau đại học.",
+            "DegreeType": "-- Loại bằng --",
+            "FieldOfStudy": "Ngành/Chuyên ngành",
+            "Institution": "Trường cấp",
+            "Year": "Năm",
+            "AddDegree": "+ Thêm Bằng cấp",
             "Certifications": "Chứng chỉ",
+            "CertificationsDesc": "Thêm các chứng chỉ hành nghề/khóa học liên quan.",
+            "CertificationName": "Tên chứng chỉ",
+            "Issuer": "Đơn vị cấp",
+            "AddCertification": "+ Thêm Chứng chỉ",
             "ExperienceYears": "Số năm kinh nghiệm",
             "Specialization": "Chuyên môn",
             "Languages": "Ngôn ngữ",
             "ConsultationModes": "Hình thức tư vấn",
-            "Price": "Khoảng giá",
+            "Price": "Ngân sách / Giá (mỗi giờ)",
+            "PriceDesc": "Nhập mức giá dự kiến theo giờ của bạn.",
+            "AmountPlaceholder": "Số tiền (VD: 500.000)",
             "Currency": "Đơn vị tiền tệ",
             "Availability": "Lịch khả dụng",
             "Rating": "Đánh giá"
