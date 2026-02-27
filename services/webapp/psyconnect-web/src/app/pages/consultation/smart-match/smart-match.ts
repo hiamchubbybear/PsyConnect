@@ -38,7 +38,7 @@ export class SmartMatchComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load recommendations', err);
-        if (err.status === 503) {
+        if (err.status === 503 || err.status === 500 || err.status === 404 || err.status === 401) {
           this.missingProfile = true;
         }
         this.isLoading = false;
