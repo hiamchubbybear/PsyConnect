@@ -114,4 +114,18 @@ export class ConsultationProfileService {
   createTherapistProfile(data: any): Observable<ConsultationProfile> {
     return this.http.post<ConsultationProfile>(`${this.apiUrl}/therapists/me`, data);
   }
+
+  /**
+   * Update client profile
+   */
+  updateClientProfile(data: any): Observable<ConsultationProfile> {
+    return this.http.put<ConsultationProfile>(`${this.apiUrl}/clients/me`, data);
+  }
+
+  /**
+   * Update therapist profile
+   */
+  updateTherapistProfile(data: any): Observable<ConsultationProfile> {
+    return this.http.put<ConsultationProfile>(`${this.apiUrl}/therapists/me`, data);
+  }
 }

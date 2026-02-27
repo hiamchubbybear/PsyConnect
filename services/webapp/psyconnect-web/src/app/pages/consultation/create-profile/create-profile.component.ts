@@ -60,7 +60,7 @@ import { ToastService } from '../../../shared/toast/toast.service';
                 <button type="button" class="btn-cancel" (click)="goBack()">Cancel</button>
                 <button *ngIf="currentStep < 3" type="button" class="btn-next" (click)="nextStep()">Continue &rsaquo;</button>
                 <button *ngIf="currentStep === 3" type="submit" class="btn-next" [disabled]="profileForm.invalid || creating">
-                  {{ creating ? 'Saving...' : 'Save & Finish' }}
+                  {{ creating ? 'Saving...' : (isEditing ? 'Update Profile' : 'Save & Finish') }}
                 </button>
               </div>
             </div>
@@ -594,12 +594,45 @@ export class CreateConsultationProfileComponent implements OnInit {
     });
   }
 
+  isEditing = false;
+  
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.role = params['role'] || this.authService.getRole();
-      if (!this.role) {
+      const rawRole = params['role'] || this.authService.getRole();
+      if (!rawRole) {
         this.toastService.error('Error', 'No role found. Please login again.');
         this.router.navigate(['/login']);
+      } else {
+        this.role = (rawRole as string).toLowerCase() as 'therapist' | 'client';
+        this.loadExistingProfile();
+      }
+    });
+  }
+
+  loadExistingProfile() {
+    this.consultationProfileService.getCurrentProfile().subscribe({
+      next: (res: any) => {
+        if (res && res.data) {
+          const profile = res.data;
+          this.isEditing = true;
+          this.profileForm.patchValue({
+            address: profile.address || '',
+            rage_price: profile.rage_price || null,
+            languages: profile.languages || [],
+            consultation_modes: profile.consultation_modes || [],
+            experience: profile.experience || null,
+          });
+          
+          if (this.role === 'therapist' && profile.specialization) {
+            this.profileForm.patchValue({ specialization: profile.specialization });
+          } else if (this.role === 'client' && profile.issue_detail) {
+             this.profileForm.patchValue({ issue_detail: profile.issue_detail });
+          }
+        }
+      },
+      error: (err) => {
+         // Profile doesn't exist or unauthorized, just proceed with empty form
+         console.warn('Could not load existing profile, assuming creation flow.', err);
       }
     });
   }
@@ -707,18 +740,25 @@ export class CreateConsultationProfileComponent implements OnInit {
       profileData.issue_detail = formVal.issue_detail;
     }
 
-    const createMethod = this.role === 'therapist'
-      ? this.consultationProfileService.createTherapistProfile(profileData)
-      : this.consultationProfileService.createClientProfile(profileData);
+    let updateMethod;
+    if (this.isEditing) {
+       updateMethod = this.role === 'therapist'
+         ? this.consultationProfileService.updateTherapistProfile(profileData)
+         : this.consultationProfileService.updateClientProfile(profileData);
+    } else {
+       updateMethod = this.role === 'therapist'
+         ? this.consultationProfileService.createTherapistProfile(profileData)
+         : this.consultationProfileService.createClientProfile(profileData);
+    }
 
-    createMethod.subscribe({
+    updateMethod.subscribe({
       next: (profile: any) => {
-        this.toastService.success('Success', 'Profile created successfully!');
+        this.toastService.success('Success', this.isEditing ? 'Profile updated successfully!' : 'Profile created successfully!');
         this.router.navigate(['/']);
       },
       error: (error: any) => {
-        console.error('Failed to create profile:', error);
-        this.toastService.error('Error', 'Failed to create profile. Please try again.');
+        console.error('Failed to save profile:', error);
+        this.toastService.error('Error', 'Failed to save profile. Please try again.');
         this.creating = false;
       }
     });

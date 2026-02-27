@@ -195,6 +195,7 @@
     },
     "AVATAR_MENU": {
         "Profile": "Profile",
+        "Consultation_Profile": "Consultation Profile",
         "Payment": "Payment",
         "Account": "Account",
         "Activity": "Activity",
