@@ -1,7 +1,7 @@
-<div class="message-wrapper" [class.mine]="message.isMine">
+<div class="message-wrapper" [class.mine]="message.isMine" [class.failed]="message.status === 'failed'" [class.sending]="message.status === 'sending'">
   <!-- Avatar: only for first message in group -->
   <div class="message-avatar" *ngIf="!message.isMine && message.isFirstInGroup">
-    <img [src]="message.userAvatar" [alt]="message.userName" />
+    <img [src]="message.userAvatar" [alt]="message.userName" appImgFallback />
   </div>
 
   <!-- Spacer for grouped messages (maintains alignment) -->
@@ -26,12 +26,36 @@
       <p>{{ message.content }}</p>
     </div>
 
-    <!-- Timestamp for my messages: below bubble -->
-    <div
-      class="message-time-mine"
-      *ngIf="message.isMine && message.showTimestamp"
-    >
-      {{ formatTime(message.timestamp) }}
+    <!-- Status indicators for my messages -->
+    <div class="message-status" *ngIf="message.isMine">
+      <!-- Sending indicator -->
+      <span class="status-sending" *ngIf="message.status === 'sending'">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+        </svg>
+      </span>
+
+      <!-- Failed indicator -->
+      <span class="status-failed" *ngIf="message.status === 'failed'" (click)="onRetry()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="#ef4444" stroke="none">
+          <circle cx="12" cy="12" r="11"/>
+          <path d="M12 7v6M12 16v1" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+
+      <!-- Timestamp for my messages -->
+      <span class="message-time-mine" *ngIf="message.showTimestamp && message.status !== 'failed'">
+        {{ formatTime(message.timestamp) }}
+      </span>
+    </div>
+
+    <!-- Failed message action text -->
+    <div class="failed-hint" *ngIf="message.isMine && message.status === 'failed'" (click)="onRetry()">
+      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+      </svg>
+      Retry
     </div>
   </div>
 </div>

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Therapist } from '../../models/swipe-card';
+import { AvatarFallbackPipe } from '../../shared/pipes/avatar-fallback.pipe';
 
 @Component({
   selector: 'app-therapist-profile-overlay',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, AvatarFallbackPipe],
   templateUrl: 'profile-overlay.html',
   styleUrls: ['./profile-overlay.scss'],
 })

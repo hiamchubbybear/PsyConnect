@@ -113,3 +113,69 @@
   align-self: flex-end;
   padding: 0 4px;
 }
+
+/* Message status indicators */
+.message-wrapper.sending {
+  .message-bubble.mine {
+    opacity: 0.7;
+  }
+}
+
+.message-wrapper.failed {
+  .message-bubble.mine {
+    border-color: #ef4444;
+    opacity: 0.85;
+  }
+}
+
+.message-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 4px;
+
+  .status-sending {
+    display: flex;
+    align-items: center;
+
+    svg {
+      animation: pulse-spin 1.2s ease-in-out infinite;
+      color: var(--color-text-muted);
+      opacity: 0.5;
+    }
+  }
+
+  .status-failed {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.15);
+    }
+  }
+}
+
+.failed-hint {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.7rem;
+  color: #ef4444;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-end;
+  padding: 0 4px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@keyframes pulse-spin {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.3; }
+}
+

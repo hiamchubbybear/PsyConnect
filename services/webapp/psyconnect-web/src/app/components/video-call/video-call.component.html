@@ -15,16 +15,11 @@
     <div class="video-placeholder" *ngIf="!callState.remoteStream">
       <div class="placeholder-content">
         <div class="avatar-placeholder mascot-pulse">
-          <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-            <circle
-              cx="40"
-              cy="40"
-              r="35"
-              fill="var(--emote-primary)"
-              opacity="0.3"
-            />
-            <circle cx="40" cy="40" r="25" fill="var(--emote-primary)" />
-          </svg>
+          <img
+            [src]="remoteUserAvatar | avatarFallback:remoteUserId"
+            [alt]="remoteUserName || 'User'"
+            style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;"
+          />
         </div>
         <p class="placeholder-text" *ngIf="callState.isCalling">Đang gọi...</p>
         <p class="placeholder-text" *ngIf="callState.isReceivingCall">

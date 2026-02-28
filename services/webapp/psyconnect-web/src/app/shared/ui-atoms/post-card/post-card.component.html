@@ -7,7 +7,7 @@
       <div class="avatar">
         <!-- Placeholder or actual avatar -->
         <img
-          [src]="post.author_avatar || 'assets/default-avatar.png'"
+          [src]="post.author_avatar | avatarFallback:post.author_id"
           [alt]="post.author_name"
         />
       </div>

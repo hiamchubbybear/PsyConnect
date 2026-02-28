@@ -17,11 +17,12 @@ import { NewsfeedService } from '../../../services/newsfeed/newsfeed.service';
 import { ReactionService } from '../../../services/newsfeed/reaction.service';
 import { Profile } from '../../../services/profile/profile';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 
 @Component({
   selector: 'app-post-modal',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, TranslateModule, ReactiveFormsModule, AvatarFallbackPipe],
   templateUrl: './post-modal.html',
   styleUrls: ['./post-modal.scss'],
 })

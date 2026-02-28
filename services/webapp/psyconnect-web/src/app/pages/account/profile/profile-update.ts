@@ -30,6 +30,7 @@ import { ToastService } from '../../../shared/toast/toast.service';
 import { FieldRowComponent } from '../../../shared/ui-atoms/field-row/field-row.component';
 import { ProfileModel } from './profile-model';
 import { ProfileOverlayComponent } from './profile-overlay';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 @Component({
   selector: 'app-profile-section',
   standalone: true,
@@ -42,6 +43,7 @@ import { ProfileOverlayComponent } from './profile-overlay';
     ProfileOverlayComponent,
     SingleButton,
     FieldRowComponent,
+    AvatarFallbackPipe,
   ],
   templateUrl: './profile-update.html',
   styleUrls: ['./profile-update.scss'],

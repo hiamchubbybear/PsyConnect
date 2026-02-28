@@ -5,7 +5,7 @@
 >
   <div class="friend-card__avatar">
     <img
-      [src]="friend.avatarUrl"
+      [src]="friend.avatarUrl | avatarFallback:friend.id"
       alt="Avatar"
       class="friend-card__avatar-img"
     />

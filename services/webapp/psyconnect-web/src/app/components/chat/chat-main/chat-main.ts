@@ -21,6 +21,8 @@ import {
   CallOptionsMenuComponent,
   CallType,
 } from '../../call-options-menu/call-options-menu.component';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
+import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 
 @Component({
   selector: 'app-chat-main',
@@ -32,6 +34,8 @@ import {
     ChatInputComponent,
     CallOptionsMenuComponent,
     TranslateModule,
+    AvatarFallbackPipe,
+    ImgFallbackDirective,
   ],
   templateUrl: './chat-main.html',
   styleUrls: ['./chat-main.scss'],
@@ -44,8 +48,10 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   @Input() currentUserName: string = '';
   @Input() currentUserAvatar: string = '';
   @Input() isLoadingMessages = false;
+  @Input() suggestedUsers: Friend[] = [];
   @Output() messagesChange = new EventEmitter<Message[]>();
   @Output() callRequested = new EventEmitter<CallType>();
+  @Output() suggestionSelected = new EventEmitter<Friend>();
   @Output() back = new EventEmitter<void>();
   @ViewChild('messagesContainer')
   messagesContainer!: ElementRef<HTMLDivElement>;
@@ -95,16 +101,81 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
     this.isSending = true;
 
-    this.chatService.sendMessage({
+    // Create optimistic message
+    const tempId = `temp-${Date.now()}`;
+    const optimisticMsg: Message = {
+      id: tempId,
       conversationId: this.conversationId,
-      content: text,
       senderId: this.currentUserId,
-    });
+      userName: this.currentUserName,
+      userAvatar: this.currentUserAvatar,
+      content: text,
+      timestamp: new Date(),
+      isMine: true,
+      status: 'sending',
+    };
+
+    // Add to messages immediately
+    this.messages = this.groupMessages([...this.messages, optimisticMsg]);
+    this.messagesChange.emit(this.messages);
+
+    try {
+      this.chatService.sendMessage({
+        conversationId: this.conversationId,
+        content: text,
+        senderId: this.currentUserId,
+      });
+
+      // Mark as sent after a short delay (WebSocket fire-and-forget)
+      setTimeout(() => {
+        this.messages = this.messages.map((m) =>
+          m.id === tempId ? { ...m, status: 'sent' as const } : m
+        );
+        this.messagesChange.emit(this.messages);
+      }, 300);
+    } catch (err) {
+      console.error('❌ Failed to send message:', err);
+      // Mark as failed
+      this.messages = this.messages.map((m) =>
+        m.id === tempId ? { ...m, status: 'failed' as const } : m
+      );
+      this.messagesChange.emit(this.messages);
+    }
 
     // Reset guard after delay
     setTimeout(() => {
       this.isSending = false;
     }, 500);
+  }
+
+  retryMessage(failedMsg: Message) {
+    if (!this.conversationId || !this.currentUserId) return;
+
+    // Update status to sending
+    this.messages = this.messages.map((m) =>
+      m.id === failedMsg.id ? { ...m, status: 'sending' as const } : m
+    );
+    this.messagesChange.emit(this.messages);
+
+    try {
+      this.chatService.sendMessage({
+        conversationId: this.conversationId,
+        content: failedMsg.content,
+        senderId: this.currentUserId,
+      });
+
+      setTimeout(() => {
+        this.messages = this.messages.map((m) =>
+          m.id === failedMsg.id ? { ...m, status: 'sent' as const } : m
+        );
+        this.messagesChange.emit(this.messages);
+      }, 300);
+    } catch (err) {
+      this.messages = this.messages.map((m) =>
+        m.id === failedMsg.id ? { ...m, status: 'failed' as const } : m
+      );
+      this.messagesChange.emit(this.messages);
+    }
   }
 
   loadOlderMessages() {
@@ -147,8 +218,8 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
         ? this.currentUserName
         : `${friend.firstName} ${friend.lastName}`,
       userAvatar: isMine
-        ? this.currentUserAvatar
-        : friend.avatarUri || 'assets/avatars/default.png',
+        ? this.currentUserAvatar || ''
+        : friend.avatarUri || '',
     };
   }
 

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { UserProfile } from '../../../models/profile';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 
 @Component({
   selector: 'app-profile-card',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, AvatarFallbackPipe],
   templateUrl: './profile-card.html',
   styleUrls: ['./profile-card.scss'],
 })

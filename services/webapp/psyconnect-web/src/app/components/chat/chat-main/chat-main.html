@@ -1,6 +1,6 @@
 <div class="chat-main">
   <div class="chat-header">
-    <button class="back-btn mobile-only" (click)="back.emit()">
+    <button class="back-btn" *ngIf="selectedFriend" (click)="back.emit()">
       <svg
         width="24"
         height="24"
@@ -16,16 +16,10 @@
     <div class="chat-info" *ngIf="selectedFriend as friend">
       <div class="chat-avatar">
         <img
-          *ngIf="friend.avatarUri && friend.avatarUri.startsWith('http')"
-          [src]="friend.avatarUri"
+          [src]="friend.avatarUri | avatarFallback:friend.profileId"
           [alt]="friend.firstName"
+          appImgFallback
         />
-        <div
-          *ngIf="!friend.avatarUri || !friend.avatarUri.startsWith('http')"
-          class="avatar-fallback"
-        >
-          {{ friend.firstName.charAt(0).toUpperCase() }}
-        </div>
       </div>
 
       <div class="chat-meta">
@@ -60,16 +54,15 @@
   <div class="messages-container" #scrollContainer>
     <ng-container *ngIf="selectedFriend; else noFriend">
       <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
-        <app-message-bubble [message]="message"></app-message-bubble>
+        <app-message-bubble [message]="message" (retry)="retryMessage($event)"></app-message-bubble>
       </ng-container>
 
       <div *ngIf="isTyping" class="typing-indicator">
         <div class="typing-avatar">
           <img
-            [src]="
-              selectedFriend.avatarUri || 'assets/images/default-avatar.png'
-            "
+            [src]="selectedFriend.avatarUri | avatarFallback:selectedFriend.profileId"
             [alt]="selectedFriend.firstName || 'User'"
+            appImgFallback
           />
         </div>
         <div class="typing-bubble">
@@ -82,7 +75,56 @@
 
     <ng-template #noFriend>
       <div class="no-friend-selected">
-        {{ "CHAT.EXAMPLE.noFriendSelected" | translate }}
+        <!-- Empty state message -->
+        <div class="no-friend-hero">
+          <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <h3>{{ "CHAT.EXAMPLE.noFriendSelected" | translate }}</h3>
+        </div>
+
+        <!-- Suggested users horizontal row -->
+        <div class="suggestions-section" *ngIf="suggestedUsers.length > 0">
+          <div class="suggestions-title">
+            <span>{{ "CHAT.SUGGESTIONS.Title" | translate }}</span>
+          </div>
+          <div class="suggestions-row">
+            <div
+              class="suggestion-item"
+              *ngFor="let user of suggestedUsers"
+              (click)="suggestionSelected.emit(user)"
+            >
+              <div class="suggestion-avatar-wrapper">
+                <img
+                  [src]="user.avatarUri | avatarFallback:user.profileId"
+                  [alt]="user.firstName"
+                  class="suggestion-avatar"
+                  appImgFallback
+                />
+              </div>
+              <span class="suggestion-name">{{ user.firstName }}</span>
+
+              <!-- Tooltip on hover -->
+              <div class="suggestion-tooltip">
+                <img
+                  [src]="user.avatarUri | avatarFallback:user.profileId"
+                  [alt]="user.firstName"
+                  class="tooltip-avatar"
+                  appImgFallback
+                />
+                <div class="tooltip-info">
+                  <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+                  <span class="tooltip-action">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    {{ "CHAT.SUGGESTIONS.StartChat" | translate }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </ng-template>
   </div>

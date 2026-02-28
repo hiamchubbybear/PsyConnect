@@ -192,6 +192,7 @@ export const routes: Routes = [
     ],
   },
   { path: 'feature/chat', component: ChatComponent, canActivate: [authGuard] },
+  { path: 'feature/chat/:id', component: ChatComponent, canActivate: [authGuard] },
   {
     path: 'feature/social',
     component: SocialProfile,

@@ -3,11 +3,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { LucideAngularModule } from 'lucide-angular'; // Added this import
 import { Post } from '../../../models/post.model';
 import { PsyButtonComponent } from '../button/psy-button.component';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, PsyButtonComponent],
+  imports: [CommonModule, LucideAngularModule, PsyButtonComponent, AvatarFallbackPipe],
   templateUrl: './post-card.component.html',
   styleUrls: ['./post-card.component.scss'],
 })

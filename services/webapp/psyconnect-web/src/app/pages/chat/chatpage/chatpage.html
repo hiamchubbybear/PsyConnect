@@ -18,7 +18,9 @@
     [currentUserName]="currentUser.name"
     [currentUserAvatar]="currentUser.avatar"
     [isLoadingMessages]="isLoadingMessages"
+    [suggestedUsers]="suggestedUsers"
     (callRequested)="handleCallRequest($event)"
+    (suggestionSelected)="onFriendSelected($event, true)"
     (back)="onBack()"
   ></app-chat-main>
 
@@ -27,6 +29,8 @@
     *ngIf="showVideoCall"
     [conversationId]="conversationId()"
     [remoteUserId]="selectedFriend()?.profileId || ''"
+    [remoteUserAvatar]="selectedFriend()?.avatarUri"
+    [remoteUserName]="selectedFriend()?.firstName"
     [currentUserId]="currentUser.profileId"
     (callEnded)="onCallEnded()"
     (offer)="onOffer($event)"

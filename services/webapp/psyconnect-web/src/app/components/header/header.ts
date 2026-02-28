@@ -9,7 +9,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
-import { NavigationEnd, Router } from '@angular/router';
+import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
@@ -27,17 +27,20 @@ import {
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
 import { HeaderStateService } from './header-state';
 import { NotificationDropdownComponent } from './notification-dropdown/notification-dropdown';
+import { AvatarFallbackPipe } from '../../shared/pipes/avatar-fallback.pipe';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
     CommonModule,
-    MatMenuModule,
-    AvatarMenuComponent,
+    RouterModule,
     TranslateModule,
+    AvatarMenuComponent,
+    MatMenuModule,
     DropdownComponent,
     NotificationDropdownComponent,
+    AvatarFallbackPipe,
   ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
@@ -57,7 +60,9 @@ export class Header implements OnInit, OnDestroy {
 
   isMini = false;
 
-  userAvatarUrl = 'assets/images/avatar.jpeg';
+  currentUser: any = null;
+  userAvatarUrl: string | null = null;
+  userProfileId: string | null = null; // Use to hash the fallback avatar string
   userName = 'Anonymous';
   isMenuOpen = false;
   isHidden = false;
@@ -121,16 +126,13 @@ export class Header implements OnInit, OnDestroy {
 
   private updateUserInfo(user: UserProfile | null) {
     if (user) {
-      const newAvatarUrl = user.avatarUri?.trim()
-        ? user.avatarUri
-        : 'assets/images/avatar.jpeg';
-      const newUserName =
+      this.userProfileId = user.profileId || user.accountId || 'guest';
+      this.userAvatarUrl = user.avatarUri?.trim() ? user.avatarUri : null;
+      this.userName =
         `${user.firstName} ${user.lastName}`.trim() || 'Anonymous';
-
-      this.userAvatarUrl = newAvatarUrl;
-      this.userName = newUserName;
     } else {
-      this.userAvatarUrl = 'assets/images/avatar.jpeg';
+      this.userProfileId = 'guest';
+      this.userAvatarUrl = null;
       this.userName = 'Anonymous';
     }
   }

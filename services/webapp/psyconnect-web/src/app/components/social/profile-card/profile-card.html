@@ -10,23 +10,13 @@
 
   <div class="profile-card__content">
     <div class="profile-card__avatar-wrapper">
-      <div
-        class="profile-card__avatar"
-        *ngIf="user.avatarUrl; else avatarFallback"
-      >
+      <div class="profile-card__avatar">
         <img
-          [src]="user.avatarUrl"
+          [src]="user.avatarUrl | avatarFallback:user.name"
           [alt]="user.name"
           class="profile-card__avatar-img"
         />
       </div>
-      <ng-template #avatarFallback>
-        <div class="profile-card__avatar profile-card__avatar--fallback">
-          <span class="profile-card__avatar-initials">{{
-            getInitials(user.name)
-          }}</span>
-        </div>
-      </ng-template>
     </div>
     <div class="profile-card__info">
       <h2 class="profile-card__name">{{ user.name }}</h2>

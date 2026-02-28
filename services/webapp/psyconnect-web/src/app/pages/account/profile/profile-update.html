@@ -6,8 +6,7 @@
           class="profile-avatar"
           [src]="
             imagePreview ||
-            form.value.avatarUri ||
-            'https://i.pinimg.com/736x/85/bc/ed/85bceda292465d9c8c59e03a9be8d676.jpg'
+            (form.value.avatarUri | avatarFallback:profile?.profileId)
           "
           alt="{{ 'ACCOUNT_MANAGEMENT.Profile.Avatar' | translate }}"
         />

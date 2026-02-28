@@ -27,10 +27,7 @@
       <div class="therapist-card__profile">
         <div class="therapist-card__avatar">
           <img
-            [src]="
-              therapist?.avatarOverride ||
-              'https://i.pinimg.com/1200x/20/f8/8b/20f88bf31b5252f2233d525d8caf97e3.jpg'
-            "
+            [src]="therapist?.avatarOverride | avatarFallback:therapist?.profileId"
             alt="Therapist Avatar"
           />
         </div>

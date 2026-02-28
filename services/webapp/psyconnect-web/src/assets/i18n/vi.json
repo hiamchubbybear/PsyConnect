@@ -393,6 +393,33 @@
                 "Settings": "Cài đặt"
             }
         },
+        "SmartMatch": {
+            "Title": "Gợi ý dành cho bạn",
+            "Subtitle": "Dựa trên hồ sơ của bạn, chúng tôi đã chọn lọc các chuyên gia phù hợp nhất.",
+            "Filter": "Bộ lọc",
+            "SortBestMatch": "Sắp xếp: Phù hợp nhất",
+            "MissingProfileTitle": "Chưa có Hồ sơ Tư vấn",
+            "MissingProfileDesc": "Chúng tôi cần biết thêm về bạn để tìm chuyên gia phù hợp. Hãy tạo hồ sơ ngay!",
+            "CreateProfile": "Tạo Hồ sơ",
+            "Loading": "Đang tìm chuyên gia phù hợp nhất cho bạn...",
+            "WhyGoodFit": "Tại sao phù hợp:",
+            "MatchedSpecialization": "Chuyên môn phù hợp",
+            "YearsExperience": "năm kinh nghiệm",
+            "AcceptingClients": "Đang nhận khách hàng mới",
+            "ScheduleFull": "Lịch hẹn hiện đã đầy",
+            "Pass": "Bỏ qua",
+            "ConnectSchedule": "Kết nối & Xem lịch",
+            "Message": "Nhắn tin",
+            "BookSession": "Đặt lịch hẹn",
+            "ViewProfile": "Xem hồ sơ",
+            "OfCount": "trên",
+            "NoMatchesTitle": "Bạn đã xem hết gợi ý",
+            "NoMatchesDesc": "Chúng tôi đang tìm thêm chuyên gia phù hợp với bạn. Vui lòng quay lại sau!",
+            "RefreshSuggestions": "Làm mới gợi ý",
+            "TherapistNotAvailableTitle": "Chức năng không khả dụng",
+            "TherapistNotAvailableDesc": "Chức năng này chỉ dành cho khách hàng đang tìm chuyên gia tư vấn. Với vai trò chuyên gia, bạn có thể quản lý phiên tư vấn của mình.",
+            "GoToSessions": "Đi đến Phiên tư vấn"
+        },
         "SOCIAL": {
             "Follow": "Theo dõi",
             "Unfollow": "Bỏ theo dõi",
@@ -1000,6 +1027,8 @@
                 "moreOptions": "Tuỳ chọn khác"
             },
             "selectChat": "Chọn cuộc trò chuyện",
+            "selectFriend": "Chọn bạn bè để bắt đầu trò chuyện",
+            "noFriendSelected": "Chọn ai đó từ danh sách để bắt đầu cuộc trò chuyện",
             "tabs": {
                 "messages": "Tin nhắn",
                 "participants": "Người tham gia"
@@ -1012,7 +1041,16 @@
             "links": "Liên kết",
             "more": "Khác"
         },
-        "TYPING": " đang nhập..."
+        "TYPING": " đang nhập...",
+        "SUGGESTIONS": {
+            "Title": "Gợi ý kết bạn",
+            "Subtitle": "Những người bạn có thể muốn trò chuyện",
+            "NoFriendsTitle": "Chưa có cuộc trò chuyện nào",
+            "NoFriendsDesc": "Bắt đầu trò chuyện với ai đó trong cộng đồng!",
+            "StartChat": "Nhắn tin",
+            "EmptyTitle": "Chưa có gợi ý",
+            "EmptyDesc": "Hãy thêm bạn bè để bắt đầu trò chuyện"
+        }
     },
     "register": {
         "title": "Tạo tài khoản",

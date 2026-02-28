@@ -2,166 +2,141 @@
   <!-- Discover Header -->
   <div class="discover-header">
     <div class="header-text">
-      <h2>Recommended for You</h2>
-      <p>
-        Based on your profile, we've carefully selected these therapists to help
-        you.
-      </p>
+      <h2>{{ 'CONSULTATION.SmartMatch.Title' | translate }}</h2>
+      <p>{{ 'CONSULTATION.SmartMatch.Subtitle' | translate }}</p>
     </div>
-    <div class="filter-controls">
-      <button class="btn btn-outline btn-sm">Filter</button>
-      <button class="btn btn-outline btn-sm">Sort By: Best Match</button>
+    <div class="counter" *ngIf="!isTherapist && !isLoading && !missingProfile && totalCount > 0">
+      <span class="counter-badge">
+        {{ currentIndex + 1 }} {{ 'CONSULTATION.SmartMatch.OfCount' | translate }} {{ totalCount }}
+      </span>
     </div>
   </div>
 
-  <!-- Missing Profile State -->
-  <div *ngIf="missingProfile" class="empty-state card fade-in">
-    <svg
-      viewBox="0 0 24 24"
-      width="48"
-      height="48"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      style="color: var(--color-warning); margin-bottom: 1rem;"
-    >
+  <!-- Therapist Not Available State -->
+  <div *ngIf="isTherapist" class="empty-state card fade-in">
+    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-warning); margin-bottom: 1rem;">
       <circle cx="12" cy="12" r="10"></circle>
       <line x1="12" y1="8" x2="12" y2="12"></line>
       <line x1="12" y1="16" x2="12.01" y2="16"></line>
     </svg>
-    <h3>Missing Consultation Profile</h3>
-    <p>
-      We need to know a little more about you to find the perfect therapist match. Let's set up your profile!
-    </p>
+    <h3>{{ 'CONSULTATION.SmartMatch.TherapistNotAvailableTitle' | translate }}</h3>
+    <p>{{ 'CONSULTATION.SmartMatch.TherapistNotAvailableDesc' | translate }}</p>
+    <button class="btn btn-primary mt-4" (click)="goToSessions()">
+      {{ 'CONSULTATION.SmartMatch.GoToSessions' | translate }}
+    </button>
+  </div>
+
+  <!-- Missing Profile State -->
+  <div *ngIf="!isTherapist && missingProfile" class="empty-state card fade-in">
+    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-warning); margin-bottom: 1rem;">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <h3>{{ 'CONSULTATION.SmartMatch.MissingProfileTitle' | translate }}</h3>
+    <p>{{ 'CONSULTATION.SmartMatch.MissingProfileDesc' | translate }}</p>
     <button class="btn btn-primary mt-4" (click)="goToCreateProfile()">
-      Create Profile
+      {{ 'CONSULTATION.SmartMatch.CreateProfile' | translate }}
     </button>
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-state">
+  <div *ngIf="!isTherapist && isLoading" class="loading-state">
     <div class="spinner"></div>
-    <p>Finding the perfect therapists for you...</p>
+    <p>{{ 'CONSULTATION.SmartMatch.Loading' | translate }}</p>
   </div>
 
-  <!-- Smart Matches Grid -->
-  <ng-container *ngIf="!isLoading && !missingProfile">
-    <div
-      class="matches-grid"
-      *ngIf="recommendedTherapists.length > 0; else noMatches"
-    >
-      <!-- Iterating over AI recommendations -->
-      <div
-        class="match-card card"
-        *ngFor="let therapist of recommendedTherapists"
-      >
-        <!-- Therapist Identity -->
-        <div class="card-body">
+  <!-- Single Card View -->
+  <ng-container *ngIf="!isTherapist && !isLoading && !missingProfile">
+    <div class="single-card-wrapper" *ngIf="currentTherapist; else noMatches">
+      <div class="match-card card fade-in">
+        <!-- Therapist Header -->
+        <div class="card-header-section">
           <div class="therapist-profile">
             <img
-              [src]="therapist.avatarOverride || 'assets/default-therapist.png'"
+              [src]="currentTherapist.avatarOverride | avatarFallback:currentTherapist.profileId"
               alt="Avatar"
-              class="avatar-lg"
+              class="avatar-xl"
             />
             <div class="info">
-              <h3>{{ therapist.name }}</h3>
+              <h3>{{ currentTherapist.name }}</h3>
               <p class="title">
-                {{
-                  therapist.professionalInfo?.title?.display ||
-                    "Mental Health Professional"
-                }}
+                {{ currentTherapist.professionalInfo?.title?.display || 'Mental Health Professional' }}
               </p>
+              <div class="availability-inline">
+                <span class="status-dot" [class.available]="currentTherapist.isAvailable"></span>
+                <span *ngIf="currentTherapist.isAvailable; else notAvail">
+                  {{ 'CONSULTATION.SmartMatch.AcceptingClients' | translate }}
+                </span>
+                <ng-template #notAvail>
+                  {{ 'CONSULTATION.SmartMatch.ScheduleFull' | translate }}
+                </ng-template>
+              </div>
             </div>
           </div>
+        </div>
 
-          <!-- AI Reasoning (If API provides points/reasons, can render here. Using placeholder since API definition doesn't guarantee reasons/points in Therapist type) -->
+        <!-- AI Reasoning -->
+        <div class="card-body">
           <div class="ai-reasons">
-            <p class="section-title">Why they're a good fit:</p>
+            <p class="section-title">{{ 'CONSULTATION.SmartMatch.WhyGoodFit' | translate }}</p>
             <ul class="reason-list">
               <li>
-                <svg
-                  viewBox="0 0 24 24"
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="check-icon"
-                >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                Matched specialization
+                {{ 'CONSULTATION.SmartMatch.MatchedSpecialization' | translate }}
               </li>
               <li>
-                <svg
-                  viewBox="0 0 24 24"
-                  width="14"
-                  height="14"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="check-icon"
-                >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                {{ therapist.experience || 0 }}+ years of experience
+                {{ currentTherapist.experience || 0 }}+ {{ 'CONSULTATION.SmartMatch.YearsExperience' | translate }}
               </li>
             </ul>
           </div>
 
-          <!-- Therapist Tags (Specialization & Languages) -->
+          <!-- Therapist Tags -->
           <div class="tags-container">
-            <span class="badge" *ngFor="let spec of therapist.specialization">{{
-              spec
-            }}</span>
-            <span
-              class="badge badge-accent"
-              *ngFor="let mode of therapist.consultationModes"
-              >{{ mode }}</span
-            >
-          </div>
-
-          <!-- Availability Snippet -->
-          <div class="availability">
-            <svg
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            <span *ngIf="therapist.isAvailable; else notAvail"
-              >Accepting new clients</span
-            >
-            <ng-template #notAvail>Schedule currently full</ng-template>
+            <span class="badge" *ngFor="let spec of currentTherapist.specialization">{{ spec }}</span>
+            <span class="badge badge-accent" *ngFor="let mode of currentTherapist.consultationModes">{{ mode }}</span>
+            <span class="badge badge-language" *ngFor="let lang of currentTherapist.languages">{{ lang }}</span>
           </div>
         </div>
 
-        <!-- Professional Call To Actions -->
+        <!-- Action Buttons -->
         <div class="card-actions">
-          <button
-            class="btn btn-outline"
-            (click)="onSwipePass(therapist.profileId)"
-          >
-            Pass
+          <button class="action-btn action-pass" (click)="onPass()" title="{{ 'CONSULTATION.SmartMatch.Pass' | translate }}">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <span>{{ 'CONSULTATION.SmartMatch.Pass' | translate }}</span>
           </button>
-          <button
-            class="btn btn-primary btn-connect"
-            (click)="onSwipeMatch(therapist.profileId)"
-          >
-            Connect & View Schedule
+
+          <button class="action-btn action-message" (click)="onMessage()" title="{{ 'CONSULTATION.SmartMatch.Message' | translate }}">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>{{ 'CONSULTATION.SmartMatch.Message' | translate }}</span>
+          </button>
+
+          <button class="action-btn action-profile" (click)="onViewProfile()" title="{{ 'CONSULTATION.SmartMatch.ViewProfile' | translate }}">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>{{ 'CONSULTATION.SmartMatch.ViewProfile' | translate }}</span>
+          </button>
+
+          <button class="action-btn action-book" (click)="onBookSession()" title="{{ 'CONSULTATION.SmartMatch.BookSession' | translate }}">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>{{ 'CONSULTATION.SmartMatch.BookSession' | translate }}</span>
           </button>
         </div>
       </div>
@@ -169,27 +144,15 @@
 
     <ng-template #noMatches>
       <div class="empty-state card">
-        <svg
-          viewBox="0 0 24 24"
-          width="48"
-          height="48"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
         </svg>
-        <h3>You've reviewed all suggestions</h3>
-        <p>
-          We are searching for more therapists that match your preferences.
-          Please check back later!
-        </p>
+        <h3>{{ 'CONSULTATION.SmartMatch.NoMatchesTitle' | translate }}</h3>
+        <p>{{ 'CONSULTATION.SmartMatch.NoMatchesDesc' | translate }}</p>
         <button class="btn btn-primary mt-4" (click)="fetchRecommendations()">
-          Refresh Suggestions
+          {{ 'CONSULTATION.SmartMatch.RefreshSuggestions' | translate }}
         </button>
       </div>
     </ng-template>

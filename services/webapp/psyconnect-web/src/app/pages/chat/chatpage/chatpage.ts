@@ -46,6 +46,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   selectedFriend = signal<Friend | null>(null);
   messages = signal<Message[]>([]);
   friends: Friend[] = [];
+  suggestedUsers: Friend[] = [];
   isLoading = false;
   isLoadingFriends = true;
   isLoadingMessages = false;
@@ -145,6 +146,21 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     // Unlock audio on first user interaction
     this.unlockAudio();
+
+    // Load friend suggestions for empty state
+    this.friendService.getFriendSuggestions().subscribe({
+      next: (suggestions) => {
+        console.log('🔍 Friend suggestions raw data:', JSON.stringify(suggestions.slice(0, 4).map(s => ({
+          name: s.firstName,
+          avatarUri: s.avatarUri,
+          profileId: s.profileId
+        })), null, 2));
+        this.suggestedUsers = suggestions.slice(0, 4);
+      },
+      error: () => {
+        this.suggestedUsers = [];
+      },
+    });
   }
 
   // Unlock audio context for autoplay
@@ -185,7 +201,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   onBack() {
     this.selectedFriend.set(null);
-    this.router.navigate(['/chat']); // Clear route param
+    this.router.navigate(['/feature/chat']);
   }
 
   onFriendSelected(friend: Friend, updateUrl = false) {
@@ -194,7 +210,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.selectedFriend.set(friend);
     if (updateUrl) {
-      this.router.navigate(['/chat', friend.profileId]);
+      this.router.navigate(['/feature/chat', friend.profileId]);
     }
     this.isLoading = true;
     this.chatService

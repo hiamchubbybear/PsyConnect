@@ -6,11 +6,13 @@ import { Friend } from '../../../models/chat.models';
 import { FriendService } from '../../../services/chat/profile.chat.service';
 import { ToastType } from '../../../shared/toast/toast-type';
 import { ToastService } from '../../../shared/toast/toast.service';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
+import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 
 @Component({
   selector: 'app-chat-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, AvatarFallbackPipe, ImgFallbackDirective],
   templateUrl: './chat-list.html',
   styleUrls: ['./chat-list.scss'],
 })

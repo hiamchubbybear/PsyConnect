@@ -29,6 +29,8 @@ export interface Message {
   content: string;
   timestamp: Date;
   isMine: boolean;
+  // Message status
+  status?: 'sending' | 'sent' | 'failed';
   // Message grouping fields
   isFirstInGroup?: boolean;
   isLastInGroup?: boolean;

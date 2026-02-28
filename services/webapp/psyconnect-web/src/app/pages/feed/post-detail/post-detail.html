@@ -29,13 +29,9 @@
         >
           <div class="post-author-avatar">
             <img
-              *ngIf="authorProfile?.avatarUri"
-              [src]="authorProfile.avatarUri"
+              [src]="authorProfile?.avatarUri | avatarFallback:post.author_id"
               [alt]="getAuthorName()"
             />
-            <div *ngIf="!authorProfile?.avatarUri" class="avatar-placeholder">
-              {{ getAuthorName().charAt(0).toUpperCase() }}
-            </div>
           </div>
           <span class="post-author-name">{{ getAuthorName() }}</span>
         </div>
@@ -54,13 +50,9 @@
           <div class="author-card__avatar-wrapper">
             <div class="author-card__avatar">
               <img
-                *ngIf="authorProfile.avatarUri"
-                [src]="authorProfile.avatarUri"
+                [src]="authorProfile?.avatarUri | avatarFallback:post.author_id"
                 [alt]="getAuthorName()"
               />
-              <div *ngIf="!authorProfile.avatarUri" class="avatar-placeholder">
-                {{ getAuthorName().charAt(0).toUpperCase() }}
-              </div>
             </div>
           </div>
 
@@ -299,13 +291,9 @@
     >
       <div class="comment-avatar">
         <img
-          *ngIf="currentUserProfile?.avatarUri"
-          [src]="currentUserProfile.avatarUri"
+          [src]="currentUserProfile?.avatarUri | avatarFallback:currentUserProfile?.userId"
           alt="Current User"
         />
-        <div *ngIf="!currentUserProfile?.avatarUri" class="avatar-placeholder">
-          {{ (currentUserProfile?.firstName || "?").charAt(0).toUpperCase() }}
-        </div>
       </div>
       <div class="comment-input-wrapper">
         <textarea
@@ -343,18 +331,9 @@
         <div class="comment">
           <div class="comment-avatar">
             <img
-              *ngIf="profileCache.get(comment.author_id)?.avatarUri"
-              [src]="profileCache.get(comment.author_id).avatarUri"
+              [src]="profileCache.get(comment.author_id)?.avatarUri | avatarFallback:comment.author_id"
               [alt]="getUserName(comment.author_id)"
             />
-            <div
-              *ngIf="!profileCache.get(comment.author_id)?.avatarUri"
-              class="avatar-placeholder"
-            >
-              {{
-                (getUserName(comment.author_id) || "?").charAt(0).toUpperCase()
-              }}
-            </div>
           </div>
           <div class="comment-body">
             <div class="comment-bubble">

@@ -390,6 +390,33 @@
                 "Settings": "Settings"
             }
         },
+        "SmartMatch": {
+            "Title": "Recommended for You",
+            "Subtitle": "Based on your profile, we've carefully selected these therapists to help you.",
+            "Filter": "Filter",
+            "SortBestMatch": "Sort By: Best Match",
+            "MissingProfileTitle": "Missing Consultation Profile",
+            "MissingProfileDesc": "We need to know a little more about you to find the perfect therapist match. Let's set up your profile!",
+            "CreateProfile": "Create Profile",
+            "Loading": "Finding the perfect therapists for you...",
+            "WhyGoodFit": "Why they're a good fit:",
+            "MatchedSpecialization": "Matched specialization",
+            "YearsExperience": "years of experience",
+            "AcceptingClients": "Accepting new clients",
+            "ScheduleFull": "Schedule currently full",
+            "Pass": "Pass",
+            "ConnectSchedule": "Connect & View Schedule",
+            "Message": "Message",
+            "BookSession": "Book Session",
+            "ViewProfile": "View Profile",
+            "OfCount": "of",
+            "NoMatchesTitle": "You've reviewed all suggestions",
+            "NoMatchesDesc": "We are searching for more therapists that match your preferences. Please check back later!",
+            "RefreshSuggestions": "Refresh Suggestions",
+            "TherapistNotAvailableTitle": "Feature Not Available",
+            "TherapistNotAvailableDesc": "This feature is only available for clients looking for a therapist. As a therapist, you can manage your sessions instead.",
+            "GoToSessions": "Go to Sessions"
+        },
         "SOCIAL": {
             "Follow": "Follow",
             "Unfollow": "Unfollow",
@@ -931,6 +958,8 @@
                 "moreOptions": "More Options"
             },
             "selectChat": "Select a chat",
+            "selectFriend": "Select a friend to start chatting",
+            "noFriendSelected": "Choose someone from the list to start a conversation",
             "tabs": {
                 "messages": "Messages",
                 "participants": "Participants"
@@ -943,7 +972,16 @@
             "links": "Links",
             "more": "More"
         },
-        "TYPING": "is typing..."
+        "TYPING": "is typing...",
+        "SUGGESTIONS": {
+            "Title": "Suggested People",
+            "Subtitle": "People you might want to chat with",
+            "NoFriendsTitle": "No conversations yet",
+            "NoFriendsDesc": "Start a conversation with someone from our community!",
+            "StartChat": "Chat",
+            "EmptyTitle": "No suggestions available",
+            "EmptyDesc": "Try adding friends to start chatting"
+        }
     },
     "register": {
         "title": "Create Account",

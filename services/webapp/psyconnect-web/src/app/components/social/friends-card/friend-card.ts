@@ -4,11 +4,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Connection } from '../../../models/connection.model';
 import { ConfirmDialogService } from '../../../services/dialog/ConfirmDialog.service';
 import { FriendActionDropdownComponent } from '../friend-action-dropdown/friend-action-dropdown';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 
 @Component({
   selector: 'app-friend-card',
   standalone: true,
-  imports: [CommonModule, TranslateModule, FriendActionDropdownComponent],
+  imports: [CommonModule, TranslateModule, FriendActionDropdownComponent, AvatarFallbackPipe],
   templateUrl: './friend-card.html',
   styleUrls: ['./friend-card.scss'],
 })

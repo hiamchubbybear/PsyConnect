@@ -50,7 +50,7 @@
     <ng-container *ngIf="auth.isLoggedIn(); else guest">
       <app-notification-dropdown></app-notification-dropdown>
       <app-avatar-menu
-        [userAvatarUrl]="userAvatarUrl"
+        [userAvatarUrl]="userAvatarUrl | avatarFallback:userProfileId"
         [userName]="userName"
         (logoutClicked)="logout()"
       ></app-avatar-menu>
@@ -75,7 +75,7 @@
 
     <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
       <app-avatar-menu
-        [userAvatarUrl]="userAvatarUrl"
+        [userAvatarUrl]="userAvatarUrl | avatarFallback:userProfileId"
         [userName]="userName"
         (logoutClicked)="logout()"
       ></app-avatar-menu>

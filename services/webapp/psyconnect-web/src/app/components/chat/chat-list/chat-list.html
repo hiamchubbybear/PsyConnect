@@ -10,7 +10,7 @@
 
   <div class="profile-card">
     <div class="profile-avatar">
-      <img [src]="currentUser.avatar" [alt]="currentUser.name" />
+      <img [src]="currentUser.avatar | avatarFallback:currentUser.profileId" [alt]="currentUser.name" appImgFallback />
       <span
         class="status-indicator"
         [class.online]="currentUser.isOnline"
@@ -47,8 +47,9 @@
       >
         <div class="chat-avatar">
           <img
-            [src]="friend.avatarUri"
+            [src]="friend.avatarUri | avatarFallback:friend.profileId"
             [alt]="friend.firstName + ' ' + friend.lastName"
+            appImgFallback
           />
         </div>
         <div class="chat-info">
@@ -64,6 +65,6 @@
   </div>
 
   <div class="load-more" *ngIf="visibleCount < friends.length">
-    <button (click)="loadMoreFriends()">Load more</button>
+    <button (click)="loadMoreFriends()">{{ "CHAT.EXAMPLE.loadMore" | translate }}</button>
   </div>
 </div>

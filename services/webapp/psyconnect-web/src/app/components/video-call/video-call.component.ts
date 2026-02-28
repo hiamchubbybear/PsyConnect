@@ -12,11 +12,12 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CallState, WebRTCService } from '../../services/webrtc/webrtc.service';
+import { AvatarFallbackPipe } from '../../shared/pipes/avatar-fallback.pipe';
 
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AvatarFallbackPipe],
   templateUrl: './video-call.component.html',
   styleUrls: ['./video-call.component.scss'],
 })
@@ -27,6 +28,8 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() conversationId!: string;
   @Input() remoteUserId!: string;
   @Input() currentUserId!: string;
+  @Input() remoteUserAvatar?: string;
+  @Input() remoteUserName?: string;
 
   @Output() callEnded = new EventEmitter<void>();
   @Output() iceCandidate = new EventEmitter<RTCIceCandidate>();

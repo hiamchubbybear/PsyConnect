@@ -1,16 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { Message } from '../../../models/chat.models';
+import { ImgFallbackDirective } from '../../directives/img-fallback.directive';
 
 @Component({
   selector: 'app-message-bubble',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ImgFallbackDirective],
   templateUrl: `./message-bubble.component.html`,
   styleUrl: `./message-bubble.component.scss`,
 })
 export class MessageBubbleComponent {
   @Input() message!: Message;
+  @Output() retry = new EventEmitter<Message>();
 
   @HostBinding('class.first-in-group')
   get isFirstInGroup() {
@@ -50,5 +52,11 @@ export class MessageBubbleComponent {
       .padStart(2, '0')}/${d.getFullYear()}`;
 
     return `${dateString}, ${timeString}`;
+  }
+
+  onRetry() {
+    if (this.message?.status === 'failed') {
+      this.retry.emit(this.message);
+    }
   }
 }
