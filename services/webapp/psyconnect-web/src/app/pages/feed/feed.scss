@@ -55,10 +55,10 @@
 
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--border-radius-xl, 16px);
   padding: 1rem;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .card.small {
@@ -280,30 +280,34 @@ h4 {
   }
 }
 
-// Feed switcher tabs
+// Feed switcher tabs (Segmented Control Pill Style)
 .feed-switcher {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  display: inline-flex;
+  background: var(--color-surface-low, #f3f4f6);
+  padding: 0.25rem;
+  border-radius: 9999px;
+  gap: 0.15rem;
+  margin-bottom: 1.5rem;
 
   .feed-tab {
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1.5rem;
     background: transparent;
     border: none;
-    border-bottom: 2px solid transparent;
+    border-radius: 9999px;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.95rem;
     color: var(--color-text-muted);
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
       color: var(--color-text);
     }
 
     &.active {
-      color: var(--color-text);
-      border-bottom-color: var(--color-text);
+      background: var(--color-surface);
+      color: var(--color-primary, #667eea);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
   }
 }
@@ -682,25 +686,25 @@ h4 {
 .skeleton {
   background: linear-gradient(
     90deg,
-    var(--color-bg-secondary) 25%,
-    var(--color-surface-mid) 50%,
-    var(--color-bg-secondary) 75%
+    var(--color-surface-low, #f3f4f6) 25%,
+    var(--color-surface-hover, #e5e7eb) 50%,
+    var(--color-surface-low, #f3f4f6) 75%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
-  border-radius: var(--border-radius-sm);
+  animation: shimmer 2s infinite ease-in-out;
+  border-radius: var(--border-radius-sm, 8px);
 }
 
 .post-card-skeleton {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
-  margin-bottom: 1rem;
-  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: var(--border-radius-xl, 16px);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 
   .skeleton-header {
     display: flex;
