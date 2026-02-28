@@ -17,9 +17,11 @@ export class CloudinaryService {
   async uploadImage(imageFile: File, username: string): Promise<string> {
     try {
       const timestamp = Math.round(new Date().getTime() / 1000);
-      const basePublicId = `avatar_${username.toLowerCase()}`;
+      // Sanitize username to avoid spaces or special chars in public_id
+      const sanitizedUsername = username.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+      const basePublicId = `avatar_${sanitizedUsername}`;
 
-      const uploadParams = {
+      const uploadParams: any = {
         timestamp: timestamp,
         public_id: basePublicId,
         folder: 'avatars',
@@ -27,17 +29,21 @@ export class CloudinaryService {
         invalidate: true,
       };
 
+      // If uploadPreset is defined, it MUST be part of the signature if we send it
+      if (environment.uploadPreset) {
+        uploadParams.upload_preset = environment.uploadPreset;
+      }
+
       const signature = this.generateSignature(uploadParams);
+      
       console.log('[DEBUG CLOUDINARY UPLOAD]', {
         cloudName: this.cloudName,
-        apiKey: this.apiKey,
+        apiKey: this.apiKey ? `${this.apiKey.substring(0, 4)}...` : 'MISSING',
+        apiSecretSet: !!this.apiSecret && this.apiSecret !== 'PLACEHOLDER_API_SECRET',
         timestamp,
         basePublicId,
         uploadParams,
-        signature: this.generateSignature(uploadParams),
-        imageFileType: imageFile?.type,
-        imageFileSize: imageFile?.size,
-        imageFileInstance: imageFile instanceof File,
+        signature
       });
 
       const formData = new FormData();
@@ -49,6 +55,10 @@ export class CloudinaryService {
       formData.append('folder', 'avatars');
       formData.append('overwrite', 'true');
       formData.append('invalidate', 'true');
+      
+      if (environment.uploadPreset) {
+        formData.append('upload_preset', environment.uploadPreset);
+      }
 
       const url = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
 
@@ -64,20 +74,18 @@ export class CloudinaryService {
         );
       }
 
-      console.log('Upload success - Overwritten:', {
-        public_id: response.public_id,
-        version: response.version,
-      });
-
       return response.secure_url;
-    } catch (error) {
-      console.error('Upload error:', error);
-
-      if (error instanceof Error) {
-        throw new Error(`Cloudinary upload failed: ${error.message}`);
-      } else {
-        throw new Error('Cloudinary upload failed: Unknown error');
+    } catch (error: any) {
+      console.error('Detailed Cloudinary error:', error);
+      
+      let errorMessage = 'Cloudinary upload failed';
+      if (error.error && error.error.error && error.error.error.message) {
+        errorMessage += `: ${error.error.error.message}`;
+      } else if (error.message) {
+        errorMessage += `: ${error.message}`;
       }
+
+      throw new Error(errorMessage);
     }
   }
 
@@ -88,6 +96,7 @@ export class CloudinaryService {
       .join('&');
 
     const stringToSign = sortedParams + this.apiSecret;
+    // Cloudinary expects SHA-1 or SHA-256 hex string
     return crypto.SHA1(stringToSign).toString();
   }
 }
