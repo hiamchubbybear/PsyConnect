@@ -168,6 +168,8 @@
   line-height: 1.7;
   color: var(--color-text);
   margin: var(--spacing-xl) 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 
   p {
     margin-bottom: var(--spacing-lg);
@@ -482,6 +484,7 @@
       color: var(--color-text);
       font-size: var(--font-size-sm);
       line-height: 1.4;
+      white-space: pre-wrap;
     }
 
     &-actions {
