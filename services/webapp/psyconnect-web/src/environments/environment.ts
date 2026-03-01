@@ -24,5 +24,4 @@ export const environment = {
   cloudName: 'dohfd2ns8',
   uploadPreset: 'avatar_preset',
   cloudinaryApiKey: 'PLACEHOLDER_API_KEY',
-  cloudinaryApiSecret: 'PLACEHOLDER_API_SECRET',
 };

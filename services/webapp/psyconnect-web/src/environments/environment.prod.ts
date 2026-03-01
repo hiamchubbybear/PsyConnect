@@ -1,0 +1,27 @@
+export const environment = {
+  production: true,
+  apiUrl: 'https://api.chessy.dev',
+  wsUrl: 'wss://ws.chessy.dev/ws',
+  key_theme: 'KEY_THEME',
+  apiVersion: 'v1',
+  refreshKey: 'X9fG2kLp',
+  accessTokenKey: 'A7dRt6vQ',
+  roleKey: 'R5mK8wNp',
+  therapistsKey: 'T1bYz3xM',
+  usernameKey: 'N3vL9pQs',
+  profileKey: 'U8pQs4nJ',
+  vapidKey:
+    'BMgf_ML9qh8u4tgdLoF7-f-VRMiKFk0iqxXFNS6GcP4bK35pwrsE7IRm1FDBfvTRmTnxgT3_z3OeoEbIiRkNylk',
+  firebaseConfig: {
+    apiKey: 'AIzaSyBjyhkn71RnXenG4dzhdiRIlIc95YM2bAk',
+    authDomain: 'psyconnect-041125.firebaseapp.com',
+    projectId: 'psyconnect-041125',
+    storageBucket: 'psyconnect-041125.firebasestorage.app',
+    messagingSenderId: '130716148033',
+    appId: '1:130716148033:web:bafc7ed2934cf9768241c0',
+    measurementId: 'G-EREPPG37PL',
+  },
+  cloudName: 'dohfd2ns8',
+  uploadPreset: 'avatar_preset',
+  cloudinaryApiKey: 'PLACEHOLDER_API_KEY',
+};
