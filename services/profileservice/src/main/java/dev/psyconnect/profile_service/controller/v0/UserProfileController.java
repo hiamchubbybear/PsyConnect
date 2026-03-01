@@ -59,4 +59,12 @@ public class UserProfileController {
     ApiResponse<List<ProfileWithMoodSummaryDto>> getFriends(@RequestHeader(value = "X-Profile-Id") String profileId) {
         return new ApiResponse<>(userProfileService.getProfileWithMood(profileId));
     }
+
+    @GetMapping("/search")
+    ApiResponse<List<UserProfileResponse>> searchProfiles(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return new ApiResponse<>(userProfileService.search(query, page, size));
+    }
 }
