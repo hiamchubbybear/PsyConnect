@@ -37,11 +37,11 @@ export class CloudinaryService {
         this.http.post<any>(this.apiUrl, { params: signParams })
       );
 
-      if (!signResponse || !signResponse.result || !signResponse.result.signature) {
+      if (!signResponse || !signResponse.data || !signResponse.data.signature) {
         throw new Error('Failed to get signature from backend');
       }
 
-      const { signature, apiKey, cloudName } = signResponse.result;
+      const { signature, apiKey, cloudName } = signResponse.data;
 
       // 2. Upload to Cloudinary using the signature
       const formData = new FormData();
