@@ -1461,5 +1461,22 @@
         "key_therapist_update_error": "Đã xảy ra lỗi khi cập nhật người tư vấn",
         "key_load_friends_failed": "Tải danh sách bạn bè thất bại",
         "error_notification": "Đăng ký nhận thông báo thất bại"
+    },
+    "SEARCH": {
+        "PLACEHOLDER": "Bạn đang tìm kiếm gì?",
+        "CAT_ALL": "Tất cả",
+        "CAT_POSTS": "Bài viết",
+        "CAT_THERAPISTS": "Chuyên gia",
+        "CAT_USERS": "Người dùng",
+        "CAT_GROUPS": "Nhóm",
+        "CAT_TAG": "Thẻ",
+        "CAT_POST": "Bài viết",
+        "CAT_THERAPIST": "Chuyên gia",
+        "CAT_USER": "Người dùng",
+        "CAT_GROUP": "Nhóm",
+        "RECENT": "Tìm kiếm gần đây",
+        "CLEAR": "Xóa tất cả",
+        "POPULAR_TAGS": "Thẻ phổ biến",
+        "NO_RESULTS": "Không tìm thấy kết quả cho"
     }
 }

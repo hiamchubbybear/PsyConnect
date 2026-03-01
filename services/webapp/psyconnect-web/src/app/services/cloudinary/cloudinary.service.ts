@@ -1,8 +1,8 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SKIP_AUTH } from '../auth/auth.interceptor';
-import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,17 +13,26 @@ export class CloudinaryService {
 
   constructor(private http: HttpClient) {}
 
-  async uploadImage(imageFile: File, username: string): Promise<string> {
+  async uploadImage(
+    imageFile: File,
+    username: string,
+    folder: string = 'avatars',
+    publicIdPrefix: string = 'avatar',
+  ): Promise<string> {
     try {
       const timestamp = Math.round(new Date().getTime() / 1000);
-      const sanitizedUsername = username.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-      const basePublicId = `avatar_${sanitizedUsername}`;
+      const sanitizedUsername = username
+        .replace(/[^a-zA-Z0-9]/g, '_')
+        .toLowerCase();
+      // Add random suffix to avoid collisions for multiple post attachments
+      const randomSuffix = Math.random().toString(36).substring(2, 8);
+      const basePublicId = `${publicIdPrefix}_${sanitizedUsername}_${randomSuffix}`;
 
       // 1. Get signature from Backend
       const signParams: any = {
         timestamp: timestamp,
         public_id: basePublicId,
-        folder: 'avatars',
+        folder: folder,
         overwrite: true,
         invalidate: true,
       };
@@ -32,9 +41,11 @@ export class CloudinaryService {
         signParams.upload_preset = environment.uploadPreset;
       }
 
-      console.log('[DEBUG CLOUDINARY] Requesting signature from backend...');
+      console.log(
+        `[DEBUG CLOUDINARY] Requesting signature for folder ${folder}...`,
+      );
       const signResponse = await firstValueFrom(
-        this.http.post<any>(this.apiUrl, { params: signParams })
+        this.http.post<any>(this.apiUrl, { params: signParams }),
       );
 
       if (!signResponse || !signResponse.data || !signResponse.data.signature) {
@@ -50,31 +61,35 @@ export class CloudinaryService {
       formData.append('timestamp', timestamp.toString());
       formData.append('signature', signature);
       formData.append('public_id', basePublicId);
-      formData.append('folder', 'avatars');
+      formData.append('folder', folder);
       formData.append('overwrite', 'true');
       formData.append('invalidate', 'true');
-      
+
       if (environment.uploadPreset) {
         formData.append('upload_preset', environment.uploadPreset);
       }
 
       const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
-      console.log('[DEBUG CLOUDINARY] Uploading to Cloudinary...');
+      console.log(
+        `[DEBUG CLOUDINARY] Uploading ${imageFile.name} to ${folder}...`,
+      );
       const response = await firstValueFrom(
         this.http.post<any>(uploadUrl, formData, {
           context: new HttpContext().set(SKIP_AUTH, true),
-        })
+        }),
       );
 
       if (!response || !response.secure_url) {
-        throw new Error('Invalid response from Cloudinary - missing secure_url');
+        throw new Error(
+          'Invalid response from Cloudinary - missing secure_url',
+        );
       }
 
       return response.secure_url;
     } catch (error: any) {
       console.error('Detailed Cloudinary error:', error);
-      
+
       let errorMessage = 'Cloudinary upload failed';
       if (error.error && error.error.error && error.error.error.message) {
         errorMessage += `: ${error.error.error.message}`;

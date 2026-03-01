@@ -23,9 +23,6 @@
         </button>
       </div>
 
-      <!-- Modern Mood Tracker -->
-      <app-mood-tracker></app-mood-tracker>
-
       <div class="section-title-row">
         <h2>{{ "FEED.Community.Title" | translate }}</h2>
         <button class="btn btn-secondary btn-sm" (click)="newPost()">
@@ -67,8 +64,9 @@
 
       <section class="posts" *ngIf="!loading && !error">
         <app-post-card
-          *ngFor="let p of posts"
+          *ngFor="let p of posts; trackBy: trackByPostId"
           [post]="p"
+          [attr.data-post-id]="p.id"
           (upvote)="upvotePost(p, $event)"
           (downvote)="downvotePost(p, $event)"
           (share)="sharePost(p, $event)"
@@ -94,9 +92,14 @@
       <div class="card small">
         <div class="card-row">
           <h4>{{ "FEED.Therapists.Title" | translate }}</h4>
-          <a class="link-small">{{ "FEED.Therapists.ViewAll" | translate }}</a>
+          <a class="link-small" (click)="viewAllTherapists()">{{
+            "FEED.Therapists.ViewAll" | translate
+          }}</a>
         </div>
-        <div class="therapist" *ngFor="let t of therapists">
+        <div
+          class="therapist"
+          *ngFor="let t of therapists; trackBy: trackByTherapistId"
+        >
           <div class="t-left">
             <div class="avatar small">
               <img [src]="t.avatar" alt="{{ t.name }}" />
@@ -123,16 +126,20 @@
       <div class="card small">
         <h4>{{ "FEED.SupportGroups.Title" | translate }}</h4>
         <ul class="support-list">
-          <li *ngFor="let g of supportGroups">
+          <li *ngFor="let g of supportGroups; trackBy: trackByGroupId">
             <div>
-              <strong>{{ g.nameKey | translate }}</strong>
+              <strong>{{ g.name }}</strong>
               <div class="muted">
-                {{ g.members }} {{ "FEED.SupportGroups.Members" | translate }}
+                {{ g.member_count }}
+                {{ "FEED.SupportGroups.Members" | translate }}
               </div>
             </div>
-            <button class="btn btn--primary tiny">
+            <button class="btn btn--primary tiny" (click)="joinGroup(g)">
               {{ "FEED.SupportGroups.JoinButton" | translate }}
             </button>
+          </li>
+          <li *ngIf="supportGroups.length === 0" class="muted">
+            {{ "FEED.SupportGroups.NoGroups" | translate }}
           </li>
         </ul>
       </div>

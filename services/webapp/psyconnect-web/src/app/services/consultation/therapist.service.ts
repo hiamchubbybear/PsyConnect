@@ -29,6 +29,17 @@ export class TherapistService {
   }
 
   changeTherapistStatus(status: boolean): Observable<boolean> {
-    return this.http.patch<boolean>(`${this.baseUrl}/me/availability`, { status });
+    return this.http.patch<boolean>(`${this.baseUrl}/me/availability`, {
+      status,
+    });
+  }
+
+  searchTherapists(
+    query: string,
+    limit: number = 20,
+    skip: number = 0,
+  ): Observable<any> {
+    const params = { q: query, limit: limit.toString(), skip: skip.toString() };
+    return this.http.get<any>(`${this.baseUrl}/search`, { params });
   }
 }

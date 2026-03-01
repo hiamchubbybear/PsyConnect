@@ -2,17 +2,19 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MoodTrackerComponent } from '../../components/social/mood-tracker/mood-tracker';
 import { Post } from '../../models/post.model';
 import {
   REACTION_IMAGES,
   REACTION_TYPES,
   ReactionType,
 } from '../../models/reaction.model';
+import { Therapist as ApiTherapist } from '../../models/swipe-card';
 import { SocialService } from '../../services/consultation/social.service';
+import { Group, GroupService } from '../../services/group/group.service';
 import { NewsfeedService } from '../../services/newsfeed/newsfeed.service';
 import { ReactionService } from '../../services/newsfeed/reaction.service';
 import { Profile } from '../../services/profile/profile';
+import { SwipeService } from '../../services/swipe/swipe.service';
 import { PsyButtonComponent as AppButtonComponent } from '../../shared/ui-atoms/button/psy-button.component';
 import { PsyEmptyStateComponent as EmptyStateComponent } from '../../shared/ui-atoms/empty-state/psy-empty-state.component';
 import { PostCardComponent } from '../../shared/ui-atoms/post-card/post-card.component';
@@ -38,7 +40,6 @@ interface SupportGroup {
     CommonModule,
     RouterModule,
     TranslateModule,
-    MoodTrackerComponent,
     PostModalComponent,
     PostCardComponent,
     EmptyStateComponent,
@@ -87,10 +88,9 @@ export class FeedComponent implements OnInit {
     },
   ];
 
-  supportGroups: SupportGroup[] = [
-    { nameKey: 'FEED.SupportGroups.P1', members: 127 },
-    { nameKey: 'FEED.SupportGroups.P2', members: 89 },
-  ];
+  supportGroups: Group[] = [];
+  viewedPosts: Set<string> = new Set();
+  private observer: IntersectionObserver | null = null;
 
   constructor(
     private router: Router,
@@ -98,10 +98,15 @@ export class FeedComponent implements OnInit {
     private reactionService: ReactionService,
     private profileService: Profile,
     private socialService: SocialService,
+    private swipeService: SwipeService,
+    private groupService: GroupService,
   ) {}
 
   ngOnInit() {
     this.loadFeed();
+    this.loadTherapists();
+    this.loadGroups();
+    this.setupIntersectionObserver();
   }
 
   loadFeed() {
@@ -119,10 +124,17 @@ export class FeedComponent implements OnInit {
         this.loading = false;
         // Load profiles for all post authors
         posts.forEach((post) => {
-          if (post.author_id && !this.profileCache.has(post.author_id)) {
-            this.loadProfile(post.author_id);
+          if (post.author_id) {
+            this.loadProfile(post.author_id).then((profile) => {
+              post.author_name =
+                `${profile.firstName} ${profile.lastName}`.trim();
+              post.author_avatar = profile.avatarUri;
+            });
           }
         });
+
+        // After posts are rendered, we might need to refresh the observer
+        setTimeout(() => this.observePosts(), 100);
       },
       error: (err: any) => {
         console.error('Failed to load feed:', err);
@@ -137,12 +149,90 @@ export class FeedComponent implements OnInit {
     this.loadFeed();
   }
 
+  loadTherapists() {
+    this.swipeService.getSwipeData().subscribe({
+      next: (res) => {
+        const therapists = res.data || [];
+        if (therapists.length > 0) {
+          this.therapists = therapists.slice(0, 3).map(
+            (t: ApiTherapist) =>
+              ({
+                name: t.name || 'Anonymous',
+                avatar: t.avatarOverride || 'assets/images/default-avatar.png',
+                specialtyKey: t.specialization?.[0] || 'CONSULTATION.General',
+                rating: t.rating || 5.0,
+                statusKey: t.isAvailable
+                  ? 'FEED.Therapists.Status.Available'
+                  : 'FEED.Therapists.Status.Busy',
+                profileId: t.profileId,
+              }) as any,
+          );
+        }
+      },
+      error: (err: any) => {
+        console.error('Failed to load therapists:', err);
+      },
+    });
+  }
+
+  loadGroups() {
+    this.groupService.getGroups().subscribe({
+      next: (groups) => {
+        this.supportGroups = groups;
+      },
+      error: (err) => console.error('Failed to load groups:', err),
+    });
+  }
+
+  setupIntersectionObserver() {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const postId = entry.target.getAttribute('data-post-id');
+            if (postId && !this.viewedPosts.has(postId)) {
+              this.markAsViewed(postId);
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }, // 50% of the post must be visible
+    );
+  }
+
+  observePosts() {
+    if (!this.observer) return;
+    const postElements = document.querySelectorAll('app-post-card');
+    postElements.forEach((el) => this.observer?.observe(el));
+  }
+
+  markAsViewed(postId: string) {
+    this.viewedPosts.add(postId);
+    this.newsfeedService.recordView(postId).subscribe({
+      error: (err: any) => console.error('Failed to record view:', err),
+    });
+  }
+
+  joinGroup(group: Group) {
+    this.groupService.joinGroup(group.id).subscribe({
+      next: () => {
+        group.member_count++;
+        // Show success toast or feedback
+      },
+      error: (err) => console.error('Failed to join group:', err),
+    });
+  }
+
   toggleMoodLog() {
-    alert('Open mood log (implement modal)');
+    // Removed
   }
 
   bookTherapist(therapist: any) {
-    alert(`Book ${therapist.name} (implement booking)`);
+    this.router.navigate(['/feature/consultation/smart-match']);
+  }
+
+  viewAllTherapists() {
+    this.router.navigate(['/feature/consultation/smart-match']);
   }
 
   newPost() {
@@ -159,7 +249,7 @@ export class FeedComponent implements OnInit {
       post.user_vote = null;
 
       this.reactionService.removeReaction(post.id).subscribe({
-        error: (err) => {
+        error: (err: any) => {
           console.error('Failed to remove upvote:', err);
           this.loadFeed(); // Revert on error
         },
@@ -173,7 +263,7 @@ export class FeedComponent implements OnInit {
     post.user_vote = 'up';
 
     this.reactionService.addReaction(post.id, 'up').subscribe({
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to upvote:', err);
         this.loadFeed(); // Revert on error
       },
@@ -189,7 +279,7 @@ export class FeedComponent implements OnInit {
       post.user_vote = null;
 
       this.reactionService.removeReaction(post.id).subscribe({
-        error: (err) => {
+        error: (err: any) => {
           console.error('Failed to remove downvote:', err);
           this.loadFeed(); // Revert on error
         },
@@ -203,7 +293,7 @@ export class FeedComponent implements OnInit {
     post.user_vote = 'down';
 
     this.reactionService.addReaction(post.id, 'down').subscribe({
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to downvote:', err);
         this.loadFeed(); // Revert on error
       },
@@ -216,7 +306,7 @@ export class FeedComponent implements OnInit {
       next: () => {
         post.share_count++;
       },
-      error: (err) => console.error('Failed to share:', err),
+      error: (err: any) => console.error('Failed to share:', err),
     });
   }
 
@@ -232,7 +322,7 @@ export class FeedComponent implements OnInit {
       next: () => {
         post.user_bookmark = !isBookmarked;
       },
-      error: (err) => console.error('Failed to toggle bookmark:', err),
+      error: (err: any) => console.error('Failed to toggle bookmark:', err),
     });
   }
 
@@ -356,5 +446,17 @@ export class FeedComponent implements OnInit {
 
   viewProfile(userId: string) {
     this.router.navigate(['/profile', userId]);
+  }
+
+  trackByPostId(index: number, post: Post): string {
+    return post.id;
+  }
+
+  trackByTherapistId(index: number, therapist: any): string {
+    return therapist.profileId || index.toString();
+  }
+
+  trackByGroupId(index: number, group: Group): string {
+    return group.id;
   }
 }

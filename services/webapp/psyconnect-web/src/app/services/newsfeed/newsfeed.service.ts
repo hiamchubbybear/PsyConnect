@@ -44,7 +44,7 @@ export class NewsfeedService {
   getUserPosts(
     userId: string,
     limit: number = 20,
-    skip: number = 0
+    skip: number = 0,
   ): Observable<Post[]> {
     const params = new HttpParams()
       .set('limit', limit.toString())
@@ -62,12 +62,26 @@ export class NewsfeedService {
   searchPosts(
     query: string,
     limit: number = 20,
-    skip: number = 0
+    skip: number = 0,
   ): Observable<Post[]> {
     const params = new HttpParams()
       .set('q', query)
       .set('limit', limit.toString())
       .set('skip', skip.toString());
     return this.http.get<Post[]>(`${this.apiUrl}/search`, { params });
+  }
+
+  // Record post view
+  recordView(id: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/view`, {});
+  }
+
+  // Get popular tags
+  getPopularTags(limit: number = 10): Observable<string[]> {
+    const params = new HttpParams().set('limit', limit.toString());
+    return this.http.get<string[]>(
+      `${this.apiUrl.replace('/posts', '/tags')}/popular`,
+      { params },
+    );
   }
 }

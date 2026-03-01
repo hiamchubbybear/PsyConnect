@@ -8,10 +8,11 @@ import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { provideRouter, RouteReuseStrategy } from '@angular/router';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { CustomRouteReuseStrategy } from './strategies/custom-route-reuse-strategy';
 
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
@@ -33,6 +34,7 @@ export function createTranslateLoader(http: HttpClient) {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
+    { provide: RouteReuseStrategy, useClass: CustomRouteReuseStrategy },
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideAnimations(),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),

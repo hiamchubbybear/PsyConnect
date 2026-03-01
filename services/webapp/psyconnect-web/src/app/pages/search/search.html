@@ -1,126 +1,388 @@
-<div class="search-container">
-  <!-- Search Header -->
-  <header class="search-header">
-    <h1>{{ 'SEARCH.Title' | translate }}</h1>
-    <p class="subtitle">{{ 'SEARCH.Subtitle' | translate }}</p>
-  </header>
+<div class="search-page">
+  <!-- Search Bar Wrapper (with dropdown) -->
+  <div class="search-wrapper" #searchWrapper>
+    <div
+      class="search-bar"
+      [class.open]="isDropdownOpen"
+      (click)="openDropdown()"
+    >
+      <!-- Search Icon -->
+      <span class="bar-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <path
+            d="M21 21L16.65 16.65"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
 
-  <!-- Search Bar -->
-  <div class="search-bar-wrapper">
-    <div class="search-bar">
-      <i class="fas fa-search"></i>
+      <!-- Selected Category Chip -->
+      <button
+        *ngIf="selectedCategory"
+        class="category-chip-inline"
+        (click)="removeCategory(); $event.stopPropagation()"
+      >
+        {{ selectedCategoryLabel }}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M18 6L6 18M6 6L18 18"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+
+      <!-- Input -->
       <input
+        #searchInput
         type="text"
+        class="bar-input"
         [(ngModel)]="query"
-        (keyup.enter)="onSearch()"
-        [placeholder]="'SEARCH.Placeholder' | translate"
-        class="search-input"
+        (ngModelChange)="onQueryChange()"
+        (click)="openDropdown(); $event.stopPropagation()"
+        placeholder="{{
+          selectedCategory
+            ? 'Search ' + selectedCategoryLabel + '...'
+            : 'Search...'
+        }}"
       />
-      <button *ngIf="query" class="clear-btn" (click)="clearSearch()">
-        <i class="fas fa-times"></i>
-      </button>
-      <button class="search-btn" (click)="onSearch()">
-        {{ 'SEARCH.SearchButton' | translate }}
+
+      <!-- Clear Button -->
+      <button
+        *ngIf="query"
+        class="clear-btn"
+        (click)="clearQuery(); $event.stopPropagation()"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M18 6L6 18M6 6L18 18"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
       </button>
     </div>
 
-    <!-- Category Filters -->
-    <div class="category-filters">
-      <button
-        class="category-btn"
-        [class.active]="selectedCategory === 'all'"
-        (click)="onCategoryChange('all')"
-      >
-        {{ 'SEARCH.Categories.All' | translate }}
-      </button>
-      <button
-        class="category-btn"
-        [class.active]="selectedCategory === 'posts'"
-        (click)="onCategoryChange('posts')"
-      >
-        {{ 'SEARCH.Categories.Posts' | translate }}
-      </button>
-      <button
-        class="category-btn"
-        [class.active]="selectedCategory === 'users'"
-        (click)="onCategoryChange('users')"
-      >
-        {{ 'SEARCH.Categories.Users' | translate }}
-      </button>
-      <button
-        class="category-btn"
-        [class.active]="selectedCategory === 'tags'"
-        (click)="onCategoryChange('tags')"
-      >
-        {{ 'SEARCH.Categories.Tags' | translate }}
-      </button>
-    </div>
-  </div>
-
-  <!-- Recent Searches -->
-  <div class="recent-searches" *ngIf="!query && recentSearches.length > 0">
-    <div class="recent-header">
-      <h3>{{ 'SEARCH.Recent.Title' | translate }}</h3>
-      <button class="clear-recent-btn" (click)="clearRecentSearches()">
-        {{ 'SEARCH.Recent.Clear' | translate }}
-      </button>
-    </div>
-    <div class="recent-list">
-      <button
-        *ngFor="let recent of recentSearches"
-        class="recent-item"
-        (click)="selectRecentSearch(recent)"
-      >
-        <i class="fas fa-history"></i>
-        <span>{{ recent }}</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="loading" class="loading-state">
-    <div class="spinner"></div>
-    <p>{{ 'COMMON.Loading' | translate }}</p>
-  </div>
-
-  <!-- Search Results -->
-  <div *ngIf="!loading && query && results.length > 0" class="results-container">
-    <div class="results-header">
-      <h2>{{ 'SEARCH.Results.Title' | translate }}</h2>
-      <span class="results-count">{{ results.length }} {{ 'SEARCH.Results.Found' | translate }}</span>
-    </div>
-
-    <div class="results-list">
-      <div *ngFor="let result of results" class="result-item">
-        <div class="result-icon">
-          <i class="fas" [ngClass]="getResultIcon(result.type)"></i>
+    <!-- Dropdown Panel -->
+    <div class="dropdown-panel" *ngIf="isDropdownOpen">
+      <!-- CATEGORY CHIPS -->
+      <div class="panel-section">
+        <p class="section-label">I'M LOOKING FOR...</p>
+        <div class="category-chips">
+          <button
+            *ngFor="let cat of categories"
+            class="cat-chip"
+            [class.active]="selectedCategory === cat.id"
+            (click)="selectCategory(cat.id)"
+          >
+            <!-- Post icon -->
+            <svg
+              *ngIf="cat.icon === 'post'"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <line
+                x1="16"
+                y1="17"
+                x2="8"
+                y2="17"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <line
+                x1="16"
+                y1="13"
+                x2="8"
+                y2="13"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <polyline
+                points="10 2 10 8 16 8"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <!-- People icon -->
+            <svg
+              *ngIf="cat.icon === 'people'"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <circle
+                cx="9"
+                cy="7"
+                r="4"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M23 21v-2a4 4 0 00-3-3.87"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M16 3.13a4 4 0 010 7.75"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            <!-- Therapist icon -->
+            <svg
+              *ngIf="cat.icon === 'therapist'"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M22 12h-4l-3 9L9 3l-3 9H2"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <!-- Group icon -->
+            <svg
+              *ngIf="cat.icon === 'group'"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <circle
+                cx="12"
+                cy="8"
+                r="3"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M12 14c-5 0-7 2-7 3v1h14v-1c0-1-2-3-7-3z"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <circle
+                cx="19"
+                cy="7"
+                r="2.5"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <path
+                d="M21.5 12c2.5.5 3.5 1.8 3.5 2.5V16h-4"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <circle
+                cx="5"
+                cy="7"
+                r="2.5"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <path
+                d="M2.5 12C0 12.5-1 13.8 0 14.5V16h4"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+            </svg>
+            <!-- Tag icon -->
+            <svg
+              *ngIf="cat.icon === 'tag'"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <line
+                x1="7"
+                y1="7"
+                x2="7.01"
+                y2="7"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            {{ cat.label }}
+          </button>
         </div>
-        <div class="result-content">
-          <h3 class="result-title">{{ result.title }}</h3>
-          <p class="result-subtitle" *ngIf="result.subtitle">{{ result.subtitle }}</p>
-          <span class="result-type">{{ ('SEARCH.Types.' + result.type) | translate }}</span>
-        </div>
-        <button class="result-action" [routerLink]="result.type === 'post' ? ['/feed/post', result.id] : ['/profile', result.id]">
-          <i class="fas fa-arrow-right"></i>
-        </button>
       </div>
+
+      <!-- LOADING -->
+      <div class="panel-loading" *ngIf="loading">
+        <div class="skeleton" *ngFor="let i of [1, 2, 3]"></div>
+      </div>
+
+      <!-- SEARCH RESULTS -->
+      <div *ngIf="showResults && results.length > 0" class="panel-section">
+        <p class="section-label">RESULTS</p>
+        <div class="result-list">
+          <div
+            *ngFor="let r of results; trackBy: trackById"
+            class="result-row"
+            (click)="navigateToResult(r)"
+          >
+            <div class="result-avatar" [class]="'result-avatar--' + r.type">
+              <img *ngIf="r.image" [src]="r.image" alt="" />
+              <span *ngIf="!r.image" class="avatar-initial">{{
+                r.title.charAt(0) | uppercase
+              }}</span>
+            </div>
+            <div class="result-text">
+              <span class="result-name">{{ r.title }}</span>
+              <span class="result-sub" *ngIf="r.subtitle">{{
+                r.subtitle
+              }}</span>
+            </div>
+            <span class="result-type-label">{{ r.type }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NO RESULTS -->
+      <div class="panel-empty" *ngIf="showResults && results.length === 0">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+            stroke="#d1d5db"
+            stroke-width="2"
+          />
+          <path
+            d="M21 21L16.65 16.65"
+            stroke="#d1d5db"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+        <p>No results for "{{ query }}"</p>
+      </div>
+
+      <!-- SUGGESTIONS (when not searching) -->
+      <ng-container *ngIf="showSuggestions">
+        <!-- Popular Tags (when Tags category selected) -->
+        <div
+          class="panel-section"
+          *ngIf="selectedCategory === 'tags' && popularTags.length > 0"
+        >
+          <p class="section-label">POPULAR TAGS</p>
+          <div class="tag-list">
+            <button
+              *ngFor="let tag of popularTags"
+              class="tag-row"
+              (click)="selectTag(tag)"
+            >
+              <div class="tag-icon-wrap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <span>#{{ tag }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Searches -->
+        <div class="panel-section" *ngIf="recentSearches.length > 0">
+          <div class="section-header">
+            <p class="section-label">RECENT SEARCHES</p>
+            <button class="link-btn" (click)="clearRecentSearches()">
+              Clear all
+            </button>
+          </div>
+          <div class="recent-list">
+            <button
+              *ngFor="let r of recentSearches"
+              class="recent-row"
+              (click)="selectRecentSearch(r)"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 8V12L15 15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span>{{ r.query }}</span>
+              <span *ngIf="r.category" class="recent-cat">{{
+                r.category
+              }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Popular Tags (global, when no category) -->
+        <div
+          class="panel-section"
+          *ngIf="!selectedCategory && popularTags.length > 0"
+        >
+          <p class="section-label">POPULAR TAGS</p>
+          <div class="tag-list">
+            <button
+              *ngFor="let tag of popularTags.slice(0, 5)"
+              class="tag-row"
+              (click)="selectTag(tag)"
+            >
+              <div class="tag-icon-wrap">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+              <span>#{{ tag }}</span>
+            </button>
+          </div>
+        </div>
+      </ng-container>
     </div>
-  </div>
-
-  <!-- No Results -->
-  <div *ngIf="!loading && query && results.length === 0" class="no-results">
-    <i class="fas fa-search"></i>
-    <h3>{{ 'SEARCH.NoResults.Title' | translate }}</h3>
-    <p>{{ 'SEARCH.NoResults.Message' | translate }} "{{ query }}"</p>
-    <button class="btn-primary" (click)="clearSearch()">
-      {{ 'SEARCH.NoResults.ClearButton' | translate }}
-    </button>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!query && recentSearches.length === 0" class="empty-state">
-    <i class="fas fa-search"></i>
-    <h3>{{ 'SEARCH.Empty.Title' | translate }}</h3>
-    <p>{{ 'SEARCH.Empty.Message' | translate }}</p>
   </div>
 </div>

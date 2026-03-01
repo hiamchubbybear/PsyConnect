@@ -372,6 +372,7 @@
         "Punjabi": "Punjabi"
     },
     "CONSULTATION": {
+        "General": "General",
         "Tabs": {
             "Overview": "Overview",
             "Sessions": "Sessions",
@@ -876,6 +877,10 @@
                 "Specialty": "Trauma & PTSD",
                 "Status": "Busy"
             },
+            "Status": {
+                "Available": "Available",
+                "Busy": "Busy"
+            },
             "BookButton": "Book Appointment"
         },
         "SupportGroups": {
@@ -883,7 +888,8 @@
             "P1": "Anxiety Support",
             "P2": "Depression Recovery",
             "Members": "members",
-            "JoinButton": "Join"
+            "JoinButton": "Join",
+            "NoGroups": "No support groups found"
         }
     },
     "MOOD": {
@@ -1403,133 +1409,29 @@
         "error_notification": "Fail to subscribe notification"
     },
     "SEARCH": {
-        "Title": "Search",
-        "Subtitle": "Find posts, users, and topics",
-        "Placeholder": "What are you looking for?",
-        "SearchButton": "Search",
+        "PLACEHOLDER": "What are you looking for?",
+        "CAT_ALL": "All",
+        "CAT_POSTS": "Posts",
+        "CAT_THERAPISTS": "Therapists",
+        "CAT_USERS": "Users",
+        "CAT_GROUPS": "Groups",
+        "CAT_TAG": "Tag",
+        "CAT_POST": "Post",
+        "CAT_THERAPIST": "Therapist",
+        "CAT_USER": "User",
+        "CAT_GROUP": "Group",
+        "RECENT": "Recent Searches",
+        "CLEAR": "Clear All",
+        "POPULAR_TAGS": "Popular Tags",
+        "NO_RESULTS": "No results found for"
+    },
+    "SEARCH_LEGACY": {
         "Categories": {
             "All": "All",
             "Posts": "Posts",
             "Users": "Users",
             "Tags": "Tags"
-        },
-        "Recent": {
-            "Title": "Recent Searches",
-            "Clear": "Clear All"
-        },
-        "Results": {
-            "Title": "Search Results",
-            "Found": "results found"
-        },
-        "Types": {
-            "post": "Post",
-            "user": "User",
-            "tag": "Tag"
-        },
-        "NoResults": {
-            "Title": "No Results Found",
-            "Message": "We couldn't find anything matching",
-            "ClearButton": "Clear Search"
-        },
-        "Empty": {
-            "Title": "Start Searching",
-            "Message": "Enter keywords to find posts, users, or topics"
         }
-    },
-    "COMMON": {
-        "Loading": "Loading",
-        "Close": "Close",
-        "View": "View",
-        "Edit": "Edit",
-        "Delete": "Delete",
-        "Back": "Back",
-        "Save": "Save",
-        "Cancel": "Cancel",
-        "Submit": "Submit",
-        "Search": "Search",
-        "Filter": "Filter",
-        "Sort": "Sort",
-        "Actions": "Actions",
-        "Status": "Status",
-        "Date": "Date",
-        "Name": "Name",
-        "Email": "Email",
-        "Phone": "Phone",
-        "Address": "Address",
-        "Description": "Description",
-        "Settings": "Settings",
-        "Profile": "Profile",
-        "Logout": "Logout",
-        "Login": "Login",
-        "Register": "Register",
-        "ForgotPassword": "Forgot Password",
-        "ResetPassword": "Reset Password",
-        "ChangePassword": "Change Password",
-        "UpdateProfile": "Update Profile",
-        "UploadImage": "Upload Image",
-        "RemoveImage": "Remove Image",
-        "SelectFile": "Select File",
-        "DropFile": "Drop file here",
-        "Success": "Success",
-        "Error": "Error",
-        "Warning": "Warning",
-        "Info": "Info",
-        "Confirm": "Confirm",
-        "Yes": "Yes",
-        "No": "No",
-        "OK": "OK",
-        "Apply": "Apply",
-        "Reset": "Reset",
-        "Clear": "Clear",
-        "SelectAll": "Select All",
-        "DeselectAll": "Deselect All",
-        "ShowMore": "Show More",
-        "ShowLess": "Show Less",
-        "LoadMore": "Load More",
-        "Refresh": "Refresh",
-        "Export": "Export",
-        "Import": "Import",
-        "Print": "Print",
-        "Download": "Download",
-        "Upload": "Upload",
-        "Share": "Share",
-        "Copy": "Copy",
-        "Paste": "Paste",
-        "Cut": "Cut",
-        "Undo": "Undo",
-        "Redo": "Redo",
-        "SelectLanguage": "Select Language",
-        "SelectTheme": "Select Theme",
-        "LightMode": "Light Mode",
-        "DarkMode": "Dark Mode",
-        "AutoMode": "Auto Mode",
-        "Notifications": "Notifications",
-        "Messages": "Messages",
-        "Help": "Help",
-        "About": "About",
-        "TermsOfService": "Terms of Service",
-        "PrivacyPolicy": "Privacy Policy",
-        "ContactUs": "Contact Us",
-        "FAQ": "FAQ",
-        "Support": "Support",
-        "Feedback": "Feedback",
-        "ReportBug": "Report Bug",
-        "RequestFeature": "Request Feature",
-        "RateApp": "Rate App",
-        "ShareApp": "Share App",
-        "FollowUs": "Follow Us",
-        "Copyright": "Copyright",
-        "AllRightsReserved": "All Rights Reserved",
-        "Version": "Version",
-        "BuildNumber": "Build Number",
-        "LastUpdated": "Last Updated",
-        "CreatedAt": "Created At",
-        "UpdatedAt": "Updated At",
-        "DeletedAt": "Deleted At",
-        "CreatedBy": "Created By",
-        "UpdatedBy": "Updated By",
-        "DeletedBy": "Deleted By",
-        "ComingSoon": "Coming Soon"
     },
     "PAYMENT": {
         "Sidebar": {

@@ -21,13 +21,19 @@ import { CommentService } from '../../../services/newsfeed/comment.service';
 import { NewsfeedService } from '../../../services/newsfeed/newsfeed.service';
 import { ReactionService } from '../../../services/newsfeed/reaction.service';
 import { Profile } from '../../../services/profile/profile';
-import { ToastService } from '../../../shared/toast/toast.service';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
+import { ToastService } from '../../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-post-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, ReactiveFormsModule, AvatarFallbackPipe],
+  imports: [
+    CommonModule,
+    RouterModule,
+    TranslateModule,
+    ReactiveFormsModule,
+    AvatarFallbackPipe,
+  ],
   templateUrl: './post-detail.html',
   styleUrls: ['./post-detail.scss'],
 })
@@ -67,7 +73,7 @@ export class PostDetailComponent implements OnInit {
     private profileService: Profile,
     private toastService: ToastService,
     private fb: FormBuilder,
-    private loaderService: LoaderService
+    private loaderService: LoaderService,
   ) {}
 
   ngOnInit() {
@@ -88,7 +94,7 @@ export class PostDetailComponent implements OnInit {
         if (this.currentUserProfile?.userId) {
           this.profileCache.set(
             this.currentUserProfile.userId,
-            this.currentUserProfile
+            this.currentUserProfile,
           );
         }
       },
@@ -167,7 +173,7 @@ export class PostDetailComponent implements OnInit {
       if (this.profileCache.has(userId)) {
         console.log(
           '💾 Profile found in cache:',
-          this.profileCache.get(userId)
+          this.profileCache.get(userId),
         );
         resolve(this.profileCache.get(userId));
         return;
@@ -212,42 +218,6 @@ export class PostDetailComponent implements OnInit {
           this.comments = [];
         }
 
-        // Add mock comments for demo if needed
-        if (this.comments.length === 0) {
-          const now = new Date().toISOString();
-          this.comments = [
-            {
-              id: 'mock-1',
-              post_id: postId,
-              user_id: 'user-1',
-              author_id: 'user-1',
-              content:
-                'I think for our second campaign we can try to target a different audience. How does it sound for you?',
-              like_count: 2,
-              is_deleted: false,
-              created_at: now,
-              updated_at: now,
-              isLiked: true,
-              replies: [
-                {
-                  id: 'mock-1-1',
-                  post_id: postId,
-                  user_id: 'user-2',
-                  author_id: 'user-2',
-                  content:
-                    'Yes, that sounds good! I can think about this tomorrow. When do we plan to start that campaign?',
-                  like_count: 3,
-                  is_deleted: false,
-                  created_at: now,
-                  updated_at: now,
-                  isLiked: true,
-                  parent_comment_id: 'mock-1',
-                },
-              ],
-            },
-          ];
-        }
-
         // Load profiles for all comment authors
         this.comments.forEach((comment) => {
           this.ensureProfileLoaded(comment);
@@ -279,6 +249,15 @@ export class PostDetailComponent implements OnInit {
         if (!this.comments) {
           this.comments = [];
         }
+
+        // Use current user profile to populate author info if missing
+        if (this.currentUserProfile) {
+          this.profileCache.set(
+            comment.author_id || comment.user_id,
+            this.currentUserProfile,
+          );
+        }
+
         this.comments.unshift(comment);
 
         // Load profile for the new comment (current user)
@@ -360,7 +339,7 @@ export class PostDetailComponent implements OnInit {
   addReplyToComment(
     comments: Comment[],
     parentId: string,
-    reply: Comment
+    reply: Comment,
   ): boolean {
     for (const comment of comments) {
       if (comment.id === parentId) {
@@ -399,20 +378,52 @@ export class PostDetailComponent implements OnInit {
 
     if (!this.post) return;
 
+    const previousVote = this.post.user_vote;
+    const previousUpvotes = this.post.upvote_count || 0;
+    const previousDownvotes = this.post.downvote_count || 0;
+
+    // Optimistic UI Update
+    if (previousVote === voteType) {
+      // Un-vote
+      this.post.user_vote = null;
+      if (voteType === 'up')
+        this.post.upvote_count = Math.max(0, previousUpvotes - 1);
+      else this.post.downvote_count = Math.max(0, previousDownvotes - 1);
+    } else {
+      // New vote or switch vote
+      this.post.user_vote = voteType;
+
+      if (voteType === 'up') {
+        this.post.upvote_count = previousUpvotes + 1;
+        if (previousVote === 'down')
+          this.post.downvote_count = Math.max(0, previousDownvotes - 1);
+      } else {
+        this.post.downvote_count = previousDownvotes + 1;
+        if (previousVote === 'up')
+          this.post.upvote_count = Math.max(0, previousUpvotes - 1);
+      }
+    }
+
     this.reactionService.toggleVote(this.post.id, voteType).subscribe({
       next: () => {
-        // Update local vote state
-        if (this.post) {
-          const currentVote = this.reactionService.getUserVote(this.post.id);
-          this.post.user_vote = currentVote;
-
-          // Reload post to get updated counts from server
-          this.loadPost(this.post.id);
-        }
+        // Just refresh the post state to be safe, but UI already updated
+        this.newsfeedService.getPost(this.post!.id).subscribe((post) => {
+          if (this.post) {
+            this.post.upvote_count = post.upvote_count;
+            this.post.downvote_count = post.downvote_count;
+            this.post.user_vote = post.user_vote;
+          }
+        });
         this.showReactionPicker = false;
       },
       error: (err) => {
         console.error('Failed to vote:', err);
+        // Rollback on error
+        if (this.post) {
+          this.post.user_vote = previousVote;
+          this.post.upvote_count = previousUpvotes;
+          this.post.downvote_count = previousDownvotes;
+        }
         this.toastService.error('Error', 'Failed to vote');
       },
     });
@@ -443,7 +454,7 @@ export class PostDetailComponent implements OnInit {
         this.isBookmarked = !this.isBookmarked;
         this.toastService.success(
           'Success',
-          this.isBookmarked ? 'Post bookmarked' : 'Bookmark removed'
+          this.isBookmarked ? 'Post bookmarked' : 'Bookmark removed',
         );
       },
       error: (err) => {
@@ -530,30 +541,33 @@ export class PostDetailComponent implements OnInit {
 
   getAuthorName(): string {
     if (!this.authorProfile) return 'Loading...';
-    const firstName = this.authorProfile.firstName;
-    const lastName = this.authorProfile.lastName;
 
-    if (firstName && lastName) {
-      return `${firstName} ${lastName}`;
-    } else if (firstName) {
-      return firstName;
-    } else if (lastName) {
-      return lastName;
+    // Check both camelCase and snake_case
+    const firstName =
+      this.authorProfile.firstName || this.authorProfile.first_name;
+    const lastName =
+      this.authorProfile.lastName || this.authorProfile.last_name;
+
+    if (firstName || lastName) {
+      return `${firstName || ''} ${lastName || ''}`.trim();
     }
 
     return (
-      this.authorProfile.username ||
-      this.authorProfile.display_name ||
-      'Unknown User'
+      this.authorProfile.username || this.authorProfile.display_name || 'User'
     );
   }
 
   getUserName(userId: string): string {
     const profile = this.profileCache.get(userId);
-    if (!profile) return userId;
-    const firstName = profile.firstName || '';
-    const lastName = profile.lastName || '';
-    return `${firstName} ${lastName}`.trim() || profile.profileId || userId;
+    if (!profile) return 'User';
+
+    const firstName = profile.firstName || profile.first_name || '';
+    const lastName = profile.lastName || profile.last_name || '';
+
+    const fullName = `${firstName} ${lastName}`.trim();
+    if (fullName) return fullName;
+
+    return profile.username || profile.display_name || 'User';
   }
 
   getAvatarUrl(profile: any): string | null {
