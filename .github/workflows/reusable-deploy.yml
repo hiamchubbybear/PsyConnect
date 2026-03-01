@@ -40,13 +40,13 @@ on:
         required: true
       GOOGLE_CLIENT_SECRET:
         required: true
-      SMPT_HOST:
+      SMTP_HOST:
         required: true
-      SMPT_PORT:
+      SMTP_PORT:
         required: true
-      SMPT_MAIL:
+      SMTP_MAIL:
         required: true
-      SMPT_APP_PASS:
+      SMTP_APP_PASS:
         required: true
       CLOUDINARY_API_KEY:
         required: true
@@ -81,13 +81,19 @@ jobs:
           FACEBOOK_CLIENT_SECRET: ${{ secrets.FACEBOOK_CLIENT_SECRET }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          SMPT_HOST: ${{ secrets.SMPT_HOST }}
-          SMPT_PORT: ${{ secrets.SMPT_PORT }}
-          SMPT_MAIL: ${{ secrets.SMPT_MAIL }}
-          SMPT_APP_PASS: ${{ secrets.SMPT_APP_PASS }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_MAIL: ${{ secrets.SMTP_MAIL }}
+          SMTP_APP_PASS: ${{ secrets.SMTP_APP_PASS }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
         run: |
+          echo "=== Verifying Secrets Availability ==="
+          [ -z "$CLOUDINARY_API_KEY" ] && echo "❌ CLOUDINARY_API_KEY is empty" || echo "✅ CLOUDINARY_API_KEY is set"
+          [ -z "$CLOUDINARY_API_SECRET" ] && echo "❌ CLOUDINARY_API_SECRET is empty" || echo "✅ CLOUDINARY_API_SECRET is set"
+          [ -z "$SMTP_APP_PASS" ] && echo "❌ SMTP_APP_PASS is empty" || echo "✅ SMTP_APP_PASS is set"
+          echo "======================================"
+
           # Since runner is on the same machine as K8s (or has kubeconfig set up)
           export KUBECONFIG=$HOME/.kube/config
 
