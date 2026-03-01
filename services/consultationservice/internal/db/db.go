@@ -126,6 +126,16 @@ func GetFollowCollection() *mongo.Collection {
 	return client.Database(dbName).Collection("follows")
 }
 
+func GetGroupCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("groups")
+}
+
+func GetGroupMemberCollection() *mongo.Collection {
+	client := InitDB()
+	return client.Database(dbName).Collection("group_members")
+}
+
 func GetBookmarkCollection() *mongo.Collection {
 	client := InitDB()
 	return client.Database(dbName).Collection("bookmarks")

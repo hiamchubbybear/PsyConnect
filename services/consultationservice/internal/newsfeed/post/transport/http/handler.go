@@ -15,20 +15,21 @@ import (
 )
 
 type Handler struct {
-	createPostUC    *usecase.CreatePostUseCase
-	getPostByIDUC   *usecase.GetPostByIDUseCase
-	updatePostUC    *usecase.UpdatePostUseCase
-	deletePostUC    *usecase.DeletePostUseCase
-	getFeedUC       *usecase.GetFeedUseCase
-	getTrendingUC   *usecase.GetTrendingPostsUseCase
-	searchPostsUC   *usecase.SearchPostsUseCase
-	getUserPostsUC  *usecase.GetUserPostsUseCase
-	getByTagUC      *usecase.GetPostsByTagUseCase
-	getByCategoryUC *usecase.GetPostsByCategoryUseCase
-	incrementViewUC *usecase.IncrementViewCountUseCase
-	redisClient     redis.RedisStore
-	reactionRepo    repository.ReactionRepository
-	bookmarkRepo    repository.BookmarkRepository
+	createPostUC     *usecase.CreatePostUseCase
+	getPostByIDUC    *usecase.GetPostByIDUseCase
+	updatePostUC     *usecase.UpdatePostUseCase
+	deletePostUC     *usecase.DeletePostUseCase
+	getFeedUC        *usecase.GetFeedUseCase
+	getTrendingUC    *usecase.GetTrendingPostsUseCase
+	searchPostsUC    *usecase.SearchPostsUseCase
+	getUserPostsUC   *usecase.GetUserPostsUseCase
+	getByTagUC       *usecase.GetPostsByTagUseCase
+	getByCategoryUC  *usecase.GetPostsByCategoryUseCase
+	incrementViewUC  *usecase.IncrementViewCountUseCase
+	getPopularTagsUC *usecase.GetPopularTagsUseCase
+	redisClient      redis.RedisStore
+	reactionRepo     repository.ReactionRepository
+	bookmarkRepo     repository.BookmarkRepository
 }
 
 func NewHandler(
@@ -43,25 +44,27 @@ func NewHandler(
 	getByTagUC *usecase.GetPostsByTagUseCase,
 	getByCategoryUC *usecase.GetPostsByCategoryUseCase,
 	incrementViewUC *usecase.IncrementViewCountUseCase,
+	getPopularTagsUC *usecase.GetPopularTagsUseCase,
 	redisClient redis.RedisStore,
 	reactionRepo repository.ReactionRepository,
 	bookmarkRepo repository.BookmarkRepository,
 ) *Handler {
 	return &Handler{
-		createPostUC:    createPostUC,
-		getPostByIDUC:   getPostByIDUC,
-		updatePostUC:    updatePostUC,
-		deletePostUC:    deletePostUC,
-		getFeedUC:       getFeedUC,
-		getTrendingUC:   getTrendingUC,
-		searchPostsUC:   searchPostsUC,
-		getUserPostsUC:  getUserPostsUC,
-		getByTagUC:      getByTagUC,
-		getByCategoryUC: getByCategoryUC,
-		incrementViewUC: incrementViewUC,
-		redisClient:     redisClient,
-		reactionRepo:    reactionRepo,
-		bookmarkRepo:    bookmarkRepo,
+		createPostUC:     createPostUC,
+		getPostByIDUC:    getPostByIDUC,
+		updatePostUC:     updatePostUC,
+		deletePostUC:     deletePostUC,
+		getFeedUC:        getFeedUC,
+		getTrendingUC:    getTrendingUC,
+		searchPostsUC:    searchPostsUC,
+		getUserPostsUC:   getUserPostsUC,
+		getByTagUC:       getByTagUC,
+		getByCategoryUC:  getByCategoryUC,
+		incrementViewUC:  incrementViewUC,
+		getPopularTagsUC: getPopularTagsUC,
+		redisClient:      redisClient,
+		reactionRepo:     reactionRepo,
+		bookmarkRepo:     bookmarkRepo,
 	}
 }
 
@@ -185,7 +188,16 @@ func (h *Handler) GetFeed(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	posts, err := h.getFeedUC.Execute(ctx, []string{userID}, limit, skip)
+	var excludeIDs []string
+	if userID != "" {
+		viewedKey := fmt.Sprintf("user:%s:viewed", userID)
+		ids, err := h.redisClient.SMembers(ctx, viewedKey)
+		if err == nil {
+			excludeIDs = ids
+		}
+	}
+
+	posts, err := h.getFeedUC.Execute(ctx, []string{userID}, excludeIDs, limit, skip)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get feed"})
 		return
@@ -286,6 +298,45 @@ func (h *Handler) GetPostsByCategory(c *gin.Context) {
 
 	posts = h.populateUserStates(ctx, posts, userID)
 	c.JSON(http.StatusOK, posts)
+}
+
+func (h *Handler) GetPopularTags(c *gin.Context) {
+	limitStr := c.DefaultQuery("limit", "10")
+	limit, _ := strconv.Atoi(limitStr)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	tags, err := h.getPopularTagsUC.Execute(ctx, limit)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get popular tags"})
+		return
+	}
+
+	c.JSON(http.StatusOK, tags)
+}
+
+func (h *Handler) IncrementViewCount(c *gin.Context) {
+	id := c.Param("id")
+	userID := c.GetString("userID")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Track in DB
+	err := h.incrementViewUC.Execute(ctx, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to increment view count"})
+		return
+	}
+
+	// Track in Redis for "Hide Viewed Posts"
+	if userID != "" {
+		viewedKey := fmt.Sprintf("user:%s:viewed", userID)
+		h.redisClient.SAdd(ctx, viewedKey, id)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "View recorded"})
 }
 
 // Helper methods for user state population

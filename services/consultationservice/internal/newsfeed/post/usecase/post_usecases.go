@@ -89,8 +89,8 @@ func NewGetFeedUseCase(postRepo repository.PostRepository) *GetFeedUseCase {
 	return &GetFeedUseCase{postRepo: postRepo}
 }
 
-func (uc *GetFeedUseCase) Execute(ctx context.Context, userIDs []string, limit, skip int64) ([]domain.Post, error) {
-	return uc.postRepo.GetFeed(ctx, userIDs, limit, skip)
+func (uc *GetFeedUseCase) Execute(ctx context.Context, userIDs []string, excludeIDs []string, limit, skip int64) ([]domain.Post, error) {
+	return uc.postRepo.GetFeed(ctx, userIDs, excludeIDs, limit, skip)
 }
 
 // GetTrendingPostsUseCase retrieves trending posts
@@ -169,6 +169,19 @@ func NewIncrementViewCountUseCase(postRepo repository.PostRepository) *Increment
 
 func (uc *IncrementViewCountUseCase) Execute(ctx context.Context, id string) error {
 	return uc.postRepo.IncrementViewCount(ctx, id)
+}
+
+// GetPopularTagsUseCase retrieves most used hashtags
+type GetPopularTagsUseCase struct {
+	postRepo repository.PostRepository
+}
+
+func NewGetPopularTagsUseCase(postRepo repository.PostRepository) *GetPopularTagsUseCase {
+	return &GetPopularTagsUseCase{postRepo: postRepo}
+}
+
+func (uc *GetPopularTagsUseCase) Execute(ctx context.Context, limit int) ([]string, error) {
+	return uc.postRepo.GetPopularTags(ctx, limit)
 }
 
 // Errors

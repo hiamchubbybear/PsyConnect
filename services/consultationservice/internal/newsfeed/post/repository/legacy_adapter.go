@@ -52,8 +52,8 @@ func (a *LegacyPostRepositoryAdapter) GetPostsByUser(ctx context.Context, userID
 	return convertModelSliceToDomain(modelPosts), nil
 }
 
-func (a *LegacyPostRepositoryAdapter) GetFeed(ctx context.Context, userIDs []string, limit, skip int64) ([]domain.Post, error) {
-	modelPosts, err := a.legacyRepo.GetFeed(ctx, userIDs, limit, skip)
+func (a *LegacyPostRepositoryAdapter) GetFeed(ctx context.Context, userIDs []string, excludeIDs []string, limit, skip int64) ([]domain.Post, error) {
+	modelPosts, err := a.legacyRepo.GetFeed(ctx, userIDs, excludeIDs, limit, skip)
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +98,10 @@ func (a *LegacyPostRepositoryAdapter) IncrementViewCount(ctx context.Context, id
 
 func (a *LegacyPostRepositoryAdapter) UpdateEngagementCount(ctx context.Context, id, field string, delta int) error {
 	return a.legacyRepo.UpdateEngagementCount(ctx, id, field, delta)
+}
+
+func (a *LegacyPostRepositoryAdapter) GetPopularTags(ctx context.Context, limit int) ([]string, error) {
+	return a.legacyRepo.GetPopularTags(ctx, limit)
 }
 
 // Conversion helpers

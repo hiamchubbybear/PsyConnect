@@ -20,13 +20,14 @@ type PostRepository interface {
 	UpdatePost(ctx context.Context, id string, post *model.Post) error
 	DeletePost(ctx context.Context, id string) error
 	GetPostsByUser(ctx context.Context, userID string, limit, skip int64) ([]model.Post, error)
-	GetFeed(ctx context.Context, userIDs []string, limit, skip int64) ([]model.Post, error)
+	GetFeed(ctx context.Context, userIDs []string, excludeIDs []string, limit, skip int64) ([]model.Post, error)
 	SearchPosts(ctx context.Context, query string, limit, skip int64) ([]model.Post, error)
 	GetTrendingPosts(ctx context.Context, limit int64) ([]model.Post, error)
 	GetPostsByTag(ctx context.Context, tag string, limit, skip int64) ([]model.Post, error)
 	GetPostsByCategory(ctx context.Context, category string, limit, skip int64) ([]model.Post, error)
 	IncrementViewCount(ctx context.Context, id string) error
 	UpdateEngagementCount(ctx context.Context, id, field string, delta int) error
+	GetPopularTags(ctx context.Context, limit int) ([]string, error)
 }
 
 type postRepo struct {
@@ -156,11 +157,26 @@ func (r *postRepo) GetPostsByUser(ctx context.Context, userID string, limit, ski
 	return posts, nil
 }
 
-func (r *postRepo) GetFeed(ctx context.Context, userIDs []string, limit, skip int64) ([]model.Post, error) {
+func (r *postRepo) GetFeed(ctx context.Context, userIDs []string, excludeIDs []string, limit, skip int64) ([]model.Post, error) {
 	filter := bson.M{
-		"author_id":  bson.M{"$in": userIDs},
 		"is_deleted": false,
-		"visibility": bson.M{"$in": []string{"public", "followers"}},
+		"$or": []bson.M{
+			{"visibility": "public"},
+			{"author_id": bson.M{"$in": userIDs}},
+		},
+	}
+
+	if len(excludeIDs) > 0 {
+		objectIDs := make([]primitive.ObjectID, 0, len(excludeIDs))
+		for _, id := range excludeIDs {
+			objID, err := primitive.ObjectIDFromHex(id)
+			if err == nil {
+				objectIDs = append(objectIDs, objID)
+			}
+		}
+		if len(objectIDs) > 0 {
+			filter["_id"] = bson.M{"$nin": objectIDs}
+		}
 	}
 
 	opts := options.Find().
@@ -325,6 +341,45 @@ func (r *postRepo) UpdateEngagementCount(ctx context.Context, id, field string, 
 
 	_, err = r.collection.UpdateOne(ctx, filter, update)
 	return err
+}
+
+func (r *postRepo) GetPopularTags(ctx context.Context, limit int) ([]string, error) {
+	// Aggregation pipeline to find most frequent hashtags
+	pipeline := mongo.Pipeline{
+		// 1. Only public posts
+		{{Key: "$match", Value: bson.M{"is_deleted": false, "visibility": "public"}}},
+		// 2. Unwind hashtags array
+		{{Key: "$unwind", Value: "$hashtags"}},
+		// 3. Group by tag and count
+		{{Key: "$group", Value: bson.M{
+			"_id":   "$hashtags",
+			"count": bson.M{"$sum": 1},
+		}}},
+		// 4. Sort by count descending
+		{{Key: "$sort", Value: bson.M{"count": -1}}},
+		// 5. Limit results
+		{{Key: "$limit", Value: limit}},
+	}
+
+	cursor, err := r.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []struct {
+		ID string `bson:"_id"`
+	}
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+
+	tags := make([]string, len(results))
+	for i, res := range results {
+		tags[i] = res.ID
+	}
+
+	return tags, nil
 }
 
 // Helper functions

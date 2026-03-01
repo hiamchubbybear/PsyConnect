@@ -298,6 +298,39 @@ func (r *MongoTherapistRepository) Delete(ctx context.Context, profileID string)
 	return nil
 }
 
+func (r *MongoTherapistRepository) Search(ctx context.Context, query string, limit, skip int64) ([]*domain.Therapist, error) {
+	filter := bson.M{
+		"is_available": true, // Only show available therapists in search
+		"$or": []bson.M{
+			{"name": bson.M{"$regex": query, "$options": "i"}},
+			{"specialization": bson.M{"$in": []bson.M{{"$regex": query, "$options": "i"}}}},
+			{"address": bson.M{"$regex": query, "$options": "i"}},
+		},
+	}
+
+	opts := options.Find().
+		SetLimit(limit).
+		SetSkip(skip).
+		SetSort(bson.D{{Key: "rating", Value: -1}})
+
+	cursor, err := r.collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to search therapists: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	var results []*domain.Therapist
+	for cursor.Next(ctx) {
+		var doc bson.M
+		if err := cursor.Decode(&doc); err != nil {
+			continue
+		}
+		results = append(results, r.mongoToDomain(doc))
+	}
+
+	return results, nil
+}
+
 // Helpers
 func getString(doc bson.M, key string) string {
 	if val, ok := doc[key].(string); ok {

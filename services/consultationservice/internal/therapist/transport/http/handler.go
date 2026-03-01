@@ -4,6 +4,7 @@ import (
 	"consultationservice/internal/therapist/usecase"
 	"consultationservice/pkg/apiresponse"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -168,6 +169,23 @@ func (h *Handler) GetTherapistByID(c *gin.Context) {
 	}
 
 	apiresponse.NewApiResponse(c, therapist)
+}
+
+func (h *Handler) SearchTherapists(c *gin.Context) {
+	query := c.Query("q")
+	limitStr := c.DefaultQuery("limit", "20")
+	skipStr := c.DefaultQuery("skip", "0")
+
+	limit, _ := strconv.ParseInt(limitStr, 10, 64)
+	skip, _ := strconv.ParseInt(skipStr, 10, 64)
+
+	therapists, err := h.getTherapistUC.Search(c.Request.Context(), query, limit, skip)
+	if err != nil {
+		apiresponse.ErrorHandler(c, http.StatusInternalServerError, "Search failed: "+err.Error())
+		return
+	}
+
+	apiresponse.NewApiResponse(c, therapists)
 }
 
 type UpdateTherapistRequest struct {

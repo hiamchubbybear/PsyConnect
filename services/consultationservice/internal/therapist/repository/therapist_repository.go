@@ -23,4 +23,7 @@ type TherapistRepository interface {
 
 	// Delete deletes a therapist matching profile
 	Delete(ctx context.Context, profileID string) error
+
+	// Search searches for therapists by name or specialization
+	Search(ctx context.Context, query string, limit, skip int64) ([]*domain.Therapist, error)
 }

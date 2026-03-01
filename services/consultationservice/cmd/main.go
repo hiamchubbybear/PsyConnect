@@ -50,6 +50,10 @@ import (
 	postRepo "consultationservice/internal/newsfeed/post/repository"
 	postHTTP "consultationservice/internal/newsfeed/post/transport/http"
 	postUseCase "consultationservice/internal/newsfeed/post/usecase"
+
+	groupRepo "consultationservice/internal/newsfeed/group/repository"
+	groupHTTP "consultationservice/internal/newsfeed/group/transport/http"
+	groupUseCase "consultationservice/internal/newsfeed/group/usecase"
 )
 
 func main() {
@@ -219,14 +223,31 @@ func main() {
 	getByTagUC := postUseCase.NewGetPostsByTagUseCase(legacyPostRepoAdapter)
 	getByCategoryUC := postUseCase.NewGetPostsByCategoryUseCase(legacyPostRepoAdapter)
 	incrementViewUC := postUseCase.NewIncrementViewCountUseCase(legacyPostRepoAdapter)
+	getPopularTagsUC := postUseCase.NewGetPopularTagsUseCase(legacyPostRepoAdapter)
 
 	postHandler := postHTTP.NewHandler(
 		createPostUC, getPostByIDUC, updatePostUC, deletePostUC,
 		getFeedUC, getTrendingUC, searchPostsUC, getUserPostsUC,
-		getByTagUC, getByCategoryUC, incrementViewUC,
+		getByTagUC, getByCategoryUC, incrementViewUC, getPopularTagsUC,
 		redisClient, legacyReactionRepo, legacyBookmarkRepo,
 	)
 	// ===== End DDD Post Components =====
+
+	// ===== DDD Group Components =====
+	groupRepository := groupRepo.NewGroupRepo()
+
+	createGroupUC := groupUseCase.NewCreateGroupUseCase(groupRepository)
+	getGroupsUC := groupUseCase.NewGetGroupsUseCase(groupRepository)
+	getGroupByIDUC := groupUseCase.NewGetGroupByIDUseCase(groupRepository)
+	joinGroupUC := groupUseCase.NewJoinGroupUseCase(groupRepository)
+
+	groupHandler := groupHTTP.NewHandler(
+		createGroupUC,
+		getGroupsUC,
+		getGroupByIDUC,
+		joinGroupUC,
+	)
+	// ===== End DDD Group Components =====
 
 	// therapistHandler := handlers.NewTherapistHandler(env, repomanager) // Legacy removed
 	// clientHandler now uses DDD version above
@@ -256,5 +277,6 @@ func main() {
 		reactionHandler,
 		commentHandler,
 		socialHandler,
+		groupHandler,
 	)
 }
