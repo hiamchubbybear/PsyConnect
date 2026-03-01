@@ -41,4 +41,3 @@ data:
   FRONTEND_OAUTH2_REDIRECT_BASE: "https://psyconnect.chessy.dev"
 
   CLOUDINARY_CLOUD_NAME: "dohfd2ns8"
-  CLOUDINARY_API_KEY: "PLACEHOLDER_API_KEY"

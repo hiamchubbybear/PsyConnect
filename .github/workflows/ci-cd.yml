@@ -140,3 +140,5 @@ jobs:
       SMPT_PORT: ${{ secrets.SMPT_PORT }}
       SMPT_MAIL: ${{ secrets.SMPT_MAIL }}
       SMPT_APP_PASS: ${{ secrets.SMPT_APP_PASS }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
