@@ -120,10 +120,10 @@ export class FeedComponent implements OnInit {
 
     feedObservable.subscribe({
       next: (posts) => {
-        this.posts = posts;
+        this.posts = posts || [];
         this.loading = false;
         // Load profiles for all post authors
-        posts.forEach((post) => {
+        (posts || []).forEach((post) => {
           if (post.author_id) {
             this.loadProfile(post.author_id).then((profile) => {
               post.author_name =
@@ -178,9 +178,12 @@ export class FeedComponent implements OnInit {
   loadGroups() {
     this.groupService.getGroups().subscribe({
       next: (groups) => {
-        this.supportGroups = groups;
+        this.supportGroups = groups || [];
       },
-      error: (err) => console.error('Failed to load groups:', err),
+      error: (err) => {
+        console.error('Failed to load groups:', err);
+        this.supportGroups = [];
+      },
     });
   }
 
@@ -229,6 +232,16 @@ export class FeedComponent implements OnInit {
 
   bookTherapist(therapist: any) {
     this.router.navigate(['/feature/consultation/smart-match']);
+  }
+
+  contactTherapist(therapist: any) {
+    if (therapist?.profileId) {
+      this.router.navigate(['/feature/chat'], {
+        queryParams: { userId: therapist.profileId },
+      });
+    } else {
+      this.router.navigate(['/feature/consultation/smart-match']);
+    }
   }
 
   viewAllTherapists() {

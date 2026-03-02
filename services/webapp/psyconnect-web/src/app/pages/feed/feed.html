@@ -64,7 +64,7 @@
 
       <section class="posts" *ngIf="!loading && !error">
         <app-post-card
-          *ngFor="let p of posts; trackBy: trackByPostId"
+          *ngFor="let p of posts || []; trackBy: trackByPostId"
           [post]="p"
           [attr.data-post-id]="p.id"
           (upvote)="upvotePost(p, $event)"
@@ -76,7 +76,7 @@
         ></app-post-card>
 
         <app-empty-state
-          *ngIf="posts.length === 0"
+          *ngIf="(posts || []).length === 0"
           [title]="'NEWSFEED.NoPosts' | translate"
         >
           <app-button variant="primary" (onClick)="newPost()">
@@ -98,7 +98,7 @@
         </div>
         <div
           class="therapist"
-          *ngFor="let t of therapists; trackBy: trackByTherapistId"
+          *ngFor="let t of therapists || []; trackBy: trackByTherapistId"
         >
           <div class="t-left">
             <div class="avatar small">
@@ -110,8 +110,10 @@
             </div>
           </div>
           <div class="t-right">
-            <div class="rating">{{ t.rating }}</div>
-            <div class="status">{{ t.statusKey | translate }}</div>
+            <div class="rating">⭐ {{ t.rating }}</div>
+            <button class="btn btn--primary tiny" (click)="contactTherapist(t)">
+              Liên hệ
+            </button>
           </div>
         </div>
         <button
@@ -126,7 +128,7 @@
       <div class="card small">
         <h4>{{ "FEED.SupportGroups.Title" | translate }}</h4>
         <ul class="support-list">
-          <li *ngFor="let g of supportGroups; trackBy: trackByGroupId">
+          <li *ngFor="let g of supportGroups || []; trackBy: trackByGroupId">
             <div>
               <strong>{{ g.name }}</strong>
               <div class="muted">
@@ -138,7 +140,7 @@
               {{ "FEED.SupportGroups.JoinButton" | translate }}
             </button>
           </li>
-          <li *ngIf="supportGroups.length === 0" class="muted">
+          <li *ngIf="(supportGroups || []).length === 0" class="muted">
             {{ "FEED.SupportGroups.NoGroups" | translate }}
           </li>
         </ul>
