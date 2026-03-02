@@ -11,6 +11,7 @@ import dev.psyconnect.profile_service.dto.request.UserProfileCreationRequest;
 import dev.psyconnect.profile_service.dto.request.UserProfileUpdateRequest;
 import dev.psyconnect.profile_service.dto.response.ProfileWithMoodSummaryDto;
 import dev.psyconnect.profile_service.dto.response.UserProfileCreationResponse;
+import dev.psyconnect.profile_service.dto.response.UserProfileResponse;
 import dev.psyconnect.profile_service.dto.response.UserProfileUpdateResponse;
 import dev.psyconnect.profile_service.service.UserProfileService;
 import lombok.AccessLevel;
