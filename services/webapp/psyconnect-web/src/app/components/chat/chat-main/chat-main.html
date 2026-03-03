@@ -2,24 +2,29 @@
   <div class="chat-header">
     <button class="back-btn" *ngIf="selectedFriend" (click)="back.emit()">
       <svg
+        xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-chevron-left"
       >
-        <path d="M19 12H5M12 19l-7-7 7-7" />
+        <path d="m15 18-6-6 6-6" />
       </svg>
     </button>
 
     <div class="chat-info" *ngIf="selectedFriend as friend">
       <div class="chat-avatar">
         <img
-          [src]="friend.avatarUri | avatarFallback:friend.profileId"
+          [src]="friend.avatarUri | avatarFallback: friend.profileId"
           [alt]="friend.firstName"
           appImgFallback
         />
+        <div class="online-badge" *ngIf="friend.isOnline"></div>
       </div>
 
       <div class="chat-meta">
@@ -32,6 +37,12 @@
         {{ "CHAT.EXAMPLE.selectFriend" | translate }}
       </h2>
     </div>
+
+    <!-- Call options menu in Header -->
+    <app-call-options-menu
+      *ngIf="selectedFriend"
+      (callTypeSelected)="startCall($event)"
+    ></app-call-options-menu>
   </div>
   <div
     class="load-more-container"
@@ -51,24 +62,43 @@
       </ng-template>
     </button>
   </div>
-  <div class="messages-container" #scrollContainer>
+  <div class="messages-container" #scrollContainer (scroll)="onScroll()">
     <ng-container *ngIf="selectedFriend; else noFriend">
       <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
-        <app-message-bubble [message]="message" (retry)="retryMessage($event)"></app-message-bubble>
+        <!-- Date Separator -->
+        <div *ngIf="message.showDateSeparator" class="date-separator">
+          <span class="date-chip">{{ message.dateSeparatorText }}</span>
+        </div>
+
+        <!-- System messages: centered info pill -->
+        <div *ngIf="message.isSystem" class="system-message">
+          <span class="system-bubble">{{ message.content }}</span>
+        </div>
+        <!-- Regular messages -->
+        <app-message-bubble
+          *ngIf="!message.isSystem"
+          [message]="message"
+          (retry)="retryMessage($event)"
+        ></app-message-bubble>
       </ng-container>
 
       <div *ngIf="isTyping" class="typing-indicator">
         <div class="typing-avatar">
           <img
-            [src]="selectedFriend.avatarUri | avatarFallback:selectedFriend.profileId"
+            [src]="
+              selectedFriend.avatarUri
+                | avatarFallback: selectedFriend.profileId
+            "
             [alt]="selectedFriend.firstName || 'User'"
             appImgFallback
           />
         </div>
         <div class="typing-bubble">
-          <span>
-            {{ selectedFriend.firstName }} {{ "CHAT.TYPING" | translate }}
-          </span>
+          <div class="typing-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
         </div>
       </div>
     </ng-container>
@@ -77,8 +107,19 @@
       <div class="no-friend-selected">
         <!-- Empty state message -->
         <div class="no-friend-hero">
-          <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="hero-icon-svg"
+          >
+            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
           </svg>
           <h3>{{ "CHAT.EXAMPLE.noFriendSelected" | translate }}</h3>
         </div>
@@ -96,7 +137,7 @@
             >
               <div class="suggestion-avatar-wrapper">
                 <img
-                  [src]="user.avatarUri | avatarFallback:user.profileId"
+                  [src]="user.avatarUri | avatarFallback: user.profileId"
                   [alt]="user.firstName"
                   class="suggestion-avatar"
                   appImgFallback
@@ -107,7 +148,7 @@
               <!-- Tooltip on hover -->
               <div class="suggestion-tooltip">
                 <img
-                  [src]="user.avatarUri | avatarFallback:user.profileId"
+                  [src]="user.avatarUri | avatarFallback: user.profileId"
                   [alt]="user.firstName"
                   class="tooltip-avatar"
                   appImgFallback
@@ -115,8 +156,19 @@
                 <div class="tooltip-info">
                   <strong>{{ user.firstName }} {{ user.lastName }}</strong>
                   <span class="tooltip-action">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="tooltip-icon-svg"
+                    >
+                      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                     </svg>
                     {{ "CHAT.SUGGESTIONS.StartChat" | translate }}
                   </span>
@@ -130,14 +182,24 @@
   </div>
 
   <div class="message-input-wrapper" *ngIf="selectedFriend">
+    <button
+      *ngIf="showScrollBottomButton"
+      class="scroll-bottom-fab"
+      (click)="scrollToBottom()"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="24"
+        height="24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
     <app-chat-input (sendMessage)="onSendMessage($event)"></app-chat-input>
-  </div>
-
-  <div class="files-sidebar">
-    <!-- Call options menu -->
-    <app-call-options-menu
-      *ngIf="selectedFriend"
-      (callTypeSelected)="startCall($event)"
-    ></app-call-options-menu>
   </div>
 </div>

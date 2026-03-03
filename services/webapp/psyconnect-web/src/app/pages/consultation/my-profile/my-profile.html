@@ -1,0 +1,228 @@
+<!-- Loading skeleton -->
+<div class="myprofile myprofile--loading" *ngIf="loading">
+  <div class="skeleton-hero">
+    <div class="skeleton-avatar-lg"></div>
+    <div class="skeleton-lines">
+      <div class="skeleton-line wide"></div>
+      <div class="skeleton-line medium"></div>
+    </div>
+  </div>
+  <div class="skeleton-body">
+    <div class="skeleton-line full" *ngFor="let i of [1, 2, 3, 4]"></div>
+  </div>
+</div>
+
+<!-- No profile — prompt user to create one -->
+<div class="myprofile myprofile--empty" *ngIf="!loading && !hasProfile">
+  <div class="empty-state">
+    <h2>{{ "CONSULTATION.MyProfile.NoProfile" | translate }}</h2>
+    <p>{{ "CONSULTATION.MyProfile.NoProfileDesc" | translate }}</p>
+    <button class="btn btn--primary" (click)="createProfile()">
+      {{ "CONSULTATION.MyProfile.CreateNow" | translate }}
+    </button>
+  </div>
+</div>
+
+<!-- Profile view -->
+<div class="myprofile" *ngIf="!loading && hasProfile && profile">
+  <!-- Hero section -->
+  <div class="profile-hero">
+    <div class="profile-hero__avatar-wrap">
+      <div class="profile-hero__avatar" *ngIf="profile.avatarUri">
+        <img [src]="profile.avatarUri" [alt]="profile.name" />
+      </div>
+      <div
+        class="profile-hero__avatar profile-hero__avatar--initials"
+        *ngIf="!profile.avatarUri"
+      >
+        {{ avatarInitials }}
+      </div>
+    </div>
+
+    <div class="profile-hero__info">
+      <h1 class="profile-hero__name">{{ profile.name }}</h1>
+
+      <div class="profile-hero__badges">
+        <span
+          class="badge badge--mode"
+          *ngFor="let m of profile.consultationModes"
+        >
+          {{ label(MODES_MAP, m) }}
+        </span>
+        <span class="badge badge--lang" *ngFor="let l of profile.languages">
+          {{ label(LANG_MAP, l) }}
+        </span>
+      </div>
+
+      <p class="profile-hero__address" *ngIf="profile.address">
+        {{ profile.address }}
+      </p>
+    </div>
+
+    <button
+      class="btn btn--secondary btn--sm profile-hero__edit-btn"
+      (click)="editProfile()"
+    >
+      {{ "CONSULTATION.MyProfile.EditProfile" | translate }}
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="profile-tabs">
+    <button
+      class="profile-tab"
+      [class.active]="activeTab === 'info'"
+      (click)="setTab('info')"
+    >
+      {{ "CONSULTATION.Tabs.MyProfile" | translate }}
+    </button>
+    <button
+      class="profile-tab"
+      [class.active]="activeTab === 'sessions'"
+      (click)="setTab('sessions')"
+    >
+      {{ "CONSULTATION.MyProfile.Sessions" | translate }}
+    </button>
+    <button
+      class="profile-tab"
+      [class.active]="activeTab === 'reviews'"
+      (click)="setTab('reviews')"
+    >
+      {{ "CONSULTATION.MyProfile.ReviewsTab" | translate }}
+    </button>
+  </div>
+
+  <!-- Tab: Profile info -->
+  <div class="tab-content" *ngIf="activeTab === 'info'">
+    <div class="info-grid">
+      <!-- Availability -->
+      <div class="info-card">
+        <h3 class="info-card__title">
+          {{ "CONSULTATION.MyProfile.AvailabilityTitle" | translate }}
+        </h3>
+        <div class="info-row">
+          <span class="info-label">{{
+            "CONSULTATION.MyProfile.Weekday" | translate
+          }}</span>
+          <div class="tag-row">
+            <span class="tag" *ngFor="let d of profile.availabilityDays">{{
+              label(DAY_MAP, d)
+            }}</span>
+            <span
+              class="tag tag--empty"
+              *ngIf="profile.availabilityDays.length === 0"
+              >{{ "COMMON.NoData" | translate }}</span
+            >
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-label">{{
+            "CONSULTATION.MyProfile.TimeSlots" | translate
+          }}</span>
+          <div class="tag-row">
+            <span class="tag" *ngFor="let t of profile.timeSlots">{{
+              label(SLOT_MAP, t)
+            }}</span>
+            <span
+              class="tag tag--empty"
+              *ngIf="profile.timeSlots.length === 0"
+              >{{ "COMMON.NoData" | translate }}</span
+            >
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-label">{{
+            "CONSULTATION.MyProfile.Duration" | translate
+          }}</span>
+          <span class="info-value">{{ profile.sessionDuration }} phút</span>
+        </div>
+        <div class="info-row" *ngIf="profile.isFlexible">
+          <span class="info-label">{{
+            "CONSULTATION.MyProfile.Flexible" | translate
+          }}</span>
+          <span class="badge badge--ok">{{ "COMMON.Yes" | translate }}</span>
+        </div>
+      </div>
+
+      <!-- Preferences (Show for Client) / Professional Info (Show for Therapist) -->
+      <div class="info-card">
+        <h3 class="info-card__title" *ngIf="role === 'client'">
+          {{ "CONSULTATION.MyProfile.Requirements" | translate }}
+        </h3>
+        <h3 class="info-card__title" *ngIf="role === 'therapist'">
+          {{ "CONSULTATION.MyProfile.ProfessionalInfo" | translate }}
+        </h3>
+
+        <div class="info-row" *ngIf="role === 'client'">
+          <span class="info-label">{{
+            "CONSULTATION.MyProfile.Urgency" | translate
+          }}</span>
+          <span class="info-value">{{ urgencyLabel() }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label" *ngIf="role === 'client'">{{
+            "CONSULTATION.MyProfile.PreferredGender" | translate
+          }}</span>
+          <span class="info-label" *ngIf="role === 'therapist'">{{
+            "CONSULTATION.MyProfile.Experience" | translate
+          }}</span>
+          <span class="info-value">{{
+            role === "client" ? genderLabel() : experienceLabel()
+          }}</span>
+        </div>
+
+        <div class="info-row" *ngIf="role === 'client'">
+          <span class="info-label">{{
+            "CONSULTATION.MyProfile.PreferredExperience" | translate
+          }}</span>
+          <span class="info-value">{{ experienceLabel() }}</span>
+        </div>
+
+        <div class="info-row" *ngIf="profile.specializations.length > 0">
+          <span class="info-label">{{
+            (role === "client"
+              ? "CONSULTATION.MyProfile.Interests"
+              : "CONSULTATION.MyProfile.Specialization"
+            ) | translate
+          }}</span>
+          <div class="tag-row">
+            <span
+              class="tag tag--spec"
+              *ngFor="let s of profile.specializations"
+              >{{ label(SPEC_MAP, s) }}</span
+            >
+          </div>
+        </div>
+
+        <div
+          class="info-row"
+          *ngIf="role === 'therapist' && profile.sessionPrice > 0"
+        >
+          <span class="info-label">{{
+            "CONSULTATION.MyProfile.Price" | translate
+          }}</span>
+          <span class="info-value"
+            >{{ profile.sessionPrice | number }} VNĐ / giờ</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Sessions placeholder -->
+  <div class="tab-content tab-content--center" *ngIf="activeTab === 'sessions'">
+    <div class="empty-state">
+      <h3>{{ "CONSULTATION.MyProfile.NoSessions" | translate }}</h3>
+      <p>{{ "CONSULTATION.MyProfile.NoSessionsDesc" | translate }}</p>
+    </div>
+  </div>
+
+  <!-- Tab: Reviews placeholder -->
+  <div class="tab-content tab-content--center" *ngIf="activeTab === 'reviews'">
+    <div class="empty-state">
+      <h3>{{ "CONSULTATION.MyProfile.NoReviews" | translate }}</h3>
+      <p>{{ "CONSULTATION.MyProfile.NoReviewsDesc" | translate }}</p>
+    </div>
+  </div>
+</div>

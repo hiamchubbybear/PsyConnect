@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { IncomingCall } from '../../services/webrtc/webrtc-signaling.service';
 
 @Component({
   selector: 'app-incoming-call',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './incoming-call.component.html',
   styleUrls: ['./incoming-call.component.scss'],
 })

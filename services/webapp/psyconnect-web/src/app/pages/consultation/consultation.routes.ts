@@ -23,6 +23,13 @@ export const consultationRoutes: Routes = [
             (m) => m.TherapistProfileComponent,
           ),
       },
+      {
+        path: 'my-profile',
+        loadComponent: () =>
+          import('./my-profile/my-profile').then(
+            (m) => m.MyConsultationProfileComponent,
+          ),
+      },
       { path: 'history', component: History },
       { path: 'reviews', component: Reviews },
       { path: 'settings', component: Settings },

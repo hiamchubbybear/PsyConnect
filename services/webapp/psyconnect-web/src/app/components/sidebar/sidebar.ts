@@ -1,5 +1,6 @@
 import { Component, ElementRef } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { Auth } from '../../services/auth/auth';
 
 @Component({
@@ -7,7 +8,7 @@ import { Auth } from '../../services/auth/auth';
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.scss'],
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, TranslateModule],
 })
 export class SidebarComponent {
   private observer?: IntersectionObserver;

@@ -15,14 +15,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { Friend, Message } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat/chat.service';
+import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 import { ChatInputComponent } from '../../../shared/ui-atoms/chat-input/chat-input.component';
 import { MessageBubbleComponent } from '../../../shared/ui-atoms/message-bubble/message-bubble.component';
 import {
   CallOptionsMenuComponent,
   CallType,
 } from '../../call-options-menu/call-options-menu.component';
-import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
-import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 
 @Component({
   selector: 'app-chat-main',
@@ -53,15 +53,13 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   @Output() callRequested = new EventEmitter<CallType>();
   @Output() suggestionSelected = new EventEmitter<Friend>();
   @Output() back = new EventEmitter<void>();
-  @ViewChild('messagesContainer')
-  messagesContainer!: ElementRef<HTMLDivElement>;
-  showLoadOlderButton = false;
-
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
 
   isLoadingOld = false;
+  showLoadOlderButton = false;
+  showScrollBottomButton = false;
 
-  isTyping = false;
+  @Input() isTyping = false;
   isSending = false; // Guard against duplicate sends
   private autoScrollPending = false;
 
@@ -80,9 +78,15 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
     }
   }
   onScroll() {
-    const container = this.messagesContainer.nativeElement;
-    const threshold = 50;
-    this.showLoadOlderButton = container.scrollTop <= threshold;
+    if (!this.scrollContainer) return;
+    const container = this.scrollContainer.nativeElement;
+
+    const topThreshold = 50;
+    this.showLoadOlderButton = container.scrollTop <= topThreshold;
+
+    const bottomDistance =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+    this.showScrollBottomButton = bottomDistance > 200;
   }
   onSendMessage(text: string) {
     const friend = this.selectedFriend;
@@ -129,15 +133,23 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       // Mark as sent after a short delay (WebSocket fire-and-forget)
       setTimeout(() => {
         this.messages = this.messages.map((m) =>
-          m.id === tempId ? { ...m, status: 'sent' as const } : m
+          m.id === tempId ? { ...m, status: 'sent' as const } : m,
         );
         this.messagesChange.emit(this.messages);
+
+        // Simulate delivered after another delay
+        setTimeout(() => {
+          this.messages = this.messages.map((m) =>
+            m.id === tempId ? { ...m, status: 'delivered' as const } : m,
+          );
+          this.messagesChange.emit(this.messages);
+        }, 1200);
       }, 300);
     } catch (err) {
       console.error('❌ Failed to send message:', err);
       // Mark as failed
       this.messages = this.messages.map((m) =>
-        m.id === tempId ? { ...m, status: 'failed' as const } : m
+        m.id === tempId ? { ...m, status: 'failed' as const } : m,
       );
       this.messagesChange.emit(this.messages);
     }
@@ -153,7 +165,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
     // Update status to sending
     this.messages = this.messages.map((m) =>
-      m.id === failedMsg.id ? { ...m, status: 'sending' as const } : m
+      m.id === failedMsg.id ? { ...m, status: 'sending' as const } : m,
     );
     this.messagesChange.emit(this.messages);
 
@@ -166,13 +178,13 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
       setTimeout(() => {
         this.messages = this.messages.map((m) =>
-          m.id === failedMsg.id ? { ...m, status: 'sent' as const } : m
+          m.id === failedMsg.id ? { ...m, status: 'sent' as const } : m,
         );
         this.messagesChange.emit(this.messages);
       }, 300);
     } catch (err) {
       this.messages = this.messages.map((m) =>
-        m.id === failedMsg.id ? { ...m, status: 'failed' as const } : m
+        m.id === failedMsg.id ? { ...m, status: 'failed' as const } : m,
       );
       this.messagesChange.emit(this.messages);
     }
@@ -223,11 +235,11 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
     };
   }
 
-  private scrollToBottom() {
+  scrollToBottom() {
     if (!this.scrollContainer) return;
     try {
       const el = this.scrollContainer.nativeElement;
-      el.scrollTop = el.scrollHeight;
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
       this.autoScrollPending = false;
     } catch (err) {
       console.warn('scrollToBottom error:', err);
@@ -244,14 +256,63 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       const prev = messages[index - 1];
       const next = messages[index + 1];
 
+      // Date separator logic
+      let showDateSeparator = false;
+      let dateSeparatorText = '';
+      if (!prev) {
+        showDateSeparator = true;
+      } else {
+        const prevDate = new Date(prev.timestamp);
+        const currDate = new Date(msg.timestamp);
+        if (
+          prevDate.getDate() !== currDate.getDate() ||
+          prevDate.getMonth() !== currDate.getMonth() ||
+          prevDate.getFullYear() !== currDate.getFullYear()
+        ) {
+          showDateSeparator = true;
+        }
+      }
+
+      if (showDateSeparator) {
+        const date = new Date(msg.timestamp);
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+
+        if (date.toDateString() === today.toDateString()) {
+          dateSeparatorText = 'Today';
+        } else if (date.toDateString() === yesterday.toDateString()) {
+          dateSeparatorText = 'Yesterday';
+        } else {
+          dateSeparatorText = date.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year:
+              date.getFullYear() !== today.getFullYear()
+                ? 'numeric'
+                : undefined,
+          });
+        }
+      }
+
       const isFirstInGroup =
         !prev ||
         prev.senderId !== msg.senderId ||
+        showDateSeparator ||
         msg.timestamp.getTime() - prev.timestamp.getTime() > GROUPING_THRESHOLD;
 
       const isLastInGroup =
         !next ||
         next.senderId !== msg.senderId ||
+        (() => {
+          const currDate = new Date(msg.timestamp);
+          const nextDate = new Date(next.timestamp);
+          return (
+            currDate.getDate() !== nextDate.getDate() ||
+            currDate.getMonth() !== nextDate.getMonth() ||
+            currDate.getFullYear() !== nextDate.getFullYear()
+          );
+        })() ||
         next.timestamp.getTime() - msg.timestamp.getTime() > GROUPING_THRESHOLD;
 
       return {
@@ -259,6 +320,8 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
         isFirstInGroup,
         isLastInGroup,
         showTimestamp: isFirstInGroup || isLastInGroup,
+        showDateSeparator,
+        dateSeparatorText,
       };
     });
   }

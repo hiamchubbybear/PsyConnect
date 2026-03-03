@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 export type CallType = 'audio' | 'video' | 'consultation';
 
 @Component({
   selector: 'app-call-options-menu',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './call-options-menu.component.html',
   styleUrls: ['./call-options-menu.component.scss'],
 })

@@ -9,6 +9,7 @@ export interface ChatFromApi {
   senderId: string;
   conversationId: string;
   text: string;
+  isSystem?: boolean;
   createdAt: string;
   updateAt: string;
 }
@@ -19,6 +20,9 @@ export interface Friend {
   avatarUri: string;
   isOnline?: boolean;
   hasNewMessage?: boolean;
+  lastMessage?: string;
+  lastMessageTime?: Date;
+  isTyping?: boolean;
 }
 export interface Message {
   id: string;
@@ -29,12 +33,15 @@ export interface Message {
   content: string;
   timestamp: Date;
   isMine: boolean;
+  isSystem?: boolean; // system messages (e.g. welcome message)
   // Message status
-  status?: 'sending' | 'sent' | 'failed';
+  status?: 'sending' | 'sent' | 'delivered' | 'failed';
   // Message grouping fields
   isFirstInGroup?: boolean;
   isLastInGroup?: boolean;
   showTimestamp?: boolean;
+  showDateSeparator?: boolean;
+  dateSeparatorText?: string;
 }
 
 export interface Chat {

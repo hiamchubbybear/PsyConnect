@@ -12,7 +12,7 @@
     <div class="profile-card__avatar-wrapper">
       <div class="profile-card__avatar">
         <img
-          [src]="user.avatarUrl | avatarFallback:user.name"
+          [src]="user.avatarUrl | avatarFallback: user.name"
           [alt]="user.name"
           class="profile-card__avatar-img"
         />
@@ -31,30 +31,14 @@
           type="button"
           [attr.aria-label]="'profile.contact.email' | translate"
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path
-              d="M3.33398 5.83337L10.0007 10.8334L16.6673 5.83337M3.33398 14.1667H16.6673C17.1275 14.1667 17.5007 13.7936 17.5007 13.3334V6.66671C17.5007 6.20647 17.1275 5.83337 16.6673 5.83337H3.33398C2.87375 5.83337 2.50065 6.20647 2.50065 6.66671V13.3334C2.50065 13.7936 2.87375 14.1667 3.33398 14.1667Z"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          {{ "profile.contact.email" | translate }}
         </button>
         <button
           class="profile-card__action-btn"
           type="button"
           [attr.aria-label]="'profile.contact.message' | translate"
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <path
-              d="M17.5007 9.58337C17.5048 10.6832 17.2493 11.7683 16.7549 12.75C16.1819 13.9265 15.2731 14.916 14.1402 15.6078C13.0074 16.2995 11.6988 16.6662 10.3643 16.6667C9.26448 16.6708 8.17937 16.4153 7.19732 15.9209L2.50065 17.5L4.07982 12.8034C3.58546 11.8213 3.33001 10.7362 3.33398 9.63629C3.33453 8.30179 3.70124 6.99315 4.39299 5.86032C5.08474 4.72749 6.07418 3.81866 7.25065 3.24571C8.23242 2.75129 9.3175 2.49584 10.4173 2.50004H10.834C12.5108 2.59588 14.0926 3.32169 15.2795 4.54492C16.4665 5.76815 17.1738 7.39931 17.2507 9.10421V9.58337Z"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          {{ "profile.contact.message" | translate }}
         </button>
       </ng-container>
 

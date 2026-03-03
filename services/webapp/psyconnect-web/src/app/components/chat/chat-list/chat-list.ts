@@ -4,22 +4,28 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Friend } from '../../../models/chat.models';
 import { FriendService } from '../../../services/chat/profile.chat.service';
+import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
+import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 import { ToastType } from '../../../shared/toast/toast-type';
 import { ToastService } from '../../../shared/toast/toast.service';
-import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
-import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 
 @Component({
   selector: 'app-chat-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, AvatarFallbackPipe, ImgFallbackDirective],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TranslateModule,
+    AvatarFallbackPipe,
+    ImgFallbackDirective,
+  ],
   templateUrl: './chat-list.html',
   styleUrls: ['./chat-list.scss'],
 })
 export class ChatListComponent implements OnInit {
   constructor(
     private friendService: FriendService,
-    private toastService: ToastService
+    private toastService: ToastService,
   ) {}
   @Input() selectedFriendId: string | null = null;
 
@@ -36,7 +42,7 @@ export class ChatListComponent implements OnInit {
   @Output() friendSelected = new EventEmitter<Friend>();
 
   searchQuery = '';
-  visibleCount = 6;
+  visibleCount = 50;
 
   ngOnInit() {}
 
@@ -47,7 +53,7 @@ export class ChatListComponent implements OnInit {
         this.toastService.show(
           'TOAST.key_failed',
           'TOAST.key_load_friends_failed',
-          ToastType.Error
+          ToastType.Error,
         ),
     });
   }
@@ -58,7 +64,7 @@ export class ChatListComponent implements OnInit {
       .filter(
         (f) =>
           f.firstName.toLowerCase().includes(q) ||
-          f.lastName.toLowerCase().includes(q)
+          f.lastName.toLowerCase().includes(q),
       )
       .slice(0, this.visibleCount);
   }

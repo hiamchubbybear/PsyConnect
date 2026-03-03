@@ -1,0 +1,406 @@
+// ─── My Consultation Profile Page ────────────────────────────────────────────
+// Uses CSS variables for full light/dark theme flexibility.
+// No hardcoded colors.
+
+.myprofile {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+.profile-hero {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  box-shadow: var(--shadow-card, 0 4px 24px rgba(0, 0, 0, 0.04));
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  &__avatar-wrap {
+    flex-shrink: 0;
+  }
+
+  &__avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--color-surface-low);
+    border: 3px solid var(--color-border);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &--initials {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-surface);
+      background: linear-gradient(
+        135deg,
+        var(--primary-color, #667eea),
+        #764ba2
+      );
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 0.5rem;
+    line-height: 1.25;
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__address {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  &__edit-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+.profile-tabs {
+  display: flex;
+  gap: 0.15rem;
+  background: var(--color-surface-low);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  padding: 0.25rem;
+  align-self: flex-start;
+}
+
+.profile-tab {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    color 0.25s;
+
+  &:hover {
+    color: var(--color-text);
+  }
+
+  &.active {
+    background: var(--color-surface);
+    color: var(--primary-color, #667eea);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+}
+
+// ─── Tab content ──────────────────────────────────────────────────────────────
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &--center {
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+  }
+}
+
+// ─── Info grid (2 columns on wide, 1 on mobile) ───────────────────────────────
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-card, 0 2px 12px rgba(0, 0, 0, 0.03));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &__title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.info-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+// ─── Badges & tags ────────────────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  &--mode {
+    background: rgba(102, 126, 234, 0.12);
+    color: var(--primary-color, #667eea);
+    border: 1px solid rgba(102, 126, 234, 0.25);
+  }
+
+  &--lang {
+    background: rgba(72, 187, 120, 0.12);
+    color: #48bb78;
+    border: 1px solid rgba(72, 187, 120, 0.25);
+  }
+
+  &--ok {
+    background: rgba(72, 187, 120, 0.12);
+    color: #48bb78;
+    border: 1px solid rgba(72, 187, 120, 0.25);
+  }
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: var(--color-surface-low);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+
+  &--spec {
+    background: rgba(237, 137, 54, 0.1);
+    color: var(--accent-color, #ed8936);
+    border-color: rgba(237, 137, 54, 0.25);
+  }
+
+  &--empty {
+    font-style: italic;
+    color: var(--color-text-muted);
+    background: transparent;
+    border-color: transparent;
+  }
+}
+
+// ─── Empty / no profile ───────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 1rem;
+  text-align: center;
+
+  h2,
+  h3 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 1.2rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    max-width: 320px;
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+    color: var(--color-text-muted);
+
+    svg {
+      opacity: 0.35;
+    }
+  }
+}
+
+// ─── Buttons ──────────────────────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    opacity 0.2s,
+    transform 0.15s;
+
+  &:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+
+  &--primary {
+    background: var(--primary-color, #667eea);
+    color: #fff;
+  }
+
+  &--secondary {
+    background: transparent;
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  &--sm {
+    padding: 0.45rem 1rem;
+    font-size: 0.82rem;
+  }
+}
+
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
+.myprofile--loading {
+  .skeleton-hero {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: var(--color-surface);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .skeleton-avatar-lg {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--color-surface-low);
+    flex-shrink: 0;
+    animation: shimmer 1.5s ease infinite;
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-low) 25%,
+      var(--color-surface-hover, #e5e7eb) 50%,
+      var(--color-surface-low) 75%
+    );
+    background-size: 200% 100%;
+  }
+
+  .skeleton-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+}
+
+.skeleton-body,
+.skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  animation: shimmer 1.5s ease infinite;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-low) 25%,
+    var(--color-surface-hover, #e5e7eb) 50%,
+    var(--color-surface-low) 75%
+  );
+  background-size: 200% 100%;
+
+  &.wide {
+    width: 55%;
+  }
+  &.medium {
+    width: 35%;
+  }
+  &.full {
+    width: 100%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

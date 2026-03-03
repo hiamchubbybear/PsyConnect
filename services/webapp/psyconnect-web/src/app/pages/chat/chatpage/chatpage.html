@@ -19,6 +19,7 @@
     [currentUserAvatar]="currentUser.avatar"
     [isLoadingMessages]="isLoadingMessages"
     [suggestedUsers]="suggestedUsers"
+    [isTyping]="selectedFriend()?.isTyping || false"
     (callRequested)="handleCallRequest($event)"
     (suggestionSelected)="onFriendSelected($event, true)"
     (back)="onBack()"

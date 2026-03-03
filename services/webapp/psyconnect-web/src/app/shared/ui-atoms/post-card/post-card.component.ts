@@ -1,14 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { LucideAngularModule } from 'lucide-angular'; // Added this import
 import { Post } from '../../../models/post.model';
-import { PsyButtonComponent } from '../button/psy-button.component';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
+import { PsyButtonComponent } from '../button/psy-button.component';
 
 @Component({
   selector: 'app-post-card',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, PsyButtonComponent, AvatarFallbackPipe],
+  imports: [
+    CommonModule,
+    LucideAngularModule,
+    PsyButtonComponent,
+    AvatarFallbackPipe,
+    TranslateModule,
+  ],
   templateUrl: './post-card.component.html',
   styleUrls: ['./post-card.component.scss'],
 })

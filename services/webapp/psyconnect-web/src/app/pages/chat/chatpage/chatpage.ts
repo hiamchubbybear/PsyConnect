@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, finalize, Subscription } from 'rxjs';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { combineLatest, finalize, of, Subscription } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { CallType } from '../../../components/call-options-menu/call-options-menu.component';
 import { ChatListComponent } from '../../../components/chat/chat-list/chat-list';
@@ -34,6 +36,8 @@ import { WebRTCService } from '../../../services/webrtc/webrtc.service';
     IncomingCallComponent,
     CommonModule,
     FormsModule,
+    RouterModule,
+    TranslateModule,
   ],
 })
 export class ChatComponent implements OnInit, OnDestroy {
@@ -50,6 +54,15 @@ export class ChatComponent implements OnInit, OnDestroy {
   isLoading = false;
   isLoadingFriends = true;
   isLoadingMessages = false;
+
+  // Consent dialog — shown once per browser session (stored in sessionStorage)
+  showConsentDialog = false;
+  private readonly CONSENT_KEY = 'psy_chat_consent_accepted';
+
+  // Stranger contacts (users not in friends list but added via route param)
+  // persisted in sessionStorage so they survive contact switching
+  private readonly STRANGERS_KEY = 'psy_chat_strangers';
+  private strangers: Friend[] = [];
 
   // WebRTC properties
   showVideoCall = false;
@@ -75,9 +88,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     private router: Router,
     private webrtcService: WebRTCService,
     private signalingService: WebRTCSignalingService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
+    // Show consent dialog on first visit (once per browser session)
+    if (!sessionStorage.getItem(this.CONSENT_KEY)) {
+      this.showConsentDialog = true;
+    }
+
+    // Restore stranger contacts from sessionStorage
+    try {
+      const stored = sessionStorage.getItem(this.STRANGERS_KEY);
+      this.strangers = stored ? JSON.parse(stored) : [];
+    } catch {
+      this.strangers = [];
+    }
+
     // Setup incoming call subscription IMMEDIATELY
     // This ensures we can receive calls even if we haven't initiated a call
     console.log('👂 Setting up incoming call subscription in ngOnInit...');
@@ -102,46 +129,27 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.cleanupCallUI();
     });
 
-    // Load current user immediately
+    // Load current user immediately, then load friends and conversations
     this.chatService.getCurrentUser().subscribe((profile) => {
       if (profile) {
         this.currentUser = mapUserProfileToChatUser(profile);
         console.log('✅ Current user loaded:', this.currentUser.name);
+        this.loadFriendsAndConversations();
       }
     });
 
-    // Load friends separately
-    combineLatest([
-      this.friendService.getMyFriends(),
-      this.route.paramMap,
-    ]).subscribe({
-      next: ([friends, params]) => {
-        console.log('✅ Friends loaded:', friends.length);
-        this.friends = friends;
-        console.log('📋 this.friends:', this.friends);
-
-        // Set loading false AFTER friends are set
-        this.isLoadingFriends = false;
-        console.log('🔍 isLoadingFriends NOW:', this.isLoadingFriends);
-
-        const idFromParam = params.get('id');
-        if (idFromParam) {
-          const friend = friends.find((f) => f.profileId === idFromParam);
-          if (friend) {
-            this.onFriendSelected(friend, false);
-            return;
-          }
-        }
-        if (friends.length > 0) {
-          this.onFriendSelected(friends[0], true);
-        }
-      },
-      error: (err) => {
-        console.error('❌ Error loading friends:', err);
-        // Even if error, stop loading so user can see their profile (empty list)
-        this.isLoadingFriends = false;
-        this.friends = [];
-      },
+    // Reactively handle route param changes (works even when component is reused)
+    this.sub = this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+      if (!id || this.isLoadingFriends) return;
+      const alreadySelected = this.selectedFriend()?.profileId === id;
+      if (alreadySelected) return;
+      const friend = this.friends.find((f) => f.profileId === id);
+      if (friend) {
+        this.onFriendSelected(friend, false);
+      } else {
+        this.openChatByProfileId(id);
+      }
     });
 
     // Unlock audio on first user interaction
@@ -150,15 +158,84 @@ export class ChatComponent implements OnInit, OnDestroy {
     // Load friend suggestions for empty state
     this.friendService.getFriendSuggestions().subscribe({
       next: (suggestions) => {
-        console.log('🔍 Friend suggestions raw data:', JSON.stringify(suggestions.slice(0, 4).map(s => ({
-          name: s.firstName,
-          avatarUri: s.avatarUri,
-          profileId: s.profileId
-        })), null, 2));
         this.suggestedUsers = suggestions.slice(0, 4);
       },
       error: () => {
         this.suggestedUsers = [];
+      },
+    });
+  }
+
+  private loadFriendsAndConversations() {
+    combineLatest([
+      this.friendService.getMyFriends(),
+      this.chatService.getRecentConversations(this.currentUser.profileId).pipe(
+        catchError((err) => {
+          console.error('Error fetching recent conversations:', err);
+          return of([]);
+        }),
+      ),
+    ]).subscribe({
+      next: ([friends, conversations]) => {
+        console.log('✅ Friends and Conversations loaded');
+
+        // Enrich friends with conversation data
+        const enrichedFriends: Friend[] = friends.map((f): Friend => {
+          // Find conversation where participants includes f.profileId
+          const conv = conversations.find((c) =>
+            c.participants?.includes(f.profileId),
+          );
+          if (conv && conv.lastMessage) {
+            let parsedText = conv.lastMessage.text;
+            try {
+              parsedText =
+                typeof parsedText === 'string'
+                  ? JSON.parse(parsedText)
+                  : String(parsedText);
+            } catch (e) {
+              // Ignore parse errors, text is unchanged
+            }
+            return {
+              ...f,
+              lastMessage: parsedText,
+              lastMessageTime: new Date(conv.lastMessage.createdAt),
+            };
+          } else if (conv) {
+            return {
+              ...f,
+              lastMessageTime: new Date(conv.createdAt),
+            };
+          }
+          return f;
+        });
+
+        // Sort by recent activity
+        enrichedFriends.sort((a, b) => {
+          const timeA = a.lastMessageTime?.getTime() || 0;
+          const timeB = b.lastMessageTime?.getTime() || 0;
+          return timeB - timeA;
+        });
+
+        this.friends = enrichedFriends;
+        this.isLoadingFriends = false;
+
+        // Auto-select first friend if no param
+        const currentId = this.route.snapshot.paramMap.get('id');
+        if (currentId) {
+          const friend = this.friends.find((f) => f.profileId === currentId);
+          if (friend) {
+            this.onFriendSelected(friend, false);
+          } else {
+            this.openChatByProfileId(currentId);
+          }
+        } else if (this.friends.length > 0) {
+          this.onFriendSelected(this.friends[0], true);
+        }
+      },
+      error: (err) => {
+        console.error('❌ Error loading friends/conversations:', err);
+        this.isLoadingFriends = false;
+        this.friends = [];
       },
     });
   }
@@ -202,6 +279,89 @@ export class ChatComponent implements OnInit, OnDestroy {
   onBack() {
     this.selectedFriend.set(null);
     this.router.navigate(['/feature/chat']);
+  }
+
+  /**
+   * Open chat by raw profileId — works for users NOT yet in the friends list
+   * (e.g., navigating from therapist card in feed).
+   * Persists the stranger in sessionStorage so they stay in the sidebar.
+   */
+  openChatByProfileId(profileId: string) {
+    // Check existing friends first
+    const existingFriend = this.friends.find((f) => f.profileId === profileId);
+    if (existingFriend) {
+      this.onFriendSelected(existingFriend, false);
+      return;
+    }
+
+    // Check strangers list
+    const existingStranger = this.strangers.find(
+      (f) => f.profileId === profileId,
+    );
+    if (existingStranger) {
+      this.onFriendSelected(existingStranger, false);
+      return;
+    }
+
+    // Create minimal friend entry and persist as stranger
+    const minimalFriend: Friend = {
+      profileId,
+      firstName: 'User',
+      lastName: '',
+      avatarUri: '',
+    };
+
+    this.strangers = [minimalFriend, ...this.strangers];
+    this.saveStrangers();
+    this.onFriendSelected(minimalFriend, false);
+  }
+
+  /** Get merged list of friends + strangers for the sidebar */
+  get allContacts(): Friend[] {
+    const friendIds = new Set(this.friends.map((f) => f.profileId));
+    const uniqueStrangers = this.strangers.filter(
+      (s) => !friendIds.has(s.profileId),
+    );
+    return [...this.friends, ...uniqueStrangers];
+  }
+
+  private saveStrangers() {
+    try {
+      sessionStorage.setItem(
+        this.STRANGERS_KEY,
+        JSON.stringify(this.strangers),
+      );
+    } catch {}
+  }
+
+  /** Consent dialog: user accepts → store in sessionStorage, close dialog */
+  acceptConsent() {
+    sessionStorage.setItem(this.CONSENT_KEY, 'true');
+    this.showConsentDialog = false;
+    this.addSystemMessage(
+      this.translate.instant('CHAT.SYSTEM.ConsentAccepted'),
+    );
+  }
+
+  private addSystemMessage(content: string) {
+    const sysMsg: Message = {
+      id: 'system-' + Date.now(),
+      conversationId: this.conversationId(),
+      senderId: 'system',
+      content: content,
+      timestamp: new Date(),
+      userName: 'System',
+      userAvatar: '',
+      isMine: false,
+      isSystem: true,
+    };
+
+    this.messages.update((prev) => [...prev, sysMsg]);
+  }
+
+  /** Consent dialog: user declines → navigate away */
+  declineConsent() {
+    this.router.navigate(['/feature/feed']);
   }
 
   onFriendSelected(friend: Friend, updateUrl = false) {

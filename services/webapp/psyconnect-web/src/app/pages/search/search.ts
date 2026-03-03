@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin, map } from 'rxjs';
 import { TherapistService } from '../../services/consultation/therapist.service';
 import { GroupService } from '../../services/group/group.service';
@@ -34,7 +35,7 @@ interface RecentSearch {
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterModule],
+  imports: [FormsModule, CommonModule, RouterModule, TranslateModule],
   templateUrl: './search.html',
   styleUrls: ['./search.scss'],
 })

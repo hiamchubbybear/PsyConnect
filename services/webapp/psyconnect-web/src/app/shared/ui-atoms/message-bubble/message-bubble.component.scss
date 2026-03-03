@@ -146,6 +146,18 @@
     }
   }
 
+  .status-icon {
+    display: flex;
+    align-items: center;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+
+    &.delivered {
+      color: var(--color-primary);
+      opacity: 1;
+    }
+  }
+
   .status-failed {
     display: flex;
     align-items: center;
@@ -174,8 +186,13 @@
 }
 
 @keyframes pulse-spin {
-  0% { opacity: 0.3; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0.3; }
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.3;
+  }
 }
-

@@ -1,13 +1,18 @@
 {
     "APP_NAME": "Psyconnect",
     "HEADER": {
-        "Feature": "Tính năng",
+        "Theme": {
+            "Light": "Giao diện Sáng",
+            "Dark": "Giao diện Tối"
+        },
+        "Home": "Trang chủ",
         "Therapist": "Chuyên gia tâm lý",
         "Community": "Cộng đồng",
         "About": "Về chúng tôi",
         "Login": "Đăng nhập",
         "Sign Up": "Đăng ký",
-        "NOTIFICATIONS": "Thông báo"
+        "NOTIFICATIONS": "Thông báo",
+        "Feature": "Tính năng"
     },
     "NOTIFICATIONS": {
         "TITLE": "Thông báo",
@@ -24,8 +29,10 @@
         "Login": "Đăng nhập",
         "Confirm": "Xác nhận",
         "Cancel": "Hủy",
+        "Yes": "Có",
+        "No": "Không",
         "SaveChanges": "Lưu thay đổi",
-        " Remove": "Xóa",
+        "Remove": "Xóa",
         "Add": "Thêm",
         "Edit": "Chỉnh sửa",
         "Delete": "Xóa",
@@ -46,7 +53,18 @@
         "Info": "Thông tin",
         "Continue": "Tiếp tục",
         "SaveProfile": "Lưu hồ sơ",
-        "Saving": "Đang lưu..."
+        "Saving": "Đang lưu...",
+        "Logout": "Đăng xuất"
+    },
+    "SIDEBAR": {
+        "Feed": "Bảng tin",
+        "Schedule": "Lịch hẹn",
+        "Chat": "Tin nhắn",
+        "Profile": "Cá nhân",
+        "Search": "Tìm kiếm",
+        "Article": "Bài viết",
+        "Settings": "Cài đặt",
+        "Logout": "Đăng xuất"
     },
     "HOME": {
         "Badge": "🌱 Nền tảng Sức khỏe Tâm thần",
@@ -144,6 +162,8 @@
             "Subtitle": "Đăng nhập vào tài khoản của bạn"
         },
         "Form": {
+            "WelcomeBack": "Chào mừng trở lại",
+            "Or": "Hoặc",
             "Username": "Tên đăng nhập",
             "UsernamePlaceholder": "Nhập tên đăng nhập của bạn",
             "UsernameRequired": "Tên đăng nhập là bắt buộc",
@@ -379,7 +399,8 @@
             "Overview": "Tổng quan",
             "Sessions": "Phiên tư vấn",
             "Schedule": "Lịch hẹn",
-            "Consultators": "Chuyên gia"
+            "Consultators": "Chuyên gia",
+            "MyProfile": "Hồ sơ của tôi"
         },
         "Sidebar": {
             "Title": "Tư vấn",
@@ -420,16 +441,51 @@
             "TherapistNotAvailableDesc": "Chức năng này chỉ dành cho khách hàng đang tìm chuyên gia tư vấn. Với vai trò chuyên gia, bạn có thể quản lý phiên tư vấn của mình.",
             "GoToSessions": "Đi đến Phiên tư vấn"
         },
-        "SOCIAL": {
-            "Follow": "Theo dõi",
-            "Unfollow": "Bỏ theo dõi",
-            "Followers": "Người theo dõi",
-            "Following": "Đang theo dõi",
-            "Bookmark": "Lưu",
-            "Bookmarked": "Đã lưu",
-            "RemoveBookmark": "Bỏ lưu",
-            "Share": "Chia sẻ",
-            "Shared": "Đã chia sẻ thành công"
+        "MyProfile": {
+            "NoProfile": "Bạn chưa có hồ sơ tư vấn",
+            "NoProfileDesc": "Tạo hồ sơ để kết nối với cộng đồng PsyConnect.",
+            "CreateNow": "Tạo hồ sơ ngay",
+            "EditProfile": "Chỉnh sửa hồ sơ",
+            "AvailabilityTitle": "Lịch rảnh",
+            "Weekday": "Ngày trong tuần",
+            "TimeSlots": "Khung giờ",
+            "Duration": "Thời lượng mỗi buổi",
+            "Flexible": "Linh hoạt lịch",
+            "Requirements": "Yêu cầu của tôi",
+            "ProfessionalInfo": "Thông tin chuyên môn",
+            "Urgency": "Mức độ khẩn cấp",
+            "PreferredGender": "Giới tính chuyên gia",
+            "PreferredExperience": "Kinh nghiệm chuyên gia",
+            "Experience": "Kinh nghiệm",
+            "Specialization": "Chuyên môn",
+            "Interests": "Lĩnh vực quan tâm",
+            "Price": "Phí tham vấn",
+            "Sessions": "Buổi tư vấn",
+            "ReviewsTab": "Đánh giá",
+            "NoSessions": "Chưa có buổi tư vấn nào",
+            "NoSessionsDesc": "Bắt đầu hành trình chăm sóc sức khỏe tinh thần cùng PsyConnect.",
+            "NoReviews": "Chưa có đánh giá nào",
+            "NoReviewsDesc": "Các đánh giá sẽ được hiển thị tại đây sau khi hoàn thành buổi tư vấn.",
+            "Labels": {
+                "Urgency": {
+                    "Immediate": "Khẩn cấp (Trong 24h)",
+                    "Urgent": "Gấp (Trong 3 ngày)",
+                    "Moderate": "Vừa (Trong tuần)",
+                    "Flexible": "Linh hoạt"
+                },
+                "Experience": {
+                    "Any": "Không yêu cầu",
+                    "Entry": "1–3 năm",
+                    "Mid": "3–7 năm",
+                    "Senior": "7+ năm"
+                },
+                "Gender": {
+                    "Any": "Không yêu cầu",
+                    "Male": "Nam",
+                    "Female": "Nữ",
+                    "NonBinary": "Phi nhị phân"
+                }
+            }
         },
         "CreateProfile": {
             "Title": "Tạo Hồ sơ Tư vấn",
@@ -445,10 +501,6 @@
             "StepDetails": "Chi tiết",
             "AlmostDoneClient": "Bạn sắp xong rồi! Hãy kiểm tra lại và nhấn <strong>Lưu & Hoàn thành</strong>.",
             "AlmostDoneTherapist": "Bạn sắp xong rồi! Hãy kiểm tra lại và nhấn <strong>Lưu & Hoàn thành</strong>."
-        },
-        "CLIENT": {
-            "BudgetDesc": "Nhập mức ngân sách dự kiến của bạn.",
-            "IssueDetail": "Vấn đề quan tâm"
         },
         "Modes": {
             "Online": "Trực tuyến",
@@ -518,7 +570,8 @@
             "ExperienceLevel": "Mức kinh nghiệm ưa thích",
             "FlexibleSchedule": "Linh hoạt lịch trình",
             "TherapistSpecialization": "Chuyên môn ưa thích",
-            "Languages": "Ngôn ngữ ưa thích"
+            "Languages": "Ngôn ngữ ưa thích",
+            "BudgetDesc": "Nhập mức ngân sách dự kiến của bạn."
         },
         "SESSION": {
             "Title": "Phiên tư vấn",
@@ -631,192 +684,302 @@
             "Offline": "Trực tiếp"
         }
     },
-    "about_us": "Về chúng tôi",
-    "hero_tagline": "Nền tảng kết nối tâm lý hàng đầu Việt Nam",
-    "mission_statement": "Kết nối người tìm hỗ trợ tâm lý với chuyên gia đã được kiểm định — nhanh, an toàn, minh bạch.",
-    "vision_statement": "Trở thành nền tảng trung lập hàng đầu, giúp mọi người dễ dàng tiếp cận chuyên môn phù hợp nhất.",
-    "core_values": [
-        "Trung lập",
-        "Minh bạch",
-        "Bảo mật",
-        "Thấu hiểu",
-        "Chuyên nghiệp"
-    ],
-    "find_expert": "Tìm chuyên gia",
-    "become_partner": "Trở thành đối tác",
-    "verified_experts": "Chuyên gia đã xác minh",
-    "successful_sessions": "Phiên tư vấn thành công",
-    "average_rating": "Đánh giá trung bình",
-    "support_available": "Hỗ trợ 24/7",
-    "our_story_title": "Vì sao tạo nền tảng này",
-    "our_story_content": "Chúng tôi thấy nhiều người muốn tiếp cận chuyên gia tâm lý nhưng gặp rào cản: không biết tìm ai, lo ngại về chất lượng, hoặc khó so sánh chi phí. PsyConnect được tạo ra như một cầu nối tin cậy — nơi khách hàng có thể tìm kiếm, so sánh và đặt lịch với các chuyên gia tư vấn độc lập chất lượng cao, dựa trên hồ sơ chi tiết, đánh giá từ người dùng thực và quy trình xác thực nghiêm ngặt của chúng tôi.",
-    "our_mission": "Sứ mệnh",
-    "our_vision": "Tầm nhìn",
-    "expert_verification": "Quy trình xác thực chuyên gia",
-    "verification_description": "Chúng tôi áp dụng quy trình xác thực 4 bước nghiêm ngặt để đảm bảo chất lượng chuyên gia trên nền tảng.",
-    "verification_steps": [
-        "Kiểm tra bằng cấp & chứng chỉ chuyên môn",
-        "Xác minh danh tính & thông tin cá nhân (KYC)",
-        "Kiểm tra kinh nghiệm thực tế & tham chiếu nghề nghiệp",
-        "Cam kết tuân thủ đạo đức nghề nghiệp & quy định pháp luật"
-    ],
-    "quality_standards": [
-        "Tất cả chuyên gia đều có bằng cấp được công nhận",
-        "Kiểm tra định kỳ chứng chỉ hành nghề",
-        "Đánh giá chất lượng dịch vụ thường xuyên",
-        "Hệ thống phản hồi và khiếu nại minh bạch",
-        "Đào tạo liên tục về các phương pháp mới"
-    ],
-    "featured_experts": "Chuyên gia tiêu biểu",
-    "featured_experts_desc": "Những chuyên gia tâm lý hàng đầu đã được xác minh và có nhiều kinh nghiệm trên nền tảng.",
-    "verified": "Đã xác minh",
-    "reviews": "đánh giá",
-    "years_experience": "năm kinh nghiệm",
-    "education": "Học vấn",
-    "certificates": "Chứng chỉ",
-    "verify": "Xác minh",
-    "our_services": "Dịch vụ của chúng tôi",
-    "services_description": "Chúng tôi cung cấp nhiều loại hình dịch vụ tư vấn tâm lý phù hợp với nhu cầu đa dạng của khách hàng.",
-    "individual_counseling": "Tư vấn cá nhân 1-1",
-    "individual_counseling_desc": "Phiên tư vấn riêng tư với chuyên gia phù hợp, có thể diễn ra online hoặc tại phòng khám.",
-    "group_therapy": "Trị liệu nhóm",
-    "group_therapy_desc": "Các nhóm hỗ trợ theo chủ đề cụ thể, được dẫn dắt bởi chuyên gia có kinh nghiệm.",
-    "couples_therapy": "Tư vấn cặp đôi",
-    "couples_therapy_desc": "Hỗ trợ các cặp đôi giải quyết xung đột và cải thiện mối quan hệ.",
-    "online_consultation": "Tư vấn trực tuyến",
-    "online_consultation_desc": "Dịch vụ tư vấn qua video call tiện lợi, tiết kiệm thời gian di chuyển.",
-    "therapeutic_methods": [
-        "CBT (Liệu pháp nhận thức hành vi)",
-        "ACT (Liệu pháp chấp nhận và cam kết)",
-        "Mindfulness (Chánh niệm)",
-        "Psychodynamic Therapy",
-        "Humanistic Counseling",
-        "EMDR",
-        "Family Systems Therapy",
-        "Solution-Focused Therapy"
-    ],
-    "who_should_use": "Ai nên sử dụng PsyConnect?",
-    "target_audience": [
-        "Người cần tư vấn tâm lý cá nhân",
-        "Gia đình có vấn đề cần hỗ trợ",
-        "Sinh viên gặp áp lực học tập",
-        "Người đi làm stress công việc",
-        "Cặp đôi có xung đột tình cảm",
-        "Người trải qua chấn thương tâm lý",
-        "Người có vấn đề về lo âu, trầm cảm"
-    ],
-    "getting_started_message": "Bạn không cần là chuyên gia để bắt đầu — chỉ cần một bước đơn giản để tìm người phù hợp nhất với mình.",
-    "our_team": "Đội ngũ của chúng tôi",
-    "team_description": "Đội ngũ chuyên gia tâm lý và quản lý chuyên nghiệp, cam kết mang đến trải nghiệm tốt nhất cho người dùng.",
-    "clinical_director": "Giám đốc Lâm sàng",
-    "clinical_director_bio": "Bác sĩ tâm lý lâm sàng với hơn 15 năm kinh nghiệm. Chuyên gia hàng đầu về trị liệu CBT và EMDR.",
-    "head_of_operations": "Trưởng phòng Vận hành",
-    "head_of_operations_bio": "10 năm kinh nghiệm quản lý dự án công nghệ và phát triển sản phẩm trong lĩnh vực chăm sóc sức khỏe.",
-    "privacy_security": "Bảo mật & An toàn",
-    "privacy_protection": "Bảo vệ quyền riêng tư",
-    "privacy_features": [
-        "Mã hóa end-to-end cho tất cả cuộc trò chuyện",
-        "Không chia sẻ thông tin cá nhân với bên thứ ba",
-        "Quyền xóa dữ liệu hoàn toàn khi yêu cầu",
-        "Tuân thủ nghiêm ngặt luật bảo vệ dữ liệu cá nhân",
-        "Hệ thống đăng nhập 2 lớp bảo mật"
-    ],
-    "security_measures": [
-        "Máy chủ được bảo vệ bằng tường lửa cao cấp",
-        "Sao lưu dữ liệu tự động và bảo mật",
-        "Kiểm tra bảo mật định kỳ bởi bên thứ ba",
-        "SSL certificate cho tất cả kết nối",
-        "Giám sát 24/7 phát hiện bất thường"
-    ],
-    "frequently_asked": "Câu hỏi thường gặp",
-    "faq_items": [
-        {
-            "question": "Làm thế nào để tôi biết chuyên gia nào phù hợp với mình?",
-            "answer": "Bạn có thể xem hồ sơ chi tiết, chuyên môn, kinh nghiệm và đánh giá của từng chuyên gia. Chúng tôi cũng có hệ thống gợi ý dựa trên nhu cầu của bạn."
+    "LANDING": {
+        "about_us": "Về chúng tôi",
+        "hero_tagline": "Nền tảng kết nối tâm lý hàng đầu Việt Nam",
+        "mission_statement": "Kết nối người tìm hỗ trợ tâm lý với chuyên gia đã được kiểm định — nhanh, an toàn, minh bạch.",
+        "vision_statement": "Trở thành nền tảng trung lập hàng đầu, giúp mọi người dễ dàng tiếp cận chuyên môn phù hợp nhất.",
+        "core_values": [
+            "Trung lập",
+            "Minh bạch",
+            "Bảo mật",
+            "Thấu hiểu",
+            "Chuyên nghiệp"
+        ],
+        "find_expert": "Tìm chuyên gia",
+        "become_partner": "Trở thành đối tác",
+        "verified_experts": "Chuyên gia đã xác minh",
+        "successful_sessions": "Phiên tư vấn thành công",
+        "average_rating": "Đánh giá trung bình",
+        "support_available": "Hỗ trợ 24/7",
+        "our_story_title": "Vì sao tạo nền tảng này",
+        "our_story_content": "Chúng tôi thấy nhiều người muốn tiếp cận chuyên gia tâm lý nhưng gặp rào cản: không biết tìm ai, lo ngại về chất lượng, hoặc khó so sánh chi phí. PsyConnect được tạo ra như một cầu nối tin cậy — nơi khách hàng có thể tìm kiếm, so sánh và đặt lịch với các chuyên gia tư vấn độc lập chất lượng cao, dựa trên hồ sơ chi tiết, đánh giá từ người dùng thực và quy trình xác thực nghiêm ngặt của chúng tôi.",
+        "our_mission": "Sứ mệnh",
+        "our_vision": "Tầm nhìn",
+        "expert_verification": "Quy trình xác thực chuyên gia",
+        "verification_description": "Chúng tôi áp dụng quy trình xác thực 4 bước nghiêm ngặt để đảm bảo chất lượng chuyên gia trên nền tảng.",
+        "verification_steps": [
+            "Kiểm tra bằng cấp & chứng chỉ chuyên môn",
+            "Xác minh danh tính & thông tin cá nhân (KYC)",
+            "Kiểm tra kinh nghiệm thực tế & tham chiếu nghề nghiệp",
+            "Cam kết tuân thủ đạo đức nghề nghiệp & quy định pháp luật"
+        ],
+        "quality_standards": [
+            "Tất cả chuyên gia đều có bằng cấp được công nhận",
+            "Kiểm tra định kỳ chứng chỉ hành nghề",
+            "Đánh giá chất lượng dịch vụ thường xuyên",
+            "Hệ thống phản hồi và khiếu nại minh bạch",
+            "Đào tạo liên tục về các phương pháp mới"
+        ],
+        "featured_experts": "Chuyên gia tiêu biểu",
+        "featured_experts_desc": "Những chuyên gia tâm lý hàng đầu đã được xác minh và có nhiều kinh nghiệm trên nền tảng.",
+        "verified": "Đã xác minh",
+        "reviews": "đánh giá",
+        "years_experience": "năm kinh nghiệm",
+        "education": "Học vấn",
+        "certificates": "Chứng chỉ",
+        "verify": "Xác minh",
+        "our_services": "Dịch vụ của chúng tôi",
+        "services_description": "Chúng tôi cung cấp nhiều loại hình dịch vụ tư vấn tâm lý phù hợp với nhu cầu đa dạng của khách hàng.",
+        "individual_counseling": "Tư vấn cá nhân 1-1",
+        "individual_counseling_desc": "Phiên tư vấn riêng tư với chuyên gia phù hợp, có thể diễn ra online hoặc tại phòng khám.",
+        "group_therapy": "Trị liệu nhóm",
+        "group_therapy_desc": "Các nhóm hỗ trợ theo chủ đề cụ thể, được dẫn dắt bởi chuyên gia có kinh nghiệm.",
+        "couples_therapy": "Tư vấn cặp đôi",
+        "couples_therapy_desc": "Hỗ trợ các cặp đôi giải quyết xung đột và cải thiện mối quan hệ.",
+        "online_consultation": "Tư vấn trực tuyến",
+        "online_consultation_desc": "Dịch vụ tư vấn qua video call tiện lợi, tiết kiệm thời gian di chuyển.",
+        "therapeutic_methods": [
+            "CBT (Liệu pháp nhận thức hành vi)",
+            "ACT (Liệu pháp chấp nhận và cam kết)",
+            "Mindfulness (Chánh niệm)",
+            "Psychodynamic Therapy",
+            "Humanistic Counseling",
+            "EMDR",
+            "Family Systems Therapy",
+            "Solution-Focused Therapy"
+        ],
+        "who_should_use": "Ai nên sử dụng PsyConnect?",
+        "target_audience": [
+            "Người cần tư vấn tâm lý cá nhân",
+            "Gia đình có vấn đề cần hỗ trợ",
+            "Sinh viên gặp áp lực học tập",
+            "Người đi làm stress công việc",
+            "Cặp đôi có xung đột tình cảm",
+            "Người trải qua chấn thương tâm lý",
+            "Người có vấn đề về lo âu, trầm cảm"
+        ],
+        "getting_started_message": "Bạn không cần là chuyên gia để bắt đầu — chỉ cần một bước đơn giản để tìm người phù hợp nhất với mình.",
+        "our_team": "Đội ngũ của chúng tôi",
+        "team_description": "Đội ngũ chuyên gia tâm lý và quản lý chuyên nghiệp, cam kết mang đến trải nghiệm tốt nhất cho người dùng.",
+        "clinical_director": "Giám đốc Lâm sàng",
+        "clinical_director_bio": "Bác sĩ tâm lý lâm sàng với hơn 15 năm kinh nghiệm. Chuyên gia hàng đầu về trị liệu CBT và EMDR.",
+        "head_of_operations": "Trưởng phòng Vận hành",
+        "head_of_operations_bio": "10 năm kinh nghiệm quản lý dự án công nghệ và phát triển sản phẩm trong lĩnh vực chăm sóc sức khỏe.",
+        "privacy_security": "Bảo mật & An toàn",
+        "privacy_protection": "Bảo vệ quyền riêng tư",
+        "privacy_features": [
+            "Mã hóa end-to-end cho tất cả cuộc trò chuyện",
+            "Không chia sẻ thông tin cá nhân với bên thứ ba",
+            "Quyền xóa dữ liệu hoàn toàn khi yêu cầu",
+            "Tuân thủ nghiêm ngặt luật bảo vệ dữ liệu cá nhân",
+            "Hệ thống đăng nhập 2 lớp bảo mật"
+        ],
+        "security_measures": [
+            "Máy chủ được bảo vệ bằng tường lửa cao cấp",
+            "Sao lưu dữ liệu tự động và bảo mật",
+            "Kiểm tra bảo mật định kỳ bởi bên thứ ba",
+            "SSL certificate cho tất cả kết nối",
+            "Giám sát 24/7 phát hiện bất thường"
+        ],
+        "frequently_asked": "Câu hỏi thường gặp",
+        "faq_items": [
+            {
+                "question": "Làm thế nào để tôi biết chuyên gia nào phù hợp với mình?",
+                "answer": "Bạn có thể xem hồ sơ chi tiết, chuyên môn, kinh nghiệm và đánh giá của từng chuyên gia. Chúng tôi cũng có hệ thống gợi ý dựa trên nhu cầu của bạn."
+            },
+            {
+                "question": "Chi phí tư vấn là bao nhiều?",
+                "answer": "Chi phí dao động từ 300,000 - 1,200,000 VND/phiên tùy theo loại dịch vụ và kinh nghiệm của chuyên gia. Bạn có thể xem giá cụ thể trên hồ sơ từng chuyên gia."
+            },
+            {
+                "question": "Thông tin của tôi có được bảo mật không?",
+                "answer": "Hoàn toàn. Chúng tôi áp dụng mã hóa end-to-end và tuân thủ nghiêm ngặt các quy định về bảo mật thông tin cá nhân."
+            },
+            {
+                "question": "Tôi có thể hủy lịch hẹn không?",
+                "answer": "Có, bạn có thể hủy lịch hẹn trước 24 giờ mà không mất phí. Hủy trong vòng 24 giờ có thể bị tính phí theo quy định của từng chuyên gia."
+            },
+            {
+                "question": "Nếu tôi cần hỗ trợ khẩn cấp thì sao?",
+                "answer": "Với các trường hợp khẩn cấp, vui lòng gọi đường dây nóng 113 hoặc liên hệ cơ sở y tế gần nhất. PsyConnect không cung cấp dịch vụ cấp cứu tâm lý."
+            }
+        ],
+        "contact_us": "Liên hệ chúng tôi",
+        "hotline": "Đường dây nóng",
+        "email": "Email",
+        "address": "Địa chỉ",
+        "business_hours": "Giờ làm việc",
+        "weekdays": "Thứ 2 - Thứ 6",
+        "weekends": "Cuối tuần",
+        "crisis_support": "Hỗ trợ khủng hoảng",
+        "crisis_support_desc": "Nếu bạn đang trong tình huống khẩn cấp hoặc có ý định tự hại, vui lòng liên hệ ngay:",
+        "emergency_call": "Gọi khẩn cấp",
+        "current_version": "Phiên bản hiện tại",
+        "whats_new": "Có gì mới",
+        "coming_soon": "Sắp ra mắt",
+        "development_team": "Đội phát triển",
+        "view_repository": "Xem mã nguồn",
+        "release_notes": [
+            "Ra mắt nền tảng với đầy đủ tính năng đăng ký và đặt lịch",
+            "Hệ thống hồ sơ chuyên gia chi tiết với xác minh chứng chỉ",
+            "Tích hợp thanh toán online an toàn",
+            "Hệ thống đánh giá và phản hồi từ người dùng",
+            "Tư vấn video call chất lượng cao",
+            "Ứng dụng mobile iOS và Android"
+        ],
+        "upcoming_features": [
+            "AI chatbot hỗ trợ tư vấn sơ cấp 24/7",
+            "Tích hợp lịch Google Calendar và Outlook",
+            "Hệ thống theo dõi tiến trình trị liệu",
+            "Ứng dụng VR cho liệu pháp thư giãn",
+            "Tính năng nhóm hỗ trợ cộng đồng",
+            "API cho tích hợp với bệnh viện/phòng khám"
+        ],
+        "team_leads": {
+            "fullstack": "Trưởng nhóm Fullstack",
+            "fullstack_bio": "8 năm kinh nghiệm phát triển ứng dụng web và mobile. Thành thạo React, Node.js và kiến trúc cloud.",
+            "backend": "Lập trình viên Backend",
+            "backend_bio": "Kinh nghiệm xây dựng microservice có khả năng mở rộng bằng Node.js và Golang, tập trung vào hiệu năng và độ tin cậy.",
+            "uiux": "Nhà thiết kế UI/UX",
+            "uiux_bio": "Đam mê hệ thống thiết kế, tính khả dụng và trải nghiệm người dùng, có nền tảng vững chắc về Figma và prototyping.",
+            "frontend": "Lập trình viên Frontend",
+            "frontend_bio": "Chuyên gia UI/UX với 5 năm kinh nghiệm tạo ra giao diện đẹp và thân thiện bằng Angular và React.",
+            "devops": "Kỹ sư DevOps",
+            "devops_engineer_bio": "Chuyên về hạ tầng cloud và tự động hóa, có kinh nghiệm làm việc tại các startup công nghệ hàng đầu.",
+            "security": "Kỹ sư An ninh mạng",
+            "security_engineer_bio": "Tập trung vào bảo mật ứng dụng, kiểm thử xâm nhập và đảm bảo tuân thủ tiêu chuẩn ngành.",
+            "qa": "Kỹ sư QA",
+            "qa_engineer_bio": "Thành thạo kiểm thử tự động và thủ công, đảm bảo chất lượng sản phẩm trước khi phát hành.",
+            "product": "Quản lý sản phẩm",
+            "product_manager_bio": "Kết nối giữa kinh doanh và công nghệ, quản lý backlog, roadmap và đảm bảo tầm nhìn sản phẩm được hiện thực hóa."
         },
-        {
-            "question": "Chi phí tư vấn là bao nhiều?",
-            "answer": "Chi phí dao động từ 300,000 - 1,200,000 VND/phiên tùy theo loại dịch vụ và kinh nghiệm của chuyên gia. Bạn có thể xem giá cụ thể trên hồ sơ từng chuyên gia."
-        },
-        {
-            "question": "Thông tin của tôi có được bảo mật không?",
-            "answer": "Hoàn toàn. Chúng tôi áp dụng mã hóa end-to-end và tuân thủ nghiêm ngặt các quy định về bảo mật thông tin cá nhân."
-        },
-        {
-            "question": "Tôi có thể hủy lịch hẹn không?",
-            "answer": "Có, bạn có thể hủy lịch hẹn trước 24 giờ mà không mất phí. Hủy trong vòng 24 giờ có thể bị tính phí theo quy định của từng chuyên gia."
-        },
-        {
-            "question": "Nếu tôi cần hỗ trợ khẩn cấp thì sao?",
-            "answer": "Với các trường hợp khẩn cấp, vui lòng gọi đường dây nóng 113 hoặc liên hệ cơ sở y tế gần nhất. PsyConnect không cung cấp dịch vụ cấp cứu tâm lý."
+        "topics": {
+            "anxiety": "Rối loạn lo âu",
+            "depression": "Trầm cảm",
+            "trauma": "Trị liệu chấn thương",
+            "family": "Tư vấn gia đình",
+            "child": "Tâm lý trẻ em"
         }
-    ],
-    "contact_us": "Liên hệ chúng tôi",
-    "hotline": "Đường dây nóng",
-    "email": "Email",
-    "address": "Địa chỉ",
-    "business_hours": "Giờ làm việc",
-    "weekdays": "Thứ 2 - Thứ 6",
-    "weekends": "Cuối tuần",
-    "crisis_support": "Hỗ trợ khủng hoảng",
-    "crisis_support_desc": "Nếu bạn đang trong tình huống khẩn cấp hoặc có ý định tự hại, vui lòng liên hệ ngay:",
-    "emergency_call": "Gọi khẩn cấp",
-    "current_version": "Phiên bản hiện tại",
-    "whats_new": "Có gì mới",
-    "coming_soon": "Sắp ra mắt",
-    "development_team": "Đội phát triển",
-    "view_repository": "Xem mã nguồn",
-    "release_notes": [
-        "Ra mắt nền tảng với đầy đủ tính năng đăng ký và đặt lịch",
-        "Hệ thống hồ sơ chuyên gia chi tiết với xác minh chứng chỉ",
-        "Tích hợp thanh toán online an toàn",
-        "Hệ thống đánh giá và phản hồi từ người dùng",
-        "Tư vấn video call chất lượng cao",
-        "Ứng dụng mobile iOS và Android"
-    ],
-    "upcoming_features": [
-        "AI chatbot hỗ trợ tư vấn sơ cấp 24/7",
-        "Tích hợp lịch Google Calendar và Outlook",
-        "Hệ thống theo dõi tiến trình trị liệu",
-        "Ứng dụng VR cho liệu pháp thư giãn",
-        "Tính năng nhóm hỗ trợ cộng đồng",
-        "API cho tích hợp với bệnh viện/phòng khám"
-    ],
-    "fullstack_lead": "Trưởng nhóm Fullstack",
-    "fullstack_lead_bio": "8 năm kinh nghiệm phát triển ứng dụng web và mobile. Thành thạo React, Node.js và kiến trúc cloud.",
-    "backend_developer": "Lập trình viên Backend",
-    "backend_developer_bio": "Kinh nghiệm xây dựng microservice có khả năng mở rộng bằng Node.js và Golang, tập trung vào hiệu năng và độ tin cậy.",
-    "uiux_designer": "Nhà thiết kế UI/UX",
-    "uiux_designer_bio": "Đam mê hệ thống thiết kế, tính khả dụng và trải nghiệm người dùng, có nền tảng vững chắc về Figma và prototyping.",
-    "frontend_developer": "Lập trình viên Frontend",
-    "frontend_developer_bio": "Chuyên gia UI/UX với 5 năm kinh nghiệm tạo ra giao diện đẹp và thân thiện bằng Angular và React.",
-    "devops_engineer": "Kỹ sư DevOps",
-    "devops_engineer_bio": "Chuyên về hạ tầng cloud và tự động hóa, có kinh nghiệm làm việc tại các startup công nghệ hàng đầu.",
-    "security_engineer": "Kỹ sư An ninh mạng",
-    "security_engineer_bio": "Tập trung vào bảo mật ứng dụng, kiểm thử xâm nhập và đảm bảo tuân thủ tiêu chuẩn ngành.",
-    "qa_engineer": "Kỹ sư QA",
-    "qa_engineer_bio": "Thành thạo kiểm thử tự động và thủ công, đảm bảo chất lượng sản phẩm trước khi phát hành.",
-    "product_manager": "Quản lý sản phẩm",
-    "product_manager_bio": "Kết nối giữa kinh doanh và công nghệ, quản lý backlog, roadmap và đảm bảo tầm nhìn sản phẩm được hiện thực hóa.",
-    "anxiety_disorders": "Rối loạn lo âu",
-    "depression": "Trầm cảm",
-    "trauma_therapy": "Trị liệu chấn thương",
-    "family_counseling": "Tư vấn gia đình",
-    "child_psychology": "Tâm lý trẻ em",
+    },
     "PAYMENT": {
         "Sidebar": {
             "Title": "Quản lý thanh toán",
             "Items": {
                 "Overview": "Tổng quan",
                 "Dashboard": "Bảng điều khiển",
-                "Segments": "Phân khúc",
                 "Transactions": "Giao dịch",
                 "Invoices": "Hóa đơn",
-                "Refunds": "Hoàn tiền",
                 "Methods": "Phương thức thanh toán",
+                "Refunds": "Hoàn tiền",
                 "Reports": "Báo cáo",
+                "Segments": "Phân khúc",
                 "Settings": "Cài đặt"
             }
+        },
+        "Overview": {
+            "Title": "Tổng quan thanh toán",
+            "Subtitle": "Theo dõi doanh thu và giao dịch của bạn",
+            "TotalRevenue": "Tổng doanh thu",
+            "MonthlyRevenue": "Doanh thu hàng tháng",
+            "Transactions": "Tổng giao dịch",
+            "Pending": "Thanh toán đang chờ",
+            "ChartComingSoon": "Biểu đồ doanh thu sắp ra mắt"
+        },
+        "Transactions": {
+            "Title": "Giao dịch",
+            "Subtitle": "Xem tất cả các giao dịch thanh toán",
+            "ComingSoonMessage": "Lịch sử giao dịch sẽ sớm khả dụng",
+            "AllStatus": "Tất cả trạng thái",
+            "Completed": "Đã hoàn thành",
+            "Pending": "Đang chờ",
+            "Failed": "Thất bại",
+            "AllTypes": "Tất cả các loại",
+            "Payment": "Thanh toán",
+            "Refund": "Hoàn tiền",
+            "Subscription": "Đăng ký",
+            "NoTransactions": "Không tìm thấy giao dịch",
+            "NoTransactionsMessage": "Không có giao dịch nào khớp với bộ lọc của bạn"
+        },
+        "Invoices": {
+            "Title": "Hóa đơn",
+            "Subtitle": "Quản lý hóa đơn của bạn",
+            "ComingSoonMessage": "Quản lý hóa đơn sắp ra mắt",
+            "CreateNew": "Tạo hóa đơn",
+            "AllStatus": "Tất cả trạng thái",
+            "Paid": "Đã thanh toán",
+            "Unpaid": "Chưa thanh toán",
+            "Overdue": "Quá hạn",
+            "InvoiceNumber": "Số hóa đơn #",
+            "Customer": "Khách hàng",
+            "Amount": "Số tiền",
+            "DueDate": "Hạn thanh toán",
+            "Status": "Trạng thái",
+            "Download": "Tải xuống",
+            "NoInvoices": "Không tìm thấy hóa đơn",
+            "NoInvoicesMessage": "Không có hóa đơn nào khớp với bộ lọc của bạn"
+        },
+        "Methods": {
+            "Title": "Phương thức thanh toán",
+            "Subtitle": "Quản lý các phương thức thanh toán",
+            "ComingSoonMessage": "Cấu hình phương thức thanh toán sắp ra mắt",
+            "AddNew": "Thêm phương thức mới",
+            "Expires": "Hết hạn",
+            "Default": "Mặc định",
+            "SetDefault": "Đặt làm mặc định"
+        },
+        "Refunds": {
+            "Title": "Hoàn tiền",
+            "Subtitle": "Xử lý yêu cầu hoàn tiền",
+            "ComingSoonMessage": "Xử lý hoàn tiền sắp ra mắt",
+            "AllStatus": "Tất cả trạng thái",
+            "Pending": "Đang chờ",
+            "Approved": "Đã duyệt",
+            "Rejected": "Đã từ chối",
+            "Reason": "Lý do",
+            "RequestDate": "Ngày yêu cầu",
+            "Approve": "Duyệt",
+            "Reject": "Từ chối",
+            "NoRefunds": "Không tìm thấy yêu cầu hoàn tiền",
+            "NoRefundsMessage": "Không có yêu cầu hoàn tiền nào khớp với bộ lọc của bạn"
+        },
+        "Reports": {
+            "Title": "Báo cáo tài chính",
+            "Subtitle": "Tạo báo cáo tài chính",
+            "ComingSoonMessage": "Tạo báo cáo sắp ra mắt",
+            "Export": "Xuất báo cáo",
+            "TotalRevenue": "Tổng doanh thu",
+            "TotalTransactions": "Tổng giao dịch",
+            "TotalRefunds": "Tổng tiền hoàn",
+            "NetRevenue": "Doanh thu thuần",
+            "Period": "Giai đoạn",
+            "Revenue": "Doanh thu",
+            "Transactions": "Giao dịch",
+            "Refunds": "Hoàn tiền"
+        },
+        "Segments": {
+            "Title": "Phân khúc khách hàng",
+            "Subtitle": "Phân tích phân khúc khách hàng",
+            "ComingSoonMessage": "Phân tích phân khúc sắp ra mắt",
+            "Customers": "Khách hàng",
+            "Revenue": "Doanh thu",
+            "AvgTransaction": "Giao dịch trung bình"
+        },
+        "Settings": {
+            "Title": "Cài đặt thanh toán",
+            "Subtitle": "Cấu hình cài đặt thanh toán",
+            "ComingSoonMessage": "Cài đặt thanh toán sắp ra mắt",
+            "General": "Cài đặt chung",
+            "Currency": "Tiền tệ",
+            "TaxRate": "Thuế suất",
+            "InvoicePrefix": "Tiền tố hóa đơn",
+            "PaymentGateway": "Cổng thanh toán",
+            "Gateway": "Cổng",
+            "Automation": "Tự động hóa",
+            "AutoRefund": "Tự động duyệt hoàn tiền",
+            "AutoRefundDesc": "Tự động duyệt hoàn tiền dưới $50",
+            "EmailNotifications": "Thông báo email",
+            "EmailNotificationsDesc": "Gửi email thông báo cho các giao dịch"
         }
     },
     "POST": {
@@ -834,7 +997,13 @@
             "NoComments": "Chưa có bình luận nào. Hãy là người đầu tiên bình luận!",
             "Like": "Thích",
             "Reply": "Trả lời",
-            "Liked": "Đã thích"
+            "Liked": "Đã thích",
+            "ReplyingTo": "Đang trả lời",
+            "Upvotes": "Lượt ủng hộ",
+            "Downvotes": "Lượt phản đối",
+            "Comments": "Bình luận",
+            "Shares": "Lượt chia sẻ",
+            "Views": "Lượt xem"
         },
         "Actions": {
             "Like": "Thích",
@@ -1024,7 +1193,9 @@
                 "add": "Thêm",
                 "view": "Xem",
                 "newChat": "Cuộc trò chuyện mới",
-                "moreOptions": "Tuỳ chọn khác"
+                "moreOptions": "Tuỳ chọn khác",
+                "attach": "Đính kèm tệp",
+                "emoji": "Thêm biểu tượng cảm xúc"
             },
             "selectChat": "Chọn cuộc trò chuyện",
             "selectFriend": "Chọn bạn bè để bắt đầu trò chuyện",
@@ -1042,6 +1213,17 @@
             "more": "Khác"
         },
         "TYPING": " đang nhập...",
+        "CONSENT": {
+            "Title": "Trước khi bắt đầu nhắn tin",
+            "Subtitle": "PsyConnect là không gian an toàn cho mọi người. Hãy:",
+            "Rule1": "Tôn trọng và lịch sự với người bạn nhắn tin",
+            "Rule2": "Không chia sẻ thông tin cá nhân nhạy cảm",
+            "Rule3": "Không spam, quấy rối hoặc có hành vi không phù hợp",
+            "Rule4": "Nếu cần hỗ trợ khẩn cấp, hãy gọi đường dây hỗ trợ",
+            "Note": "Bằng cách nhấn \"Đồng ý\", bạn xác nhận sẽ sử dụng tính năng nhắn tin một cách có trách nhiệm.",
+            "Accept": "Đồng ý & Tiếp tục",
+            "Decline": "Không đồng ý"
+        },
         "SUGGESTIONS": {
             "Title": "Gợi ý kết bạn",
             "Subtitle": "Những người bạn có thể muốn trò chuyện",
@@ -1050,6 +1232,21 @@
             "StartChat": "Nhắn tin",
             "EmptyTitle": "Chưa có gợi ý",
             "EmptyDesc": "Hãy thêm bạn bè để bắt đầu trò chuyện"
+        },
+        "SYSTEM": {
+            "ConsentAccepted": "Bạn đã đồng ý với các điều khoản bảo mật và tôn trọng cộng đồng. Chúc bạn có những cuộc trò chuyện bổ ích!",
+            "StrangerAdded": "Bạn đang nhắn tin với người lạ. Hãy cẩn trọng và tôn trọng lẫn nhau."
+        },
+        "VIDEO_CALL": {
+            "ToggleVideo": "Bật/Tắt Camera",
+            "ToggleAudio": "Bật/Tắt Micro",
+            "TogglePip": "Chế độ cửa sổ",
+            "EndCall": "Kết thúc cuộc gọi",
+            "ToggleFullscreen": "Toàn màn hình",
+            "Settings": "Cài đặt",
+            "VideoCall": "Gọi Video",
+            "VoiceCall": "Gọi Thoại",
+            "RemindLater": "Nhắc tôi sau"
         }
     },
     "register": {
@@ -1185,33 +1382,39 @@
         "helpText": "Không nhận được mã? Kiểm tra thư mục spam hoặc nhấp Gửi lại mã",
         "backToLogin": "Quay lại đăng nhập"
     },
-    "SOCIAL": {
-        "sidebar": {
-            "items": {
-                "wall": "Tường",
-                "friends": "Bạn bè",
-                "discover": "Khám phá",
-                "settings": "Cài đặt"
-            }
-        }
-    },
     "profile": {
-        "title": "Profile",
+        "title": "Hồ sơ",
         "edit": {
-            "button": "Edit",
-            "ariaLabel": "Edit profile"
+            "button": "Chỉnh sửa",
+            "ariaLabel": "Chỉnh sửa hồ sơ"
+        },
+        "personalInfo": "Thông tin cá nhân",
+        "aboutMe": "Về tôi",
+        "fields": {
+            "fullName": "Họ và tên",
+            "dob": "Ngày sinh",
+            "gender": "Giới tính",
+            "address": "Địa chỉ",
+            "username": "Tên tài khoản",
+            "role": "Vai trò",
+            "bio": "Giới thiệu"
+        },
+        "placeholders": {
+            "noBio": "Chưa có giới thiệu",
+            "notAvailable": "N/A",
+            "notUpdated": "Chưa cập nhật"
         },
         "staffInfo": {
-            "title": "Staff Member Information"
+            "title": "Thông tin nhân viên"
         },
         "staffWebsite": {
-            "title": "Staff Website"
+            "title": "Website nhân viên"
         },
         "contact": {
-            "email": "Send email",
-            "message": "Send message",
-            "slack": "Contact on Slack",
-            "phone": "Call phone"
+            "email": "Gửi email",
+            "message": "Gửi tin nhắn",
+            "slack": "Liên hệ qua Slack",
+            "phone": "Gọi điện"
         }
     },
     "friends": {
@@ -1243,185 +1446,6 @@
         "title": "Hoàn thiện hồ sơ",
         "subtitle": "Giúp chúng tôi kết nối bạn với chuyên gia tâm lý phù hợp bằng cách hoàn thiện hồ sơ.",
         "saveSuccess": "Đã cập nhật hồ sơ thành công!"
-    },
-    "client": {
-        "steps": {
-            "basic": "Cơ bản",
-            "preferences": "Ưu tiên",
-            "availability": "Lịch trình",
-            "therapist": "Chuyên gia"
-        },
-        "basicInfo": {
-            "title": "Thông tin cơ bản",
-            "subtitle": "Cho chúng tôi biết về bạn và nơi bạn sinh sống"
-        },
-        "address": {
-            "label": "Địa điểm của bạn",
-            "placeholder": "Thành phố Hồ Chí Minh, Việt Nam"
-        },
-        "languages": {
-            "label": "Ngôn ngữ bạn nói"
-        },
-        "preferences": {
-            "title": "Ưu tiên trị liệu",
-            "subtitle": "Giúp chúng tôi hiểu bạn đang tìm kiếm điều gì trong liệu pháp"
-        },
-        "issueDetail": {
-            "label": "Điều gì khiến bạn tìm đến trị liệu? (Tùy chọn)"
-        },
-        "consultationModes": {
-            "label": "Bạn muốn gặp mặt như thế nào?"
-        },
-        "budget": {
-            "label": "Ngân sách mỗi buổi (VND)",
-            "placeholder": "500000"
-        },
-        "sessionDuration": {
-            "label": "Thời lượng buổi trị liệu ưa thích"
-        },
-        "availability": {
-            "title": "Lịch trình của bạn",
-            "subtitle": "Bạn có thể tham gia buổi trị liệu khi nào?"
-        },
-        "availableDays": {
-            "label": "Ngày có thể tham gia"
-        },
-        "timeSlots": {
-            "label": "Khung giờ ưa thích"
-        },
-        "flexibleSchedule": {
-            "label": "Tôi linh hoạt với lịch trình"
-        },
-        "therapistPreferences": {
-            "title": "Ưu tiên chuyên gia",
-            "subtitle": "Cho chúng tôi biết về chuyên gia lý tưởng của bạn"
-        },
-        "preferredGender": {
-            "label": "Giới tính ưa thích"
-        },
-        "experienceLevel": {
-            "label": "Mức độ kinh nghiệm"
-        },
-        "therapistSpecialization": {
-            "label": "Chuyên môn ưa thích"
-        },
-        "preferredLanguage": {
-            "label": "Chuyên gia phải nói"
-        },
-        "urgencyLevel": {
-            "label": "Bạn cần giúp đỡ trong bao lâu?"
-        }
-    },
-    "therapist": {
-        "steps": {
-            "basic": "Cơ bản",
-            "professional": "Chuyên môn",
-            "practice": "Hành nghề",
-            "availability": "Lịch trình"
-        },
-        "basicInfo": {
-            "title": "Thông tin cơ bản",
-            "subtitle": "Cho chúng tôi biết về bạn và phòng khám của bạn"
-        },
-        "name": {
-            "label": "Họ và tên",
-            "placeholder": "Tiến sĩ Sarah Johnson"
-        },
-        "address": {
-            "label": "Địa điểm hành nghề",
-            "placeholder": "Quận 1, Thành phố Hồ Chí Minh"
-        },
-        "avatar": {
-            "label": "URL ảnh đại diện (Tùy chọn)",
-            "placeholder": "https://example.com/photo.jpg"
-        },
-        "languages": {
-            "label": "Ngôn ngữ bạn nói"
-        },
-        "professionalInfo": {
-            "title": "Thông tin chuyên môn",
-            "subtitle": "Chia sẻ thông tin xác thực và trình độ của bạn"
-        },
-        "title": {
-            "label": "Chức danh chuyên môn"
-        },
-        "experienceYears": {
-            "label": "Số năm kinh nghiệm",
-            "placeholder": "8"
-        },
-        "degrees": {
-            "title": "Học vấn & Bằng cấp"
-        },
-        "degree": {
-            "title": "Bằng cấp",
-            "type": {
-                "label": "Loại bằng cấp",
-                "placeholder": "PhD, MD, MSW, v.v."
-            },
-            "field": {
-                "label": "Lĩnh vực nghiên cứu",
-                "placeholder": "Tâm lý học lâm sàng"
-            },
-            "institution": {
-                "label": "Trường đại học",
-                "placeholder": "Đại học California"
-            },
-            "year": {
-                "label": "Năm tốt nghiệp",
-                "placeholder": "2015"
-            }
-        },
-        "certifications": {
-            "title": "Chứng chỉ chuyên môn"
-        },
-        "certification": {
-            "title": "Chứng chỉ",
-            "name": {
-                "label": "Tên chứng chỉ",
-                "placeholder": "Chuyên gia CBT"
-            },
-            "issuer": {
-                "label": "Tổ chức cấp",
-                "placeholder": "Hiệp hội Tâm lý học Hoa Kỳ"
-            },
-            "year": {
-                "label": "Năm đạt được",
-                "placeholder": "2016"
-            }
-        },
-        "addDegree": "Thêm bằng cấp",
-        "addCertification": "Thêm chứng chỉ",
-        "practice": {
-            "title": "Chuyên môn & Hành nghề",
-            "subtitle": "Cho chúng tôi biết về các lĩnh vực chuyên môn của bạn"
-        },
-        "specialization": {
-            "label": "Lĩnh vực chuyên môn"
-        },
-        "consultationModes": {
-            "label": "Hình thức tư vấn cung cấp"
-        },
-        "sessionFee": {
-            "label": "Chi phí buổi trị liệu",
-            "placeholder": "800000"
-        },
-        "experience": {
-            "label": "Tổng số năm hành nghề",
-            "placeholder": "8"
-        },
-        "isAvailable": {
-            "label": "Hiện tôi đang nhận khách hàng mới"
-        },
-        "availability": {
-            "title": "Lịch trình & Có mặt",
-            "subtitle": "Bạn có thể gặp khách hàng khi nào?"
-        },
-        "availableDays": {
-            "label": "Ngày có thể làm việc"
-        },
-        "timeSlots": {
-            "label": "Khung giờ làm việc"
-        }
     },
     "TOAST": {
         "error": "Lỗi",
@@ -1462,6 +1486,27 @@
         "key_load_friends_failed": "Tải danh sách bạn bè thất bại",
         "error_notification": "Đăng ký nhận thông báo thất bại"
     },
+    "SOCIAL": {
+        "Follow": "Theo dõi",
+        "Unfollow": "Bỏ theo dõi",
+        "Followers": "Người theo dõi",
+        "Following": "Đang theo dõi",
+        "BOOKMARK": "Lưu",
+        "BOOKMARKED": "Đã lưu",
+        "RemoveBookmark": "Bỏ lưu",
+        "SHARE": "Chia sẻ",
+        "Shared": "Đã chia sẻ thành công",
+        "sidebar": {
+            "title": "Mạng xã hội",
+            "items": {
+                "wall": "Bảng tin",
+                "friends": "Bạn bè",
+                "discover": "Khám phá",
+                "settings": "Cài đặt",
+                "consultation_profile": "Hồ sơ tư vấn"
+            }
+        }
+    },
     "SEARCH": {
         "PLACEHOLDER": "Bạn đang tìm kiếm gì?",
         "CAT_ALL": "Tất cả",
@@ -1478,5 +1523,16 @@
         "CLEAR": "Xóa tất cả",
         "POPULAR_TAGS": "Thẻ phổ biến",
         "NO_RESULTS": "Không tìm thấy kết quả cho"
+    },
+    "GENDER": {
+        "MALE": "Nam",
+        "FEMALE": "Nữ",
+        "OTHER": "Khác",
+        "NON_BINARY": "Phi nhị phân"
+    },
+    "ROLE": {
+        "USER": "Người dùng",
+        "THERAPIST": "Chuyên gia tâm lý",
+        "ADMIN": "Quản trị viên"
     }
 }

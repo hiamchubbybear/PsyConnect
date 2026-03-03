@@ -70,3 +70,120 @@ app-chat-main {
     }
   }
 }
+
+// ─── Consent overlay ─────────────────────────────────────────────────────────
+.consent-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.consent-card {
+  background: var(--color-surface, #1e293b);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+  border-radius: 1.5rem;
+  padding: 2rem 2.5rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  animation: consent-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  @keyframes consent-in {
+    from {
+      opacity: 0;
+      transform: scale(0.88) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+}
+
+.consent-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+}
+
+.consent-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text, #f1f5f9);
+  margin-bottom: 0.75rem;
+}
+
+.consent-body {
+  font-size: 0.9rem;
+  color: var(--color-text-muted, #94a3b8);
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+.consent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  text-align: left;
+
+  li {
+    font-size: 0.875rem;
+    color: var(--color-text, #e2e8f0);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.06));
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.consent-note {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #64748b);
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
+.consent-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+
+  button {
+    padding: 0.65rem 1.5rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition:
+      opacity 0.2s,
+      transform 0.15s;
+
+    &:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .btn-decline {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-text-muted, #94a3b8);
+  }
+
+  .btn-accept {
+    background: var(--primary-color, #667eea);
+    color: #fff;
+    padding-inline: 2rem;
+  }
+}

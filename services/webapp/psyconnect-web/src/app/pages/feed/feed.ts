@@ -8,7 +8,10 @@ import {
   REACTION_TYPES,
   ReactionType,
 } from '../../models/reaction.model';
-import { Therapist as ApiTherapist } from '../../models/swipe-card';
+import {
+  Therapist as ApiTherapist,
+  mapTherapistResponse,
+} from '../../models/swipe-card';
 import { SocialService } from '../../services/consultation/social.service';
 import { Group, GroupService } from '../../services/group/group.service';
 import { NewsfeedService } from '../../services/newsfeed/newsfeed.service';
@@ -18,6 +21,7 @@ import { SwipeService } from '../../services/swipe/swipe.service';
 import { PsyButtonComponent as AppButtonComponent } from '../../shared/ui-atoms/button/psy-button.component';
 import { PsyEmptyStateComponent as EmptyStateComponent } from '../../shared/ui-atoms/empty-state/psy-empty-state.component';
 import { PostCardComponent } from '../../shared/ui-atoms/post-card/post-card.component';
+import { SearchComponent } from '../search/search';
 import { PostModalComponent } from './post-modal/post-modal';
 
 interface Therapist {
@@ -44,6 +48,7 @@ interface SupportGroup {
     PostCardComponent,
     EmptyStateComponent,
     AppButtonComponent,
+    SearchComponent,
   ],
   templateUrl: './feed.html',
   styleUrls: ['./feed.scss'],
@@ -90,6 +95,8 @@ export class FeedComponent implements OnInit {
 
   supportGroups: Group[] = [];
   viewedPosts: Set<string> = new Set();
+  private currentPage = 0;
+  private readonly PAGE_SIZE = 20;
   private observer: IntersectionObserver | null = null;
 
   constructor(
@@ -132,8 +139,7 @@ export class FeedComponent implements OnInit {
             });
           }
         });
-
-        // After posts are rendered, we might need to refresh the observer
+        this.viewedPosts.clear();
         setTimeout(() => this.observePosts(), 100);
       },
       error: (err: any) => {
@@ -152,22 +158,37 @@ export class FeedComponent implements OnInit {
   loadTherapists() {
     this.swipeService.getSwipeData().subscribe({
       next: (res) => {
-        const therapists = res.data || [];
-        if (therapists.length > 0) {
-          this.therapists = therapists.slice(0, 3).map(
-            (t: ApiTherapist) =>
-              ({
-                name: t.name || 'Anonymous',
-                avatar: t.avatarOverride || 'assets/images/default-avatar.png',
-                specialtyKey: t.specialization?.[0] || 'CONSULTATION.General',
-                rating: t.rating || 5.0,
-                statusKey: t.isAvailable
-                  ? 'FEED.Therapists.Status.Available'
-                  : 'FEED.Therapists.Status.Busy',
-                profileId: t.profileId,
-              }) as any,
-          );
-        }
+        const therapists = mapTherapistResponse(res);
+        const slice = therapists.slice(0, 3);
+        if (slice.length === 0) return;
+
+        // Seed list with initial data from swipe API
+        this.therapists = slice.map((t: ApiTherapist) => ({
+          name: t.name || 'Therapist',
+          avatar: t.avatarOverride || 'assets/images/default-avatar.png',
+          specialtyKey: t.specialization?.[0] || 'Counseling',
+          rating: t.rating || 5.0,
+          profileId: t.profileId,
+        })) as any[];
+
+        // Enrich each entry with real profile data
+        slice.forEach((t: ApiTherapist, i: number) => {
+          if (!t.profileId) return;
+          this.profileService.getProfileById(t.profileId).subscribe({
+            next: (response: any) => {
+              const profile = response?.data || response;
+              const fullName =
+                `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
+              this.therapists[i] = {
+                ...this.therapists[i],
+                name: fullName || this.therapists[i].name,
+                avatar: profile.avatarUri || this.therapists[i].avatar,
+              };
+              this.therapists = [...this.therapists]; // trigger change detection
+            },
+            error: () => {},
+          });
+        });
       },
       error: (err: any) => {
         console.error('Failed to load therapists:', err);
@@ -214,6 +235,13 @@ export class FeedComponent implements OnInit {
     this.newsfeedService.recordView(postId).subscribe({
       error: (err: any) => console.error('Failed to record view:', err),
     });
+
+    // When all posts have been seen, reload the feed
+    if (this.posts.length > 0 && this.viewedPosts.size >= this.posts.length) {
+      setTimeout(() => {
+        this.loadFeed();
+      }, 800);
+    }
   }
 
   joinGroup(group: Group) {
@@ -236,9 +264,7 @@ export class FeedComponent implements OnInit {
 
   contactTherapist(therapist: any) {
     if (therapist?.profileId) {
-      this.router.navigate(['/feature/chat'], {
-        queryParams: { userId: therapist.profileId },
-      });
+      this.router.navigate(['/feature/chat', therapist.profileId]);
     } else {
       this.router.navigate(['/feature/consultation/smart-match']);
     }

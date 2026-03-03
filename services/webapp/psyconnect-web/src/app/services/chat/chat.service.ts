@@ -237,7 +237,9 @@ export class ChatService {
         code: number;
         message: string;
         data: { id: string };
-      }>(`${this.apiUrl}/conversations/by-users`, { params: { user1: user1Id, user2: user2Id } })
+      }>(`${this.apiUrl}/conversations/by-users`, {
+        params: { user1: user1Id, user2: user2Id },
+      })
       .pipe(
         tap((res) => console.log('getOrCreateConversation response:', res)),
         map((res) => {
@@ -249,6 +251,22 @@ export class ChatService {
         catchError((err) => {
           console.error('getOrCreateConversation error:', err);
           return of({ id: '' });
+        }),
+      );
+  }
+
+  getRecentConversations(userId: string): Observable<any[]> {
+    return this.http
+      .get<{
+        code: number;
+        message: string;
+        data: any[];
+      }>(`${this.apiUrl}/conversations/me`, { params: { userId } })
+      .pipe(
+        map((res) => res.data || []),
+        catchError((err) => {
+          console.error('getRecentConversations error:', err);
+          return of([]);
         }),
       );
   }

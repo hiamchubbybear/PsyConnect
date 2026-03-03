@@ -1,76 +1,61 @@
 .call-options-container {
-  position: relative;
   display: flex;
-  flex-direction: column;
-  margin-bottom: 0.5rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .call-btn {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border: none;
-  border-radius: 12px;
-  background: #667eea;
-  color: white;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-primary);
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.125rem;
   transition: all var(--transition-fast);
-  font-size: 0.625rem;
-  font-weight: 500;
-  position: relative;
 
   &:hover {
-    transform: translateX(-2px);
-    box-shadow: var(--shadow-md);
+    background: var(--color-surface-low);
   }
 
   &:active {
     transform: scale(0.95);
   }
 
-  svg:first-child {
+  svg {
     width: 20px;
     height: 20px;
   }
+}
 
-  .dropdown-icon {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 8px;
-    height: 8px;
-  }
-
-  span {
-    display: block;
-    margin-top: 0.125rem;
-  }
+.dropdown-wrapper {
+  position: relative;
 }
 
 .call-menu {
   position: absolute;
-  top: 0;
-  right: calc(100% + 8px);
+  top: calc(100% + 8px);
+  right: 0;
   background: var(--color-surface);
   border-radius: 12px;
   box-shadow: var(--shadow-xl);
   padding: 8px;
   min-width: 180px;
   z-index: 1000;
-  animation: slideLeft 0.2s ease;
+  animation: slideDown 0.2s ease;
 
-  @keyframes slideLeft {
+  @keyframes slideDown {
     from {
       opacity: 0;
-      transform: translateX(10px);
+      transform: translateY(-10px);
     }
     to {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0);
     }
   }
 }
@@ -111,10 +96,6 @@
   }
 
   &.consultation {
-    border-top: 1px solid var(--color-border);
-    margin-top: 4px;
-    padding-top: 16px;
-
     svg {
       color: var(--color-accent, #ed8936);
     }
@@ -128,10 +109,10 @@
 // Dark mode support
 :host-context([data-theme="dark"]) {
   .call-btn {
-    background: #7c3aed;
+    color: #8b5cf6;
 
     &:hover {
-      background: #8b5cf6;
+      background: #1f2937;
     }
   }
 

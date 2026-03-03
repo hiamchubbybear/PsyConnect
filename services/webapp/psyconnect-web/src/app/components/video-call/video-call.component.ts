@@ -10,6 +10,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { CallState, WebRTCService } from '../../services/webrtc/webrtc.service';
 import { AvatarFallbackPipe } from '../../shared/pipes/avatar-fallback.pipe';
@@ -17,7 +18,7 @@ import { AvatarFallbackPipe } from '../../shared/pipes/avatar-fallback.pipe';
 @Component({
   selector: 'app-video-call',
   standalone: true,
-  imports: [CommonModule, AvatarFallbackPipe],
+  imports: [CommonModule, AvatarFallbackPipe, TranslateModule],
   templateUrl: './video-call.component.html',
   styleUrls: ['./video-call.component.scss'],
 })
@@ -114,7 +115,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log('🎥 Attaching remote stream to video element');
           this.remoteVideo.nativeElement.srcObject = state.remoteStream;
         }
-      }
+      },
     );
   }
 
@@ -139,7 +140,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       console.error('❌ Error starting call:', error);
       alert(
-        'Không thể bắt đầu cuộc gọi. Vui lòng kiểm tra quyền camera/microphone.'
+        'Không thể bắt đầu cuộc gọi. Vui lòng kiểm tra quyền camera/microphone.',
       );
     }
   }

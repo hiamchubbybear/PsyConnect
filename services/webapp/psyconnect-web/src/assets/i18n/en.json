@@ -1,6 +1,11 @@
 {
     "APP_NAME": "Psyconnect",
     "HEADER": {
+        "Theme": {
+            "Light": "Light Mode",
+            "Dark": "Dark Mode"
+        },
+        "Home": "Home",
         "Feature": "Feature",
         "Therapist": "Therapist",
         "Community": "Community",
@@ -49,6 +54,16 @@
         "Days": "Days",
         "TimeSlots": "Time Slots",
         "Title": "Title"
+    },
+    "SIDEBAR": {
+        "Feed": "Feed",
+        "Schedule": "Schedule",
+        "Chat": "Chat",
+        "Profile": "Profile",
+        "Search": "Search",
+        "Article": "Article",
+        "Settings": "Settings",
+        "Logout": "Logout"
     },
     "HOME": {
         "Badge": "🌱 Mental Health Platform",
@@ -124,6 +139,8 @@
             "Subtitle": "Sign in to your account"
         },
         "Form": {
+            "WelcomeBack": "Welcome Back",
+            "Or": "Or",
             "Username": "Username",
             "UsernamePlaceholder": "Enter your username",
             "UsernameRequired": "Username is required",
@@ -372,12 +389,69 @@
         "Punjabi": "Punjabi"
     },
     "CONSULTATION": {
+        "MyProfile": {
+            "NoProfile": "You don't have a consultation profile yet",
+            "NoProfileDesc": "Create a profile to connect with the PsyConnect community.",
+            "CreateNow": "Create Profile Now",
+            "EditProfile": "Edit Profile",
+            "AvailabilityTitle": "Availability",
+            "Weekday": "Day of the week",
+            "TimeSlots": "Time Slots",
+            "Duration": "Session Duration",
+            "Flexible": "Flexible Schedule",
+            "Requirements": "My Requirements",
+            "ProfessionalInfo": "Professional Information",
+            "Urgency": "Urgency Level",
+            "PreferredGender": "Preferred Therapist Gender",
+            "PreferredExperience": "Preferred Experience Level",
+            "Experience": "Experience",
+            "Specialization": "Specialization",
+            "Interests": "Areas of Interest",
+            "Price": "Consultation Fee",
+            "Sessions": "Sessions",
+            "ReviewsTab": "Reviews",
+            "NoSessions": "No sessions yet",
+            "NoSessionsDesc": "Start your mental health journey with PsyConnect.",
+            "NoReviews": "No reviews yet",
+            "NoReviewsDesc": "Reviews will appear here after sessions are completed.",
+            "Labels": {
+                "Urgency": {
+                    "Immediate": "Immediate (Within 24h)",
+                    "Urgent": "Urgent (Within 3 days)",
+                    "Moderate": "Moderate (Within a week)",
+                    "Flexible": "Flexible"
+                },
+                "Experience": {
+                    "Any": "Any Experience",
+                    "Entry": "1–3 years",
+                    "Mid": "3–7 years",
+                    "Senior": "7+ years"
+                },
+                "Gender": {
+                    "Any": "Any Gender",
+                    "Male": "Male",
+                    "Female": "Female",
+                    "Other": "Other"
+                }
+            },
+            "Message": "Message",
+            "BookSession": "Book Session",
+            "ViewProfile": "View Profile",
+            "OfCount": "out of",
+            "NoMatchesTitle": "You've seen all suggestions",
+            "NoMatchesDesc": "We're looking for more therapists that match your criteria. Please check back later!",
+            "RefreshSuggestions": "Refresh Suggestions",
+            "TherapistNotAvailableTitle": "Feature Not Available",
+            "TherapistNotAvailableDesc": "This feature is for clients seeking therapists. As a therapist, you can manage your own sessions.",
+            "GoToSessions": "Go to Sessions"
+        },
         "General": "General",
         "Tabs": {
             "Overview": "Overview",
             "Sessions": "Sessions",
             "Schedule": "Schedule",
-            "Consultators": "Consultators"
+            "Consultators": "Consultators",
+            "MyProfile": "My Profile"
         },
         "Sidebar": {
             "Title": "Consultation",
@@ -423,11 +497,21 @@
             "Unfollow": "Unfollow",
             "Followers": "Followers",
             "Following": "Following",
-            "Bookmark": "Bookmark",
-            "Bookmarked": "Bookmarked",
+            "BOOKMARK": "Bookmark",
+            "BOOKMARKED": "Bookmarked",
             "RemoveBookmark": "Remove Bookmark",
-            "Share": "Share",
-            "Shared": "Shared Successfully"
+            "SHARE": "Share",
+            "Shared": "Shared Successfully",
+            "sidebar": {
+                "title": "Social",
+                "items": {
+                    "wall": "Wall",
+                    "friends": "Friends",
+                    "discover": "Discover",
+                    "settings": "Setting",
+                    "consultation_profile": "Consultation Profile"
+                }
+            }
         },
         "CreateProfile": {
             "Title": "Create Consultation Profile",
@@ -798,22 +882,6 @@
     "trauma_therapy": "Trauma Therapy",
     "family_counseling": "Family Counseling",
     "child_psychology": "Child Psychology",
-    "PAYMENT": {
-        "Sidebar": {
-            "Title": "Payment Management",
-            "Items": {
-                "Overview": "Overview",
-                "Dashboard": "Dashboard",
-                "Segments": "Segments",
-                "Transactions": "Transactions",
-                "Invoices": "Invoices",
-                "Refunds": "Refunds",
-                "Methods": "Payment Methods",
-                "Reports": "Reports",
-                "Settings": "Settings"
-            }
-        }
-    },
     "NEWSFEED": {
         "FeedTypes": {
             "All": "All",
@@ -987,6 +1055,32 @@
             "StartChat": "Chat",
             "EmptyTitle": "No suggestions available",
             "EmptyDesc": "Try adding friends to start chatting"
+        },
+        "CONSENT": {
+            "Title": "Before you start chatting",
+            "Subtitle": "PsyConnect is a safe space for everyone. Please:",
+            "Rule1": "Be respectful and polite to the person you are chatting with",
+            "Rule2": "Do not share sensitive personal information",
+            "Rule3": "Do not spam, harass, or engage in inappropriate behavior",
+            "Rule4": "If you need urgent assistance, call the helpline",
+            "Note": "By clicking \"I Agree\", you confirm that you will use the messaging feature responsibly.",
+            "Accept": "I Agree",
+            "Decline": "Decline"
+        },
+        "SYSTEM": {
+            "ConsentAccepted": "You have agreed to the privacy and community respect terms. Have a great conversation!",
+            "StrangerAdded": "You are chatting with a stranger. Please be careful and respectful to each other."
+        },
+        "VIDEO_CALL": {
+            "ToggleVideo": "Toggle Camera",
+            "ToggleAudio": "Toggle Microphone",
+            "TogglePip": "Picture in Picture",
+            "EndCall": "End Call",
+            "ToggleFullscreen": "Fullscreen",
+            "Settings": "Settings",
+            "VideoCall": "Video Call",
+            "VoiceCall": "Voice Call",
+            "RemindLater": "Remind me later"
         }
     },
     "register": {
@@ -1130,16 +1224,6 @@
         },
         "helpText": "Didn't receive the code? Check your spam folder or click Resend Code",
         "backToLogin": "Back to Login"
-    },
-    "SOCIAL": {
-        "sidebar": {
-            "items": {
-                "wall": "Wall",
-                "friends": "Friends",
-                "discover": "Discover",
-                "settings": "Setting"
-            }
-        }
     },
     "profile": {
         "title": "Profile",
@@ -1438,6 +1522,7 @@
             "Title": "Payment Management",
             "Items": {
                 "Overview": "Overview",
+                "Dashboard": "Dashboard",
                 "Transactions": "Transactions",
                 "Invoices": "Invoices",
                 "Methods": "Payment Methods",
