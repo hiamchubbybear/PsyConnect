@@ -27,7 +27,7 @@ export class Profile {
       Authorization: `Bearer ${token}`,
     });
 
-    return this.http.get<ProfileResponse>(`${this.apiUrl}/profile`, {
+    return this.http.get<ProfileResponse>(`${this.apiUrl}/v1/profile/me`, {
       headers,
     });
   }

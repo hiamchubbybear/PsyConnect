@@ -31,7 +31,7 @@ export class ProfilePageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private profileService: Profile,
-    private userContext: UserContextService
+    private userContext: UserContextService,
   ) {}
 
   ngOnInit(): void {
@@ -52,8 +52,9 @@ export class ProfilePageComponent implements OnInit {
   loadMyProfile() {
     this.profileService.getProfile().subscribe({
       next: (res: any) => {
-        this.userProfile = res.data || res;
-        this.mapFields();
+        const raw = res.data || res;
+        this.userProfile = this.transformToCardFormat(raw);
+        this.mapFields(raw);
       },
     });
   }
@@ -61,25 +62,42 @@ export class ProfilePageComponent implements OnInit {
   loadUserProfile(id: string) {
     this.profileService.getProfileById(id).subscribe({
       next: (res: any) => {
-        this.userProfile = res.data || res;
-        this.mapFields();
+        const raw = res.data || res;
+        this.userProfile = this.transformToCardFormat(raw);
+        this.mapFields(raw);
       },
     });
   }
 
-  mapFields() {
-    if (!this.userProfile) return;
+  /**
+   * Transforms ProfileResponse.data shape into the shape expected by profile-card.html
+   * (user.name, user.avatarUrl, user.role, user.coverUrl)
+   */
+  private transformToCardFormat(raw: any): any {
+    const firstName = raw.firstName || '';
+    const lastName = raw.lastName || '';
+    return {
+      ...raw,
+      name: [firstName, lastName].filter(Boolean).join(' ') || 'N/A',
+      avatarUrl: raw.avatarUri || raw.avatarUrl || '',
+      role: raw.role || '',
+      coverUrl: raw.coverUrl || raw.coverUri || null,
+    };
+  }
+
+  mapFields(raw: any) {
+    if (!raw) return;
 
     this.staffInfoFields = [
-      { label: 'Email', value: this.userProfile.email || 'N/A' },
-      { label: 'Phone', value: this.userProfile.phone || 'N/A' },
-      { label: 'Address', value: this.userProfile.address || 'N/A' },
+      { label: 'Email', value: raw.email || 'N/A' },
+      { label: 'Phone', value: raw.phone || 'N/A' },
+      { label: 'Address', value: raw.address || 'N/A' },
     ];
 
     this.websiteFields = [
-      { label: 'Gender', value: this.userProfile.gender || 'N/A' },
-      { label: 'DOB', value: this.userProfile.dob || 'N/A' },
-      { label: 'Bio', value: this.userProfile.bio || 'N/A' },
+      { label: 'Gender', value: raw.gender || 'N/A' },
+      { label: 'DOB', value: raw.dob || 'N/A' },
+      { label: 'Bio', value: raw.bio || raw.description || 'N/A' },
     ];
   }
 

@@ -167,9 +167,37 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private loadFriendsAndConversations() {
+    const userId = this.currentUser.profileId;
+    if (!userId || userId === 'fallback' || userId === 'unknown') {
+      console.warn(
+        '⚠️ loadFriendsAndConversations: profileId not ready yet:',
+        userId,
+      );
+      // Still load friends, just skip conversations
+      this.friendService.getMyFriends().subscribe({
+        next: (friends) => {
+          this.friends = friends;
+          this.isLoadingFriends = false;
+          const currentId = this.route.snapshot.paramMap.get('id');
+          if (currentId) {
+            const friend = friends.find((f) => f.profileId === currentId);
+            if (friend) this.onFriendSelected(friend, false);
+            else this.openChatByProfileId(currentId);
+          } else if (friends.length > 0) {
+            this.onFriendSelected(friends[0], true);
+          }
+        },
+        error: () => {
+          this.isLoadingFriends = false;
+        },
+      });
+      return;
+    }
+
+    console.log('📡 Loading conversations for profileId:', userId);
     combineLatest([
       this.friendService.getMyFriends(),
-      this.chatService.getRecentConversations(this.currentUser.profileId).pipe(
+      this.chatService.getRecentConversations(userId).pipe(
         catchError((err) => {
           console.error('Error fetching recent conversations:', err);
           return of([]);

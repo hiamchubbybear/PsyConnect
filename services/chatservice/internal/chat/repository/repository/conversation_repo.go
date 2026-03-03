@@ -47,11 +47,14 @@ func (r *ConversationRepository) GetConversationByUsers(user1ID, user2ID string)
 
 func (r *ConversationRepository) GetConversationsByUserID(userID string) ([]*model.Conversation, error) {
 	filter := bson.M{
-		"participants": userID,
+		"participants": bson.M{
+			"$elemMatch": bson.M{"$eq": userID},
+		},
 	}
 
 	cursor, err := r.collection.Find(context.Background(), filter)
 	if err != nil {
+		log.Printf("[ConversationRepository] Error querying conversations for user %s: %v", userID, err)
 		return nil, err
 	}
 	defer cursor.Close(context.Background())
@@ -61,5 +64,6 @@ func (r *ConversationRepository) GetConversationsByUserID(userID string) ([]*mod
 		return nil, err
 	}
 
+	log.Printf("[ConversationRepository] Found %d conversations for user %s", len(conversations), userID)
 	return conversations, nil
 }
