@@ -69,6 +69,21 @@ func (r *ChatRepository) FindChatsByConversation(conversationID string, limit in
 	return chats, nil
 }
 
+func (r *ChatRepository) FindLastChatByConversation(conversationID string) (*model.Chat, error) {
+	filter := bson.M{"conversation_id": conversationID}
+	opts := options.FindOne().SetSort(bson.M{"created_at": -1})
+
+	var chat model.Chat
+	err := r.collection.FindOne(context.Background(), filter, opts).Decode(&chat)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &chat, nil
+}
+
 func (r *ChatRepository) DeleteChatByID(chatID string) (int64, error) {
 	res, err := r.collection.DeleteOne(context.Background(), bson.M{"_id": chatID})
 	if err != nil {

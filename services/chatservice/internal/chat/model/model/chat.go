@@ -12,6 +12,7 @@ type Chat struct {
 	SenderID       string    `json:"senderId" bson:"sender_id"`
 	ConversationID string    `json:"conversationId" bson:"conversation_id"`
 	Text           string    `json:"text" bson:"text"`
+	IsSystem       bool      `json:"isSystem" bson:"is_system"`
 	CreatedAt      time.Time `json:"createdAt" bson:"created_at"`
 	UpdatedAt      time.Time `json:"updatedAt,omitempty" bson:"updated_at,omitempty"`
 }

@@ -45,5 +45,7 @@ func RouterInit(env *bootstrap.Env, repoManager *repository.RepositoryManager) {
 
 	router.POST("/conversations", chatHandler.CreateConversation)
 	router.GET("/conversations/by-users", conversationHandler.GetConversationByUsers)
+	router.GET("/conversations/me", conversationHandler.GetRecentConversations)
+
 	router.Run(uri)
 }

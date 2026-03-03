@@ -44,3 +44,22 @@ func (r *ConversationRepository) GetConversationByUsers(user1ID, user2ID string)
 	log.Println("Converstation founds", conv)
 	return &conv, err
 }
+
+func (r *ConversationRepository) GetConversationsByUserID(userID string) ([]*model.Conversation, error) {
+	filter := bson.M{
+		"participants": userID,
+	}
+
+	cursor, err := r.collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var conversations []*model.Conversation
+	if err := cursor.All(context.Background(), &conversations); err != nil {
+		return nil, err
+	}
+
+	return conversations, nil
+}
