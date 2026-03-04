@@ -1,12 +1,8 @@
 <div class="scheduler-container fade-in">
+  <!-- Header -->
   <div class="calendar-header">
     <div class="nav-controls">
-      <button
-        class="btn btn-outline btn-sm"
-        mwlCalendarPreviousView
-        [view]="view"
-        [(viewDate)]="viewDate"
-      >
+      <button class="btn btn-outline btn-sm" (click)="previousPeriod()">
         <svg
           viewBox="0 0 24 24"
           width="16"
@@ -17,18 +13,13 @@
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <polyline points="15 18 9 12 15 6"></polyline>
+          <polyline points="15 18 9 12 15 6" />
         </svg>
       </button>
 
       <h3>{{ viewDate | date: "MMMM yyyy" }}</h3>
 
-      <button
-        class="btn btn-outline btn-sm"
-        mwlCalendarNextView
-        [view]="view"
-        [(viewDate)]="viewDate"
-      >
+      <button class="btn btn-outline btn-sm" (click)="nextPeriod()">
         <svg
           viewBox="0 0 24 24"
           width="16"
@@ -39,34 +30,61 @@
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <polyline points="9 18 15 12 9 6"></polyline>
+          <polyline points="9 18 15 12 9 6" />
         </svg>
       </button>
 
-      <button
-        class="btn btn-outline btn-sm"
-        mwlCalendarToday
-        [(viewDate)]="viewDate"
-      >
-        Today
-      </button>
+      <button class="btn btn-outline btn-sm" (click)="today()">Hôm nay</button>
     </div>
 
     <div class="actions">
-      <button class="btn btn-primary btn-sm">+ Create Event</button>
+      <button
+        class="btn btn-outline btn-sm"
+        (click)="setView(CalendarView.Week)"
+        [class.btn-primary]="view === CalendarView.Week"
+      >
+        Tuần
+      </button>
+      <button
+        class="btn btn-outline btn-sm"
+        (click)="setView(CalendarView.Month)"
+        [class.btn-primary]="view === CalendarView.Month"
+      >
+        Tháng
+      </button>
     </div>
   </div>
 
-  <div class="calendar-wrapper card">
+  <!-- Loading -->
+  <div class="calendar-loading" *ngIf="isLoading">
+    <div class="loading-shimmer"></div>
+  </div>
+
+  <!-- Calendar views -->
+  <div class="calendar-wrapper card" *ngIf="!isLoading">
     <mwl-calendar-week-view
+      *ngIf="view === CalendarView.Week"
       [viewDate]="viewDate"
       [events]="events"
-      [dayStartHour]="8"
-      [dayEndHour]="17"
+      [dayStartHour]="7"
+      [dayEndHour]="20"
       [precision]="'minutes'"
       [hourSegments]="2"
       [hourSegmentHeight]="30"
     >
     </mwl-calendar-week-view>
+
+    <mwl-calendar-month-view
+      *ngIf="view === CalendarView.Month"
+      [viewDate]="viewDate"
+      [events]="events"
+    >
+    </mwl-calendar-month-view>
+  </div>
+
+  <!-- Empty state -->
+  <div class="sched-empty" *ngIf="!isLoading && events.length === 0">
+    <span>📅</span>
+    <p>Không có buổi tư vấn nào trong tháng này</p>
   </div>
 </div>

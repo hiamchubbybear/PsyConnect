@@ -53,6 +53,15 @@
             >
             <div class="unread-dot" *ngIf="friend.hasNewMessage"></div>
           </div>
+          <div class="chat-role-label" *ngIf="friend.role">
+            <span [class]="'role-text role-text--' + friend.role.toLowerCase()">
+              {{
+                friend.role.toLowerCase() === "therapist"
+                  ? "Chuyên gia"
+                  : "Thành viên"
+              }}
+            </span>
+          </div>
           <div
             class="chat-message"
             [class.unread]="friend.hasNewMessage"
@@ -73,6 +82,38 @@
         </div>
       </div>
     </ng-container>
+  </div>
+
+  <!-- Empty search result or empty list -->
+  <div
+    class="empty-list-state"
+    *ngIf="!isLoading && filteredFriends.length === 0"
+  >
+    <div class="empty-icon-wrapper">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="40"
+        height="40"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <line x1="17" y1="8" x2="23" y2="8" />
+        <line x1="20" y1="5" x2="20" y2="11" />
+      </svg>
+    </div>
+    <p class="empty-text">
+      {{
+        searchQuery
+          ? ("CHAT.EMPTY.NoResults" | translate)
+          : ("CHAT.EMPTY.NoFriends" | translate)
+      }}
+    </p>
   </div>
 
   <div class="load-more" *ngIf="visibleCount < friends.length">

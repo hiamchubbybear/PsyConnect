@@ -195,6 +195,7 @@ export class ChatService {
     conversationId: string;
     content: string;
     senderId: string;
+    sessionData?: any;
   }) {
     if (!this.socket$ || !this.isConnected) {
       console.warn('WebSocket not connected, message dropped');
@@ -207,6 +208,7 @@ export class ChatService {
       senderId: msg.senderId,
       data: {
         text: msg.content,
+        sessionData: msg.sessionData,
       },
     };
 

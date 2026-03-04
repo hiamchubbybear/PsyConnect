@@ -1,12 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostBinding,
+  Input,
+  Output,
+} from '@angular/core';
 import { Message } from '../../../models/chat.models';
 import { ImgFallbackDirective } from '../../directives/img-fallback.directive';
+import { SessionCardComponent } from '../session-card/session-card.component';
 
 @Component({
   selector: 'app-message-bubble',
   standalone: true,
-  imports: [CommonModule, ImgFallbackDirective],
+  imports: [CommonModule, ImgFallbackDirective, SessionCardComponent],
   templateUrl: `./message-bubble.component.html`,
   styleUrl: `./message-bubble.component.scss`,
 })

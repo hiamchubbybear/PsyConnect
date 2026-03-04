@@ -201,6 +201,32 @@ h2 {
   }
 }
 
+.chat-role-label {
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.role-text {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+
+  &--therapist {
+    background: rgba(102, 126, 234, 0.1);
+    color: var(--color-primary);
+  }
+
+  &--client,
+  &--user {
+    background: var(--color-surface-low);
+    color: var(--color-text-muted);
+  }
+}
+
 .unread-dot {
   width: 8px;
   height: 8px;
@@ -251,4 +277,46 @@ h2 {
 .chat-time {
   font-size: 0.75rem;
   color: var(--color-text-muted);
+}
+
+.empty-list-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl) var(--spacing-md);
+  text-align: center;
+  opacity: 0.8;
+  animation: fadeIn 0.5s ease-out;
+
+  .empty-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    background: var(--color-surface-low);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .empty-text {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    max-width: 200px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
 }

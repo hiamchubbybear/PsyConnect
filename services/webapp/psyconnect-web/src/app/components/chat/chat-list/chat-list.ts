@@ -38,6 +38,7 @@ export class ChatListComponent implements OnInit {
   };
 
   @Input() friends: Friend[] = [];
+  @Input() isLoading = false;
 
   @Output() friendSelected = new EventEmitter<Friend>();
 

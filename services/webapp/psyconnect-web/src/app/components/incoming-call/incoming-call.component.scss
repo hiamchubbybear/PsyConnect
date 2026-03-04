@@ -1,4 +1,4 @@
-@import "../../styles/styles.scss";
+@use "../../styles/variable" as v;
 
 .incoming-call-toast {
   position: fixed;

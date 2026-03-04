@@ -136,10 +136,17 @@ func RouterInit(
 	session := api.Group("/sessions")
 	{
 		session.GET("/me", sessionHandler.GetSessionsByProfile)
+		session.GET("/me/calendar", sessionHandler.GetCalendar)
+		session.GET("/me/overview", sessionHandler.GetOverview)
 		session.POST("/me", sessionHandler.CreateSession)
 		session.DELETE("/:id", sessionHandler.DeleteSession)
 		session.GET("/:id", sessionHandler.GetSession)
 		session.POST("/:id/call/start", sessionHandler.StartCall)
+
+		// Payment & Refund Routes
+		session.GET("/:id/payment-url", sessionHandler.GetPaymentURL)          // Mock Payment URL
+		session.POST("/webhook/payment", sessionHandler.ProcessPaymentWebhook) // Payment Webhook
+		session.POST("/:id/refund", sessionHandler.RefundSession)              // Process Refund
 	}
 
 	adminSession := api.Group("/admin/sessions")

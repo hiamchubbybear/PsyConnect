@@ -1,3 +1,5 @@
+import { ConsultationSession } from './consultation.model';
+
 export interface User {
   id: string;
   name: string;
@@ -9,6 +11,7 @@ export interface ChatFromApi {
   senderId: string;
   conversationId: string;
   text: string;
+  sessionData?: ConsultationSession;
   isSystem?: boolean;
   createdAt: string;
   updateAt: string;
@@ -18,6 +21,7 @@ export interface Friend {
   firstName: string;
   lastName: string;
   avatarUri: string;
+  role?: string; // 'therapist' | 'client' | 'user'
   isOnline?: boolean;
   hasNewMessage?: boolean;
   lastMessage?: string;
@@ -31,6 +35,7 @@ export interface Message {
   senderId: string;
   userAvatar: string;
   content: string;
+  sessionData?: ConsultationSession;
   timestamp: Date;
   isMine: boolean;
   isSystem?: boolean; // system messages (e.g. welcome message)

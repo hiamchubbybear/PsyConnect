@@ -7,12 +7,31 @@
     max-width: 960px;
     margin: 0 auto;
   }
-}
-app-profile-card {
-  width: calc(100% + 36rem);
+  &__posts {
+    margin-top: 2rem;
+  }
 
-  border-radius: 12px;
-  overflow: hidden;
+  &__section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 1.5rem;
+  }
+
+  &__posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  &__posts-empty,
+  &__posts-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+    border-radius: 12px;
+  }
 }
 
 @media (min-width: 768px) {

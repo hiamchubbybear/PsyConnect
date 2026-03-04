@@ -120,17 +120,27 @@ export class FeedComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    const feedObservable =
-      this.feedType === 'trending'
-        ? this.newsfeedService.getTrendingPosts(20)
-        : this.newsfeedService.getFeed(20, 0);
+    const loadTrending = this.feedType === 'trending';
+    const limit = this.PAGE_SIZE;
+    const skip = loadTrending ? 0 : this.currentPage * this.PAGE_SIZE;
+
+    const feedObservable = loadTrending
+      ? this.newsfeedService.getTrendingPosts(limit)
+      : this.newsfeedService.getFeed(limit, skip);
 
     feedObservable.subscribe({
       next: (posts) => {
-        this.posts = posts || [];
+        const newPosts = posts || [];
+        // Append instead of replace if not page 0
+        if (this.currentPage === 0) {
+          this.posts = newPosts;
+        } else {
+          this.posts = [...this.posts, ...newPosts];
+        }
+
         this.loading = false;
         // Load profiles for all post authors
-        (posts || []).forEach((post) => {
+        newPosts.forEach((post) => {
           if (post.author_id) {
             this.loadProfile(post.author_id).then((profile) => {
               post.author_name =
@@ -139,7 +149,7 @@ export class FeedComponent implements OnInit {
             });
           }
         });
-        this.viewedPosts.clear();
+
         setTimeout(() => this.observePosts(), 100);
       },
       error: (err: any) => {
@@ -152,6 +162,8 @@ export class FeedComponent implements OnInit {
 
   switchFeed(type: 'all' | 'trending') {
     this.feedType = type;
+    this.currentPage = 0;
+    this.viewedPosts.clear();
     this.loadFeed();
   }
 
@@ -236,11 +248,15 @@ export class FeedComponent implements OnInit {
       error: (err: any) => console.error('Failed to record view:', err),
     });
 
-    // When all posts have been seen, reload the feed
+    // When all posts have been seen, load MORE (next page)
     if (this.posts.length > 0 && this.viewedPosts.size >= this.posts.length) {
-      setTimeout(() => {
-        this.loadFeed();
-      }, 800);
+      if (this.feedType === 'all') {
+        // Only paginate "all" feed
+        this.currentPage++;
+        setTimeout(() => {
+          this.loadFeed();
+        }, 800);
+      }
     }
   }
 

@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {
-    CollapsibleSidebarComponent,
-    SidebarItem,
+  CollapsibleSidebarComponent,
+  SidebarItem,
 } from '../../components/collapsible-sidebar/collapsible-sidebar';
 
 @Component({
   selector: 'app-socialprofile',
   imports: [RouterOutlet, CollapsibleSidebarComponent],
   template: `<app-collapsible-sidebar
-      [title]="'Consultation'"
-      [titleTranslateKey]="'CONSULTATION.Sidebar.Title'"
+      [title]="'Social'"
+      [titleTranslateKey]="'SOCIAL.sidebar.title'"
       [items]="sidebarItems"
       [width]="'240px'"
       [(collapsed)]="isSidebarCollapsed"
@@ -23,11 +23,13 @@ import {
     >
       <router-outlet></router-outlet>
     </div>`,
-  styles: `.main-content {
-        margin-left: 360px;
-        padding: 2rem;
-        transition: margin-left 0.3s ease;
-      }`,
+  styles: `
+    .main-content {
+      margin-left: 360px;
+      padding: 2rem;
+      transition: margin-left 0.3s ease;
+    }
+  `,
 })
 export class SocialProfile {
   isSidebarCollapsed = false;

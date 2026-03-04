@@ -76,20 +76,32 @@ export const WEEKDAYS = [
   { value: 'thursday', label: 'Thursday', labelVi: 'Thứ Năm' },
   { value: 'friday', label: 'Friday', labelVi: 'Thứ Sáu' },
   { value: 'saturday', label: 'Saturday', labelVi: 'Thứ Bảy' },
-  { value: 'sunday', label: 'Sunday', labelVi: 'Chủ Nhật' }
+  { value: 'sunday', label: 'Sunday', labelVi: 'Chủ Nhật' },
 ];
 
 export const TIME_SLOTS = [
-  { value: 'morning', label: 'Morning (6AM - 12PM)', labelVi: 'Sáng (6h - 12h)' },
-  { value: 'afternoon', label: 'Afternoon (12PM - 6PM)', labelVi: 'Chiều (12h - 18h)' },
-  { value: 'evening', label: 'Evening (6PM - 10PM)', labelVi: 'Tối (18h - 22h)' }
+  {
+    value: 'morning',
+    label: 'Morning (6AM - 12PM)',
+    labelVi: 'Sáng (6h - 12h)',
+  },
+  {
+    value: 'afternoon',
+    label: 'Afternoon (12PM - 6PM)',
+    labelVi: 'Chiều (12h - 18h)',
+  },
+  {
+    value: 'evening',
+    label: 'Evening (6PM - 10PM)',
+    labelVi: 'Tối (18h - 22h)',
+  },
 ];
 
 export const CONSULTATION_MODES = [
   { value: 'online', label: 'Online Video', labelVi: 'Video trực tuyến' },
   { value: 'in-person', label: 'In Person', labelVi: 'Trực tiếp' },
   { value: 'phone', label: 'Phone Call', labelVi: 'Điện thoại' },
-  { value: 'chat', label: 'Text Chat', labelVi: 'Nhắn tin' }
+  { value: 'chat', label: 'Text Chat', labelVi: 'Nhắn tin' },
 ];
 
 export const LANGUAGES = [
@@ -97,39 +109,59 @@ export const LANGUAGES = [
   { value: 'vi', label: 'Vietnamese', labelVi: 'Tiếng Việt' },
   { value: 'zh', label: 'Chinese', labelVi: 'Tiếng Trung' },
   { value: 'ja', label: 'Japanese', labelVi: 'Tiếng Nhật' },
-  { value: 'ko', label: 'Korean', labelVi: 'Tiếng Hàn' }
+  { value: 'ko', label: 'Korean', labelVi: 'Tiếng Hàn' },
 ];
 
 export const SPECIALIZATIONS = [
-  { value: 'anxiety', label: 'Anxiety & Stress', labelVi: 'Lo âu & Căng thẳng' },
+  {
+    value: 'anxiety',
+    label: 'Anxiety & Stress',
+    labelVi: 'Lo âu & Căng thẳng',
+  },
   { value: 'depression', label: 'Depression', labelVi: 'Trầm cảm' },
-  { value: 'relationship', label: 'Relationship Issues', labelVi: 'Vấn đề quan hệ' },
+  {
+    value: 'relationship',
+    label: 'Relationship Issues',
+    labelVi: 'Vấn đề quan hệ',
+  },
   { value: 'trauma', label: 'Trauma & PTSD', labelVi: 'Chấn thương tâm lý' },
   { value: 'family', label: 'Family Therapy', labelVi: 'Trị liệu gia đình' },
   { value: 'addiction', label: 'Addiction', labelVi: 'Nghiện ngập' },
   { value: 'eating', label: 'Eating Disorders', labelVi: 'Rối loạn ăn uống' },
-  { value: 'grief', label: 'Grief & Loss', labelVi: 'Đau buồn mất mát' }
+  { value: 'grief', label: 'Grief & Loss', labelVi: 'Đau buồn mất mát' },
 ];
 
 export const URGENCY_LEVELS = [
-  { value: 'immediate', label: 'Immediate (Within 24 hours)', labelVi: 'Khẩn cấp (Trong 24h)' },
-  { value: 'urgent', label: 'Urgent (Within 3 days)', labelVi: 'Gấp (Trong 3 ngày)' },
-  { value: 'moderate', label: 'Moderate (Within a week)', labelVi: 'Vừa (Trong tuần)' },
-  { value: 'flexible', label: 'Flexible', labelVi: 'Linh hoạt' }
+  {
+    value: 'immediate',
+    label: 'Immediate (Within 24 hours)',
+    labelVi: 'Khẩn cấp (Trong 24h)',
+  },
+  {
+    value: 'urgent',
+    label: 'Urgent (Within 3 days)',
+    labelVi: 'Gấp (Trong 3 ngày)',
+  },
+  {
+    value: 'moderate',
+    label: 'Moderate (Within a week)',
+    labelVi: 'Vừa (Trong tuần)',
+  },
+  { value: 'flexible', label: 'Flexible', labelVi: 'Linh hoạt' },
 ];
 
 export const EXPERIENCE_LEVELS = [
   { value: 'any', label: 'No Preference', labelVi: 'Không yêu cầu' },
   { value: 'entry', label: '1-3 years', labelVi: '1-3 năm' },
   { value: 'mid', label: '3-7 years', labelVi: '3-7 năm' },
-  { value: 'senior', label: '7+ years', labelVi: '7+ năm' }
+  { value: 'senior', label: '7+ years', labelVi: '7+ năm' },
 ];
 
 export const GENDER_PREFERENCES = [
   { value: 'any', label: 'No Preference', labelVi: 'Không yêu cầu' },
   { value: 'male', label: 'Male', labelVi: 'Nam' },
   { value: 'female', label: 'Female', labelVi: 'Nữ' },
-  { value: 'non-binary', label: 'Non-binary', labelVi: 'Phi nhị phân' }
+  { value: 'non-binary', label: 'Non-binary', labelVi: 'Phi nhị phân' },
 ];
 
 export const PROFESSIONAL_TITLES = [
@@ -140,28 +172,45 @@ export const PROFESSIONAL_TITLES = [
   { code: 'LPC', display: 'Licensed Professional Counselor' },
   { code: 'LMFT', display: 'Licensed Marriage and Family Therapist' },
   { code: 'MSW', display: 'Master of Social Work' },
-  { code: 'MA', display: 'Master of Arts (Counseling/Psychology)' }
+  { code: 'MA', display: 'Master of Arts (Counseling/Psychology)' },
 ];
 
 // Session Models
-export interface Session {
+export interface ConsultationSession {
   session_id: string;
   therapist_id: string;
   client_id: string;
   mode: string;
   start_time: string;
   end_time: string;
+  scheduled_date?: string;
+  time_zone?: string;
   status: string;
   price: number;
+  payment_status?: string;
+  location_info?: LocationInfo;
+  call_session_id?: string;
   created_at: string;
 }
 
+export interface LocationInfo {
+  link?: string;
+  passcode?: string;
+  address_line?: string;
+  city?: string;
+  coordinates?: string[];
+}
+
 export interface SessionRequest {
-  clientID: string;
-  therapistID: string;
-  sessionTime: string;
+  client_id?: string;
+  therapist_id: string;
+  start_time: string;
+  end_time: string;
+  time_zone: string;
+  scheduled_date?: string;
   mode: string;
   price: number;
+  location_info?: LocationInfo;
 }
 
 export interface DeleteSessionRequest {

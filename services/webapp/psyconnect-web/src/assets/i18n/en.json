@@ -492,27 +492,6 @@
             "TherapistNotAvailableDesc": "This feature is only available for clients looking for a therapist. As a therapist, you can manage your sessions instead.",
             "GoToSessions": "Go to Sessions"
         },
-        "SOCIAL": {
-            "Follow": "Follow",
-            "Unfollow": "Unfollow",
-            "Followers": "Followers",
-            "Following": "Following",
-            "BOOKMARK": "Bookmark",
-            "BOOKMARKED": "Bookmarked",
-            "RemoveBookmark": "Remove Bookmark",
-            "SHARE": "Share",
-            "Shared": "Shared Successfully",
-            "sidebar": {
-                "title": "Social",
-                "items": {
-                    "wall": "Wall",
-                    "friends": "Friends",
-                    "discover": "Discover",
-                    "settings": "Setting",
-                    "consultation_profile": "Consultation Profile"
-                }
-            }
-        },
         "CreateProfile": {
             "Title": "Create Consultation Profile",
             "ConsultationModes": "Consultation Modes",
@@ -527,6 +506,25 @@
             "StepDetails": "Details",
             "AlmostDoneClient": "You are almost done! Review your information and click <strong>Save & Finish</strong> to complete your profile.",
             "AlmostDoneTherapist": "You are almost done! Review your information and click <strong>Save & Finish</strong> to complete your profile."
+        },
+        "Booking": {
+            "Title": "Book a Session",
+            "Subtitle": "Schedule your consultation session",
+            "Therapist": "Therapist",
+            "Date": "Session Date",
+            "StartTime": "Start Time",
+            "EndTime": "End Time",
+            "Mode": "Consultation Mode",
+            "Price": "Session Price",
+            "Timezone": "Your Timezone",
+            "LocationTitle": "Session Location",
+            "OnlineLink": "Video Call Link",
+            "OfflineAddress": "Meeting Address",
+            "Confirm": "Confirm Booking",
+            "Cancel": "Cancel",
+            "Success": "Session booked successfully!",
+            "Error": "Booking failed. Please try again.",
+            "RatePerHour": "Rate / hour"
         },
         "Modes": {
             "Online": "Online",
@@ -1009,6 +1007,10 @@
         "ViewRepo": "View Repository"
     },
     "CHAT": {
+        "EMPTY": {
+            "NoResults": "No results found",
+            "NoFriends": "No conversations yet"
+        },
         "MAIN": {
             "SELECT": "Select a chat"
         },
@@ -1761,6 +1763,39 @@
             "Title": "Post Settings",
             "Subtitle": "Configure post settings",
             "ComingSoonMessage": "Post settings coming soon"
+        }
+    },
+    "SOCIAL": {
+        "Follow": "Follow",
+        "Unfollow": "Unfollow",
+        "Followers": "Followers",
+        "Following": "Following",
+        "BOOKMARK": "Bookmark",
+        "BOOKMARKED": "Bookmarked",
+        "RemoveBookmark": "Remove Bookmark",
+        "SHARE": "Share",
+        "Shared": "Shared Successfully",
+        "sidebar": {
+            "title": "Social",
+            "items": {
+                "wall": "Wall",
+                "friends": "Friends",
+                "discover": "Discover",
+                "settings": "Setting",
+                "consultation_profile": "Consultation Profile"
+            }
+        },
+        "wall": {
+            "myPosts": "My Posts",
+            "empty": "You haven't shared any moments yet. Let's make some memories! ✨",
+            "fields": {
+                "email": "Email",
+                "phone": "Phone",
+                "address": "Address",
+                "gender": "Gender",
+                "dob": "Date of Birth",
+                "bio": "Bio"
+            }
         }
     }
 }

@@ -502,6 +502,25 @@
             "AlmostDoneClient": "Bạn sắp xong rồi! Hãy kiểm tra lại và nhấn <strong>Lưu & Hoàn thành</strong>.",
             "AlmostDoneTherapist": "Bạn sắp xong rồi! Hãy kiểm tra lại và nhấn <strong>Lưu & Hoàn thành</strong>."
         },
+        "Booking": {
+            "Title": "Đặt lịch hẹn",
+            "Subtitle": "Lên lịch buổi tư vấn của bạn",
+            "Therapist": "Chuyên gia tâm lý",
+            "Date": "Ngày trị liệu",
+            "StartTime": "Giờ bắt đầu",
+            "EndTime": "Giờ kết thúc",
+            "Mode": "Hình thức tư vấn",
+            "Price": "Phí buổi tư vấn",
+            "Timezone": "Múi giờ của bạn",
+            "LocationTitle": "Địa điểm buổi hẹn",
+            "OnlineLink": "Link video call",
+            "OfflineAddress": "Địa chỉ gặp mặt",
+            "Confirm": "Xác nhận đặt lịch",
+            "Cancel": "Hủy",
+            "Success": "Đặt lịch thành công!",
+            "Error": "Đặt lịch thất bại. Vui lòng thử lại.",
+            "RatePerHour": "Phí / giờ"
+        },
         "Modes": {
             "Online": "Trực tuyến",
             "InPerson": "Trực tiếp",
@@ -1175,6 +1194,10 @@
         "ViewRepo": "Xem kho lưu trữ"
     },
     "CHAT": {
+        "EMPTY": {
+            "NoResults": "Không tìm thấy kết quả nào",
+            "NoFriends": "Chưa có cuộc trò chuyện nào"
+        },
         "SELECT": "Chọn một cuộc trò chuyện",
         "EXAMPLE": {
             "loadMore": "Tải thêm",
@@ -1504,6 +1527,18 @@
                 "discover": "Khám phá",
                 "settings": "Cài đặt",
                 "consultation_profile": "Hồ sơ tư vấn"
+            }
+        },
+        "wall": {
+            "myPosts": "Bài viết của tôi",
+            "empty": "Bạn chưa chia sẻ khoảnh khắc nào. Hãy cùng tạo ra những kỷ niệm đẹp nhé! ✨",
+            "fields": {
+                "email": "Email",
+                "phone": "Số điện thoại",
+                "address": "Địa chỉ",
+                "gender": "Giới tính",
+                "dob": "Ngày sinh",
+                "bio": "Tiểu sử"
             }
         }
     },

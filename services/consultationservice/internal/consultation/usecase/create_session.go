@@ -3,28 +3,33 @@ package usecase
 import (
 	"consultationservice/internal/consultation/domain"
 	"consultationservice/internal/consultation/repository"
+	"consultationservice/internal/kafka"
 	"context"
 	"errors"
 	"time"
 )
 
 type CreateSessionRequest struct {
-	TherapistID string
-	ClientID    string
-	Mode        domain.ConsultationMode
-	StartTime   time.Time
-	EndTime     time.Time
-	Price       float64
-	TimeZone    string
+	TherapistID   string
+	ClientID      string
+	Mode          domain.ConsultationMode
+	StartTime     time.Time
+	EndTime       time.Time
+	Price         float64
+	TimeZone      string
+	ScheduledDate string
+	LocationInfo  *domain.LocationInfo
 }
 
 type CreateSessionUseCase struct {
 	sessionRepo repository.SessionRepository
+	producer    *kafka.Producer
 }
 
-func NewCreateSessionUseCase(sessionRepo repository.SessionRepository) *CreateSessionUseCase {
+func NewCreateSessionUseCase(sessionRepo repository.SessionRepository, producer *kafka.Producer) *CreateSessionUseCase {
 	return &CreateSessionUseCase{
 		sessionRepo: sessionRepo,
+		producer:    producer,
 	}
 }
 
@@ -71,6 +76,10 @@ func (uc *CreateSessionUseCase) Execute(ctx context.Context, req CreateSessionRe
 	if overlap {
 		return nil, errors.New("session time overlaps with existing sessions")
 	}
+	if req.ScheduledDate == "" {
+		req.ScheduledDate = req.StartTime.Format("2006-01-02")
+	}
+
 	// Payment nil first
 	session, err := domain.NewSession(
 		req.ClientID,
@@ -78,12 +87,19 @@ func (uc *CreateSessionUseCase) Execute(ctx context.Context, req CreateSessionRe
 		req.StartTime,
 		req.EndTime,
 		req.TimeZone,
+		req.ScheduledDate,
+		req.LocationInfo,
 		req.Price,
 		req.Mode,
 	)
 
 	if err := uc.sessionRepo.Create(ctx, session); err != nil {
 		return nil, err
+	}
+
+	// 5. Send Event
+	if uc.producer != nil {
+		_ = uc.producer.SendSessionEvent("notification.push.consultation-created", session)
 	}
 
 	return session, nil

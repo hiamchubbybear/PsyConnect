@@ -6,6 +6,7 @@
       [currentUser]="currentUser"
       [friends]="friends"
       [selectedFriendId]="selectedFriend()?.profileId || null"
+      [isLoading]="isLoadingFriends"
       (friendSelected)="onFriendSelected($event, true)"
     ></app-chat-list>
   </div>

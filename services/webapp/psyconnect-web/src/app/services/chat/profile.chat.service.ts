@@ -9,6 +9,7 @@ export interface Friend {
   firstName: string;
   lastName: string;
   avatarUri: string;
+  role?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -33,9 +34,10 @@ export class FriendService {
           firstName: f.firstName,
           lastName: f.lastName,
           avatarUri: f.avatarUri,
+          role: f.role,
         })) as Friend[];
       }),
-      finalize(() => this.loader.hide())
+      finalize(() => this.loader.hide()),
     );
   }
 
@@ -53,9 +55,10 @@ export class FriendService {
           firstName: f.firstName,
           lastName: f.lastName,
           avatarUri: f.avatarUri,
+          role: f.role,
         })) as Friend[];
       }),
-      finalize(() => this.loader.hide())
+      finalize(() => this.loader.hide()),
     );
   }
 
@@ -73,9 +76,10 @@ export class FriendService {
           firstName: f.firstName,
           lastName: f.lastName,
           avatarUri: f.avatarUri,
+          role: f.role,
         })) as Friend[];
       }),
-      finalize(() => this.loader.hide())
+      finalize(() => this.loader.hide()),
     );
   }
   sendFriendRequest(targetId: string): Observable<any> {
@@ -88,7 +92,7 @@ export class FriendService {
         console.log('[FriendService] sendFriendRequest response:', res);
         return res;
       }),
-      finalize(() => this.loader.hide())
+      finalize(() => this.loader.hide()),
     );
   }
   acceptFriendRequest(targetId: string): Observable<any> {
@@ -101,7 +105,7 @@ export class FriendService {
         console.log('[FriendService] acceptFriendRequest response:', res);
         return res;
       }),
-      finalize(() => this.loader.hide())
+      finalize(() => this.loader.hide()),
     );
   }
   unfriend(targetId: string): Observable<any> {
@@ -114,7 +118,7 @@ export class FriendService {
         console.log('[FriendService] unfriend response:', res);
         return res;
       }),
-      finalize(() => this.loader.hide())
+      finalize(() => this.loader.hide()),
     );
   }
 }

@@ -1,118 +1,195 @@
-<div class="bookings-container">
+<div class="sessions-page">
+  <!-- Header -->
   <div class="page-header">
-    <h1>Bookings</h1>
-    <p>See your scheduled events from your calendar events links.</p>
+    <h2 class="page-title">Buổi tư vấn của tôi</h2>
+    <p class="page-subtitle">Quản lý toàn bộ lịch sử tư vấn của bạn</p>
   </div>
 
-  <div class="filter-tabs">
-    <button class="filter-tab active">Upcoming</button>
-    <button class="filter-tab">Pending</button>
-    <button class="filter-tab">Recurring</button>
-    <button class="filter-tab">Past</button>
-    <button class="filter-tab">Cancelled</button>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'upcoming'"
+      (click)="setTab('upcoming')"
+    >
+      Sắp tới
+      <span class="tab-count" *ngIf="upcomingCount > 0">{{
+        upcomingCount
+      }}</span>
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'completed'"
+      (click)="setTab('completed')"
+    >
+      Hoàn thành
+      <span class="tab-count">{{ completedCount }}</span>
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'cancelled'"
+      (click)="setTab('cancelled')"
+    >
+      Đã hủy
+      <span class="tab-count">{{ cancelledCount }}</span>
+    </button>
   </div>
 
-  <div class="bookings-list">
-    <!-- Month Header -->
-    <h3 class="month-divider">July</h3>
+  <!-- Loading skeleton -->
+  <div class="skeleton-list" *ngIf="isLoading">
+    <div class="skeleton-card" *ngFor="let i of [1, 2, 3]"></div>
+  </div>
 
-    <!-- Booking Item -->
-    <div class="booking-row">
-      <div class="booking-date">
-        <span class="day-name">Wed</span>
-        <span class="day-number">28</span>
-      </div>
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!isLoading && filteredSessions.length === 0">
+    <div class="empty-icon">📅</div>
+    <h3>Chưa có buổi tư vấn nào</h3>
+    <p>
+      {{
+        activeTab === "upcoming"
+          ? "Bạn chưa có lịch hẹn sắp tới. Hãy đặt lịch với chuyên gia tâm lý ngay hôm nay!"
+          : activeTab === "completed"
+            ? "Bạn chưa hoàn thành buổi tư vấn nào."
+            : "Bạn không có buổi tư vấn bị hủy."
+      }}
+    </p>
+  </div>
 
-      <div class="booking-divider"></div>
-
-      <div class="booking-time-location">
-        <div class="info-line">
-          <span class="btn-icon-text" style="font-size: 12px; margin-right: 4px"
-            >🕒</span
-          >
-          <span class="time">09:00 - 09:30</span>
-        </div>
-        <div class="info-line">
-          <span class="btn-icon-text" style="font-size: 12px; margin-right: 4px"
-            >📍</span
-          >
-          <span class="location">Online</span>
-        </div>
-      </div>
-
-      <div class="booking-details">
-        <h4 class="booking-title">30min call meeting Peer &lt;&gt; Leslie</h4>
-        <div class="attendees">
-          <div class="avatar">
-            <img [src]="null | avatarFallback: 'user_1'" alt="Peer" />
+  <!-- Sessions List -->
+  <div class="sessions-list" *ngIf="!isLoading && filteredSessions.length > 0">
+    <div class="session-card" *ngFor="let session of filteredSessions">
+      <!-- Card Header -->
+      <div class="session-card__header">
+        <div class="session-mode-icon">{{ getModeIcon(session.mode) }}</div>
+        <div class="session-info">
+          <div class="session-date">
+            {{ formatDate(session.start_time || session.scheduled_date || "") }}
           </div>
-          <div class="avatar">
-            <img [src]="null | avatarFallback: 'user_2'" alt="Leslie" />
+          <div class="session-time">
+            {{ formatTime(session.start_time || "") }} —
+            {{ formatTime(session.end_time || "") }}
           </div>
         </div>
+        <span
+          class="status-badge"
+          [ngClass]="getStatusClass(session.status || '')"
+        >
+          {{
+            session.status === "pending"
+              ? "⏳ Chờ xác nhận"
+              : session.status === "active"
+                ? "✅ Đang diễn ra"
+                : session.status === "completed"
+                  ? "🏆 Hoàn thành"
+                  : session.status === "cancelled"
+                    ? "❌ Đã hủy"
+                    : session.status
+          }}
+        </span>
       </div>
-    </div>
 
-    <!-- Booking Item 2 -->
-    <div class="booking-row striped">
-      <div class="booking-date">
-        <span class="day-name">Thu</span>
-        <span class="day-number">29</span>
+      <!-- Card Body -->
+      <div class="session-card__body">
+        <div class="detail-row">
+          <span class="detail-label">Hình thức</span>
+          <span class="detail-value mode-badge mode-badge--{{ session.mode }}">
+            {{
+              session.mode === "online"
+                ? "Online"
+                : session.mode === "in_person"
+                  ? "Trực tiếp"
+                  : session.mode === "phone"
+                    ? "Điện thoại"
+                    : session.mode
+            }}
+          </span>
+        </div>
+        <div class="detail-row" *ngIf="session.price">
+          <span class="detail-label">Phí tư vấn</span>
+          <span class="detail-value">{{ session.price | number }} VND</span>
+        </div>
+        <div class="detail-row" *ngIf="session.time_zone">
+          <span class="detail-label">Múi giờ</span>
+          <span class="detail-value">{{ session.time_zone }}</span>
+        </div>
+        <div class="detail-row" *ngIf="session.location_info?.address_line">
+          <span class="detail-label">📍 Địa chỉ</span>
+          <span class="detail-value">{{
+            session.location_info?.address_line
+          }}</span>
+        </div>
+        <div class="detail-row" *ngIf="session.payment_status">
+          <span class="detail-label">Thanh toán</span>
+          <span
+            class="pay-chip"
+            [class.pay-chip--paid]="session.payment_status === 'paid'"
+          >
+            {{
+              session.payment_status === "paid"
+                ? "✅ Đã thanh toán"
+                : "💳 Chưa thanh toán"
+            }}
+          </span>
+        </div>
       </div>
 
-      <div class="booking-divider"></div>
-
-      <div class="booking-time-location">
-        <div class="info-line">
+      <!-- Card Actions -->
+      <div class="session-card__actions">
+        <!-- Join (online + active/upcoming) -->
+        <button
+          class="btn btn--join"
+          *ngIf="
+            session.mode === 'online' &&
+            (session.status === 'active' || session.status === 'pending')
+          "
+          (click)="joinSession(session)"
+        >
           <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="15"
             viewBox="0 0 24 24"
-            width="14"
-            height="14"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
           >
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
+            <path
+              d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"
+            />
+            <rect x="2" y="6" width="14" height="12" rx="2" />
           </svg>
-          <span class="time">11:15 - 11:45</span>
-          <span class="status-indicator warning"></span>
-        </div>
-        <div class="info-line">
+          Tham gia
+        </button>
+        <!-- Pay -->
+        <button
+          class="btn btn--pay"
+          *ngIf="
+            session.payment_status !== 'paid' && session.status !== 'cancelled'
+          "
+          (click)="getPaymentUrl(session)"
+        >
           <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="15"
             viewBox="0 0 24 24"
-            width="14"
-            height="14"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
           >
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+            <line x1="1" y1="10" x2="23" y2="10" />
           </svg>
-          <span class="location">Online</span>
-        </div>
-      </div>
-
-      <div class="booking-details">
-        <h4 class="booking-title">
-          30min call meeting Olivia, Liam &lt;&gt; Alban
-        </h4>
-        <div class="attendees">
-          <div class="avatar">
-            <img [src]="null | avatarFallback: 'user_3'" alt="Olivia" />
-          </div>
-          <div class="avatar">
-            <img [src]="null | avatarFallback: 'user_4'" alt="Liam" />
-          </div>
-          <div class="avatar">
-            <img [src]="null | avatarFallback: 'user_5'" alt="Alban" />
-          </div>
-        </div>
+          Thanh toán
+        </button>
+        <!-- Cancel -->
+        <button
+          class="btn btn--cancel"
+          *ngIf="session.status === 'pending'"
+          (click)="cancelSession(session)"
+        >
+          Hủy lịch
+        </button>
       </div>
     </div>
   </div>

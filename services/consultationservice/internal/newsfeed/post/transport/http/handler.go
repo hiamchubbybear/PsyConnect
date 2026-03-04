@@ -193,7 +193,10 @@ func (h *Handler) GetFeed(c *gin.Context) {
 		viewedKey := fmt.Sprintf("user:%s:viewed", userID)
 		ids, err := h.redisClient.SMembers(ctx, viewedKey)
 		if err == nil {
-			excludeIDs = ids
+			// temporarily disable excluding viewed posts so the feed doesn't
+			// appear empty when there are only a few test posts
+			_ = ids
+			// excludeIDs = ids
 		}
 	}
 

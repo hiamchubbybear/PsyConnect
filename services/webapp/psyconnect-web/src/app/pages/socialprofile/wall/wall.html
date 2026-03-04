@@ -17,5 +17,30 @@
       [showEdit]="isOwnProfile"
       (edit)="onEditWebsite()"
     ></app-info-block>
+
+    <!-- My Posts Section -->
+    <div class="profile-page__posts">
+      <h2 class="profile-page__section-title">
+        {{ "SOCIAL.wall.myPosts" | translate }}
+      </h2>
+
+      <div class="profile-page__posts-grid" *ngIf="userPosts.length > 0">
+        <app-post-card
+          *ngFor="let post of userPosts"
+          [post]="post"
+        ></app-post-card>
+      </div>
+
+      <div
+        class="profile-page__posts-empty"
+        *ngIf="!isLoadingPosts && userPosts.length === 0"
+      >
+        <p>{{ "SOCIAL.wall.empty" | translate }}</p>
+      </div>
+
+      <div class="profile-page__posts-loading" *ngIf="isLoadingPosts">
+        <p>{{ "COMMON.Loading" | translate }}</p>
+      </div>
+    </div>
   </div>
 </div>

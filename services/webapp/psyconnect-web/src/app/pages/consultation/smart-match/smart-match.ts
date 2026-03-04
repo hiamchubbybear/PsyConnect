@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatchRequest } from '../../../models/consultation.model';
 import { Therapist } from '../../../models/swipe-card';
 import { AuthService } from '../../../services/auth/auth.service';
 import { MatchingService } from '../../../services/consultation/matching.service';
 import { SwipeService } from '../../../services/swipe/swipe.service';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
+import { BookingDialogComponent } from '../booking-dialog/booking-dialog';
 
 @Component({
   selector: 'consultation-smart-match',
@@ -28,6 +29,7 @@ export class SmartMatchComponent implements OnInit {
     private matchingService: MatchingService,
     private authService: AuthService,
     private router: Router,
+    private dialog: MatDialog,
   ) {}
 
   get currentTherapist(): Therapist | null {
@@ -64,7 +66,7 @@ export class SmartMatchComponent implements OnInit {
                 },
                 error: () => {
                   this.isLoading = false;
-                }
+                },
               });
             },
             error: (triggerErr) => {
@@ -72,7 +74,7 @@ export class SmartMatchComponent implements OnInit {
                 this.missingProfile = true;
               }
               this.isLoading = false;
-            }
+            },
           });
         } else {
           this.recommendedTherapists = therapists;
@@ -99,7 +101,7 @@ export class SmartMatchComponent implements OnInit {
 
   onPass() {
     if (!this.currentTherapist) return;
-    // Move to next therapist
+
     this.recommendedTherapists.splice(this.currentIndex, 1);
     if (this.currentIndex >= this.recommendedTherapists.length) {
       this.currentIndex = 0;
@@ -108,30 +110,34 @@ export class SmartMatchComponent implements OnInit {
 
   onBookSession() {
     if (!this.currentTherapist) return;
-    const therapistId = this.currentTherapist.profileId;
-    const request: MatchRequest = { therapist_id: therapistId };
 
-    this.matchingService.requestMatch(request).subscribe({
-      next: () => {
-        this.router.navigate(['/feature/consultation/schedules']);
-      },
-      error: (err) => {
-        console.error('Failed to request match', err);
-      },
+    const dialogRef = this.dialog.open(BookingDialogComponent, {
+      width: '500px',
+      data: { therapist: this.currentTherapist },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Session created successfully
+        this.router.navigate(['/feature/consultation/sessions']);
+      }
     });
   }
 
   onMessage() {
     if (!this.currentTherapist) return;
-    // Navigate to chat and start a conversation with the therapist
+
     this.router.navigate(['/feature/chat'], {
-      queryParams: { therapistId: this.currentTherapist.profileId }
+      queryParams: { therapistId: this.currentTherapist.profileId },
     });
   }
 
   onViewProfile() {
     if (!this.currentTherapist) return;
-    // Navigate to therapist's public profile
-    this.router.navigate(['/feature/consultation/therapist', this.currentTherapist.profileId]);
+
+    this.router.navigate([
+      '/feature/consultation/therapist',
+      this.currentTherapist.profileId,
+    ]);
   }
 }

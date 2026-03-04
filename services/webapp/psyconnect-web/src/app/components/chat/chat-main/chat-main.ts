@@ -11,9 +11,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { Friend, Message } from '../../../models/chat.models';
+import { BookingDialogComponent } from '../../../pages/consultation/booking-dialog/booking-dialog';
 import { ChatService } from '../../../services/chat/chat.service';
 import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
@@ -63,7 +65,10 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   isSending = false; // Guard against duplicate sends
   private autoScrollPending = false;
 
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private dialog: MatDialog,
+  ) {}
 
   ngAfterViewInit(): void {
     this.scrollToBottom();
@@ -329,5 +334,21 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   startCall(callType: CallType) {
     console.log('📞 Starting', callType, 'call...');
     this.callRequested.emit(callType);
+  }
+
+  bookSession() {
+    if (!this.selectedFriend) return;
+    this.dialog.open(BookingDialogComponent, {
+      width: '500px',
+      panelClass: 'booking-dialog-panel',
+      data: {
+        therapist: {
+          profileId: this.selectedFriend.profileId,
+          profile_id: this.selectedFriend.profileId,
+          name: `${this.selectedFriend.firstName} ${this.selectedFriend.lastName}`,
+          avatarUri: this.selectedFriend.avatarUri,
+        },
+      },
+    });
   }
 }

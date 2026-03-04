@@ -103,10 +103,16 @@ func main() {
 	sessionRepo := consultationRepo.NewMongoSessionRepository(db.GetSessionCollection())
 
 	// Initialize Session UseCases
-	createSessionUC := usecase.NewCreateSessionUseCase(sessionRepo)
+	createSessionUC := usecase.NewCreateSessionUseCase(sessionRepo, kafkaProducer)
 	getSessionUC := usecase.NewGetSessionUseCase(sessionRepo)
 	deleteSessionUC := usecase.NewDeleteSessionUseCase(sessionRepo)
 	startCallUC := usecase.NewStartCallUseCase(sessionRepo, kafkaProducer)
+	getPaymentUrlUC := usecase.NewGetPaymentURLUseCase(sessionRepo)
+	processPaymentWebhookUC := usecase.NewProcessPaymentWebhookUseCase(sessionRepo, kafkaProducer)
+	processRefundUC := usecase.NewProcessRefundUseCase(sessionRepo, kafkaProducer)
+
+	getOverviewUC := usecase.NewGetOverviewUseCase(sessionRepo)
+	getCalendarUC := usecase.NewGetCalendarUseCase(sessionRepo)
 
 	// Initialize DDD HTTP Handler
 	sessionHandler := httpHandler.NewHandler(
@@ -114,6 +120,11 @@ func main() {
 		getSessionUC,
 		deleteSessionUC,
 		startCallUC,
+		getPaymentUrlUC,
+		processPaymentWebhookUC,
+		processRefundUC,
+		getCalendarUC,
+		getOverviewUC,
 	)
 	// ===== End DDD Session Components =====
 

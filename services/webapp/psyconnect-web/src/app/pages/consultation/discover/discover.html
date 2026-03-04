@@ -1,213 +1,146 @@
-<div class="dashboard-wrapper fade-in">
-  <!-- Left Column: Hero Cards, Community & Schedules -->
-  <div class="main-column">
-    <!-- Top Left: Hero Cards (Now compact and horizontal) -->
-    <div class="hero-grid">
-      <div class="dash-card">
-        <div class="card-icon">
-          <div class="card-icon-text">💳</div>
-        </div>
-        <div class="card-content">
-          <h3>Payment</h3>
-          <p>5 pending</p>
-        </div>
-      </div>
+<div class="discover-page">
+  <!-- Overview Header -->
+  <div class="overview-header">
+    <div>
+      <h2 class="page-title">Tổng quan tư vấn</h2>
+      <p class="page-subtitle">Theo dõi hành trình sức khỏe tâm lý của bạn</p>
+    </div>
+    <button class="refresh-btn" (click)="loadOverview()">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M21 2v6h-6" />
+        <path d="M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6" />
+        <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+      </svg>
+      Làm mới
+    </button>
+  </div>
 
-      <div class="dash-card dash-card--soft">
-        <div class="card-icon">
-          <div class="card-icon-text">📊</div>
-        </div>
-        <div class="card-content">
-          <h3>Analytic</h3>
-          <p>1 week ago</p>
-        </div>
-      </div>
+  <!-- Loading state -->
+  <div class="stats-grid skeleton-grid" *ngIf="isLoading">
+    <div class="skeleton-stat" *ngFor="let i of [1, 2, 3, 4]"></div>
+  </div>
 
-      <div class="dash-card dash-card--primary">
-        <div class="card-icon">
-          <div class="card-icon-text">🏥</div>
-        </div>
-        <div class="card-content">
-          <h3>Consultations</h3>
-          <p>4 upcoming</p>
-        </div>
+  <!-- Stats Cards -->
+  <div class="stats-grid" *ngIf="!isLoading && overview">
+    <div class="stat-card stat-card--upcoming">
+      <div class="stat-icon">📅</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ overview.upcoming_count }}</div>
+        <div class="stat-label">Sắp diễn ra</div>
       </div>
     </div>
-
-    <!-- Bottom Left: Community Box and Schedule List -->
-    <div class="content-row">
-      <!-- Community Volunteer Promo -->
-      <div class="promo-card">
-        <div class="promo-card__header">
-          <h4 class="promo-card__subtitle">Community</h4>
-          <h3 class="promo-card__title">Medicine volunteer network</h3>
-        </div>
-        <div class="promo-card__body">
-          <div class="detail-grid">
-            <div class="detail-item">
-              <span class="detail-label">DAY</span>
-              <span class="detail-value">Mon - Fri</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">TIME</span>
-              <span class="detail-value">3:00 PM</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">GOALS</span>
-              <span class="detail-value">Helping</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">REQ</span>
-              <span class="detail-value">Available</span>
-            </div>
-          </div>
-          <button class="btn btn-primary mt-3 w-100">Join Now</button>
-        </div>
+    <div class="stat-card stat-card--completed">
+      <div class="stat-icon">✅</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ overview.completed_count }}</div>
+        <div class="stat-label">Đã hoàn thành</div>
       </div>
-
-      <!-- Upcoming Schedules List -->
-      <div class="schedule-list">
-        <div class="schedule-list__header">
-          <h3>Upcoming Appointments</h3>
-          <button class="icon-btn">
-            <span class="btn-icon-text">⋮</span>
-          </button>
-        </div>
-
-        <div class="schedule-items-container">
-          <div class="schedule-item">
-            <div class="avatar bg-success">HC</div>
-            <div class="schedule-info">
-              <h4>Hirurgy</h4>
-              <p>Ann Curgy</p>
-            </div>
-            <div class="schedule-action">
-              <span class="btn-icon-text">›</span>
-            </div>
-          </div>
-
-          <div class="schedule-item">
-            <div class="avatar bg-warning">CA</div>
-            <div class="schedule-info">
-              <h4>Cardiology</h4>
-              <p>Alise Pirsen</p>
-            </div>
-            <div class="schedule-action">
-              <svg
-                viewBox="0 0 24 24"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </div>
-          </div>
-
-          <div class="schedule-item">
-            <div class="avatar bg-info">TE</div>
-            <div class="schedule-info">
-              <h4>Therapy</h4>
-              <p>Andry Willson</p>
-            </div>
-            <div class="schedule-action">
-              <svg
-                viewBox="0 0 24 24"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </div>
-          </div>
-        </div>
+    </div>
+    <div class="stat-card stat-card--payment">
+      <div class="stat-icon">💳</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ overview.pending_payment_count }}</div>
+        <div class="stat-label">Chưa thanh toán</div>
+      </div>
+    </div>
+    <div class="stat-card stat-card--spent">
+      <div class="stat-icon">💰</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ formatCurrency(overview.total_spent) }}</div>
+        <div class="stat-label">Tổng chi phí</div>
       </div>
     </div>
   </div>
 
-  <!-- Right Sidebar: Calendar and Illustration -->
-  <div class="right-rail">
-    <!-- Mini Calendar -->
-    <div class="calendar-widget">
-      <div class="calendar-header">
-        <div class="month-title">
-          <span class="calendar-icon-text">📅</span>
-          July 2026
-        </div>
-        <div class="calendar-nav">
-          <button class="nav-btn">
-            <span class="btn-icon-text">‹</span>
-          </button>
-          <button class="nav-btn">
-            <span class="btn-icon-text">›</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="calendar-grid">
-        <div class="day-name">Mo</div>
-        <div class="day-name">Tu</div>
-        <div class="day-name">We</div>
-        <div class="day-name">Th</div>
-        <div class="day-name">Fr</div>
-        <div class="day-name">Sa</div>
-        <div class="day-name">Su</div>
-        <!-- Mock Days -->
-        <div class="day">1</div>
-        <div class="day highlighted-soft">2</div>
-        <div class="day">3</div>
-        <div class="day">4</div>
-        <div class="day">5</div>
-        <div class="day">6</div>
-        <div class="day highlighted-soft">7</div>
-        <div class="day">8</div>
-        <div class="day">9</div>
-        <div class="day">10</div>
-        <div class="day">11</div>
-        <div class="day">12</div>
-        <div class="day">13</div>
-        <div class="day">14</div>
-        <div class="day">15</div>
-        <div class="day">16</div>
-        <div class="day">17</div>
-        <div class="day">18</div>
-        <div class="day highlighted">19</div>
-        <div class="day">20</div>
-        <div class="day">21</div>
-        <div class="day">22</div>
-        <div class="day">23</div>
-        <div class="day">24</div>
-        <div class="day">25</div>
-        <div class="day">26</div>
-        <div class="day">27</div>
-        <div class="day">28</div>
-        <div class="day">29</div>
-        <div class="day">30</div>
-        <div class="day">31</div>
-        <div class="day disabled">1</div>
-        <div class="day disabled">2</div>
-        <div class="day disabled">3</div>
-        <div class="day disabled">4</div>
-      </div>
+  <!-- Next Session Banner -->
+  <div class="next-session-banner" *ngIf="!isLoading && overview?.next_session">
+    <div class="next-session-label">Buổi tư vấn tiếp theo</div>
+    <div class="next-session-info">
+      <span class="next-date">{{ nextSessionDate }}</span>
+      <span class="next-time">{{ nextSessionTime }}</span>
+      <span class="next-mode">
+        {{
+          overview?.next_session?.mode === "online"
+            ? "💻 Online"
+            : overview?.next_session?.mode === "in_person"
+              ? "🏥 Trực tiếp"
+              : overview?.next_session?.mode
+        }}
+      </span>
     </div>
+    <a [routerLink]="['../sessions']" class="view-sessions-btn">Xem tất cả →</a>
+  </div>
 
-    <!-- Illustration Widget -->
-    <div class="illustration-widget">
-      <div class="illustration-placeholder">
-        <div class="flower-symbol">🌸</div>
-      </div>
-      <div class="illustration-text">
-        <h4>Mental Wellness</h4>
-        <p>A secure place for therapy.</p>
+  <!-- Empty next session -->
+  <div class="no-upcoming" *ngIf="!isLoading && !overview?.next_session">
+    <span>🌟</span>
+    <p>
+      Bạn chưa có buổi tư vấn nào sắp tới.
+      <a [routerLink]="['../smart-match']">Tìm chuyên gia ngay</a>
+    </p>
+  </div>
+
+  <!-- Recent Sessions -->
+  <div
+    class="recent-sessions"
+    *ngIf="
+      !isLoading && overview && (overview.recent_sessions?.length || 0) > 0
+    "
+  >
+    <h3 class="section-title">Các buổi gần đây</h3>
+    <div class="recent-list">
+      <div
+        class="recent-item"
+        *ngFor="let s of overview.recent_sessions | slice: 0 : 5"
+      >
+        <span class="recent-mode">
+          {{
+            s.mode === "online"
+              ? "💻"
+              : s.mode === "in_person"
+                ? "🏥"
+                : s.mode === "phone"
+                  ? "📞"
+                  : "💬"
+          }}
+        </span>
+        <div class="recent-info">
+          <span class="recent-date"
+            >{{ formatDate(s.start_time) }} ·
+            {{ formatTime(s.start_time) }}</span
+          >
+          <span class="recent-price" *ngIf="s.price"
+            >{{ s.price | number }} VND</span
+          >
+        </div>
+        <span
+          class="recent-status"
+          [style.color]="
+            s.status === 'completed'
+              ? '#059669'
+              : s.status === 'cancelled'
+                ? '#dc2626'
+                : '#d97706'
+          "
+        >
+          {{
+            s.status === "completed"
+              ? "Hoàn thành"
+              : s.status === "cancelled"
+                ? "Đã hủy"
+                : s.status === "pending"
+                  ? "Chờ xác nhận"
+                  : s.status
+          }}
+        </span>
       </div>
     </div>
   </div>

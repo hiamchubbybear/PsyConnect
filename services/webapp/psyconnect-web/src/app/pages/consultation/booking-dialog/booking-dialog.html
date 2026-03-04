@@ -1,0 +1,327 @@
+<div class="booking-dialog">
+  <!-- ── Header ─────────────────── -->
+  <div class="booking-header">
+    <div class="booking-header__icon">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+        <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
+      </svg>
+    </div>
+    <div class="booking-header__text">
+      <h2>{{ "CONSULTATION.Booking.Title" | translate }}</h2>
+      <p>{{ "CONSULTATION.Booking.Subtitle" | translate }}</p>
+    </div>
+    <button class="booking-close-btn" mat-dialog-close aria-label="Close">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- ── Responsibility Banner ───── -->
+  <div class="responsibility-banner">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span
+      >Bạn có trách nhiệm với lịch hẹn này. Hủy trễ hơn 24h có thể phát sinh
+      phí.</span
+    >
+  </div>
+
+  <!-- ── Therapist Card ─────────── -->
+  <div class="therapist-card">
+    <div class="therapist-avatar">
+      {{ therapist.name?.charAt(0)?.toUpperCase() || "?" }}
+    </div>
+    <div class="therapist-info">
+      <h3>{{ therapist.name }}</h3>
+      <p class="therapist-role">Chuyên gia tâm lý · Tư vấn viên</p>
+      <div
+        class="rate-badge"
+        *ngIf="therapist.rage_price || therapist.ragePrice"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <line x1="12" y1="1" x2="12" y2="23" />
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+        {{ therapist.rage_price || therapist.ragePrice | number }}
+        {{ therapist.currency || "VND" }} / giờ
+      </div>
+    </div>
+  </div>
+
+  <mat-dialog-content class="dialog-body">
+    <form [formGroup]="bookingForm" class="booking-form">
+      <!-- ── Section 1: Thời gian ── -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+          </svg>
+          <div>
+            <h4>Chọn ngày và giờ</h4>
+            <p>
+              Chọn ngày và khung giờ phù hợp với lịch của bạn. Vui lòng đặt
+              trước ít nhất 1 ngày.
+            </p>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">
+            {{ "CONSULTATION.Booking.Date" | translate }}
+            <span class="required-mark">*</span>
+          </label>
+          <input
+            type="date"
+            formControlName="scheduledDate"
+            class="field-input"
+            [min]="minDate"
+          />
+          <span class="field-hint">Chọn ngày từ hôm nay trở đi</span>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label"
+              >{{ "CONSULTATION.Booking.StartTime" | translate }}
+              <span class="required-mark">*</span></label
+            >
+            <input
+              type="time"
+              formControlName="startTime"
+              class="field-input"
+            />
+            <span class="field-hint">Giờ bắt đầu buổi tư vấn</span>
+          </div>
+          <div class="time-arrow">→</div>
+          <div class="field-group">
+            <label class="field-label"
+              >{{ "CONSULTATION.Booking.EndTime" | translate }}
+              <span class="required-mark">*</span></label
+            >
+            <input type="time" formControlName="endTime" class="field-input" />
+            <span class="field-hint">Giờ kết thúc buổi tư vấn</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Section 2: Hình thức ── -->
+      <div class="form-section">
+        <div class="section-header">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"
+            />
+            <rect x="2" y="6" width="14" height="12" rx="2" />
+          </svg>
+          <div>
+            <h4>Hình thức tư vấn</h4>
+            <p>
+              Chọn hình thức phù hợp. Online sẽ cung cấp link video, Trực tiếp
+              sẽ ghi nhận địa chỉ.
+            </p>
+          </div>
+        </div>
+
+        <div class="mode-pills">
+          <label
+            class="mode-pill"
+            *ngFor="let mode of modes"
+            [class.active]="bookingForm.get('mode')?.value === mode.value"
+            [title]="mode.label"
+          >
+            <input
+              type="radio"
+              formControlName="mode"
+              [value]="mode.value"
+              hidden
+            />
+            <span class="mode-dot"></span>
+            {{ mode.label }}
+          </label>
+        </div>
+      </div>
+
+      <!-- ── Section 3: Múi giờ ─── -->
+      <div class="form-section form-section--compact">
+        <div class="section-header">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path
+              d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+            />
+            <line x1="2" y1="12" x2="22" y2="12" />
+          </svg>
+          <div>
+            <h4>{{ "CONSULTATION.Booking.Timezone" | translate }}</h4>
+            <p>Được phát hiện tự động từ thiết bị của bạn</p>
+          </div>
+        </div>
+        <div class="timezone-chip">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          {{ timezone }}
+        </div>
+      </div>
+
+      <!-- ── Section 4: Trách nhiệm ─── -->
+      <div class="form-section responsibility-section">
+        <label class="checkbox-group">
+          <input
+            type="checkbox"
+            formControlName="acceptResponsibility"
+            class="checkbox-input"
+          />
+          <span class="checkbox-text">
+            Tôi xác nhận đã kiểm tra kỹ thời gian và cam kết tham gia buổi tư
+            vấn đúng giờ. Tôi hiểu rằng việc hủy lịch sát giờ có thể ảnh hưởng
+            đến chuyên gia và các khách hàng khác.
+          </span>
+        </label>
+        <p
+          class="field-hint field-hint--warning"
+          *ngIf="
+            bookingForm.get('acceptResponsibility')?.invalid &&
+            bookingForm.get('acceptResponsibility')?.touched
+          "
+        >
+          Vui lòng xác nhận trách nhiệm trước khi tiếp tục.
+        </p>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <!-- ── Actions ──────────────────── -->
+  <mat-dialog-actions class="booking-actions">
+    <div class="actions-note">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+      Bằng cách xác nhận, bạn đồng ý với điều khoản đặt lịch
+    </div>
+    <div class="actions-btns">
+      <button class="btn-cancel" mat-dialog-close>
+        {{ "CONSULTATION.Booking.Cancel" | translate }}
+      </button>
+      <button
+        class="btn-confirm"
+        (click)="onSubmit()"
+        [disabled]="bookingForm.invalid || isLoading"
+      >
+        <ng-container *ngIf="!isLoading">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          {{ "CONSULTATION.Booking.Confirm" | translate }}
+        </ng-container>
+        <span *ngIf="isLoading" class="btn-spinner"></span>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

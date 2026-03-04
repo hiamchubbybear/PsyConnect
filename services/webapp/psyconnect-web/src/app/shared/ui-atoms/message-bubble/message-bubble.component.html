@@ -29,6 +29,11 @@
 
     <div class="message-bubble" [class.mine]="message.isMine">
       <p>{{ message.content }}</p>
+      <!-- Session Card: shown when a booking is embedded in the message -->
+      <app-session-card
+        *ngIf="message.sessionData"
+        [session]="message.sessionData"
+      ></app-session-card>
     </div>
 
     <!-- Status indicators for my messages -->

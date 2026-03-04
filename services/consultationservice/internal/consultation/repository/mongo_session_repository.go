@@ -30,10 +30,18 @@ func (r *MongoSessionRepository) UpdateStatus(
 ) error {
 
 	filter := bson.M{"_id": sessionID}
+	now := time.Now().UTC()
 	update := bson.M{
 		"$set": bson.M{
 			"status":     status,
-			"updated_at": time.Now().UTC(),
+			"updated_at": now,
+		},
+		"$push": bson.M{
+			"logs": domain.SessionLog{
+				Status:    status,
+				Timestamp: now,
+				Message:   "Status updated to " + string(status),
+			},
 		},
 	}
 
@@ -57,17 +65,27 @@ func (r *MongoSessionRepository) UpdatePayment(
 ) error {
 
 	filter := bson.M{"_id": sessionID}
+	now := time.Now().UTC()
 
 	updateFields := bson.M{
 		"payment_status": paymentStatus,
-		"updated_at":     time.Now().UTC(),
+		"updated_at":     now,
 	}
 
 	if paymentID != nil {
 		updateFields["payment_id"] = paymentID
 	}
 
-	update := bson.M{"$set": updateFields}
+	update := bson.M{
+		"$set": updateFields,
+		"$push": bson.M{
+			"logs": domain.SessionLog{
+				Status:    "payment_update",
+				Timestamp: now,
+				Message:   "Payment status updated to " + string(paymentStatus),
+			},
+		},
+	}
 
 	result, err := r.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -123,11 +141,19 @@ func (r *MongoSessionRepository) Cancel(
 		},
 	}
 
+	now := time.Now().UTC()
 	update := bson.M{
 		"$set": bson.M{
 			"status":           domain.SessionStatusCancelled,
 			"cancel_meta_data": cancelMeta,
-			"updated_at":       time.Now().UTC(),
+			"updated_at":       now,
+		},
+		"$push": bson.M{
+			"logs": domain.SessionLog{
+				Status:    domain.SessionStatusCancelled,
+				Timestamp: now,
+				Message:   "Session cancelled",
+			},
 		},
 	}
 

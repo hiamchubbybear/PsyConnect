@@ -30,6 +30,12 @@
 
   --color-primary: #{v.$color-primary};
   --color-primary-hover: #{v.$color-primary-hover};
+  --color-primary-rgb: 102, 126, 234;
+  --color-bg-rgb: 255, 255, 255;
+  --color-bg-secondary-rgb: 249, 250, 251;
+  --color-text-rgb: 9, 9, 11;
+  --color-success-rgb: 22, 163, 74;
+  --color-accent-rgb: 82, 82, 82;
   --color-accent: #{v.$color-accent};
   --color-accent-hover: #{v.$color-accent-hover};
 
@@ -135,6 +141,12 @@
   // Primary & Accent handling
   --color-primary: #3b82f6; // Blue 500 - Clear on dark
   --color-primary-hover: #2563eb; // Blue 600
+  --color-primary-rgb: 59, 130, 246;
+  --color-bg-rgb: 15, 23, 42;
+  --color-bg-secondary-rgb: 30, 41, 59;
+  --color-text-rgb: 248, 250, 252;
+  --color-success-rgb: 74, 222, 128;
+  --color-accent-rgb: 59, 130, 246;
   --color-accent: #3b82f6;
   --color-accent-hover: #2563eb;
   --color-accent-bg: rgba(59, 130, 246, 0.15);

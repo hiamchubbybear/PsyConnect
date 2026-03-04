@@ -149,29 +149,30 @@ func (p *Producer) Close() error {
 	return err2
 }
 
-func (p *Producer) SendIncomingCallEvent(payload interface{}) error {
-	// 1. Wrap payload in standard Event structure
+func (p *Producer) SendSessionEvent(eventType string, payload interface{}) error {
 	event := struct {
 		Key   string      `json:"key"`
 		Value interface{} `json:"value"`
 	}{
-		Key: "consultation_event", // Or receiver_id if dynamic
+		Key: "session_event",
 		Value: struct {
 			Type    string      `json:"type"`
 			Payload interface{} `json:"payload"`
 		}{
-			Type:    "consultation.incoming_call",
+			Type:    eventType,
 			Payload: payload,
 		},
 	}
 
-	// 2. Serialize to JSON
 	data, err := json.Marshal(event)
 	if err != nil {
-		log.Printf("❌ Failed to marshal incoming call event: %v", err)
+		log.Printf("❌ Failed to marshal session event: %v", err)
 		return err
 	}
 
-	// 3. Send to Notification Topic use existing notificationWriter
 	return p.SendNotification(string(data))
+}
+
+func (p *Producer) SendIncomingCallEvent(payload interface{}) error {
+	return p.SendSessionEvent("consultation.incoming_call", payload)
 }

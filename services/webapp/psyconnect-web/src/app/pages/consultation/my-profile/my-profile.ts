@@ -6,8 +6,8 @@ import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import {
   CONSULTATION_MODES,
+  ConsultationSession,
   LANGUAGES,
-  Session,
   SPECIALIZATIONS,
   TIME_SLOTS,
   WEEKDAYS,
@@ -42,7 +42,7 @@ interface DisplayProfile {
 })
 export class MyConsultationProfileComponent implements OnInit, OnDestroy {
   profile: DisplayProfile | null = null;
-  sessions: Session[] = [];
+  sessions: ConsultationSession[] = [];
   loading = true;
   error = false;
   activeTab: 'info' | 'sessions' | 'reviews' = 'info';
