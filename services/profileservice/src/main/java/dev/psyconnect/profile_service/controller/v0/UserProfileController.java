@@ -61,6 +61,11 @@ public class UserProfileController {
         return new ApiResponse<>(userProfileService.getProfileWithMood(profileId));
     }
 
+    @PostMapping("/batch")
+    ApiResponse<List<UserProfileResponse>> getProfilesBatch(@RequestBody List<String> profileIds) {
+        return new ApiResponse<>(userProfileService.getBulk(profileIds));
+    }
+
     @GetMapping("/search")
     ApiResponse<List<UserProfileResponse>> searchProfiles(
             @RequestParam String query,

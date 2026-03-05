@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, finalize, map } from 'rxjs';
+import { Observable, catchError, finalize, map, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LoaderService } from '../loader/loader';
 
@@ -21,7 +21,7 @@ export class FriendService {
   constructor(private loader: LoaderService) {}
 
   getMyFriends(): Observable<Friend[]> {
-    const url = `${this.baseUrl}/${this.version}/profile/friends/me`;
+    const url = `${this.baseUrl}/${this.version}/profile/friends`;
     this.loader.show();
 
     return this.http.get<any>(url).pipe(
@@ -121,6 +121,24 @@ export class FriendService {
           role: f.role,
         })) as Friend[];
       }),
+    );
+  }
+
+  getProfilesBatch(profileIds: string[]): Observable<Friend[]> {
+    if (!profileIds || profileIds.length === 0) return of([]);
+    const url = `${this.baseUrl}/${this.version}/profile/batch`;
+    return this.http.post<any>(url, profileIds).pipe(
+      map((res) => {
+        if (res.code !== 200 || !Array.isArray(res.data)) return [];
+        return res.data.map((f: any) => ({
+          profileId: f.profileId,
+          firstName: f.firstName,
+          lastName: f.lastName,
+          avatarUri: f.avatarUri,
+          role: f.role,
+        })) as Friend[];
+      }),
+      catchError(() => of([])),
     );
   }
 

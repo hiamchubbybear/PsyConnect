@@ -63,8 +63,12 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   showLoadOlderButton = false;
   showScrollBottomButton = false;
 
+  get hasUserMessages(): boolean {
+    return this.messages.some((m) => !m.isSystem);
+  }
+
   @Input() isTyping = false;
-  isSending = false; 
+  isSending = false;
   private autoScrollPending = false;
 
   upcomingSession: ConsultationSession | null = null;
@@ -102,11 +106,10 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
     this.sessionService.getAllSessions().subscribe((sessions) => {
       const friendId = this.selectedFriend?.profileId;
       const myId = this.currentUserId;
-      
+
       const now = new Date();
       this.upcomingSession =
         sessions.find((s) => {
-          
           const involveMe = s.client_id === myId || s.therapist_id === myId;
           const involveFriend =
             s.client_id === friendId || s.therapist_id === friendId;
@@ -139,7 +142,6 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       return;
     }
 
-    
     if (this.isSending) {
       console.warn('⚠️ Already sending, ignoring duplicate');
       return;
@@ -147,7 +149,6 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
     this.isSending = true;
 
-    
     const tempId = `temp-${Date.now()}`;
     const optimisticMsg: Message = {
       id: tempId,
@@ -161,7 +162,6 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       status: 'sending',
     };
 
-    
     this.messages = this.groupMessages([...this.messages, optimisticMsg]);
     this.messagesChange.emit(this.messages);
 
@@ -172,14 +172,12 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
         senderId: this.currentUserId,
       });
 
-      
       setTimeout(() => {
         this.messages = this.messages.map((m) =>
           m.id === tempId ? { ...m, status: 'sent' as const } : m,
         );
         this.messagesChange.emit(this.messages);
 
-        
         setTimeout(() => {
           this.messages = this.messages.map((m) =>
             m.id === tempId ? { ...m, status: 'delivered' as const } : m,
@@ -189,14 +187,13 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       }, 300);
     } catch (err) {
       console.error('❌ Failed to send message:', err);
-      
+
       this.messages = this.messages.map((m) =>
         m.id === tempId ? { ...m, status: 'failed' as const } : m,
       );
       this.messagesChange.emit(this.messages);
     }
 
-    
     setTimeout(() => {
       this.isSending = false;
     }, 500);
@@ -205,7 +202,6 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   retryMessage(failedMsg: Message) {
     if (!this.conversationId || !this.currentUserId) return;
 
-    
     this.messages = this.messages.map((m) =>
       m.id === failedMsg.id ? { ...m, status: 'sending' as const } : m,
     );
@@ -254,7 +250,6 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
         const enriched = olderMsgs.map((m) => this.enrichMessage(m, friend!));
 
-        
         const merged = [...enriched, ...this.messages];
         const grouped = this.groupMessages(merged);
 
@@ -292,13 +287,12 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   }
 
   private groupMessages(messages: Message[]): Message[] {
-    const GROUPING_THRESHOLD = 5 * 60 * 1000; 
+    const GROUPING_THRESHOLD = 5 * 60 * 1000;
 
     return messages.map((msg, index) => {
       const prev = messages[index - 1];
       const next = messages[index + 1];
 
-      
       let showDateSeparator = false;
       let dateSeparatorText = '';
       if (!prev) {

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { combineLatest, finalize, of, Subscription } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { CallType } from '../../../components/call-options-menu/call-options-menu.component';
 import { ChatListComponent } from '../../../components/chat/chat-list/chat-list';
@@ -55,30 +55,25 @@ export class ChatComponent implements OnInit, OnDestroy {
   isLoadingFriends = true;
   isLoadingMessages = false;
 
-  
   showConsentDialog = false;
   private readonly CONSENT_KEY = 'psy_chat_consent_accepted';
 
-  
-  
   private readonly STRANGERS_KEY = 'psy_chat_strangers';
   private strangers: Friend[] = [];
 
-  
   showVideoCall = false;
   incomingCall: IncomingCall | null = null;
-  currentCallType: CallType = 'video'; 
-  activeCallerId: string | null = null; 
-  activeSessionId: string | null = null; 
-  private isEndingCall = false; 
+  currentCallType: CallType = 'video';
+  activeCallerId: string | null = null;
+  activeSessionId: string | null = null;
+  private isEndingCall = false;
 
-  
   private ringtoneAudio: HTMLAudioElement | null = null;
   private outgoingAudio: HTMLAudioElement | null = null;
-  private audioUnlocked = false; 
+  private audioUnlocked = false;
   @ViewChild(VideoCallComponent) videoCallComponent?: VideoCallComponent;
 
-  private readonly GROUPING_THRESHOLD = 5 * 60 * 1000; 
+  private readonly GROUPING_THRESHOLD = 5 * 60 * 1000;
 
   constructor(
     private friendService: FriendService,
@@ -92,12 +87,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    
     if (!sessionStorage.getItem(this.CONSENT_KEY)) {
       this.showConsentDialog = true;
     }
 
-    
     try {
       const stored = sessionStorage.getItem(this.STRANGERS_KEY);
       this.strangers = stored ? JSON.parse(stored) : [];
@@ -105,8 +98,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.strangers = [];
     }
 
-    
-    
     console.log('👂 Setting up incoming call subscription in ngOnInit...');
     this.incomingCallSubscription =
       this.signalingService.incomingCall$.subscribe((call) => {
@@ -114,7 +105,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.incomingCall = call;
         console.log('✅ this.incomingCall set to:', this.incomingCall);
 
-        
         if (call) {
           this.playRingtone();
         } else {
@@ -122,14 +112,12 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
       });
 
-    
     this.webrtcService.callEnded$.subscribe(() => {
       console.log('📞 Call ended by remote user');
-      
+
       this.cleanupCallUI();
     });
 
-    
     this.chatService.getCurrentUser().subscribe((profile) => {
       if (profile) {
         this.currentUser = mapUserProfileToChatUser(profile);
@@ -138,7 +126,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     });
 
-    
     this.sub = this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (!id || this.isLoadingFriends) return;
@@ -152,10 +139,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     });
 
-    
     this.unlockAudio();
 
-    
     this.friendService.getFriendSuggestions().subscribe({
       next: (suggestions) => {
         this.suggestedUsers = suggestions.slice(0, 4);
@@ -173,7 +158,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         '⚠️ loadFriendsAndConversations: profileId not ready yet:',
         userId,
       );
-      
+
       this.friendService.getMyFriends().subscribe({
         next: (friends) => {
           this.friends = friends;
@@ -203,77 +188,116 @@ export class ChatComponent implements OnInit, OnDestroy {
           return of([]);
         }),
       ),
-    ]).subscribe({
-      next: ([friends, conversations]) => {
-        console.log('✅ Friends and Conversations loaded');
+    ])
+      .pipe(
+        switchMap(([friends, conversations]: [Friend[], any[]]) => {
+          const knownIds = new Set(friends.map((f) => f.profileId));
+          knownIds.add(userId);
 
-        
-        const enrichedFriends: Friend[] = friends.map((f): Friend => {
-          
-          const conv = conversations.find((c) =>
-            c.participants?.includes(f.profileId),
-          );
-          if (conv && conv.lastMessage) {
-            let parsedText = conv.lastMessage.text;
-            try {
-              parsedText =
-                typeof parsedText === 'string'
-                  ? JSON.parse(parsedText)
-                  : String(parsedText);
-            } catch (e) {
-              
+          const unknownIds = new Set<string>();
+          for (const conv of conversations) {
+            for (const pId of conv.participants || []) {
+              if (!knownIds.has(pId)) {
+                unknownIds.add(pId);
+              }
             }
-            return {
-              ...f,
-              lastMessage: parsedText,
-              lastMessageTime: new Date(conv.lastMessage.createdAt),
-            };
-          } else if (conv) {
-            return {
-              ...f,
-              lastMessageTime: new Date(conv.createdAt),
-            };
           }
-          return f;
-        });
 
-        
-        enrichedFriends.sort((a, b) => {
-          const timeA = a.lastMessageTime?.getTime() || 0;
-          const timeB = b.lastMessageTime?.getTime() || 0;
-          return timeB - timeA;
-        });
-
-        this.friends = enrichedFriends;
-        this.isLoadingFriends = false;
-
-        
-        const currentId = this.route.snapshot.paramMap.get('id');
-        if (currentId) {
-          const friend = this.friends.find((f) => f.profileId === currentId);
-          if (friend) {
-            this.onFriendSelected(friend, false);
-          } else {
-            this.openChatByProfileId(currentId);
+          if (unknownIds.size === 0) {
+            return of({ friends, conversations });
           }
-        } else if (this.friends.length > 0) {
-          this.onFriendSelected(this.friends[0], true);
-        }
-      },
-      error: (err) => {
-        console.error('❌ Error loading friends/conversations:', err);
-        this.isLoadingFriends = false;
-        this.friends = [];
-      },
-    });
+
+          return this.friendService
+            .getProfilesBatch(Array.from(unknownIds))
+            .pipe(
+              map((newFriends: Friend[]) => ({
+                friends: [...friends, ...newFriends],
+                conversations,
+              })),
+              catchError(() => of({ friends, conversations })),
+            );
+        }),
+      )
+      .subscribe({
+        next: ({
+          friends,
+          conversations,
+        }: {
+          friends: Friend[];
+          conversations: any[];
+        }) => {
+          console.log('✅ Friends and Conversations loaded');
+
+          const enrichedFriends: Friend[] = friends.map((f: Friend): Friend => {
+            const conv = conversations.find((c: any) =>
+              c.participants?.includes(f.profileId),
+            );
+            if (conv && conv.lastMessage) {
+              let parsedText = conv.lastMessage.text;
+              try {
+                parsedText =
+                  typeof parsedText === 'string'
+                    ? JSON.parse(parsedText)
+                    : String(parsedText);
+              } catch (e) {}
+              return {
+                ...f,
+                lastMessage: parsedText,
+                lastMessageTime: new Date(conv.lastMessage.createdAt),
+              };
+            } else if (conv) {
+              return {
+                ...f,
+                lastMessageTime: new Date(conv.createdAt),
+              };
+            }
+            return f;
+          });
+
+          // Only keep friends that have an associated conversation OR keep them all?
+          // The user wants to see "people they chatted with". We will show all who have `lastMessageTime`
+          // or we just show them all in order of recent messages.
+          // Let's filter to those who have a conversation to keep it clean like "recent chats",
+          // but if they are an actual "friend", we keep them?
+          // The user specifically said: "khi load trang ấy thì sẽ load các người đã chat lần trước ở chat list ấy".
+          // So let's filter the ones that have a `lastMessageTime` (meaning they have a recent conversation).
+          const chatListFriends = enrichedFriends.filter(
+            (f) => f.lastMessageTime,
+          );
+
+          chatListFriends.sort((a, b) => {
+            const timeA = a.lastMessageTime?.getTime() || 0;
+            const timeB = b.lastMessageTime?.getTime() || 0;
+            return timeB - timeA;
+          });
+
+          this.friends = chatListFriends;
+          this.isLoadingFriends = false;
+
+          const currentId = this.route.snapshot.paramMap.get('id');
+          if (currentId) {
+            const friend = this.friends.find((f) => f.profileId === currentId);
+            if (friend) {
+              this.onFriendSelected(friend, false);
+            } else {
+              this.openChatByProfileId(currentId);
+            }
+          } else if (this.friends.length > 0) {
+            this.onFriendSelected(this.friends[0], true);
+          }
+        },
+        error: (err) => {
+          console.error('❌ Error loading friends/conversations:', err);
+          this.isLoadingFriends = false;
+          this.friends = [];
+        },
+      });
   }
 
-  
   private unlockAudio() {
     const unlock = () => {
       if (this.audioUnlocked) return;
 
-      
       const silentAudio = new Audio();
       silentAudio.src =
         'data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
@@ -286,12 +310,9 @@ export class ChatComponent implements OnInit, OnDestroy {
           document.removeEventListener('click', unlock);
           document.removeEventListener('touchstart', unlock);
         })
-        .catch(() => {
-          
-        });
+        .catch(() => {});
     };
 
-    
     document.addEventListener('click', unlock, { once: true });
     document.addEventListener('touchstart', unlock, { once: true });
   }
@@ -309,16 +330,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.router.navigate(['/feature/chat']);
   }
 
-  
   openChatByProfileId(profileId: string) {
-    
     const existingFriend = this.friends.find((f) => f.profileId === profileId);
     if (existingFriend) {
       this.onFriendSelected(existingFriend, false);
       return;
     }
 
-    
     const existingStranger = this.strangers.find(
       (f) => f.profileId === profileId,
     );
@@ -327,7 +345,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
 
-    
     const minimalFriend: Friend = {
       profileId,
       firstName: 'User',
@@ -340,7 +357,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.onFriendSelected(minimalFriend, false);
   }
 
-  
   get allContacts(): Friend[] {
     const friendIds = new Set(this.friends.map((f) => f.profileId));
     const uniqueStrangers = this.strangers.filter(
@@ -358,7 +374,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     } catch {}
   }
 
-  
   acceptConsent() {
     sessionStorage.setItem(this.CONSENT_KEY, 'true');
     this.showConsentDialog = false;
@@ -383,14 +398,16 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messages.update((prev) => [...prev, sysMsg]);
   }
 
-  
   declineConsent() {
     this.router.navigate(['/feature/feed']);
   }
 
   onFriendSelected(friend: Friend, updateUrl = false) {
-    
     this.wsSubscription?.unsubscribe();
+
+    if (!this.friends.some((f) => f.profileId === friend.profileId)) {
+      this.friends = [friend, ...this.friends];
+    }
 
     this.selectedFriend.set(friend);
     if (updateUrl) {
@@ -403,7 +420,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       .subscribe((conv) => {
         this.conversationId.set(conv.id);
 
-        
         this.isLoadingMessages = true;
         this.chatService
           .getChatsByConversation(conv.id, this.currentUser.profileId)
@@ -413,14 +429,12 @@ export class ChatComponent implements OnInit, OnDestroy {
             const groupedMsgs = this.groupMessages(enrichedMsgs);
             this.messages.set(groupedMsgs);
 
-            
             this.wsSubscription = this.chatService
               .connect(friend.profileId, conv.id)
               .subscribe({
                 next: (wsMsg: any) => {
                   console.log('📨 Received WebSocket message:', wsMsg);
 
-                  
                   const webrtcTypes = ['offer', 'answer', 'ice', 'leave'];
                   if (webrtcTypes.includes(wsMsg.type)) {
                     console.log(
@@ -428,7 +442,6 @@ export class ChatComponent implements OnInit, OnDestroy {
                       wsMsg.type,
                     );
 
-                    
                     if (wsMsg.type === 'answer') {
                       console.log(
                         '📞 Answer received - stopping outgoing tone',
@@ -441,12 +454,11 @@ export class ChatComponent implements OnInit, OnDestroy {
                     if (wsMsg.type === 'leave') {
                       console.log('👋 LEAVE message received:', wsMsg);
                     }
-                    
+
                     (this.signalingService as any).handleMessage(wsMsg);
-                    return; 
+                    return;
                   }
 
-                  
                   const msg: Message = {
                     id: wsMsg.data?.id || '',
                     conversationId:
@@ -454,15 +466,13 @@ export class ChatComponent implements OnInit, OnDestroy {
                     senderId: wsMsg.senderId || wsMsg.data?.senderId,
                     content: wsMsg.data?.content || '',
                     timestamp: new Date(wsMsg.data?.timestamp || Date.now()),
-                    userName: '', 
-                    userAvatar: '', 
-                    isMine: false, 
+                    userName: '',
+                    userAvatar: '',
+                    isMine: false,
                   };
 
-                  
                   const enrichedMsg = this.enrichMessage(msg, friend);
 
-                  
                   this.messages.update((prev) => {
                     const updated = [...prev, enrichedMsg];
                     return this.groupMessages(updated);
@@ -515,10 +525,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     };
   }
 
-  
   handleCallRequest(callType: CallType) {
     console.log('📞', callType, 'call requested');
-    this.currentCallType = callType; 
+    this.currentCallType = callType;
 
     const friend = this.selectedFriend();
     if (!friend || !this.conversationId()) {
@@ -526,9 +535,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
 
-    
-    
-    const sessionId = crypto.randomUUID(); 
+    const sessionId = crypto.randomUUID();
     this.chatService
       .startCall({
         conversationId: this.conversationId(),
@@ -539,24 +546,12 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
       .subscribe();
 
-    
     this.activeCallerId = friend.profileId;
-    
-    
-    
-    
-    
-    
 
-    
-
-    
     this.activeCallerId = friend.profileId;
-    
+
     console.log('✅ Set activeCallerId:', this.activeCallerId);
 
-    
-    
     const wsUrl = environment.wsUrl;
     this.signalingService.connect(
       wsUrl,
@@ -565,23 +560,20 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.currentUser.profileId,
     );
 
-    
     this.showVideoCall = true;
 
-    
     const connectionSub = this.signalingService.connected$.subscribe(
       (connected) => {
         if (connected) {
           console.log('✅ WebSocket ready, starting call...');
 
-          
           this.playOutgoingTone();
 
           setTimeout(() => {
             if (this.videoCallComponent) {
               this.videoCallComponent.startCall();
             }
-            connectionSub.unsubscribe(); 
+            connectionSub.unsubscribe();
           }, 100);
         }
       },
@@ -589,7 +581,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onCallEnded() {
-    
     if (this.isEndingCall) {
       console.log('⚠️  Already ending call, skipping...');
       return;
@@ -598,7 +589,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.isEndingCall = true;
     console.log('📞 Call ended - cleaning up...');
 
-    
     if (this.activeCallerId && this.activeSessionId) {
       console.log('📤 Sending leave message to:', this.activeCallerId);
       this.signalingService.sendLeave(
@@ -607,42 +597,30 @@ export class ChatComponent implements OnInit, OnDestroy {
       );
     }
 
-    
-    
     this.webrtcService.endCall();
 
-    
     this.cleanupCallUI();
 
     console.log('✅ Call cleanup complete');
 
-    
     setTimeout(() => {
       this.isEndingCall = false;
     }, 1000);
   }
 
-  
   private cleanupCallUI() {
     console.log('🧹 Cleaning up call UI...');
 
-    
     this.stopRingtone();
     this.stopOutgoingTone();
 
-    
     if (!this.isEndingCall) {
       this.playCallEnd();
     }
 
-    
-    
-
-    
     this.activeCallerId = null;
     this.activeSessionId = null;
 
-    
     this.showVideoCall = false;
     console.log('✅ showVideoCall set to false');
 
@@ -660,7 +638,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     console.log('📤 Calling sendOffer for friend:', friend.profileId);
     const sessionId = this.signalingService.sendOffer(friend.profileId, offer);
 
-    
     this.activeSessionId = sessionId;
     console.log('✅ Set activeSessionId:', this.activeSessionId);
   }
@@ -668,10 +645,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   onAnswer(answer: RTCSessionDescriptionInit) {
     console.log('📥 onAnswer called with:', answer);
 
-    
     this.stopOutgoingTone();
 
-    
     if (!this.activeCallerId || !this.activeSessionId) {
       console.error('❌ No active call session info');
       return;
@@ -699,21 +674,16 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     console.log('📞 Accepting incoming call from:', this.incomingCall.callerId);
 
-    
     this.stopRingtone();
 
-    
     this.activeCallerId = this.incomingCall.callerId;
     this.activeSessionId = this.incomingCall.sessionId;
     const offer = this.incomingCall.offer;
 
-    
     this.incomingCall = null;
 
-    
     this.showVideoCall = true;
 
-    
     const friend = this.selectedFriend();
     if (!friend) {
       console.error('❌ No friend selected');
@@ -729,7 +699,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.currentUser.profileId,
     );
 
-    
     const connectionSub = this.signalingService.connected$.subscribe(
       (connected) => {
         if (connected) {
@@ -758,16 +727,15 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.incomingCall.sessionId,
     );
     this.signalingService.clearIncomingCall();
-    this.stopRingtone(); 
+    this.stopRingtone();
   }
 
-  
   private playRingtone() {
     try {
       if (!this.ringtoneAudio) {
         this.ringtoneAudio = new Audio('/sounds/ring-tone.mp3');
         this.ringtoneAudio.loop = true;
-        this.ringtoneAudio.volume = 0.3; 
+        this.ringtoneAudio.volume = 0.3;
       }
       this.ringtoneAudio.play().catch((err) => {
         console.error('❌ Error playing ringtone:', err);
@@ -789,7 +757,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (!this.outgoingAudio) {
         this.outgoingAudio = new Audio('/sounds/outgoing-call.mp3');
         this.outgoingAudio.loop = true;
-        this.outgoingAudio.volume = 0.3; 
+        this.outgoingAudio.volume = 0.3;
       }
       this.outgoingAudio.play().catch((err) => {
         console.error('❌ Error playing outgoing tone:', err);
@@ -809,7 +777,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private playCallConnected() {
     try {
       const audio = new Audio('/sounds/call-connected.mp3');
-      audio.volume = 0.4; 
+      audio.volume = 0.4;
       audio.play().catch((err) => {
         console.error('❌ Error playing call connected sound:', err);
       });
@@ -821,7 +789,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private playCallEnd() {
     try {
       const audio = new Audio('/sounds/end-call.mp3');
-      audio.volume = 0.4; 
+      audio.volume = 0.4;
       audio.play().catch((err) => {
         console.error('❌ Error playing call end sound:', err);
       });

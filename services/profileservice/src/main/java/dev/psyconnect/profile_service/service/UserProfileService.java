@@ -84,6 +84,12 @@ public class UserProfileService {
         return response;
     }
 
+    public List<UserProfileResponse> getBulk(List<String> profileIds) {
+        return userProfileRepository.findAllByIds(profileIds).stream()
+                .map(userProfileMapper::toUserProfileRequest)
+                .collect(Collectors.toList());
+    }
+
     public UserProfileUpdateResponse update(UserProfileUpdateRequest userProfileUpdateRequest, String profileId) {
         UserProfileUpdateResponse response;
         try {
