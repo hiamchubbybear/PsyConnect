@@ -158,13 +158,7 @@ public class UserProfileService {
     public List<ProfileWithMoodSummaryDto> getProfileWithMood(String profileId) {
         try {
             return userProfileRepository.getProfileWithAllRelations(profileId).stream()
-                    .map(p -> ProfileWithMoodSummaryDto.builder()
-                            .profile(ProfileSummaryDto.builder()
-                                    .profileId(p.getProfile().getProfileId())
-                                    .avatarUri(p.getProfile().getAvatarUri())
-                                    .build())
-                            .mood(p.getMood())
-                            .build())
+                    .map(dev.psyconnect.profile_service.dto.response.ProfileWithRelationShipResponse::toSummaryWithMood)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             kafkaService.sendLog(buildLog(
