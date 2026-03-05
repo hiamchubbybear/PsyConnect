@@ -83,7 +83,6 @@ func (uc *CreateSessionUseCase) Execute(ctx context.Context, req CreateSessionRe
 		req.ScheduledDate = req.StartTime.Format("2006-01-02")
 	}
 
-	
 	session, err := domain.NewSession(
 		req.ClientID,
 		req.TherapistID,
@@ -100,7 +99,6 @@ func (uc *CreateSessionUseCase) Execute(ctx context.Context, req CreateSessionRe
 		return nil, err
 	}
 
-	
 	if uc.producer != nil && uc.profileHandler != nil {
 		clientProfile, _ := uc.profileHandler.GetProfile(req.ClientID)
 		therapistProfile, _ := uc.profileHandler.GetProfile(req.TherapistID)
