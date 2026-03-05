@@ -108,6 +108,22 @@ export class FriendService {
       finalize(() => this.loader.hide()),
     );
   }
+  searchProfiles(query: string, page = 0, size = 10): Observable<Friend[]> {
+    const url = `${this.baseUrl}/${this.version}/profile/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+    return this.http.get<any>(url).pipe(
+      map((res) => {
+        if (res.code !== 200 || !Array.isArray(res.data)) return [];
+        return res.data.map((f: any) => ({
+          profileId: f.profileId,
+          firstName: f.firstName,
+          lastName: f.lastName,
+          avatarUri: f.avatarUri,
+          role: f.role,
+        })) as Friend[];
+      }),
+    );
+  }
+
   unfriend(targetId: string): Observable<any> {
     const url = `${this.baseUrl}/${this.version}/profile/friend/unfriend`;
     const body = { target: targetId };

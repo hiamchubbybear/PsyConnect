@@ -6,7 +6,6 @@ import { Friend } from '../../../models/chat.models';
 import { FriendService } from '../../../services/chat/profile.chat.service';
 import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
-import { ToastType } from '../../../shared/toast/toast-type';
 import { ToastService } from '../../../shared/toast/toast.service';
 
 @Component({
@@ -47,16 +46,8 @@ export class ChatListComponent implements OnInit {
 
   ngOnInit() {}
 
-  private loadFriends() {
-    this.friendService.getMyFriends().subscribe({
-      next: (friends) => (this.friends = friends),
-      error: () =>
-        this.toastService.show(
-          'TOAST.key_failed',
-          'TOAST.key_load_friends_failed',
-          ToastType.Error,
-        ),
-    });
+  onSearchChange(query: string) {
+    this.searchQuery = query;
   }
 
   get filteredFriends(): Friend[] {

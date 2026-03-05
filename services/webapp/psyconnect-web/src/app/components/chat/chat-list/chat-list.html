@@ -24,7 +24,8 @@
     <input
       type="text"
       [placeholder]="'CHAT.EXAMPLE.search' | translate"
-      [(ngModel)]="searchQuery"
+      [ngModel]="searchQuery"
+      (ngModelChange)="onSearchChange($event)"
     />
   </div>
 

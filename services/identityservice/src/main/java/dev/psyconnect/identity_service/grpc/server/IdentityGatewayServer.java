@@ -47,7 +47,10 @@ public class IdentityGatewayServer extends IdentityServiceGrpc.IdentityServiceIm
                         .setSuccess(true)
                         .setEmail(account.get().getEmail())
                         .setUsername(account.get().getUsername())
-                        .setRole(account.get().getRole().name())
+                        .setRole(account.get().getRole().stream()
+                                .findFirst()
+                                .map(dev.psyconnect.identity_service.model.RoleEntity::getName)
+                                .orElse("USER"))
                         .build());
             } else {
                 responseObserver.onNext(TokenCheckIdentity.UserInfoResponse.newBuilder()
