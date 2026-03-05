@@ -23,4 +23,5 @@ message UserInfoResponse {
   bool success = 1;
   string email = 2;
   string username = 3;
+  string role = 4;
 }

@@ -1616,6 +1616,18 @@ public final class TokenCheckIdentity {
      */
     com.google.protobuf.ByteString
         getUsernameBytes();
+
+    /**
+     * <code>string role = 4;</code>
+     * @return The role.
+     */
+    java.lang.String getRole();
+    /**
+     * <code>string role = 4;</code>
+     * @return The bytes for role.
+     */
+    com.google.protobuf.ByteString
+        getRoleBytes();
   }
   /**
    * Protobuf type {@code identity.UserInfoResponse}
@@ -1632,6 +1644,7 @@ public final class TokenCheckIdentity {
     private UserInfoResponse() {
       email_ = "";
       username_ = "";
+      role_ = "";
     }
 
     @java.lang.Override
@@ -1746,6 +1759,44 @@ public final class TokenCheckIdentity {
       }
     }
 
+    public static final int ROLE_FIELD_NUMBER = 4;
+    private volatile java.lang.Object role_;
+    /**
+     * <code>string role = 4;</code>
+     * @return The role.
+     */
+    @java.lang.Override
+    public java.lang.String getRole() {
+      java.lang.Object ref = role_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        role_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string role = 4;</code>
+     * @return The bytes for role.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getRoleBytes() {
+      java.lang.Object ref = role_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        role_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -1769,6 +1820,9 @@ public final class TokenCheckIdentity {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(username_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, username_);
       }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(role_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, role_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1787,6 +1841,9 @@ public final class TokenCheckIdentity {
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(username_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, username_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(role_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, role_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1809,6 +1866,8 @@ public final class TokenCheckIdentity {
           .equals(other.getEmail())) return false;
       if (!getUsername()
           .equals(other.getUsername())) return false;
+      if (!getRole()
+          .equals(other.getRole())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -1827,6 +1886,8 @@ public final class TokenCheckIdentity {
       hash = (53 * hash) + getEmail().hashCode();
       hash = (37 * hash) + USERNAME_FIELD_NUMBER;
       hash = (53 * hash) + getUsername().hashCode();
+      hash = (37 * hash) + ROLE_FIELD_NUMBER;
+      hash = (53 * hash) + getRole().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1961,6 +2022,8 @@ public final class TokenCheckIdentity {
 
         username_ = "";
 
+        role_ = "";
+
         return this;
       }
 
@@ -1990,6 +2053,7 @@ public final class TokenCheckIdentity {
         result.success_ = success_;
         result.email_ = email_;
         result.username_ = username_;
+        result.role_ = role_;
         onBuilt();
         return result;
       }
@@ -2049,6 +2113,10 @@ public final class TokenCheckIdentity {
           username_ = other.username_;
           onChanged();
         }
+        if (!other.getRole().isEmpty()) {
+          role_ = other.role_;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -2090,6 +2158,11 @@ public final class TokenCheckIdentity {
 
                 break;
               } // case 26
+              case 34: {
+                role_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 34
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -2288,6 +2361,82 @@ public final class TokenCheckIdentity {
         onChanged();
         return this;
       }
+
+      private java.lang.Object role_ = "";
+      /**
+       * <code>string role = 4;</code>
+       * @return The role.
+       */
+      public java.lang.String getRole() {
+        java.lang.Object ref = role_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          role_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string role = 4;</code>
+       * @return The bytes for role.
+       */
+      public com.google.protobuf.ByteString
+          getRoleBytes() {
+        java.lang.Object ref = role_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          role_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string role = 4;</code>
+       * @param value The role to set.
+       * @return This builder for chaining.
+       */
+      public Builder setRole(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        role_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string role = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearRole() {
+        
+        role_ = getDefaultInstance().getRole();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string role = 4;</code>
+       * @param value The bytes for role to set.
+       * @return This builder for chaining.
+       */
+      public Builder setRoleBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        role_ = value;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -2384,14 +2533,14 @@ public final class TokenCheckIdentity {
       "\n\032token_check_identity.proto\022\010identity\"\035" +
       "\n\014TokenRequest\022\r\n\005token\030\001 \001(\t\"\036\n\rTokenRe" +
       "sponse\022\r\n\005valid\030\001 \001(\010\"%\n\017UserInfoRequest" +
-      "\022\022\n\nprofile_id\030\001 \001(\t\"D\n\020UserInfoResponse" +
+      "\022\022\n\nprofile_id\030\001 \001(\t\"R\n\020UserInfoResponse" +
       "\022\017\n\007success\030\001 \001(\010\022\r\n\005email\030\002 \001(\t\022\020\n\010user" +
-      "name\030\003 \001(\t2\246\001\n\017IdentityService\022B\n\017TokenC" +
-      "heckValid\022\026.identity.TokenRequest\032\027.iden" +
-      "tity.TokenResponse\022O\n\026GetUserInfoByProfi" +
-      "leId\022\031.identity.UserInfoRequest\032\032.identi" +
-      "ty.UserInfoResponseB!\n\037dev.psyconnect.gr" +
-      "pc.api_gatewayb\006proto3"
+      "name\030\003 \001(\t\022\014\n\004role\030\004 \001(\t2\246\001\n\017IdentitySer" +
+      "vice\022B\n\017TokenCheckValid\022\026.identity.Token" +
+      "Request\032\027.identity.TokenResponse\022O\n\026GetU" +
+      "serInfoByProfileId\022\031.identity.UserInfoRe" +
+      "quest\032\032.identity.UserInfoResponseB!\n\037dev" +
+      ".psyconnect.grpc.api_gatewayb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -2420,7 +2569,7 @@ public final class TokenCheckIdentity {
     internal_static_identity_UserInfoResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_identity_UserInfoResponse_descriptor,
-        new java.lang.String[] { "Success", "Email", "Username", });
+        new java.lang.String[] { "Success", "Email", "Username", "Role", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
