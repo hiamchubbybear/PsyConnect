@@ -4,18 +4,18 @@ export interface Post {
   content: string;
   author_id: string;
 
-  // Enhanced fields
+  
   tags: string[];
   categories: string[];
   media: MediaAttachment[];
   mentions: string[];
   hashtags: string[];
 
-  // Metadata
+  
   visibility: 'public' | 'private' | 'followers';
   post_type: 'article' | 'question' | 'discussion' | 'resource';
 
-  // Engagement metrics
+  
   view_count: number;
   upvote_count: number;
   downvote_count: number;
@@ -24,14 +24,14 @@ export interface Post {
   user_vote?: 'up' | 'down' | null;
   user_bookmark?: boolean;
 
-  // Control
+  
   is_deleted: boolean;
 
   created_at: string;
   updated_at: string;
   status?: 'published' | 'draft';
 
-  // UI Display fields (optional/populated)
+  
   author_name?: string;
   author_avatar?: string;
   image_url?: string;

@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Count represents a count operation.
+
 type Count struct {
 	authenticator  driver.Authenticator
 	maxTime        *time.Duration
@@ -45,9 +45,9 @@ type Count struct {
 	timeout        *time.Duration
 }
 
-// CountResult represents a count result returned by the server.
+
 type CountResult struct {
-	// The number of documents found
+	
 	N int64
 }
 
@@ -59,27 +59,27 @@ func buildCountResult(response bsoncore.Document) (CountResult, error) {
 	cr := CountResult{}
 	for _, element := range elements {
 		switch element.Key() {
-		case "n": // for count using original command
+		case "n": 
 			var ok bool
 			cr.N, ok = element.Value().AsInt64OK()
 			if !ok {
 				return cr, fmt.Errorf("response field 'n' is type int64, but received BSON type %s",
 					element.Value().Type)
 			}
-		case "cursor": // for count using aggregate with $collStats
+		case "cursor": 
 			firstBatch, err := element.Value().Document().LookupErr("firstBatch")
 			if err != nil {
 				return cr, err
 			}
 
-			// get count value from first batch
+			
 			val := firstBatch.Array().Index(0)
 			count, err := val.Document().LookupErr("n")
 			if err != nil {
 				return cr, err
 			}
 
-			// use count as Int64 for result
+			
 			var ok bool
 			cr.N, ok = count.AsInt64OK()
 			if !ok {
@@ -91,12 +91,12 @@ func buildCountResult(response bsoncore.Document) (CountResult, error) {
 	return cr, nil
 }
 
-// NewCount constructs and returns a new Count.
+
 func NewCount() *Count {
 	return &Count{}
 }
 
-// Result returns the result of executing this operation.
+
 func (c *Count) Result() CountResult { return c.result }
 
 func (c *Count) processResponse(info driver.ResponseInfo) error {
@@ -105,7 +105,7 @@ func (c *Count) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (c *Count) Execute(ctx context.Context) error {
 	if c.deployment == nil {
 		return errors.New("the Count operation must have a Deployment set before Execute can be called")
@@ -132,7 +132,7 @@ func (c *Count) Execute(ctx context.Context) error {
 		Authenticator:     c.authenticator,
 	}.Execute(ctx)
 
-	// Swallow error if NamespaceNotFound(26) is returned from aggregate on non-existent namespace
+	
 	if err != nil {
 		dErr, ok := err.(driver.Error)
 		if ok && dErr.Code == 26 {
@@ -153,7 +153,7 @@ func (c *Count) command(dst []byte, _ description.SelectedServer) ([]byte, error
 	return dst, nil
 }
 
-// MaxTime specifies the maximum amount of time to allow the query to run on the server.
+
 func (c *Count) MaxTime(maxTime *time.Duration) *Count {
 	if c == nil {
 		c = new(Count)
@@ -163,7 +163,7 @@ func (c *Count) MaxTime(maxTime *time.Duration) *Count {
 	return c
 }
 
-// Query determines what results are returned from find.
+
 func (c *Count) Query(query bsoncore.Document) *Count {
 	if c == nil {
 		c = new(Count)
@@ -173,7 +173,7 @@ func (c *Count) Query(query bsoncore.Document) *Count {
 	return c
 }
 
-// Session sets the session for this operation.
+
 func (c *Count) Session(session *session.Client) *Count {
 	if c == nil {
 		c = new(Count)
@@ -183,7 +183,7 @@ func (c *Count) Session(session *session.Client) *Count {
 	return c
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (c *Count) ClusterClock(clock *session.ClusterClock) *Count {
 	if c == nil {
 		c = new(Count)
@@ -193,7 +193,7 @@ func (c *Count) ClusterClock(clock *session.ClusterClock) *Count {
 	return c
 }
 
-// Collection sets the collection that this command will run against.
+
 func (c *Count) Collection(collection string) *Count {
 	if c == nil {
 		c = new(Count)
@@ -203,7 +203,7 @@ func (c *Count) Collection(collection string) *Count {
 	return c
 }
 
-// Comment sets a value to help trace an operation.
+
 func (c *Count) Comment(comment bsoncore.Value) *Count {
 	if c == nil {
 		c = new(Count)
@@ -213,7 +213,7 @@ func (c *Count) Comment(comment bsoncore.Value) *Count {
 	return c
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (c *Count) CommandMonitor(monitor *event.CommandMonitor) *Count {
 	if c == nil {
 		c = new(Count)
@@ -223,7 +223,7 @@ func (c *Count) CommandMonitor(monitor *event.CommandMonitor) *Count {
 	return c
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (c *Count) Crypt(crypt driver.Crypt) *Count {
 	if c == nil {
 		c = new(Count)
@@ -233,7 +233,7 @@ func (c *Count) Crypt(crypt driver.Crypt) *Count {
 	return c
 }
 
-// Database sets the database to run this operation against.
+
 func (c *Count) Database(database string) *Count {
 	if c == nil {
 		c = new(Count)
@@ -243,7 +243,7 @@ func (c *Count) Database(database string) *Count {
 	return c
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (c *Count) Deployment(deployment driver.Deployment) *Count {
 	if c == nil {
 		c = new(Count)
@@ -253,7 +253,7 @@ func (c *Count) Deployment(deployment driver.Deployment) *Count {
 	return c
 }
 
-// ReadConcern specifies the read concern for this operation.
+
 func (c *Count) ReadConcern(readConcern *readconcern.ReadConcern) *Count {
 	if c == nil {
 		c = new(Count)
@@ -263,7 +263,7 @@ func (c *Count) ReadConcern(readConcern *readconcern.ReadConcern) *Count {
 	return c
 }
 
-// ReadPreference set the read preference used with this operation.
+
 func (c *Count) ReadPreference(readPreference *readpref.ReadPref) *Count {
 	if c == nil {
 		c = new(Count)
@@ -273,7 +273,7 @@ func (c *Count) ReadPreference(readPreference *readpref.ReadPref) *Count {
 	return c
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (c *Count) ServerSelector(selector description.ServerSelector) *Count {
 	if c == nil {
 		c = new(Count)
@@ -283,8 +283,8 @@ func (c *Count) ServerSelector(selector description.ServerSelector) *Count {
 	return c
 }
 
-// Retry enables retryable mode for this operation. Retries are handled automatically in driver.Operation.Execute based
-// on how the operation is set.
+
+
 func (c *Count) Retry(retry driver.RetryMode) *Count {
 	if c == nil {
 		c = new(Count)
@@ -294,7 +294,7 @@ func (c *Count) Retry(retry driver.RetryMode) *Count {
 	return c
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (c *Count) ServerAPI(serverAPI *driver.ServerAPIOptions) *Count {
 	if c == nil {
 		c = new(Count)
@@ -304,7 +304,7 @@ func (c *Count) ServerAPI(serverAPI *driver.ServerAPIOptions) *Count {
 	return c
 }
 
-// Timeout sets the timeout for this operation.
+
 func (c *Count) Timeout(timeout *time.Duration) *Count {
 	if c == nil {
 		c = new(Count)
@@ -314,7 +314,7 @@ func (c *Count) Timeout(timeout *time.Duration) *Count {
 	return c
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (c *Count) Authenticator(authenticator driver.Authenticator) *Count {
 	if c == nil {
 		c = new(Count)

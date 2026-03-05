@@ -96,9 +96,9 @@ func (c cmdable) LIndex(ctx context.Context, key string, index int64) *StringCmd
 	return cmd
 }
 
-// LMPop Pops one or more elements from the first non-empty list key from the list of provided key names.
-// direction: left or right, count: > 0
-// example: client.LMPop(ctx, "left", 3, "key1", "key2")
+
+
+
 func (c cmdable) LMPop(ctx context.Context, direction string, count int64, keys ...string) *KeyValuesCmd {
 	args := make([]interface{}, 2+len(keys), 5+len(keys))
 	args[0] = "lmpop"

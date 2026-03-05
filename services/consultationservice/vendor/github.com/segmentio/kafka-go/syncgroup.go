@@ -13,73 +13,73 @@ import (
 	"github.com/segmentio/kafka-go/protocol/syncgroup"
 )
 
-// SyncGroupRequest is the request structure for the SyncGroup function.
+
 type SyncGroupRequest struct {
-	// Address of the kafka broker to sent he request to.
+	
 	Addr net.Addr
 
-	// GroupID of the group to sync.
+	
 	GroupID string
 
-	// The generation of the group.
+	
 	GenerationID int
 
-	// The member ID assigned by the group.
+	
 	MemberID string
 
-	// The unique identifier for the consumer instance.
+	
 	GroupInstanceID string
 
-	// The name for the class of protocols implemented by the group being joined.
+	
 	ProtocolType string
 
-	// The group protocol name.
+	
 	ProtocolName string
 
-	// The group member assignments.
+	
 	Assignments []SyncGroupRequestAssignment
 }
 
-// SyncGroupRequestAssignment represents an assignement for a goroup memeber.
+
 type SyncGroupRequestAssignment struct {
-	// The ID of the member to assign.
+	
 	MemberID string
 
-	// The member assignment.
+	
 	Assignment GroupProtocolAssignment
 }
 
-// SyncGroupResponse is the response structure for the SyncGroup function.
+
 type SyncGroupResponse struct {
-	// An error that may have occurred when attempting to sync the group.
-	//
-	// The errors contain the kafka error code. Programs may use the standard
-	// errors.Is function to test the error against kafka error codes.
+	
+	
+	
+	
 	Error error
 
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// The group protocol type.
+	
 	ProtocolType string
 
-	// The group protocol name.
+	
 	ProtocolName string
 
-	// The member assignment.
+	
 	Assignment GroupProtocolAssignment
 }
 
-// GroupProtocolAssignment represents an assignment of topics and partitions for a group memeber.
+
 type GroupProtocolAssignment struct {
-	// The topics and partitions assigned to the group memeber.
+	
 	AssignedPartitions map[string][]int
 
-	// UserData for the assignemnt.
+	
 	UserData []byte
 }
 
-// SyncGroup sends a sync group request to the coordinator and returns the response.
+
 func (c *Client) SyncGroup(ctx context.Context, req *SyncGroupRequest) (*SyncGroupResponse, error) {
 	syncGroup := syncgroup.Request{
 		GroupID:         req.GroupID,
@@ -183,9 +183,9 @@ func (t groupAssignment) writeTo(wb *writeBuffer) {
 }
 
 func (t *groupAssignment) readFrom(r *bufio.Reader, size int) (remain int, err error) {
-	// I came across this case when testing for compatibility with bsm/sarama-cluster. It
-	// appears in some cases, sarama-cluster can send a nil array entry. Admittedly, I
-	// didn't look too closely at it.
+	
+	
+	
 	if size == 0 {
 		t.Topics = map[string][]int32{}
 		return 0, nil
@@ -211,12 +211,12 @@ func (t groupAssignment) bytes() []byte {
 }
 
 type syncGroupRequestGroupAssignmentV0 struct {
-	// MemberID assigned by the group coordinator
+	
 	MemberID string
 
-	// MemberAssignments holds client encoded assignments
-	//
-	// See consumer groups section of https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol
+	
+	
+	
 	MemberAssignments []byte
 }
 
@@ -231,13 +231,13 @@ func (t syncGroupRequestGroupAssignmentV0) writeTo(wb *writeBuffer) {
 }
 
 type syncGroupRequestV0 struct {
-	// GroupID holds the unique group identifier
+	
 	GroupID string
 
-	// GenerationID holds the generation of the group.
+	
 	GenerationID int32
 
-	// MemberID assigned by the group coordinator
+	
 	MemberID string
 
 	GroupAssignments []syncGroupRequestGroupAssignmentV0
@@ -258,12 +258,12 @@ func (t syncGroupRequestV0) writeTo(wb *writeBuffer) {
 }
 
 type syncGroupResponseV0 struct {
-	// ErrorCode holds response error code
+	
 	ErrorCode int16
 
-	// MemberAssignments holds client encoded assignments
-	//
-	// See consumer groups section of https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol
+	
+	
+	
 	MemberAssignments []byte
 }
 

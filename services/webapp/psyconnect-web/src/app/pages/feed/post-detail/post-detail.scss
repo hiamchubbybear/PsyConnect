@@ -69,7 +69,7 @@
       }
     }
 
-    // Author section with avatar
+    
     .post-author-container {
       position: relative;
       margin-bottom: var(--spacing-md);
@@ -312,7 +312,7 @@
 
   .comment-input {
     flex: 1;
-    padding: 10px 60px 10px 16px; // Extra padding for character counter
+    padding: 10px 60px 10px 16px; 
     font-size: var(--font-size-sm);
     font-family: var(--font-primary);
     color: var(--color-text);
@@ -338,7 +338,7 @@
       color: var(--color-text-muted);
     }
 
-    // Hide scrollbar for cleaner look
+    
     &::-webkit-scrollbar {
       width: 4px;
     }
@@ -351,7 +351,7 @@
 
   .char-counter {
     position: absolute;
-    right: 70px; // Position before submit button
+    right: 70px; 
     bottom: 12px;
     font-size: 11px;
     color: var(--color-text-muted);
@@ -360,7 +360,7 @@
     font-weight: 500;
 
     &.warning {
-      color: #f59e0b; // Orange warning when approaching limit
+      color: #f59e0b; 
     }
   }
 
@@ -476,7 +476,7 @@
       }
     }
 
-    // Nested replies
+    
     &-replies {
       margin-top: var(--spacing-sm);
       margin-left: 40px;
@@ -528,7 +528,7 @@
   cursor: pointer;
 }
 
-// Comment author styles
+
 .comment-author-wrapper {
   display: inline-flex;
   align-items: center;
@@ -573,7 +573,7 @@
   }
 }
 
-// Premium Author Card Styles
+
 .author-card {
   position: absolute;
   top: calc(100% + 0.5rem);
@@ -588,14 +588,14 @@
   animation: fadeInCard 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
   transform-origin: top left;
 
-  // Cover Area
+  
   &__cover {
     height: 80px;
     background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
     position: relative;
   }
 
-  // Avatar overlapping cover
+  
   &__avatar-wrapper {
     position: absolute;
     top: 40px;
@@ -632,7 +632,7 @@
     }
   }
 
-  // Content Area
+  
   &__content {
     padding: 3rem 1.5rem 1.5rem;
     display: flex;
@@ -748,7 +748,7 @@
   }
 }
 
-// Replying Indicator
+
 .replying-indicator {
   margin: 8px 0 4px 0;
   padding: 6px 12px;
@@ -760,7 +760,7 @@
   font-weight: 500;
 }
 
-// Reply Form Styling
+
 .reply-form {
   margin: 12px 0;
   padding: 12px;
@@ -839,7 +839,7 @@
   }
 }
 
-// Nested Comments Indentation
+
 .comment-replies {
   margin-left: 40px;
   border-left: 2px solid var(--color-border, #e0e0e0);
@@ -847,7 +847,7 @@
   margin-top: 12px;
 }
 
-// CRITICAL: Ensure comment action buttons are clickable
+
 .comment-actions {
   position: relative;
   z-index: 10;

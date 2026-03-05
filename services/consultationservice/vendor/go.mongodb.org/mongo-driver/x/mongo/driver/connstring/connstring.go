@@ -1,17 +1,17 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
-// Package connstring is intended for internal use only. It is made available to
-// facilitate use cases that require access to internal MongoDB driver
-// functionality and state. The API of this package is not stable and there is
-// no backward compatibility guarantee.
-//
-// WARNING: THIS PACKAGE IS EXPERIMENTAL AND MAY BE MODIFIED OR REMOVED WITHOUT
-// NOTICE! USE WITH EXTREME CAUTION!
-package connstring // import "go.mongodb.org/mongo-driver/x/mongo/driver/connstring"
+
+
+
+
+
+
+
+
+
+
+
+
+package connstring 
 
 import (
 	"errors"
@@ -30,57 +30,57 @@ import (
 )
 
 const (
-	// ServerMonitoringModeAuto indicates that the client will behave like "poll"
-	// mode when running on a FaaS (Function as a Service) platform, or like
-	// "stream" mode otherwise. The client detects its execution environment by
-	// following the rules for generating the "client.env" handshake metadata field
-	// as specified in the MongoDB Handshake specification. This is the default
-	// mode.
+	
+	
+	
+	
+	
+	
 	ServerMonitoringModeAuto = "auto"
 
-	// ServerMonitoringModePoll indicates that the client will periodically check
-	// the server using a hello or legacy hello command and then sleep for
-	// heartbeatFrequencyMS milliseconds before running another check.
+	
+	
+	
 	ServerMonitoringModePoll = "poll"
 
-	// ServerMonitoringModeStream indicates that the client will use a streaming
-	// protocol when the server supports it. The streaming protocol optimally
-	// reduces the time it takes for a client to discover server state changes.
+	
+	
+	
 	ServerMonitoringModeStream = "stream"
 )
 
 var (
-	// ErrLoadBalancedWithMultipleHosts is returned when loadBalanced=true is
-	// specified in a URI with multiple hosts.
+	
+	
 	ErrLoadBalancedWithMultipleHosts = errors.New(
 		"loadBalanced cannot be set to true if multiple hosts are specified")
 
-	// ErrLoadBalancedWithReplicaSet is returned when loadBalanced=true is
-	// specified in a URI with the replicaSet option.
+	
+	
 	ErrLoadBalancedWithReplicaSet = errors.New(
 		"loadBalanced cannot be set to true if a replica set name is specified")
 
-	// ErrLoadBalancedWithDirectConnection is returned when loadBalanced=true is
-	// specified in a URI with the directConnection option.
+	
+	
 	ErrLoadBalancedWithDirectConnection = errors.New(
 		"loadBalanced cannot be set to true if the direct connection option is specified")
 
-	// ErrSRVMaxHostsWithReplicaSet is returned when srvMaxHosts > 0 is
-	// specified in a URI with the replicaSet option.
+	
+	
 	ErrSRVMaxHostsWithReplicaSet = errors.New(
 		"srvMaxHosts cannot be a positive value if a replica set name is specified")
 
-	// ErrSRVMaxHostsWithLoadBalanced is returned when srvMaxHosts > 0 is
-	// specified in a URI with loadBalanced=true.
+	
+	
 	ErrSRVMaxHostsWithLoadBalanced = errors.New(
 		"srvMaxHosts cannot be a positive value if loadBalanced is set to true")
 )
 
-// random is a package-global pseudo-random number generator.
+
 var random = randutil.NewLockedRand()
 
-// ParseAndValidate parses the provided URI into a ConnString object.
-// It check that all values are valid.
+
+
 func ParseAndValidate(s string) (*ConnString, error) {
 	connStr, err := Parse(s)
 	if err != nil {
@@ -93,9 +93,9 @@ func ParseAndValidate(s string) (*ConnString, error) {
 	return connStr, nil
 }
 
-// Parse parses the provided URI into a ConnString object
-// but does not check that all values are valid. Use `ConnString.Validate()`
-// to run the validation checks separately.
+
+
+
 func Parse(s string) (*ConnString, error) {
 	p := parser{dnsResolver: dns.DefaultResolver}
 	connStr, err := p.parse(s)
@@ -105,7 +105,7 @@ func Parse(s string) (*ConnString, error) {
 	return connStr, err
 }
 
-// ConnString represents a connection string to mongodb.
+
 type ConnString struct {
 	Original                           string
 	AppName                            string
@@ -200,15 +200,15 @@ func (u *ConnString) String() string {
 	return u.Original
 }
 
-// HasAuthParameters returns true if this ConnString has any authentication parameters set and therefore represents
-// a request for authentication.
+
+
 func (u *ConnString) HasAuthParameters() bool {
-	// Check all auth parameters except for AuthSource because an auth source without other credentials is semantically
-	// valid and must not be interpreted as a request for authentication.
+	
+	
 	return u.AuthMechanism != "" || u.AuthMechanismProperties != nil || u.UsernameSet || u.PasswordSet
 }
 
-// Validate checks that the Auth and SSL parameters are valid values.
+
 func (u *ConnString) Validate() error {
 	var err error
 
@@ -220,12 +220,12 @@ func (u *ConnString) Validate() error {
 		return err
 	}
 
-	// Check for invalid write concern (i.e. w=0 and j=true)
+	
 	if u.WNumberSet && u.WNumber == 0 && u.JSet && u.J {
 		return writeconcern.ErrInconsistent
 	}
 
-	// Check for invalid use of direct connections.
+	
 	if (u.ConnectSet && u.Connect == SingleConnect) ||
 		(u.DirectConnectionSet && u.DirectConnection) {
 		if len(u.Hosts) > 1 {
@@ -239,7 +239,7 @@ func (u *ConnString) Validate() error {
 		}
 	}
 
-	// Validation for load-balanced mode.
+	
 	if u.LoadBalancedSet && u.LoadBalanced {
 		if len(u.Hosts) > 1 {
 			return ErrLoadBalancedWithMultipleHosts
@@ -249,7 +249,7 @@ func (u *ConnString) Validate() error {
 		}
 	}
 
-	// Check for invalid use of SRVMaxHosts.
+	
 	if u.SRVMaxHosts > 0 {
 		if u.ReplicaSet != "" {
 			return ErrSRVMaxHostsWithReplicaSet
@@ -259,7 +259,7 @@ func (u *ConnString) Validate() error {
 		}
 	}
 
-	// Check for OIDC auth mechanism properties that cannot be set in the ConnString.
+	
 	if u.AuthMechanism == auth.MongoDBOIDC {
 		if _, ok := u.AuthMechanismProperties[auth.AllowedHostsProp]; ok {
 			return fmt.Errorf(
@@ -273,8 +273,8 @@ func (u *ConnString) Validate() error {
 }
 
 func (u *ConnString) setDefaultAuthParams(dbName string) error {
-	// We do this check here rather than in validateAuth because this function is called as part of parsing and sets
-	// the value of AuthSource if authentication is enabled.
+	
+	
 	if u.AuthSourceSet && u.AuthSource == "" {
 		return errors.New("authSource must be non-empty when supplied in a URI")
 	}
@@ -314,7 +314,7 @@ func (u *ConnString) setDefaultAuthParams(dbName string) error {
 			}
 		}
 	case "":
-		// Only set auth source if there is a request for authentication via non-empty credentials.
+		
 		if u.AuthSource == "" && (u.AuthMechanismProperties != nil || u.Username != "" || u.PasswordSet) {
 			u.AuthSource = dbName
 			if u.AuthSource == "" {
@@ -328,7 +328,7 @@ func (u *ConnString) setDefaultAuthParams(dbName string) error {
 }
 
 func (u *ConnString) addOptions(connectionArgPairs []string) error {
-	var tlsssl *bool // used to determine if tls and ssl options are both specified and set differently.
+	var tlsssl *bool 
 	for _, pair := range connectionArgPairs {
 		kv := strings.SplitN(pair, "=", 2)
 		if len(kv) != 2 || kv[0] == "" {
@@ -380,7 +380,7 @@ func (u *ConnString) addOptions(connectionArgPairs []string) error {
 				return fmt.Errorf("invalid 'connect' value: %q", value)
 			}
 			if u.DirectConnectionSet {
-				expectedValue := u.Connect == SingleConnect // directConnection should be true if connect=direct
+				expectedValue := u.Connect == SingleConnect 
 				if u.DirectConnection != expectedValue {
 					return fmt.Errorf("options connect=%q and directConnection=%v conflict", value, u.DirectConnection)
 				}
@@ -484,8 +484,8 @@ func (u *ConnString) addOptions(connectionArgPairs []string) error {
 			u.ReadPreference = value
 		case "readpreferencetags":
 			if value == "" {
-				// If "readPreferenceTags=" is supplied, append an empty map to tag sets to
-				// represent a wild-card.
+				
+				
 				u.ReadPreferenceTagSets = append(u.ReadPreferenceTagSets, map[string]string{})
 				break
 			}
@@ -552,7 +552,7 @@ func (u *ConnString) addOptions(connectionArgPairs []string) error {
 			u.SocketTimeout = time.Duration(n) * time.Millisecond
 			u.SocketTimeoutSet = true
 		case "srvmaxhosts":
-			// srvMaxHosts can only be set on URIs with the "mongodb+srv" scheme
+			
 			if u.Scheme != SchemeMongoDBSRV {
 				return fmt.Errorf("cannot specify srvMaxHosts on non-SRV URI")
 			}
@@ -563,15 +563,15 @@ func (u *ConnString) addOptions(connectionArgPairs []string) error {
 			}
 			u.SRVMaxHosts = n
 		case "srvservicename":
-			// srvServiceName can only be set on URIs with the "mongodb+srv" scheme
+			
 			if u.Scheme != SchemeMongoDBSRV {
 				return fmt.Errorf("cannot specify srvServiceName on non-SRV URI")
 			}
 
-			// srvServiceName must be between 1 and 62 characters according to
-			// our specification. Empty service names are not valid, and the service
-			// name (including prepended underscore) should not exceed the 63 character
-			// limit for DNS query subdomains.
+			
+			
+			
+			
 			if len(value) < 1 || len(value) > 62 {
 				return fmt.Errorf("srvServiceName value must be between 1 and 62 characters")
 			}
@@ -670,7 +670,7 @@ func (u *ConnString) addOptions(connectionArgPairs []string) error {
 			u.WTimeout = time.Duration(n) * time.Millisecond
 			u.WTimeoutSet = true
 		case "wtimeout":
-			// Defer to wtimeoutms, but not to a manually-set option.
+			
 			if u.WTimeoutSet {
 				break
 			}
@@ -691,7 +691,7 @@ func (u *ConnString) addOptions(connectionArgPairs []string) error {
 			u.ZlibLevel = level
 			u.ZlibLevelSet = true
 		case "zstdcompressionlevel":
-			const maxZstdLevel = 22 // https://github.com/facebook/zstd/blob/a880ca239b447968493dd2fed3850e766d6305cc/contrib/linux-kernel/lib/zstd/compress.c#L3291
+			const maxZstdLevel = 22 
 			level, err := strconv.Atoi(value)
 			if err != nil || (level < -1 || level > maxZstdLevel) {
 				return fmt.Errorf("invalid value for %q: %q", key, value)
@@ -842,8 +842,8 @@ func sanitizeHost(host string) (string, error) {
 	}
 
 	_, port, err := net.SplitHostPort(unescaped)
-	// this is unfortunate that SplitHostPort actually requires
-	// a port to exist.
+	
+	
 	if err != nil {
 		if addrError, ok := err.(*net.AddrError); !ok || addrError.Err != "missing port in address" {
 			return "", err
@@ -862,19 +862,19 @@ func sanitizeHost(host string) (string, error) {
 	return unescaped, nil
 }
 
-// ConnectMode informs the driver on how to connect
-// to the server.
+
+
 type ConnectMode uint8
 
 var _ fmt.Stringer = ConnectMode(0)
 
-// ConnectMode constants.
+
 const (
 	AutoConnect ConnectMode = iota
 	SingleConnect
 )
 
-// String implements the fmt.Stringer interface.
+
 func (c ConnectMode) String() string {
 	switch c {
 	case AutoConnect:
@@ -886,7 +886,7 @@ func (c ConnectMode) String() string {
 	}
 }
 
-// Scheme constants
+
 const (
 	SchemeMongoDB    = "mongodb"
 	SchemeMongoDBSRV = "mongodb+srv"
@@ -905,11 +905,11 @@ func (p *parser) parse(original string) (*ConnString, error) {
 	switch {
 	case strings.HasPrefix(uri, SchemeMongoDBSRV+"://"):
 		connStr.Scheme = SchemeMongoDBSRV
-		// remove the scheme
+		
 		uri = uri[len(SchemeMongoDBSRV)+3:]
 	case strings.HasPrefix(uri, SchemeMongoDB+"://"):
 		connStr.Scheme = SchemeMongoDB
-		// remove the scheme
+		
 		uri = uri[len(SchemeMongoDB)+3:]
 	default:
 		return nil, errors.New(`scheme must be "mongodb" or "mongodb+srv"`)
@@ -928,7 +928,7 @@ func (p *parser) parse(original string) (*ConnString, error) {
 			connStr.PasswordSet = true
 		}
 
-		// Validate and process the username.
+		
 		if strings.Contains(username, "/") {
 			return nil, fmt.Errorf("unescaped slash in username")
 		}
@@ -938,7 +938,7 @@ func (p *parser) parse(original string) (*ConnString, error) {
 		}
 		connStr.UsernameSet = true
 
-		// Validate and process the password.
+		
 		if strings.Contains(password, ":") {
 			return nil, fmt.Errorf("unescaped colon in password")
 		}
@@ -951,7 +951,7 @@ func (p *parser) parse(original string) (*ConnString, error) {
 		}
 	}
 
-	// fetch the hosts field
+	
 	hosts := uri
 	if idx := strings.IndexAny(uri, "/?@"); idx != -1 {
 		if uri[idx] == '@' {
@@ -982,13 +982,13 @@ func (p *parser) parse(original string) (*ConnString, error) {
 	uri = extractedDatabase.uri
 	connStr.Database = extractedDatabase.db
 
-	// grab connection arguments from URI
+	
 	connectionArgsFromQueryString, err := extractQueryArgsFromURI(uri)
 	if err != nil {
 		return nil, err
 	}
 
-	// grab connection arguments from TXT record and enable SSL if "mongodb+srv://"
+	
 	var connectionArgsFromTXT []string
 	if connStr.Scheme == SchemeMongoDBSRV && p.dnsResolver != nil {
 		connectionArgsFromTXT, err = p.dnsResolver.GetConnectionArgsFromTXT(hosts)
@@ -996,12 +996,12 @@ func (p *parser) parse(original string) (*ConnString, error) {
 			return nil, err
 		}
 
-		// SSL is enabled by default for SRV, but can be manually disabled with "ssl=false".
+		
 		connStr.SSL = true
 		connStr.SSLSet = true
 	}
 
-	// add connection arguments from URI and TXT records to connstring
+	
 	connectionArgPairs := make([]string, 0, len(connectionArgsFromTXT)+len(connectionArgsFromQueryString))
 	connectionArgPairs = append(connectionArgPairs, connectionArgsFromTXT...)
 	connectionArgPairs = append(connectionArgPairs, connectionArgsFromQueryString...)
@@ -1011,15 +1011,15 @@ func (p *parser) parse(original string) (*ConnString, error) {
 		return nil, err
 	}
 
-	// do SRV lookup if "mongodb+srv://"
+	
 	if connStr.Scheme == SchemeMongoDBSRV && p.dnsResolver != nil {
 		parsedHosts, err := p.dnsResolver.ParseHosts(hosts, connStr.SRVServiceName, true)
 		if err != nil {
 			return connStr, err
 		}
 
-		// If p.SRVMaxHosts is non-zero and is less than the number of hosts, randomly
-		// select SRVMaxHosts hosts from parsedHosts.
+		
+		
 		if connStr.SRVMaxHosts > 0 && connStr.SRVMaxHosts < len(parsedHosts) {
 			random.Shuffle(len(parsedHosts), func(i, j int) {
 				parsedHosts[i], parsedHosts[j] = parsedHosts[j], parsedHosts[i]
@@ -1048,7 +1048,7 @@ func (p *parser) parse(original string) (*ConnString, error) {
 		return nil, err
 	}
 
-	// If WTimeout was set from manual options passed in, set WTImeoutSet to true.
+	
 	if connStr.WTimeoutSetFromOption {
 		connStr.WTimeoutSet = true
 	}
@@ -1056,8 +1056,8 @@ func (p *parser) parse(original string) (*ConnString, error) {
 	return connStr, nil
 }
 
-// IsValidServerMonitoringMode will return true if the given string matches a
-// valid server monitoring mode.
+
+
 func IsValidServerMonitoringMode(mode string) bool {
 	return mode == ServerMonitoringModeAuto ||
 		mode == ServerMonitoringModeStream ||
@@ -1086,10 +1086,10 @@ type extractedDatabase struct {
 	db  string
 }
 
-// extractDatabaseFromURI is a helper function to retrieve information about
-// the database from the passed in URI. It accepts as an argument the currently
-// parsed URI and returns the remainder of the uri, the database it found,
-// and any error it encounters while parsing.
+
+
+
+
 func extractDatabaseFromURI(uri string) (extractedDatabase, error) {
 	if len(uri) == 0 {
 		return extractedDatabase{}, nil

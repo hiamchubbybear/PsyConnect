@@ -13,12 +13,12 @@ import (
 	"consultationservice/internal/route"
 	"consultationservice/pkg/logger"
 
-	// DDD imports
+	
 	consultationRepo "consultationservice/internal/consultation/repository"
 	httpHandler "consultationservice/internal/consultation/transport/http"
 	"consultationservice/internal/consultation/usecase"
 
-	// DDD imports
+	
 	clientRepo "consultationservice/internal/client/repository"
 	clientHTTP "consultationservice/internal/client/transport/http"
 	clientUseCase "consultationservice/internal/client/usecase"
@@ -54,6 +54,8 @@ import (
 	groupRepo "consultationservice/internal/newsfeed/group/repository"
 	groupHTTP "consultationservice/internal/newsfeed/group/transport/http"
 	groupUseCase "consultationservice/internal/newsfeed/group/usecase"
+
+	"consultationservice/internal/grpc/handler"
 )
 
 func main() {
@@ -86,24 +88,47 @@ func main() {
 		})
 		log.Printf("Warning: Redis initialization failed: %v", err)
 	}
-	// ===== Initialize Legacy Repositories (for adapters) =====
-	// These will be replaced with pure DDD implementations
+	
+	
 	legacyPostRepo := repository.NewPostRepo()
 	legacyReactionRepo := repository.NewReactionRepo()
 	legacyBookmarkRepo := repository.NewBookmarkRepo()
 
-	// Initialize Kafka Producer
+	
 	kafkaProducer, err := kafka.NewProducer(env)
 	if err != nil {
 		log.Printf("⚠️  Warning: Failed to initialize Kafka producer: %v", err)
 	}
 
-	// ===== DDD Session Components =====
-	// Initialize DDD Session Repository
+	
+	
+	profileGrpcAddr := os.Getenv("PROFILE_SERVICE_URL")
+	if profileGrpcAddr == "" {
+		profileGrpcAddr = "profileservice:50051" 
+	} else {
+		
+		profileGrpcAddr = strings.TrimPrefix(profileGrpcAddr, "http://")
+		profileGrpcAddr = strings.TrimPrefix(profileGrpcAddr, "https://")
+		if !strings.Contains(profileGrpcAddr, ":") {
+			profileGrpcAddr = profileGrpcAddr + ":50051"
+		}
+	}
+
+	profileHandler, err := handler.NewProfileGrpc(profileGrpcAddr)
+	if err != nil {
+		log.Printf("⚠️ Warning: Failed to initialize Profile gRPC client: %v", err)
+	}
+	defer func() {
+		if profileHandler != nil {
+			profileHandler.Close()
+		}
+	}()
+
+	
 	sessionRepo := consultationRepo.NewMongoSessionRepository(db.GetSessionCollection())
 
-	// Initialize Session UseCases
-	createSessionUC := usecase.NewCreateSessionUseCase(sessionRepo, kafkaProducer)
+	
+	createSessionUC := usecase.NewCreateSessionUseCase(sessionRepo, kafkaProducer, profileHandler)
 	getSessionUC := usecase.NewGetSessionUseCase(sessionRepo)
 	deleteSessionUC := usecase.NewDeleteSessionUseCase(sessionRepo)
 	startCallUC := usecase.NewStartCallUseCase(sessionRepo, kafkaProducer)
@@ -114,7 +139,7 @@ func main() {
 	getOverviewUC := usecase.NewGetOverviewUseCase(sessionRepo)
 	getCalendarUC := usecase.NewGetCalendarUseCase(sessionRepo)
 
-	// Initialize DDD HTTP Handler
+	
 	sessionHandler := httpHandler.NewHandler(
 		createSessionUC,
 		getSessionUC,
@@ -126,76 +151,76 @@ func main() {
 		getCalendarUC,
 		getOverviewUC,
 	)
-	// ===== End DDD Session Components =====
+	
 
-	// ===== DDD Client Components =====
-	// Initialize DDD Client Repository
+	
+	
 	clientRepository := clientRepo.NewMongoClientRepository(db.GetClientCollection(), redisClient)
 
-	// Initialize Client UseCases
+	
 	createClientUC := clientUseCase.NewCreateClientUseCase(clientRepository)
 	getClientUC := clientUseCase.NewGetClientUseCase(clientRepository)
 	updateClientUC := clientUseCase.NewUpdateClientUseCase(clientRepository)
 	deleteClientUC := clientUseCase.NewDeleteClientUseCase(clientRepository)
 
-	// Initialize DDD Client HTTP Handler
+	
 	clientHandler := clientHTTP.NewHandler(
 		createClientUC,
 		getClientUC,
 		updateClientUC,
 		deleteClientUC,
 	)
-	// ===== End DDD Client Components =====
+	
 
-	// ===== DDD Therapist Components =====
-	// Initialize DDD Therapist Repository
+	
+	
 	therapistRepository := therapistRepo.NewMongoTherapistRepository(db.GetTherapistCollection(), redisClient)
 
-	// Initialize Therapist UseCases
+	
 	createTherapistUC := therapistUseCase.NewCreateTherapistUseCase(therapistRepository)
 	getTherapistUC := therapistUseCase.NewGetTherapistUseCase(therapistRepository)
 	updateTherapistUC := therapistUseCase.NewUpdateTherapistUseCase(therapistRepository)
 	deleteTherapistUC := therapistUseCase.NewDeleteTherapistUseCase(therapistRepository)
 
-	// Initialize DDD Therapist HTTP Handler
+	
 	therapistHandler := therapistHTTP.NewHandler(
 		createTherapistUC,
 		getTherapistUC,
 		updateTherapistUC,
 		deleteTherapistUC,
 	)
-	// ===== End DDD Therapist Components =====
+	
 
-	// ===== DDD Matching Components =====
+	
 	matchRepository := matchRepo.NewMongoMatchRepository(db.GetMatchCollection(), redisClient)
 	createMatchUC := matchUseCase.NewCreateMatchUseCase(matchRepository, clientRepository, therapistRepository)
 	getClientMatchesUC := matchUseCase.NewGetClientMatchesUseCase(matchRepository)
 
 	matchHandler := matchHTTP.NewHandler(createMatchUC, getClientMatchesUC)
-	// ===== End DDD Matching Components =====
+	
 
-	// ===== DDD Swipe Components =====
+	
 	swipeRepository := swipeRepo.NewMongoSwipeRepository(db.GetSwipedCollection(), matchRepository, redisClient)
 	insertSwipeUC := swipeUseCase.NewInsertSwipeUseCase(swipeRepository)
 	swipeAndMatchUC := swipeUseCase.NewSwipeAndMatchUseCase(swipeRepository)
 	recommendUC := swipeUseCase.NewRecommendUseCase(clientRepository, therapistRepository, swipeRepository)
 
 	swipeHandler := swipeHTTP.NewHandler(insertSwipeUC, swipeAndMatchUC, recommendUC)
-	// ===== End DDD Swipe Components =====
+	
 
-	// ===== DDD Reaction Components =====
+	
 	reactionRepository := reactionRepo.NewMongoReactionRepository(db.GetReactionCollection(), redisClient)
 
-	// Create adapter for legacy PostRepository
+	
 	postRepoAdapter := reactionUseCase.NewPostRepositoryAdapter(legacyPostRepo)
 
 	toggleReactionUC := reactionUseCase.NewToggleReactionUseCase(reactionRepository, postRepoAdapter)
 	getReactionsUC := reactionUseCase.NewGetReactionsUseCase(reactionRepository)
 
 	reactionHandler := reactionHTTP.NewHandler(toggleReactionUC, getReactionsUC, kafkaProducer)
-	// ===== End DDD Reaction Components =====
+	
 
-	// ===== DDD Comment Components =====
+	
 	commentRepository := commentRepo.NewMongoCommentRepository(db.GetCommentCollection(), redisClient)
 	postRepoAdapterComment := commentUseCase.NewPostRepositoryAdapter(legacyPostRepo)
 
@@ -206,9 +231,9 @@ func main() {
 	getRepliesUC := commentUseCase.NewGetRepliesUseCase(commentRepository)
 
 	commentHandler := commentHTTP.NewHandler(createCommentUC, getCommentsUC, updateCommentUC, deleteCommentUC, getRepliesUC, kafkaProducer)
-	// ===== End DDD Comment Components =====
+	
 
-	// ===== DDD Social Components =====
+	
 	followRepository := socialRepo.NewMongoFollowRepository(db.GetFollowCollection())
 	bookmarkRepository := socialRepo.NewMongoBookmarkRepository(db.GetBookmarkCollection())
 
@@ -218,9 +243,9 @@ func main() {
 	unbookmarkPostUC := socialUseCase.NewUnbookmarkPostUseCase(bookmarkRepository)
 
 	socialHandler := socialHTTP.NewHandler(followUserUC, unfollowUserUC, bookmarkPostUC, unbookmarkPostUC)
-	// ===== End DDD Social Components =====
+	
 
-	// ===== DDD Post Components =====
+	
 	legacyPostRepoAdapter := postRepo.NewLegacyPostRepositoryAdapter(legacyPostRepo)
 
 	createPostUC := postUseCase.NewCreatePostUseCase(legacyPostRepoAdapter)
@@ -242,9 +267,9 @@ func main() {
 		getByTagUC, getByCategoryUC, incrementViewUC, getPopularTagsUC,
 		redisClient, legacyReactionRepo, legacyBookmarkRepo,
 	)
-	// ===== End DDD Post Components =====
+	
 
-	// ===== DDD Group Components =====
+	
 	groupRepository := groupRepo.NewGroupRepo()
 
 	createGroupUC := groupUseCase.NewCreateGroupUseCase(groupRepository)
@@ -258,18 +283,18 @@ func main() {
 		getGroupByIDUC,
 		joinGroupUC,
 	)
-	// ===== End DDD Group Components =====
+	
 
-	// therapistHandler := handlers.NewTherapistHandler(env, repomanager) // Legacy removed
-	// clientHandler now uses DDD version above
-	// matchHandler used to be here
-	// swipeHandler used to be here
+	
+	
+	
+	
 
-	// ===== Legacy Handlers (to be removed) =====
-	// postHandler used to be here (now DDD)
-	// reactionHandler used to be here (now DDD)
-	// commentHandler used to be here (now DDD)
-	// socialHandler used to be here (now DDD)
+	
+	
+	
+	
+	
 
 	kafka.NewConsumer(env)
 	kafka.NewProducer(env)

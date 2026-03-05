@@ -13,19 +13,19 @@ type Comment struct {
 	Content         string             `bson:"content" json:"content"`
 	ParentCommentID string             `bson:"parent_comment_id,omitempty" json:"parent_comment_id,omitempty"`
 
-	// Nested comment tracking
-	Depth      int    `bson:"depth" json:"depth"`                   // 0=root, 1=reply, 2=nested reply
-	Path       string `bson:"path,omitempty" json:"path,omitempty"` // e.g., "comment1/comment2"
-	ReplyCount int    `bson:"reply_count" json:"reply_count"`       // Denormalized count
+	
+	Depth      int    `bson:"depth" json:"depth"`                   
+	Path       string `bson:"path,omitempty" json:"path,omitempty"` 
+	ReplyCount int    `bson:"reply_count" json:"reply_count"`       
 
 	IsDeleted bool      `bson:"is_deleted" json:"is_deleted"`
 	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 
-	// Populated fields (not stored in DB)
-	Replies  []Comment   `bson:"-" json:"replies,omitempty"`   // Nested replies
-	AuthorID string      `bson:"-" json:"author_id,omitempty"` // For frontend compatibility
-	Author   *AuthorInfo `bson:"-" json:"author,omitempty"`    // Populated author info
+	
+	Replies  []Comment   `bson:"-" json:"replies,omitempty"`   
+	AuthorID string      `bson:"-" json:"author_id,omitempty"` 
+	Author   *AuthorInfo `bson:"-" json:"author,omitempty"`    
 }
 
 type AuthorInfo struct {
@@ -53,5 +53,5 @@ func (c *Comment) IsRootComment() bool {
 }
 
 func (c *Comment) CanReply() bool {
-	return c.Depth < 2 // Max depth is 2 (0, 1, 2)
+	return c.Depth < 2 
 }

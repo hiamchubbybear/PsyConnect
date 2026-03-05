@@ -23,7 +23,7 @@ public class RoleCheckAspect {
         String header = request.getHeader("X-Roles");
         String role = header.substring(0, header.indexOf(':'));
         boolean isAllowed = false;
-        // If match one of all break the loop and return true
+
         for (String r : allowedRoles.value()) {
             if (role.equals("role." + r.toLowerCase().trim())) {
                 log.info("User role {}", "role." + r.toLowerCase().trim());

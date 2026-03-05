@@ -63,7 +63,7 @@ func (p pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err erro
 	return pbkdf2.Key(password, p.Salt, p.IterationCount, size, h), nil
 }
 
-// PBKDF2Opts contains options for the PBKDF2 key derivation function.
+
 type PBKDF2Opts struct {
 	SaltSize       int
 	IterationCount int

@@ -1,15 +1,15 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 //go:build aix && ppc
 
 package unix
 
-//sysnb	Getrlimit(resource int, rlim *Rlimit) (err error) = getrlimit64
-//sys	Seek(fd int, offset int64, whence int) (off int64, err error) = lseek64
 
-//sys	mmap(addr uintptr, length uintptr, prot int, flags int, fd int, offset int64) (xaddr uintptr, err error)
+
+
+
 
 func setTimespec(sec, nsec int64) Timespec {
 	return Timespec{Sec: int32(sec), Nsec: int32(nsec)}

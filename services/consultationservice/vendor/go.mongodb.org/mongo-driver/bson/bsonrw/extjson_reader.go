@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsonrw
 
@@ -16,16 +16,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// ExtJSONValueReaderPool is a pool for ValueReaders that read ExtJSON.
-//
-// Deprecated: ExtJSONValueReaderPool will not be supported in Go Driver 2.0.
+
+
+
 type ExtJSONValueReaderPool struct {
 	pool sync.Pool
 }
 
-// NewExtJSONValueReaderPool instantiates a new ExtJSONValueReaderPool.
-//
-// Deprecated: ExtJSONValueReaderPool will not be supported in Go Driver 2.0.
+
+
+
 func NewExtJSONValueReaderPool() *ExtJSONValueReaderPool {
 	return &ExtJSONValueReaderPool{
 		pool: sync.Pool{
@@ -36,18 +36,18 @@ func NewExtJSONValueReaderPool() *ExtJSONValueReaderPool {
 	}
 }
 
-// Get retrieves a ValueReader from the pool and uses src as the underlying ExtJSON.
-//
-// Deprecated: ExtJSONValueReaderPool will not be supported in Go Driver 2.0.
+
+
+
 func (bvrp *ExtJSONValueReaderPool) Get(r io.Reader, canonical bool) (ValueReader, error) {
 	vr := bvrp.pool.Get().(*extJSONValueReader)
 	return vr.reset(r, canonical)
 }
 
-// Put inserts a ValueReader into the pool. If the ValueReader is not a ExtJSON ValueReader nothing
-// is inserted into the pool and ok will be false.
-//
-// Deprecated: ExtJSONValueReaderPool will not be supported in Go Driver 2.0.
+
+
+
+
 func (bvrp *ExtJSONValueReaderPool) Put(vr ValueReader) (ok bool) {
 	bvr, ok := vr.(*extJSONValueReader)
 	if !ok {
@@ -65,7 +65,7 @@ type ejvrState struct {
 	depth int
 }
 
-// extJSONValueReader is for reading extended JSON.
+
 type extJSONValueReader struct {
 	p *extJSONParser
 
@@ -73,9 +73,9 @@ type extJSONValueReader struct {
 	frame int
 }
 
-// NewExtJSONValueReader creates a new ValueReader from a given io.Reader
-// It will interpret the JSON of r as canonical or relaxed according to the
-// given canonical flag
+
+
+
 func NewExtJSONValueReader(r io.Reader, canonical bool) (ValueReader, error) {
 	return newExtJSONValueReader(r, canonical)
 }
@@ -115,10 +115,10 @@ func (ejvr *extJSONValueReader) reset(r io.Reader, canonical bool) (*extJSONValu
 }
 
 func (ejvr *extJSONValueReader) advanceFrame() {
-	if ejvr.frame+1 >= len(ejvr.stack) { // We need to grow the stack
+	if ejvr.frame+1 >= len(ejvr.stack) { 
 		length := len(ejvr.stack)
 		if length+1 >= cap(ejvr.stack) {
-			// double it
+			
 			buf := make([]ejvrState, 2*cap(ejvr.stack)+1)
 			copy(buf, ejvr.stack)
 			ejvr.stack = buf
@@ -127,7 +127,7 @@ func (ejvr *extJSONValueReader) advanceFrame() {
 	}
 	ejvr.frame++
 
-	// Clean the stack
+	
 	ejvr.stack[ejvr.frame].mode = 0
 	ejvr.stack[ejvr.frame].vType = 0
 	ejvr.stack[ejvr.frame].depth = 0
@@ -164,23 +164,23 @@ func (ejvr *extJSONValueReader) pop() {
 	case mElement, mValue:
 		ejvr.frame--
 	case mDocument, mArray, mCodeWithScope:
-		ejvr.frame -= 2 // we pop twice to jump over the vrElement: vrDocument -> vrElement -> vrDocument/TopLevel/etc...
+		ejvr.frame -= 2 
 	}
 }
 
 func (ejvr *extJSONValueReader) skipObject() {
-	// read entire object until depth returns to 0 (last ending } or ] seen)
+	
 	depth := 1
 	for depth > 0 {
 		ejvr.p.advanceState()
 
-		// If object is empty, raise depth and continue. When emptyObject is true, the
-		// parser has already read both the opening and closing brackets of an empty
-		// object ("{}"), so the next valid token will be part of the parent document,
-		// not part of the nested document.
-		//
-		// If there is a comma, there are remaining fields, emptyObject must be set back
-		// to false, and comma must be skipped with advanceState().
+		
+		
+		
+		
+		
+		
+		
 		if ejvr.p.emptyObject {
 			if ejvr.p.s == jpsSawComma {
 				ejvr.p.emptyObject = false
@@ -250,7 +250,7 @@ func (ejvr *extJSONValueReader) Skip() error {
 	t := ejvr.stack[ejvr.frame].vType
 	switch t {
 	case bsontype.Array, bsontype.EmbeddedDocument, bsontype.CodeWithScope:
-		// read entire array, doc or CodeWithScope
+		
 		ejvr.skipObject()
 	default:
 		_, err := ejvr.p.readValue(t)
@@ -264,7 +264,7 @@ func (ejvr *extJSONValueReader) Skip() error {
 
 func (ejvr *extJSONValueReader) ReadArray() (ArrayReader, error) {
 	switch ejvr.stack[ejvr.frame].mode {
-	case mTopLevel: // allow reading array from top level
+	case mTopLevel: 
 	case mArray:
 		return ejvr, nil
 	default:

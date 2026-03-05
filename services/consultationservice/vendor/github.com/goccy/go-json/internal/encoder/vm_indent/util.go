@@ -37,9 +37,9 @@ type emptyInterface struct {
 
 type nonEmptyInterface struct {
 	itab *struct {
-		ityp *runtime.Type // static interface type
-		typ  *runtime.Type // dynamic concrete type
-		// unused fields...
+		ityp *runtime.Type 
+		typ  *runtime.Type 
+		
 	}
 	ptr unsafe.Pointer
 }
@@ -173,7 +173,7 @@ func appendEmptyObject(_ *encoder.RuntimeContext, b []byte) []byte {
 
 func appendObjectEnd(ctx *encoder.RuntimeContext, code *encoder.Opcode, b []byte) []byte {
 	last := len(b) - 1
-	// replace comma to newline
+	
 	b[last-1] = '\n'
 	b = appendIndent(ctx, b[:last], code.Indent)
 	return append(b, '}', ',', '\n')
@@ -203,7 +203,7 @@ func appendStructEndSkipLast(ctx *encoder.RuntimeContext, code *encoder.Opcode, 
 		b[last] = '}'
 	} else {
 		if b[last] == '\n' {
-			// to remove ',' and '\n' characters
+			
 			b = b[:len(b)-2]
 		}
 		b = append(b, '\n')

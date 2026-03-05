@@ -24,6 +24,6 @@ func (uc *GetPaymentURLUseCase) Execute(ctx context.Context, sessionID string) (
 		return "", errors.New("session not found")
 	}
 
-	// Mocking a payment URL
+	
 	return fmt.Sprintf("https://mock-payment-gateway.psyconnect.dev/pay?session_id=%s&amount=%.2f", sessionID, session.Price), nil
 }

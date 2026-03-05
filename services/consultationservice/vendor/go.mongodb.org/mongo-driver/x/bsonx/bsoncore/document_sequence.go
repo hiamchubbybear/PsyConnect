@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2022-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsoncore
 
@@ -13,36 +13,36 @@ import (
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
-// DocumentSequenceStyle is used to represent how a document sequence is laid out in a slice of
-// bytes.
+
+
 type DocumentSequenceStyle uint32
 
-// These constants are the valid styles for a DocumentSequence.
+
 const (
 	_ DocumentSequenceStyle = iota
 	SequenceStyle
 	ArrayStyle
 )
 
-// DocumentSequence represents a sequence of documents. The Style field indicates how the documents
-// are laid out inside of the Data field.
+
+
 type DocumentSequence struct {
 	Style DocumentSequenceStyle
 	Data  []byte
 	Pos   int
 }
 
-// ErrCorruptedDocument is returned when a full document couldn't be read from the sequence.
+
 var ErrCorruptedDocument = errors.New("invalid DocumentSequence: corrupted document")
 
-// ErrNonDocument is returned when a DocumentSequence contains a non-document BSON value.
+
 var ErrNonDocument = errors.New("invalid DocumentSequence: a non-document value was found in sequence")
 
-// ErrInvalidDocumentSequenceStyle is returned when an unknown DocumentSequenceStyle is set on a
-// DocumentSequence.
+
+
 var ErrInvalidDocumentSequenceStyle = errors.New("invalid DocumentSequenceStyle")
 
-// DocumentCount returns the number of documents in the sequence.
+
 func (ds *DocumentSequence) DocumentCount() int {
 	if ds == nil {
 		return 0
@@ -80,7 +80,7 @@ func (ds *DocumentSequence) DocumentCount() int {
 	}
 }
 
-// Empty returns true if the sequence is empty. It always returns true for unknown sequence styles.
+
 func (ds *DocumentSequence) Empty() bool {
 	if ds == nil {
 		return true
@@ -96,8 +96,8 @@ func (ds *DocumentSequence) Empty() bool {
 	}
 }
 
-// ResetIterator resets the iteration point for the Next method to the beginning of the document
-// sequence.
+
+
 func (ds *DocumentSequence) ResetIterator() {
 	if ds == nil {
 		return
@@ -105,8 +105,8 @@ func (ds *DocumentSequence) ResetIterator() {
 	ds.Pos = 0
 }
 
-// Documents returns a slice of the documents. If nil either the Data field is also nil or could not
-// be properly read.
+
+
 func (ds *DocumentSequence) Documents() ([]Document, error) {
 	if ds == nil {
 		return nil, nil
@@ -149,8 +149,8 @@ func (ds *DocumentSequence) Documents() ([]Document, error) {
 	}
 }
 
-// Next retrieves the next document from this sequence and returns it. This method will return
-// io.EOF when it has reached the end of the sequence.
+
+
 func (ds *DocumentSequence) Next() (Document, error) {
 	if ds == nil || ds.Pos >= len(ds.Data) {
 		return nil, io.EOF
@@ -168,10 +168,10 @@ func (ds *DocumentSequence) Next() (Document, error) {
 			if len(ds.Data) < 4 {
 				return nil, ErrCorruptedDocument
 			}
-			ds.Pos = 4 // Skip the length of the document
+			ds.Pos = 4 
 		}
 		if len(ds.Data[ds.Pos:]) == 1 && ds.Data[ds.Pos] == 0x00 {
-			return nil, io.EOF // At the end of the document
+			return nil, io.EOF 
 		}
 		elem, _, ok := ReadElement(ds.Data[ds.Pos:])
 		if !ok {

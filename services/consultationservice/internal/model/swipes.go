@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-// Deprecated: Replace ClientSwipeV1
+
 type ClientSwipe struct {
 	ClientId    string    `json:"client_id" bson:"client_id"`
 	TherapistId string    `json:"therapist_id" bson:"therapist_id"`

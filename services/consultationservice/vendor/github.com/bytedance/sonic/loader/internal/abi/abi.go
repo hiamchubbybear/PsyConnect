@@ -1,18 +1,4 @@
-/*
- * Copyright 2022 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package abi
 
@@ -52,7 +38,7 @@ func (self FunctionLayout) StackMap() *rt.StackMap {
     var st []slot
     var mb rt.StackMapBuilder
 
-    /* add arguments */
+    
     for _, v := range self.Args {
         st = append(st, slot {
             m: v.Mem,
@@ -60,7 +46,7 @@ func (self FunctionLayout) StackMap() *rt.StackMap {
         })
     }
 
-    /* add stack-passed return values */
+    
     for _, v := range self.Rets {
         if !v.InRegister {
             st = append(st, slot {
@@ -70,17 +56,17 @@ func (self FunctionLayout) StackMap() *rt.StackMap {
         }
     }
 
-    /* sort by memory offset */
+    
     sort.Slice(st, func(i int, j int) bool {
         return st[i].m < st[j].m
     })
 
-    /* add the bits */
+    
     for _, v := range st {
         mb.AddField(v.p)
     }
 
-    /* build the stack map */
+    
     return mb.Build()
 }
 
@@ -93,13 +79,13 @@ func (self FunctionLayout) formatSeq(v []Parameter, fp *uint32) string {
     nb := len(v)
     mm := make([]string, 0, len(v))
 
-    /* convert each part */
+    
     for i := nb-1; i >=0; i-- {
         *fp -= PtrSize
         mm = append(mm, fmt.Sprintf("%#04x %s", *fp, v[i].String()))
     }
 
-    /* join them together */
+    
     return strings.Join(mm, "\n")
 }
 

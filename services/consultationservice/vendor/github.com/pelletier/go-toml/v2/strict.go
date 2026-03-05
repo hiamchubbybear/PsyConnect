@@ -9,7 +9,7 @@ import (
 type strict struct {
 	Enabled bool
 
-	// Tracks the current key being processed.
+	
 	key tracker.KeyTracker
 
 	missing []unstable.ParserError

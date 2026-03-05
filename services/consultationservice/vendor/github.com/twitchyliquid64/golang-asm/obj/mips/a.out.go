@@ -1,31 +1,31 @@
-// cmd/9c/9.out.h from Vita Nuova.
-//
-//	Copyright © 1994-1999 Lucent Technologies Inc.  All rights reserved.
-//	Portions Copyright © 1995-1997 C H Forsyth (forsyth@terzarima.net)
-//	Portions Copyright © 1997-1999 Vita Nuova Limited
-//	Portions Copyright © 2000-2008 Vita Nuova Holdings Limited (www.vitanuova.com)
-//	Portions Copyright © 2004,2006 Bruce Ellis
-//	Portions Copyright © 2005-2007 C H Forsyth (forsyth@terzarima.net)
-//	Revisions Copyright © 2000-2008 Lucent Technologies Inc. and others
-//	Portions Copyright © 2009 The Go Authors. All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package mips
 
@@ -35,19 +35,17 @@ import (
 
 //go:generate go run ../stringer.go -i $GOFILE -o anames.go -p mips
 
-/*
- * mips 64
- */
+
 const (
 	NSNAME = 8
 	NSYM   = 50
-	NREG   = 32 /* number of general registers */
-	NFREG  = 32 /* number of floating point registers */
-	NWREG  = 32 /* number of MSA registers */
+	NREG   = 32 
+	NFREG  = 32 
+	NWREG  = 32 
 )
 
 const (
-	REG_R0 = obj.RBaseMIPS + iota // must be a multiple of 32
+	REG_R0 = obj.RBaseMIPS + iota 
 	REG_R1
 	REG_R2
 	REG_R3
@@ -80,7 +78,7 @@ const (
 	REG_R30
 	REG_R31
 
-	REG_F0 // must be a multiple of 32
+	REG_F0 
 	REG_F1
 	REG_F2
 	REG_F3
@@ -113,8 +111,8 @@ const (
 	REG_F30
 	REG_F31
 
-	// co-processor 0 control registers
-	REG_M0 // must be a multiple of 32
+	
+	REG_M0 
 	REG_M1
 	REG_M2
 	REG_M3
@@ -147,8 +145,8 @@ const (
 	REG_M30
 	REG_M31
 
-	// FPU control registers
-	REG_FCR0 // must be a multiple of 32
+	
+	REG_FCR0 
 	REG_FCR1
 	REG_FCR2
 	REG_FCR3
@@ -181,9 +179,9 @@ const (
 	REG_FCR30
 	REG_FCR31
 
-	// MSA registers
-	// The lower bits of W registers are alias to F registers
-	REG_W0 // must be a multiple of 32
+	
+	
+	REG_W0 
 	REG_W1
 	REG_W2
 	REG_W3
@@ -219,41 +217,41 @@ const (
 	REG_HI
 	REG_LO
 
-	REG_LAST = REG_LO // the last defined register
+	REG_LAST = REG_LO 
 
 	REG_SPECIAL = REG_M0
 
-	REGZERO = REG_R0 /* set to zero */
+	REGZERO = REG_R0 
 	REGSP   = REG_R29
 	REGSB   = REG_R28
 	REGLINK = REG_R31
 	REGRET  = REG_R1
-	REGARG  = -1      /* -1 disables passing the first argument in register */
-	REGRT1  = REG_R1  /* reserved for runtime, duffzero and duffcopy */
-	REGRT2  = REG_R2  /* reserved for runtime, duffcopy */
-	REGCTXT = REG_R22 /* context for closures */
-	REGG    = REG_R30 /* G */
-	REGTMP  = REG_R23 /* used by the linker */
+	REGARG  = -1      
+	REGRT1  = REG_R1  
+	REGRT2  = REG_R2  
+	REGCTXT = REG_R22 
+	REGG    = REG_R30 
+	REGTMP  = REG_R23 
 	FREGRET = REG_F0
 )
 
-// https://llvm.org/svn/llvm-project/llvm/trunk/lib/Target/Mips/MipsRegisterInfo.td search for DwarfRegNum
-// https://gcc.gnu.org/viewcvs/gcc/trunk/gcc/config/mips/mips.c?view=co&revision=258099&content-type=text%2Fplain search for mips_dwarf_regno
-// For now, this is adequate for both 32 and 64 bit.
+
+
+
 var MIPSDWARFRegisters = map[int16]int16{}
 
 func init() {
-	// f assigns dwarfregisters[from:to] = (base):(to-from+base)
+	
 	f := func(from, to, base int16) {
 		for r := int16(from); r <= to; r++ {
 			MIPSDWARFRegisters[r] = (r - from) + base
 		}
 	}
 	f(REG_R0, REG_R31, 0)
-	f(REG_F0, REG_F31, 32) // For 32-bit MIPS, compiler only uses even numbered registers --  see cmd/compile/internal/ssa/gen/MIPSOps.go
+	f(REG_F0, REG_F31, 32) 
 	MIPSDWARFRegisters[REG_HI] = 64
 	MIPSDWARFRegisters[REG_LO] = 65
-	// The lower bits of W registers are alias to F registers
+	
 	f(REG_W0, REG_W31, 32)
 }
 
@@ -262,7 +260,7 @@ const (
 )
 
 const (
-	/* mark flags */
+	
 	FOLL    = 1 << 0
 	LABEL   = 1 << 1
 	LEAF    = 1 << 2
@@ -280,25 +278,25 @@ const (
 	C_REG
 	C_FREG
 	C_FCREG
-	C_MREG /* special processor register */
-	C_WREG /* MSA registers */
+	C_MREG 
+	C_WREG 
 	C_HI
 	C_LO
 	C_ZCON
-	C_SCON /* 16 bit signed */
-	C_UCON /* 32 bit signed, low 16 bits 0 */
+	C_SCON 
+	C_UCON 
 	C_ADD0CON
 	C_AND0CON
-	C_ADDCON /* -0x8000 <= v < 0 */
-	C_ANDCON /* 0 < v <= 0xFFFF */
-	C_LCON   /* other 32 */
-	C_DCON   /* other 64 (could subdivide further) */
-	C_SACON  /* $n(REG) where n <= int16 */
+	C_ADDCON 
+	C_ANDCON 
+	C_LCON   
+	C_DCON   
+	C_SACON  
 	C_SECON
-	C_LACON /* $n(REG) where int16 < n <= int32 */
+	C_LACON 
 	C_LECON
-	C_DACON /* $n(REG) where int32 < n */
-	C_STCON /* $tlsvar */
+	C_DACON 
+	C_STCON 
 	C_SBRA
 	C_LBRA
 	C_SAUTO
@@ -313,7 +311,7 @@ const (
 	C_TLS
 	C_TEXTSIZE
 
-	C_NCLASS /* must be the last */
+	C_NCLASS 
 )
 
 const (
@@ -384,7 +382,7 @@ const (
 	ANEGF
 	ANEGW
 	ANEGV
-	ANOOP // hardware nop
+	ANOOP 
 	ANOR
 	AOR
 	AREM
@@ -415,7 +413,7 @@ const (
 	AWORD
 	AXOR
 
-	/* 64-bit */
+	
 	AMOVV
 	AMOVVL
 	AMOVVR
@@ -433,7 +431,7 @@ const (
 	ASUBV
 	ASUBVU
 
-	/* 64-bit FP */
+	
 	ATRUNCFV
 	ATRUNCDV
 	ATRUNCFW
@@ -444,7 +442,7 @@ const (
 	AMOVVF
 	AMOVVD
 
-	/* MSA */
+	
 	AVMOVB
 	AVMOVH
 	AVMOVW
@@ -452,17 +450,17 @@ const (
 
 	ALAST
 
-	// aliases
+	
 	AJMP = obj.AJMP
 	AJAL = obj.ACALL
 	ARET = obj.ARET
 )
 
 func init() {
-	// The asm encoder generally assumes that the lowest 5 bits of the
-	// REG_XX constants match the machine instruction encoding, i.e.
-	// the lowest 5 bits is the register number.
-	// Check this here.
+	
+	
+	
+	
 	if REG_R0%32 != 0 {
 		panic("REG_R0 is not a multiple of 32")
 	}

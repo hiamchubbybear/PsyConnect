@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package cpu
 
@@ -9,7 +9,7 @@ import (
 	"syscall"
 )
 
-// HWCAP/HWCAP2 bits. These are exposed by Linux.
+
 const (
 	hwcap_FP       = 1 << 0
 	hwcap_ASIMD    = 1 << 1
@@ -41,11 +41,11 @@ const (
 	hwcap2_I8MM = 1 << 13
 )
 
-// linuxKernelCanEmulateCPUID reports whether we're running
-// on Linux 4.11+. Ideally we'd like to ask the question about
-// whether the current kernel contains
-// https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=77c97b4ee21290f5f083173d957843b615abbff2
-// but the version number will have to do.
+
+
+
+
+
 func linuxKernelCanEmulateCPUID() bool {
 	var un syscall.Utsname
 	syscall.Uname(&un)
@@ -62,19 +62,19 @@ func linuxKernelCanEmulateCPUID() bool {
 
 func doinit() {
 	if err := readHWCAP(); err != nil {
-		// We failed to read /proc/self/auxv. This can happen if the binary has
-		// been given extra capabilities(7) with /bin/setcap.
-		//
-		// When this happens, we have two options. If the Linux kernel is new
-		// enough (4.11+), we can read the arm64 registers directly which'll
-		// trap into the kernel and then return back to userspace.
-		//
-		// But on older kernels, such as Linux 4.4.180 as used on many Synology
-		// devices, calling readARM64Registers (specifically getisar0) will
-		// cause a SIGILL and we'll die. So for older kernels, parse /proc/cpuinfo
-		// instead.
-		//
-		// See golang/go#57336.
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		if linuxKernelCanEmulateCPUID() {
 			readARM64Registers()
 		} else {
@@ -83,7 +83,7 @@ func doinit() {
 		return
 	}
 
-	// HWCAP feature bits
+	
 	ARM64.HasFP = isSet(hwCap, hwcap_FP)
 	ARM64.HasASIMD = isSet(hwCap, hwcap_ASIMD)
 	ARM64.HasEVTSTRM = isSet(hwCap, hwcap_EVTSTRM)
@@ -110,7 +110,7 @@ func doinit() {
 	ARM64.HasASIMDFHM = isSet(hwCap, hwcap_ASIMDFHM)
 	ARM64.HasDIT = isSet(hwCap, hwcap_DIT)
 
-	// HWCAP2 feature bits
+	
 	ARM64.HasSVE2 = isSet(hwCap2, hwcap2_SVE2)
 	ARM64.HasI8MM = isSet(hwCap2, hwcap2_I8MM)
 }

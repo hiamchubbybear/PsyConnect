@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package proto
 
@@ -11,22 +11,22 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 )
 
-// Size returns the size in bytes of the wire-format encoding of m.
-//
-// Note that Size might return more bytes than Marshal will write in the case of
-// lazily decoded messages that arrive in non-minimal wire format: see
-// https://protobuf.dev/reference/go/size/ for more details.
+
+
+
+
+
 func Size(m Message) int {
 	return MarshalOptions{}.Size(m)
 }
 
-// Size returns the size in bytes of the wire-format encoding of m.
-//
-// Note that Size might return more bytes than Marshal will write in the case of
-// lazily decoded messages that arrive in non-minimal wire format: see
-// https://protobuf.dev/reference/go/size/ for more details.
+
+
+
+
+
 func (o MarshalOptions) Size(m Message) int {
-	// Treat a nil message interface as an empty message; nothing to output.
+	
 	if m == nil {
 		return 0
 	}
@@ -34,9 +34,9 @@ func (o MarshalOptions) Size(m Message) int {
 	return o.size(m.ProtoReflect())
 }
 
-// size is a centralized function that all size operations go through.
-// For profiling purposes, avoid changing the name of this function or
-// introducing other code paths for size that do not go through this.
+
+
+
 func (o MarshalOptions) size(m protoreflect.Message) (size int) {
 	methods := protoMethods(m)
 	if methods != nil && methods.Size != nil {
@@ -47,8 +47,8 @@ func (o MarshalOptions) size(m protoreflect.Message) (size int) {
 		return out.Size
 	}
 	if methods != nil && methods.Marshal != nil {
-		// This is not efficient, but we don't have any choice.
-		// This case is mainly used for legacy types with a Marshal method.
+		
+		
 		out, _ := methods.Marshal(protoiface.MarshalInput{
 			Message: m,
 			Flags:   o.flags(),

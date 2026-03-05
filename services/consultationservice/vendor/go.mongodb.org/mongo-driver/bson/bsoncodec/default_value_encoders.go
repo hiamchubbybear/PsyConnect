@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsoncodec
 
@@ -56,18 +56,18 @@ func encodeElement(ec EncodeContext, dw bsonrw.DocumentWriter, e primitive.E) er
 	return nil
 }
 
-// DefaultValueEncoders is a namespace type for the default ValueEncoders used
-// when creating a registry.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
+
 type DefaultValueEncoders struct{}
 
-// RegisterDefaultEncoders will register the encoder methods attached to DefaultValueEncoders with
-// the provided RegistryBuilder.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
+
 func (dve DefaultValueEncoders) RegisterDefaultEncoders(rb *RegistryBuilder) {
 	if rb == nil {
 		panic(errors.New("argument to RegisterDefaultEncoders must not be nil"))
@@ -118,10 +118,10 @@ func (dve DefaultValueEncoders) RegisterDefaultEncoders(rb *RegistryBuilder) {
 		RegisterHookEncoder(tProxy, ValueEncoderFunc(dve.ProxyEncodeValue))
 }
 
-// BooleanEncodeValue is the ValueEncoderFunc for bool types.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) BooleanEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Kind() != reflect.Bool {
 		return ValueEncoderError{Name: "BooleanEncodeValue", Kinds: []reflect.Kind{reflect.Bool}, Received: val}
@@ -133,10 +133,10 @@ func fitsIn32Bits(i int64) bool {
 	return math.MinInt32 <= i && i <= math.MaxInt32
 }
 
-// IntEncodeValue is the ValueEncoderFunc for int types.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) IntEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	switch val.Kind() {
 	case reflect.Int8, reflect.Int16, reflect.Int32:
@@ -162,9 +162,9 @@ func (dve DefaultValueEncoders) IntEncodeValue(ec EncodeContext, vw bsonrw.Value
 	}
 }
 
-// UintEncodeValue is the ValueEncoderFunc for uint types.
-//
-// Deprecated: UintEncodeValue is not registered by default. Use UintCodec.EncodeValue instead.
+
+
+
 func (dve DefaultValueEncoders) UintEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	switch val.Kind() {
 	case reflect.Uint8, reflect.Uint16:
@@ -187,10 +187,10 @@ func (dve DefaultValueEncoders) UintEncodeValue(ec EncodeContext, vw bsonrw.Valu
 	}
 }
 
-// FloatEncodeValue is the ValueEncoderFunc for float types.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) FloatEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	switch val.Kind() {
 	case reflect.Float32, reflect.Float64:
@@ -200,9 +200,9 @@ func (dve DefaultValueEncoders) FloatEncodeValue(_ EncodeContext, vw bsonrw.Valu
 	return ValueEncoderError{Name: "FloatEncodeValue", Kinds: []reflect.Kind{reflect.Float32, reflect.Float64}, Received: val}
 }
 
-// StringEncodeValue is the ValueEncoderFunc for string types.
-//
-// Deprecated: StringEncodeValue is not registered by default. Use StringCodec.EncodeValue instead.
+
+
+
 func (dve DefaultValueEncoders) StringEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if val.Kind() != reflect.String {
 		return ValueEncoderError{
@@ -215,10 +215,10 @@ func (dve DefaultValueEncoders) StringEncodeValue(_ EncodeContext, vw bsonrw.Val
 	return vw.WriteString(val.String())
 }
 
-// ObjectIDEncodeValue is the ValueEncoderFunc for primitive.ObjectID.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) ObjectIDEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tOID {
 		return ValueEncoderError{Name: "ObjectIDEncodeValue", Types: []reflect.Type{tOID}, Received: val}
@@ -226,10 +226,10 @@ func (dve DefaultValueEncoders) ObjectIDEncodeValue(_ EncodeContext, vw bsonrw.V
 	return vw.WriteObjectID(val.Interface().(primitive.ObjectID))
 }
 
-// Decimal128EncodeValue is the ValueEncoderFunc for primitive.Decimal128.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) Decimal128EncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tDecimal {
 		return ValueEncoderError{Name: "Decimal128EncodeValue", Types: []reflect.Type{tDecimal}, Received: val}
@@ -237,17 +237,17 @@ func (dve DefaultValueEncoders) Decimal128EncodeValue(_ EncodeContext, vw bsonrw
 	return vw.WriteDecimal128(val.Interface().(primitive.Decimal128))
 }
 
-// JSONNumberEncodeValue is the ValueEncoderFunc for json.Number.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) JSONNumberEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tJSONNumber {
 		return ValueEncoderError{Name: "JSONNumberEncodeValue", Types: []reflect.Type{tJSONNumber}, Received: val}
 	}
 	jsnum := val.Interface().(json.Number)
 
-	// Attempt int first, then float64
+	
 	if i64, err := jsnum.Int64(); err == nil {
 		return dve.IntEncodeValue(ec, vw, reflect.ValueOf(i64))
 	}
@@ -260,10 +260,10 @@ func (dve DefaultValueEncoders) JSONNumberEncodeValue(ec EncodeContext, vw bsonr
 	return dve.FloatEncodeValue(ec, vw, reflect.ValueOf(f64))
 }
 
-// URLEncodeValue is the ValueEncoderFunc for url.URL.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) URLEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tURL {
 		return ValueEncoderError{Name: "URLEncodeValue", Types: []reflect.Type{tURL}, Received: val}
@@ -272,9 +272,9 @@ func (dve DefaultValueEncoders) URLEncodeValue(_ EncodeContext, vw bsonrw.ValueW
 	return vw.WriteString(u.String())
 }
 
-// TimeEncodeValue is the ValueEncoderFunc for time.TIme.
-//
-// Deprecated: TimeEncodeValue is not registered by default. Use TimeCodec.EncodeValue instead.
+
+
+
 func (dve DefaultValueEncoders) TimeEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tTime {
 		return ValueEncoderError{Name: "TimeEncodeValue", Types: []reflect.Type{tTime}, Received: val}
@@ -284,9 +284,9 @@ func (dve DefaultValueEncoders) TimeEncodeValue(_ EncodeContext, vw bsonrw.Value
 	return vw.WriteDateTime(int64(dt))
 }
 
-// ByteSliceEncodeValue is the ValueEncoderFunc for []byte.
-//
-// Deprecated: ByteSliceEncodeValue is not registered by default. Use ByteSliceCodec.EncodeValue instead.
+
+
+
 func (dve DefaultValueEncoders) ByteSliceEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tByteSlice {
 		return ValueEncoderError{Name: "ByteSliceEncodeValue", Types: []reflect.Type{tByteSlice}, Received: val}
@@ -297,20 +297,20 @@ func (dve DefaultValueEncoders) ByteSliceEncodeValue(_ EncodeContext, vw bsonrw.
 	return vw.WriteBinary(val.Interface().([]byte))
 }
 
-// MapEncodeValue is the ValueEncoderFunc for map[string]* types.
-//
-// Deprecated: MapEncodeValue is not registered by default. Use MapCodec.EncodeValue instead.
+
+
+
 func (dve DefaultValueEncoders) MapEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Kind() != reflect.Map || val.Type().Key().Kind() != reflect.String {
 		return ValueEncoderError{Name: "MapEncodeValue", Kinds: []reflect.Kind{reflect.Map}, Received: val}
 	}
 
 	if val.IsNil() {
-		// If we have a nill map but we can't WriteNull, that means we're probably trying to encode
-		// to a TopLevel document. We can't currently tell if this is what actually happened, but if
-		// there's a deeper underlying problem, the error will also be returned from WriteDocument,
-		// so just continue. The operations on a map reflection value are valid, so we can call
-		// MapKeys within mapEncodeValue without a problem.
+		
+		
+		
+		
+		
 		err := vw.WriteNull()
 		if err == nil {
 			return nil
@@ -325,9 +325,9 @@ func (dve DefaultValueEncoders) MapEncodeValue(ec EncodeContext, vw bsonrw.Value
 	return dve.mapEncodeValue(ec, dw, val, nil)
 }
 
-// mapEncodeValue handles encoding of the values of a map. The collisionFn returns
-// true if the provided key exists, this is mainly used for inline maps in the
-// struct codec.
+
+
+
 func (dve DefaultValueEncoders) mapEncodeValue(ec EncodeContext, dw bsonrw.DocumentWriter, val reflect.Value, collisionFn func(string) bool) error {
 
 	elemType := val.Type().Elem()
@@ -369,16 +369,16 @@ func (dve DefaultValueEncoders) mapEncodeValue(ec EncodeContext, dw bsonrw.Docum
 	return dw.WriteDocumentEnd()
 }
 
-// ArrayEncodeValue is the ValueEncoderFunc for array types.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) ArrayEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Kind() != reflect.Array {
 		return ValueEncoderError{Name: "ArrayEncodeValue", Kinds: []reflect.Kind{reflect.Array}, Received: val}
 	}
 
-	// If we have a []primitive.E we want to treat it as a document instead of as an array.
+	
 	if val.Type().Elem() == tE {
 		dw, err := vw.WriteDocument()
 		if err != nil {
@@ -396,7 +396,7 @@ func (dve DefaultValueEncoders) ArrayEncodeValue(ec EncodeContext, vw bsonrw.Val
 		return dw.WriteDocumentEnd()
 	}
 
-	// If we have a []byte we want to treat it as a binary instead of as an array.
+	
 	if val.Type().Elem() == tByte {
 		var byteSlice []byte
 		for idx := 0; idx < val.Len(); idx++ {
@@ -443,9 +443,9 @@ func (dve DefaultValueEncoders) ArrayEncodeValue(ec EncodeContext, vw bsonrw.Val
 	return aw.WriteArrayEnd()
 }
 
-// SliceEncodeValue is the ValueEncoderFunc for slice types.
-//
-// Deprecated: SliceEncodeValue is not registered by default. Use SliceCodec.EncodeValue instead.
+
+
+
 func (dve DefaultValueEncoders) SliceEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Kind() != reflect.Slice {
 		return ValueEncoderError{Name: "SliceEncodeValue", Kinds: []reflect.Kind{reflect.Slice}, Received: val}
@@ -455,7 +455,7 @@ func (dve DefaultValueEncoders) SliceEncodeValue(ec EncodeContext, vw bsonrw.Val
 		return vw.WriteNull()
 	}
 
-	// If we have a []primitive.E we want to treat it as a document instead of as an array.
+	
 	if val.Type().ConvertibleTo(tD) {
 		d := val.Convert(tD).Interface().(primitive.D)
 
@@ -525,9 +525,9 @@ func (dve DefaultValueEncoders) lookupElementEncoder(ec EncodeContext, origEncod
 	return currEncoder, currVal, err
 }
 
-// EmptyInterfaceEncodeValue is the ValueEncoderFunc for interface{}.
-//
-// Deprecated: EmptyInterfaceEncodeValue is not registered by default. Use EmptyInterfaceCodec.EncodeValue instead.
+
+
+
 func (dve DefaultValueEncoders) EmptyInterfaceEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tEmpty {
 		return ValueEncoderError{Name: "EmptyInterfaceEncodeValue", Types: []reflect.Type{tEmpty}, Received: val}
@@ -544,17 +544,17 @@ func (dve DefaultValueEncoders) EmptyInterfaceEncodeValue(ec EncodeContext, vw b
 	return encoder.EncodeValue(ec, vw, val.Elem())
 }
 
-// ValueMarshalerEncodeValue is the ValueEncoderFunc for ValueMarshaler implementations.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) ValueMarshalerEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
-	// Either val or a pointer to val must implement ValueMarshaler
+	
 	switch {
 	case !val.IsValid():
 		return ValueEncoderError{Name: "ValueMarshalerEncodeValue", Types: []reflect.Type{tValueMarshaler}, Received: val}
 	case val.Type().Implements(tValueMarshaler):
-		// If ValueMarshaler is implemented on a concrete type, make sure that val isn't a nil pointer
+		
 		if isImplementationNil(val, tValueMarshaler) {
 			return vw.WriteNull()
 		}
@@ -575,17 +575,17 @@ func (dve DefaultValueEncoders) ValueMarshalerEncodeValue(_ EncodeContext, vw bs
 	return bsonrw.Copier{}.CopyValueFromBytes(vw, t, data)
 }
 
-// MarshalerEncodeValue is the ValueEncoderFunc for Marshaler implementations.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) MarshalerEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
-	// Either val or a pointer to val must implement Marshaler
+	
 	switch {
 	case !val.IsValid():
 		return ValueEncoderError{Name: "MarshalerEncodeValue", Types: []reflect.Type{tMarshaler}, Received: val}
 	case val.Type().Implements(tMarshaler):
-		// If Marshaler is implemented on a concrete type, make sure that val isn't a nil pointer
+		
 		if isImplementationNil(val, tMarshaler) {
 			return vw.WriteNull()
 		}
@@ -606,17 +606,17 @@ func (dve DefaultValueEncoders) MarshalerEncodeValue(_ EncodeContext, vw bsonrw.
 	return bsonrw.Copier{}.CopyValueFromBytes(vw, bsontype.EmbeddedDocument, data)
 }
 
-// ProxyEncodeValue is the ValueEncoderFunc for Proxy implementations.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) ProxyEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
-	// Either val or a pointer to val must implement Proxy
+	
 	switch {
 	case !val.IsValid():
 		return ValueEncoderError{Name: "ProxyEncodeValue", Types: []reflect.Type{tProxy}, Received: val}
 	case val.Type().Implements(tProxy):
-		// If Proxy is implemented on a concrete type, make sure that val isn't a nil pointer
+		
 		if isImplementationNil(val, tProxy) {
 			return vw.WriteNull()
 		}
@@ -653,10 +653,10 @@ func (dve DefaultValueEncoders) ProxyEncodeValue(ec EncodeContext, vw bsonrw.Val
 	return encoder.EncodeValue(ec, vw, vv)
 }
 
-// JavaScriptEncodeValue is the ValueEncoderFunc for the primitive.JavaScript type.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) JavaScriptEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tJavaScript {
 		return ValueEncoderError{Name: "JavaScriptEncodeValue", Types: []reflect.Type{tJavaScript}, Received: val}
@@ -665,10 +665,10 @@ func (DefaultValueEncoders) JavaScriptEncodeValue(_ EncodeContext, vw bsonrw.Val
 	return vw.WriteJavascript(val.String())
 }
 
-// SymbolEncodeValue is the ValueEncoderFunc for the primitive.Symbol type.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) SymbolEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tSymbol {
 		return ValueEncoderError{Name: "SymbolEncodeValue", Types: []reflect.Type{tSymbol}, Received: val}
@@ -677,10 +677,10 @@ func (DefaultValueEncoders) SymbolEncodeValue(_ EncodeContext, vw bsonrw.ValueWr
 	return vw.WriteSymbol(val.String())
 }
 
-// BinaryEncodeValue is the ValueEncoderFunc for Binary.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) BinaryEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tBinary {
 		return ValueEncoderError{Name: "BinaryEncodeValue", Types: []reflect.Type{tBinary}, Received: val}
@@ -690,10 +690,10 @@ func (DefaultValueEncoders) BinaryEncodeValue(_ EncodeContext, vw bsonrw.ValueWr
 	return vw.WriteBinaryWithSubtype(b.Data, b.Subtype)
 }
 
-// UndefinedEncodeValue is the ValueEncoderFunc for Undefined.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) UndefinedEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tUndefined {
 		return ValueEncoderError{Name: "UndefinedEncodeValue", Types: []reflect.Type{tUndefined}, Received: val}
@@ -702,10 +702,10 @@ func (DefaultValueEncoders) UndefinedEncodeValue(_ EncodeContext, vw bsonrw.Valu
 	return vw.WriteUndefined()
 }
 
-// DateTimeEncodeValue is the ValueEncoderFunc for DateTime.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) DateTimeEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tDateTime {
 		return ValueEncoderError{Name: "DateTimeEncodeValue", Types: []reflect.Type{tDateTime}, Received: val}
@@ -714,10 +714,10 @@ func (DefaultValueEncoders) DateTimeEncodeValue(_ EncodeContext, vw bsonrw.Value
 	return vw.WriteDateTime(val.Int())
 }
 
-// NullEncodeValue is the ValueEncoderFunc for Null.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) NullEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tNull {
 		return ValueEncoderError{Name: "NullEncodeValue", Types: []reflect.Type{tNull}, Received: val}
@@ -726,10 +726,10 @@ func (DefaultValueEncoders) NullEncodeValue(_ EncodeContext, vw bsonrw.ValueWrit
 	return vw.WriteNull()
 }
 
-// RegexEncodeValue is the ValueEncoderFunc for Regex.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) RegexEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tRegex {
 		return ValueEncoderError{Name: "RegexEncodeValue", Types: []reflect.Type{tRegex}, Received: val}
@@ -740,10 +740,10 @@ func (DefaultValueEncoders) RegexEncodeValue(_ EncodeContext, vw bsonrw.ValueWri
 	return vw.WriteRegex(regex.Pattern, regex.Options)
 }
 
-// DBPointerEncodeValue is the ValueEncoderFunc for DBPointer.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) DBPointerEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tDBPointer {
 		return ValueEncoderError{Name: "DBPointerEncodeValue", Types: []reflect.Type{tDBPointer}, Received: val}
@@ -754,10 +754,10 @@ func (DefaultValueEncoders) DBPointerEncodeValue(_ EncodeContext, vw bsonrw.Valu
 	return vw.WriteDBPointer(dbp.DB, dbp.Pointer)
 }
 
-// TimestampEncodeValue is the ValueEncoderFunc for Timestamp.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) TimestampEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tTimestamp {
 		return ValueEncoderError{Name: "TimestampEncodeValue", Types: []reflect.Type{tTimestamp}, Received: val}
@@ -768,10 +768,10 @@ func (DefaultValueEncoders) TimestampEncodeValue(_ EncodeContext, vw bsonrw.Valu
 	return vw.WriteTimestamp(ts.T, ts.I)
 }
 
-// MinKeyEncodeValue is the ValueEncoderFunc for MinKey.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) MinKeyEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tMinKey {
 		return ValueEncoderError{Name: "MinKeyEncodeValue", Types: []reflect.Type{tMinKey}, Received: val}
@@ -780,10 +780,10 @@ func (DefaultValueEncoders) MinKeyEncodeValue(_ EncodeContext, vw bsonrw.ValueWr
 	return vw.WriteMinKey()
 }
 
-// MaxKeyEncodeValue is the ValueEncoderFunc for MaxKey.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) MaxKeyEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tMaxKey {
 		return ValueEncoderError{Name: "MaxKeyEncodeValue", Types: []reflect.Type{tMaxKey}, Received: val}
@@ -792,10 +792,10 @@ func (DefaultValueEncoders) MaxKeyEncodeValue(_ EncodeContext, vw bsonrw.ValueWr
 	return vw.WriteMaxKey()
 }
 
-// CoreDocumentEncodeValue is the ValueEncoderFunc for bsoncore.Document.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (DefaultValueEncoders) CoreDocumentEncodeValue(_ EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tCoreDocument {
 		return ValueEncoderError{Name: "CoreDocumentEncodeValue", Types: []reflect.Type{tCoreDocument}, Received: val}
@@ -806,10 +806,10 @@ func (DefaultValueEncoders) CoreDocumentEncodeValue(_ EncodeContext, vw bsonrw.V
 	return bsonrw.Copier{}.CopyDocumentFromBytes(vw, cdoc)
 }
 
-// CodeWithScopeEncodeValue is the ValueEncoderFunc for CodeWithScope.
-//
-// Deprecated: Use [go.mongodb.org/mongo-driver/bson.NewRegistry] to get a registry with all default
-// value encoders registered.
+
+
+
+
 func (dve DefaultValueEncoders) CodeWithScopeEncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tCodeWithScope {
 		return ValueEncoderError{Name: "CodeWithScopeEncodeValue", Types: []reflect.Type{tCodeWithScope}, Received: val}
@@ -846,7 +846,7 @@ func (dve DefaultValueEncoders) CodeWithScopeEncodeValue(ec EncodeContext, vw bs
 	return dw.WriteDocumentEnd()
 }
 
-// isImplementationNil returns if val is a nil pointer and inter is implemented on a concrete type
+
 func isImplementationNil(val reflect.Value, inter reflect.Type) bool {
 	vt := val.Type()
 	for vt.Kind() == reflect.Ptr {

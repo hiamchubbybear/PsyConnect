@@ -45,19 +45,19 @@ type StreamCmdable interface {
 	XInfoConsumers(ctx context.Context, key string, group string) *XInfoConsumersCmd
 }
 
-// XAddArgs accepts values in the following formats:
-//   - XAddArgs.Values = []interface{}{"key1", "value1", "key2", "value2"}
-//   - XAddArgs.Values = []string("key1", "value1", "key2", "value2")
-//   - XAddArgs.Values = map[string]interface{}{"key1": "value1", "key2": "value2"}
-//
-// Note that map will not preserve the order of key-value pairs.
-// MaxLen/MaxLenApprox and MinID are in conflict, only one of them can be used.
+
+
+
+
+
+
+
 type XAddArgs struct {
 	Stream     string
 	NoMkStream bool
-	MaxLen     int64 // MAXLEN N
+	MaxLen     int64 
 	MinID      string
-	// Approx causes MaxLen and MinID to use "~" matcher (instead of "=").
+	
 	Approx bool
 	Limit  int64
 	Mode   string
@@ -166,7 +166,7 @@ func (c cmdable) XRevRangeN(ctx context.Context, stream, start, stop string, cou
 }
 
 type XReadArgs struct {
-	Streams []string // list of streams and ids, e.g. stream1 stream2 id1 id2
+	Streams []string 
 	Count   int64
 	Block   time.Duration
 	ID      string
@@ -259,7 +259,7 @@ func (c cmdable) XGroupDelConsumer(ctx context.Context, stream, group, consumer 
 type XReadGroupArgs struct {
 	Group    string
 	Consumer string
-	Streams  []string // list of streams and ids, e.g. stream1 stream2 id1 id2
+	Streams  []string 
 	Count    int64
 	Block    time.Duration
 	NoAck    bool
@@ -407,15 +407,15 @@ func xClaimArgs(a *XClaimArgs) []interface{} {
 	return args
 }
 
-// TODO: refactor xTrim, xTrimMode and the wrappers over the functions
 
-// xTrim If approx is true, add the "~" parameter, otherwise it is the default "=" (redis default).
-// example:
-//
-//	XTRIM key MAXLEN/MINID threshold LIMIT limit.
-//	XTRIM key MAXLEN/MINID ~ threshold LIMIT limit.
-//
-// The redis-server version is lower than 6.2, please set limit to 0.
+
+
+
+
+
+
+
+
 func (c cmdable) xTrim(
 	ctx context.Context, key, strategy string,
 	approx bool, threshold interface{}, limit int64,
@@ -434,8 +434,8 @@ func (c cmdable) xTrim(
 	return cmd
 }
 
-// XTrimMaxLen No `~` rules are used, `limit` cannot be used.
-// cmd: XTRIM key MAXLEN maxLen
+
+
 func (c cmdable) XTrimMaxLen(ctx context.Context, key string, maxLen int64) *IntCmd {
 	return c.xTrim(ctx, key, "maxlen", false, maxLen, 0)
 }
@@ -506,8 +506,8 @@ func (c cmdable) XInfoStream(ctx context.Context, key string) *XInfoStreamCmd {
 	return cmd
 }
 
-// XInfoStreamFull XINFO STREAM FULL [COUNT count]
-// redis-server >= 6.0.
+
+
 func (c cmdable) XInfoStreamFull(ctx context.Context, key string, count int) *XInfoStreamFullCmd {
 	args := make([]interface{}, 0, 6)
 	args = append(args, "xinfo", "stream", key, "full")

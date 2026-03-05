@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { forkJoin, map } from 'rxjs';
+import { HeaderStateService } from '../../components/header/header-state';
 import { TherapistService } from '../../services/consultation/therapist.service';
 import { GroupService } from '../../services/group/group.service';
 import { NewsfeedService } from '../../services/newsfeed/newsfeed.service';
@@ -41,6 +42,7 @@ interface RecentSearch {
 })
 export class SearchComponent implements OnInit {
   @ViewChild('searchWrapper') searchWrapper!: ElementRef;
+  @ViewChild('searchInput') searchInput!: ElementRef;
 
   query = '';
   isDropdownOpen = false;
@@ -65,11 +67,20 @@ export class SearchComponent implements OnInit {
     private therapistService: TherapistService,
     private groupService: GroupService,
     private router: Router,
+    private headerState: HeaderStateService,
   ) {}
 
   ngOnInit() {
     this.loadRecentSearches();
     this.loadPopularTags();
+
+    
+    this.isDropdownOpen = true;
+    setTimeout(() => {
+      if (this.searchInput) {
+        this.searchInput.nativeElement.focus();
+      }
+    }, 100);
   }
 
   @HostListener('document:click', ['$event'])
@@ -78,7 +89,7 @@ export class SearchComponent implements OnInit {
       this.searchWrapper &&
       !this.searchWrapper.nativeElement.contains(event.target)
     ) {
-      this.isDropdownOpen = false;
+      this.closeDropdown();
     }
   }
 
@@ -98,6 +109,12 @@ export class SearchComponent implements OnInit {
 
   openDropdown() {
     this.isDropdownOpen = true;
+    this.headerState.setSearchOpen(true);
+  }
+
+  closeDropdown() {
+    this.isDropdownOpen = false;
+    this.headerState.setSearchOpen(false);
   }
 
   selectCategory(category: Category) {
@@ -137,9 +154,9 @@ export class SearchComponent implements OnInit {
     const searches: any = {};
 
     if (!this.selectedCategory || this.selectedCategory === 'posts') {
-      searches.posts = this.newsfeedService.searchPosts(this.query, 8, 0).pipe(
+      searches.posts = this.newsfeedService.searchPosts(this.query, 10, 0).pipe(
         map((posts) =>
-          (posts || []).map((p) => ({
+          (posts || []).slice(0, 10).map((p: any) => ({
             type: 'post' as const,
             id: p.id,
             title: p.title || 'Post',
@@ -153,27 +170,29 @@ export class SearchComponent implements OnInit {
 
     if (!this.selectedCategory || this.selectedCategory === 'people') {
       searches.users = this.profileService
-        .searchProfiles(this.query, 0, 8)
+        .searchProfiles(this.query, 0, 10)
         .pipe(
           map((res) =>
-            (res?.data || []).map((p: any) => ({
-              type: 'user' as const,
-              id: p.profileId,
-              title: `${p.firstName} ${p.lastName}`.trim() || 'User',
-              subtitle: p.address || 'Member',
-              image: p.avatarUri,
-            })),
+            (res?.data?.content || res?.data || [])
+              .slice(0, 10)
+              .map((p: any) => ({
+                type: 'user' as const,
+                id: p.profileId,
+                title: `${p.firstName} ${p.lastName}`.trim() || 'User',
+                subtitle: p.address || 'Member',
+                image: p.avatarUri,
+              })),
           ),
         );
     }
 
     if (!this.selectedCategory || this.selectedCategory === 'therapists') {
       searches.therapists = this.therapistService
-        .searchTherapists(this.query, 8, 0)
+        .searchTherapists(this.query, 10, 0)
         .pipe(
           map((res) => {
             const list = res?.data || res || [];
-            return list.map((t: any) => ({
+            return list.slice(0, 10).map((t: any) => ({
               type: 'therapist' as const,
               id: t.profile_id,
               title: t.name || 'Therapist',
@@ -187,10 +206,10 @@ export class SearchComponent implements OnInit {
 
     if (!this.selectedCategory || this.selectedCategory === 'groups') {
       searches.groups = this.groupService
-        .getGroups(undefined, 8, 0, this.query)
+        .getGroups(undefined, 10, 0, this.query)
         .pipe(
           map((groups) =>
-            (groups || []).map((g) => ({
+            (groups || []).slice(0, 10).map((g) => ({
               type: 'group' as const,
               id: g.id,
               title: g.name,
@@ -211,8 +230,10 @@ export class SearchComponent implements OnInit {
         ];
         this.loading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('[SearchComponent] Search failed:', err);
         this.loading = false;
+        this.hasSearched = false;
       },
     });
   }

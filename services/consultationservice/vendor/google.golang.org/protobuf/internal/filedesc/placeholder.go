@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package filedesc
 
@@ -27,7 +27,7 @@ var (
 	emptyServices   = new(Services)
 )
 
-// PlaceholderFile is a placeholder, representing only the file path.
+
 type PlaceholderFile string
 
 func (f PlaceholderFile) ParentFile() protoreflect.FileDescriptor       { return f }
@@ -49,7 +49,7 @@ func (f PlaceholderFile) SourceLocations() protoreflect.SourceLocations { return
 func (f PlaceholderFile) ProtoType(protoreflect.FileDescriptor)         { return }
 func (f PlaceholderFile) ProtoInternal(pragma.DoNotImplement)           { return }
 
-// PlaceholderEnum is a placeholder, representing only the full name.
+
 type PlaceholderEnum protoreflect.FullName
 
 func (e PlaceholderEnum) ParentFile() protoreflect.FileDescriptor   { return nil }
@@ -67,7 +67,7 @@ func (e PlaceholderEnum) IsClosed() bool                            { return fal
 func (e PlaceholderEnum) ProtoType(protoreflect.EnumDescriptor)     { return }
 func (e PlaceholderEnum) ProtoInternal(pragma.DoNotImplement)       { return }
 
-// PlaceholderEnumValue is a placeholder, representing only the full name.
+
 type PlaceholderEnumValue protoreflect.FullName
 
 func (e PlaceholderEnumValue) ParentFile() protoreflect.FileDescriptor    { return nil }
@@ -82,7 +82,7 @@ func (e PlaceholderEnumValue) Number() protoreflect.EnumNumber            { retu
 func (e PlaceholderEnumValue) ProtoType(protoreflect.EnumValueDescriptor) { return }
 func (e PlaceholderEnumValue) ProtoInternal(pragma.DoNotImplement)        { return }
 
-// PlaceholderMessage is a placeholder, representing only the full name.
+
 type PlaceholderMessage protoreflect.FullName
 
 func (m PlaceholderMessage) ParentFile() protoreflect.FileDescriptor    { return nil }

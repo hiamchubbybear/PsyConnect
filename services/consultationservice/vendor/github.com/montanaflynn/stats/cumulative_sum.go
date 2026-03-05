@@ -1,6 +1,6 @@
 package stats
 
-// CumulativeSum calculates the cumulative sum of the input slice
+
 func CumulativeSum(input Float64Data) ([]float64, error) {
 
 	if input.Len() == 0 {

@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsoncodec
 
@@ -15,46 +15,46 @@ import (
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
-// ByteSliceCodec is the Codec used for []byte values.
-//
-// Deprecated: ByteSliceCodec will not be directly configurable in Go Driver
-// 2.0. To configure the byte slice encode and decode behavior, use the
-// configuration methods on a [go.mongodb.org/mongo-driver/bson.Encoder] or
-// [go.mongodb.org/mongo-driver/bson.Decoder]. To configure the byte slice
-// encode and decode behavior for a mongo.Client, use
-// [go.mongodb.org/mongo-driver/mongo/options.ClientOptions.SetBSONOptions].
-//
-// For example, to configure a mongo.Client to encode nil byte slices as empty
-// BSON binary values, use:
-//
-//	opt := options.Client().SetBSONOptions(&options.BSONOptions{
-//	    NilByteSliceAsEmpty: true,
-//	})
-//
-// See the deprecation notice for each field in ByteSliceCodec for the
-// corresponding settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type ByteSliceCodec struct {
-	// EncodeNilAsEmpty causes EncodeValue to marshal nil Go byte slices as empty BSON binary values
-	// instead of BSON null.
-	//
-	// Deprecated: Use bson.Encoder.NilByteSliceAsEmpty or options.BSONOptions.NilByteSliceAsEmpty
-	// instead.
+	
+	
+	
+	
+	
 	EncodeNilAsEmpty bool
 }
 
 var (
 	defaultByteSliceCodec = NewByteSliceCodec()
 
-	// Assert that defaultByteSliceCodec satisfies the typeDecoder interface, which allows it to be
-	// used by collection type decoders (e.g. map, slice, etc) to set individual values in a
-	// collection.
+	
+	
+	
 	_ typeDecoder = defaultByteSliceCodec
 )
 
-// NewByteSliceCodec returns a ByteSliceCodec with options opts.
-//
-// Deprecated: NewByteSliceCodec will not be available in Go Driver 2.0. See
-// [ByteSliceCodec] for more details.
+
+
+
+
 func NewByteSliceCodec(opts ...*bsonoptions.ByteSliceCodecOptions) *ByteSliceCodec {
 	byteSliceOpt := bsonoptions.MergeByteSliceCodecOptions(opts...)
 	codec := ByteSliceCodec{}
@@ -64,7 +64,7 @@ func NewByteSliceCodec(opts ...*bsonoptions.ByteSliceCodecOptions) *ByteSliceCod
 	return &codec
 }
 
-// EncodeValue is the ValueEncoder for []byte.
+
 func (bsc *ByteSliceCodec) EncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tByteSlice {
 		return ValueEncoderError{Name: "ByteSliceEncodeValue", Types: []reflect.Type{tByteSlice}, Received: val}
@@ -122,7 +122,7 @@ func (bsc *ByteSliceCodec) decodeType(_ DecodeContext, vr bsonrw.ValueReader, t 
 	return reflect.ValueOf(data), nil
 }
 
-// DecodeValue is the ValueDecoder for []byte.
+
 func (bsc *ByteSliceCodec) DecodeValue(dc DecodeContext, vr bsonrw.ValueReader, val reflect.Value) error {
 	if !val.CanSet() || val.Type() != tByteSlice {
 		return ValueDecoderError{Name: "ByteSliceDecodeValue", Types: []reflect.Type{tByteSlice}, Received: val}

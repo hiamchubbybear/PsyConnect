@@ -14,7 +14,7 @@ type Database struct {
 	DB *gorm.DB
 }
 
-// Notification model
+
 type Notification struct {
 	ID        uint           `gorm:"primaryKey" json:"id"`
 	UserID    string         `gorm:"index;type:varchar(255);not null" json:"userId"`
@@ -28,7 +28,7 @@ type Notification struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
-// FCMToken model
+
 type FCMToken struct {
 	ID        uint           `gorm:"primaryKey" json:"id"`
 	UserID    string         `gorm:"uniqueIndex;type:varchar(255);not null" json:"userId"`
@@ -46,7 +46,7 @@ func NewDatabase(dsn string) (*Database, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	// Auto-migrate models
+	
 	if err := db.AutoMigrate(&Notification{}, &FCMToken{}); err != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
@@ -56,12 +56,12 @@ func NewDatabase(dsn string) (*Database, error) {
 	return &Database{DB: db}, nil
 }
 
-// SaveNotification creates a new notification
+
 func (d *Database) SaveNotification(notification *Notification) error {
 	return d.DB.Create(notification).Error
 }
 
-// GetNotifications retrieves notifications for a user
+
 func (d *Database) GetNotifications(userID string, limit, offset int) ([]Notification, error) {
 	var notifications []Notification
 	err := d.DB.Where("user_id = ?", userID).
@@ -72,20 +72,20 @@ func (d *Database) GetNotifications(userID string, limit, offset int) ([]Notific
 	return notifications, err
 }
 
-// MarkAsRead marks a notification as read
+
 func (d *Database) MarkAsRead(notificationID uint, userID string) error {
 	return d.DB.Model(&Notification{}).
 		Where("id = ? AND user_id = ?", notificationID, userID).
 		Update("is_read", true).Error
 }
 
-// SaveFCMToken saves or updates FCM token for a user
+
 func (d *Database) SaveFCMToken(userID, token string) error {
 	var fcmToken FCMToken
 	result := d.DB.Where("user_id = ?", userID).First(&fcmToken)
 
 	if result.Error == gorm.ErrRecordNotFound {
-		// Create new token
+		
 		fcmToken = FCMToken{
 			UserID: userID,
 			Token:  token,
@@ -93,12 +93,12 @@ func (d *Database) SaveFCMToken(userID, token string) error {
 		return d.DB.Create(&fcmToken).Error
 	}
 
-	// Update existing token
+	
 	fcmToken.Token = token
 	return d.DB.Save(&fcmToken).Error
 }
 
-// GetFCMToken retrieves FCM token for a user
+
 func (d *Database) GetFCMToken(userID string) (string, error) {
 	var fcmToken FCMToken
 	err := d.DB.Where("user_id = ?", userID).First(&fcmToken).Error
@@ -108,7 +108,7 @@ func (d *Database) GetFCMToken(userID string) (string, error) {
 	return fcmToken.Token, nil
 }
 
-// Close closes the database connection
+
 func (d *Database) Close() error {
 	sqlDB, err := d.DB.DB()
 	if err != nil {

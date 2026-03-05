@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -20,13 +20,13 @@ func (errInvalidUTF8) Error() string     { return "string field contains invalid
 func (errInvalidUTF8) InvalidUTF8() bool { return true }
 func (errInvalidUTF8) Unwrap() error     { return errors.Error }
 
-// initOneofFieldCoders initializes the fast-path functions for the fields in a oneof.
-//
-// For size, marshal, and isInit operations, functions are set only on the first field
-// in the oneof. The functions are called when the oneof is non-nil, and will dispatch
-// to the appropriate field-specific function as necessary.
-//
-// The unmarshal function is set on each field individually as usual.
+
+
+
+
+
+
+
 func (mi *MessageInfo) initOneofFieldCoders(od protoreflect.OneofDescriptor, si structInfo) {
 	fs := si.oneofsByName[od.Name()]
 	ft := fs.Type
@@ -36,12 +36,12 @@ func (mi *MessageInfo) initOneofFieldCoders(od protoreflect.OneofDescriptor, si 
 	for i, lim := 0, fields.Len(); i < lim; i++ {
 		fd := od.Fields().Get(i)
 		num := fd.Number()
-		// Make a copy of the original coderFieldInfo for use in unmarshaling.
-		//
-		// oneofFields[oneofType].funcs.marshal is the field-specific marshal function.
-		//
-		// mi.coderFields[num].marshal is set on only the first field in the oneof,
-		// and dispatches to the field-specific marshaler in oneofFields.
+		
+		
+		
+		
+		
+		
 		cf := *mi.coderFields[num]
 		ot := si.oneofWrappersByNumber[num]
 		cf.ft = ot.Field(0).Type
@@ -51,8 +51,8 @@ func (mi *MessageInfo) initOneofFieldCoders(od protoreflect.OneofDescriptor, si 
 			needIsInit = true
 		}
 		mi.coderFields[num].funcs.unmarshal = func(b []byte, p pointer, wtyp protowire.Type, f *coderFieldInfo, opts unmarshalOptions) (unmarshalOutput, error) {
-			var vw reflect.Value         // pointer to wrapper type
-			vi := p.AsValueOf(ft).Elem() // oneof field value of interface kind
+			var vw reflect.Value         
+			vi := p.AsValueOf(ft).Elem() 
 			if !vi.IsNil() && !vi.Elem().IsNil() && vi.Elem().Elem().Type() == ot {
 				vw = vi.Elem()
 			} else {
@@ -74,7 +74,7 @@ func (mi *MessageInfo) initOneofFieldCoders(od protoreflect.OneofDescriptor, si 
 		if v.IsNil() {
 			return pointer{}, nil
 		}
-		v = v.Elem() // interface -> *struct
+		v = v.Elem() 
 		if v.IsNil() {
 			return pointer{}, nil
 		}
@@ -330,9 +330,9 @@ func sizeGroupType(p pointer, f *coderFieldInfo, opts marshalOptions) int {
 }
 
 func appendGroupType(b []byte, p pointer, f *coderFieldInfo, opts marshalOptions) ([]byte, error) {
-	b = protowire.AppendVarint(b, f.wiretag) // start group
+	b = protowire.AppendVarint(b, f.wiretag) 
 	b, err := f.mi.marshalAppendPointer(b, p.Elem(), opts)
-	b = protowire.AppendVarint(b, f.wiretag+1) // end group
+	b = protowire.AppendVarint(b, f.wiretag+1) 
 	return b, err
 }
 
@@ -351,9 +351,9 @@ func sizeGroup(m proto.Message, tagsize int, opts marshalOptions) int {
 }
 
 func appendGroup(b []byte, m proto.Message, wiretag uint64, opts marshalOptions) ([]byte, error) {
-	b = protowire.AppendVarint(b, wiretag) // start group
+	b = protowire.AppendVarint(b, wiretag) 
 	b, err := opts.Options().MarshalAppend(b, m)
-	b = protowire.AppendVarint(b, wiretag+1) // end group
+	b = protowire.AppendVarint(b, wiretag+1) 
 	return b, err
 }
 
@@ -530,7 +530,7 @@ func isInitMessageSlice(p pointer, goType reflect.Type) error {
 	return nil
 }
 
-// Slices of messages
+
 
 func sizeMessageSliceValue(listv protoreflect.Value, tagsize int, opts marshalOptions) int {
 	mopts := opts.Options()
@@ -622,13 +622,13 @@ func appendGroupSliceValue(b []byte, listv protoreflect.Value, wiretag uint64, o
 	mopts := opts.Options()
 	for i, llen := 0, list.Len(); i < llen; i++ {
 		m := list.Get(i).Message().Interface()
-		b = protowire.AppendVarint(b, wiretag) // start group
+		b = protowire.AppendVarint(b, wiretag) 
 		var err error
 		b, err = mopts.MarshalAppend(b, m)
 		if err != nil {
 			return b, err
 		}
-		b = protowire.AppendVarint(b, wiretag+1) // end group
+		b = protowire.AppendVarint(b, wiretag+1) 
 	}
 	return b, nil
 }
@@ -711,12 +711,12 @@ func appendGroupSlice(b []byte, p pointer, wiretag uint64, messageType reflect.T
 	var err error
 	for _, v := range s {
 		m := asMessage(v.AsValueOf(messageType.Elem()))
-		b = protowire.AppendVarint(b, wiretag) // start group
+		b = protowire.AppendVarint(b, wiretag) 
 		b, err = opts.Options().MarshalAppend(b, m)
 		if err != nil {
 			return b, err
 		}
-		b = protowire.AppendVarint(b, wiretag+1) // end group
+		b = protowire.AppendVarint(b, wiretag+1) 
 	}
 	return b, nil
 }
@@ -756,12 +756,12 @@ func appendGroupSliceInfo(b []byte, p pointer, f *coderFieldInfo, opts marshalOp
 	s := p.PointerSlice()
 	var err error
 	for _, v := range s {
-		b = protowire.AppendVarint(b, f.wiretag) // start group
+		b = protowire.AppendVarint(b, f.wiretag) 
 		b, err = f.mi.marshalAppendPointer(b, v, opts)
 		if err != nil {
 			return b, err
 		}
-		b = protowire.AppendVarint(b, f.wiretag+1) // end group
+		b = protowire.AppendVarint(b, f.wiretag+1) 
 	}
 	return b, nil
 }

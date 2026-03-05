@@ -76,14 +76,14 @@ export class CreatePostComponent implements OnInit {
     if (input.files) {
       const files = Array.from(input.files);
 
-      // Limit to 5 files
+      
       if (this.selectedFiles.length + files.length > 5) {
         this.toastService.error('Error', 'Maximum 5 files allowed');
         return;
       }
 
       files.forEach((file) => {
-        // Validate file size (max 5MB per file)
+        
         if (file.size > 5 * 1024 * 1024) {
           this.toastService.error(
             'Error',
@@ -94,7 +94,7 @@ export class CreatePostComponent implements OnInit {
 
         this.selectedFiles.push(file);
 
-        // Create preview for images
+        
         if (file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = (e) => {
@@ -123,7 +123,7 @@ export class CreatePostComponent implements OnInit {
     const formValue = this.postForm.value;
 
     try {
-      // 1. Upload files to Cloudinary first
+      
       const mediaAttachments: MediaAttachment[] = [];
       const username =
         this.secureStorage.getItem<string>(environment.usernameKey) ||
@@ -155,7 +155,7 @@ export class CreatePostComponent implements OnInit {
         }
       }
 
-      // 2. Prepare post data
+      
       const tags = formValue.tags
         ? formValue.tags
             .split(',')
@@ -179,11 +179,11 @@ export class CreatePostComponent implements OnInit {
         media: mediaAttachments,
       };
 
-      // 3. Create post on backend
+      
       this.newsfeedService.createPost(postData).subscribe({
         next: (post) => {
           this.toastService.success('Success', 'Post created successfully!');
-          this.router.navigate(['/feature/feed']); // Redirect to feed instead of post detail (which might be complex/missing)
+          this.router.navigate(['/feature/feed']); 
         },
         error: (err) => {
           console.error('Failed to create post:', err);

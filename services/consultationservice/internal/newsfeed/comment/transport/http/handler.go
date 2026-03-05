@@ -14,12 +14,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// KafkaProducer interface for sending notifications
+
 type KafkaProducer interface {
 	SendToTopic(topic string, message string) error
 }
 
-// ProfileService interface for getting user profiles
+
 type ProfileService interface {
 	GetProfile(userID string) (interface{}, error)
 }
@@ -65,7 +65,7 @@ func (h *Handler) CreateComment(c *gin.Context) {
 		return
 	}
 
-	// Validate content length
+	
 	if len(req.Content) < 1 || len(req.Content) > 500 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Content must be 1-500 characters"})
 		return
@@ -84,7 +84,7 @@ func (h *Handler) CreateComment(c *gin.Context) {
 		return
 	}
 
-	// Send notification (async)
+	
 	if req.ParentCommentID == "" {
 		go h.sendCommentNotification(postID, userID, comment.ID.Hex())
 	}
@@ -112,7 +112,7 @@ func (h *Handler) GetComments(c *gin.Context) {
 		return
 	}
 
-	// Populate author info
+	
 	comments = h.populateCommentAuthors(ctx, comments)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -182,10 +182,10 @@ func (h *Handler) sendCommentNotification(postID, commenterID, commentID string)
 
 func (h *Handler) populateCommentAuthors(ctx context.Context, comments []domain.Comment) []domain.Comment {
 	for i := range comments {
-		// Set AuthorID for frontend compatibility
+		
 		comments[i].AuthorID = comments[i].UserID
 
-		// Recursively populate replies
+		
 		if len(comments[i].Replies) > 0 {
 			comments[i].Replies = h.populateCommentAuthors(ctx, comments[i].Replies)
 		}

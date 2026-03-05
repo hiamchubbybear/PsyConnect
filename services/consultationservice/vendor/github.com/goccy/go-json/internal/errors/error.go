@@ -7,7 +7,7 @@ import (
 )
 
 type InvalidUTF8Error struct {
-	S string // the whole string value that caused the error
+	S string 
 }
 
 func (e *InvalidUTF8Error) Error() string {
@@ -29,7 +29,7 @@ func (e *InvalidUnmarshalError) Error() string {
 	return fmt.Sprintf("json: Unmarshal(nil %s)", e.Type)
 }
 
-// A MarshalerError represents an error from calling a MarshalJSON or MarshalText method.
+
 type MarshalerError struct {
 	Type       reflect.Type
 	Err        error
@@ -44,21 +44,21 @@ func (e *MarshalerError) Error() string {
 	return fmt.Sprintf("json: error calling %s for type %s: %s", srcFunc, e.Type, e.Err.Error())
 }
 
-// Unwrap returns the underlying error.
+
 func (e *MarshalerError) Unwrap() error { return e.Err }
 
-// A SyntaxError is a description of a JSON syntax error.
+
 type SyntaxError struct {
-	msg    string // description of error
-	Offset int64  // error occurred after reading Offset bytes
+	msg    string 
+	Offset int64  
 }
 
 func (e *SyntaxError) Error() string { return e.msg }
 
-// An UnmarshalFieldError describes a JSON object key that
-// led to an unexported (and therefore unwritable) struct field.
-//
-// Deprecated: No longer used; kept for compatibility.
+
+
+
+
 type UnmarshalFieldError struct {
 	Key   string
 	Type  reflect.Type
@@ -71,14 +71,14 @@ func (e *UnmarshalFieldError) Error() string {
 	)
 }
 
-// An UnmarshalTypeError describes a JSON value that was
-// not appropriate for a value of a specific Go type.
+
+
 type UnmarshalTypeError struct {
-	Value  string       // description of JSON value - "bool", "array", "number -5"
-	Type   reflect.Type // type of Go value it could not be assigned to
-	Offset int64        // error occurred after reading Offset bytes
-	Struct string       // name of the struct type containing the field
-	Field  string       // the full path from root node to the field
+	Value  string       
+	Type   reflect.Type 
+	Offset int64        
+	Struct string       
+	Field  string       
 }
 
 func (e *UnmarshalTypeError) Error() string {
@@ -90,8 +90,8 @@ func (e *UnmarshalTypeError) Error() string {
 	return fmt.Sprintf("json: cannot unmarshal %s into Go value of type %s", e.Value, e.Type)
 }
 
-// An UnsupportedTypeError is returned by Marshal when attempting
-// to encode an unsupported value type.
+
+
 type UnsupportedTypeError struct {
 	Type reflect.Type
 }

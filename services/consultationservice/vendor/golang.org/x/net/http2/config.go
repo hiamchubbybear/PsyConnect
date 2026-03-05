@@ -1,6 +1,6 @@
-// Copyright 2024 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package http2
 
@@ -10,21 +10,21 @@ import (
 	"time"
 )
 
-// http2Config is a package-internal version of net/http.HTTP2Config.
-//
-// http.HTTP2Config was added in Go 1.24.
-// When running with a version of net/http that includes HTTP2Config,
-// we merge the configuration with the fields in Transport or Server
-// to produce an http2Config.
-//
-// Zero valued fields in http2Config are interpreted as in the
-// net/http.HTTPConfig documentation.
-//
-// Precedence order for reconciling configurations is:
-//
-//   - Use the net/http.{Server,Transport}.HTTP2Config value, when non-zero.
-//   - Otherwise use the http2.{Server.Transport} value.
-//   - If the resulting value is zero or out of range, use a default.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type http2Config struct {
 	MaxConcurrentStreams         uint32
 	MaxDecoderHeaderTableSize    uint32
@@ -39,8 +39,8 @@ type http2Config struct {
 	CountError                   func(errType string)
 }
 
-// configFromServer merges configuration settings from
-// net/http.Server.HTTP2Config and http2.Server.
+
+
 func configFromServer(h1 *http.Server, h2 *Server) http2Config {
 	conf := http2Config{
 		MaxConcurrentStreams:         h2.MaxConcurrentStreams,
@@ -60,8 +60,8 @@ func configFromServer(h1 *http.Server, h2 *Server) http2Config {
 	return conf
 }
 
-// configFromTransport merges configuration settings from h2 and h2.t1.HTTP2
-// (the net/http Transport).
+
+
 func configFromTransport(h2 *Transport) http2Config {
 	conf := http2Config{
 		MaxEncoderHeaderTableSize: h2.MaxEncoderHeaderTableSize,
@@ -72,8 +72,8 @@ func configFromTransport(h2 *Transport) http2Config {
 		WriteByteTimeout:          h2.WriteByteTimeout,
 	}
 
-	// Unlike most config fields, where out-of-range values revert to the default,
-	// Transport.MaxReadFrameSize clips.
+	
+	
 	if conf.MaxReadFrameSize < minMaxFrameSize {
 		conf.MaxReadFrameSize = minMaxFrameSize
 	} else if conf.MaxReadFrameSize > maxFrameSize {
@@ -111,12 +111,12 @@ func setConfigDefaults(conf *http2Config, server bool) {
 	setDefault(&conf.PingTimeout, 1, math.MaxInt64, 15*time.Second)
 }
 
-// adjustHTTP1MaxHeaderSize converts a limit in bytes on the size of an HTTP/1 header
-// to an HTTP/2 MAX_HEADER_LIST_SIZE value.
+
+
 func adjustHTTP1MaxHeaderSize(n int64) int64 {
-	// http2's count is in a slightly different unit and includes 32 bytes per pair.
-	// So, take the net/http.Server value and pad it up a bit, assuming 10 headers.
-	const perFieldOverhead = 32 // per http2 spec
-	const typicalHeaders = 10   // conservative
+	
+	
+	const perFieldOverhead = 32 
+	const typicalHeaders = 10   
 	return n + typicalHeaders*perFieldOverhead
 }

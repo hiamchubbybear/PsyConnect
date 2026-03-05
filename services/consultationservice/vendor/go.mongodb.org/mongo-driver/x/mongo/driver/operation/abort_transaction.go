@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -19,7 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// AbortTransaction performs an abortTransaction operation.
+
 type AbortTransaction struct {
 	authenticator driver.Authenticator
 	recoveryToken bsoncore.Document
@@ -36,7 +36,7 @@ type AbortTransaction struct {
 	serverAPI     *driver.ServerAPIOptions
 }
 
-// NewAbortTransaction constructs and returns a new AbortTransaction.
+
 func NewAbortTransaction() *AbortTransaction {
 	return &AbortTransaction{}
 }
@@ -46,7 +46,7 @@ func (at *AbortTransaction) processResponse(driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (at *AbortTransaction) Execute(ctx context.Context) error {
 	if at.deployment == nil {
 		return errors.New("the AbortTransaction operation must have a Deployment set before Execute can be called")
@@ -81,7 +81,7 @@ func (at *AbortTransaction) command(dst []byte, _ description.SelectedServer) ([
 	return dst, nil
 }
 
-// RecoveryToken sets the recovery token to use when committing or aborting a sharded transaction.
+
 func (at *AbortTransaction) RecoveryToken(recoveryToken bsoncore.Document) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -91,7 +91,7 @@ func (at *AbortTransaction) RecoveryToken(recoveryToken bsoncore.Document) *Abor
 	return at
 }
 
-// Session sets the session for this operation.
+
 func (at *AbortTransaction) Session(session *session.Client) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -101,7 +101,7 @@ func (at *AbortTransaction) Session(session *session.Client) *AbortTransaction {
 	return at
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (at *AbortTransaction) ClusterClock(clock *session.ClusterClock) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -111,7 +111,7 @@ func (at *AbortTransaction) ClusterClock(clock *session.ClusterClock) *AbortTran
 	return at
 }
 
-// Collection sets the collection that this command will run against.
+
 func (at *AbortTransaction) Collection(collection string) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -121,7 +121,7 @@ func (at *AbortTransaction) Collection(collection string) *AbortTransaction {
 	return at
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (at *AbortTransaction) CommandMonitor(monitor *event.CommandMonitor) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -131,7 +131,7 @@ func (at *AbortTransaction) CommandMonitor(monitor *event.CommandMonitor) *Abort
 	return at
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (at *AbortTransaction) Crypt(crypt driver.Crypt) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -141,7 +141,7 @@ func (at *AbortTransaction) Crypt(crypt driver.Crypt) *AbortTransaction {
 	return at
 }
 
-// Database sets the database to run this operation against.
+
 func (at *AbortTransaction) Database(database string) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -151,7 +151,7 @@ func (at *AbortTransaction) Database(database string) *AbortTransaction {
 	return at
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (at *AbortTransaction) Deployment(deployment driver.Deployment) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -161,7 +161,7 @@ func (at *AbortTransaction) Deployment(deployment driver.Deployment) *AbortTrans
 	return at
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (at *AbortTransaction) ServerSelector(selector description.ServerSelector) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -171,7 +171,7 @@ func (at *AbortTransaction) ServerSelector(selector description.ServerSelector) 
 	return at
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (at *AbortTransaction) WriteConcern(writeConcern *writeconcern.WriteConcern) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -181,8 +181,8 @@ func (at *AbortTransaction) WriteConcern(writeConcern *writeconcern.WriteConcern
 	return at
 }
 
-// Retry enables retryable mode for this operation. Retries are handled automatically in driver.Operation.Execute based
-// on how the operation is set.
+
+
 func (at *AbortTransaction) Retry(retry driver.RetryMode) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -192,7 +192,7 @@ func (at *AbortTransaction) Retry(retry driver.RetryMode) *AbortTransaction {
 	return at
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (at *AbortTransaction) ServerAPI(serverAPI *driver.ServerAPIOptions) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)
@@ -202,7 +202,7 @@ func (at *AbortTransaction) ServerAPI(serverAPI *driver.ServerAPIOptions) *Abort
 	return at
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (at *AbortTransaction) Authenticator(authenticator driver.Authenticator) *AbortTransaction {
 	if at == nil {
 		at = new(AbortTransaction)

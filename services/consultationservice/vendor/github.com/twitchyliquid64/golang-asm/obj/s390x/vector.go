@@ -1,6 +1,6 @@
-// Copyright 2016 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package s390x
 
@@ -8,11 +8,11 @@ import (
 	"github.com/twitchyliquid64/golang-asm/obj"
 )
 
-// This file contains utility functions for use when
-// assembling vector instructions.
 
-// vop returns the opcode, element size and condition
-// setting for the given (possibly extended) mnemonic.
+
+
+
+
 func vop(as obj.As) (opcode, es, cs uint32) {
 	switch as {
 	default:
@@ -1024,8 +1024,8 @@ func vop(as obj.As) (opcode, es, cs uint32) {
 	}
 }
 
-// singleElementMask returns the single element mask bits required for the
-// given instruction.
+
+
 func singleElementMask(as obj.As) uint32 {
 	switch as {
 	case AWFADB,

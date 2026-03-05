@@ -1,10 +1,10 @@
 .chat-layout {
   display: flex;
-  height: calc(100vh - 2rem); // Leave space for padding
+  height: calc(100vh - 2rem); 
   width: 100%;
-  max-width: 1600px; // Contained width
-  margin: 1rem auto; // Center with margin
-  gap: 1rem; // Gap between sidebar and main
+  max-width: 1600px; 
+  margin: 1rem auto; 
+  gap: 1rem; 
   padding: 0;
   background: var(--color-bg);
   overflow: hidden;
@@ -26,8 +26,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--color-surface);
-  border-radius: 0.75rem; // Rounded corners
-  box-shadow: var(--shadow-card); // Add shadow
+  border-radius: 0.75rem; 
+  box-shadow: var(--shadow-card); 
   border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -39,7 +39,7 @@
     border-radius: 0;
     border: none;
 
-    // Hide sidebar when chat is active on mobile
+    
     .chat-layout.mobile-chat-active & {
       display: none;
     }
@@ -50,8 +50,8 @@ app-chat-main {
   flex: 1;
   min-width: 0;
   background: var(--color-surface);
-  border-radius: 0.75rem; // Rounded corners
-  box-shadow: var(--shadow-card); // Add shadow
+  border-radius: 0.75rem; 
+  box-shadow: var(--shadow-card); 
   border: 1px solid var(--color-border);
   overflow: hidden;
   display: flex;
@@ -62,16 +62,16 @@ app-chat-main {
     height: 100%;
     border-radius: 0;
     border: none;
-    display: none; // Hidden by default on mobile (show list first)
+    display: none; 
 
-    // Show main chat when active on mobile
+    
     .chat-layout.mobile-chat-active & {
       display: flex;
     }
   }
 }
 
-// ─── Consent overlay ─────────────────────────────────────────────────────────
+
 .consent-overlay {
   position: fixed;
   inset: 0;

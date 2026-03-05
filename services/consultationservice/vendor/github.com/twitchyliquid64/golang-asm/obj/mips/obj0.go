@@ -1,31 +1,31 @@
-// cmd/9l/noop.c, cmd/9l/pass.c, cmd/9l/span.c from Vita Nuova.
-//
-//	Copyright © 1994-1999 Lucent Technologies Inc.  All rights reserved.
-//	Portions Copyright © 1995-1997 C H Forsyth (forsyth@terzarima.net)
-//	Portions Copyright © 1997-1999 Vita Nuova Limited
-//	Portions Copyright © 2000-2008 Vita Nuova Holdings Limited (www.vitanuova.com)
-//	Portions Copyright © 2004,2006 Bruce Ellis
-//	Portions Copyright © 2005-2007 C H Forsyth (forsyth@terzarima.net)
-//	Revisions Copyright © 2000-2008 Lucent Technologies Inc. and others
-//	Portions Copyright © 2009 The Go Authors. All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package mips
 
@@ -44,7 +44,7 @@ func progedit(ctxt *obj.Link, p *obj.Prog, newprog obj.ProgAlloc) {
 	p.From.Class = 0
 	p.To.Class = 0
 
-	// Rewrite JMP/JAL to symbol as TYPE_BRANCH.
+	
 	switch p.As {
 	case AJMP,
 		AJAL,
@@ -56,7 +56,7 @@ func progedit(ctxt *obj.Link, p *obj.Prog, newprog obj.ProgAlloc) {
 		}
 	}
 
-	// Rewrite float constants to values stored in memory.
+	
 	switch p.As {
 	case AMOVF:
 		if p.From.Type == obj.TYPE_FCONST {
@@ -88,7 +88,7 @@ func progedit(ctxt *obj.Link, p *obj.Prog, newprog obj.ProgAlloc) {
 			p.From.Offset = 0
 		}
 
-		// Put >32-bit constants in memory and load them
+		
 	case AMOVV:
 		if p.From.Type == obj.TYPE_CONST && p.From.Name == obj.NAME_NONE && p.From.Reg == 0 && int64(int32(p.From.Offset)) != p.From.Offset {
 			p.From.Type = obj.TYPE_MEM
@@ -98,7 +98,7 @@ func progedit(ctxt *obj.Link, p *obj.Prog, newprog obj.ProgAlloc) {
 		}
 	}
 
-	// Rewrite SUB constants into ADD.
+	
 	switch p.As {
 	case ASUB:
 		if p.From.Type == obj.TYPE_CONST {
@@ -127,10 +127,10 @@ func progedit(ctxt *obj.Link, p *obj.Prog, newprog obj.ProgAlloc) {
 }
 
 func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
-	// TODO(minux): add morestack short-cuts with small fixed frame-size.
+	
 	c := ctxt0{ctxt: ctxt, newprog: newprog, cursym: cursym}
 
-	// a switch for enabling/disabling instruction scheduling
+	
 	nosched := true
 
 	if c.cursym.Func.Text == nil || c.cursym.Func.Text.Link == nil {
@@ -140,7 +140,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 	p := c.cursym.Func.Text
 	textstksiz := p.To.Offset
 	if textstksiz == -ctxt.FixedFrameSize() {
-		// Historical way to mark NOFRAME.
+		
 		p.From.Sym.Set(obj.AttrNoFrame, true)
 		textstksiz = 0
 	}
@@ -156,22 +156,18 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 	c.cursym.Func.Args = p.To.Val.(int32)
 	c.cursym.Func.Locals = int32(textstksiz)
 
-	/*
-	 * find leaf subroutines
-	 * expand RET
-	 * expand BECOME pseudo
-	 */
+	
 
 	for p := c.cursym.Func.Text; p != nil; p = p.Link {
 		switch p.As {
-		/* too hard, just leave alone */
+		
 		case obj.ATEXT:
 			p.Mark |= LABEL | LEAF | SYNC
 			if p.Link != nil {
 				p.Link.Mark |= LABEL
 			}
 
-		/* too hard, just leave alone */
+		
 		case AMOVW,
 			AMOVV:
 			if p.To.Type == obj.TYPE_REG && p.To.Reg >= REG_SPECIAL {
@@ -182,7 +178,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 				p.Mark |= LABEL | SYNC
 			}
 
-		/* too hard, just leave alone */
+		
 		case ASYSCALL,
 			AWORD,
 			ATLBWR,
@@ -215,14 +211,14 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 			ABNE,
 			ABFPT, ABFPF:
 			if p.As == ABFPT || p.As == ABFPF {
-				// We don't treat ABFPT and ABFPF as branches here,
-				// so that we will always fill nop (0x0) in their
-				// delay slot during assembly.
-				// This is to workaround a kernel FPU emulator bug
-				// where it uses the user stack to simulate the
-				// instruction in the delay slot if it's not 0x0,
-				// and somehow that leads to SIGSEGV when the kernel
-				// jump to the stack.
+				
+				
+				
+				
+				
+				
+				
+				
 				p.Mark |= SYNC
 			} else {
 				p.Mark |= BRANCH
@@ -238,9 +234,9 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 					q1.Mark |= LABEL
 				}
 			}
-			//else {
-			//	p.Mark |= LABEL
-			//}
+			
+			
+			
 			q1 = p.Link
 			if q1 != nil {
 				q1.Mark |= LABEL
@@ -274,13 +270,13 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 			autosize = int32(textstksiz)
 
 			if p.Mark&LEAF != 0 && autosize == 0 {
-				// A leaf function with no locals has no frame.
+				
 				p.From.Sym.Set(obj.AttrNoFrame, true)
 			}
 
 			if !p.From.Sym.NoFrame() {
-				// If there is a stack frame at all, it includes
-				// space to save the LR.
+				
+				
 				autosize += int32(c.ctxt.FixedFrameSize())
 			}
 
@@ -308,19 +304,19 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 			}
 
 			if !p.From.Sym.NoSplit() {
-				p = c.stacksplit(p, autosize) // emit split check
+				p = c.stacksplit(p, autosize) 
 			}
 
 			q = p
 
 			if autosize != 0 {
-				// Make sure to save link register for non-empty frame, even if
-				// it is a leaf function, so that traceback works.
-				// Store link register before decrement SP, so if a signal comes
-				// during the execution of the function prologue, the traceback
-				// code will not see a half-updated stack frame.
-				// This sequence is not async preemptible, as if we open a frame
-				// at the current SP, it will clobber the saved LR.
+				
+				
+				
+				
+				
+				
+				
 				q = c.ctxt.StartUnsafePoint(q, c.newprog)
 
 				q = obj.Appendp(q, newprog)
@@ -345,30 +341,30 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 			}
 
 			if c.cursym.Func.Text.From.Sym.Wrapper() && c.cursym.Func.Text.Mark&LEAF == 0 {
-				// if(g->panic != nil && g->panic->argp == FP) g->panic->argp = bottom-of-frame
-				//
-				//	MOV	g_panic(g), R1
-				//	BEQ	R1, end
-				//	MOV	panic_argp(R1), R2
-				//	ADD	$(autosize+FIXED_FRAME), R29, R3
-				//	BNE	R2, R3, end
-				//	ADD	$FIXED_FRAME, R29, R2
-				//	MOV	R2, panic_argp(R1)
-				// end:
-				//	NOP
-				//
-				// The NOP is needed to give the jumps somewhere to land.
-				// It is a liblink NOP, not an mips NOP: it encodes to 0 instruction bytes.
-				//
-				// We don't generate this for leafs because that means the wrapped
-				// function was inlined into the wrapper.
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 
 				q = obj.Appendp(q, newprog)
 
 				q.As = mov
 				q.From.Type = obj.TYPE_MEM
 				q.From.Reg = REGG
-				q.From.Offset = 4 * int64(c.ctxt.Arch.PtrSize) // G.panic
+				q.From.Offset = 4 * int64(c.ctxt.Arch.PtrSize) 
 				q.To.Type = obj.TYPE_REG
 				q.To.Reg = REG_R1
 
@@ -384,7 +380,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 				q.As = mov
 				q.From.Type = obj.TYPE_MEM
 				q.From.Reg = REG_R1
-				q.From.Offset = 0 // Panic.argp
+				q.From.Offset = 0 
 				q.To.Type = obj.TYPE_REG
 				q.To.Reg = REG_R2
 
@@ -419,7 +415,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 				q.From.Reg = REG_R2
 				q.To.Type = obj.TYPE_MEM
 				q.To.Reg = REG_R1
-				q.To.Offset = 0 // Panic.argp
+				q.To.Offset = 0 
 
 				q = obj.Appendp(q, newprog)
 
@@ -435,14 +431,14 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 			}
 
 			retSym := p.To.Sym
-			p.To.Name = obj.NAME_NONE // clear fields as we may modify p to other instruction
+			p.To.Name = obj.NAME_NONE 
 			p.To.Sym = nil
 
 			if c.cursym.Func.Text.Mark&LEAF != 0 {
 				if autosize == 0 {
 					p.As = AJMP
 					p.From = obj.Addr{}
-					if retSym != nil { // retjmp
+					if retSym != nil { 
 						p.To.Type = obj.TYPE_BRANCH
 						p.To.Name = obj.NAME_EXTERN
 						p.To.Sym = retSym
@@ -500,7 +496,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 			q1 = c.newprog()
 			q1.As = AJMP
 			q1.Pos = p.Pos
-			if retSym != nil { // retjmp
+			if retSym != nil { 
 				q1.To.Type = obj.TYPE_BRANCH
 				q1.To.Name = obj.NAME_EXTERN
 				q1.To.Sym = retSym
@@ -525,12 +521,12 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 
 		case obj.AGETCALLERPC:
 			if cursym.Leaf() {
-				/* MOV LR, Rd */
+				
 				p.As = mov
 				p.From.Type = obj.TYPE_REG
 				p.From.Reg = REGLINK
 			} else {
-				/* MOV (RSP), Rd */
+				
 				p.As = mov
 				p.From.Type = obj.TYPE_MEM
 				p.From.Reg = REGSP
@@ -539,7 +535,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 	}
 
 	if c.ctxt.Arch.Family == sys.MIPS {
-		// rewrite MOVD into two MOVF in 32-bit mode to avoid unaligned memory access
+		
 		for p = c.cursym.Func.Text; p != nil; p = p1 {
 			p1 = p.Link
 
@@ -559,7 +555,7 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 
 			var addrOff int64
 			if c.ctxt.Arch.ByteOrder == binary.BigEndian {
-				addrOff = 4 // swap load/save order
+				addrOff = 4 
 			}
 			if p.From.Type == obj.TYPE_MEM {
 				reg := REG_F0 + (p.To.Reg-REG_F0)&^1
@@ -578,8 +574,8 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 	}
 
 	if nosched {
-		// if we don't do instruction scheduling, simply add
-		// NOP after each branch instruction.
+		
+		
 		for p = c.cursym.Func.Text; p != nil; p = p.Link {
 			if p.Mark&BRANCH != 0 {
 				c.addnop(p)
@@ -588,10 +584,10 @@ func preprocess(ctxt *obj.Link, cursym *obj.LSym, newprog obj.ProgAlloc) {
 		return
 	}
 
-	// instruction scheduling
-	q = nil                 // p - 1
-	q1 = c.cursym.Func.Text // top of block
-	o := 0                  // count of instructions
+	
+	q = nil                 
+	q1 = c.cursym.Func.Text 
+	o := 0                  
 	for p = c.cursym.Func.Text; p != nil; p = p1 {
 		p1 = p.Link
 		o++
@@ -644,29 +640,29 @@ func (c *ctxt0) stacksplit(p *obj.Prog, framesize int32) *obj.Prog {
 		sub = ASUBU
 	}
 
-	// MOV	g_stackguard(g), R1
+	
 	p = obj.Appendp(p, c.newprog)
 
 	p.As = mov
 	p.From.Type = obj.TYPE_MEM
 	p.From.Reg = REGG
-	p.From.Offset = 2 * int64(c.ctxt.Arch.PtrSize) // G.stackguard0
+	p.From.Offset = 2 * int64(c.ctxt.Arch.PtrSize) 
 	if c.cursym.CFunc() {
-		p.From.Offset = 3 * int64(c.ctxt.Arch.PtrSize) // G.stackguard1
+		p.From.Offset = 3 * int64(c.ctxt.Arch.PtrSize) 
 	}
 	p.To.Type = obj.TYPE_REG
 	p.To.Reg = REG_R1
 
-	// Mark the stack bound check and morestack call async nonpreemptible.
-	// If we get preempted here, when resumed the preemption request is
-	// cleared, but we'll still call morestack, which will double the stack
-	// unnecessarily. See issue #35470.
+	
+	
+	
+	
 	p = c.ctxt.StartUnsafePoint(p, c.newprog)
 
 	var q *obj.Prog
 	if framesize <= objabi.StackSmall {
-		// small stack: SP < stackguard
-		//	AGTU	SP, stackguard, R1
+		
+		
 		p = obj.Appendp(p, c.newprog)
 
 		p.As = ASGTU
@@ -676,9 +672,9 @@ func (c *ctxt0) stacksplit(p *obj.Prog, framesize int32) *obj.Prog {
 		p.To.Type = obj.TYPE_REG
 		p.To.Reg = REG_R1
 	} else if framesize <= objabi.StackBig {
-		// large stack: SP-framesize < stackguard-StackSmall
-		//	ADD	$-(framesize-StackSmall), SP, R2
-		//	SGTU	R2, stackguard, R1
+		
+		
+		
 		p = obj.Appendp(p, c.newprog)
 
 		p.As = add
@@ -696,21 +692,21 @@ func (c *ctxt0) stacksplit(p *obj.Prog, framesize int32) *obj.Prog {
 		p.To.Type = obj.TYPE_REG
 		p.To.Reg = REG_R1
 	} else {
-		// Such a large stack we need to protect against wraparound.
-		// If SP is close to zero:
-		//	SP-stackguard+StackGuard <= framesize + (StackGuard-StackSmall)
-		// The +StackGuard on both sides is required to keep the left side positive:
-		// SP is allowed to be slightly below stackguard. See stack.h.
-		//
-		// Preemption sets stackguard to StackPreempt, a very large value.
-		// That breaks the math above, so we have to check for that explicitly.
-		//	// stackguard is R1
-		//	MOV	$StackPreempt, R2
-		//	BEQ	R1, R2, label-of-call-to-morestack
-		//	ADD	$StackGuard, SP, R2
-		//	SUB	R1, R2
-		//	MOV	$(framesize+(StackGuard-StackSmall)), R1
-		//	SGTU	R2, R1, R1
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		p = obj.Appendp(p, c.newprog)
 
 		p.As = mov
@@ -759,7 +755,7 @@ func (c *ctxt0) stacksplit(p *obj.Prog, framesize int32) *obj.Prog {
 		p.To.Reg = REG_R1
 	}
 
-	// q1: BNE	R1, done
+	
 	p = obj.Appendp(p, c.newprog)
 	q1 := p
 
@@ -769,7 +765,7 @@ func (c *ctxt0) stacksplit(p *obj.Prog, framesize int32) *obj.Prog {
 	p.To.Type = obj.TYPE_BRANCH
 	p.Mark |= BRANCH
 
-	// MOV	LINK, R3
+	
 	p = obj.Appendp(p, c.newprog)
 
 	p.As = mov
@@ -784,7 +780,7 @@ func (c *ctxt0) stacksplit(p *obj.Prog, framesize int32) *obj.Prog {
 
 	p = c.ctxt.EmitEntryStackMap(c.cursym, p, c.newprog)
 
-	// JAL	runtime.morestack(SB)
+	
 	p = obj.Appendp(p, c.newprog)
 
 	p.As = AJAL
@@ -800,7 +796,7 @@ func (c *ctxt0) stacksplit(p *obj.Prog, framesize int32) *obj.Prog {
 
 	p = c.ctxt.EndUnsafePoint(p, c.newprog, -1)
 
-	// JMP	start
+	
 	p = obj.Appendp(p, c.newprog)
 
 	p.As = AJMP
@@ -808,10 +804,10 @@ func (c *ctxt0) stacksplit(p *obj.Prog, framesize int32) *obj.Prog {
 	p.To.SetTarget(c.cursym.Func.Text.Link)
 	p.Mark |= BRANCH
 
-	// placeholder for q1's jump target
+	
 	p = obj.Appendp(p, c.newprog)
 
-	p.As = obj.ANOP // zero-width place holder
+	p.As = obj.ANOP 
 	q1.To.SetTarget(p)
 
 	return p
@@ -830,11 +826,11 @@ const (
 	E_FCR   = 1 << 1
 	E_MCR   = 1 << 2
 	E_MEM   = 1 << 3
-	E_MEMSP = 1 << 4 /* uses offset and size */
-	E_MEMSB = 1 << 5 /* uses offset and size */
+	E_MEMSP = 1 << 4 
+	E_MEMSB = 1 << 5 
 	ANYMEM  = E_MEM | E_MEMSP | E_MEMSB
-	//DELAY = LOAD|BRANCH|FCMP
-	DELAY = BRANCH /* only schedule branch */
+	
+	DELAY = BRANCH 
 )
 
 type Dep struct {
@@ -856,9 +852,7 @@ type Sch struct {
 func (c *ctxt0) sched(p0, pe *obj.Prog) {
 	var sch [NSCHED]Sch
 
-	/*
-	 * build side structure
-	 */
+	
 	s := sch[:]
 	for p := p0; ; p = p.Link {
 		s[0].p = *p
@@ -909,14 +903,14 @@ func (c *ctxt0) sched(p0, pe *obj.Prog) {
 		continue
 
 	out2:
-		// t[0] is the instruction being moved to fill the delay
+		
 		stmp := t[0]
 		copy(t[:i-j], t[1:i-j+1])
 		s[0] = stmp
 
 		if t[i-j-1].p.Mark&BRANCH != 0 {
-			// t[i-j] is being put into a branch delay slot
-			// combine its Spadj with the branch instruction
+			
+			
 			t[i-j-1].p.Spadj += t[i-j].p.Spadj
 			t[i-j].p.Spadj = 0
 		}
@@ -924,9 +918,7 @@ func (c *ctxt0) sched(p0, pe *obj.Prog) {
 		i--
 	}
 
-	/*
-	 * put it all back
-	 */
+	
 	var p *obj.Prog
 	var q *obj.Prog
 	for s, p = sch[:], p0; -cap(s) <= -cap(se); s, p = s[1:], q {
@@ -951,14 +943,12 @@ func (c *ctxt0) markregused(s *Sch) {
 		s.used.ireg |= 1 << (REGTMP - REG_R0)
 	}
 
-	ar := 0  /* dest is really reference */
-	ad := 0  /* source/dest is really address */
-	ld := 0  /* opcode is load instruction */
-	sz := 20 /* size of load/store for overlap computation */
+	ar := 0  
+	ad := 0  
+	ld := 0  
+	sz := 20 
 
-	/*
-	 * flags based on opcode
-	 */
+	
 	switch p.As {
 	case obj.ATEXT:
 		c.autosize = int32(p.To.Offset + 8)
@@ -1080,14 +1070,12 @@ func (c *ctxt0) markregused(s *Sch) {
 			if p.To.Type == obj.TYPE_REG {
 				p.Reg = p.To.Reg
 			}
-			//if(p->reg == NREG)
-			//	print("botch %P\n", p);
+			
+			
 		}
 	}
 
-	/*
-	 * flags based on 'to' field
-	 */
+	
 	cls := int(p.To.Class)
 	if cls == 0 {
 		cls = c.aclass(&p.To) + 1
@@ -1204,9 +1192,7 @@ func (c *ctxt0) markregused(s *Sch) {
 		}
 	}
 
-	/*
-	 * flags based on 'from' field
-	 */
+	
 	cls = int(p.From.Class)
 	if cls == 0 {
 		cls = c.aclass(&p.From) + 1
@@ -1321,13 +1307,10 @@ func (c *ctxt0) markregused(s *Sch) {
 			s.used.ireg |= 1 << uint(cls-REG_R0)
 		}
 	}
-	s.set.ireg &^= (1 << (REGZERO - REG_R0)) /* R0 can't be set */
+	s.set.ireg &^= (1 << (REGZERO - REG_R0)) 
 }
 
-/*
- * test to see if two instructions can be
- * interchanged without changing semantics
- */
+
 func (c *ctxt0) depend(sa, sb *Sch) bool {
 	if sa.set.ireg&(sb.set.ireg|sb.used.ireg) != 0 {
 		return true
@@ -1343,11 +1326,7 @@ func (c *ctxt0) depend(sa, sb *Sch) bool {
 		return true
 	}
 
-	/*
-	 * special case.
-	 * loads from same address cannot pass.
-	 * this is for hardware fifo's and the like
-	 */
+	
 	if sa.used.cc&sb.used.cc&E_MEM != 0 {
 		if sa.p.Reg == sb.p.Reg {
 			if c.regoff(&sa.p.From) == c.regoff(&sb.p.From) {
@@ -1358,11 +1337,7 @@ func (c *ctxt0) depend(sa, sb *Sch) bool {
 
 	x := (sa.set.cc & (sb.set.cc | sb.used.cc)) | (sb.set.cc & sa.used.cc)
 	if x != 0 {
-		/*
-		 * allow SB and SP to pass each other.
-		 * allow SB to pass SB iff doffsets are ok
-		 * anything else conflicts
-		 */
+		
 		if x != E_MEMSP && x != E_MEMSB {
 			return true
 		}
@@ -1391,11 +1366,7 @@ func offoverlap(sa, sb *Sch) bool {
 	return false
 }
 
-/*
- * test 2 adjacent instructions
- * and find out if inserted instructions
- * are desired to prevent stalls.
- */
+
 func conflict(sa, sb *Sch) bool {
 	if sa.set.ireg&sb.used.ireg != 0 {
 		return true

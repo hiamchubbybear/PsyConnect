@@ -54,7 +54,7 @@ func (uc *GetCalendarUseCase) Execute(ctx context.Context, profileID string, rol
 	for _, s := range sessions {
 		startStr := s.StartTime.Format(time.RFC3339)
 
-		// Apply date range filter
+		
 		if fromStr != "" && startStr < fromStr {
 			continue
 		}

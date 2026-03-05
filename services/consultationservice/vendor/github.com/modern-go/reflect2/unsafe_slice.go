@@ -5,7 +5,7 @@ import (
 	"unsafe"
 )
 
-// sliceHeader is a safe version of SliceHeader used within this package.
+
 type sliceHeader struct {
 	Data unsafe.Pointer
 	Len  int

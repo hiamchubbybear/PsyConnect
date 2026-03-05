@@ -487,7 +487,7 @@
   }
 }
 
-// Replying Indicator
+
 .replying-indicator {
   margin: 8px 0 4px 0;
   padding: 6px 12px;
@@ -499,7 +499,7 @@
   font-weight: 500;
 }
 
-// Reply Form Styling
+
 .reply-form {
   margin: 12px 0;
   padding: 12px;
@@ -578,7 +578,7 @@
   }
 }
 
-// CRITICAL: Ensure comment action buttons are clickable
+
 .comment-actions {
   position: relative;
   z-index: 10;
@@ -592,7 +592,7 @@
   }
 }
 
-/* Modal Skeleton Loading State */
+
 .modal-skeleton {
   display: flex;
   flex-direction: column;
@@ -729,7 +729,7 @@
   width: 70px;
 }
 
-/* Hide container until ready */
+
 .post-modal-container {
   display: none;
   &.ready {

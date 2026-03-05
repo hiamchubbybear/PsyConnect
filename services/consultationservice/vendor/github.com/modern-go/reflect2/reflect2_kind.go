@@ -5,7 +5,7 @@ import (
 	"unsafe"
 )
 
-// DefaultTypeOfKind return the non aliased default type for the kind
+
 func DefaultTypeOfKind(kind reflect.Kind) Type {
 	return kindTypes[kind]
 }

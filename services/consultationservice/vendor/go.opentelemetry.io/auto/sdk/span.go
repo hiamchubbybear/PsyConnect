@@ -1,5 +1,5 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
+
+
 
 package sdk
 
@@ -38,7 +38,7 @@ func (s *span) SpanContext() trace.SpanContext {
 	if s == nil {
 		return trace.SpanContext{}
 	}
-	// s.spanContext is immutable, do not acquire lock s.mu.
+	
 	return s.spanContext
 }
 
@@ -84,7 +84,7 @@ func (s *span) SetAttributes(attrs ...attribute.KeyValue) {
 
 	limit := maxSpan.Attrs
 	if limit == 0 {
-		// No attributes allowed.
+		
 		s.span.DroppedAttrs += uint32(len(attrs))
 		return
 	}
@@ -118,15 +118,15 @@ func (s *span) SetAttributes(attrs ...attribute.KeyValue) {
 	}
 }
 
-// convCappedAttrs converts up to limit attrs into a []telemetry.Attr. The
-// number of dropped attributes is also returned.
+
+
 func convCappedAttrs(limit int, attrs []attribute.KeyValue) ([]telemetry.Attr, uint32) {
 	if limit == 0 {
 		return nil, uint32(len(attrs))
 	}
 
 	if limit < 0 {
-		// Unlimited.
+		
 		return convAttrs(attrs), 0
 	}
 
@@ -136,7 +136,7 @@ func convCappedAttrs(limit int, attrs []attribute.KeyValue) ([]telemetry.Attr, u
 
 func convAttrs(attrs []attribute.KeyValue) []telemetry.Attr {
 	if len(attrs) == 0 {
-		// Avoid allocations if not necessary.
+		
 		return nil
 	}
 
@@ -196,30 +196,30 @@ func convAttrValue(value attribute.Value) telemetry.Value {
 	return telemetry.Value{}
 }
 
-// truncate returns a truncated version of s such that it contains less than
-// the limit number of characters. Truncation is applied by returning the limit
-// number of valid characters contained in s.
-//
-// If limit is negative, it returns the original string.
-//
-// UTF-8 is supported. When truncating, all invalid characters are dropped
-// before applying truncation.
-//
-// If s already contains less than the limit number of bytes, it is returned
-// unchanged. No invalid characters are removed.
+
+
+
+
+
+
+
+
+
+
+
 func truncate(limit int, s string) string {
-	// This prioritize performance in the following order based on the most
-	// common expected use-cases.
-	//
-	//  - Short values less than the default limit (128).
-	//  - Strings with valid encodings that exceed the limit.
-	//  - No limit.
-	//  - Strings with invalid encodings that exceed the limit.
+	
+	
+	
+	
+	
+	
+	
 	if limit < 0 || len(s) <= limit {
 		return s
 	}
 
-	// Optimistically, assume all valid UTF-8.
+	
 	var b strings.Builder
 	count := 0
 	for i, c := range s {
@@ -233,7 +233,7 @@ func truncate(limit int, s string) string {
 
 		_, size := utf8.DecodeRuneInString(s[i:])
 		if size == 1 {
-			// Invalid encoding.
+			
 			b.Grow(len(s) - 1)
 			_, _ = b.WriteString(s[:i])
 			s = s[i:]
@@ -241,16 +241,16 @@ func truncate(limit int, s string) string {
 		}
 	}
 
-	// Fast-path, no invalid input.
+	
 	if b.Cap() == 0 {
 		return s
 	}
 
-	// Truncate while validating UTF-8.
+	
 	for i := 0; i < len(s) && count < limit; {
 		c := s[i]
 		if c < utf8.RuneSelf {
-			// Optimization for single byte runes (common case).
+			
 			_ = b.WriteByte(c)
 			i++
 			count++
@@ -259,7 +259,7 @@ func truncate(limit int, s string) string {
 
 		_, size := utf8.DecodeRuneInString(s[i:])
 		if size == 1 {
-			// We checked for all 1-byte runes above, this is a RuneError.
+			
 			i++
 			continue
 		}
@@ -277,7 +277,7 @@ func (s *span) End(opts ...trace.SpanEndOption) {
 		return
 	}
 
-	// s.end exists so the lock (s.mu) is not held while s.ended is called.
+	
 	s.ended(s.end(opts))
 }
 
@@ -292,16 +292,16 @@ func (s *span) end(opts []trace.SpanEndOption) []byte {
 		s.span.EndTime = time.Now()
 	}
 
-	b, _ := json.Marshal(s.traces) // TODO: do not ignore this error.
+	b, _ := json.Marshal(s.traces) 
 	return b
 }
 
-// Expected to be implemented in eBPF.
-//
+
+
 //go:noinline
 func (*span) ended(buf []byte) { ended(buf) }
 
-// ended is used for testing.
+
 var ended = func([]byte) {}
 
 func (s *span) RecordError(err error, opts ...trace.EventOption) {
@@ -331,7 +331,7 @@ func (s *span) RecordError(err error, opts ...trace.EventOption) {
 func typeStr(i any) string {
 	t := reflect.TypeOf(i)
 	if t.PkgPath() == "" && t.Name() == "" {
-		// Likely a builtin type.
+		
 		return t.String()
 	}
 	return fmt.Sprintf("%s.%s", t.PkgPath(), t.Name())
@@ -350,8 +350,8 @@ func (s *span) AddEvent(name string, opts ...trace.EventOption) {
 	s.addEvent(name, cfg.Timestamp(), cfg.Attributes())
 }
 
-// addEvent adds an event with name and attrs at tStamp to the span. The span
-// lock (s.mu) needs to be held by the caller.
+
+
 func (s *span) addEvent(name string, tStamp time.Time, attrs []attribute.KeyValue) {
 	limit := maxSpan.Events
 
@@ -361,7 +361,7 @@ func (s *span) addEvent(name string, tStamp time.Time, attrs []attribute.KeyValu
 	}
 
 	if limit > 0 && len(s.span.Events) == limit {
-		// Drop head while avoiding allocation of more capacity.
+		
 		copy(s.span.Events[:limit-1], s.span.Events[1:])
 		s.span.Events = s.span.Events[:limit-1]
 		s.span.DroppedEvents++
@@ -389,7 +389,7 @@ func (s *span) AddLink(link trace.Link) {
 	}
 
 	if l > 0 && len(s.span.Links) == l {
-		// Drop head while avoiding allocation of more capacity.
+		
 		copy(s.span.Links[:l-1], s.span.Links[1:])
 		s.span.Links = s.span.Links[:l-1]
 		s.span.DroppedLinks++

@@ -36,11 +36,11 @@ export class PostModalComponent implements OnInit {
   commentForm!: FormGroup;
   submittingComment = false;
 
-  // Loading state
+  
   isInitialized = false;
   currentUserProfile: any = null;
 
-  // Reply functionality
+  
   replyingToCommentId: string | null = null;
   replyingToUsername: string | null = null;
   replyForm!: FormGroup;
@@ -166,7 +166,7 @@ export class PostModalComponent implements OnInit {
           : response.comments || [];
         this.comments = comments;
 
-        // Load profiles for all authors
+        
         const profilePromises = comments.map((c: any) =>
           this.ensureProfileLoadedPromise(c)
         );
@@ -275,12 +275,12 @@ export class PostModalComponent implements OnInit {
     return this.replyForm.get('content')?.value?.length || 0;
   }
 
-  // Voting and Engagement
+  
   upvotePost(event: Event) {
     event.stopPropagation();
     if (!this.post) return;
 
-    // If already upvoted, remove the vote
+    
     if (this.post.user_vote === 'up') {
       this.post.upvote_count--;
       this.post.user_vote = null;
@@ -291,7 +291,7 @@ export class PostModalComponent implements OnInit {
       return;
     }
 
-    // Otherwise, add/switch to upvote
+    
     if (this.post.user_vote === 'down') this.post.downvote_count--;
     this.post.upvote_count++;
     this.post.user_vote = 'up';
@@ -305,7 +305,7 @@ export class PostModalComponent implements OnInit {
     event.stopPropagation();
     if (!this.post) return;
 
-    // If already downvoted, remove the vote
+    
     if (this.post.user_vote === 'down') {
       this.post.downvote_count--;
       this.post.user_vote = null;
@@ -316,7 +316,7 @@ export class PostModalComponent implements OnInit {
       return;
     }
 
-    // Otherwise, add/switch to downvote
+    
     if (this.post.user_vote === 'up') this.post.upvote_count--;
     this.post.downvote_count++;
     this.post.user_vote = 'down';
@@ -357,7 +357,7 @@ export class PostModalComponent implements OnInit {
     });
   }
 
-  // Utils
+  
   getUserName(userId: string): string {
     const profile = this.profileCache.get(userId);
     if (!profile) return 'User';

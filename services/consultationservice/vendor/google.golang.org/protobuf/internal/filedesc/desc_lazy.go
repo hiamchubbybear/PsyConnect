@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package filedesc
 
@@ -28,11 +28,11 @@ func (file *File) resolveMessages() {
 	for i := range file.allMessages {
 		md := &file.allMessages[i]
 
-		// Resolve message field dependencies.
+		
 		for j := range md.L2.Fields.List {
 			fd := &md.L2.Fields.List[j]
 
-			// Resolve message field dependency.
+			
 			switch fd.L1.Kind {
 			case protoreflect.EnumKind:
 				fd.L1.Enum = file.resolveEnumDependency(fd.L1.Enum, listFieldDeps, depIdx)
@@ -41,13 +41,13 @@ func (file *File) resolveMessages() {
 				fd.L1.Message = file.resolveMessageDependency(fd.L1.Message, listFieldDeps, depIdx)
 				depIdx++
 				if fd.L1.Kind == protoreflect.GroupKind && (fd.IsMap() || fd.IsMapEntry()) {
-					// A map field might inherit delimited encoding from a file-wide default feature.
-					// But maps never actually use delimited encoding. (At least for now...)
+					
+					
 					fd.L1.Kind = protoreflect.MessageKind
 				}
 			}
 
-			// Default is resolved here since it depends on Enum being resolved.
+			
 			if v := fd.L1.Default.val; v.IsValid() {
 				fd.L1.Default = unmarshalDefault(v.Bytes(), fd.L1.Kind, file, fd.L1.Enum)
 			}
@@ -60,7 +60,7 @@ func (file *File) resolveExtensions() {
 	for i := range file.allExtensions {
 		xd := &file.allExtensions[i]
 
-		// Resolve extension field dependency.
+		
 		switch xd.L1.Kind {
 		case protoreflect.EnumKind:
 			xd.L2.Enum = file.resolveEnumDependency(xd.L2.Enum, listExtDeps, depIdx)
@@ -70,7 +70,7 @@ func (file *File) resolveExtensions() {
 			depIdx++
 		}
 
-		// Default is resolved here since it depends on Enum being resolved.
+		
 		if v := xd.L2.Default.val; v.IsValid() {
 			xd.L2.Default = unmarshalDefault(v.Bytes(), xd.L1.Kind, file, xd.L2.Enum)
 		}
@@ -82,7 +82,7 @@ func (file *File) resolveServices() {
 	for i := range file.allServices {
 		sd := &file.allServices[i]
 
-		// Resolve method dependencies.
+		
 		for j := range sd.L2.Methods.List {
 			md := &sd.L2.Methods.List[j]
 			md.L1.Input = file.resolveMessageDependency(md.L1.Input, listMethInDeps, depIdx)
@@ -261,7 +261,7 @@ func (vd *EnumValue) unmarshalFull(b []byte, sb *strs.Builder, pf *File, pd prot
 			b = b[m:]
 			switch num {
 			case genid.EnumValueDescriptorProto_Name_field_number:
-				// NOTE: Enum values are in the same scope as the enum parent.
+				
 				vd.L0.FullName = appendFullName(sb, pd.Parent().FullName(), v)
 			case genid.EnumValueDescriptorProto_Options_field_number:
 				rawOptions = appendOptions(rawOptions, v)
@@ -431,9 +431,9 @@ func (fd *Field) unmarshalFull(b []byte, sb *strs.Builder, pf *File, pd protoref
 			case genid.FieldDescriptorProto_Type_field_number:
 				fd.L1.Kind = protoreflect.Kind(v)
 			case genid.FieldDescriptorProto_OneofIndex_field_number:
-				// In Message.unmarshalFull, we allocate slices for both
-				// the field and oneof descriptors before unmarshaling either
-				// of them. This ensures pointers to slice elements are stable.
+				
+				
+				
 				od := &pd.(*Message).L2.Oneofs.List[v]
 				od.L1.Fields.List = append(od.L1.Fields.List, fd)
 				if fd.L1.ContainingOneof != nil {
@@ -452,7 +452,7 @@ func (fd *Field) unmarshalFull(b []byte, sb *strs.Builder, pf *File, pd protoref
 			case genid.FieldDescriptorProto_JsonName_field_number:
 				fd.L1.StringName.InitJSON(sb.MakeString(v))
 			case genid.FieldDescriptorProto_DefaultValue_field_number:
-				fd.L1.Default.val = protoreflect.ValueOfBytes(v) // temporarily store as bytes; later resolved in resolveMessages
+				fd.L1.Default.val = protoreflect.ValueOfBytes(v) 
 			case genid.FieldDescriptorProto_TypeName_field_number:
 				rawTypeName = v
 			case genid.FieldDescriptorProto_Options_field_number:
@@ -563,7 +563,7 @@ func (xd *Extension) unmarshalFull(b []byte, sb *strs.Builder) {
 			case genid.FieldDescriptorProto_JsonName_field_number:
 				xd.L2.StringName.InitJSON(sb.MakeString(v))
 			case genid.FieldDescriptorProto_DefaultValue_field_number:
-				xd.L2.Default.val = protoreflect.ValueOfBytes(v) // temporarily store as bytes; later resolved in resolveExtensions
+				xd.L2.Default.val = protoreflect.ValueOfBytes(v) 
 			case genid.FieldDescriptorProto_TypeName_field_number:
 				rawTypeName = v
 			case genid.FieldDescriptorProto_Options_field_number:
@@ -657,8 +657,8 @@ func (md *Method) unmarshalFull(b []byte, sb *strs.Builder, pf *File, pd protore
 	md.L1.Options = pf.builder.optionsUnmarshaler(&descopts.Method, rawOptions)
 }
 
-// appendOptions appends src to dst, where the returned slice is never nil.
-// This is necessary to distinguish between empty and unpopulated options.
+
+
 func appendOptions(dst, src []byte) []byte {
 	if dst == nil {
 		dst = []byte{}
@@ -666,10 +666,10 @@ func appendOptions(dst, src []byte) []byte {
 	return append(dst, src...)
 }
 
-// optionsUnmarshaler constructs a lazy unmarshal function for an options message.
-//
-// The type of message to unmarshal to is passed as a pointer since the
-// vars in descopts may not yet be populated at the time this function is called.
+
+
+
+
 func (db *Builder) optionsUnmarshaler(p *protoreflect.ProtoMessage, b []byte) func() protoreflect.ProtoMessage {
 	if b == nil {
 		return nil

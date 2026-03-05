@@ -8,7 +8,7 @@ func init() {
 	protocol.Register(&Request{}, &Response{})
 }
 
-// Detailed API definition: https://kafka.apache.org/protocol#The_Messages_ListGroups
+
 type Request struct {
 	_        struct{} `kafka:"min=v0,max=v2"`
 	brokerID int32
@@ -44,7 +44,7 @@ type ResponseGroup struct {
 	GroupID      string `kafka:"min=v0,max=v2"`
 	ProtocolType string `kafka:"min=v0,max=v2"`
 
-	// Use this to store which broker returned the response
+	
 	BrokerID int32 `kafka:"-"`
 }
 

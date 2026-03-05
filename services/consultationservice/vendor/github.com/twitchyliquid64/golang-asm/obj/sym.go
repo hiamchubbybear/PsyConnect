@@ -1,33 +1,33 @@
-// Derived from Inferno utils/6l/obj.c and utils/6l/span.c
-// https://bitbucket.org/inferno-os/inferno-os/src/master/utils/6l/obj.c
-// https://bitbucket.org/inferno-os/inferno-os/src/master/utils/6l/span.c
-//
-//	Copyright © 1994-1999 Lucent Technologies Inc.  All rights reserved.
-//	Portions Copyright © 1995-1997 C H Forsyth (forsyth@terzarima.net)
-//	Portions Copyright © 1997-1999 Vita Nuova Limited
-//	Portions Copyright © 2000-2007 Vita Nuova Holdings Limited (www.vitanuova.com)
-//	Portions Copyright © 2004,2006 Bruce Ellis
-//	Portions Copyright © 2005-2007 C H Forsyth (forsyth@terzarima.net)
-//	Revisions Copyright © 2000-2007 Lucent Technologies Inc. and others
-//	Portions Copyright © 2009 The Go Authors. All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package obj
 
@@ -56,8 +56,8 @@ func Linknew(arch *LinkArch) *Link {
 	return ctxt
 }
 
-// LookupDerived looks up or creates the symbol with name name derived from symbol s.
-// The resulting symbol will be static iff s is.
+
+
 func (ctxt *Link) LookupDerived(s *LSym, name string) *LSym {
 	if s.Static() {
 		return ctxt.LookupStatic(name)
@@ -65,8 +65,8 @@ func (ctxt *Link) LookupDerived(s *LSym, name string) *LSym {
 	return ctxt.Lookup(name)
 }
 
-// LookupStatic looks up the static symbol with name name.
-// If it does not exist, it creates it.
+
+
 func (ctxt *Link) LookupStatic(name string) *LSym {
 	s := ctxt.statichash[name]
 	if s == nil {
@@ -76,15 +76,15 @@ func (ctxt *Link) LookupStatic(name string) *LSym {
 	return s
 }
 
-// LookupABI looks up a symbol with the given ABI.
-// If it does not exist, it creates it.
+
+
 func (ctxt *Link) LookupABI(name string, abi ABI) *LSym {
 	return ctxt.LookupABIInit(name, abi, nil)
 }
 
-// LookupABI looks up a symbol with the given ABI.
-// If it does not exist, it creates it and
-// passes it to init for one-time initialization.
+
+
+
 func (ctxt *Link) LookupABIInit(name string, abi ABI, init func(s *LSym)) *LSym {
 	var hash map[string]*LSym
 	switch abi {
@@ -110,15 +110,15 @@ func (ctxt *Link) LookupABIInit(name string, abi ABI, init func(s *LSym)) *LSym 
 	return s
 }
 
-// Lookup looks up the symbol with name name.
-// If it does not exist, it creates it.
+
+
 func (ctxt *Link) Lookup(name string) *LSym {
 	return ctxt.LookupInit(name, nil)
 }
 
-// LookupInit looks up the symbol with name name.
-// If it does not exist, it creates it and
-// passes it to init for one-time initialization.
+
+
+
 func (ctxt *Link) LookupInit(name string, init func(s *LSym)) *LSym {
 	ctxt.hashmu.Lock()
 	s := ctxt.hash[name]
@@ -171,22 +171,22 @@ func (ctxt *Link) Int64Sym(i int64) *LSym {
 	})
 }
 
-// Assign index to symbols.
-// asm is set to true if this is called by the assembler (i.e. not the compiler),
-// in which case all the symbols are non-package (for now).
+
+
+
 func (ctxt *Link) NumberSyms() {
 	if ctxt.Headtype == objabi.Haix {
-		// Data must be sorted to keep a constant order in TOC symbols.
-		// As they are created during Progedit, two symbols can be switched between
-		// two different compilations. Therefore, BuildID will be different.
-		// TODO: find a better place and optimize to only sort TOC symbols
+		
+		
+		
+		
 		sort.Slice(ctxt.Data, func(i, j int) bool {
 			return ctxt.Data[i].Name < ctxt.Data[j].Name
 		})
 	}
 
-	// Constant symbols are created late in the concurrent phase. Sort them
-	// to ensure a deterministic order.
+	
+	
 	sort.Slice(ctxt.constSyms, func(i, j int) bool {
 		return ctxt.constSyms[i].Name < ctxt.constSyms[j].Name
 	})
@@ -201,10 +201,10 @@ func (ctxt *Link) NumberSyms() {
 
 	var idx, hashedidx, hashed64idx, nonpkgidx int32
 	ctxt.traverseSyms(traverseDefs, func(s *LSym) {
-		// if Pkgpath is unknown, cannot hash symbols with relocations, as it
-		// may reference named symbols whose names are not fully expanded.
+		
+		
 		if s.ContentAddressable() && (ctxt.Pkgpath != "" || len(s.R) == 0) {
-			if len(s.P) <= 8 && len(s.R) == 0 { // we can use short hash only for symbols without relocations
+			if len(s.P) <= 8 && len(s.R) == 0 { 
 				s.PkgIdx = goobj.PkgIdxHashed64
 				s.SymIdx = hashed64idx
 				if hashed64idx != int32(len(ctxt.hashed64defs)) {
@@ -241,16 +241,16 @@ func (ctxt *Link) NumberSyms() {
 		s.Set(AttrIndexed, true)
 	})
 
-	ipkg := int32(1) // 0 is invalid index
+	ipkg := int32(1) 
 	nonpkgdef := nonpkgidx
 	ctxt.traverseSyms(traverseRefs|traverseAux, func(rs *LSym) {
 		if rs.PkgIdx != goobj.PkgIdxInvalid {
 			return
 		}
 		if !ctxt.Flag_linkshared {
-			// Assign special index for builtin symbols.
-			// Don't do it when linking against shared libraries, as the runtime
-			// may be in a different library.
+			
+			
+			
 			if i := goobj.BuiltinIdx(rs.Name, int(rs.ABI())); i != -1 {
 				rs.PkgIdx = goobj.PkgIdxBuiltin
 				rs.SymIdx = int32(i)
@@ -260,7 +260,7 @@ func (ctxt *Link) NumberSyms() {
 		}
 		pkg := rs.Pkg
 		if rs.ContentAddressable() {
-			// for now, only support content-addressable symbols that are always locally defined.
+			
 			panic("hashed refs unsupported for now")
 		}
 		if pkg == "" || pkg == "\"\"" || pkg == "_" || !rs.Indexed() {
@@ -284,34 +284,34 @@ func (ctxt *Link) NumberSyms() {
 	})
 }
 
-// Returns whether s is a non-package symbol, which needs to be referenced
-// by name instead of by index.
+
+
 func isNonPkgSym(ctxt *Link, s *LSym) bool {
 	if ctxt.IsAsm && !s.Static() {
-		// asm symbols are referenced by name only, except static symbols
-		// which are file-local and can be referenced by index.
+		
+		
 		return true
 	}
 	if ctxt.Flag_linkshared {
-		// The referenced symbol may be in a different shared library so
-		// the linker cannot see its index.
+		
+		
 		return true
 	}
 	if s.Pkg == "_" {
-		// The frontend uses package "_" to mark symbols that should not
-		// be referenced by index, e.g. linkname'd symbols.
+		
+		
 		return true
 	}
 	if s.DuplicateOK() {
-		// Dupok symbol needs to be dedup'd by name.
+		
 		return true
 	}
 	return false
 }
 
-// StaticNamePref is the prefix the front end applies to static temporary
-// variables. When turned into LSyms, these can be tagged as static so
-// as to avoid inserting them into the linker's name lookup tables.
+
+
+
 const StaticNamePref = ".stmp_"
 
 type traverseFlag uint32
@@ -324,7 +324,7 @@ const (
 	traverseAll = traverseDefs | traverseRefs | traverseAux
 )
 
-// Traverse symbols based on flag, call fn for each symbol.
+
 func (ctxt *Link) traverseSyms(flag traverseFlag, fn func(*LSym)) {
 	lists := [][]*LSym{ctxt.Text, ctxt.Data, ctxt.ABIAliases}
 	for _, list := range lists {
@@ -357,8 +357,8 @@ func (ctxt *Link) traverseSyms(flag traverseFlag, fn func(*LSym)) {
 func (ctxt *Link) traverseFuncAux(flag traverseFlag, fsym *LSym, fn func(parent *LSym, aux *LSym)) {
 	pc := &fsym.Func.Pcln
 	if flag&traverseAux == 0 {
-		// NB: should it become necessary to walk aux sym reloc references
-		// without walking the aux syms themselves, this can be changed.
+		
+		
 		panic("should not be here")
 	}
 	for _, d := range pc.Funcdata {
@@ -402,7 +402,7 @@ func (ctxt *Link) traverseFuncAux(flag traverseFlag, fsym *LSym, fn func(parent 
 	}
 }
 
-// Traverse aux symbols, calling fn for each sym/aux pair.
+
 func (ctxt *Link) traverseAuxSyms(flag traverseFlag, fn func(parent *LSym, aux *LSym)) {
 	lists := [][]*LSym{ctxt.Text, ctxt.Data, ctxt.ABIAliases}
 	for _, list := range lists {

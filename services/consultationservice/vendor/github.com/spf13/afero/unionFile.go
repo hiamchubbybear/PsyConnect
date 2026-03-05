@@ -7,19 +7,19 @@ import (
 	"syscall"
 )
 
-// The UnionFile implements the afero.File interface and will be returned
-// when reading a directory present at least in the overlay or opening a file
-// for writing.
-//
-// The calls to
-// Readdir() and Readdirnames() merge the file os.FileInfo / names from the
-// base and the overlay - for files present in both layers, only those
-// from the overlay will be used.
-//
-// When opening files for writing (Create() / OpenFile() with the right flags)
-// the operations will be done in both layers, starting with the overlay. A
-// successful read in the overlay will move the cursor position in the base layer
-// by the number of bytes read.
+
+
+
+
+
+
+
+
+
+
+
+
+
 type UnionFile struct {
 	Base   File
 	Layer  File
@@ -29,9 +29,9 @@ type UnionFile struct {
 }
 
 func (f *UnionFile) Close() error {
-	// first close base, so we have a newer timestamp in the overlay. If we'd close
-	// the overlay first, we'd get a cacheStale the next time we access this file
-	// -> cache would be useless ;-)
+	
+	
+	
 	if f.Base != nil {
 		f.Base.Close()
 	}
@@ -45,11 +45,11 @@ func (f *UnionFile) Read(s []byte) (int, error) {
 	if f.Layer != nil {
 		n, err := f.Layer.Read(s)
 		if (err == nil || err == io.EOF) && f.Base != nil {
-			// advance the file position also in the base file, the next
-			// call may be a write at this position (or a seek with SEEK_CUR)
+			
+			
 			if _, seekErr := f.Base.Seek(int64(n), io.SeekCurrent); seekErr != nil {
-				// only overwrite err in case the seek fails: we need to
-				// report an eventual io.EOF to the caller
+				
+				
 				err = seekErr
 			}
 		}
@@ -92,7 +92,7 @@ func (f *UnionFile) Seek(o int64, w int) (pos int64, err error) {
 func (f *UnionFile) Write(s []byte) (n int, err error) {
 	if f.Layer != nil {
 		n, err = f.Layer.Write(s)
-		if err == nil && f.Base != nil { // hmm, do we have fixed size files where a write may hit the EOF mark?
+		if err == nil && f.Base != nil { 
 			_, err = f.Base.Write(s)
 		}
 		return n, err
@@ -124,9 +124,9 @@ func (f *UnionFile) Name() string {
 	return f.Base.Name()
 }
 
-// DirsMerger is how UnionFile weaves two directories together.
-// It takes the FileInfo slices from the layer and the base and returns a
-// single view.
+
+
+
 type DirsMerger func(lofi, bofi []os.FileInfo) ([]os.FileInfo, error)
 
 var defaultUnionMergeDirsFn = func(lofi, bofi []os.FileInfo) ([]os.FileInfo, error) {
@@ -153,9 +153,9 @@ var defaultUnionMergeDirsFn = func(lofi, bofi []os.FileInfo) ([]os.FileInfo, err
 	return rfi, nil
 }
 
-// Readdir will weave the two directories together and
-// return a single view of the overlayed directories.
-// At the end of the directory view, the error is io.EOF if c > 0.
+
+
+
 func (f *UnionFile) Readdir(c int) (ofi []os.FileInfo, err error) {
 	var merge DirsMerger = f.Merger
 	if merge == nil {
@@ -268,26 +268,26 @@ func (f *UnionFile) WriteString(s string) (n int, err error) {
 }
 
 func copyFile(base Fs, layer Fs, name string, bfh File) error {
-	// First make sure the directory exists
+	
 	exists, err := Exists(layer, filepath.Dir(name))
 	if err != nil {
 		return err
 	}
 	if !exists {
-		err = layer.MkdirAll(filepath.Dir(name), 0o777) // FIXME?
+		err = layer.MkdirAll(filepath.Dir(name), 0o777) 
 		if err != nil {
 			return err
 		}
 	}
 
-	// Create the file on the overlay
+	
 	lfh, err := layer.Create(name)
 	if err != nil {
 		return err
 	}
 	n, err := io.Copy(lfh, bfh)
 	if err != nil {
-		// If anything fails, clean up the file
+		
 		layer.Remove(name)
 		lfh.Close()
 		return err

@@ -4,13 +4,13 @@ import (
 	"io"
 )
 
-// IteratorPool a thread safe pool of iterators with same configuration
+
 type IteratorPool interface {
 	BorrowIterator(data []byte) *Iterator
 	ReturnIterator(iter *Iterator)
 }
 
-// StreamPool a thread safe pool of streams with same configuration
+
 type StreamPool interface {
 	BorrowStream(writer io.Writer) *Stream
 	ReturnStream(stream *Stream)

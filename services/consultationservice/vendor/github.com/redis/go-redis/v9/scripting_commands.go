@@ -54,8 +54,8 @@ func (c cmdable) eval(ctx context.Context, name, payload string, keys []string, 
 	cmdArgs = appendArgs(cmdArgs, args)
 	cmd := NewCmd(ctx, cmdArgs...)
 
-	// it is possible that only args exist without a key.
-	// rdb.eval(ctx, eval, script, nil, arg1, arg2)
+	
+	
 	if len(keys) > 0 {
 		cmd.SetFirstKeyPos(3)
 	}
@@ -93,14 +93,14 @@ func (c cmdable) ScriptLoad(ctx context.Context, script string) *StringCmd {
 	return cmd
 }
 
-// ------------------------------------------------------------------------------
 
-// FunctionListQuery is used with FunctionList to query for Redis libraries
-//
-//	  	LibraryNamePattern 	- Use an empty string to get all libraries.
-//	  						- Use a glob-style pattern to match multiple libraries with a matching name
-//	  						- Use a library's full name to match a single library
-//		WithCode			- If true, it will return the code of the library
+
+
+
+
+
+
+
 type FunctionListQuery struct {
 	LibraryNamePattern string
 	WithCode           bool
@@ -185,8 +185,8 @@ func (c cmdable) FCall(ctx context.Context, function string, keys []string, args
 	return cmd
 }
 
-// FCallRo this function simply calls FCallRO,
-// Deprecated: to maintain convention FCallRO.
+
+
 func (c cmdable) FCallRo(ctx context.Context, function string, keys []string, args ...interface{}) *Cmd {
 	return c.FCallRO(ctx, function, keys, args...)
 }

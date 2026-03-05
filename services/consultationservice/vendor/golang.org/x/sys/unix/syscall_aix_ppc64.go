@@ -1,15 +1,15 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 //go:build aix && ppc64
 
 package unix
 
-//sysnb	Getrlimit(resource int, rlim *Rlimit) (err error)
-//sys	Seek(fd int, offset int64, whence int) (off int64, err error) = lseek
 
-//sys	mmap(addr uintptr, length uintptr, prot int, flags int, fd int, offset int64) (xaddr uintptr, err error) = mmap64
+
+
+
 
 func setTimespec(sec, nsec int64) Timespec {
 	return Timespec{Sec: sec, Nsec: nsec}
@@ -35,11 +35,11 @@ func (cmsg *Cmsghdr) SetLen(length int) {
 	cmsg.Len = uint32(length)
 }
 
-// In order to only have Timespec structure, type of Stat_t's fields
-// Atim, Mtim and Ctim is changed from StTimespec to Timespec during
-// ztypes generation.
-// On ppc64, Timespec.Nsec is an int64 while StTimespec.Nsec is an
-// int32, so the fields' value must be modified.
+
+
+
+
+
 func fixStatTimFields(stat *Stat_t) {
 	stat.Atim.Nsec >>= 32
 	stat.Mtim.Nsec >>= 32

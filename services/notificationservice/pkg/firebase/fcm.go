@@ -25,7 +25,7 @@ func NewFCMService(credentialsPath string) (*FCMService, error) {
 		opt := option.WithCredentialsFile(credentialsPath)
 		app, err = firebase.NewApp(ctx, nil, opt)
 	} else {
-		// Use default credentials (from environment)
+		
 		app, err = firebase.NewApp(ctx, nil)
 	}
 
@@ -46,7 +46,7 @@ func NewFCMService(credentialsPath string) (*FCMService, error) {
 	}, nil
 }
 
-// SendPushNotification sends a push notification to a specific device
+
 func (f *FCMService) SendPushNotification(token, title, body string, data map[string]string) error {
 	message := &messaging.Message{
 		Token: token,
@@ -74,7 +74,7 @@ func (f *FCMService) SendPushNotification(token, title, body string, data map[st
 	return nil
 }
 
-// SendMulticast sends a notification to multiple devices
+
 func (f *FCMService) SendMulticast(tokens []string, title, body string, data map[string]string) error {
 	message := &messaging.MulticastMessage{
 		Tokens: tokens,

@@ -49,11 +49,11 @@ export class NotificationService {
         console.log('Notification nhận được:', payload);
         const { title, body } = payload.notification || {};
         new Notification(title || 'Thông báo', { body });
-        // Refresh local list when push arrives
+        
         this.fetchNotifications(userId);
       });
 
-      // Initial fetch
+      
       this.fetchNotifications(userId);
     } catch (error) {
       console.error('Lỗi khi khởi tạo notification:', error);
@@ -82,7 +82,7 @@ export class NotificationService {
         { headers }
       )
       .subscribe(() => {
-        // Optimistic update
+        
         const current = this.notificationsSubject.value;
         const updated = current.map((n) =>
           n.id === notificationId ? { ...n, isRead: true } : n

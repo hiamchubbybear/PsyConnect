@@ -22,20 +22,20 @@ func NewStartCallUseCase(sessionRepo repo.SessionRepository, producer *kafka.Pro
 }
 
 func (uc *StartCallUseCase) Execute(ctx context.Context, sessionID string, callerID string) error {
-	// 1. Get Session
+	
 	session, err := uc.sessionRepo.GetByID(ctx, sessionID)
 	if err != nil {
 		return fmt.Errorf("session not found: %w", err)
 	}
 
-	// 2. Validate
+	
 	if !session.CanStartCall() {
-		// return errors.New("session is not active or not within allowed time window")
-		// For testing, we might want to relax this or just logging warning
+		
+		
 	}
 
-	// 3. Construct Payload
-	// Determine the receiver (the OTHER person in the session)
+	
+	
 	var receiverID string
 	if callerID == session.ClientID {
 		receiverID = session.TherapistID
@@ -48,11 +48,11 @@ func (uc *StartCallUseCase) Execute(ctx context.Context, sessionID string, calle
 	payload := domain.IncomingCallPayload{
 		SessionID:  session.SessionID,
 		CallerID:   callerID,
-		CallerName: "Incoming Call", // Ideally fetch name from Profile Service, but keep simple for now
-		// CallerAvatar: ...
+		CallerName: "Incoming Call", 
+		
 	}
 
-	// 4. Send Event
+	
 	err = uc.producer.SendIncomingCallEvent(struct {
 		ReceiverID string                     `json:"receiver_id"`
 		Payload    domain.IncomingCallPayload `json:"payload"`

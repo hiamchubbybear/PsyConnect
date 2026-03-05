@@ -92,6 +92,34 @@ nav.header-center {
   gap: 0.25rem;
   flex-shrink: 0;
 
+  .search-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: var(--color-text-muted);
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+      color: var(--color-text);
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
   ::ng-deep app-dropdown {
     .dropdown {
       min-width: 0;
@@ -283,11 +311,11 @@ nav.header-center {
 
 :host-context([data-theme="dark"]) {
   .header {
-    background: rgba(20, 20, 28, 0.85);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(10, 15, 30, 0.85); 
+    border-color: rgba(255, 255, 255, 0.12);
     box-shadow:
-      0 4px 24px rgba(0, 0, 0, 0.45),
-      0 1px 0 rgba(255, 255, 255, 0.06) inset;
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      0 1px 0 rgba(255, 255, 255, 0.08) inset;
 
     nav.header-center a {
       color: rgba(255, 255, 255, 0.65) !important;

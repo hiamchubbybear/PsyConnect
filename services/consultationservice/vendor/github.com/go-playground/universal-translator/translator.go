@@ -14,55 +14,55 @@ const (
 	unknownTranslation = ""
 )
 
-// Translator is universal translators
-// translator instance which is a thin wrapper
-// around locales.Translator instance providing
-// some extra functionality
+
+
+
+
 type Translator interface {
 	locales.Translator
 
-	// adds a normal translation for a particular language/locale
-	// {#} is the only replacement type accepted and are ad infinitum
-	// eg. one: '{0} day left' other: '{0} days left'
+	
+	
+	
 	Add(key interface{}, text string, override bool) error
 
-	// adds a cardinal plural translation for a particular language/locale
-	// {0} is the only replacement type accepted and only one variable is accepted as
-	// multiple cannot be used for a plural rule determination, unless it is a range;
-	// see AddRange below.
-	// eg. in locale 'en' one: '{0} day left' other: '{0} days left'
+	
+	
+	
+	
+	
 	AddCardinal(key interface{}, text string, rule locales.PluralRule, override bool) error
 
-	// adds an ordinal plural translation for a particular language/locale
-	// {0} is the only replacement type accepted and only one variable is accepted as
-	// multiple cannot be used for a plural rule determination, unless it is a range;
-	// see AddRange below.
-	// eg. in locale 'en' one: '{0}st day of spring' other: '{0}nd day of spring'
-	// - 1st, 2nd, 3rd...
+	
+	
+	
+	
+	
+	
 	AddOrdinal(key interface{}, text string, rule locales.PluralRule, override bool) error
 
-	// adds a range plural translation for a particular language/locale
-	// {0} and {1} are the only replacement types accepted and only these are accepted.
-	// eg. in locale 'nl' one: '{0}-{1} day left' other: '{0}-{1} days left'
+	
+	
+	
 	AddRange(key interface{}, text string, rule locales.PluralRule, override bool) error
 
-	// creates the translation for the locale given the 'key' and params passed in
+	
 	T(key interface{}, params ...string) (string, error)
 
-	// creates the cardinal translation for the locale given the 'key', 'num' and 'digit' arguments
-	//  and param passed in
+	
+	
 	C(key interface{}, num float64, digits uint64, param string) (string, error)
 
-	// creates the ordinal translation for the locale given the 'key', 'num' and 'digit' arguments
-	// and param passed in
+	
+	
 	O(key interface{}, num float64, digits uint64, param string) (string, error)
 
-	//  creates the range translation for the locale given the 'key', 'num1', 'digit1', 'num2' and
-	//  'digit2' arguments and 'param1' and 'param2' passed in
+	
+	
 	R(key interface{}, num1 float64, digits1 uint64, num2 float64, digits2 uint64, param1, param2 string) (string, error)
 
-	// VerifyTranslations checks to ensures that no plural rules have been
-	// missed within the translations.
+	
+	
 	VerifyTranslations() error
 }
 
@@ -72,7 +72,7 @@ var _ locales.Translator = new(translator)
 type translator struct {
 	locales.Translator
 	translations        map[interface{}]*transText
-	cardinalTanslations map[interface{}][]*transText // array index is mapped to locales.PluralRule index + the locales.PluralRuleUnknown
+	cardinalTanslations map[interface{}][]*transText 
 	ordinalTanslations  map[interface{}][]*transText
 	rangeTanslations    map[interface{}][]*transText
 }
@@ -85,16 +85,16 @@ type transText struct {
 func newTranslator(trans locales.Translator) Translator {
 	return &translator{
 		Translator:          trans,
-		translations:        make(map[interface{}]*transText), // translation text broken up by byte index
+		translations:        make(map[interface{}]*transText), 
 		cardinalTanslations: make(map[interface{}][]*transText),
 		ordinalTanslations:  make(map[interface{}][]*transText),
 		rangeTanslations:    make(map[interface{}][]*transText),
 	}
 }
 
-// Add adds a normal translation for a particular language/locale
-// {#} is the only replacement type accepted and are ad infinitum
-// eg. one: '{0} day left' other: '{0} days left'
+
+
+
 func (t *translator) Add(key interface{}, text string, override bool) error {
 
 	if _, ok := t.translations[key]; ok && !override {
@@ -130,16 +130,16 @@ func (t *translator) Add(key interface{}, text string, override bool) error {
 	return nil
 }
 
-// AddCardinal adds a cardinal plural translation for a particular language/locale
-// {0} is the only replacement type accepted and only one variable is accepted as
-// multiple cannot be used for a plural rule determination, unless it is a range;
-// see AddRange below.
-// eg. in locale 'en' one: '{0} day left' other: '{0} days left'
+
+
+
+
+
 func (t *translator) AddCardinal(key interface{}, text string, rule locales.PluralRule, override bool) error {
 
 	var verified bool
 
-	// verify plural rule exists for locale
+	
 	for _, pr := range t.PluralsCardinal() {
 		if pr == rule {
 			verified = true
@@ -153,7 +153,7 @@ func (t *translator) AddCardinal(key interface{}, text string, rule locales.Plur
 
 	tarr, ok := t.cardinalTanslations[key]
 	if ok {
-		// verify not adding a conflicting record
+		
 		if len(tarr) > 0 && tarr[rule] != nil && !override {
 			return &ErrConflictingTranslation{locale: t.Locale(), key: key, rule: rule, text: text}
 		}
@@ -182,16 +182,16 @@ func (t *translator) AddCardinal(key interface{}, text string, rule locales.Plur
 	return nil
 }
 
-// AddOrdinal adds an ordinal plural translation for a particular language/locale
-// {0} is the only replacement type accepted and only one variable is accepted as
-// multiple cannot be used for a plural rule determination, unless it is a range;
-// see AddRange below.
-// eg. in locale 'en' one: '{0}st day of spring' other: '{0}nd day of spring' - 1st, 2nd, 3rd...
+
+
+
+
+
 func (t *translator) AddOrdinal(key interface{}, text string, rule locales.PluralRule, override bool) error {
 
 	var verified bool
 
-	// verify plural rule exists for locale
+	
 	for _, pr := range t.PluralsOrdinal() {
 		if pr == rule {
 			verified = true
@@ -205,7 +205,7 @@ func (t *translator) AddOrdinal(key interface{}, text string, rule locales.Plura
 
 	tarr, ok := t.ordinalTanslations[key]
 	if ok {
-		// verify not adding a conflicting record
+		
 		if len(tarr) > 0 && tarr[rule] != nil && !override {
 			return &ErrConflictingTranslation{locale: t.Locale(), key: key, rule: rule, text: text}
 		}
@@ -234,14 +234,14 @@ func (t *translator) AddOrdinal(key interface{}, text string, rule locales.Plura
 	return nil
 }
 
-// AddRange adds a range plural translation for a particular language/locale
-// {0} and {1} are the only replacement types accepted and only these are accepted.
-// eg. in locale 'nl' one: '{0}-{1} day left' other: '{0}-{1} days left'
+
+
+
 func (t *translator) AddRange(key interface{}, text string, rule locales.PluralRule, override bool) error {
 
 	var verified bool
 
-	// verify plural rule exists for locale
+	
 	for _, pr := range t.PluralsRange() {
 		if pr == rule {
 			verified = true
@@ -255,7 +255,7 @@ func (t *translator) AddRange(key interface{}, text string, rule locales.PluralR
 
 	tarr, ok := t.rangeTanslations[key]
 	if ok {
-		// verify not adding a conflicting record
+		
 		if len(tarr) > 0 && tarr[rule] != nil && !override {
 			return &ErrConflictingTranslation{locale: t.Locale(), key: key, rule: rule, text: text}
 		}
@@ -293,7 +293,7 @@ func (t *translator) AddRange(key interface{}, text string, rule locales.PluralR
 	return nil
 }
 
-// T creates the translation for the locale given the 'key' and params passed in
+
 func (t *translator) T(key interface{}, params ...string) (string, error) {
 
 	trans, ok := t.translations[key]
@@ -319,7 +319,7 @@ func (t *translator) T(key interface{}, params ...string) (string, error) {
 	return string(b), nil
 }
 
-// C creates the cardinal translation for the locale given the 'key', 'num' and 'digit' arguments and param passed in
+
 func (t *translator) C(key interface{}, num float64, digits uint64, param string) (string, error) {
 
 	tarr, ok := t.cardinalTanslations[key]
@@ -339,7 +339,7 @@ func (t *translator) C(key interface{}, num float64, digits uint64, param string
 	return string(b), nil
 }
 
-// O creates the ordinal translation for the locale given the 'key', 'num' and 'digit' arguments and param passed in
+
 func (t *translator) O(key interface{}, num float64, digits uint64, param string) (string, error) {
 
 	tarr, ok := t.ordinalTanslations[key]
@@ -359,8 +359,8 @@ func (t *translator) O(key interface{}, num float64, digits uint64, param string
 	return string(b), nil
 }
 
-// R creates the range translation for the locale given the 'key', 'num1', 'digit1', 'num2' and 'digit2' arguments
-// and 'param1' and 'param2' passed in
+
+
 func (t *translator) R(key interface{}, num1 float64, digits1 uint64, num2 float64, digits2 uint64, param1, param2 string) (string, error) {
 
 	tarr, ok := t.rangeTanslations[key]
@@ -382,8 +382,8 @@ func (t *translator) R(key interface{}, num1 float64, digits1 uint64, num2 float
 	return string(b), nil
 }
 
-// VerifyTranslations checks to ensures that no plural rules have been
-// missed within the translations.
+
+
 func (t *translator) VerifyTranslations() error {
 
 	for k, v := range t.cardinalTanslations {

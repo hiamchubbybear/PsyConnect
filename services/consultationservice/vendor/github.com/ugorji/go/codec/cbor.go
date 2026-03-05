@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
+
+
 
 package codec
 
@@ -10,7 +10,7 @@ import (
 	"unicode/utf8"
 )
 
-// major
+
 const (
 	cborMajorUint byte = iota
 	cborMajorNegInt
@@ -22,7 +22,7 @@ const (
 	cborMajorSimpleOrFloat
 )
 
-// simple
+
 const (
 	cborBdFalse byte = 0xf4 + iota
 	cborBdTrue
@@ -34,7 +34,7 @@ const (
 	cborBdFloat64
 )
 
-// indefinite
+
 const (
 	cborBdIndefiniteBytes  byte = 0x5f
 	cborBdIndefiniteString byte = 0x7f
@@ -43,8 +43,8 @@ const (
 	cborBdBreak            byte = 0xff
 )
 
-// These define some in-stream descriptors for
-// manual encoding e.g. when doing explicit indefinite-length
+
+
 const (
 	CborStreamBytes  byte = 0x5f
 	CborStreamString byte = 0x7f
@@ -53,7 +53,7 @@ const (
 	CborStreamBreak  byte = 0xff
 )
 
-// base values
+
 const (
 	cborBaseUint   byte = 0x00
 	cborBaseNegInt byte = 0x20
@@ -65,11 +65,11 @@ const (
 	cborBaseSimple byte = 0xe0
 )
 
-// const (
-// 	cborSelfDesrTag  byte = 0xd9
-// 	cborSelfDesrTag2 byte = 0xd9
-// 	cborSelfDesrTag3 byte = 0xf7
-// )
+
+
+
+
+
 
 var (
 	cbordescSimpleNames = map[byte]string{
@@ -115,7 +115,7 @@ func cbordesc(bd byte) (s string) {
 	return
 }
 
-// -------------------
+
 
 type cborEncDriver struct {
 	noBuiltInTypes
@@ -123,9 +123,9 @@ type cborEncDriver struct {
 	encDriverNoopContainerWriter
 	h *CborHandle
 
-	// scratch buffer for: encode time, numbers, etc
-	//
-	// RFC3339Nano uses 35 chars: 2006-01-02T15:04:05.999999999Z07:00
+	
+	
+	
 	b [40]byte
 
 	e Encoder
@@ -182,7 +182,7 @@ func (e *cborEncDriver) encUint(v uint64, bd byte) {
 	} else if v <= math.MaxUint32 {
 		e.e.encWr.writen1(bd + 0x1a)
 		bigen.writeUint32(e.e.w(), uint32(v))
-	} else { // if v <= math.MaxUint64 {
+	} else { 
 		e.e.encWr.writen1(bd + 0x1b)
 		bigen.writeUint64(e.e.w(), v)
 	}
@@ -235,7 +235,7 @@ func (e *cborEncDriver) EncodeExt(rv interface{}, basetype reflect.Type, xtag ui
 
 func (e *cborEncDriver) EncodeRawExt(re *RawExt) {
 	e.encUint(uint64(re.Tag), cborBaseTag)
-	// only encodes re.Value (never re.Data)
+	
 	if re.Value != nil {
 		e.e.encode(re.Value)
 	} else {
@@ -320,15 +320,15 @@ func (e *cborEncDriver) encStringBytesS(bb byte, v string) {
 	}
 }
 
-// ----------------------
+
 
 type cborDecDriver struct {
 	decDriverNoopContainerReader
 	decDriverNoopNumberHelper
 	h *CborHandle
 	bdAndBdread
-	st bool // skip tags
-	_  bool // found nil
+	st bool 
+	_  bool 
 	noBuiltInTypes
 	d Decoder
 }
@@ -352,7 +352,7 @@ func (d *cborDecDriver) advanceNil() (null bool) {
 	}
 	if d.bd == cborBdNil || d.bd == cborBdUndefined {
 		d.bdRead = false
-		return true // null = true
+		return true 
 	}
 	return
 }
@@ -361,13 +361,13 @@ func (d *cborDecDriver) TryNil() bool {
 	return d.advanceNil()
 }
 
-// skipTags is called to skip any tags in the stream.
-//
-// Since any value can be tagged, then we should call skipTags
-// before any value is decoded.
-//
-// By definition, skipTags should not be called before
-// checking for break, or nil or undefined.
+
+
+
+
+
+
+
 func (d *cborDecDriver) skipTags() {
 	for d.bd>>5 == cborMajorTag {
 		d.decUint()
@@ -383,7 +383,7 @@ func (d *cborDecDriver) ContainerType() (vt valueType) {
 		d.skipTags()
 	}
 	if d.bd == cborBdNil {
-		d.bdRead = false // always consume nil after seeing it in container type
+		d.bdRead = false 
 		return valueTypeNil
 	}
 	major := d.bd >> 5
@@ -525,7 +525,7 @@ func (d *cborDecDriver) DecodeFloat64() (f float64) {
 	return
 }
 
-// bool can be decoded from bool only (single byte).
+
 func (d *cborDecDriver) DecodeBool() (b bool) {
 	if d.advanceNil() {
 		return
@@ -737,10 +737,10 @@ func (d *cborDecDriver) DecodeNaked() {
 			n.v = valueTypeTime
 			n.t = d.decodeTime(n.u)
 		} else if d.st && d.h.getExtForTag(n.u) == nil {
-			// d.skipTags() // no need to call this - tags already skipped
+			
 			d.bdRead = false
 			d.DecodeNaked()
-			return // return when done (as true recursive function)
+			return 
 		}
 	case cborMajorSimpleOrFloat:
 		switch d.bd {
@@ -758,7 +758,7 @@ func (d *cborDecDriver) DecodeNaked() {
 		default:
 			d.d.errorf("decodeNaked: Unrecognized d.bd: 0x%x", d.bd)
 		}
-	default: // should never happen
+	default: 
 		d.d.errorf("decodeNaked: Unrecognized d.bd: 0x%x", d.bd)
 	}
 	if !decodeFurther {
@@ -767,8 +767,8 @@ func (d *cborDecDriver) DecodeNaked() {
 }
 
 func (d *cborDecDriver) uintBytes() (v []byte, ui uint64) {
-	// this is only used by nextValueBytes, so it's ok to
-	// use readx and bigenstd here.
+	
+	
 	switch vv := d.bd & 0x1f; vv {
 	case 0x18:
 		v = d.d.decRd.readx(1)
@@ -883,7 +883,7 @@ func (d *cborDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 		v = d.nextValueBytesR(v)
 	case cborMajorSimpleOrFloat:
 		switch d.bd {
-		case cborBdNil, cborBdUndefined, cborBdFalse, cborBdTrue: // pass
+		case cborBdNil, cborBdUndefined, cborBdFalse, cborBdTrue: 
 		case cborBdFloat16:
 			h.appendN(&v, d.d.decRd.readx(2)...)
 		case cborBdFloat32:
@@ -893,49 +893,49 @@ func (d *cborDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 		default:
 			d.d.errorf("nextValueBytes: Unrecognized d.bd: 0x%x", d.bd)
 		}
-	default: // should never happen
+	default: 
 		d.d.errorf("nextValueBytes: Unrecognized d.bd: 0x%x", d.bd)
 	}
 	return
 }
 
-// -------------------------
 
-// CborHandle is a Handle for the CBOR encoding format,
-// defined at http://tools.ietf.org/html/rfc7049 and documented further at http://cbor.io .
-//
-// CBOR is comprehensively supported, including support for:
-//   - indefinite-length arrays/maps/bytes/strings
-//   - (extension) tags in range 0..0xffff (0 .. 65535)
-//   - half, single and double-precision floats
-//   - all numbers (1, 2, 4 and 8-byte signed and unsigned integers)
-//   - nil, true, false, ...
-//   - arrays and maps, bytes and text strings
-//
-// None of the optional extensions (with tags) defined in the spec are supported out-of-the-box.
-// Users can implement them as needed (using SetExt), including spec-documented ones:
-//   - timestamp, BigNum, BigFloat, Decimals,
-//   - Encoded Text (e.g. URL, regexp, base64, MIME Message), etc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type CborHandle struct {
 	binaryEncodingType
-	// noElemSeparators
+	
 	BasicHandle
 
-	// IndefiniteLength=true, means that we encode using indefinitelength
+	
 	IndefiniteLength bool
 
-	// TimeRFC3339 says to encode time.Time using RFC3339 format.
-	// If unset, we encode time.Time using seconds past epoch.
+	
+	
 	TimeRFC3339 bool
 
-	// SkipUnexpectedTags says to skip over any tags for which extensions are
-	// not defined. This is in keeping with the cbor spec on "Optional Tagging of Items".
-	//
-	// Furthermore, this allows the skipping over of the Self Describing Tag 0xd9d9f7.
+	
+	
+	
+	
 	SkipUnexpectedTags bool
 }
 
-// Name returns the name of the handle: cbor
+
 func (h *CborHandle) Name() string { return "cbor" }
 
 func (h *CborHandle) desc(bd byte) string { return cbordesc(bd) }

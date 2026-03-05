@@ -19,42 +19,42 @@ import (
 	"github.com/redis/go-redis/v9/internal/util"
 )
 
-//------------------------------------------------------------------------------
 
-// FailoverOptions are used to configure a failover client and should
-// be passed to NewFailoverClient.
+
+
+
 type FailoverOptions struct {
-	// The master name.
+	
 	MasterName string
-	// A seed list of host:port addresses of sentinel nodes.
+	
 	SentinelAddrs []string
 
-	// ClientName will execute the `CLIENT SETNAME ClientName` command for each conn.
+	
 	ClientName string
 
-	// If specified with SentinelPassword, enables ACL-based authentication (via
-	// AUTH <user> <pass>).
+	
+	
 	SentinelUsername string
-	// Sentinel password from "requirepass <password>" (if enabled) in Sentinel
-	// configuration, or, if SentinelUsername is also supplied, used for ACL-based
-	// authentication.
+	
+	
+	
 	SentinelPassword string
 
-	// Allows routing read-only commands to the closest master or replica node.
-	// This option only works with NewFailoverClusterClient.
+	
+	
 	RouteByLatency bool
-	// Allows routing read-only commands to the random master or replica node.
-	// This option only works with NewFailoverClusterClient.
+	
+	
 	RouteRandomly bool
 
-	// Route all commands to replica read-only nodes.
+	
 	ReplicaOnly bool
 
-	// Use replicas disconnected with master when cannot get connected replicas
-	// Now, this option only works in RandomReplicaAddr function.
+	
+	
 	UseDisconnectedReplicas bool
 
-	// Following options are copied from Options struct.
+	
 
 	Dialer    func(ctx context.Context, network, addr string) (net.Conn, error)
 	OnConnect func(ctx context.Context, cn *Conn) error
@@ -62,22 +62,22 @@ type FailoverOptions struct {
 	Protocol int
 	Username string
 	Password string
-	// CredentialsProvider allows the username and password to be updated
-	// before reconnecting. It should return the current username and password.
+	
+	
 	CredentialsProvider func() (username string, password string)
 
-	// CredentialsProviderContext is an enhanced parameter of CredentialsProvider,
-	// done to maintain API compatibility. In the future,
-	// there might be a merge between CredentialsProviderContext and CredentialsProvider.
-	// There will be a conflict between them; if CredentialsProviderContext exists, we will ignore CredentialsProvider.
+	
+	
+	
+	
 	CredentialsProviderContext func(ctx context.Context) (username string, password string, err error)
 
-	// StreamingCredentialsProvider is used to retrieve the credentials
-	// for the connection from an external source. Those credentials may change
-	// during the connection lifetime. This is useful for managed identity
-	// scenarios where the credentials are retrieved from an external source.
-	//
-	// Currently, this is a placeholder for the future implementation.
+	
+	
+	
+	
+	
+	
 	StreamingCredentialsProvider auth.StreamingCredentialsProvider
 	DB                           int
 
@@ -90,18 +90,18 @@ type FailoverOptions struct {
 	WriteTimeout          time.Duration
 	ContextTimeoutEnabled bool
 
-	// ReadBufferSize is the size of the bufio.Reader buffer for each connection.
-	// Larger buffers can improve performance for commands that return large responses.
-	// Smaller buffers can improve memory usage for larger pools.
-	//
-	// default: 256KiB (262144 bytes)
+	
+	
+	
+	
+	
 	ReadBufferSize int
 
-	// WriteBufferSize is the size of the bufio.Writer buffer for each connection.
-	// Larger buffers can improve performance for large pipelines and commands with many arguments.
-	// Smaller buffers can improve memory usage for larger pools.
-	//
-	// default: 256KiB (262144 bytes)
+	
+	
+	
+	
+	
 	WriteBufferSize int
 
 	PoolFIFO bool
@@ -116,16 +116,16 @@ type FailoverOptions struct {
 
 	TLSConfig *tls.Config
 
-	// DisableIndentity - Disable set-lib on connect.
-	//
-	// default: false
-	//
-	// Deprecated: Use DisableIdentity instead.
+	
+	
+	
+	
+	
 	DisableIndentity bool
 
-	// DisableIdentity is used to disable CLIENT SETINFO command on connect.
-	//
-	// default: false
+	
+	
+	
 	DisableIdentity bool
 
 	IdentitySuffix string
@@ -270,43 +270,43 @@ func (opt *FailoverOptions) clusterOptions() *ClusterOptions {
 	}
 }
 
-// ParseFailoverURL parses a URL into FailoverOptions that can be used to connect to Redis.
-// The URL must be in the form:
-//
-//	redis://<user>:<password>@<host>:<port>/<db_number>
-//	or
-//	rediss://<user>:<password>@<host>:<port>/<db_number>
-//
-// To add additional addresses, specify the query parameter, "addr" one or more times. e.g:
-//
-//	redis://<user>:<password>@<host>:<port>/<db_number>?addr=<host2>:<port2>&addr=<host3>:<port3>
-//	or
-//	rediss://<user>:<password>@<host>:<port>/<db_number>?addr=<host2>:<port2>&addr=<host3>:<port3>
-//
-// Most Option fields can be set using query parameters, with the following restrictions:
-//   - field names are mapped using snake-case conversion: to set MaxRetries, use max_retries
-//   - only scalar type fields are supported (bool, int, time.Duration)
-//   - for time.Duration fields, values must be a valid input for time.ParseDuration();
-//     additionally a plain integer as value (i.e. without unit) is interpreted as seconds
-//   - to disable a duration field, use value less than or equal to 0; to use the default
-//     value, leave the value blank or remove the parameter
-//   - only the last value is interpreted if a parameter is given multiple times
-//   - fields "network", "addr", "sentinel_username" and "sentinel_password" can only be set using other
-//     URL attributes (scheme, host, userinfo, resp.), query parameters using these
-//     names will be treated as unknown parameters
-//   - unknown parameter names will result in an error
-//   - use "skip_verify=true" to ignore TLS certificate validation
-//
-// Example:
-//
-//	redis://user:password@localhost:6789?master_name=mymaster&dial_timeout=3&read_timeout=6s&addr=localhost:6790&addr=localhost:6791
-//	is equivalent to:
-//	&FailoverOptions{
-//		MasterName:  "mymaster",
-//		Addr:        ["localhost:6789", "localhost:6790", "localhost:6791"]
-//		DialTimeout: 3 * time.Second, // no time unit = seconds
-//		ReadTimeout: 6 * time.Second,
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func ParseFailoverURL(redisURL string) (*FailoverOptions, error) {
 	u, err := url.Parse(redisURL)
 	if err != nil {
@@ -407,7 +407,7 @@ func setupFailoverConnParams(u *url.URL, o *FailoverOptions) (*FailoverOptions, 
 		o.TLSConfig.InsecureSkipVerify = q.bool("skip_verify")
 	}
 
-	// any parameters left?
+	
 	if r := q.remaining(); len(r) > 0 {
 		return nil, fmt.Errorf("redis: unexpected option: %s", strings.Join(r, ", "))
 	}
@@ -415,9 +415,9 @@ func setupFailoverConnParams(u *url.URL, o *FailoverOptions) (*FailoverOptions, 
 	return o, nil
 }
 
-// NewFailoverClient returns a Redis client that uses Redis Sentinel
-// for automatic failover. It's safe for concurrent use by multiple
-// goroutines.
+
+
+
 func NewFailoverClient(failoverOpt *FailoverOptions) *Client {
 	if failoverOpt == nil {
 		panic("redis: NewFailoverClient nil options")
@@ -503,9 +503,9 @@ func masterReplicaDialer(
 	}
 }
 
-//------------------------------------------------------------------------------
 
-// SentinelClient is a client for a Redis Sentinel.
+
+
 type SentinelClient struct {
 	*baseClient
 }
@@ -549,16 +549,16 @@ func (c *SentinelClient) pubSub() *PubSub {
 	return pubsub
 }
 
-// Ping is used to test if a connection is still alive, or to
-// measure latency.
+
+
 func (c *SentinelClient) Ping(ctx context.Context) *StringCmd {
 	cmd := NewStringCmd(ctx, "ping")
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// Subscribe subscribes the client to the specified channels.
-// Channels can be omitted to create empty subscription.
+
+
 func (c *SentinelClient) Subscribe(ctx context.Context, channels ...string) *PubSub {
 	pubsub := c.pubSub()
 	if len(channels) > 0 {
@@ -567,8 +567,8 @@ func (c *SentinelClient) Subscribe(ctx context.Context, channels ...string) *Pub
 	return pubsub
 }
 
-// PSubscribe subscribes the client to the given patterns.
-// Patterns can be omitted to create empty subscription.
+
+
 func (c *SentinelClient) PSubscribe(ctx context.Context, channels ...string) *PubSub {
 	pubsub := c.pubSub()
 	if len(channels) > 0 {
@@ -589,88 +589,88 @@ func (c *SentinelClient) Sentinels(ctx context.Context, name string) *MapStringS
 	return cmd
 }
 
-// Failover forces a failover as if the master was not reachable, and without
-// asking for agreement to other Sentinels.
+
+
 func (c *SentinelClient) Failover(ctx context.Context, name string) *StatusCmd {
 	cmd := NewStatusCmd(ctx, "sentinel", "failover", name)
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// Reset resets all the masters with matching name. The pattern argument is a
-// glob-style pattern. The reset process clears any previous state in a master
-// (including a failover in progress), and removes every replica and sentinel
-// already discovered and associated with the master.
+
+
+
+
 func (c *SentinelClient) Reset(ctx context.Context, pattern string) *IntCmd {
 	cmd := NewIntCmd(ctx, "sentinel", "reset", pattern)
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// FlushConfig forces Sentinel to rewrite its configuration on disk, including
-// the current Sentinel state.
+
+
 func (c *SentinelClient) FlushConfig(ctx context.Context) *StatusCmd {
 	cmd := NewStatusCmd(ctx, "sentinel", "flushconfig")
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// Master shows the state and info of the specified master.
+
 func (c *SentinelClient) Master(ctx context.Context, name string) *MapStringStringCmd {
 	cmd := NewMapStringStringCmd(ctx, "sentinel", "master", name)
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// Masters shows a list of monitored masters and their state.
+
 func (c *SentinelClient) Masters(ctx context.Context) *SliceCmd {
 	cmd := NewSliceCmd(ctx, "sentinel", "masters")
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// Replicas shows a list of replicas for the specified master and their state.
+
 func (c *SentinelClient) Replicas(ctx context.Context, name string) *MapStringStringSliceCmd {
 	cmd := NewMapStringStringSliceCmd(ctx, "sentinel", "replicas", name)
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// CkQuorum checks if the current Sentinel configuration is able to reach the
-// quorum needed to failover a master, and the majority needed to authorize the
-// failover. This command should be used in monitoring systems to check if a
-// Sentinel deployment is ok.
+
+
+
+
 func (c *SentinelClient) CkQuorum(ctx context.Context, name string) *StringCmd {
 	cmd := NewStringCmd(ctx, "sentinel", "ckquorum", name)
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// Monitor tells the Sentinel to start monitoring a new master with the specified
-// name, ip, port, and quorum.
+
+
 func (c *SentinelClient) Monitor(ctx context.Context, name, ip, port, quorum string) *StringCmd {
 	cmd := NewStringCmd(ctx, "sentinel", "monitor", name, ip, port, quorum)
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// Set is used in order to change configuration parameters of a specific master.
+
 func (c *SentinelClient) Set(ctx context.Context, name, option, value string) *StringCmd {
 	cmd := NewStringCmd(ctx, "sentinel", "set", name, option, value)
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-// Remove is used in order to remove the specified master: the master will no
-// longer be monitored, and will totally be removed from the internal state of
-// the Sentinel.
+
+
+
 func (c *SentinelClient) Remove(ctx context.Context, name string) *StringCmd {
 	cmd := NewStringCmd(ctx, "sentinel", "remove", name)
 	_ = c.Process(ctx, cmd)
 	return cmd
 }
 
-//------------------------------------------------------------------------------
+
 
 type sentinelFailover struct {
 	opt *FailoverOptions
@@ -742,7 +742,7 @@ func (c *sentinelFailover) MasterAddr(ctx context.Context) (string, error) {
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return "", err
 			}
-			// Continue on other errors
+			
 			internal.Logger.Printf(ctx, "sentinel: GetMasterAddrByName name=%q failed: %s",
 				c.opt.MasterName, err)
 		} else {
@@ -760,7 +760,7 @@ func (c *sentinelFailover) MasterAddr(ctx context.Context) (string, error) {
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return "", err
 			}
-			// Continue on other errors
+			
 			internal.Logger.Printf(ctx, "sentinel: GetMasterAddrByName name=%q failed: %s",
 				c.opt.MasterName, err)
 		} else {
@@ -793,7 +793,7 @@ func (c *sentinelFailover) MasterAddr(ctx context.Context) (string, error) {
 			}
 			once.Do(func() {
 				masterAddr = net.JoinHostPort(addrVal[0], addrVal[1])
-				// Push working sentinel to the top
+				
 				c.sentinelAddrs[0], c.sentinelAddrs[i] = c.sentinelAddrs[i], c.sentinelAddrs[0]
 				c.setSentinel(ctx, sentinelCli)
 				internal.Logger.Printf(ctx, "sentinel: selected addr=%s masterAddr=%s", addr, masterAddr)
@@ -838,7 +838,7 @@ func (c *sentinelFailover) replicaAddrs(ctx context.Context, useDisconnected boo
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return nil, err
 			}
-			// Continue on other errors
+			
 			internal.Logger.Printf(ctx, "sentinel: Replicas name=%q failed: %s",
 				c.opt.MasterName, err)
 		} else if len(addrs) > 0 {
@@ -856,13 +856,13 @@ func (c *sentinelFailover) replicaAddrs(ctx context.Context, useDisconnected boo
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return nil, err
 			}
-			// Continue on other errors
+			
 			internal.Logger.Printf(ctx, "sentinel: Replicas name=%q failed: %s",
 				c.opt.MasterName, err)
 		} else if len(addrs) > 0 {
 			return addrs, nil
 		} else {
-			// No error and no replicas.
+			
 			_ = c.closeSentinel()
 		}
 	}
@@ -887,7 +887,7 @@ func (c *sentinelFailover) replicaAddrs(ctx context.Context, useDisconnected boo
 		if len(addrs) == 0 {
 			continue
 		}
-		// Push working sentinel to the top.
+		
 		c.sentinelAddrs[0], c.sentinelAddrs[i] = c.sentinelAddrs[i], c.sentinelAddrs[0]
 		c.setSentinel(ctx, sentinel)
 
@@ -944,7 +944,7 @@ func parseReplicaAddrs(addrs []map[string]string, keepDisconnected bool) []strin
 
 func (c *sentinelFailover) trySwitchMaster(ctx context.Context, addr string) {
 	c.mu.RLock()
-	currentAddr := c.masterAddr //nolint:ifshort
+	currentAddr := c.masterAddr 
 	c.mu.RUnlock()
 
 	if addr == currentAddr {
@@ -1037,10 +1037,10 @@ func contains(slice []string, str string) bool {
 	return false
 }
 
-//------------------------------------------------------------------------------
 
-// NewFailoverClusterClient returns a client that supports routing read-only commands
-// to a replica node.
+
+
+
 func NewFailoverClusterClient(failoverOpt *FailoverOptions) *ClusterClient {
 	if failoverOpt == nil {
 		panic("redis: NewFailoverClusterClient nil options")

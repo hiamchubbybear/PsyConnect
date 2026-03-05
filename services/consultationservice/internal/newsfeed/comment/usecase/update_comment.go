@@ -16,7 +16,7 @@ func NewUpdateCommentUseCase(commentRepo repository.CommentRepository) *UpdateCo
 }
 
 func (uc *UpdateCommentUseCase) Execute(ctx context.Context, commentID, userID, content string) error {
-	// Get comment to verify ownership
+	
 	comment, err := uc.commentRepo.GetCommentByID(ctx, commentID)
 	if err != nil {
 		return err

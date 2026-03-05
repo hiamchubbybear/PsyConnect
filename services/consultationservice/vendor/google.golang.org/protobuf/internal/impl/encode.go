@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -30,7 +30,7 @@ func (o marshalOptions) Options() proto.MarshalOptions {
 func (o marshalOptions) Deterministic() bool { return o.flags&piface.MarshalDeterministic != 0 }
 func (o marshalOptions) UseCachedSize() bool { return o.flags&piface.MarshalUseCachedSize != 0 }
 
-// size is protoreflect.Methods.Size.
+
 func (mi *MessageInfo) size(in piface.SizeInput) piface.SizeOutput {
 	var p pointer
 	if ms, ok := in.Message.(*messageState); ok {
@@ -50,9 +50,9 @@ func (mi *MessageInfo) sizePointer(p pointer, opts marshalOptions) (size int) {
 		return 0
 	}
 	if opts.UseCachedSize() && mi.sizecacheOffset.IsValid() {
-		// The size cache contains the size + 1, to allow the
-		// zero value to be invalid, while also allowing for a
-		// 0 size to be cached.
+		
+		
+		
 		if size := atomic.LoadInt32(p.Apply(mi.sizecacheOffset).Int32()); size > 0 {
 			return int(size - 1)
 		}
@@ -117,21 +117,21 @@ func (mi *MessageInfo) sizePointerSlow(p pointer, opts marshalOptions) (size int
 	}
 	if mi.sizecacheOffset.IsValid() {
 		if size > (math.MaxInt32 - 1) {
-			// The size is too large for the int32 sizecache field.
-			// We will need to recompute the size when encoding;
-			// unfortunately expensive, but better than invalid output.
+			
+			
+			
 			atomic.StoreInt32(p.Apply(mi.sizecacheOffset).Int32(), 0)
 		} else {
-			// The size cache contains the size + 1, to allow the
-			// zero value to be invalid, while also allowing for a
-			// 0 size to be cached.
+			
+			
+			
 			atomic.StoreInt32(p.Apply(mi.sizecacheOffset).Int32(), int32(size+1))
 		}
 	}
 	return size
 }
 
-// marshal is protoreflect.Methods.Marshal.
+
 func (mi *MessageInfo) marshal(in piface.MarshalInput) (out piface.MarshalOutput, err error) {
 	var p pointer
 	if ms, ok := in.Message.(*messageState); ok {
@@ -154,10 +154,10 @@ func (mi *MessageInfo) marshalAppendPointer(b []byte, p pointer, opts marshalOpt
 		return marshalMessageSet(mi, b, p, opts)
 	}
 	var err error
-	// The old marshaler encodes extensions at beginning.
+	
 	if mi.extensionOffset.IsValid() {
 		e := p.Apply(mi.extensionOffset).Extensions()
-		// TODO: Special handling for MessageSet?
+		
 		b, err = mi.appendExtensions(b, e, opts)
 		if err != nil {
 			return b, err
@@ -184,7 +184,7 @@ func (mi *MessageInfo) marshalAppendPointer(b []byte, p pointer, opts marshalOpt
 				continue
 			}
 			if f.isLazy {
-				// Be careful, this field needs to be read atomically, like for a get
+				
 				if f.isPointer && fptr.AtomicGetPointer().IsNil() {
 					if lazyFields(opts) {
 						b, _ = (*lazy).AppendField(b, uint32(f.num))
@@ -225,19 +225,19 @@ func (mi *MessageInfo) marshalAppendPointer(b []byte, p pointer, opts marshalOpt
 	return b, nil
 }
 
-// fullyLazyExtensions returns true if we should attempt to keep extensions lazy over size and marshal.
+
 func fullyLazyExtensions(opts marshalOptions) bool {
-	// When deterministic marshaling is requested, force an unmarshal for lazy
-	// extensions to produce a deterministic result, instead of passing through
-	// bytes lazily that may or may not match what Go Protobuf would produce.
+	
+	
+	
 	return opts.flags&piface.MarshalDeterministic == 0
 }
 
-// lazyFields returns true if we should attempt to keep fields lazy over size and marshal.
+
 func lazyFields(opts marshalOptions) bool {
-	// When deterministic marshaling is requested, force an unmarshal for lazy
-	// fields to produce a deterministic result, instead of passing through
-	// bytes lazily that may or may not match what Go Protobuf would produce.
+	
+	
+	
 	return opts.flags&piface.MarshalDeterministic == 0
 }
 
@@ -251,9 +251,9 @@ func (mi *MessageInfo) sizeExtensions(ext *map[int32]ExtensionField, opts marsha
 			continue
 		}
 		if fullyLazyExtensions(opts) {
-			// Don't expand the extension, instead use the buffer to calculate size
+			
 			if lb := x.lazyBuffer(); lb != nil {
-				// We got hold of the buffer, so it's still lazy.
+				
 				n += len(lb)
 				continue
 			}
@@ -272,12 +272,12 @@ func (mi *MessageInfo) appendExtensions(b []byte, ext *map[int32]ExtensionField,
 	case 0:
 		return b, nil
 	case 1:
-		// Fast-path for one extension: Don't bother sorting the keys.
+		
 		var err error
 		for _, x := range *ext {
 			xi := getExtensionFieldInfo(x.Type())
 			if fullyLazyExtensions(opts) {
-				// Don't expand the extension if it's still in wire format, instead use the buffer content.
+				
 				if lb := x.lazyBuffer(); lb != nil {
 					b = append(b, lb...)
 					continue
@@ -287,8 +287,8 @@ func (mi *MessageInfo) appendExtensions(b []byte, ext *map[int32]ExtensionField,
 		}
 		return b, err
 	default:
-		// Sort the keys to provide a deterministic encoding.
-		// Not sure this is required, but the old code does it.
+		
+		
 		keys := make([]int, 0, len(*ext))
 		for k := range *ext {
 			keys = append(keys, int(k))
@@ -299,7 +299,7 @@ func (mi *MessageInfo) appendExtensions(b []byte, ext *map[int32]ExtensionField,
 			x := (*ext)[int32(k)]
 			xi := getExtensionFieldInfo(x.Type())
 			if fullyLazyExtensions(opts) {
-				// Don't expand the extension if it's still in wire format, instead use the buffer content.
+				
 				if lb := x.lazyBuffer(); lb != nil {
 					b = append(b, lb...)
 					continue

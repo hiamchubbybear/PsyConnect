@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsonrw
 
@@ -48,12 +48,12 @@ type jsonScanner struct {
 	lastReadErr error
 }
 
-// nextToken returns the next JSON token if one exists. A token is a character
-// of the JSON grammar, a number, a string, or a literal.
+
+
 func (js *jsonScanner) nextToken() (*jsonToken, error) {
 	c, err := js.readNextByte()
 
-	// keep reading until a non-space is encountered (break on read error or EOF)
+	
 	for isWhiteSpace(c) && err == nil {
 		c, err = js.readNextByte()
 	}
@@ -64,7 +64,7 @@ func (js *jsonScanner) nextToken() (*jsonToken, error) {
 		return nil, err
 	}
 
-	// switch on the character
+	
 	switch c {
 	case '{':
 		return &jsonToken{t: jttBeginObject, v: byte('{'), p: js.pos - 1}, nil
@@ -78,15 +78,15 @@ func (js *jsonScanner) nextToken() (*jsonToken, error) {
 		return &jsonToken{t: jttColon, v: byte(':'), p: js.pos - 1}, nil
 	case ',':
 		return &jsonToken{t: jttComma, v: byte(','), p: js.pos - 1}, nil
-	case '"': // RFC-8259 only allows for double quotes (") not single (')
+	case '"': 
 		return js.scanString()
 	default:
-		// check if it's a number
+		
 		switch {
 		case c == '-' || isDigit(c):
 			return js.scanNumber(c)
 		case c == 't' || c == 'f' || c == 'n':
-			// maybe a literal
+			
 			return js.scanLiteral(c)
 		default:
 			return nil, fmt.Errorf("invalid JSON input. Position: %d. Character: %c", js.pos-1, c)
@@ -94,9 +94,9 @@ func (js *jsonScanner) nextToken() (*jsonToken, error) {
 	}
 }
 
-// readNextByte attempts to read the next byte from the buffer. If the buffer
-// has been exhausted, this function calls readIntoBuf, thus refilling the
-// buffer and resetting the read position to 0
+
+
+
 func (js *jsonScanner) readNextByte() (byte, error) {
 	if js.pos >= len(js.buf) {
 		err := js.readIntoBuf()
@@ -112,7 +112,7 @@ func (js *jsonScanner) readNextByte() (byte, error) {
 	return b, nil
 }
 
-// readNNextBytes reads n bytes into dst, starting at offset
+
 func (js *jsonScanner) readNNextBytes(dst []byte, n, offset int) error {
 	var err error
 
@@ -126,7 +126,7 @@ func (js *jsonScanner) readNNextBytes(dst []byte, n, offset int) error {
 	return nil
 }
 
-// readIntoBuf reads up to 512 bytes from the scanner's io.Reader into the buffer
+
 func (js *jsonScanner) readIntoBuf() error {
 	if js.lastReadErr != nil {
 		js.buf = js.buf[:0]
@@ -163,10 +163,10 @@ func isValueTerminator(c byte) bool {
 	return c == ',' || c == '}' || c == ']' || isWhiteSpace(c)
 }
 
-// getu4 decodes the 4-byte hex sequence from the beginning of s, returning the hex value as a rune,
-// or it returns -1. Note that the "\u" from the unicode escape sequence should not be present.
-// It is copied and lightly modified from the Go JSON decode function at
-// https://github.com/golang/go/blob/1b0a0316802b8048d69da49dc23c5a5ab08e8ae8/src/encoding/json/decode.go#L1169-L1188
+
+
+
+
 func getu4(s []byte) rune {
 	if len(s) < 4 {
 		return -1
@@ -188,7 +188,7 @@ func getu4(s []byte) rune {
 	return r
 }
 
-// scanString reads from an opening '"' to a closing '"' and handles escaped characters
+
 func (js *jsonScanner) scanString() (*jsonToken, error) {
 	var b bytes.Buffer
 	var c byte
@@ -239,13 +239,13 @@ func (js *jsonScanner) scanString() (*jsonToken, error) {
 
 				rn := getu4(us)
 
-				// If the rune we just decoded is the high or low value of a possible surrogate pair,
-				// try to decode the next sequence as the low value of a surrogate pair. We're
-				// expecting the next sequence to be another Unicode escape sequence (e.g. "\uDD1E"),
-				// but need to handle cases where the input is not a valid surrogate pair.
-				// For more context on unicode surrogate pairs, see:
-				// https://www.christianfscott.com/rust-chars-vs-go-runes/
-				// https://www.unicode.org/glossary/#high_surrogate_code_point
+				
+				
+				
+				
+				
+				
+				
 				if utf16.IsSurrogate(rn) {
 					c, err = js.readNextByte()
 					if err != nil {
@@ -255,9 +255,9 @@ func (js *jsonScanner) scanString() (*jsonToken, error) {
 						return nil, err
 					}
 
-					// If the next value isn't the beginning of a backslash escape sequence, write
-					// the Unicode replacement character for the surrogate value and goto the
-					// beginning of the next char eval block.
+					
+					
+					
 					if c != '\\' {
 						b.WriteRune(unicode.ReplacementChar)
 						goto evalNextChar
@@ -271,9 +271,9 @@ func (js *jsonScanner) scanString() (*jsonToken, error) {
 						return nil, err
 					}
 
-					// If the next value isn't the beginning of a unicode escape sequence, write the
-					// Unicode replacement character for the surrogate value and goto the beginning
-					// of the next escape char eval block.
+					
+					
+					
 					if c != 'u' {
 						b.WriteRune(unicode.ReplacementChar)
 						goto evalNextEscapeChar
@@ -286,8 +286,8 @@ func (js *jsonScanner) scanString() (*jsonToken, error) {
 
 					rn2 := getu4(us)
 
-					// Try to decode the pair of runes as a utf16 surrogate pair. If that fails, write
-					// the Unicode replacement character for the surrogate value and the 2nd decoded rune.
+					
+					
 					if rnPair := utf16.DecodeRune(rn, rn2); rnPair != unicode.ReplacementChar {
 						b.WriteRune(rnPair)
 					} else {
@@ -310,9 +310,9 @@ func (js *jsonScanner) scanString() (*jsonToken, error) {
 	}
 }
 
-// scanLiteral reads an unquoted sequence of characters and determines if it is one of
-// three valid JSON literals (true, false, null); if so, it returns the appropriate
-// jsonToken; otherwise, it returns an error
+
+
+
 func (js *jsonScanner) scanLiteral(first byte) (*jsonToken, error) {
 	p := js.pos - 1
 
@@ -362,14 +362,14 @@ const (
 	nssInvalid
 )
 
-// scanNumber reads a JSON number (according to RFC-8259)
+
 func (js *jsonScanner) scanNumber(first byte) (*jsonToken, error) {
 	var b bytes.Buffer
 	var s numberScanState
 	var c byte
 	var err error
 
-	t := jttInt64 // assume it's an int64 until the type can be determined
+	t := jttInt64 
 	start := js.pos - 1
 
 	b.WriteByte(first)

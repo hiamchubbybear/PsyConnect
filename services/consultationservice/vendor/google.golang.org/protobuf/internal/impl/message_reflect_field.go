@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -15,7 +15,7 @@ import (
 type fieldInfo struct {
 	fieldDesc protoreflect.FieldDescriptor
 
-	// These fields are used for protobuf reflection support.
+	
 	has        func(pointer) bool
 	clear      func(pointer)
 	get        func(pointer) protoreflect.Value
@@ -26,9 +26,9 @@ type fieldInfo struct {
 }
 
 func fieldInfoForMissing(fd protoreflect.FieldDescriptor) fieldInfo {
-	// This never occurs for generated message types.
-	// It implies that a hand-crafted type has missing Go fields
-	// for specific protobuf message fields.
+	
+	
+	
 	return fieldInfo{
 		fieldDesc: fd,
 		has: func(p pointer) bool {
@@ -72,12 +72,12 @@ func fieldInfoForOneof(fd protoreflect.FieldDescriptor, fs reflect.StructField, 
 	conv := NewConverter(ot.Field(0).Type, fd)
 	isMessage := fd.Message() != nil
 
-	// TODO: Implement unsafe fast path?
+	
 	fieldOffset := offsetOf(fs)
 	return fieldInfo{
-		// NOTE: The logic below intentionally assumes that oneof fields are
-		// well-formatted. That is, the oneof interface never contains a
-		// typed nil pointer to one of the wrapper structs.
+		
+		
+		
 
 		fieldDesc: fd,
 		has: func(p pointer) bool {
@@ -93,8 +93,8 @@ func fieldInfoForOneof(fd protoreflect.FieldDescriptor, fs reflect.StructField, 
 		clear: func(p pointer) {
 			rv := p.Apply(fieldOffset).AsValueOf(fs.Type).Elem()
 			if rv.IsNil() || rv.Elem().Type().Elem() != ot {
-				// NOTE: We intentionally don't check for rv.Elem().IsNil()
-				// so that (*OneofWrapperType)(nil) gets cleared to nil.
+				
+				
 				return
 			}
 			rv.Set(reflect.Zero(rv.Type()))
@@ -148,7 +148,7 @@ func fieldInfoForMap(fd protoreflect.FieldDescriptor, fs reflect.StructField, x 
 	}
 	conv := NewConverter(ft, fd)
 
-	// TODO: Implement unsafe fast path?
+	
 	fieldOffset := offsetOf(fs)
 	return fieldInfo{
 		fieldDesc: fd,
@@ -201,7 +201,7 @@ func fieldInfoForList(fd protoreflect.FieldDescriptor, fs reflect.StructField, x
 	}
 	conv := NewConverter(reflect.PtrTo(ft), fd)
 
-	// TODO: Implement unsafe fast path?
+	
 	fieldOffset := offsetOf(fs)
 	return fieldInfo{
 		fieldDesc: fd,
@@ -256,9 +256,9 @@ func fieldInfoForScalar(fd protoreflect.FieldDescriptor, fs reflect.StructField,
 	var getter func(p pointer) protoreflect.Value
 	if nullable {
 		if ft.Kind() != reflect.Ptr && ft.Kind() != reflect.Slice {
-			// This never occurs for generated message types.
-			// Despite the protobuf type system specifying presence,
-			// the Go field type cannot represent it.
+			
+			
+			
 			nullable = false
 		}
 		if ft.Kind() == reflect.Ptr {
@@ -268,7 +268,7 @@ func fieldInfoForScalar(fd protoreflect.FieldDescriptor, fs reflect.StructField,
 	conv := NewConverter(ft, fd)
 	fieldOffset := offsetOf(fs)
 
-	// Generate specialized getter functions to avoid going through reflect.Value
+	
 	if nullable {
 		getter = getterForNullableScalar(fd, fs, conv, fieldOffset)
 	} else {
@@ -297,7 +297,7 @@ func fieldInfoForScalar(fd protoreflect.FieldDescriptor, fs reflect.StructField,
 			case reflect.String, reflect.Slice:
 				return rv.Len() > 0
 			default:
-				panic(fmt.Sprintf("field %v has invalid type: %v", fd.FullName(), rv.Type())) // should never happen
+				panic(fmt.Sprintf("field %v has invalid type: %v", fd.FullName(), rv.Type())) 
 			}
 		},
 		clear: func(p pointer) {
@@ -305,7 +305,7 @@ func fieldInfoForScalar(fd protoreflect.FieldDescriptor, fs reflect.StructField,
 			rv.Set(reflect.Zero(rv.Type()))
 		},
 		get: getter,
-		// TODO: Implement unsafe fast path for set?
+		
 		set: func(p pointer, v protoreflect.Value) {
 			rv := p.Apply(fieldOffset).AsValueOf(fs.Type).Elem()
 			if nullable && rv.Kind() == reflect.Ptr {
@@ -317,9 +317,9 @@ func fieldInfoForScalar(fd protoreflect.FieldDescriptor, fs reflect.StructField,
 			rv.Set(conv.GoValueOf(v))
 			if isBytes && rv.Len() == 0 {
 				if nullable {
-					rv.Set(emptyBytes) // preserve presence
+					rv.Set(emptyBytes) 
 				} else {
-					rv.Set(nilBytes) // do not preserve presence
+					rv.Set(nilBytes) 
 				}
 			}
 		},
@@ -333,7 +333,7 @@ func fieldInfoForMessage(fd protoreflect.FieldDescriptor, fs reflect.StructField
 	ft := fs.Type
 	conv := NewConverter(ft, fd)
 
-	// TODO: Implement unsafe fast path?
+	
 	fieldOffset := offsetOf(fs)
 	return fieldInfo{
 		fieldDesc: fd,
@@ -396,7 +396,7 @@ func makeOneofInfo(od protoreflect.OneofDescriptor, si structInfo, x exporter) *
 				return 0
 			}
 			rv := p.Apply(fieldOffset).AsValueOf(fs.Type).Elem()
-			if rv.IsNil() { // valid on either *T or []byte
+			if rv.IsNil() { 
 				return 0
 			}
 			return od.Fields().Get(0).Number()

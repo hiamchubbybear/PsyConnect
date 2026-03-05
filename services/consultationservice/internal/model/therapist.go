@@ -1,6 +1,6 @@
 package model
 
-// Deprecated: Replace TherapistV1 instead
+
 type Therapist struct {
 	ProfileId         string   `json:"profile_id,omitempty" bson:"profile_id"`
 	Address           string   `json:"address,omitempty" bson:"address"`

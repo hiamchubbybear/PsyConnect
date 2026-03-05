@@ -86,11 +86,6 @@
       line-height: 1.6;
       margin-bottom: 1rem;
       white-space: pre-wrap;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      line-clamp: 3; // Standard property
-      -webkit-box-orient: vertical;
-      overflow: hidden;
     }
 
     .post-media {
@@ -115,7 +110,8 @@
     justify-content: space-between;
     align-items: center;
     background: var(--color-surface-hover, #fafafa);
-    border-radius: 0 0 var(--border-radius-xl, 20px) var(--border-radius-xl, 20px);
+    border-radius: 0 0 var(--border-radius-xl, 20px)
+      var(--border-radius-xl, 20px);
 
     .reactions,
     .actions {

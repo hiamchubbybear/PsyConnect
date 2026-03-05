@@ -1,8 +1,8 @@
-//+build jsoniter_sloppy
+
 
 package jsoniter
 
-// sloppy but faster implementation, do not validate the input json
+
 
 func (iter *Iterator) skipNumber() {
 	for {
@@ -28,22 +28,22 @@ func (iter *Iterator) skipArray() {
 	for {
 		for i := iter.head; i < iter.tail; i++ {
 			switch iter.buf[i] {
-			case '"': // If inside string, skip it
+			case '"': 
 				iter.head = i + 1
 				iter.skipString()
-				i = iter.head - 1 // it will be i++ soon
-			case '[': // If open symbol, increase level
+				i = iter.head - 1 
+			case '[': 
 				level++
 				if !iter.incrementDepth() {
 					return
 				}
-			case ']': // If close symbol, increase level
+			case ']': 
 				level--
 				if !iter.decrementDepth() {
 					return
 				}
 
-				// If we have returned to the original level, we're done
+				
 				if level == 0 {
 					iter.head = i + 1
 					return
@@ -66,22 +66,22 @@ func (iter *Iterator) skipObject() {
 	for {
 		for i := iter.head; i < iter.tail; i++ {
 			switch iter.buf[i] {
-			case '"': // If inside string, skip it
+			case '"': 
 				iter.head = i + 1
 				iter.skipString()
-				i = iter.head - 1 // it will be i++ soon
-			case '{': // If open symbol, increase level
+				i = iter.head - 1 
+			case '{': 
 				level++
 				if !iter.incrementDepth() {
 					return
 				}
-			case '}': // If close symbol, increase level
+			case '}': 
 				level--
 				if !iter.decrementDepth() {
 					return
 				}
 
-				// If we have returned to the original level, we're done
+				
 				if level == 0 {
 					iter.head = i + 1
 					return
@@ -104,7 +104,7 @@ func (iter *Iterator) skipString() {
 				return
 			}
 			if escaped {
-				iter.head = 1 // skip the first char as last char read is \
+				iter.head = 1 
 			}
 		} else {
 			iter.head = end
@@ -113,9 +113,9 @@ func (iter *Iterator) skipString() {
 	}
 }
 
-// adapted from: https://github.com/buger/jsonparser/blob/master/parser.go
-// Tries to find the end of string
-// Support if string contains escaped quote symbols.
+
+
+
 func (iter *Iterator) findStringEnd() (int, bool) {
 	escaped := false
 	for i := iter.head; i < iter.tail; i++ {
@@ -127,14 +127,14 @@ func (iter *Iterator) findStringEnd() (int, bool) {
 			j := i - 1
 			for {
 				if j < iter.head || iter.buf[j] != '\\' {
-					// even number of backslashes
-					// either end of buffer, or " found
+					
+					
 					return i + 1, true
 				}
 				j--
 				if j < iter.head || iter.buf[j] != '\\' {
-					// odd number of backslashes
-					// it is \" or \\\"
+					
+					
 					break
 				}
 				j--
@@ -146,18 +146,18 @@ func (iter *Iterator) findStringEnd() (int, bool) {
 	j := iter.tail - 1
 	for {
 		if j < iter.head || iter.buf[j] != '\\' {
-			// even number of backslashes
-			// either end of buffer, or " found
-			return -1, false // do not end with \
+			
+			
+			return -1, false 
 		}
 		j--
 		if j < iter.head || iter.buf[j] != '\\' {
-			// odd number of backslashes
-			// it is \" or \\\"
+			
+			
 			break
 		}
 		j--
 
 	}
-	return -1, true // end with \
+	return -1, true 
 }

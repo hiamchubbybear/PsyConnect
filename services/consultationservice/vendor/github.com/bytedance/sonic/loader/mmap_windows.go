@@ -1,23 +1,9 @@
 //go:build windows
 // +build windows
 
-// build
 
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
+
 
 package loader
 
@@ -53,8 +39,8 @@ func mprotect(p uintptr, nb int) (oldProtect int) {
     return
 }
 
-// winapi_VirtualAlloc allocate memory
-// Doc: https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc
+
+
 func winapi_VirtualAlloc(lpAddr uintptr, dwSize int, flAllocationType int, flProtect int) (uintptr, error) {
     r1, _, err := libKernel32_VirtualAlloc.Call(
         lpAddr,
@@ -68,8 +54,8 @@ func winapi_VirtualAlloc(lpAddr uintptr, dwSize int, flAllocationType int, flPro
     return r1, nil
 }
 
-// winapi_VirtualProtect change memory protection
-// Doc: https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualprotect
+
+
 func winapi_VirtualProtect(lpAddr uintptr, dwSize int, flNewProtect int, lpflOldProtect *int) error {
     r1, _, err := libKernel32_VirtualProtect.Call(
         lpAddr,

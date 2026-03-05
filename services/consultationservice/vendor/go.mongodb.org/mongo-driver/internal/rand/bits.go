@@ -1,14 +1,14 @@
-// Copied from https://cs.opensource.google/go/go/+/946b4baaf6521d521928500b2b57429c149854e7:src/math/bits.go
 
-// Copyright 2017 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
+
 
 package rand
 
-// Add64 returns the sum with carry of x, y and carry: sum = x + y + carry.
-// The carry input must be 0 or 1; otherwise the behavior is undefined.
-// The carryOut output is guaranteed to be 0 or 1.
+
+
+
 func Add64(x, y, carry uint64) (sum, carryOut uint64) {
 	yc := y + carry
 	sum = x + yc
@@ -18,9 +18,9 @@ func Add64(x, y, carry uint64) (sum, carryOut uint64) {
 	return
 }
 
-// Mul64 returns the 128-bit product of x and y: (hi, lo) = x * y
-// with the product bits' upper half returned in hi and the lower
-// half returned in lo.
+
+
+
 func Mul64(x, y uint64) (hi, lo uint64) {
 	const mask32 = 1<<32 - 1
 	x0 := x & mask32

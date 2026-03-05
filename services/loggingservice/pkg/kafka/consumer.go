@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Consumer represents a Kafka consumer for log events
+
 type Consumer struct {
 	reader   *kafka.Reader
 	config   settings.KafkaConfig
@@ -21,10 +21,10 @@ type Consumer struct {
 	handlers []LogHandler
 }
 
-// LogHandler is a function that processes log events
+
 type LogHandler func(*models.LogEvent) error
 
-// NewConsumer creates a new Kafka consumer
+
 func NewConsumer(config settings.KafkaConfig, logger *zap.Logger) (*Consumer, error) {
 	brokers := strings.Split(config.BootstrapServers, ",")
 
@@ -32,8 +32,8 @@ func NewConsumer(config settings.KafkaConfig, logger *zap.Logger) (*Consumer, er
 		Brokers:        brokers,
 		GroupID:        config.GroupID,
 		GroupTopics:    config.Topics,
-		MinBytes:       10e3, // 10KB
-		MaxBytes:       10e6, // 10MB
+		MinBytes:       10e3, 
+		MaxBytes:       10e6, 
 		CommitInterval: 1 * time.Second,
 		StartOffset:    kafka.FirstOffset,
 		ErrorLogger: kafka.LoggerFunc(func(msg string, args ...interface{}) {
@@ -49,23 +49,23 @@ func NewConsumer(config settings.KafkaConfig, logger *zap.Logger) (*Consumer, er
 	}, nil
 }
 
-// AddHandler adds a log handler
+
 func (c *Consumer) AddHandler(handler LogHandler) {
 	c.handlers = append(c.handlers, handler)
 }
 
-// Start starts consuming messages from Kafka
+
 func (c *Consumer) Start() error {
 	c.logger.Info("Kafka consumer started",
 		zap.Strings("topics", c.config.Topics),
 		zap.String("group_id", c.config.GroupID),
 	)
 
-	// Context for cancellation
+	
 	ctx := context.Background()
 
 	for {
-		// ReadMessage automatically commits offsets when using consumer groups
+		
 		m, err := c.reader.ReadMessage(ctx)
 		if err != nil {
 			if err == io.EOF {
@@ -73,7 +73,7 @@ func (c *Consumer) Start() error {
 				return nil
 			}
 			c.logger.Error("Failed to read message", zap.Error(err))
-			// Exponential backoff could be added here
+			
 			time.Sleep(1 * time.Second)
 			continue
 		}
@@ -82,7 +82,7 @@ func (c *Consumer) Start() error {
 	}
 }
 
-// handleMessage processes a Kafka message
+
 func (c *Consumer) handleMessage(msg kafka.Message) {
 	topic := msg.Topic
 
@@ -92,7 +92,7 @@ func (c *Consumer) handleMessage(msg kafka.Message) {
 		zap.Int64("offset", msg.Offset),
 	)
 
-	// Parse log event
+	
 	event, err := models.ParseLogEvent(msg.Value)
 	if err != nil {
 		c.logger.Error("Failed to parse log event",
@@ -103,12 +103,12 @@ func (c *Consumer) handleMessage(msg kafka.Message) {
 		return
 	}
 
-	// Ensure service name is set from topic if not present
+	
 	if event.Service == "" {
 		event.Service = topic
 	}
 
-	// Call all handlers
+	
 	for _, handler := range c.handlers {
 		if err := handler(event); err != nil {
 			c.logger.Error("Handler failed",
@@ -120,7 +120,7 @@ func (c *Consumer) handleMessage(msg kafka.Message) {
 	}
 }
 
-// Close closes the Kafka consumer
+
 func (c *Consumer) Close() error {
 	c.logger.Info("Closing Kafka consumer")
 	return c.reader.Close()

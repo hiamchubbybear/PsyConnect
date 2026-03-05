@@ -2,11 +2,11 @@ export interface Comment {
   id: string;
   post_id: string;
   user_id: string;
-  author_id: string; // Author ID for display
+  author_id: string; 
   content: string;
   parent_comment_id?: string;
 
-  // Nested comment fields
+  
   depth?: number;
   path?: string;
   reply_count?: number;
@@ -18,7 +18,7 @@ export interface Comment {
   updated_at: string;
   isLiked?: boolean;
 
-  // Backend-populated author info (if available)
+  
   author?: {
     id: string;
     first_name: string;

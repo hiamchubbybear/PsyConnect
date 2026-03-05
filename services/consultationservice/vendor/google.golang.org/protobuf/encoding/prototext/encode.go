@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package prototext
 
@@ -25,73 +25,73 @@ import (
 
 const defaultIndent = "  "
 
-// Format formats the message as a multiline string.
-// This function is only intended for human consumption and ignores errors.
-// Do not depend on the output being stable. Its output will change across
-// different builds of your program, even when using the same version of the
-// protobuf module.
+
+
+
+
+
 func Format(m proto.Message) string {
 	return MarshalOptions{Multiline: true}.Format(m)
 }
 
-// Marshal writes the given [proto.Message] in textproto format using default
-// options. Do not depend on the output being stable. Its output will change
-// across different builds of your program, even when using the same version of
-// the protobuf module.
+
+
+
+
 func Marshal(m proto.Message) ([]byte, error) {
 	return MarshalOptions{}.Marshal(m)
 }
 
-// MarshalOptions is a configurable text format marshaler.
+
 type MarshalOptions struct {
 	pragma.NoUnkeyedLiterals
 
-	// Multiline specifies whether the marshaler should format the output in
-	// indented-form with every textual element on a new line.
-	// If Indent is an empty string, then an arbitrary indent is chosen.
+	
+	
+	
 	Multiline bool
 
-	// Indent specifies the set of indentation characters to use in a multiline
-	// formatted output such that every entry is preceded by Indent and
-	// terminated by a newline. If non-empty, then Multiline is treated as true.
-	// Indent can only be composed of space or tab characters.
+	
+	
+	
+	
 	Indent string
 
-	// EmitASCII specifies whether to format strings and bytes as ASCII only
-	// as opposed to using UTF-8 encoding when possible.
+	
+	
 	EmitASCII bool
 
-	// allowInvalidUTF8 specifies whether to permit the encoding of strings
-	// with invalid UTF-8. This is unexported as it is intended to only
-	// be specified by the Format method.
+	
+	
+	
 	allowInvalidUTF8 bool
 
-	// AllowPartial allows messages that have missing required fields to marshal
-	// without returning an error. If AllowPartial is false (the default),
-	// Marshal will return error if there are any missing required fields.
+	
+	
+	
 	AllowPartial bool
 
-	// EmitUnknown specifies whether to emit unknown fields in the output.
-	// If specified, the unmarshaler may be unable to parse the output.
-	// The default is to exclude unknown fields.
+	
+	
+	
 	EmitUnknown bool
 
-	// Resolver is used for looking up types when expanding google.protobuf.Any
-	// messages. If nil, this defaults to using protoregistry.GlobalTypes.
+	
+	
 	Resolver interface {
 		protoregistry.ExtensionTypeResolver
 		protoregistry.MessageTypeResolver
 	}
 }
 
-// Format formats the message as a string.
-// This method is only intended for human consumption and ignores errors.
-// Do not depend on the output being stable. Its output will change across
-// different builds of your program, even when using the same version of the
-// protobuf module.
+
+
+
+
+
 func (o MarshalOptions) Format(m proto.Message) string {
 	if m == nil || !m.ProtoReflect().IsValid() {
-		return "<nil>" // invalid syntax, but okay since this is for debugging
+		return "<nil>" 
 	}
 	o.allowInvalidUTF8 = true
 	o.AllowPartial = true
@@ -100,23 +100,23 @@ func (o MarshalOptions) Format(m proto.Message) string {
 	return string(b)
 }
 
-// Marshal writes the given [proto.Message] in textproto format using options in
-// MarshalOptions object. Do not depend on the output being stable. Its output
-// will change across different builds of your program, even when using the
-// same version of the protobuf module.
+
+
+
+
 func (o MarshalOptions) Marshal(m proto.Message) ([]byte, error) {
 	return o.marshal(nil, m)
 }
 
-// MarshalAppend appends the textproto format encoding of m to b,
-// returning the result.
+
+
 func (o MarshalOptions) MarshalAppend(b []byte, m proto.Message) ([]byte, error) {
 	return o.marshal(b, m)
 }
 
-// marshal is a centralized function that all marshal operations go through.
-// For profiling purposes, avoid changing the name of this function or
-// introducing other code paths for marshal that do not go through this.
+
+
+
 func (o MarshalOptions) marshal(b []byte, m proto.Message) ([]byte, error) {
 	var delims = [2]byte{'{', '}'}
 
@@ -132,8 +132,8 @@ func (o MarshalOptions) marshal(b []byte, m proto.Message) ([]byte, error) {
 		return nil, err
 	}
 
-	// Treat nil message interface as an empty message,
-	// in which case there is nothing to output.
+	
+	
 	if m == nil {
 		return b, nil
 	}
@@ -158,7 +158,7 @@ type encoder struct {
 	opts MarshalOptions
 }
 
-// marshalMessage marshals the given protoreflect.Message.
+
 func (e encoder) marshalMessage(m protoreflect.Message, inclDelims bool) error {
 	messageDesc := m.Descriptor()
 	if !flags.ProtoLegacy && messageset.IsMessageSet(messageDesc) {
@@ -170,15 +170,15 @@ func (e encoder) marshalMessage(m protoreflect.Message, inclDelims bool) error {
 		defer e.EndMessage()
 	}
 
-	// Handle Any expansion.
+	
 	if messageDesc.FullName() == genid.Any_message_fullname {
 		if e.marshalAny(m) {
 			return nil
 		}
-		// If unable to expand, continue on to marshal Any as a regular message.
+		
 	}
 
-	// Marshal fields.
+	
 	var err error
 	order.RangeFields(m, order.IndexNameFieldOrder, func(fd protoreflect.FieldDescriptor, v protoreflect.Value) bool {
 		if err = e.marshalField(fd.TextName(), v, fd); err != nil {
@@ -190,7 +190,7 @@ func (e encoder) marshalMessage(m protoreflect.Message, inclDelims bool) error {
 		return err
 	}
 
-	// Marshal unknown fields.
+	
 	if e.opts.EmitUnknown {
 		e.marshalUnknown(m.GetUnknown())
 	}
@@ -198,7 +198,7 @@ func (e encoder) marshalMessage(m protoreflect.Message, inclDelims bool) error {
 	return nil
 }
 
-// marshalField marshals the given field with protoreflect.Value.
+
 func (e encoder) marshalField(name string, val protoreflect.Value, fd protoreflect.FieldDescriptor) error {
 	switch {
 	case fd.IsList():
@@ -211,8 +211,8 @@ func (e encoder) marshalField(name string, val protoreflect.Value, fd protorefle
 	}
 }
 
-// marshalSingular marshals the given non-repeated field value. This includes
-// all scalar types, enums, messages, and groups.
+
+
 func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDescriptor) error {
 	kind := fd.Kind()
 	switch kind {
@@ -236,11 +236,11 @@ func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDe
 		e.WriteUint(val.Uint())
 
 	case protoreflect.FloatKind:
-		// Encoder.WriteFloat handles the special numbers NaN and infinites.
+		
 		e.WriteFloat(val.Float(), 32)
 
 	case protoreflect.DoubleKind:
-		// Encoder.WriteFloat handles the special numbers NaN and infinites.
+		
 		e.WriteFloat(val.Float(), 64)
 
 	case protoreflect.BytesKind:
@@ -251,7 +251,7 @@ func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDe
 		if desc := fd.Enum().Values().ByNumber(num); desc != nil {
 			e.WriteLiteral(string(desc.Name()))
 		} else {
-			// Use numeric value if there is no enum description.
+			
 			e.WriteInt(int64(num))
 		}
 
@@ -264,7 +264,7 @@ func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDe
 	return nil
 }
 
-// marshalList marshals the given protoreflect.List as multiple name-value fields.
+
 func (e encoder) marshalList(name string, list protoreflect.List, fd protoreflect.FieldDescriptor) error {
 	size := list.Len()
 	for i := 0; i < size; i++ {
@@ -276,7 +276,7 @@ func (e encoder) marshalList(name string, list protoreflect.List, fd protoreflec
 	return nil
 }
 
-// marshalMap marshals the given protoreflect.Map as multiple name-value fields.
+
 func (e encoder) marshalMap(name string, mmap protoreflect.Map, fd protoreflect.FieldDescriptor) error {
 	var err error
 	order.RangeEntries(mmap, order.GenericKeyOrder, func(key protoreflect.MapKey, val protoreflect.Value) bool {
@@ -300,8 +300,8 @@ func (e encoder) marshalMap(name string, mmap protoreflect.Map, fd protoreflect.
 	return err
 }
 
-// marshalUnknown parses the given []byte and marshals fields out.
-// This function assumes proper encoding in the given []byte.
+
+
 func (e encoder) marshalUnknown(b []byte) {
 	const dec = 10
 	const hex = 16
@@ -341,10 +341,10 @@ func (e encoder) marshalUnknown(b []byte) {
 	}
 }
 
-// marshalAny marshals the given google.protobuf.Any message in expanded form.
-// It returns true if it was able to marshal, else false.
+
+
 func (e encoder) marshalAny(any protoreflect.Message) bool {
-	// Construct the embedded message.
+	
 	fds := any.Descriptor().Fields()
 	fdType := fds.ByNumber(genid.Any_TypeUrl_field_number)
 	typeURL := any.Get(fdType).String()
@@ -354,7 +354,7 @@ func (e encoder) marshalAny(any protoreflect.Message) bool {
 	}
 	m := mt.New().Interface()
 
-	// Unmarshal bytes into embedded message.
+	
 	fdValue := fds.ByNumber(genid.Any_Value_field_number)
 	value := any.Get(fdValue)
 	err = proto.UnmarshalOptions{
@@ -365,11 +365,11 @@ func (e encoder) marshalAny(any protoreflect.Message) bool {
 		return false
 	}
 
-	// Get current encoder position. If marshaling fails, reset encoder output
-	// back to this position.
+	
+	
 	pos := e.Snapshot()
 
-	// Field name is the proto field name enclosed in [].
+	
 	e.WriteName("[" + typeURL + "]")
 	err = e.marshalMessage(m.ProtoReflect(), true)
 	if err != nil {

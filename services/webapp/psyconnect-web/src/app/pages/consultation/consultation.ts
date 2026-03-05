@@ -21,7 +21,7 @@ export class ConsultationComponent {
   private setupNavigation() {
     const role = this.authService.getRole();
 
-    // Common items
+    
     const commonItems = [
       {
         label: 'My Sessions',
@@ -50,7 +50,7 @@ export class ConsultationComponent {
         ...commonItems,
       ];
     } else {
-      // Default to client
+      
       this.navItems = [
         {
           label: 'Discover',

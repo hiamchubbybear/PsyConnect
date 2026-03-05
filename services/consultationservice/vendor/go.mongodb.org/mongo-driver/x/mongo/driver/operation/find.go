@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Find performs a find operation.
+
 type Find struct {
 	authenticator       driver.Authenticator
 	allowDiskUse        *bool
@@ -67,14 +67,14 @@ type Find struct {
 	logger              *logger.Logger
 }
 
-// NewFind constructs and returns a new Find.
+
 func NewFind(filter bsoncore.Document) *Find {
 	return &Find{
 		filter: filter,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (f *Find) Result(opts driver.CursorOptions) (*driver.BatchCursor, error) {
 	opts.ServerAPI = f.serverAPI
 	return driver.NewBatchCursor(f.result, f.session, f.clock, opts)
@@ -86,7 +86,7 @@ func (f *Find) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (f *Find) Execute(ctx context.Context) error {
 	if f.deployment == nil {
 		return errors.New("the Find operation must have a Deployment set before Execute can be called")
@@ -195,7 +195,7 @@ func (f *Find) command(dst []byte, desc description.SelectedServer) ([]byte, err
 	return dst, nil
 }
 
-// AllowDiskUse when true allows temporary data to be written to disk during the find command."
+
 func (f *Find) AllowDiskUse(allowDiskUse bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -205,7 +205,7 @@ func (f *Find) AllowDiskUse(allowDiskUse bool) *Find {
 	return f
 }
 
-// AllowPartialResults when true allows partial results to be returned if some shards are down.
+
 func (f *Find) AllowPartialResults(allowPartialResults bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -215,7 +215,7 @@ func (f *Find) AllowPartialResults(allowPartialResults bool) *Find {
 	return f
 }
 
-// AwaitData when true makes a cursor block before returning when no data is available.
+
 func (f *Find) AwaitData(awaitData bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -225,7 +225,7 @@ func (f *Find) AwaitData(awaitData bool) *Find {
 	return f
 }
 
-// BatchSize specifies the number of documents to return in every batch.
+
 func (f *Find) BatchSize(batchSize int32) *Find {
 	if f == nil {
 		f = new(Find)
@@ -235,7 +235,7 @@ func (f *Find) BatchSize(batchSize int32) *Find {
 	return f
 }
 
-// Collation specifies a collation to be used.
+
 func (f *Find) Collation(collation bsoncore.Document) *Find {
 	if f == nil {
 		f = new(Find)
@@ -245,7 +245,7 @@ func (f *Find) Collation(collation bsoncore.Document) *Find {
 	return f
 }
 
-// Comment sets a string to help trace an operation.
+
 func (f *Find) Comment(comment string) *Find {
 	if f == nil {
 		f = new(Find)
@@ -255,7 +255,7 @@ func (f *Find) Comment(comment string) *Find {
 	return f
 }
 
-// Filter determines what results are returned from find.
+
 func (f *Find) Filter(filter bsoncore.Document) *Find {
 	if f == nil {
 		f = new(Find)
@@ -265,7 +265,7 @@ func (f *Find) Filter(filter bsoncore.Document) *Find {
 	return f
 }
 
-// Hint specifies the index to use.
+
 func (f *Find) Hint(hint bsoncore.Value) *Find {
 	if f == nil {
 		f = new(Find)
@@ -275,7 +275,7 @@ func (f *Find) Hint(hint bsoncore.Value) *Find {
 	return f
 }
 
-// Let specifies the let document to use. This option is only valid for server versions 5.0 and above.
+
 func (f *Find) Let(let bsoncore.Document) *Find {
 	if f == nil {
 		f = new(Find)
@@ -285,7 +285,7 @@ func (f *Find) Let(let bsoncore.Document) *Find {
 	return f
 }
 
-// Limit sets a limit on the number of documents to return.
+
 func (f *Find) Limit(limit int64) *Find {
 	if f == nil {
 		f = new(Find)
@@ -295,7 +295,7 @@ func (f *Find) Limit(limit int64) *Find {
 	return f
 }
 
-// Max sets an exclusive upper bound for a specific index.
+
 func (f *Find) Max(max bsoncore.Document) *Find {
 	if f == nil {
 		f = new(Find)
@@ -305,7 +305,7 @@ func (f *Find) Max(max bsoncore.Document) *Find {
 	return f
 }
 
-// MaxTime specifies the maximum amount of time to allow the query to run on the server.
+
 func (f *Find) MaxTime(maxTime *time.Duration) *Find {
 	if f == nil {
 		f = new(Find)
@@ -315,7 +315,7 @@ func (f *Find) MaxTime(maxTime *time.Duration) *Find {
 	return f
 }
 
-// Min sets an inclusive lower bound for a specific index.
+
 func (f *Find) Min(min bsoncore.Document) *Find {
 	if f == nil {
 		f = new(Find)
@@ -325,7 +325,7 @@ func (f *Find) Min(min bsoncore.Document) *Find {
 	return f
 }
 
-// NoCursorTimeout when true prevents cursor from timing out after an inactivity period.
+
 func (f *Find) NoCursorTimeout(noCursorTimeout bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -335,7 +335,7 @@ func (f *Find) NoCursorTimeout(noCursorTimeout bool) *Find {
 	return f
 }
 
-// OplogReplay when true replays a replica set's oplog.
+
 func (f *Find) OplogReplay(oplogReplay bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -345,7 +345,7 @@ func (f *Find) OplogReplay(oplogReplay bool) *Find {
 	return f
 }
 
-// Projection limits the fields returned for all documents.
+
 func (f *Find) Projection(projection bsoncore.Document) *Find {
 	if f == nil {
 		f = new(Find)
@@ -355,7 +355,7 @@ func (f *Find) Projection(projection bsoncore.Document) *Find {
 	return f
 }
 
-// ReturnKey when true returns index keys for all result documents.
+
 func (f *Find) ReturnKey(returnKey bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -365,7 +365,7 @@ func (f *Find) ReturnKey(returnKey bool) *Find {
 	return f
 }
 
-// ShowRecordID when true adds a $recordId field with the record identifier to returned documents.
+
 func (f *Find) ShowRecordID(showRecordID bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -375,7 +375,7 @@ func (f *Find) ShowRecordID(showRecordID bool) *Find {
 	return f
 }
 
-// SingleBatch specifies whether the results should be returned in a single batch.
+
 func (f *Find) SingleBatch(singleBatch bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -385,7 +385,7 @@ func (f *Find) SingleBatch(singleBatch bool) *Find {
 	return f
 }
 
-// Skip specifies the number of documents to skip before returning.
+
 func (f *Find) Skip(skip int64) *Find {
 	if f == nil {
 		f = new(Find)
@@ -395,7 +395,7 @@ func (f *Find) Skip(skip int64) *Find {
 	return f
 }
 
-// Snapshot prevents the cursor from returning a document more than once because of an intervening write operation.
+
 func (f *Find) Snapshot(snapshot bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -405,7 +405,7 @@ func (f *Find) Snapshot(snapshot bool) *Find {
 	return f
 }
 
-// Sort specifies the order in which to return results.
+
 func (f *Find) Sort(sort bsoncore.Document) *Find {
 	if f == nil {
 		f = new(Find)
@@ -415,7 +415,7 @@ func (f *Find) Sort(sort bsoncore.Document) *Find {
 	return f
 }
 
-// Tailable keeps a cursor open and resumable after the last data has been retrieved.
+
 func (f *Find) Tailable(tailable bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -425,7 +425,7 @@ func (f *Find) Tailable(tailable bool) *Find {
 	return f
 }
 
-// Session sets the session for this operation.
+
 func (f *Find) Session(session *session.Client) *Find {
 	if f == nil {
 		f = new(Find)
@@ -435,7 +435,7 @@ func (f *Find) Session(session *session.Client) *Find {
 	return f
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (f *Find) ClusterClock(clock *session.ClusterClock) *Find {
 	if f == nil {
 		f = new(Find)
@@ -445,7 +445,7 @@ func (f *Find) ClusterClock(clock *session.ClusterClock) *Find {
 	return f
 }
 
-// Collection sets the collection that this command will run against.
+
 func (f *Find) Collection(collection string) *Find {
 	if f == nil {
 		f = new(Find)
@@ -455,7 +455,7 @@ func (f *Find) Collection(collection string) *Find {
 	return f
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (f *Find) CommandMonitor(monitor *event.CommandMonitor) *Find {
 	if f == nil {
 		f = new(Find)
@@ -465,7 +465,7 @@ func (f *Find) CommandMonitor(monitor *event.CommandMonitor) *Find {
 	return f
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (f *Find) Crypt(crypt driver.Crypt) *Find {
 	if f == nil {
 		f = new(Find)
@@ -475,7 +475,7 @@ func (f *Find) Crypt(crypt driver.Crypt) *Find {
 	return f
 }
 
-// Database sets the database to run this operation against.
+
 func (f *Find) Database(database string) *Find {
 	if f == nil {
 		f = new(Find)
@@ -485,7 +485,7 @@ func (f *Find) Database(database string) *Find {
 	return f
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (f *Find) Deployment(deployment driver.Deployment) *Find {
 	if f == nil {
 		f = new(Find)
@@ -495,7 +495,7 @@ func (f *Find) Deployment(deployment driver.Deployment) *Find {
 	return f
 }
 
-// ReadConcern specifies the read concern for this operation.
+
 func (f *Find) ReadConcern(readConcern *readconcern.ReadConcern) *Find {
 	if f == nil {
 		f = new(Find)
@@ -505,7 +505,7 @@ func (f *Find) ReadConcern(readConcern *readconcern.ReadConcern) *Find {
 	return f
 }
 
-// ReadPreference set the read preference used with this operation.
+
 func (f *Find) ReadPreference(readPreference *readpref.ReadPref) *Find {
 	if f == nil {
 		f = new(Find)
@@ -515,7 +515,7 @@ func (f *Find) ReadPreference(readPreference *readpref.ReadPref) *Find {
 	return f
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (f *Find) ServerSelector(selector description.ServerSelector) *Find {
 	if f == nil {
 		f = new(Find)
@@ -525,8 +525,8 @@ func (f *Find) ServerSelector(selector description.ServerSelector) *Find {
 	return f
 }
 
-// Retry enables retryable mode for this operation. Retries are handled automatically in driver.Operation.Execute based
-// on how the operation is set.
+
+
 func (f *Find) Retry(retry driver.RetryMode) *Find {
 	if f == nil {
 		f = new(Find)
@@ -536,7 +536,7 @@ func (f *Find) Retry(retry driver.RetryMode) *Find {
 	return f
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (f *Find) ServerAPI(serverAPI *driver.ServerAPIOptions) *Find {
 	if f == nil {
 		f = new(Find)
@@ -546,7 +546,7 @@ func (f *Find) ServerAPI(serverAPI *driver.ServerAPIOptions) *Find {
 	return f
 }
 
-// Timeout sets the timeout for this operation.
+
 func (f *Find) Timeout(timeout *time.Duration) *Find {
 	if f == nil {
 		f = new(Find)
@@ -556,9 +556,9 @@ func (f *Find) Timeout(timeout *time.Duration) *Find {
 	return f
 }
 
-// OmitCSOTMaxTimeMS omits the automatically-calculated "maxTimeMS" from the
-// command when CSOT is enabled. It does not effect "maxTimeMS" set by
-// [Find.MaxTime].
+
+
+
 func (f *Find) OmitCSOTMaxTimeMS(omit bool) *Find {
 	if f == nil {
 		f = new(Find)
@@ -568,7 +568,7 @@ func (f *Find) OmitCSOTMaxTimeMS(omit bool) *Find {
 	return f
 }
 
-// Logger sets the logger for this operation.
+
 func (f *Find) Logger(logger *logger.Logger) *Find {
 	if f == nil {
 		f = new(Find)
@@ -578,7 +578,7 @@ func (f *Find) Logger(logger *logger.Logger) *Find {
 	return f
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (f *Find) Authenticator(authenticator driver.Authenticator) *Find {
 	if f == nil {
 		f = new(Find)

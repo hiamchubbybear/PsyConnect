@@ -25,18 +25,18 @@ type RequestPartition struct {
 	Partition          int32 `kafka:"min=v1,max=v5"`
 	CurrentLeaderEpoch int32 `kafka:"min=v4,max=v5"`
 	Timestamp          int64 `kafka:"min=v1,max=v5"`
-	// v0 of the API predates kafka 0.10, and doesn't make much sense to
-	// use so we chose not to support it. It had this extra field to limit
-	// the number of offsets returned, which has been removed in v1.
-	//
-	// MaxNumOffsets int32 `kafka:"min=v0,max=v0"`
+	
+	
+	
+	
+	
 }
 
 func (r *Request) ApiKey() protocol.ApiKey { return protocol.ListOffsets }
 
 func (r *Request) Broker(cluster protocol.Cluster) (protocol.Broker, error) {
-	// Expects r to be a request that was returned by Map, will likely panic
-	// or produce the wrong result if that's not the case.
+	
+	
 	partition := r.Topics[0].Partitions[0].Partition
 	topic := r.Topics[0].Topic
 
@@ -50,19 +50,19 @@ func (r *Request) Broker(cluster protocol.Cluster) (protocol.Broker, error) {
 }
 
 func (r *Request) Split(cluster protocol.Cluster) ([]protocol.Message, protocol.Merger, error) {
-	// Because kafka refuses to answer ListOffsets requests containing multiple
-	// entries of unique topic/partition pairs, we submit multiple requests on
-	// the wire and merge their results back.
-	//
-	// ListOffsets requests also need to be sent to partition leaders, to keep
-	// the logic simple we simply split each offset request into a single
-	// message. This may cause a bit more requests to be sent on the wire but
-	// it keeps the code sane, we can still optimize the aggregation mechanism
-	// later if it becomes a problem.
-	//
-	// Really the idea here is to shield applications from having to deal with
-	// the limitation of the kafka server, so they can request any combinations
-	// of topic/partition/offsets.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	requests := make([]Request, 0, 2*len(r.Topics))
 
 	for _, t := range r.Topics {
@@ -117,15 +117,15 @@ func (r *Response) Merge(requests []protocol.Message, results []interface{}) (pr
 		partition int32
 	}
 
-	// Kafka doesn't always return the timestamp in the response, for example
-	// when the request sends -2 (for the first offset) it always returns -1,
-	// probably to indicate that the timestamp is unknown. This means that we
-	// can't correlate the requests and responses based on their timestamps,
-	// the primary key is the topic/partition pair.
-	//
-	// To make the API a bit friendly, we reconstructing an index of topic
-	// partitions to the timestamps that were requested, and override the
-	// timestamp value in the response.
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	timestamps := make([]map[topicPartition]int64, len(requests))
 
 	for i, m := range requests {
@@ -156,7 +156,7 @@ func (r *Response) Merge(requests []protocol.Message, results []interface{}) (pr
 				for _, p := range t.Partitions {
 					partitions = append(partitions, ResponsePartition{
 						Partition:   p.Partition,
-						ErrorCode:   -1, // UNKNOWN, can we do better?
+						ErrorCode:   -1, 
 						Timestamp:   -1,
 						Offset:      -1,
 						LeaderEpoch: -1,

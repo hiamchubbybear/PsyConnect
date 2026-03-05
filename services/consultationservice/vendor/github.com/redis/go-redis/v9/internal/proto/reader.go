@@ -12,36 +12,36 @@ import (
 	"github.com/redis/go-redis/v9/internal/util"
 )
 
-// DefaultBufferSize is the default size for read/write buffers (256 KiB).
+
 const DefaultBufferSize = 256 * 1024
 
-// redis resp protocol data type.
+
 const (
-	RespStatus    = '+' // +<string>\r\n
-	RespError     = '-' // -<string>\r\n
-	RespString    = '$' // $<length>\r\n<bytes>\r\n
-	RespInt       = ':' // :<number>\r\n
-	RespNil       = '_' // _\r\n
-	RespFloat     = ',' // ,<floating-point-number>\r\n (golang float)
-	RespBool      = '#' // true: #t\r\n false: #f\r\n
-	RespBlobError = '!' // !<length>\r\n<bytes>\r\n
-	RespVerbatim  = '=' // =<length>\r\nFORMAT:<bytes>\r\n
-	RespBigInt    = '(' // (<big number>\r\n
-	RespArray     = '*' // *<len>\r\n... (same as resp2)
-	RespMap       = '%' // %<len>\r\n(key)\r\n(value)\r\n... (golang map)
-	RespSet       = '~' // ~<len>\r\n... (same as Array)
-	RespAttr      = '|' // |<len>\r\n(key)\r\n(value)\r\n... + command reply
-	RespPush      = '>' // ><len>\r\n... (same as Array)
+	RespStatus    = '+' 
+	RespError     = '-' 
+	RespString    = '$' 
+	RespInt       = ':' 
+	RespNil       = '_' 
+	RespFloat     = ',' 
+	RespBool      = '#' 
+	RespBlobError = '!' 
+	RespVerbatim  = '=' 
+	RespBigInt    = '(' 
+	RespArray     = '*' 
+	RespMap       = '%' 
+	RespSet       = '~' 
+	RespAttr      = '|' 
+	RespPush      = '>' 
 )
 
-// Not used temporarily.
-// Redis has not used these two data types for the time being, and will implement them later.
-// Streamed           = "EOF:"
-// StreamedAggregated = '?'
 
-//------------------------------------------------------------------------------
 
-const Nil = RedisError("redis: nil") // nolint:errname
+
+
+
+
+
+const Nil = RedisError("redis: nil") 
 
 type RedisError string
 
@@ -53,7 +53,7 @@ func ParseErrorReply(line []byte) error {
 	return RedisError(line[1:])
 }
 
-//------------------------------------------------------------------------------
+
 
 type Reader struct {
 	rd *bufio.Reader
@@ -83,8 +83,8 @@ func (r *Reader) Reset(rd io.Reader) {
 	r.rd.Reset(rd)
 }
 
-// PeekReplyType returns the data type of the next response without advancing the Reader,
-// and discard the attribute type.
+
+
 func (r *Reader) PeekReplyType() (byte, error) {
 	b, err := r.rd.Peek(1)
 	if err != nil {
@@ -99,8 +99,8 @@ func (r *Reader) PeekReplyType() (byte, error) {
 	return b[0], nil
 }
 
-// ReadLine Return a valid reply, it will check the protocol or redis error,
-// and discard the attribute type.
+
+
 func (r *Reader) ReadLine() ([]byte, error) {
 	line, err := r.readLine()
 	if err != nil {
@@ -125,7 +125,7 @@ func (r *Reader) ReadLine() ([]byte, error) {
 		return r.ReadLine()
 	}
 
-	// Compatible with RESP2
+	
 	if IsNilReply(line) {
 		return nil, Nil
 	}
@@ -133,9 +133,9 @@ func (r *Reader) ReadLine() ([]byte, error) {
 	return line, nil
 }
 
-// readLine returns an error if:
-//   - there is a pending read error;
-//   - or line does not end with \r\n.
+
+
+
 func (r *Reader) readLine() ([]byte, error) {
 	b, err := r.rd.ReadSlice('\n')
 	if err != nil {
@@ -151,7 +151,7 @@ func (r *Reader) readLine() ([]byte, error) {
 			return nil, err
 		}
 
-		full = append(full, b...) //nolint:makezero
+		full = append(full, b...) 
 		b = full
 	}
 	if len(b) <= 2 || b[len(b)-1] != '\n' || b[len(b)-2] != '\r' {
@@ -301,7 +301,7 @@ func (r *Reader) readMap(line []byte) (map[interface{}]interface{}, error) {
 	return m, nil
 }
 
-// -------------------------------
+
 
 func (r *Reader) ReadInt() (int64, error) {
 	line, err := r.ReadLine()
@@ -419,7 +419,7 @@ func (r *Reader) ReadSlice() ([]interface{}, error) {
 	return r.readSlice(line)
 }
 
-// ReadFixedArrayLen read fixed array length.
+
 func (r *Reader) ReadFixedArrayLen(fixedLen int) error {
 	n, err := r.ReadArrayLen()
 	if err != nil {
@@ -431,7 +431,7 @@ func (r *Reader) ReadFixedArrayLen(fixedLen int) error {
 	return nil
 }
 
-// ReadArrayLen Read and return the length of the array.
+
 func (r *Reader) ReadArrayLen() (int, error) {
 	line, err := r.ReadLine()
 	if err != nil {
@@ -445,7 +445,7 @@ func (r *Reader) ReadArrayLen() (int, error) {
 	}
 }
 
-// ReadFixedMapLen reads fixed map length.
+
 func (r *Reader) ReadFixedMapLen(fixedLen int) error {
 	n, err := r.ReadMapLen()
 	if err != nil {
@@ -457,10 +457,10 @@ func (r *Reader) ReadFixedMapLen(fixedLen int) error {
 	return nil
 }
 
-// ReadMapLen reads the length of the map type.
-// If responding to the array type (RespArray/RespSet/RespPush),
-// it must be a multiple of 2 and return n/2.
-// Other types will return an error.
+
+
+
+
 func (r *Reader) ReadMapLen() (int, error) {
 	line, err := r.ReadLine()
 	if err != nil {
@@ -470,7 +470,7 @@ func (r *Reader) ReadMapLen() (int, error) {
 	case RespMap:
 		return replyLen(line)
 	case RespArray, RespSet, RespPush:
-		// Some commands and RESP2 protocol may respond to array types.
+		
 		n, err := replyLen(line)
 		if err != nil {
 			return 0, err
@@ -484,7 +484,7 @@ func (r *Reader) ReadMapLen() (int, error) {
 	}
 }
 
-// DiscardNext read and discard the data represented by the next line.
+
 func (r *Reader) DiscardNext() error {
 	line, err := r.readLine()
 	if err != nil {
@@ -493,7 +493,7 @@ func (r *Reader) DiscardNext() error {
 	return r.Discard(line)
 }
 
-// Discard the data represented by line.
+
 func (r *Reader) Discard(line []byte) (err error) {
 	if len(line) == 0 {
 		return errors.New("redis: invalid line")
@@ -510,7 +510,7 @@ func (r *Reader) Discard(line []byte) (err error) {
 
 	switch line[0] {
 	case RespBlobError, RespString, RespVerbatim:
-		// +\r\n
+		
 		_, err = r.rd.Discard(n + 2)
 		return err
 	case RespArray, RespSet, RespPush:
@@ -521,7 +521,7 @@ func (r *Reader) Discard(line []byte) (err error) {
 		}
 		return nil
 	case RespMap, RespAttr:
-		// Read key & value.
+		
 		for i := 0; i < n*2; i++ {
 			if err = r.DiscardNext(); err != nil {
 				return err
@@ -553,7 +553,7 @@ func replyLen(line []byte) (n int, err error) {
 	return n, nil
 }
 
-// IsNilReply detects redis.Nil of RESP2.
+
 func IsNilReply(line []byte) bool {
 	return len(line) == 3 &&
 		(line[0] == RespString || line[0] == RespArray) &&

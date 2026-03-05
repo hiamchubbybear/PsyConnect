@@ -1,31 +1,31 @@
-// Based on cmd/internal/obj/ppc64/a.out.go.
-//
-//	Copyright © 1994-1999 Lucent Technologies Inc.  All rights reserved.
-//	Portions Copyright © 1995-1997 C H Forsyth (forsyth@terzarima.net)
-//	Portions Copyright © 1997-1999 Vita Nuova Limited
-//	Portions Copyright © 2000-2008 Vita Nuova Holdings Limited (www.vitanuova.com)
-//	Portions Copyright © 2004,2006 Bruce Ellis
-//	Portions Copyright © 2005-2007 C H Forsyth (forsyth@terzarima.net)
-//	Revisions Copyright © 2000-2008 Lucent Technologies Inc. and others
-//	Portions Copyright © 2009 The Go Authors. All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package s390x
 
@@ -36,12 +36,12 @@ import "github.com/twitchyliquid64/golang-asm/obj"
 const (
 	NSNAME = 8
 	NSYM   = 50
-	NREG   = 16 // number of general purpose registers
-	NFREG  = 16 // number of floating point registers
+	NREG   = 16 
+	NFREG  = 16 
 )
 
 const (
-	// General purpose registers (GPRs).
+	
 	REG_R0 = obj.RBaseS390X + iota
 	REG_R1
 	REG_R2
@@ -59,7 +59,7 @@ const (
 	REG_R14
 	REG_R15
 
-	// Floating point registers (FPRs).
+	
 	REG_F0
 	REG_F1
 	REG_F2
@@ -77,12 +77,12 @@ const (
 	REG_F14
 	REG_F15
 
-	// Vector registers (VRs) - only available when the vector
-	// facility is installed.
-	// V0-V15 are aliases for F0-F15.
-	// We keep them in a separate space to make printing etc. easier
-	// If the code generator ever emits vector instructions it will
-	// need to take into account the aliasing.
+	
+	
+	
+	
+	
+	
 	REG_V0
 	REG_V1
 	REG_V2
@@ -116,9 +116,9 @@ const (
 	REG_V30
 	REG_V31
 
-	// Access registers (ARs).
-	// The thread pointer is typically stored in the register pair
-	// AR0 and AR1.
+	
+	
+	
 	REG_AR0
 	REG_AR1
 	REG_AR2
@@ -136,25 +136,25 @@ const (
 	REG_AR14
 	REG_AR15
 
-	REG_RESERVED // end of allocated registers
+	REG_RESERVED 
 
-	REGARG  = -1      // -1 disables passing the first argument in register
-	REGRT1  = REG_R3  // used during zeroing of the stack - not reserved
-	REGRT2  = REG_R4  // used during zeroing of the stack - not reserved
-	REGTMP  = REG_R10 // scratch register used in the assembler and linker
-	REGTMP2 = REG_R11 // scratch register used in the assembler and linker
-	REGCTXT = REG_R12 // context for closures
-	REGG    = REG_R13 // G
-	REG_LR  = REG_R14 // link register
-	REGSP   = REG_R15 // stack pointer
+	REGARG  = -1      
+	REGRT1  = REG_R3  
+	REGRT2  = REG_R4  
+	REGTMP  = REG_R10 
+	REGTMP2 = REG_R11 
+	REGCTXT = REG_R12 
+	REGG    = REG_R13 
+	REG_LR  = REG_R14 
+	REGSP   = REG_R15 
 )
 
-// LINUX for zSeries ELF Application Binary Interface Supplement
-// https://refspecs.linuxfoundation.org/ELF/zSeries/lzsabi0_zSeries/x1472.html
+
+
 var S390XDWARFRegisters = map[int16]int16{}
 
 func init() {
-	// f assigns dwarfregisters[from:to by step] = (base):((to-from)/step+base)
+	
 	f := func(from, step, to, base int16) {
 		for r := int16(from); r <= to; r += step {
 			S390XDWARFRegisters[r] = (r-from)/step + base
@@ -167,8 +167,8 @@ func init() {
 	f(REG_F8, 2, REG_F14, 24)
 	f(REG_F9, 2, REG_F15, 28)
 
-	f(REG_V0, 2, REG_V6, 16) // V0:15 aliased to F0:15
-	f(REG_V1, 2, REG_V7, 20) // TODO what about V16:31?
+	f(REG_V0, 2, REG_V6, 16) 
+	f(REG_V1, 2, REG_V7, 20) 
 	f(REG_V8, 2, REG_V14, 24)
 	f(REG_V9, 2, REG_V15, 28)
 
@@ -183,48 +183,48 @@ const (
 )
 
 const (
-	// mark flags
+	
 	LEAF = 1 << iota
 	BRANCH
-	USETMP // generated code of this Prog uses REGTMP
+	USETMP 
 )
 
-const ( // comments from func aclass in asmz.go
+const ( 
 	C_NONE     = iota
-	C_REG      // general-purpose register (64-bit)
-	C_FREG     // floating-point register (64-bit)
-	C_VREG     // vector register (128-bit)
-	C_AREG     // access register (32-bit)
-	C_ZCON     // constant == 0
-	C_SCON     // 0 <= constant <= 0x7fff (positive int16)
-	C_UCON     // constant & 0xffff == 0 (int16 or uint16)
-	C_ADDCON   // 0 > constant >= -0x8000 (negative int16)
-	C_ANDCON   // constant <= 0xffff
-	C_LCON     // constant (int32 or uint32)
-	C_DCON     // constant (int64 or uint64)
-	C_SACON    // computed address, 16-bit displacement, possibly SP-relative
-	C_LACON    // computed address, 32-bit displacement, possibly SP-relative
-	C_DACON    // computed address, 64-bit displacment?
-	C_SBRA     // short branch
-	C_LBRA     // long branch
-	C_SAUTO    // short auto
-	C_LAUTO    // long auto
-	C_ZOREG    // heap address, register-based, displacement == 0
-	C_SOREG    // heap address, register-based, int16 displacement
-	C_LOREG    // heap address, register-based, int32 displacement
-	C_TLS_LE   // TLS - local exec model (for executables)
-	C_TLS_IE   // TLS - initial exec model (for shared libraries loaded at program startup)
-	C_GOK      // general address
-	C_ADDR     // relocation for extern or static symbols (loads and stores)
-	C_SYMADDR  // relocation for extern or static symbols (address taking)
-	C_GOTADDR  // GOT slot for a symbol in -dynlink mode
-	C_TEXTSIZE // text size
+	C_REG      
+	C_FREG     
+	C_VREG     
+	C_AREG     
+	C_ZCON     
+	C_SCON     
+	C_UCON     
+	C_ADDCON   
+	C_ANDCON   
+	C_LCON     
+	C_DCON     
+	C_SACON    
+	C_LACON    
+	C_DACON    
+	C_SBRA     
+	C_LBRA     
+	C_SAUTO    
+	C_LAUTO    
+	C_ZOREG    
+	C_SOREG    
+	C_LOREG    
+	C_TLS_LE   
+	C_TLS_IE   
+	C_GOK      
+	C_ADDR     
+	C_SYMADDR  
+	C_GOTADDR  
+	C_TEXTSIZE 
 	C_ANY
-	C_NCLASS // must be the last
+	C_NCLASS 
 )
 
 const (
-	// integer arithmetic
+	
 	AADD = obj.ABaseS390X + obj.A_ARCHSPECIFIC + iota
 	AADDC
 	AADDE
@@ -250,7 +250,7 @@ const (
 	ANEG
 	ANEGW
 
-	// integer moves
+	
 	AMOVWBR
 	AMOVB
 	AMOVBZ
@@ -262,7 +262,7 @@ const (
 	AMOVD
 	AMOVDBR
 
-	// conditional moves
+	
 	AMOVDEQ
 	AMOVDGE
 	AMOVDGT
@@ -272,13 +272,13 @@ const (
 	ALOCR
 	ALOCGR
 
-	// find leftmost one
+	
 	AFLOGR
 
-	// population count
+	
 	APOPCNT
 
-	// integer bitwise
+	
 	AAND
 	AANDW
 	AOR
@@ -308,7 +308,7 @@ const (
 	ARISBHGZ
 	ARISBLGZ
 
-	// floating point
+	
 	AFABS
 	AFADD
 	AFADDS
@@ -344,60 +344,60 @@ const (
 	ATCEB
 	ATCDB
 
-	// move from GPR to FPR and vice versa
+	
 	ALDGR
 	ALGDR
 
-	// convert from int32/int64 to float/float64
+	
 	ACEFBRA
 	ACDFBRA
 	ACEGBRA
 	ACDGBRA
 
-	// convert from float/float64 to int32/int64
+	
 	ACFEBRA
 	ACFDBRA
 	ACGEBRA
 	ACGDBRA
 
-	// convert from uint32/uint64 to float/float64
+	
 	ACELFBR
 	ACDLFBR
 	ACELGBR
 	ACDLGBR
 
-	// convert from float/float64 to uint32/uint64
+	
 	ACLFEBR
 	ACLFDBR
 	ACLGEBR
 	ACLGDBR
 
-	// compare
+	
 	ACMP
 	ACMPU
 	ACMPW
 	ACMPWU
 
-	// test under mask
+	
 	ATMHH
 	ATMHL
 	ATMLH
 	ATMLL
 
-	// insert program mask
+	
 	AIPM
 
-	// set program mask
+	
 	ASPM
 
-	// compare and swap
+	
 	ACS
 	ACSG
 
-	// serialize
+	
 	ASYNC
 
-	// branch
+	
 	ABC
 	ABCL
 	ABRC
@@ -413,11 +413,11 @@ const (
 	ABVS
 	ASYSCALL
 
-	// branch on count
+	
 	ABRCT
 	ABRCTG
 
-	// compare and branch
+	
 	ACRJ
 	ACGRJ
 	ACLRJ
@@ -439,7 +439,7 @@ const (
 	ACMPUBLT
 	ACMPUBNE
 
-	// storage-and-storage
+	
 	AMVC
 	AMVCIN
 	ACLC
@@ -447,13 +447,13 @@ const (
 	AOC
 	ANC
 
-	// load
+	
 	AEXRL
 	ALARL
 	ALA
 	ALAY
 
-	// interlocked load and op
+	
 	ALAA
 	ALAAG
 	ALAAL
@@ -465,22 +465,22 @@ const (
 	ALAO
 	ALAOG
 
-	// load/store multiple
+	
 	ALMY
 	ALMG
 	ASTMY
 	ASTMG
 
-	// store clock
+	
 	ASTCK
 	ASTCKC
 	ASTCKE
 	ASTCKF
 
-	// macros
+	
 	ACLEAR
 
-	// vector
+	
 	AVA
 	AVAB
 	AVAH
@@ -987,17 +987,17 @@ const (
 	AVMSLOG
 	AVMSLEOG
 
-	ANOPH // NOP
+	ANOPH 
 
-	// binary
+	
 	ABYTE
 	AWORD
 	ADWORD
 
-	// end marker
+	
 	ALAST
 
-	// aliases
+	
 	ABR = obj.AJMP
 	ABL = obj.ACALL
 )

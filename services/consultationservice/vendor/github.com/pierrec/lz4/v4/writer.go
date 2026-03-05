@@ -16,7 +16,7 @@ var writerStates = []aState{
 	errorState:  newState,
 }
 
-// NewWriter returns a new LZ4 frame encoder.
+
 func NewWriter(w io.Writer) *Writer {
 	zw := &Writer{frame: lz4stream.NewFrame()}
 	zw.state.init(writerStates)
@@ -25,15 +25,15 @@ func NewWriter(w io.Writer) *Writer {
 	return zw
 }
 
-// Writer allows writing an LZ4 stream.
+
 type Writer struct {
 	state   _State
-	src     io.Writer                 // destination writer
-	level   lz4block.CompressionLevel // how hard to try
-	num     int                       // concurrency level
-	frame   *lz4stream.Frame          // frame being built
-	data    []byte                    // pending data
-	idx     int                       // size of pending data
+	src     io.Writer                 
+	level   lz4block.CompressionLevel 
+	num     int                       
+	frame   *lz4stream.Frame          
+	data    []byte                    
+	idx     int                       
 	handler func(int)
 	legacy  bool
 }
@@ -62,7 +62,7 @@ func (w *Writer) isNotConcurrent() bool {
 	return w.num == 1
 }
 
-// init sets up the Writer when in newState. It does not change the Writer state.
+
 func (w *Writer) init() error {
 	w.frame.InitW(w.src, w.num, w.legacy)
 	size := w.frame.Descriptor.Flags.BlockSizeIndex()
@@ -88,7 +88,7 @@ func (w *Writer) Write(buf []byte) (n int, err error) {
 	zn := len(w.data)
 	for len(buf) > 0 {
 		if w.isNotConcurrent() && w.idx == 0 && len(buf) >= zn {
-			// Avoid a copy as there is enough data for a block.
+			
 			if err = w.write(buf[:zn], false); err != nil {
 				return
 			}
@@ -96,18 +96,18 @@ func (w *Writer) Write(buf []byte) (n int, err error) {
 			buf = buf[zn:]
 			continue
 		}
-		// Accumulate the data to be compressed.
+		
 		m := copy(w.data[w.idx:], buf)
 		n += m
 		w.idx += m
 		buf = buf[m:]
 
 		if w.idx < len(w.data) {
-			// Buffer not filled.
+			
 			return
 		}
 
-		// Buffer full.
+		
 		if err = w.write(w.data, true); err != nil {
 			return
 		}
@@ -136,7 +136,7 @@ func (w *Writer) write(data []byte, safe bool) error {
 		w.handler(len(b.Data))
 		b.Close(w.frame)
 		if safe {
-			// safe to put it back as the last usage of it was FrameDataBlock.Write() called before c is closed
+			
 			lz4block.Put(data)
 		}
 	}(c, data, safe)
@@ -144,7 +144,7 @@ func (w *Writer) write(data []byte, safe bool) error {
 	return nil
 }
 
-// Flush any buffered data to the underlying writer immediately.
+
 func (w *Writer) Flush() (err error) {
 	switch w.state.state {
 	case writeState:
@@ -155,7 +155,7 @@ func (w *Writer) Flush() (err error) {
 	}
 
 	if w.idx > 0 {
-		// Flush pending data, disable w.data freeing as it is done later on.
+		
 		if err = w.write(w.data[:w.idx], false); err != nil {
 			return err
 		}
@@ -164,14 +164,14 @@ func (w *Writer) Flush() (err error) {
 	return nil
 }
 
-// Close closes the Writer, flushing any unwritten data to the underlying writer
-// without closing it.
+
+
 func (w *Writer) Close() error {
 	if err := w.Flush(); err != nil {
 		return err
 	}
 	err := w.frame.CloseW(w.src, w.num)
-	// It is now safe to free the buffer.
+	
 	if w.data != nil {
 		lz4block.Put(w.data)
 		w.data = nil
@@ -179,19 +179,19 @@ func (w *Writer) Close() error {
 	return err
 }
 
-// Reset clears the state of the Writer w such that it is equivalent to its
-// initial state from NewWriter, but instead writing to writer.
-// Reset keeps the previous options unless overwritten by the supplied ones.
-// No access to writer is performed.
-//
-// w.Close must be called before Reset or pending data may be dropped.
+
+
+
+
+
+
 func (w *Writer) Reset(writer io.Writer) {
 	w.frame.Reset(w.num)
 	w.state.reset()
 	w.src = writer
 }
 
-// ReadFrom efficiently reads from r and compressed into the Writer destination.
+
 func (w *Writer) ReadFrom(r io.Reader) (n int64, err error) {
 	switch w.state.state {
 	case closedState, errorState:
@@ -210,14 +210,14 @@ func (w *Writer) ReadFrom(r io.Reader) (n int64, err error) {
 	var rn int
 	data := size.Get()
 	if w.isNotConcurrent() {
-		// Keep the same buffer for the whole process.
+		
 		defer lz4block.Put(data)
 	}
 	for !done {
 		rn, err = io.ReadFull(r, data)
 		switch err {
 		case nil:
-		case io.EOF, io.ErrUnexpectedEOF: // read may be partial
+		case io.EOF, io.ErrUnexpectedEOF: 
 			done = true
 		default:
 			return
@@ -229,8 +229,8 @@ func (w *Writer) ReadFrom(r io.Reader) (n int64, err error) {
 		}
 		w.handler(rn)
 		if !done && !w.isNotConcurrent() {
-			// The buffer will be returned automatically by go routines (safe=true)
-			// so get a new one fo the next round.
+			
+			
 			data = size.Get()
 		}
 	}

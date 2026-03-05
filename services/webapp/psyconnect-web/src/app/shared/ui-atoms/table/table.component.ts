@@ -8,7 +8,7 @@ import { PsyEmptyStateComponent } from '../empty-state/psy-empty-state.component
   imports: [CommonModule, PsyEmptyStateComponent],
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss'],
-  encapsulation: ViewEncapsulation.None, // To apply styles to projected content
+  encapsulation: ViewEncapsulation.None, 
 })
 export class TableComponent {
   @Input() loading = false;

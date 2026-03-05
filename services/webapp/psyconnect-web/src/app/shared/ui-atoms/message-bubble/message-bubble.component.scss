@@ -1,14 +1,14 @@
 :host {
   display: block;
-  margin-bottom: 2px; // Default tight spacing
+  margin-bottom: 2px; 
 }
 
 :host.first-in-group {
-  margin-top: 6px; // Tighter spacing between groups
+  margin-top: 6px; 
 }
 
 :host.last-in-group {
-  margin-bottom: 6px; // Tighter spacing after groups
+  margin-bottom: 6px; 
 }
 
 .message-wrapper {
@@ -41,7 +41,7 @@
 }
 
 .avatar-spacer {
-  width: 32px; // Match avatar width
+  width: 32px; 
   flex-shrink: 0;
 }
 
@@ -64,14 +64,14 @@
 }
 
 .message-author {
-  font-size: var(--font-size-xs); // slightly larger than time
+  font-size: var(--font-size-xs); 
   font-weight: 600;
-  color: var(--color-text); // text-gray-700
+  color: var(--color-text); 
 }
 
 .message-time {
   font-size: var(--font-size-2xs);
-  color: var(--color-text-muted); // text-gray-400
+  color: var(--color-text-muted); 
 }
 
 .message-bubble {
@@ -91,8 +91,8 @@
   display: inline-block;
 
   &.mine {
-    background: var(--color-bg-contrast); // black
-    color: var(--color-bg); // white
+    background: var(--color-bg-contrast); 
+    color: var(--color-bg); 
     border-radius: 18px;
     border-bottom-right-radius: 4px;
     border-color: var(--color-bg-contrast);
@@ -101,7 +101,7 @@
 
   p {
     margin: 0;
-    font-size: 0.9375rem; // ~15px
+    font-size: 0.9375rem; 
     line-height: 1.4;
     max-width: 100%;
   }
@@ -114,7 +114,7 @@
   padding: 0 4px;
 }
 
-/* Message status indicators */
+
 .message-wrapper.sending {
   .message-bubble.mine {
     opacity: 0.7;

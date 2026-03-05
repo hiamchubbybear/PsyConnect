@@ -1,6 +1,6 @@
-// Copyright 2015 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package obj
 
@@ -14,7 +14,7 @@ import (
 
 const REG_NONE = 0
 
-// Line returns a string containing the filename and line number for p
+
 func (p *Prog) Line() string {
 	return p.Ctxt.OutermostPos(p.Pos).Format(false, true)
 }
@@ -22,23 +22,23 @@ func (p *Prog) InnermostLine(w io.Writer) {
 	p.Ctxt.InnermostPos(p.Pos).WriteTo(w, false, true)
 }
 
-// InnermostLineNumber returns a string containing the line number for the
-// innermost inlined function (if any inlining) at p's position
+
+
 func (p *Prog) InnermostLineNumber() string {
 	return p.Ctxt.InnermostPos(p.Pos).LineNumber()
 }
 
-// InnermostLineNumberHTML returns a string containing the line number for the
-// innermost inlined function (if any inlining) at p's position
+
+
 func (p *Prog) InnermostLineNumberHTML() string {
 	return p.Ctxt.InnermostPos(p.Pos).LineNumberHTML()
 }
 
-// InnermostFilename returns a string containing the innermost
-// (in inlining) filename at p's position
+
+
 func (p *Prog) InnermostFilename() string {
-	// TODO For now, this is only used for debugging output, and if we need more/better information, it might change.
-	// An example of what we might want to see is the full stack of positions for inlined code, so we get some visibility into what is recorded there.
+	
+	
 	pos := p.Ctxt.InnermostPos(p.Pos)
 	if !pos.IsKnown() {
 		return "<unknown file name>"
@@ -65,7 +65,7 @@ var armCondCode = []string{
 	".NV",
 }
 
-/* ARM scond byte */
+
 const (
 	C_SCOND     = (1 << 4) - 1
 	C_SBIT      = 1 << 4
@@ -76,7 +76,7 @@ const (
 	C_SCOND_XOR = 14
 )
 
-// CConv formats opcode suffix bits (Prog.Scond).
+
 func CConv(s uint8) string {
 	if s == 0 {
 		return ""
@@ -90,11 +90,11 @@ func CConv(s uint8) string {
 	return fmt.Sprintf("SC???%d", s)
 }
 
-// CConvARM formats ARM opcode suffix bits (mostly condition codes).
+
 func CConvARM(s uint8) string {
-	// TODO: could be great to move suffix-related things into
-	// ARM asm backends some day.
-	// obj/x86 can be used as an example.
+	
+	
+	
 
 	sc := armCondCode[(s&C_SCOND)^C_SCOND_XOR]
 	if s&C_SBIT != 0 {
@@ -106,7 +106,7 @@ func CConvARM(s uint8) string {
 	if s&C_WBIT != 0 {
 		sc += ".W"
 	}
-	if s&C_UBIT != 0 { /* ambiguous with FBIT */
+	if s&C_UBIT != 0 { 
 		sc += ".U"
 	}
 	return sc
@@ -137,16 +137,16 @@ func (p *Prog) InnermostString(w io.Writer) {
 	p.WriteInstructionString(w)
 }
 
-// InstructionString returns a string representation of the instruction without preceding
-// program counter or file and line number.
+
+
 func (p *Prog) InstructionString() string {
 	buf := new(bytes.Buffer)
 	p.WriteInstructionString(buf)
 	return buf.String()
 }
 
-// WriteInstructionString writes a string representation of the instruction without preceding
-// program counter or file and line number.
+
+
 func (p *Prog) WriteInstructionString(w io.Writer) {
 	if p == nil {
 		io.WriteString(w, "<nil Prog>")
@@ -170,7 +170,7 @@ func (p *Prog) WriteInstructionString(w io.Writer) {
 		sep = ", "
 	}
 	if p.Reg != REG_NONE {
-		// Should not happen but might as well show it if it does.
+		
 		fmt.Fprintf(w, "%s%v", sep, Rconv(int(p.Reg)))
 		sep = ", "
 	}
@@ -181,10 +181,10 @@ func (p *Prog) WriteInstructionString(w io.Writer) {
 	}
 
 	if p.As == ATEXT {
-		// If there are attributes, print them. Otherwise, skip the comma.
-		// In short, print one of these two:
-		// TEXT	foo(SB), DUPOK|NOSPLIT, $0
-		// TEXT	foo(SB), $0
+		
+		
+		
+		
 		s := p.From.Sym.Attribute.TextAttrString()
 		if s != "" {
 			fmt.Fprintf(w, "%s%s", sep, s)
@@ -228,10 +228,10 @@ func WriteDconv(w io.Writer, p *Prog, a *Addr) {
 		}
 
 	case TYPE_REG:
-		// TODO(rsc): This special case is for x86 instructions like
-		//	PINSRQ	CX,$1,X6
-		// where the $1 is included in the p->to Addr.
-		// Move into a new field.
+		
+		
+		
+		
 		if a.Offset != 0 && (a.Reg < RBaseARM64 || a.Reg >= RBaseMIPS) {
 			fmt.Fprintf(w, "$%d,%v", a.Offset, Rconv(int(a.Reg)))
 			return
@@ -243,8 +243,8 @@ func WriteDconv(w io.Writer, p *Prog, a *Addr) {
 		} else {
 			io.WriteString(w, Rconv(int(a.Reg)))
 		}
-		if (RBaseARM64+1<<10+1<<9) /* arm64.REG_ELEM */ <= a.Reg &&
-			a.Reg < (RBaseARM64+1<<11) /* arm64.REG_ELEM_END */ {
+		if (RBaseARM64+1<<10+1<<9)  <= a.Reg &&
+			a.Reg < (RBaseARM64+1<<11)  {
 			fmt.Fprintf(w, "[%d]", a.Index)
 		}
 
@@ -265,7 +265,7 @@ func WriteDconv(w io.Writer, p *Prog, a *Addr) {
 		a.WriteNameTo(w)
 		if a.Index != REG_NONE {
 			if a.Scale == 0 {
-				// arm64 shifted or extended register offset, scale = 0.
+				
 				fmt.Fprintf(w, "(%v)", Rconv(int(a.Index)))
 			} else {
 				fmt.Fprintf(w, "(%v*%d)", Rconv(int(a.Index)), int(a.Scale))
@@ -288,7 +288,7 @@ func WriteDconv(w io.Writer, p *Prog, a *Addr) {
 
 	case TYPE_FCONST:
 		str := fmt.Sprintf("%.17g", a.Val.(float64))
-		// Make sure 1 prints as 1.0
+		
 		if !strings.ContainsAny(str, ".e") {
 			str += ".0"
 		}
@@ -349,7 +349,7 @@ func (a *Addr) WriteNameTo(w io.Writer) {
 			fmt.Fprintf(w, "%d(%v)", a.Offset, Rconv(int(a.Reg)))
 		}
 
-		// Note: a.Reg == REG_NONE encodes the default base register for the NAME_ type.
+		
 	case NAME_EXTERN:
 		reg := "SB"
 		if a.Reg != REG_NONE {
@@ -424,12 +424,12 @@ func offConv(off int64) string {
 	return fmt.Sprintf("%+d", off)
 }
 
-// opSuffixSet is like regListSet, but for opcode suffixes.
-//
-// Unlike some other similar structures, uint8 space is not
-// divided by its own values set (because there are only 256 of them).
-// Instead, every arch may interpret/format all 8 bits as they like,
-// as long as they register proper cconv function for it.
+
+
+
+
+
+
 type opSuffixSet struct {
 	arch  string
 	cconv func(suffix uint8) string
@@ -437,10 +437,10 @@ type opSuffixSet struct {
 
 var opSuffixSpace []opSuffixSet
 
-// RegisterOpSuffix assigns cconv function for formatting opcode suffixes
-// when compiling for GOARCH=arch.
-//
-// cconv is never called with 0 argument.
+
+
+
+
 func RegisterOpSuffix(arch string, cconv func(uint8) string) {
 	opSuffixSpace = append(opSuffixSpace, opSuffixSet{
 		arch:  arch,
@@ -454,33 +454,29 @@ type regSet struct {
 	Rconv func(int) string
 }
 
-// Few enough architectures that a linear scan is fastest.
-// Not even worth sorting.
+
+
 var regSpace []regSet
 
-/*
-	Each architecture defines a register space as a unique
-	integer range.
-	Here is the list of architectures and the base of their register spaces.
-*/
+
 
 const (
-	// Because of masking operations in the encodings, each register
-	// space should start at 0 modulo some power of 2.
+	
+	
 	RBase386   = 1 * 1024
 	RBaseAMD64 = 2 * 1024
 	RBaseARM   = 3 * 1024
-	RBasePPC64 = 4 * 1024  // range [4k, 8k)
-	RBaseARM64 = 8 * 1024  // range [8k, 13k)
-	RBaseMIPS  = 13 * 1024 // range [13k, 14k)
-	RBaseS390X = 14 * 1024 // range [14k, 15k)
-	RBaseRISCV = 15 * 1024 // range [15k, 16k)
+	RBasePPC64 = 4 * 1024  
+	RBaseARM64 = 8 * 1024  
+	RBaseMIPS  = 13 * 1024 
+	RBaseS390X = 14 * 1024 
+	RBaseRISCV = 15 * 1024 
 	RBaseWasm  = 16 * 1024
 )
 
-// RegisterRegister binds a pretty-printer (Rconv) for register
-// numbers to a given register number range. Lo is inclusive,
-// hi exclusive (valid registers are lo through hi-1).
+
+
+
 func RegisterRegister(lo, hi int, Rconv func(int) string) {
 	regSpace = append(regSpace, regSet{lo, hi, Rconv})
 }
@@ -506,24 +502,24 @@ type regListSet struct {
 
 var regListSpace []regListSet
 
-// Each architecture is allotted a distinct subspace: [Lo, Hi) for declaring its
-// arch-specific register list numbers.
+
+
 const (
 	RegListARMLo = 0
 	RegListARMHi = 1 << 16
 
-	// arm64 uses the 60th bit to differentiate from other archs
+	
 	RegListARM64Lo = 1 << 60
 	RegListARM64Hi = 1<<61 - 1
 
-	// x86 uses the 61th bit to differentiate from other archs
+	
 	RegListX86Lo = 1 << 61
 	RegListX86Hi = 1<<62 - 1
 )
 
-// RegisterRegisterList binds a pretty-printer (RLconv) for register list
-// numbers to a given register list number range. Lo is inclusive,
-// hi exclusive (valid register list are lo through hi-1).
+
+
+
 func RegisterRegisterList(lo, hi int64, rlconv func(int64) string) {
 	regListSpace = append(regListSpace, regListSet{lo, hi, rlconv})
 }
@@ -543,11 +539,11 @@ type opSet struct {
 	names []string
 }
 
-// Not even worth sorting
+
 var aSpace []opSet
 
-// RegisterOpcode binds a list of instruction names
-// to a given instruction number range.
+
+
 func RegisterOpcode(lo As, Anames []string) {
 	if len(Anames) > AllowedOpCodes {
 		panic(fmt.Sprintf("too many instructions, have %d max %d", len(Anames), AllowedOpCodes))
@@ -586,8 +582,8 @@ var Anames = []string{
 }
 
 func Bool2int(b bool) int {
-	// The compiler currently only optimizes this form.
-	// See issue 6011.
+	
+	
 	var i int
 	if b {
 		i = 1

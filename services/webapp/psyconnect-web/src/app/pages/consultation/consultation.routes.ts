@@ -32,6 +32,13 @@ export const consultationRoutes: Routes = [
       },
       { path: 'history', component: History },
       { path: 'reviews', component: Reviews },
+      {
+        path: 'book/:therapistId',
+        loadComponent: () =>
+          import('./booking-page/booking-page').then(
+            (m) => m.BookingPageComponent,
+          ),
+      },
       { path: 'settings', component: Settings },
       { path: '', redirectTo: 'discover', pathMatch: 'full' },
     ],

@@ -37,7 +37,7 @@ func (rs *RecordSet) readFromVersion2(d *decoder) error {
 	numRecords := dec.readInt32()
 	reader := io.Reader(dec)
 
-	// unused
+	
 	_ = lastOffsetDelta
 	_ = maxTimestamp
 
@@ -67,35 +67,35 @@ func (rs *RecordSet) readFromVersion2(d *decoder) error {
 	dec.remain = recordsLength
 
 	records := make([]optimizedRecord, numRecords)
-	// These are two lazy allocators that will be used to optimize allocation of
-	// page references for keys and values.
-	//
-	// By default, no memory is allocated and on first use, numRecords page refs
-	// are allocated in a contiguous memory space, and the allocators return
-	// pointers into those arrays for each page ref that get requested.
-	//
-	// The reasoning is that kafka partitions typically have records of a single
-	// form, which either have no keys, no values, or both keys and values.
-	// Using lazy allocators adapts nicely to these patterns to only allocate
-	// the memory that is needed by the program, while still reducing the number
-	// of malloc calls made by the program.
-	//
-	// Using a single allocator for both keys and values keeps related values
-	// close by in memory, making access to the records more friendly to CPU
-	// caches.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	alloc := pageRefAllocator{size: int(numRecords)}
-	// Following the same reasoning that kafka partitions will typically have
-	// records with repeating formats, we expect to either find records with
-	// no headers, or records which always contain headers.
-	//
-	// To reduce the memory footprint when records have no headers, the Header
-	// slices are lazily allocated in a separate array.
+	
+	
+	
+	
+	
+	
 	headers := ([][]Header)(nil)
 
 	for i := range records {
 		r := &records[i]
-		_ = dec.readVarInt() // record length (unused)
-		_ = dec.readInt8()   // record attributes (unused)
+		_ = dec.readVarInt() 
+		_ = dec.readInt8()   
 		timestampDelta := dec.readVarInt()
 		offsetDelta := dec.readVarInt()
 
@@ -147,9 +147,9 @@ func (rs *RecordSet) readFromVersion2(d *decoder) error {
 		}
 	}
 
-	// Note: it's unclear whether kafka 0.11+ still truncates the responses,
-	// all attempts I made at constructing a test to trigger a truncation have
-	// failed. I kept this code here as a safeguard but it may never execute.
+	
+	
+	
 	if dec.err != nil && len(records) == 0 {
 		return dec.err
 	}
@@ -193,19 +193,19 @@ func (rs *RecordSet) writeToVersion2(buffer *pageBuffer, bufferOffset int64) err
 	numRecords := int32(0)
 
 	e := &encoder{writer: buffer}
-	e.writeInt64(0)                    // base offset                         |  0 +8
-	e.writeInt32(0)                    // placeholder for record batch length |  8 +4
-	e.writeInt32(-1)                   // partition leader epoch              | 12 +3
-	e.writeInt8(2)                     // magic byte                          | 16 +1
-	e.writeInt32(0)                    // placeholder for crc32 checksum      | 17 +4
-	e.writeInt16(int16(rs.Attributes)) // attributes                          | 21 +2
-	e.writeInt32(0)                    // placeholder for lastOffsetDelta     | 23 +4
-	e.writeInt64(0)                    // placeholder for firstTimestamp      | 27 +8
-	e.writeInt64(0)                    // placeholder for maxTimestamp        | 35 +8
-	e.writeInt64(-1)                   // producer id                         | 43 +8
-	e.writeInt16(-1)                   // producer epoch                      | 51 +2
-	e.writeInt32(-1)                   // base sequence                       | 53 +4
-	e.writeInt32(0)                    // placeholder for numRecords          | 57 +4
+	e.writeInt64(0)                    
+	e.writeInt32(0)                    
+	e.writeInt32(-1)                   
+	e.writeInt8(2)                     
+	e.writeInt32(0)                    
+	e.writeInt16(int16(rs.Attributes)) 
+	e.writeInt32(0)                    
+	e.writeInt64(0)                    
+	e.writeInt64(0)                    
+	e.writeInt64(-1)                   
+	e.writeInt16(-1)                   
+	e.writeInt32(-1)                   
+	e.writeInt32(0)                    
 
 	var compressor io.WriteCloser
 	if compression := rs.Attributes.Compression(); compression != 0 {
@@ -236,7 +236,7 @@ func (rs *RecordSet) writeToVersion2(buffer *pageBuffer, bufferOffset int64) err
 		offsetDelta := int64(i)
 		lastOffsetDelta = int32(offsetDelta)
 
-		length := 1 + // attributes
+		length := 1 + 
 			sizeOfVarInt(timestampDelta) +
 			sizeOfVarInt(offsetDelta) +
 			sizeOfVarNullBytesIface(r.Key) +
@@ -248,7 +248,7 @@ func (rs *RecordSet) writeToVersion2(buffer *pageBuffer, bufferOffset int64) err
 		}
 
 		e.writeVarInt(int64(length))
-		e.writeInt8(0) // record attributes (unused)
+		e.writeInt8(0) 
 		e.writeVarInt(timestampDelta)
 		e.writeVarInt(offsetDelta)
 

@@ -1,8 +1,8 @@
-// Copyright 2021 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// illumos system calls not present on Solaris.
+
+
+
+
 
 //go:build amd64 && illumos
 
@@ -25,7 +25,7 @@ func bytes2iovec(bs [][]byte) []Iovec {
 	return iovecs
 }
 
-//sys	readv(fd int, iovs []Iovec) (n int, err error)
+
 
 func Readv(fd int, iovs [][]byte) (n int, err error) {
 	iovecs := bytes2iovec(iovs)
@@ -33,7 +33,7 @@ func Readv(fd int, iovs [][]byte) (n int, err error) {
 	return n, err
 }
 
-//sys	preadv(fd int, iovs []Iovec, off int64) (n int, err error)
+
 
 func Preadv(fd int, iovs [][]byte, off int64) (n int, err error) {
 	iovecs := bytes2iovec(iovs)
@@ -41,7 +41,7 @@ func Preadv(fd int, iovs [][]byte, off int64) (n int, err error) {
 	return n, err
 }
 
-//sys	writev(fd int, iovs []Iovec) (n int, err error)
+
 
 func Writev(fd int, iovs [][]byte) (n int, err error) {
 	iovecs := bytes2iovec(iovs)
@@ -49,7 +49,7 @@ func Writev(fd int, iovs [][]byte) (n int, err error) {
 	return n, err
 }
 
-//sys	pwritev(fd int, iovs []Iovec, off int64) (n int, err error)
+
 
 func Pwritev(fd int, iovs [][]byte, off int64) (n int, err error) {
 	iovecs := bytes2iovec(iovs)
@@ -57,7 +57,7 @@ func Pwritev(fd int, iovs [][]byte, off int64) (n int, err error) {
 	return n, err
 }
 
-//sys	accept4(s int, rsa *RawSockaddrAny, addrlen *_Socklen, flags int) (fd int, err error) = libsocket.accept4
+
 
 func Accept4(fd int, flags int) (nfd int, sa Sockaddr, err error) {
 	var rsa RawSockaddrAny

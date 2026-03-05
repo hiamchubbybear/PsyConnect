@@ -1,8 +1,8 @@
-// Copyright 2018 by David A. Golden. All rights reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package scram
 
@@ -101,7 +101,7 @@ func parseClientFirst(c1 string) (msg c1Msg, err error) {
 		return
 	}
 
-	// 'a' field is optional
+	
 	if len(fields[1]) > 0 {
 		msg.authzID, err = parseField(fields[1], "a")
 		if err != nil {
@@ -109,10 +109,10 @@ func parseClientFirst(c1 string) (msg c1Msg, err error) {
 		}
 	}
 
-	// Recombine and save the gs2 header
+	
 	msg.gs2Header = gs2flag + "," + msg.authzID + ","
 
-	// Check for unsupported extensions field "m".
+	
 	if strings.HasPrefix(fields[2], "m=") {
 		err = errors.New("SCRAM message extensions are not supported")
 		return
@@ -150,8 +150,8 @@ func parseClientFinal(c2 string) (msg c2Msg, err error) {
 		return
 	}
 
-	// Extension fields may come between nonce and proof, so we
-	// grab the *last* fields as proof.
+	
+	
 	msg.proof, err = parseFieldBase64(fields[len(fields)-1], "p")
 	if err != nil {
 		return
@@ -164,7 +164,7 @@ func parseClientFinal(c2 string) (msg c2Msg, err error) {
 
 func parseServerFirst(s1 string) (msg s1Msg, err error) {
 
-	// Check for unsupported extensions field "m".
+	
 	if strings.HasPrefix(s1, "m=") {
 		err = errors.New("SCRAM message extensions are not supported")
 		return

@@ -13,7 +13,7 @@
   justify-content: center;
   transition: all var(--transition-fast);
 
-  // Picture-in-Picture mode - minimized to corner
+  
   &.pip-mode {
     top: auto;
     left: auto;
@@ -49,7 +49,7 @@
   }
 }
 
-// Remote video (main, large)
+
 .remote-video-wrapper {
   position: absolute;
   top: 0;
@@ -71,7 +71,7 @@
   }
 }
 
-// Video placeholder
+
 .video-placeholder {
   width: 100%;
   height: 100%;
@@ -82,7 +82,7 @@
     135deg,
     var(--color-primary) 0%,
     var(--color-accent) 100%
-  ); // Use theme colors
+  ); 
 }
 
 .placeholder-content {
@@ -102,7 +102,7 @@
   margin: 0;
 }
 
-// Local video (small, picture-in-picture)
+
 .local-video-wrapper {
   position: absolute;
   top: 20px;
@@ -115,7 +115,7 @@
   z-index: 10;
   border: 2px solid rgba(255, 255, 255, 0.2);
   background: var(--color-surface-high);
-  cursor: move; // Show draggable cursor
+  cursor: move; 
   transition: all var(--transition-fast);
 
   &.hidden {
@@ -165,10 +165,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1); // Mirror effect
+  transform: scaleX(-1); 
 }
 
-// Call controls
+
 .call-controls {
   position: absolute;
   bottom: 30px;
@@ -184,12 +184,12 @@
 }
 
 .control-btn {
-  width: 48px; // Reduced from 56px
-  height: 48px; // Reduced from 56px
+  width: 48px; 
+  height: 48px; 
   border: none;
   border-radius: 50%;
   background: var(--color-surface-overlay);
-  color: white; // Always white for visibility on dark background
+  color: white; 
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -211,8 +211,8 @@
   }
 
   svg {
-    width: 20px; // Reduced from 24px
-    height: 20px; // Reduced from 24px
+    width: 20px; 
+    height: 20px; 
   }
 }
 
@@ -224,7 +224,7 @@
   }
 }
 
-// Call status indicator
+
 .call-status {
   position: absolute;
   top: 20px;
@@ -249,7 +249,7 @@
   background: #10b981;
 }
 
-// Responsive
+
 @media (max-width: 768px) {
   .local-video-wrapper {
     width: 120px;
@@ -282,12 +282,12 @@
   }
 }
 
-// Animations (use existing mascot animations)
+
 .mascot-pulse {
   animation: pulse 2s ease-in-out infinite;
 }
 
-// Settings menu
+
 .settings-menu {
   position: absolute;
   bottom: 100px;

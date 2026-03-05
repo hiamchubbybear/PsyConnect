@@ -13,317 +13,317 @@ import (
 	metadataAPI "github.com/segmentio/kafka-go/protocol/metadata"
 )
 
-// The Writer type provides the implementation of a producer of kafka messages
-// that automatically distributes messages across partitions of a single topic
-// using a configurable balancing policy.
-//
-// Writes manage the dispatch of messages across partitions of the topic they
-// are configured to write to using a Balancer, and aggregate batches to
-// optimize the writes to kafka.
-//
-// Writers may be configured to be used synchronously or asynchronously. When
-// use synchronously, calls to WriteMessages block until the messages have been
-// written to kafka. In this mode, the program should inspect the error returned
-// by the function and test if it an instance of kafka.WriteErrors in order to
-// identify which messages have succeeded or failed, for example:
-//
-//		// Construct a synchronous writer (the default mode).
-//		w := &kafka.Writer{
-//			Addr:         kafka.TCP("localhost:9092", "localhost:9093", "localhost:9094"),
-//			Topic:        "topic-A",
-//			RequiredAcks: kafka.RequireAll,
-//		}
-//
-//		...
-//
-//	 // Passing a context can prevent the operation from blocking indefinitely.
-//		switch err := w.WriteMessages(ctx, msgs...).(type) {
-//		case nil:
-//		case kafka.WriteErrors:
-//			for i := range msgs {
-//				if err[i] != nil {
-//					// handle the error writing msgs[i]
-//					...
-//				}
-//			}
-//		default:
-//			// handle other errors
-//			...
-//		}
-//
-// In asynchronous mode, the program may configure a completion handler on the
-// writer to receive notifications of messages being written to kafka:
-//
-//	w := &kafka.Writer{
-//		Addr:         kafka.TCP("localhost:9092", "localhost:9093", "localhost:9094"),
-//		Topic:        "topic-A",
-//		RequiredAcks: kafka.RequireAll,
-//		Async:        true, // make the writer asynchronous
-//		Completion: func(messages []kafka.Message, err error) {
-//			...
-//		},
-//	}
-//
-//	...
-//
-//	// Because the writer is asynchronous, there is no need for the context to
-//	// be cancelled, the call will never block.
-//	if err := w.WriteMessages(context.Background(), msgs...); err != nil {
-//		// Only validation errors would be reported in this case.
-//		...
-//	}
-//
-// Methods of Writer are safe to use concurrently from multiple goroutines,
-// however the writer configuration should not be modified after first use.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type Writer struct {
-	// Address of the kafka cluster that this writer is configured to send
-	// messages to.
-	//
-	// This field is required, attempting to write messages to a writer with a
-	// nil address will error.
+	
+	
+	
+	
+	
 	Addr net.Addr
 
-	// Topic is the name of the topic that the writer will produce messages to.
-	//
-	// Setting this field or not is a mutually exclusive option. If you set Topic
-	// here, you must not set Topic for any produced Message. Otherwise, if you	do
-	// not set Topic, every Message must have Topic specified.
+	
+	
+	
+	
+	
 	Topic string
 
-	// The balancer used to distribute messages across partitions.
-	//
-	// The default is to use a round-robin distribution.
+	
+	
+	
 	Balancer Balancer
 
-	// Limit on how many attempts will be made to deliver a message.
-	//
-	// The default is to try at most 10 times.
+	
+	
+	
 	MaxAttempts int
 
-	// WriteBackoffMin optionally sets the smallest amount of time the writer waits before
-	// it attempts to write a batch of messages
-	//
-	// Default: 100ms
+	
+	
+	
+	
 	WriteBackoffMin time.Duration
 
-	// WriteBackoffMax optionally sets the maximum amount of time the writer waits before
-	// it attempts to write a batch of messages
-	//
-	// Default: 1s
+	
+	
+	
+	
 	WriteBackoffMax time.Duration
 
-	// Limit on how many messages will be buffered before being sent to a
-	// partition.
-	//
-	// The default is to use a target batch size of 100 messages.
+	
+	
+	
+	
 	BatchSize int
 
-	// Limit the maximum size of a request in bytes before being sent to
-	// a partition.
-	//
-	// The default is to use a kafka default value of 1048576.
+	
+	
+	
+	
 	BatchBytes int64
 
-	// Time limit on how often incomplete message batches will be flushed to
-	// kafka.
-	//
-	// The default is to flush at least every second.
+	
+	
+	
+	
 	BatchTimeout time.Duration
 
-	// Timeout for read operations performed by the Writer.
-	//
-	// Defaults to 10 seconds.
+	
+	
+	
 	ReadTimeout time.Duration
 
-	// Timeout for write operation performed by the Writer.
-	//
-	// Defaults to 10 seconds.
+	
+	
+	
 	WriteTimeout time.Duration
 
-	// Number of acknowledges from partition replicas required before receiving
-	// a response to a produce request, the following values are supported:
-	//
-	//  RequireNone (0)  fire-and-forget, do not wait for acknowledgements from the
-	//  RequireOne  (1)  wait for the leader to acknowledge the writes
-	//  RequireAll  (-1) wait for the full ISR to acknowledge the writes
-	//
-	// Defaults to RequireNone.
+	
+	
+	
+	
+	
+	
+	
+	
 	RequiredAcks RequiredAcks
 
-	// Setting this flag to true causes the WriteMessages method to never block.
-	// It also means that errors are ignored since the caller will not receive
-	// the returned value. Use this only if you don't care about guarantees of
-	// whether the messages were written to kafka.
-	//
-	// Defaults to false.
+	
+	
+	
+	
+	
+	
 	Async bool
 
-	// An optional function called when the writer succeeds or fails the
-	// delivery of messages to a kafka partition. When writing the messages
-	// fails, the `err` parameter will be non-nil.
-	//
-	// The messages that the Completion function is called with have their
-	// topic, partition, offset, and time set based on the Produce responses
-	// received from kafka. All messages passed to a call to the function have
-	// been written to the same partition. The keys and values of messages are
-	// referencing the original byte slices carried by messages in the calls to
-	// WriteMessages.
-	//
-	// The function is called from goroutines started by the writer. Calls to
-	// Close will block on the Completion function calls. When the Writer is
-	// not writing asynchronously, the WriteMessages call will also block on
-	// Completion function, which is a useful guarantee if the byte slices
-	// for the message keys and values are intended to be reused after the
-	// WriteMessages call returned.
-	//
-	// If a completion function panics, the program terminates because the
-	// panic is not recovered by the writer and bubbles up to the top of the
-	// goroutine's call stack.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	Completion func(messages []Message, err error)
 
-	// Compression set the compression codec to be used to compress messages.
+	
 	Compression Compression
 
-	// If not nil, specifies a logger used to report internal changes within the
-	// writer.
+	
+	
 	Logger Logger
 
-	// ErrorLogger is the logger used to report errors. If nil, the writer falls
-	// back to using Logger instead.
+	
+	
 	ErrorLogger Logger
 
-	// A transport used to send messages to kafka clusters.
-	//
-	// If nil, DefaultTransport is used.
+	
+	
+	
 	Transport RoundTripper
 
-	// AllowAutoTopicCreation notifies writer to create topic if missing.
+	
 	AllowAutoTopicCreation bool
 
-	// Manages the current set of partition-topic writers.
+	
 	group   sync.WaitGroup
 	mutex   sync.Mutex
 	closed  bool
 	writers map[topicPartition]*partitionWriter
 
-	// writer stats are all made of atomic values, no need for synchronization.
-	// Use a pointer to ensure 64-bit alignment of the values. The once value is
-	// used to lazily create the value when first used, allowing programs to use
-	// the zero-value value of Writer.
+	
+	
+	
+	
 	once sync.Once
 	*writerStats
 
-	// If no balancer is configured, the writer uses this one. RoundRobin values
-	// are safe to use concurrently from multiple goroutines, there is no need
-	// for extra synchronization to access this field.
+	
+	
+	
 	roundRobin RoundRobin
 
-	// non-nil when a transport was created by NewWriter, remove in 1.0.
+	
 	transport *Transport
 }
 
-// WriterConfig is a configuration type used to create new instances of Writer.
-//
-// DEPRECATED: writer values should be configured directly by assigning their
-// exported fields. This type is kept for backward compatibility, and will be
-// removed in version 1.0.
+
+
+
+
+
 type WriterConfig struct {
-	// The list of brokers used to discover the partitions available on the
-	// kafka cluster.
-	//
-	// This field is required, attempting to create a writer with an empty list
-	// of brokers will panic.
+	
+	
+	
+	
+	
 	Brokers []string
 
-	// The topic that the writer will produce messages to.
-	//
-	// If provided, this will be used to set the topic for all produced messages.
-	// If not provided, each Message must specify a topic for itself. This must be
-	// mutually exclusive, otherwise the Writer will return an error.
+	
+	
+	
+	
+	
 	Topic string
 
-	// The dialer used by the writer to establish connections to the kafka
-	// cluster.
-	//
-	// If nil, the default dialer is used instead.
+	
+	
+	
+	
 	Dialer *Dialer
 
-	// The balancer used to distribute messages across partitions.
-	//
-	// The default is to use a round-robin distribution.
+	
+	
+	
 	Balancer Balancer
 
-	// Limit on how many attempts will be made to deliver a message.
-	//
-	// The default is to try at most 10 times.
+	
+	
+	
 	MaxAttempts int
 
-	// DEPRECATED: in versions prior to 0.4, the writer used channels internally
-	// to dispatch messages to partitions. This has been replaced by an in-memory
-	// aggregation of batches which uses shared state instead of message passing,
-	// making this option unnecessary.
+	
+	
+	
+	
 	QueueCapacity int
 
-	// Limit on how many messages will be buffered before being sent to a
-	// partition.
-	//
-	// The default is to use a target batch size of 100 messages.
+	
+	
+	
+	
 	BatchSize int
 
-	// Limit the maximum size of a request in bytes before being sent to
-	// a partition.
-	//
-	// The default is to use a kafka default value of 1048576.
+	
+	
+	
+	
 	BatchBytes int
 
-	// Time limit on how often incomplete message batches will be flushed to
-	// kafka.
-	//
-	// The default is to flush at least every second.
+	
+	
+	
+	
 	BatchTimeout time.Duration
 
-	// Timeout for read operations performed by the Writer.
-	//
-	// Defaults to 10 seconds.
+	
+	
+	
 	ReadTimeout time.Duration
 
-	// Timeout for write operation performed by the Writer.
-	//
-	// Defaults to 10 seconds.
+	
+	
+	
 	WriteTimeout time.Duration
 
-	// DEPRECATED: in versions prior to 0.4, the writer used to maintain a cache
-	// the topic layout. With the change to use a transport to manage connections,
-	// the responsibility of syncing the cluster layout has been delegated to the
-	// transport.
+	
+	
+	
+	
 	RebalanceInterval time.Duration
 
-	// DEPRECATED: in versions prior to 0.4, the writer used to manage connections
-	// to the kafka cluster directly. With the change to use a transport to manage
-	// connections, the writer has no connections to manage directly anymore.
+	
+	
+	
 	IdleConnTimeout time.Duration
 
-	// Number of acknowledges from partition replicas required before receiving
-	// a response to a produce request. The default is -1, which means to wait for
-	// all replicas, and a value above 0 is required to indicate how many replicas
-	// should acknowledge a message to be considered successful.
+	
+	
+	
+	
 	RequiredAcks int
 
-	// Setting this flag to true causes the WriteMessages method to never block.
-	// It also means that errors are ignored since the caller will not receive
-	// the returned value. Use this only if you don't care about guarantees of
-	// whether the messages were written to kafka.
+	
+	
+	
+	
 	Async bool
 
-	// CompressionCodec set the codec to be used to compress Kafka messages.
+	
 	CompressionCodec
 
-	// If not nil, specifies a logger used to report internal changes within the
-	// writer.
+	
+	
 	Logger Logger
 
-	// ErrorLogger is the logger used to report errors. If nil, the writer falls
-	// back to using Logger instead.
+	
+	
 	ErrorLogger Logger
 }
 
@@ -332,7 +332,7 @@ type topicPartition struct {
 	partition int32
 }
 
-// Validate method validates WriterConfig properties.
+
 func (config *WriterConfig) Validate() error {
 	if len(config.Brokers) == 0 {
 		return errors.New("cannot create a kafka writer with an empty list of brokers")
@@ -340,8 +340,8 @@ func (config *WriterConfig) Validate() error {
 	return nil
 }
 
-// WriterStats is a data structure returned by a call to Writer.Stats that
-// exposes details about the behavior of the writer.
+
+
 type WriterStats struct {
 	Writes   int64 `metric:"kafka.writer.write.count"     type:"counter"`
 	Messages int64 `metric:"kafka.writer.message.count"   type:"counter"`
@@ -368,17 +368,17 @@ type WriterStats struct {
 
 	Topic string `tag:"topic"`
 
-	// DEPRECATED: these fields will only be reported for backward compatibility
-	// if the Writer was constructed with NewWriter.
+	
+	
 	Dials    int64         `metric:"kafka.writer.dial.count" type:"counter"`
 	DialTime DurationStats `metric:"kafka.writer.dial.seconds"`
 
-	// DEPRECATED: these fields were meaningful prior to kafka-go 0.4, changes
-	// to the internal implementation and the introduction of the transport type
-	// made them unnecessary.
-	//
-	// The values will be zero but are left for backward compatibility to avoid
-	// breaking programs that used these fields.
+	
+	
+	
+	
+	
+	
 	Rebalances        int64
 	RebalanceInterval time.Duration
 	QueueLength       int64
@@ -386,11 +386,11 @@ type WriterStats struct {
 	ClientID          string
 }
 
-// writerStats is a struct that contains statistics on a writer.
-//
-// Since atomic is used to mutate the statistics the values must be 64-bit aligned.
-// This is easily accomplished by always allocating this struct directly, (i.e. using a pointer to the struct).
-// See https://golang.org/pkg/sync/atomic/#pkg-note-BUG
+
+
+
+
+
 type writerStats struct {
 	dials          counter
 	writes         counter
@@ -407,11 +407,11 @@ type writerStats struct {
 	batchSizeBytes summary
 }
 
-// NewWriter creates and returns a new Writer configured with config.
-//
-// DEPRECATED: Writer value can be instantiated and configured directly,
-// this function is retained for backward compatibility and will be removed
-// in version 1.0.
+
+
+
+
+
 func NewWriter(config WriterConfig) *Writer {
 	if err := config.Validate(); err != nil {
 		panic(err)
@@ -425,7 +425,7 @@ func NewWriter(config WriterConfig) *Writer {
 		config.Balancer = &RoundRobin{}
 	}
 
-	// Converts the pre-0.4 Dialer API into a Transport.
+	
 	kafkaDialer := DefaultDialer
 	if config.Dialer != nil {
 		kafkaDialer = config.Dialer
@@ -448,8 +448,8 @@ func NewWriter(config WriterConfig) *Writer {
 	}
 
 	stats := new(writerStats)
-	// For backward compatibility with the pre-0.4 APIs, support custom
-	// resolvers by wrapping the dial function.
+	
+	
 	dial := func(ctx context.Context, network, addr string) (net.Conn, error) {
 		start := time.Now()
 		defer func() {
@@ -465,15 +465,15 @@ func NewWriter(config WriterConfig) *Writer {
 
 	idleTimeout := config.IdleConnTimeout
 	if idleTimeout == 0 {
-		// Historical default value of WriterConfig.IdleTimeout, 9 minutes seems
-		// like it is way too long when there is no ping mechanism in the kafka
-		// protocol.
+		
+		
+		
 		idleTimeout = 9 * time.Minute
 	}
 
 	metadataTTL := config.RebalanceInterval
 	if metadataTTL == 0 {
-		// Historical default value of WriterConfig.RebalanceInterval.
+		
 		metadataTTL = 15 * time.Second
 	}
 
@@ -506,8 +506,8 @@ func NewWriter(config WriterConfig) *Writer {
 	}
 
 	if config.RequiredAcks == 0 {
-		// Historically the writers created by NewWriter have used "all" as the
-		// default value when 0 was specified.
+		
+		
 		w.RequiredAcks = RequireAll
 	}
 
@@ -518,9 +518,9 @@ func NewWriter(config WriterConfig) *Writer {
 	return w
 }
 
-// enter is called by WriteMessages to indicate that a new inflight operation
-// has started, which helps synchronize with Close and ensure that the method
-// does not return until all inflight operations were completed.
+
+
+
 func (w *Writer) enter() bool {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
@@ -531,15 +531,15 @@ func (w *Writer) enter() bool {
 	return true
 }
 
-// leave is called by WriteMessages to indicate that the inflight operation has
-// completed.
+
+
 func (w *Writer) leave() { w.group.Done() }
 
-// spawn starts a new asynchronous operation on the writer. This method is used
-// instead of starting goroutines inline to help manage the state of the
-// writer's wait group. The wait group is used to block Close calls until all
-// inflight operations have completed, therefore automatically including those
-// started with calls to spawn.
+
+
+
+
+
 func (w *Writer) spawn(f func()) {
 	w.group.Add(1)
 	go func() {
@@ -548,19 +548,19 @@ func (w *Writer) spawn(f func()) {
 	}()
 }
 
-// Close flushes pending writes, and waits for all writes to complete before
-// returning. Calling Close also prevents new writes from being submitted to
-// the writer, further calls to WriteMessages and the like will fail with
-// io.ErrClosedPipe.
+
+
+
+
 func (w *Writer) Close() error {
 	w.mutex.Lock()
-	// Marking the writer as closed here causes future calls to WriteMessages to
-	// fail with io.ErrClosedPipe. Mutation of this field is synchronized on the
-	// writer's mutex to ensure that no more increments of the wait group are
-	// performed afterwards (which could otherwise race with the Wait below).
+	
+	
+	
+	
 	w.closed = true
 
-	// close all writers to trigger any pending batches
+	
 	for _, writer := range w.writers {
 		writer.close()
 	}
@@ -579,33 +579,33 @@ func (w *Writer) Close() error {
 	return nil
 }
 
-// WriteMessages writes a batch of messages to the kafka topic configured on this
-// writer.
-//
-// Unless the writer was configured to write messages asynchronously, the method
-// blocks until all messages have been written, or until the maximum number of
-// attempts was reached.
-//
-// When sending synchronously and the writer's batch size is configured to be
-// greater than 1, this method blocks until either a full batch can be assembled
-// or the batch timeout is reached.  The batch size and timeouts are evaluated
-// per partition, so the choice of Balancer can also influence the flushing
-// behavior.  For example, the Hash balancer will require on average N * batch
-// size messages to trigger a flush where N is the number of partitions.  The
-// best way to achieve good batching behavior is to share one Writer amongst
-// multiple go routines.
-//
-// When the method returns an error, it may be of type kafka.WriteError to allow
-// the caller to determine the status of each message.
-//
-// The context passed as first argument may also be used to asynchronously
-// cancel the operation. Note that in this case there are no guarantees made on
-// whether messages were written to kafka, they might also still be written
-// after this method has already returned, therefore it is important to not
-// modify byte slices of passed messages if WriteMessages returned early due
-// to a canceled context.
-// The program should assume that the whole batch failed and re-write the
-// messages later (which could then cause duplicates).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (w *Writer) WriteMessages(ctx context.Context, msgs ...Message) error {
 	if w.Addr == nil {
 		return errors.New("kafka.(*Writer).WriteMessages: cannot create a kafka writer with a nil address")
@@ -626,20 +626,20 @@ func (w *Writer) WriteMessages(ctx context.Context, msgs ...Message) error {
 	for i := range msgs {
 		n := int64(msgs[i].totalSize())
 		if n > batchBytes {
-			// This error is left for backward compatibility with historical
-			// behavior, but it can yield O(N^2) behaviors. The expectations
-			// are that the program will check if WriteMessages returned a
-			// MessageTooLargeError, discard the message that was exceeding
-			// the maximum size, and try again.
+			
+			
+			
+			
+			
 			return messageTooLarge(msgs, i)
 		}
 	}
 
-	// We use int32 here to half the memory footprint (compared to using int
-	// on 64 bits architectures). We map lists of the message indexes instead
-	// of the message values for the same reason, int32 is 4 bytes, vs a full
-	// Message value which is 100+ bytes and contains pointers and contributes
-	// to increasing GC work.
+	
+	
+	
+	
+	
 	assignments := make(map[topicPartition][]int32)
 
 	for i, msg := range msgs {
@@ -743,12 +743,12 @@ func (w *Writer) produce(key topicPartition, batch *writeBatch) (*ProduceRespons
 
 func (w *Writer) partitions(ctx context.Context, topic string) (int, error) {
 	client := w.client(w.readTimeout())
-	// Here we use the transport directly as an optimization to avoid the
-	// construction of temporary request and response objects made by the
-	// (*Client).Metadata API.
-	//
-	// It is expected that the transport will optimize this request by
-	// caching recent results (the kafka.Transport types does).
+	
+	
+	
+	
+	
+	
 	r, err := client.transport().RoundTrip(ctx, client.Addr, &metadataAPI.Request{
 		TopicNames:             []string{topic},
 		AllowAutoTopicCreation: w.AllowAutoTopicCreation,
@@ -758,7 +758,7 @@ func (w *Writer) partitions(ctx context.Context, topic string) (int, error) {
 	}
 	for _, t := range r.(*metadataAPI.Response).Topics {
 		if t.Name == topic {
-			// This should always hit, unless kafka has a bug.
+			
 			if t.ErrorCode != 0 {
 				return 0, Error(t.ErrorCode)
 			}
@@ -787,10 +787,10 @@ func (w *Writer) maxAttempts() int {
 	if w.MaxAttempts > 0 {
 		return w.MaxAttempts
 	}
-	// TODO: this is a very high default, if something has failed 9 times it
-	// seems unlikely it will succeed on the 10th attempt. However, it does
-	// carry the risk to greatly increase the volume of requests sent to the
-	// kafka cluster. We should consider reducing this default (3?).
+	
+	
+	
+	
 	return 10
 }
 
@@ -859,8 +859,8 @@ func (w *Writer) withErrorLogger(do func(Logger)) {
 
 func (w *Writer) stats() *writerStats {
 	w.once.Do(func() {
-		// This field is not nil when the writer was constructed with NewWriter
-		// to share the value with the dial function and count dials.
+		
+		
 		if w.writerStats == nil {
 			w.writerStats = new(writerStats)
 		}
@@ -868,13 +868,13 @@ func (w *Writer) stats() *writerStats {
 	return w.writerStats
 }
 
-// Stats returns a snapshot of the writer stats since the last time the method
-// was called, or since the writer was created if it is called for the first
-// time.
-//
-// A typical use of this method is to spawn a goroutine that will periodically
-// call Stats on a kafka writer and report the metrics to a stats collection
-// system.
+
+
+
+
+
+
+
 func (w *Writer) Stats() WriterStats {
 	stats := w.stats()
 	return WriterStats{
@@ -905,15 +905,15 @@ func (w *Writer) Stats() WriterStats {
 }
 
 func (w *Writer) chooseTopic(msg Message) (string, error) {
-	// w.Topic and msg.Topic are mutually exclusive, meaning only 1 must be set
-	// otherwise we will return an error.
+	
+	
 	if w.Topic != "" && msg.Topic != "" {
 		return "", errors.New("kafka.(*Writer): Topic must not be specified for both Writer and Message")
 	} else if w.Topic == "" && msg.Topic == "" {
 		return "", errors.New("kafka.(*Writer): Topic must be specified for Writer or Message")
 	}
 
-	// now we choose the topic, depending on which one is not empty
+	
 	if msg.Topic != "" {
 		return msg.Topic, nil
 	}
@@ -924,9 +924,9 @@ func (w *Writer) chooseTopic(msg Message) (string, error) {
 type batchQueue struct {
 	queue []*writeBatch
 
-	// Pointers are used here to make `go vet` happy, and avoid copying mutexes.
-	// It may be better to revert these to non-pointers and avoid the copies in
-	// a different way.
+	
+	
+	
 	mutex *sync.Mutex
 	cond  *sync.Cond
 
@@ -984,8 +984,8 @@ func newBatchQueue(initialSize int) batchQueue {
 	return bq
 }
 
-// partitionWriter is a writer for a topic-partion pair. It maintains messaging order
-// across batches of messages.
+
+
 type partitionWriter struct {
 	meta  topicPartition
 	queue batchQueue
@@ -993,8 +993,8 @@ type partitionWriter struct {
 	mutex     sync.Mutex
 	currBatch *writeBatch
 
-	// reference to the writer that owns this batch. Used for the produce logic
-	// as well as stat tracking
+	
+	
 	w *Writer
 }
 
@@ -1012,9 +1012,9 @@ func (ptw *partitionWriter) writeBatches() {
 	for {
 		batch := ptw.queue.Get()
 
-		// The only time we can return nil is when the queue is closed
-		// and empty. If the queue is closed that means
-		// the Writer is closed so once we're here it's time to exit.
+		
+		
+		
 		if batch == nil {
 			return
 		}
@@ -1062,36 +1062,36 @@ func (ptw *partitionWriter) writeMessages(msgs []Message, indexes []int32) map[*
 	return batches
 }
 
-// ptw.w can be accessed here because this is called with the lock ptw.mutex already held.
+
 func (ptw *partitionWriter) newWriteBatch() *writeBatch {
 	batch := newWriteBatch(time.Now(), ptw.w.batchTimeout())
 	ptw.w.spawn(func() { ptw.awaitBatch(batch) })
 	return batch
 }
 
-// awaitBatch waits for a batch to either fill up or time out.
-// If the batch is full it only stops the timer, if the timer
-// expires it will queue the batch for writing if needed.
+
+
+
 func (ptw *partitionWriter) awaitBatch(batch *writeBatch) {
 	select {
 	case <-batch.timer.C:
 		ptw.mutex.Lock()
-		// detach the batch from the writer if we're still attached
-		// and queue for writing.
-		// Only the current batch can expire, all previous batches were already written to the queue.
-		// If writeMesseages locks pw.mutex after the timer fires but before this goroutine
-		// can lock pw.mutex it will either have filled the batch and enqueued it which will mean
-		// pw.currBatch != batch so we just move on.
-		// Otherwise, we detach the batch from the ptWriter and enqueue it for writing.
+		
+		
+		
+		
+		
+		
+		
 		if ptw.currBatch == batch {
 			ptw.queue.Put(batch)
 			ptw.currBatch = nil
 		}
 		ptw.mutex.Unlock()
 	case <-batch.ready:
-		// The batch became full, it was removed from the ptwriter and its
-		// ready channel was closed. We need to close the timer to avoid
-		// having it leak until it expires.
+		
+		
+		
 		batch.timer.Stop()
 	}
 	stats := ptw.w.stats()
@@ -1110,16 +1110,16 @@ func (ptw *partitionWriter) writeBatch(batch *writeBatch) {
 	for attempt, maxAttempts := 0, ptw.w.maxAttempts(); attempt < maxAttempts; attempt++ {
 		if attempt != 0 {
 			stats.retries.observe(1)
-			// TODO: should there be a way to asynchronously cancel this
-			// operation?
-			//
-			// * If all goroutines that added message to this batch have stopped
-			//   waiting for it, should we abort?
-			//
-			// * If the writer has been closed? It reduces the durability
-			//   guarantees to abort, but may be better to avoid long wait times
-			//   on close.
-			//
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			delay := backoff(attempt, ptw.w.writeBackoffMin(), ptw.w.writeBackoffMax())
 			ptw.w.withLogger(func(log Logger) {
 				log.Printf("backing off %s writing %d messages to %s (partition: %d)", delay, len(batch.msgs), key.topic, key.partition)
@@ -1137,11 +1137,11 @@ func (ptw *partitionWriter) writeBatch(batch *writeBatch) {
 		stats.writes.observe(1)
 		stats.messages.observe(int64(len(batch.msgs)))
 		stats.bytes.observe(batch.bytes)
-		// stats.writeTime used to report the duration of WriteMessages, but the
-		// implementation was broken and reporting values in the nanoseconds
-		// range. In kafka-go 0.4, we recylced this value to instead report the
-		// duration of produce requests, and changed the stats.waitTime value to
-		// report the time that kafka has throttled the requests for.
+		
+		
+		
+		
+		
 		stats.writeTime.observe(int64(time.Since(start)))
 
 		if res != nil {
@@ -1206,7 +1206,7 @@ type writeBatch struct {
 	ready chan struct{}
 	done  chan struct{}
 	timer *time.Timer
-	err   error // result of the batch completion
+	err   error 
 }
 
 func newWriteBatch(now time.Time, timeout time.Duration) *writeBatch {
@@ -1281,13 +1281,13 @@ type bytesReadCloser struct{ bytes.Reader }
 
 func (*bytesReadCloser) Close() error { return nil }
 
-// A cache of []int values passed to balancers of writers, used to amortize the
-// heap allocation of the partition index lists.
-//
-// With hindsight, the use of `...int` to pass the partition list to Balancers
-// was not the best design choice: kafka partition numbers are monotonically
-// increasing, we could have simply passed the number of partitions instead.
-// If we ever revisit this API, we can hopefully remove this cache.
+
+
+
+
+
+
+
 var partitionsCache atomic.Value
 
 func loadCachedPartitions(numPartitions int) []int {

@@ -524,7 +524,19 @@
             "Cancel": "Cancel",
             "Success": "Session booked successfully!",
             "Error": "Booking failed. Please try again.",
-            "RatePerHour": "Rate / hour"
+            "RatePerHour": "Rate / hour",
+            "ResponsibilityNote": "You are responsible for this appointment. Cancellation later than 24 hours may incur a fee.",
+            "SelectDateTime": "Select Date and Time",
+            "SelectDateTimeDesc": "Select a date and time slot that fits your schedule. Please book at least 1 day in advance.",
+            "DateHint": "Select a date from today onwards",
+            "StartTimeHint": "Counseling session start time",
+            "EndTimeHint": "Counseling session end time",
+            "ModeDesc": "Choose a suitable format. Online will provide a video link, In-person will record the address.",
+            "TimezoneDesc": "Detected automatically from your device",
+            "AcceptResponsibility": "I confirm that I have checked the time carefully and am committed to joining the consultation on time. I understand that late cancellation may affect the expert and other clients.",
+            "AcceptResponsibilityError": "Please confirm responsibility before continuing.",
+            "TermsAgreement": "By confirming, you agree to the booking terms",
+            "ConfirmMsg": "{{mode}} appointment at {{date}} has been confirmed."
         },
         "Modes": {
             "Online": "Online",

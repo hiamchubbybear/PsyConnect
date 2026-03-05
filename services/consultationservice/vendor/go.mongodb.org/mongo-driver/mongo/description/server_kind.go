@@ -1,15 +1,15 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package description
 
-// ServerKind represents the type of a single server in a topology.
+
 type ServerKind uint32
 
-// These constants are the possible types of servers.
+
 const (
 	Standalone   ServerKind = 1
 	RSMember     ServerKind = 2
@@ -21,7 +21,7 @@ const (
 	LoadBalancer ServerKind = 512
 )
 
-// String returns a stringified version of the kind or "Unknown" if the kind is invalid.
+
 func (kind ServerKind) String() string {
 	switch kind {
 	case Standalone:

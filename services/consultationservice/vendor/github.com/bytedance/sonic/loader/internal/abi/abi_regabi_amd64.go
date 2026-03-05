@@ -1,27 +1,9 @@
 //go:build go1.17
 // +build go1.17
 
-/*
- * Copyright 2022 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
-/** Go Internal ABI implementation
- *
- *  This module implements the function layout algorithm described by the Go internal ABI.
- *  See https://github.com/golang/go/blob/master/src/cmd/compile/abi-internal.md for more info.
- */
+
+
 
 package abi
 
@@ -32,42 +14,17 @@ import (
 	x64 "github.com/bytedance/sonic/loader/internal/iasm/x86_64"
 )
 
-/** Frame Structure of the Generated Function
-    FP  +------------------------------+
-        |             . . .            |
-        | 2nd reg argument spill space |
-        + 1st reg argument spill space |
-        | <pointer-sized alignment>    |
-        |             . . .            |
-        | 2nd stack-assigned result    |
-        + 1st stack-assigned result    |
-        | <pointer-sized alignment>    |
-        |             . . .            |
-        | 2nd stack-assigned argument  |
-        | 1st stack-assigned argument  |
-        | stack-assigned receiver      |
-prev()  +------------------------------+ (Previous Frame)
-                Return PC              |
-size()  -------------------------------|
-               Saved RBP               |
-offs()  -------------------------------|
-           1th Reserved Registers      |
-        -------------------------------|
-           2th Reserved Registers      |
-        -------------------------------|
-           Local Variables             |
-    RSP -------------------------------|↓ lower addresses
-*/
+
 
 const zeroRegGo = x64.XMM15
 
 var iregOrderGo = [...]Register64{
-	x64.RAX, // RDI
-	x64.RBX, // RSI
-	x64.RCX, // RDX
-	x64.RDI, // RCX
-	x64.RSI, // R8
-	x64.R8,  // R9
+	x64.RAX, 
+	x64.RBX, 
+	x64.RCX, 
+	x64.RDI, 
+	x64.RSI, 
+	x64.R8,  
 	x64.R9,
 	x64.R10,
 	x64.R11,
@@ -96,8 +53,8 @@ func ReservedRegs(callc bool) []Register {
 		return nil
 	}
 	return []Register{
-		R14, // current goroutine
-		R15, // GOT reference
+		R14, 
+		R15, 
 	}
 }
 
@@ -138,12 +95,12 @@ func (self *stackAlloc) alloc(p []Parameter, vt reflect.Type) []Parameter {
 	nb := vt.Size()
 	vk := vt.Kind()
 
-	/* zero-sized objects are allocated on stack */
+	
 	if nb == 0 {
 		return append(p, mkStack(intType, self.s))
 	}
 
-	/* check for value type */
+	
 	switch vk {
 	case reflect.Bool:
 		return self.valloc(p, reflect.TypeOf(false))
@@ -220,29 +177,29 @@ func NewFunctionLayout(ft reflect.Type) FunctionLayout {
 	var sa stackAlloc
 	var fn FunctionLayout
 
-	/* assign every arguments */
+	
 	for i := 0; i < ft.NumIn(); i++ {
 		fn.Args = sa.alloc(fn.Args, ft.In(i))
 	}
 
-	/* reset the register counter, and add a pointer alignment field */
+	
 	sa.reset()
 
-	/* assign every return value */
+	
 	for i := 0; i < ft.NumOut(); i++ {
 		fn.Rets = sa.alloc(fn.Rets, ft.Out(i))
 	}
 
 	sa.spill(0, PtrAlign)
 
-	/* assign spill slots */
+	
 	for i := 0; i < len(fn.Args); i++ {
 		if fn.Args[i].InRegister {
 			fn.Args[i].Mem = sa.spill(PtrSize, PtrAlign) - PtrSize
 		}
 	}
 
-	/* add the final pointer alignment field */
+	
 	fn.FP = sa.spill(0, PtrAlign)
 	return fn
 }
@@ -268,17 +225,17 @@ func (self *Frame) emitExchangeArgs(p *Program) {
 	switch len(iregArgs) {
 	case 0, 1, 2, 3:
 		{
-			//Fast-Path: when arguments count are less than four, just exchange the registers
+			
 			for i := 0; i < len(iregArgs); i++ {
 				p.MOVQ(iregOrderGo[i], iregOrderC[i])
 			}
 		}
 	case 4, 5, 6:
 		{
-			// need to spill 3th ~ regArgs registers before exchange
+			
 			for i := 3; i < len(iregArgs); i++ {
 				arg := iregArgs[i]
-				// pointer args have already been spilled
+				
 				if !arg.IsPointer {
 					p.MOVQ(iregOrderGo[i], Ptr(RSP, int32(self.Prev()+arg.Mem)))
 				}
@@ -316,7 +273,7 @@ func (self *Frame) emitExchangeRets(p *Program) {
 	if len(self.desc.Rets) > 1 {
 		panic("too many results, only support one result now")
 	}
-	// store result
+	
 	if len(self.desc.Rets) == 1 && !self.desc.Rets[0].InRegister {
 		if self.desc.Rets[0].IsFloat == floatKind64 {
 			p.MOVSD(xregOrderC[0], self.retv(0))
@@ -329,7 +286,7 @@ func (self *Frame) emitExchangeRets(p *Program) {
 }
 
 func (self *Frame) emitRestoreRegs(p *Program) {
-	// load reserved registers
+	
 	for i, r := range ReservedRegs(self.ccall) {
 		switch r.(type) {
 		case Register64:
@@ -340,6 +297,6 @@ func (self *Frame) emitRestoreRegs(p *Program) {
 			panic(fmt.Sprintf("unsupported register type %t to reserve", r))
 		}
 	}
-	// zero xmm15 for go abi
+	
 	p.XORPS(zeroRegGo, zeroRegGo)
 }

@@ -1,21 +1,7 @@
 //go:build (amd64 && go1.16 && !go1.25) || (arm64 && go1.20 && !go1.25)
 // +build amd64,go1.16,!go1.25 arm64,go1.20,!go1.25
 
-/**
- * Copyright 2024 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package alg
 
@@ -28,11 +14,11 @@ import (
 	"github.com/bytedance/sonic/internal/rt"
 )
 
-// Valid validates json and returns first non-blank character position,
-// if it is only one valid json value.
-// Otherwise returns invalid character position using start.
-//
-// Note: it does not check for the invalid UTF-8 characters.
+
+
+
+
+
 func Valid(data []byte) (ok bool, start int) {
     n := len(data)
     if n == 0 {
@@ -48,7 +34,7 @@ func Valid(data []byte) (ok bool, start int) {
         return false, p-1
     }
 
-    /* check for trailing spaces */
+    
     for ;p < n; p++ {
         if (types.SPACE_MASK & (1 << data[p])) == 0 {
             return false, p
@@ -78,30 +64,30 @@ func Quote(buf []byte, val string, double bool) []byte {
 	nb := len(val)
 	b := (*rt.GoSlice)(unsafe.Pointer(&buf))
 
-	// input buffer
+	
 	for nb > 0 {
-		// output buffer
+		
 		dp := unsafe.Pointer(uintptr(b.Ptr) + uintptr(b.Len))
 		dn := b.Cap - b.Len
-		// call native.Quote, dn is byte count it outputs
+		
 		opts := uint64(0)
 		if double {
 			opts = types.F_DOUBLE_UNQUOTE
 		}
 		ret := native.Quote(sp, nb, dp, &dn, opts)
-		// update *buf length
+		
 		b.Len += dn
 
-		// no need more output
+		
 		if ret >= 0 {
 			break
 		}
 
-		// double buf size
+		
 		*b = rt.GrowSlice(typeByte, *b, b.Cap*2)
-		// ret is the complement of consumed input
+		
 		ret = ^ret
-		// update input buffer
+		
 		nb -= ret
 		sp = unsafe.Pointer(uintptr(sp) + uintptr(ret))
 	}
@@ -120,11 +106,11 @@ func Quote(buf []byte, val string, double bool) []byte {
 func HtmlEscape(dst []byte, src []byte) []byte {
 	var sidx int
 
-	dst = append(dst, src[:0]...) // avoid check nil dst
+	dst = append(dst, src[:0]...) 
 	sbuf := (*rt.GoSlice)(unsafe.Pointer(&src))
 	dbuf := (*rt.GoSlice)(unsafe.Pointer(&dst))
 
-	/* grow dst if it is shorter */
+	
 	if cap(dst)-len(dst) < len(src)+types.BufPaddingSize {
 		cap := len(src)*3/2 + types.BufPaddingSize
 		*dbuf = rt.GrowSlice(typeByte, *dbuf, cap)
@@ -138,12 +124,12 @@ func HtmlEscape(dst []byte, src []byte) []byte {
 		dn := dbuf.Cap - dbuf.Len
 		nb := native.HTMLEscape(sp, sn, dp, &dn)
 
-		/* check for errors */
+		
 		if dbuf.Len += dn; nb >= 0 {
 			break
 		}
 
-		/* not enough space, grow the slice and try again */
+		
 		sidx += ^nb
 		*dbuf = rt.GrowSlice(typeByte, *dbuf, dbuf.Cap*2)
 	}

@@ -1,18 +1,18 @@
-//
-// Copyright 2024 CloudWeGo Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package x86_64
 
@@ -91,12 +91,12 @@ func expandmm(m *[]byte, n int, v byte) {
 	sl := (*_GoSlice)(unsafe.Pointer(m))
 	nb := sl.len + n
 
-	/* grow as needed */
+	
 	if nb > cap(*m) {
 		*m = growslice(byteType, *m, nb)
 	}
 
-	/* fill the new area */
+	
 	memset(unsafe.Pointer(uintptr(sl.ptr)+uintptr(sl.len)), v, uintptr(n))
 	sl.len = nb
 }
@@ -121,7 +121,7 @@ func literal64(v string) (uint64, error) {
 	var ex error
 	var mm [12]byte
 
-	/* unquote the runes */
+	
 	for v != "" {
 		if ch, _, v, ex = strconv.UnquoteChar(v, '\''); ex != nil {
 			return 0, ex
@@ -130,7 +130,7 @@ func literal64(v string) (uint64, error) {
 		}
 	}
 
-	/* convert to uint64 */
+	
 	return *(*uint64)(unsafe.Pointer(&mm)), nil
 }
 

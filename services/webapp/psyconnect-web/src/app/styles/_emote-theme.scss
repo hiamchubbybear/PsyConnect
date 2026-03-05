@@ -1,48 +1,48 @@
-/* Emote Theme Variables */
+
 
 :root {
-  /* Light theme emote colors */
-  --emote-primary: #c4b5fd; /* Purple ghost body */
-  --emote-secondary: #bfdbfe; /* Blue ghost body */
-  --emote-eyes: #6366f1; /* Eye color */
-  --emote-mouth: #6366f1; /* Mouth color */
-  --emote-mouth-fill: #6366f1; /* Mouth fill */
-  --emote-blush: #fca5a5; /* Blush color */
-  --emote-heart: #f87171; /* Heart color */
-  --emote-tear: #60a5fa; /* Tear color */
-  --emote-zzz: #6366f1; /* Sleep Z letters */
-  --emote-anger: #ef4444; /* Anger symbol */
-  --emote-hat: #f472b6; /* Party hat */
-  --emote-hat-pom: #fde047; /* Hat pompom */
-  --emote-confetti-1: #fde047; /* Confetti yellow */
-  --emote-confetti-2: #f472b6; /* Confetti pink */
-  --emote-confetti-3: #60a5fa; /* Confetti blue */
-  --emote-confetti-4: #34d399; /* Confetti green */
-  --emote-sparkle: #a78bfa; /* Sparkle/aura */
+  
+  --emote-primary: #c4b5fd; 
+  --emote-secondary: #bfdbfe; 
+  --emote-eyes: #6366f1; 
+  --emote-mouth: #6366f1; 
+  --emote-mouth-fill: #6366f1; 
+  --emote-blush: #fca5a5; 
+  --emote-heart: #f87171; 
+  --emote-tear: #60a5fa; 
+  --emote-zzz: #6366f1; 
+  --emote-anger: #ef4444; 
+  --emote-hat: #f472b6; 
+  --emote-hat-pom: #fde047; 
+  --emote-confetti-1: #fde047; 
+  --emote-confetti-2: #f472b6; 
+  --emote-confetti-3: #60a5fa; 
+  --emote-confetti-4: #34d399; 
+  --emote-sparkle: #a78bfa; 
 }
 
-/* Dark theme emote colors */
+
 [data-theme="dark"] {
-  --emote-primary: #8b5cf6; /* Brighter purple for dark bg */
-  --emote-secondary: #60a5fa; /* Brighter blue for dark bg */
-  --emote-eyes: #a78bfa; /* Lighter eyes */
-  --emote-mouth: #a78bfa; /* Lighter mouth */
-  --emote-mouth-fill: #a78bfa; /* Lighter mouth fill */
-  --emote-blush: #f87171; /* Brighter blush */
-  --emote-heart: #fb7185; /* Brighter heart */
-  --emote-tear: #7dd3fc; /* Brighter tear */
-  --emote-zzz: #a78bfa; /* Lighter Z */
-  --emote-anger: #f87171; /* Brighter anger */
-  --emote-hat: #f9a8d4; /* Brighter hat */
-  --emote-hat-pom: #fef08a; /* Brighter pompom */
-  --emote-confetti-1: #fef08a; /* Brighter confetti */
+  --emote-primary: #8b5cf6; 
+  --emote-secondary: #60a5fa; 
+  --emote-eyes: #a78bfa; 
+  --emote-mouth: #a78bfa; 
+  --emote-mouth-fill: #a78bfa; 
+  --emote-blush: #f87171; 
+  --emote-heart: #fb7185; 
+  --emote-tear: #7dd3fc; 
+  --emote-zzz: #a78bfa; 
+  --emote-anger: #f87171; 
+  --emote-hat: #f9a8d4; 
+  --emote-hat-pom: #fef08a; 
+  --emote-confetti-1: #fef08a; 
   --emote-confetti-2: #f9a8d4;
   --emote-confetti-3: #7dd3fc;
   --emote-confetti-4: #6ee7b7;
-  --emote-sparkle: #c4b5fd; /* Brighter sparkle */
+  --emote-sparkle: #c4b5fd; 
 }
 
-/* Emote container styles */
+
 .emote {
   display: inline-block;
   width: 24px;
@@ -70,12 +70,12 @@
   height: 48px;
 }
 
-/* Emote in messages */
+
 .message-content .emote {
   margin: 0 2px;
 }
 
-/* Emote picker button */
+
 .emote-picker-btn {
   cursor: pointer;
   padding: 4px;

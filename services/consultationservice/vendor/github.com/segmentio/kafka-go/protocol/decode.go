@@ -277,7 +277,7 @@ func (d *decoder) readCompactBytes() []byte {
 }
 
 func (d *decoder) readVarInt() int64 {
-	n := 11 // varints are at most 11 bytes
+	n := 11 
 
 	if n > d.remain {
 		n = d.remain
@@ -304,7 +304,7 @@ func (d *decoder) readVarInt() int64 {
 }
 
 func (d *decoder) readUnsignedVarInt() uint64 {
-	n := 11 // varints are at most 11 bytes
+	n := 11 
 
 	if n > d.remain {
 		n = d.remain
@@ -361,7 +361,7 @@ func decodeFuncOf(typ reflect.Type, version int16, flexible bool, tag structTag)
 	case reflect.Struct:
 		return structDecodeFuncOf(typ, version, flexible)
 	case reflect.Slice:
-		if typ.Elem().Kind() == reflect.Uint8 { // []byte
+		if typ.Elem().Kind() == reflect.Uint8 { 
 			return bytesDecodeFuncOf(flexible, tag)
 		}
 		return arrayDecodeFuncOf(typ, version, flexible, tag)
@@ -372,7 +372,7 @@ func decodeFuncOf(typ reflect.Type, version int16, flexible bool, tag structTag)
 
 func stringDecodeFuncOf(flexible bool, tag structTag) decodeFunc {
 	if flexible {
-		// In flexible messages, all strings are compact
+		
 		return (*decoder).decodeCompactString
 	}
 	return (*decoder).decodeString
@@ -380,7 +380,7 @@ func stringDecodeFuncOf(flexible bool, tag structTag) decodeFunc {
 
 func bytesDecodeFuncOf(flexible bool, tag structTag) decodeFunc {
 	if flexible {
-		// In flexible messages, all arrays are compact
+		
 		return (*decoder).decodeCompactBytes
 	}
 	return (*decoder).decodeBytes
@@ -406,10 +406,10 @@ func structDecodeFuncOf(typ reflect.Type, version int16, flexible bool) decodeFu
 				}
 
 				if tag.TagID < -1 {
-					// Normal required field
+					
 					fields = append(fields, f)
 				} else {
-					// Optional tagged field (flexible messages only)
+					
 					taggedFields[tag.TagID] = &f
 				}
 				return false
@@ -425,8 +425,8 @@ func structDecodeFuncOf(typ reflect.Type, version int16, flexible bool) decodeFu
 		}
 
 		if flexible {
-			// See https://cwiki.apache.org/confluence/display/KAFKA/KIP-482%3A+The+Kafka+Protocol+should+Support+Optional+Tagged+Fields
-			// for details of tag buffers in "flexible" messages.
+			
+			
 			n := int(d.readUnsignedVarInt())
 
 			for i := 0; i < n; i++ {
@@ -448,7 +448,7 @@ func arrayDecodeFuncOf(typ reflect.Type, version int16, flexible bool, tag struc
 	elemType := typ.Elem()
 	elemFunc := decodeFuncOf(elemType, version, flexible, tag)
 	if flexible {
-		// In flexible messages, all arrays are compact
+		
 		return func(d *decoder, v value) { d.decodeCompactArray(v, elemType, elemFunc) }
 	}
 
@@ -532,6 +532,6 @@ func Unmarshal(data []byte, version int16, value interface{}) error {
 }
 
 var (
-	decoders     sync.Pool    // *decoder
-	unmarshalers atomic.Value // map[versionedType]decodeFunc
+	decoders     sync.Pool    
+	unmarshalers atomic.Value 
 )

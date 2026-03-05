@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package mongo
 
@@ -30,7 +30,7 @@ var (
 	defaultRunCmdOpts = []*options.RunCmdOptions{options.RunCmd().SetReadPreference(readpref.Primary())}
 )
 
-// Database is a handle to a MongoDB database. It is safe for concurrent use by multiple goroutines.
+
 type Database struct {
 	client         *Client
 	name           string
@@ -94,33 +94,33 @@ func newDatabase(client *Client, name string, opts ...*options.DatabaseOptions) 
 	return db
 }
 
-// Client returns the Client the Database was created from.
+
 func (db *Database) Client() *Client {
 	return db.client
 }
 
-// Name returns the name of the database.
+
 func (db *Database) Name() string {
 	return db.name
 }
 
-// Collection gets a handle for a collection with the given name configured with the given CollectionOptions.
+
 func (db *Database) Collection(name string, opts ...*options.CollectionOptions) *Collection {
 	return newCollection(db, name, opts...)
 }
 
-// Aggregate executes an aggregate command the database. This requires MongoDB version >= 3.6 and driver version >=
-// 1.1.0.
-//
-// The pipeline parameter must be a slice of documents, each representing an aggregation stage. The pipeline
-// cannot be nil but can be empty. The stage documents must all be non-nil. For a pipeline of bson.D documents, the
-// mongo.Pipeline type can be used. See
-// https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/#db-aggregate-stages for a list of valid
-// stages in database-level aggregations.
-//
-// The opts parameter can be used to specify options for this operation (see the options.AggregateOptions documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/aggregate/.
+
+
+
+
+
+
+
+
+
+
+
+
 func (db *Database) Aggregate(ctx context.Context, pipeline interface{},
 	opts ...*options.AggregateOptions) (*Cursor, error) {
 	a := aggregateParams{
@@ -192,24 +192,24 @@ func (db *Database) processRunCommand(ctx context.Context, cmd interface{},
 		Timeout(db.client.timeout).Logger(db.client.logger).Authenticator(db.client.authenticator), sess, nil
 }
 
-// RunCommand executes the given command against the database.
-//
-// This function does not obey the Database's readPreference. To specify a read
-// preference, the RunCmdOptions.ReadPreference option must be used.
-//
-// This function does not obey the Database's readConcern or writeConcern. A
-// user must supply these values manually in the user-provided runCommand
-// parameter.
-//
-// The runCommand parameter must be a document for the command to be executed. It cannot be nil.
-// This must be an order-preserving type such as bson.D. Map types such as bson.M are not valid.
-//
-// The opts parameter can be used to specify options for this operation (see the options.RunCmdOptions documentation).
-//
-// The behavior of RunCommand is undefined if the command document contains any of the following:
-// - A session ID or any transaction-specific fields
-// - API versioning options when an API version is already declared on the Client
-// - maxTimeMS when Timeout is set on the Client
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (db *Database) RunCommand(ctx context.Context, runCommand interface{}, opts ...*options.RunCmdOptions) *SingleResult {
 	if ctx == nil {
 		ctx = context.Background()
@@ -222,7 +222,7 @@ func (db *Database) RunCommand(ctx context.Context, runCommand interface{}, opts
 	}
 
 	err = op.Execute(ctx)
-	// RunCommand can be used to run a write, thus execute may return a write error
+	
 	_, convErr := processWriteError(err)
 	return &SingleResult{
 		ctx:      ctx,
@@ -233,20 +233,20 @@ func (db *Database) RunCommand(ctx context.Context, runCommand interface{}, opts
 	}
 }
 
-// RunCommandCursor executes the given command against the database and parses the response as a cursor. If the command
-// being executed does not return a cursor (e.g. insert), the command will be executed on the server and an error will
-// be returned because the server response cannot be parsed as a cursor. This function does not obey the Database's read
-// preference. To specify a read preference, the RunCmdOptions.ReadPreference option must be used.
-//
-// The runCommand parameter must be a document for the command to be executed. It cannot be nil.
-// This must be an order-preserving type such as bson.D. Map types such as bson.M are not valid.
-//
-// The opts parameter can be used to specify options for this operation (see the options.RunCmdOptions documentation).
-//
-// The behavior of RunCommandCursor is undefined if the command document contains any of the following:
-// - A session ID or any transaction-specific fields
-// - API versioning options when an API version is already declared on the Client
-// - maxTimeMS when Timeout is set on the Client
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (db *Database) RunCommandCursor(ctx context.Context, runCommand interface{}, opts ...*options.RunCmdOptions) (*Cursor, error) {
 	if ctx == nil {
 		ctx = context.Background()
@@ -276,8 +276,8 @@ func (db *Database) RunCommandCursor(ctx context.Context, runCommand interface{}
 	return cursor, replaceErrors(err)
 }
 
-// Drop drops the database on the server. This method ignores "namespace not found" errors so it is safe to drop
-// a database that does not exist on the server.
+
+
 func (db *Database) Drop(ctx context.Context) error {
 	if ctx == nil {
 		ctx = context.Background()
@@ -319,20 +319,20 @@ func (db *Database) Drop(ctx context.Context) error {
 	return nil
 }
 
-// ListCollectionSpecifications executes a listCollections command and returns a slice of CollectionSpecification
-// instances representing the collections in the database.
-//
-// The filter parameter must be a document containing query operators and can be used to select which collections
-// are included in the result. It cannot be nil. An empty document (e.g. bson.D{}) should be used to include all
-// collections.
-//
-// The opts parameter can be used to specify options for the operation (see the options.ListCollectionsOptions
-// documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/listCollections/.
-//
-// BUG(benjirewis): ListCollectionSpecifications prevents listing more than 100 collections per database when running
-// against MongoDB version 2.6.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (db *Database) ListCollectionSpecifications(ctx context.Context, filter interface{},
 	opts ...*options.ListCollectionsOptions) ([]*CollectionSpecification, error) {
 
@@ -348,8 +348,8 @@ func (db *Database) ListCollectionSpecifications(ctx context.Context, filter int
 	}
 
 	for _, spec := range specs {
-		// Pre-4.4 servers report a namespace in their responses, so we only set Namespace manually if it was not in
-		// the response.
+		
+		
 		if spec.IDIndex != nil && spec.IDIndex.Namespace == "" {
 			spec.IDIndex.Namespace = db.name + "." + spec.Name
 		}
@@ -357,19 +357,19 @@ func (db *Database) ListCollectionSpecifications(ctx context.Context, filter int
 	return specs, nil
 }
 
-// ListCollections executes a listCollections command and returns a cursor over the collections in the database.
-//
-// The filter parameter must be a document containing query operators and can be used to select which collections
-// are included in the result. It cannot be nil. An empty document (e.g. bson.D{}) should be used to include all
-// collections.
-//
-// The opts parameter can be used to specify options for the operation (see the options.ListCollectionsOptions
-// documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/listCollections/.
-//
-// BUG(benjirewis): ListCollections prevents listing more than 100 collections per database when running against
-// MongoDB version 2.6.
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (db *Database) ListCollections(ctx context.Context, filter interface{}, opts ...*options.ListCollectionsOptions) (*Cursor, error) {
 	if ctx == nil {
 		ctx = context.Background()
@@ -440,20 +440,20 @@ func (db *Database) ListCollections(ctx context.Context, filter interface{}, opt
 	return cursor, replaceErrors(err)
 }
 
-// ListCollectionNames executes a listCollections command and returns a slice containing the names of the collections
-// in the database. This method requires driver version >= 1.1.0.
-//
-// The filter parameter must be a document containing query operators and can be used to select which collections
-// are included in the result. It cannot be nil. An empty document (e.g. bson.D{}) should be used to include all
-// collections.
-//
-// The opts parameter can be used to specify options for the operation (see the options.ListCollectionsOptions
-// documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/listCollections/.
-//
-// BUG(benjirewis): ListCollectionNames prevents listing more than 100 collections per database when running against
-// MongoDB version 2.6.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (db *Database) ListCollectionNames(ctx context.Context, filter interface{}, opts ...*options.ListCollectionsOptions) ([]string, error) {
 	opts = append(opts, options.ListCollections().SetNameOnly(true))
 
@@ -483,34 +483,34 @@ func (db *Database) ListCollectionNames(ctx context.Context, filter interface{},
 	return names, nil
 }
 
-// ReadConcern returns the read concern used to configure the Database object.
+
 func (db *Database) ReadConcern() *readconcern.ReadConcern {
 	return db.readConcern
 }
 
-// ReadPreference returns the read preference used to configure the Database object.
+
 func (db *Database) ReadPreference() *readpref.ReadPref {
 	return db.readPreference
 }
 
-// WriteConcern returns the write concern used to configure the Database object.
+
 func (db *Database) WriteConcern() *writeconcern.WriteConcern {
 	return db.writeConcern
 }
 
-// Watch returns a change stream for all changes to the corresponding database. See
-// https://www.mongodb.com/docs/manual/changeStreams/ for more information about change streams.
-//
-// The Database must be configured with read concern majority or no read concern for a change stream to be created
-// successfully.
-//
-// The pipeline parameter must be a slice of documents, each representing a pipeline stage. The pipeline cannot be
-// nil but can be empty. The stage documents must all be non-nil. See https://www.mongodb.com/docs/manual/changeStreams/ for
-// a list of pipeline stages that can be used with change streams. For a pipeline of bson.D documents, the
-// mongo.Pipeline{} type can be used.
-//
-// The opts parameter can be used to specify options for change stream creation (see the options.ChangeStreamOptions
-// documentation).
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (db *Database) Watch(ctx context.Context, pipeline interface{},
 	opts ...*options.ChangeStreamOptions) (*ChangeStream, error) {
 
@@ -526,20 +526,20 @@ func (db *Database) Watch(ctx context.Context, pipeline interface{},
 	return newChangeStream(ctx, csConfig, pipeline, opts...)
 }
 
-// CreateCollection executes a create command to explicitly create a new collection with the specified name on the
-// server. If the collection being created already exists, this method will return a mongo.CommandError. This method
-// requires driver version 1.4.0 or higher.
-//
-// The opts parameter can be used to specify options for the operation (see the options.CreateCollectionOptions
-// documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/create/.
+
+
+
+
+
+
+
+
 func (db *Database) CreateCollection(ctx context.Context, name string, opts ...*options.CreateCollectionOptions) error {
 	cco := options.MergeCreateCollectionOptions(opts...)
-	// Follow Client-Side Encryption specification to check for encryptedFields.
-	// Check for encryptedFields from create options.
+	
+	
 	ef := cco.EncryptedFields
-	// Check for encryptedFields from the client EncryptedFieldsMap.
+	
 	if ef == nil {
 		ef = db.getEncryptedFieldsFromMap(name)
 	}
@@ -550,10 +550,10 @@ func (db *Database) CreateCollection(ctx context.Context, name string, opts ...*
 	return db.createCollection(ctx, name, opts...)
 }
 
-// getEncryptedFieldsFromServer tries to get an "encryptedFields" document associated with collectionName by running the "listCollections" command.
-// Returns nil and no error if the listCollections command succeeds, but "encryptedFields" is not present.
+
+
 func (db *Database) getEncryptedFieldsFromServer(ctx context.Context, collectionName string) (interface{}, error) {
-	// Check if collection has an EncryptedFields configured server-side.
+	
 	collSpecs, err := db.ListCollectionSpecifications(ctx, bson.D{{"name", collectionName}})
 	if err != nil {
 		return nil, err
@@ -580,10 +580,10 @@ func (db *Database) getEncryptedFieldsFromServer(ctx context.Context, collection
 	return encryptedFields, nil
 }
 
-// getEncryptedFieldsFromMap tries to get an "encryptedFields" document associated with collectionName by checking the client EncryptedFieldsMap.
-// Returns nil and no error if an EncryptedFieldsMap is not configured, or does not contain an entry for collectionName.
+
+
 func (db *Database) getEncryptedFieldsFromMap(collectionName string) interface{} {
-	// Check the EncryptedFieldsMap
+	
 	efMap := db.client.encryptedFieldsMap
 	if efMap == nil {
 		return nil
@@ -598,16 +598,16 @@ func (db *Database) getEncryptedFieldsFromMap(collectionName string) interface{}
 	return nil
 }
 
-// createCollectionWithEncryptedFields creates a collection with an EncryptedFields.
+
 func (db *Database) createCollectionWithEncryptedFields(ctx context.Context, name string, ef interface{}, opts ...*options.CreateCollectionOptions) error {
 	efBSON, err := marshal(ef, db.bsonOpts, db.registry)
 	if err != nil {
 		return fmt.Errorf("error transforming document: %w", err)
 	}
 
-	// Check the wire version to ensure server is 7.0.0 or newer.
-	// After the wire version check, and before creating the collections, it is possible the server state changes.
-	// That is OK. This wire version check is a best effort to inform users earlier if using a QEv2 driver with a QEv1 server.
+	
+	
+	
 	{
 		const QEv2WireVersion = 21
 		server, err := db.client.deployment.SelectServer(ctx, description.WriteSelector())
@@ -625,11 +625,11 @@ func (db *Database) createCollectionWithEncryptedFields(ctx context.Context, nam
 		}
 	}
 
-	// Create the two encryption-related, associated collections: `escCollection` and `ecocCollection`.
+	
 
 	stateCollectionOpts := options.CreateCollection().
 		SetClusteredIndex(bson.D{{"key", bson.D{{"_id", 1}}}, {"unique", true}})
-	// Create ESCCollection.
+	
 	escCollection, err := csfle.GetEncryptedStateCollectionName(efBSON, name, csfle.EncryptedStateCollection)
 	if err != nil {
 		return err
@@ -639,7 +639,7 @@ func (db *Database) createCollectionWithEncryptedFields(ctx context.Context, nam
 		return err
 	}
 
-	// Create ECOCCollection.
+	
 	ecocCollection, err := csfle.GetEncryptedStateCollectionName(efBSON, name, csfle.EncryptedCompactionCollection)
 	if err != nil {
 		return err
@@ -649,7 +649,7 @@ func (db *Database) createCollectionWithEncryptedFields(ctx context.Context, nam
 		return err
 	}
 
-	// Create a data collection with the 'encryptedFields' option.
+	
 	op, err := db.createCollectionOperation(name, opts...)
 	if err != nil {
 		return err
@@ -660,7 +660,7 @@ func (db *Database) createCollectionWithEncryptedFields(ctx context.Context, nam
 		return err
 	}
 
-	// Create an index on the __safeContent__ field in the collection @collectionName.
+	
 	if _, err := db.Collection(name).Indexes().CreateOne(ctx, IndexModel{Keys: bson.D{{"__safeContent__", 1}}}); err != nil {
 		return fmt.Errorf("error creating safeContent index: %w", err)
 	}
@@ -668,7 +668,7 @@ func (db *Database) createCollectionWithEncryptedFields(ctx context.Context, nam
 	return nil
 }
 
-// createCollection creates a collection without EncryptedFields.
+
 func (db *Database) createCollection(ctx context.Context, name string, opts ...*options.CreateCollectionOptions) error {
 	op, err := db.createCollectionOperation(name, opts...)
 	if err != nil {
@@ -781,19 +781,19 @@ func (db *Database) createCollectionOperation(name string, opts ...*options.Crea
 	return op, nil
 }
 
-// CreateView executes a create command to explicitly create a view on the server. See
-// https://www.mongodb.com/docs/manual/core/views/ for more information about views. This method requires driver version >=
-// 1.4.0 and MongoDB version >= 3.4.
-//
-// The viewName parameter specifies the name of the view to create.
-//
-// # The viewOn parameter specifies the name of the collection or view on which this view will be created
-//
-// The pipeline parameter specifies an aggregation pipeline that will be exececuted against the source collection or
-// view to create this view.
-//
-// The opts parameter can be used to specify options for the operation (see the options.CreateViewOptions
-// documentation).
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (db *Database) CreateView(ctx context.Context, viewName, viewOn string, pipeline interface{},
 	opts ...*options.CreateViewOptions) error {
 

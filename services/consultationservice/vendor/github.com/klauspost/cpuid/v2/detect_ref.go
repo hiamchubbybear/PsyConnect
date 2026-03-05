@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Klaus Post, released under MIT License. See LICENSE file.
+
 
 //go:build (!amd64 && !386 && !arm64) || gccgo || noasm || appengine
 // +build !amd64,!386,!arm64 gccgo noasm appengine

@@ -6,7 +6,7 @@ func init() {
 	protocol.Register(&Request{}, &Response{})
 }
 
-// Detailed API definition: https://kafka.apache.org/protocol#The_Messages_AlterConfigs
+
 type Request struct {
 	Resources    []RequestResources `kafka:"min=v0,max=v1"`
 	ValidateOnly bool               `kafka:"min=v0,max=v1"`

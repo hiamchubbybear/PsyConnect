@@ -5,7 +5,7 @@ import (
 	"unsafe"
 )
 
-// Type representing reflect.rtype for noescape trick
+
 type Type struct{}
 
 //go:linkname rtype_Align reflect.(*rtype).Align

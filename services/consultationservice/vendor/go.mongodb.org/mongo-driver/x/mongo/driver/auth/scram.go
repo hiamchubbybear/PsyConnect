@@ -1,14 +1,14 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
-// Copyright (C) MongoDB, Inc. 2018-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
+
+
+
+
+
 
 package auth
 
@@ -23,15 +23,15 @@ import (
 )
 
 const (
-	// SCRAMSHA1 holds the mechanism name "SCRAM-SHA-1"
+	
 	SCRAMSHA1 = "SCRAM-SHA-1"
 
-	// SCRAMSHA256 holds the mechanism name "SCRAM-SHA-256"
+	
 	SCRAMSHA256 = "SCRAM-SHA-256"
 )
 
 var (
-	// Additional options for the saslStart command to enable a shorter SCRAM conversation
+	
 	scramStartOptions bsoncore.Document = bsoncore.BuildDocumentFromElements(nil,
 		bsoncore.AppendBooleanElement(nil, "skipEmptyExchange", true),
 	)
@@ -76,7 +76,7 @@ func newScramSHA256Authenticator(cred *Cred, _ *http.Client) (Authenticator, err
 	}, nil
 }
 
-// ScramAuthenticator uses the SCRAM algorithm over SASL to authenticate a connection.
+
 type ScramAuthenticator struct {
 	mechanism string
 	source    string
@@ -85,7 +85,7 @@ type ScramAuthenticator struct {
 
 var _ SpeculativeAuthenticator = (*ScramAuthenticator)(nil)
 
-// Auth authenticates the provided connection by conducting a full SASL conversation.
+
 func (a *ScramAuthenticator) Auth(ctx context.Context, cfg *Config) error {
 	err := ConductSaslConversation(ctx, cfg, a.source, a.createSaslClient())
 	if err != nil {
@@ -94,12 +94,12 @@ func (a *ScramAuthenticator) Auth(ctx context.Context, cfg *Config) error {
 	return nil
 }
 
-// Reauth reauthenticates the connection.
+
 func (a *ScramAuthenticator) Reauth(_ context.Context, _ *driver.AuthConfig) error {
 	return newAuthError("SCRAM does not support reauthentication", nil)
 }
 
-// CreateSpeculativeConversation creates a speculative conversation for SCRAM authentication.
+
 func (a *ScramAuthenticator) CreateSpeculativeConversation() (SpeculativeConversation, error) {
 	return newSaslConversation(a.createSaslClient(), a.source, true), nil
 }

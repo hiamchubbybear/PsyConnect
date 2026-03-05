@@ -11,8 +11,8 @@ import (
 	"github.com/modern-go/reflect2"
 )
 
-// Config customize how the API should behave.
-// The API is created from Config by Froze.
+
+
 type Config struct {
 	IndentionStep                 int
 	MarshalFloatWith6Digits       bool
@@ -27,8 +27,8 @@ type Config struct {
 	CaseSensitive                 bool
 }
 
-// API the public interface of this package.
-// Primary Marshal and Unmarshal.
+
+
 type API interface {
 	IteratorPool
 	StreamPool
@@ -46,23 +46,23 @@ type API interface {
 	EncoderOf(typ reflect2.Type) ValEncoder
 }
 
-// ConfigDefault the default API
+
 var ConfigDefault = Config{
 	EscapeHTML: true,
 }.Froze()
 
-// ConfigCompatibleWithStandardLibrary tries to be 100% compatible with standard library behavior
+
 var ConfigCompatibleWithStandardLibrary = Config{
 	EscapeHTML:             true,
 	SortMapKeys:            true,
 	ValidateJsonRawMessage: true,
 }.Froze()
 
-// ConfigFastest marshals float with only 6 digits precision
+
 var ConfigFastest = Config{
 	EscapeHTML:                    false,
-	MarshalFloatWith6Digits:       true, // will lose precession
-	ObjectFieldMustBeSimpleString: true, // do not unescape object field
+	MarshalFloatWith6Digits:       true, 
+	ObjectFieldMustBeSimpleString: true, 
 }.Froze()
 
 type frozenConfig struct {
@@ -125,7 +125,7 @@ func addFrozenConfigToCache(cfg Config, frozenConfig *frozenConfig) {
 	cfgCache.Store(cfg, frozenConfig)
 }
 
-// Froze forge API from config
+
 func (cfg Config) Froze() API {
 	api := &frozenConfig{
 		sortMapKeys:                   cfg.SortMapKeys,
@@ -247,10 +247,10 @@ func (encoder *lossyFloat64Encoder) IsEmpty(ptr unsafe.Pointer) bool {
 	return *((*float64)(ptr)) == 0
 }
 
-// EnableLossyFloatMarshalling keeps 10**(-6) precision
-// for float variables for better performance.
+
+
 func (cfg *frozenConfig) marshalFloatWith6Digits(extension EncoderExtension) {
-	// for better performance
+	
 	extension[reflect2.TypeOfPtr((*float32)(nil)).Elem()] = &lossyFloat32Encoder{}
 	extension[reflect2.TypeOfPtr((*float64)(nil)).Elem()] = &lossyFloat64Encoder{}
 }

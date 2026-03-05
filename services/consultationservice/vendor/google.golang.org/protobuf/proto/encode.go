@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package proto
 
@@ -18,73 +18,73 @@ import (
 	protoerrors "google.golang.org/protobuf/internal/errors"
 )
 
-// MarshalOptions configures the marshaler.
-//
-// Example usage:
-//
-//	b, err := MarshalOptions{Deterministic: true}.Marshal(m)
+
+
+
+
+
 type MarshalOptions struct {
 	pragma.NoUnkeyedLiterals
 
-	// AllowPartial allows messages that have missing required fields to marshal
-	// without returning an error. If AllowPartial is false (the default),
-	// Marshal will return an error if there are any missing required fields.
+	
+	
+	
 	AllowPartial bool
 
-	// Deterministic controls whether the same message will always be
-	// serialized to the same bytes within the same binary.
-	//
-	// Setting this option guarantees that repeated serialization of
-	// the same message will return the same bytes, and that different
-	// processes of the same binary (which may be executing on different
-	// machines) will serialize equal messages to the same bytes.
-	// It has no effect on the resulting size of the encoded message compared
-	// to a non-deterministic marshal.
-	//
-	// Note that the deterministic serialization is NOT canonical across
-	// languages. It is not guaranteed to remain stable over time. It is
-	// unstable across different builds with schema changes due to unknown
-	// fields. Users who need canonical serialization (e.g., persistent
-	// storage in a canonical form, fingerprinting, etc.) must define
-	// their own canonicalization specification and implement their own
-	// serializer rather than relying on this API.
-	//
-	// If deterministic serialization is requested, map entries will be
-	// sorted by keys in lexographical order. This is an implementation
-	// detail and subject to change.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	Deterministic bool
 
-	// UseCachedSize indicates that the result of a previous Size call
-	// may be reused.
-	//
-	// Setting this option asserts that:
-	//
-	// 1. Size has previously been called on this message with identical
-	// options (except for UseCachedSize itself).
-	//
-	// 2. The message and all its submessages have not changed in any
-	// way since the Size call. For lazily decoded messages, accessing
-	// a message results in decoding the message, which is a change.
-	//
-	// If either of these invariants is violated,
-	// the results are undefined and may include panics or corrupted output.
-	//
-	// Implementations MAY take this option into account to provide
-	// better performance, but there is no guarantee that they will do so.
-	// There is absolutely no guarantee that Size followed by Marshal with
-	// UseCachedSize set will perform equivalently to Marshal alone.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	UseCachedSize bool
 }
 
-// flags turns the specified MarshalOptions (user-facing) into
-// protoiface.MarshalInputFlags (used internally by the marshaler).
-//
-// See impl.marshalOptions.Options for the inverse operation.
+
+
+
+
 func (o MarshalOptions) flags() protoiface.MarshalInputFlags {
 	var flags protoiface.MarshalInputFlags
 
-	// Note: o.AllowPartial is always forced to true by MarshalOptions.marshal,
-	// which is why it is not a part of MarshalInputFlags.
+	
+	
 
 	if o.Deterministic {
 		flags |= protoiface.MarshalDeterministic
@@ -97,13 +97,13 @@ func (o MarshalOptions) flags() protoiface.MarshalInputFlags {
 	return flags
 }
 
-// Marshal returns the wire-format encoding of m.
-//
-// This is the most common entry point for encoding a Protobuf message.
-//
-// See the [MarshalOptions] type if you need more control.
+
+
+
+
+
 func Marshal(m Message) ([]byte, error) {
-	// Treat nil message interface as an empty message; nothing to output.
+	
 	if m == nil {
 		return nil, nil
 	}
@@ -115,9 +115,9 @@ func Marshal(m Message) ([]byte, error) {
 	return out.Buf, err
 }
 
-// Marshal returns the wire-format encoding of m.
+
 func (o MarshalOptions) Marshal(m Message) ([]byte, error) {
-	// Treat nil message interface as an empty message; nothing to output.
+	
 	if m == nil {
 		return nil, nil
 	}
@@ -129,15 +129,15 @@ func (o MarshalOptions) Marshal(m Message) ([]byte, error) {
 	return out.Buf, err
 }
 
-// emptyBytesForMessage returns a nil buffer if and only if m is invalid,
-// otherwise it returns a non-nil empty buffer.
-//
-// This is to assist the edge-case where user-code does the following:
-//
-//	m1.OptionalBytes, _ = proto.Marshal(m2)
-//
-// where they expect the proto2 "optional_bytes" field to be populated
-// if any only if m2 is a valid message.
+
+
+
+
+
+
+
+
+
 func emptyBytesForMessage(m Message) []byte {
 	if m == nil || !m.ProtoReflect().IsValid() {
 		return nil
@@ -145,13 +145,13 @@ func emptyBytesForMessage(m Message) []byte {
 	return emptyBuf[:]
 }
 
-// MarshalAppend appends the wire-format encoding of m to b,
-// returning the result.
-//
-// This is a less common entry point than [Marshal], which is only needed if you
-// need to supply your own buffers for performance reasons.
+
+
+
+
+
 func (o MarshalOptions) MarshalAppend(b []byte, m Message) ([]byte, error) {
-	// Treat nil message interface as an empty message; nothing to append.
+	
 	if m == nil {
 		return b, nil
 	}
@@ -160,17 +160,17 @@ func (o MarshalOptions) MarshalAppend(b []byte, m Message) ([]byte, error) {
 	return out.Buf, err
 }
 
-// MarshalState returns the wire-format encoding of a message.
-//
-// This method permits fine-grained control over the marshaler.
-// Most users should use [Marshal] instead.
+
+
+
+
 func (o MarshalOptions) MarshalState(in protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
 	return o.marshal(in.Buf, in.Message)
 }
 
-// marshal is a centralized function that all marshal operations go through.
-// For profiling purposes, avoid changing the name of this function or
-// introducing other code paths for marshal that do not go through this.
+
+
+
 func (o MarshalOptions) marshal(b []byte, m protoreflect.Message) (out protoiface.MarshalOutput, err error) {
 	allowPartial := o.AllowPartial
 	o.AllowPartial = true
@@ -214,19 +214,19 @@ func (o MarshalOptions) marshalMessage(b []byte, m protoreflect.Message) ([]byte
 	return out.Buf, err
 }
 
-// growcap scales up the capacity of a slice.
-//
-// Given a slice with a current capacity of oldcap and a desired
-// capacity of wantcap, growcap returns a new capacity >= wantcap.
-//
-// The algorithm is mostly identical to the one used by append as of Go 1.14.
+
+
+
+
+
+
 func growcap(oldcap, wantcap int) (newcap int) {
 	if wantcap > oldcap*2 {
 		newcap = wantcap
 	} else if oldcap < 1024 {
-		// The Go 1.14 runtime takes this case when len(s) < 1024,
-		// not when cap(s) < 1024. The difference doesn't seem
-		// significant here.
+		
+		
+		
 		newcap = oldcap * 2
 	} else {
 		newcap = oldcap
@@ -246,9 +246,9 @@ func (o MarshalOptions) marshalMessageSlow(b []byte, m protoreflect.Message) ([]
 	}
 	fieldOrder := order.AnyFieldOrder
 	if o.Deterministic {
-		// TODO: This should use a more natural ordering like NumberFieldOrder,
-		// but doing so breaks golden tests that make invalid assumption about
-		// output stability of this implementation.
+		
+		
+		
 		fieldOrder = order.LegacyFieldOrder
 	}
 	var err error
@@ -329,9 +329,9 @@ func (o MarshalOptions) marshalMap(b []byte, fd protoreflect.FieldDescriptor, ma
 	return b, err
 }
 
-// When encoding length-prefixed fields, we speculatively set aside some number of bytes
-// for the length, encode the data, and then encode the length (shifting the data if necessary
-// to make room).
+
+
+
 const speculativeLength = 1
 
 func appendSpeculativeLength(b []byte) ([]byte, int) {

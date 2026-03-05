@@ -1,13 +1,13 @@
 package unstable
 
-// root contains a full AST.
-//
-// It is immutable once constructed with Builder.
+
+
+
 type root struct {
 	nodes []Node
 }
 
-// Iterator over the top level nodes.
+
 func (r *root) Iterator() Iterator {
 	it := Iterator{}
 	if len(r.nodes) > 0 {

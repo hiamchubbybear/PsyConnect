@@ -19,8 +19,8 @@
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
-  /* Icon-only action buttons (Book, etc.) */
-  /* Role pill under friend name */
+  
+  
 }
 .chat-main .chat-header .chat-info {
   display: flex;
@@ -319,7 +319,7 @@
   line-height: 1.6;
 }
 
-/* No friend selected + Suggestions */
+
 .no-friend-selected {
   display: flex;
   flex-direction: column;
@@ -367,7 +367,7 @@
   cursor: pointer;
   position: relative;
   transition: transform 0.2s ease;
-  /* Hover tooltip */
+  
 }
 .no-friend-selected .suggestions-section .suggestions-row .suggestion-item:hover {
   transform: translateY(-3px);
@@ -417,7 +417,7 @@
   gap: 0.75rem;
   white-space: nowrap;
   min-width: 180px;
-  /* Arrow */
+  
 }
 .no-friend-selected .suggestions-section .suggestions-row .suggestion-item .suggestion-tooltip::after {
   content: "";
@@ -474,4 +474,4 @@
   user-select: none;
 }
 
-/*# sourceMappingURL=tmp.css.map */
+

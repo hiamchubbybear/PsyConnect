@@ -13,7 +13,7 @@ type SliceHeader struct {
 }
 
 const (
-	maxAcceptableTypeAddrRange = 1024 * 1024 * 2 // 2 Mib
+	maxAcceptableTypeAddrRange = 1024 * 1024 * 2 
 )
 
 type TypeAddr struct {

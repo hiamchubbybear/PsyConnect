@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-// Deprecated:Replace RecommendationApi instead
+
 func RecommendationApi(data dto.FilterRawData) ([]model.ClientSwipe, error) {
 	url := os.Getenv("RECOMMENDATION_SERVICE_URL")
 	if url == "" {

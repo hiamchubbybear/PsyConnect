@@ -1,6 +1,6 @@
-// Copyright 2025 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package httpcommon
 
@@ -11,8 +11,8 @@ import (
 
 var (
 	commonBuildOnce   sync.Once
-	commonLowerHeader map[string]string // Go-Canonical-Case -> lower-case
-	commonCanonHeader map[string]string // lower-case -> Go-Canonical-Case
+	commonLowerHeader map[string]string 
+	commonCanonHeader map[string]string 
 )
 
 func buildCommonHeaderMapsOnce() {
@@ -88,8 +88,8 @@ func buildCommonHeaderMaps() {
 	}
 }
 
-// LowerHeader returns the lowercase form of a header name,
-// used on the wire for HTTP/2 and HTTP/3 requests.
+
+
 func LowerHeader(v string) (lower string, ascii bool) {
 	buildCommonHeaderMapsOnce()
 	if s, ok := commonLowerHeader[v]; ok {
@@ -98,7 +98,7 @@ func LowerHeader(v string) (lower string, ascii bool) {
 	return asciiToLower(v)
 }
 
-// CanonicalHeader canonicalizes a header name. (For example, "host" becomes "Host".)
+
 func CanonicalHeader(v string) string {
 	buildCommonHeaderMapsOnce()
 	if s, ok := commonCanonHeader[v]; ok {
@@ -107,7 +107,7 @@ func CanonicalHeader(v string) string {
 	return textproto.CanonicalMIMEHeaderKey(v)
 }
 
-// CachedCanonicalHeader returns the canonical form of a well-known header name.
+
 func CachedCanonicalHeader(v string) (string, bool) {
 	buildCommonHeaderMapsOnce()
 	s, ok := commonCanonHeader[v]

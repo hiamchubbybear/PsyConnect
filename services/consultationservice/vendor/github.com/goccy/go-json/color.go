@@ -15,7 +15,7 @@ const escape = "\x1b"
 
 type colorAttr int
 
-//nolint:deadcode,varcheck
+
 const (
 	fgBlackColor colorAttr = iota + 30
 	fgRedColor
@@ -27,7 +27,7 @@ const (
 	fgWhiteColor
 )
 
-//nolint:deadcode,varcheck
+
 const (
 	fgHiBlackColor colorAttr = iota + 90
 	fgHiRedColor

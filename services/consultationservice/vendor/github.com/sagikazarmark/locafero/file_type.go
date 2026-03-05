@@ -2,7 +2,7 @@ package locafero
 
 import "io/fs"
 
-// FileType represents the kind of entries [Finder] can return.
+
 type FileType int
 
 const (

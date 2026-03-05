@@ -60,18 +60,18 @@ var (
 	defaultCField = &cField{namesEqual: true}
 )
 
-// FilterFunc is the type used to filter fields using
-// StructFiltered(...) function.
-// returning true results in the field being filtered/skipped from
-// validation
+
+
+
+
 type FilterFunc func(ns []byte) bool
 
-// CustomTypeFunc allows for overriding or adding custom field type handler functions
-// field = field value of the type to return a value to be validated
-// example Valuer from sql drive see https://golang.org/src/database/sql/driver/types.go?s=1210:1293#L29
+
+
+
 type CustomTypeFunc func(field reflect.Value) interface{}
 
-// TagNameFunc allows for adding of a custom tag name parser
+
 type TagNameFunc func(field reflect.StructField) string
 
 type internalValidationFuncWrapper struct {
@@ -79,7 +79,7 @@ type internalValidationFuncWrapper struct {
 	runValidationOnNil bool
 }
 
-// Validate contains the validator settings and cache
+
 type Validate struct {
 	tagName                string
 	pool                   *sync.Pool
@@ -88,7 +88,7 @@ type Validate struct {
 	customFuncs            map[reflect.Type]CustomTypeFunc
 	aliases                map[string]string
 	validations            map[string]internalValidationFuncWrapper
-	transTagFunc           map[ut.Translator]map[string]TranslationFunc // map[<locale>]map[<tag>]TranslationFunc
+	transTagFunc           map[ut.Translator]map[string]TranslationFunc 
 	rules                  map[reflect.Type]map[string]string
 	tagCache               *tagCache
 	structCache            *structCache
@@ -98,11 +98,11 @@ type Validate struct {
 	privateFieldValidation bool
 }
 
-// New returns a new instance of 'validate' with sane defaults.
-// Validate is designed to be thread-safe and used as a singleton instance.
-// It caches information about your struct and validations,
-// in essence only parsing your validation tags once per struct type.
-// Using multiple instances neglects the benefit of caching.
+
+
+
+
+
 func New(options ...Option) *Validate {
 
 	tc := new(tagCache)
@@ -119,22 +119,22 @@ func New(options ...Option) *Validate {
 		structCache: sc,
 	}
 
-	// must copy alias validators for separate validations to be used in each validator instance
+	
 	for k, val := range bakedInAliases {
 		v.RegisterAlias(k, val)
 	}
 
-	// must copy validators for separate validations to be used in each instance
+	
 	for k, val := range bakedInValidators {
 
 		switch k {
-		// these require that even if the value is nil that the validation should run, omitempty still overrides this behaviour
+		
 		case requiredIfTag, requiredUnlessTag, requiredWithTag, requiredWithAllTag, requiredWithoutTag, requiredWithoutAllTag,
 			excludedIfTag, excludedUnlessTag, excludedWithTag, excludedWithAllTag, excludedWithoutTag, excludedWithoutAllTag,
 			skipUnlessTag:
 			_ = v.registerValidation(k, wrapFunc(val), true, true)
 		default:
-			// no need to error check here, baked in will always be valid
+			
 			_ = v.registerValidation(k, wrapFunc(val), true, false)
 		}
 	}
@@ -156,13 +156,13 @@ func New(options ...Option) *Validate {
 	return v
 }
 
-// SetTagName allows for changing of the default tag name of 'validate'
+
 func (v *Validate) SetTagName(name string) {
 	v.tagName = name
 }
 
-// ValidateMapCtx validates a map using a map of validation rules and allows passing of contextual
-// validation information via context.Context.
+
+
 func (v Validate) ValidateMapCtx(ctx context.Context, data map[string]interface{}, rules map[string]interface{}) map[string]interface{} {
 	errs := make(map[string]interface{})
 	for field, rule := range rules {
@@ -192,39 +192,39 @@ func (v Validate) ValidateMapCtx(ctx context.Context, data map[string]interface{
 	return errs
 }
 
-// ValidateMap validates map data from a map of tags
+
 func (v *Validate) ValidateMap(data map[string]interface{}, rules map[string]interface{}) map[string]interface{} {
 	return v.ValidateMapCtx(context.Background(), data, rules)
 }
 
-// RegisterTagNameFunc registers a function to get alternate names for StructFields.
-//
-// eg. to use the names which have been specified for JSON representations of structs, rather than normal Go field names:
-//
-//	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
-//	    name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
-//	    // skip if tag key says it should be ignored
-//	    if name == "-" {
-//	        return ""
-//	    }
-//	    return name
-//	})
+
+
+
+
+
+
+
+
+
+
+
+
 func (v *Validate) RegisterTagNameFunc(fn TagNameFunc) {
 	v.tagNameFunc = fn
 	v.hasTagNameFunc = true
 }
 
-// RegisterValidation adds a validation with the given tag
-//
-// NOTES:
-// - if the key already exists, the previous validation function will be replaced.
-// - this method is not thread-safe it is intended that these all be registered prior to any validation
+
+
+
+
+
 func (v *Validate) RegisterValidation(tag string, fn Func, callValidationEvenIfNull ...bool) error {
 	return v.RegisterValidationCtx(tag, wrapFunc(fn), callValidationEvenIfNull...)
 }
 
-// RegisterValidationCtx does the same as RegisterValidation on accepts a FuncCtx validation
-// allowing context.Context validation support.
+
+
 func (v *Validate) RegisterValidationCtx(tag string, fn FuncCtx, callValidationEvenIfNull ...bool) error {
 	var nilCheckable bool
 	if len(callValidationEvenIfNull) > 0 {
@@ -250,11 +250,11 @@ func (v *Validate) registerValidation(tag string, fn FuncCtx, bakedIn bool, nilC
 	return nil
 }
 
-// RegisterAlias registers a mapping of a single validation tag that
-// defines a common or complex set of validation(s) to simplify adding validation
-// to structs.
-//
-// NOTE: this function is not thread-safe it is intended that these all be registered prior to any validation
+
+
+
+
+
 func (v *Validate) RegisterAlias(alias, tags string) {
 
 	_, ok := restrictedTags[alias]
@@ -266,19 +266,19 @@ func (v *Validate) RegisterAlias(alias, tags string) {
 	v.aliases[alias] = tags
 }
 
-// RegisterStructValidation registers a StructLevelFunc against a number of types.
-//
-// NOTE:
-// - this method is not thread-safe it is intended that these all be registered prior to any validation
+
+
+
+
 func (v *Validate) RegisterStructValidation(fn StructLevelFunc, types ...interface{}) {
 	v.RegisterStructValidationCtx(wrapStructLevelFunc(fn), types...)
 }
 
-// RegisterStructValidationCtx registers a StructLevelFuncCtx against a number of types and allows passing
-// of contextual validation information via context.Context.
-//
-// NOTE:
-// - this method is not thread-safe it is intended that these all be registered prior to any validation
+
+
+
+
+
 func (v *Validate) RegisterStructValidationCtx(fn StructLevelFuncCtx, types ...interface{}) {
 
 	if v.structLevelFuncs == nil {
@@ -295,10 +295,10 @@ func (v *Validate) RegisterStructValidationCtx(fn StructLevelFuncCtx, types ...i
 	}
 }
 
-// RegisterStructValidationMapRules registers validate map rules.
-// Be aware that map validation rules supersede those defined on a/the struct if present.
-//
-// NOTE: this method is not thread-safe it is intended that these all be registered prior to any validation
+
+
+
+
 func (v *Validate) RegisterStructValidationMapRules(rules map[string]string, types ...interface{}) {
 	if v.rules == nil {
 		v.rules = make(map[reflect.Type]map[string]string)
@@ -323,9 +323,9 @@ func (v *Validate) RegisterStructValidationMapRules(rules map[string]string, typ
 	}
 }
 
-// RegisterCustomTypeFunc registers a CustomTypeFunc against a number of types
-//
-// NOTE: this method is not thread-safe it is intended that these all be registered prior to any validation
+
+
+
 func (v *Validate) RegisterCustomTypeFunc(fn CustomTypeFunc, types ...interface{}) {
 
 	if v.customFuncs == nil {
@@ -339,7 +339,7 @@ func (v *Validate) RegisterCustomTypeFunc(fn CustomTypeFunc, types ...interface{
 	v.hasCustomFuncs = true
 }
 
-// RegisterTranslation registers translations against the provided tag.
+
 func (v *Validate) RegisterTranslation(tag string, trans ut.Translator, registerFn RegisterTranslationsFunc, translationFn TranslationFunc) (err error) {
 
 	if v.transTagFunc == nil {
@@ -361,19 +361,19 @@ func (v *Validate) RegisterTranslation(tag string, trans ut.Translator, register
 	return
 }
 
-// Struct validates a structs exposed fields, and automatically validates nested structs, unless otherwise specified.
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
+
+
+
+
 func (v *Validate) Struct(s interface{}) error {
 	return v.StructCtx(context.Background(), s)
 }
 
-// StructCtx validates a structs exposed fields, and automatically validates nested structs, unless otherwise specified
-// and also allows passing of context.Context for contextual validation information.
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
+
+
+
+
+
 func (v *Validate) StructCtx(ctx context.Context, s interface{}) (err error) {
 
 	val := reflect.ValueOf(s)
@@ -387,11 +387,11 @@ func (v *Validate) StructCtx(ctx context.Context, s interface{}) (err error) {
 		return &InvalidValidationError{Type: reflect.TypeOf(s)}
 	}
 
-	// good to validate
+	
 	vd := v.pool.Get().(*validate)
 	vd.top = top
 	vd.isPartial = false
-	// vd.hasExcludes = false // only need to reset in StructPartial and StructExcept
+	
 
 	vd.validateStruct(ctx, top, val, val.Type(), vd.ns[0:0], vd.actualNs[0:0], nil)
 
@@ -405,21 +405,21 @@ func (v *Validate) StructCtx(ctx context.Context, s interface{}) (err error) {
 	return
 }
 
-// StructFiltered validates a structs exposed fields, that pass the FilterFunc check and automatically validates
-// nested structs, unless otherwise specified.
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
+
+
+
+
+
 func (v *Validate) StructFiltered(s interface{}, fn FilterFunc) error {
 	return v.StructFilteredCtx(context.Background(), s, fn)
 }
 
-// StructFilteredCtx validates a structs exposed fields, that pass the FilterFunc check and automatically validates
-// nested structs, unless otherwise specified and also allows passing of contextual validation information via
-// context.Context
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
+
+
+
+
+
+
 func (v *Validate) StructFilteredCtx(ctx context.Context, s interface{}, fn FilterFunc) (err error) {
 	val := reflect.ValueOf(s)
 	top := val
@@ -432,12 +432,12 @@ func (v *Validate) StructFilteredCtx(ctx context.Context, s interface{}, fn Filt
 		return &InvalidValidationError{Type: reflect.TypeOf(s)}
 	}
 
-	// good to validate
+	
 	vd := v.pool.Get().(*validate)
 	vd.top = top
 	vd.isPartial = true
 	vd.ffn = fn
-	// vd.hasExcludes = false // only need to reset in StructPartial and StructExcept
+	
 
 	vd.validateStruct(ctx, top, val, val.Type(), vd.ns[0:0], vd.actualNs[0:0], nil)
 
@@ -451,23 +451,23 @@ func (v *Validate) StructFilteredCtx(ctx context.Context, s interface{}, fn Filt
 	return
 }
 
-// StructPartial validates the fields passed in only, ignoring all others.
-// Fields may be provided in a namespaced fashion relative to the  struct provided
-// eg. NestedStruct.Field or NestedArrayField[0].Struct.Name
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
+
+
+
+
+
+
 func (v *Validate) StructPartial(s interface{}, fields ...string) error {
 	return v.StructPartialCtx(context.Background(), s, fields...)
 }
 
-// StructPartialCtx validates the fields passed in only, ignoring all others and allows passing of contextual
-// validation information via context.Context
-// Fields may be provided in a namespaced fashion relative to the  struct provided
-// eg. NestedStruct.Field or NestedArrayField[0].Struct.Name
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
+
+
+
+
+
+
+
 func (v *Validate) StructPartialCtx(ctx context.Context, s interface{}, fields ...string) (err error) {
 	val := reflect.ValueOf(s)
 	top := val
@@ -480,7 +480,7 @@ func (v *Validate) StructPartialCtx(ctx context.Context, s interface{}, fields .
 		return &InvalidValidationError{Type: reflect.TypeOf(s)}
 	}
 
-	// good to validate
+	
 	vd := v.pool.Get().(*validate)
 	vd.top = top
 	vd.isPartial = true
@@ -497,7 +497,7 @@ func (v *Validate) StructPartialCtx(ctx context.Context, s interface{}, fields .
 		if len(flds) > 0 {
 
 			vd.misc = append(vd.misc[0:0], name...)
-			// Don't append empty name for unnamed structs
+			
 			if len(vd.misc) != 0 {
 				vd.misc = append(vd.misc, '.')
 			}
@@ -541,23 +541,23 @@ func (v *Validate) StructPartialCtx(ctx context.Context, s interface{}, fields .
 	return
 }
 
-// StructExcept validates all fields except the ones passed in.
-// Fields may be provided in a namespaced fashion relative to the  struct provided
-// i.e. NestedStruct.Field or NestedArrayField[0].Struct.Name
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
+
+
+
+
+
+
 func (v *Validate) StructExcept(s interface{}, fields ...string) error {
 	return v.StructExceptCtx(context.Background(), s, fields...)
 }
 
-// StructExceptCtx validates all fields except the ones passed in and allows passing of contextual
-// validation information via context.Context
-// Fields may be provided in a namespaced fashion relative to the  struct provided
-// i.e. NestedStruct.Field or NestedArrayField[0].Struct.Name
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
+
+
+
+
+
+
+
 func (v *Validate) StructExceptCtx(ctx context.Context, s interface{}, fields ...string) (err error) {
 	val := reflect.ValueOf(s)
 	top := val
@@ -570,7 +570,7 @@ func (v *Validate) StructExceptCtx(ctx context.Context, s interface{}, fields ..
 		return &InvalidValidationError{Type: reflect.TypeOf(s)}
 	}
 
-	// good to validate
+	
 	vd := v.pool.Get().(*validate)
 	vd.top = top
 	vd.isPartial = true
@@ -606,37 +606,37 @@ func (v *Validate) StructExceptCtx(ctx context.Context, s interface{}, fields ..
 	return
 }
 
-// Var validates a single variable using tag style validation.
-// eg.
-// var i int
-// validate.Var(i, "gt=1,lt=10")
-//
-// WARNING: a struct can be passed for validation eg. time.Time is a struct or
-// if you have a custom type and have registered a custom type handler, so must
-// allow it; however unforeseen validations will occur if trying to validate a
-// struct that is meant to be passed to 'validate.Struct'
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
-// validate Array, Slice and maps fields which may contain more than one error
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (v *Validate) Var(field interface{}, tag string) error {
 	return v.VarCtx(context.Background(), field, tag)
 }
 
-// VarCtx validates a single variable using tag style validation and allows passing of contextual
-// validation information via context.Context.
-// eg.
-// var i int
-// validate.Var(i, "gt=1,lt=10")
-//
-// WARNING: a struct can be passed for validation eg. time.Time is a struct or
-// if you have a custom type and have registered a custom type handler, so must
-// allow it; however unforeseen validations will occur if trying to validate a
-// struct that is meant to be passed to 'validate.Struct'
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
-// validate Array, Slice and maps fields which may contain more than one error
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (v *Validate) VarCtx(ctx context.Context, field interface{}, tag string) (err error) {
 	if len(tag) == 0 || tag == skipValidationTag {
 		return nil
@@ -658,39 +658,39 @@ func (v *Validate) VarCtx(ctx context.Context, field interface{}, tag string) (e
 	return
 }
 
-// VarWithValue validates a single variable, against another variable/field's value using tag style validation
-// eg.
-// s1 := "abcd"
-// s2 := "abcd"
-// validate.VarWithValue(s1, s2, "eqcsfield") // returns true
-//
-// WARNING: a struct can be passed for validation eg. time.Time is a struct or
-// if you have a custom type and have registered a custom type handler, so must
-// allow it; however unforeseen validations will occur if trying to validate a
-// struct that is meant to be passed to 'validate.Struct'
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
-// validate Array, Slice and maps fields which may contain more than one error
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (v *Validate) VarWithValue(field interface{}, other interface{}, tag string) error {
 	return v.VarWithValueCtx(context.Background(), field, other, tag)
 }
 
-// VarWithValueCtx validates a single variable, against another variable/field's value using tag style validation and
-// allows passing of contextual validation information via context.Context.
-// eg.
-// s1 := "abcd"
-// s2 := "abcd"
-// validate.VarWithValue(s1, s2, "eqcsfield") // returns true
-//
-// WARNING: a struct can be passed for validation eg. time.Time is a struct or
-// if you have a custom type and have registered a custom type handler, so must
-// allow it; however unforeseen validations will occur if trying to validate a
-// struct that is meant to be passed to 'validate.Struct'
-//
-// It returns InvalidValidationError for bad values passed in and nil or ValidationErrors as error otherwise.
-// You will need to assert the error if it's not nil eg. err.(validator.ValidationErrors) to access the array of errors.
-// validate Array, Slice and maps fields which may contain more than one error
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (v *Validate) VarWithValueCtx(ctx context.Context, field interface{}, other interface{}, tag string) (err error) {
 	if len(tag) == 0 || tag == skipValidationTag {
 		return nil

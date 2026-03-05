@@ -1,6 +1,6 @@
-// Copyright 2024 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -73,11 +73,11 @@ func (mi *MessageInfo) makeOpaqueCoderMethods(t reflect.Type, si opaqueStructInf
 			presenceIndex: noPresence,
 		}
 
-		// TODO: Use presence for all fields.
-		//
-		// In some cases, such as maps, presence means only "might be set" rather
-		// than "is definitely set", but every field should have a presence bit to
-		// permit us to skip over definitely-unset fields at marshal time.
+		
+		
+		
+		
+		
 
 		var hasPresence bool
 		hasPresence, cf.isLazy = usePresenceForField(si, fd)
@@ -122,7 +122,7 @@ func (mi *MessageInfo) makeOpaqueCoderMethods(t reflect.Type, si opaqueStructInf
 		mi.denseCoderFields[cf.num] = cf
 	}
 
-	// To preserve compatibility with historic wire output, marshal oneofs last.
+	
 	if mi.Desc.Oneofs().Len() > 0 {
 		sort.Slice(mi.orderedCoderFields, func(i, j int) bool {
 			fi := fields.ByNumber(mi.orderedCoderFields[i].num)

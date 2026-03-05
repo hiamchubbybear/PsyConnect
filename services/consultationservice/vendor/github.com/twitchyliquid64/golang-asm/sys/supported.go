@@ -1,14 +1,14 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package sys
 
-// RaceDetectorSupported reports whether goos/goarch supports the race
-// detector. There is a copy of this function in cmd/dist/test.go.
-// Race detector only supports 48-bit VMA on arm64. But it will always
-// return true for arm64, because we don't have VMA size information during
-// the compile time.
+
+
+
+
+
 func RaceDetectorSupported(goos, goarch string) bool {
 	switch goos {
 	case "linux":
@@ -20,8 +20,8 @@ func RaceDetectorSupported(goos, goarch string) bool {
 	}
 }
 
-// MSanSupported reports whether goos/goarch supports the memory
-// sanitizer option. There is a copy of this function in cmd/dist/test.go.
+
+
 func MSanSupported(goos, goarch string) bool {
 	switch goos {
 	case "linux":
@@ -31,7 +31,7 @@ func MSanSupported(goos, goarch string) bool {
 	}
 }
 
-// MustLinkExternal reports whether goos/goarch requires external linking.
+
 func MustLinkExternal(goos, goarch string) bool {
 	switch goos {
 	case "android":
@@ -46,8 +46,8 @@ func MustLinkExternal(goos, goarch string) bool {
 	return false
 }
 
-// BuildModeSupported reports whether goos/goarch supports the given build mode
-// using the given compiler.
+
+
 func BuildModeSupported(compiler, buildmode, goos, goarch string) bool {
 	if compiler == "gccgo" {
 		return true
@@ -60,8 +60,8 @@ func BuildModeSupported(compiler, buildmode, goos, goarch string) bool {
 		return true
 
 	case "c-archive":
-		// TODO(bcmills): This seems dubious.
-		// Do we really support c-archive mode on js/wasm‽
+		
+		
 		return platform != "linux/ppc64"
 
 	case "c-shared":

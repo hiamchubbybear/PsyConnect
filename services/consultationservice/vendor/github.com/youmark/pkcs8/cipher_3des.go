@@ -15,7 +15,7 @@ func init() {
 	})
 }
 
-// TripleDESCBC is the 168-bit key 3DES cipher in CBC mode.
+
 var TripleDESCBC = cipherWithBlock{
 	ivSize:   des.BlockSize,
 	keySize:  24,

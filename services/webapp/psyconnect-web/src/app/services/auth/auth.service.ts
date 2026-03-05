@@ -24,7 +24,7 @@ export class AuthService {
   saveToken(token: string) {
     this.secureService.setItem(this.TOKEN_KEY, token);
 
-    // Decode JWT and save role
+    
     const payload = this.decodeToken(token);
     if (payload) {
       const role = this.extractRoleFromScope(payload.scope);
@@ -47,9 +47,7 @@ export class AuthService {
     this.secureService.removeItem(this.ROLE_KEY);
   }
 
-  /**
-   * Decode JWT token to get payload
-   */
+  
   decodeToken(token: string): JWTPayload | null {
     try {
       const parts = token.split('.');
@@ -67,10 +65,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * Extract role from scope string
-   * Example: "role.therapist:permission ..." -> "therapist"
-   */
+  
   private extractRoleFromScope(scope: string): 'therapist' | 'client' | null {
     if (!scope) return null;
     const s = scope.toLowerCase();
@@ -79,9 +74,7 @@ export class AuthService {
     return null;
   }
 
-  /**
-   * Save user role to localStorage
-   */
+  
   saveRole(role: 'therapist' | 'client'): void {
     this.secureService.setItem(this.ROLE_KEY, role);
   }
@@ -93,7 +86,7 @@ export class AuthService {
       if (extracted) return extracted;
     }
 
-    // Fallback: extract directly from token if possible
+    
     const payload = this.getCurrentUser();
     if (payload && payload.scope) {
       const extractedRole = this.extractRoleFromScope(payload.scope);
@@ -105,16 +98,12 @@ export class AuthService {
     return null;
   }
 
-  /**
-   * Check if user is therapist
-   */
+  
   isTherapist(): boolean {
     return this.getRole() === 'therapist';
   }
 
-  /**
-   * Check if user is client
-   */
+  
   isClient(): boolean {
     return this.getRole() === 'client';
   }
@@ -127,9 +116,7 @@ export class AuthService {
     return this.decodeToken(token);
   }
 
-  /**
-   * Check if token is expired
-   */
+  
   isTokenExpired(): boolean {
     const payload = this.getCurrentUser();
     if (!payload) {

@@ -78,7 +78,7 @@ type Therapist struct {
 	ProfessionalInfo ProfessionalInfo `json:"professional_info,omitempty" bson:"professional_info"`
 }
 
-// --- Pools dữ liệu để random ---
+
 var (
 	names = []string{
 		"Dr. Alice Nguyen", "Dr. Bob Tran", "Dr. Carol Pham", "Dr. David Le",
@@ -176,7 +176,7 @@ func main() {
 			Specialization:    randomSubset(specializationPool, 2, 5),
 			ConsultationModes: randomSubset([]string{"Online", "Offline"}, 1, 2),
 			Experience:        rand.Intn(15) + 1,
-			Rating:            3.5 + rand.Float64()*1.5, // 3.5 -> 5.0
+			Rating:            3.5 + rand.Float64()*1.5, 
 			Currency:          "USD",
 			RagePrice:         40 + rand.Intn(60),
 			IsAvailable:       rand.Intn(2) == 0,
@@ -193,7 +193,7 @@ func main() {
 			},
 		}
 
-		// Availability
+		
 		t.Availability.Days = randomSubset([]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"}, 2, 4)
 		t.Availability.TimeSlots = randomSubset([]string{"09:00-11:00", "13:00-15:00", "15:00-17:00", "19:00-21:00"}, 1, 3)
 

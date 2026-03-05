@@ -1,5 +1,8 @@
 package dev.psyconnect.identity_service.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -7,10 +10,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import dev.psyconnect.identity_service.dto.request.CloudinarySignRequest;
 import dev.psyconnect.identity_service.dto.response.CloudinarySignResponse;
@@ -36,22 +35,20 @@ public class CloudinaryService {
 
     public CloudinarySignResponse generateSignature(CloudinarySignRequest request) {
         Map<String, Object> params = request.getParams();
-        
-        // Cloudinary requires parameters to be sorted alphabetically
+
         TreeMap<String, Object> sortedParams = new TreeMap<>(params);
-        
+
         String stringToSign = sortedParams.entrySet().stream()
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.joining("&"));
-        
-        // Append API Secret
+
         stringToSign += apiSecret;
-        
+
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
             byte[] hash = digest.digest(stringToSign.getBytes(StandardCharsets.UTF_8));
             String signature = new String(Hex.encode(hash));
-            
+
             long timestamp = Long.parseLong(params.get("timestamp").toString());
 
             return CloudinarySignResponse.builder()

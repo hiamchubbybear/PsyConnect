@@ -25,7 +25,7 @@ export class IncomingCallComponent {
   }
 
   onRemind() {
-    // Emit remind event
+    
     this.remind.emit();
   }
 }

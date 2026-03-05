@@ -167,7 +167,7 @@ export class Overview implements OnInit {
   }
 
   loadStats() {
-    // Mock data
+    
     this.stats = {
       totalRevenue: 45280,
       monthlyRevenue: 12450,

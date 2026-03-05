@@ -31,13 +31,13 @@ func (e BadConnError) Unwrap() error {
 	return e.wrapped
 }
 
-//------------------------------------------------------------------------------
+
 
 type StickyConnPool struct {
 	pool   Pooler
-	shared int32 // atomic
+	shared int32 
 
-	state uint32 // atomic
+	state uint32 
 	ch    chan *Conn
 
 	_badConnError atomic.Value
@@ -66,7 +66,7 @@ func (p *StickyConnPool) CloseConn(cn *Conn) error {
 }
 
 func (p *StickyConnPool) Get(ctx context.Context) (*Conn, error) {
-	// In worst case this races with Close which is not a very common operation.
+	
 	for i := 0; i < 1000; i++ {
 		switch atomic.LoadUint32(&p.state) {
 		case stateDefault:

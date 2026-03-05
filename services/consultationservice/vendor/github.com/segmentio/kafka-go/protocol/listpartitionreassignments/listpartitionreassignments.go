@@ -6,11 +6,11 @@ func init() {
 	protocol.Register(&Request{}, &Response{})
 }
 
-// Detailed API definition: https://kafka.apache.org/protocol#The_Messages_ListPartitionReassignments.
+
 
 type Request struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	TimeoutMs int32          `kafka:"min=v0,max=v0"`
@@ -18,8 +18,8 @@ type Request struct {
 }
 
 type RequestTopic struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	Name             string  `kafka:"min=v0,max=v0"`
@@ -35,8 +35,8 @@ func (r *Request) Broker(cluster protocol.Cluster) (protocol.Broker, error) {
 }
 
 type Response struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	ThrottleTimeMs int32           `kafka:"min=v0,max=v0"`
@@ -46,8 +46,8 @@ type Response struct {
 }
 
 type ResponseTopic struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	Name       string              `kafka:"min=v0,max=v0"`
@@ -55,8 +55,8 @@ type ResponseTopic struct {
 }
 
 type ResponsePartition struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	PartitionIndex   int32   `kafka:"min=v0,max=v0"`

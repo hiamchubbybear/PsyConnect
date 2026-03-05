@@ -69,9 +69,7 @@ export class RequestResetComponent {
 
     this.submitting = true;
     const email = this.requestForm.value.email;
-    /**
-     * @deprecated The field should be remove next api update
-     */
+    
     const username = '';
     this.passwordService
       .requestReset({

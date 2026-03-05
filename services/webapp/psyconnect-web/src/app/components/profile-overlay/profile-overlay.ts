@@ -1,4 +1,4 @@
-// therapist-profile-overlay.component.ts
+
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';

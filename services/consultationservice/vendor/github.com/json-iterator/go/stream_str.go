@@ -4,13 +4,13 @@ import (
 	"unicode/utf8"
 )
 
-// htmlSafeSet holds the value true if the ASCII character with the given
-// array position can be safely represented inside a JSON string, embedded
-// inside of HTML <script> tags, without any additional escaping.
-//
-// All values are true except for the ASCII control characters (0-31), the
-// double quote ("), the backslash character ("\"), HTML opening and closing
-// tags ("<" and ">"), and the ampersand ("&").
+
+
+
+
+
+
+
 var htmlSafeSet = [utf8.RuneSelf]bool{
 	' ':      true,
 	'!':      true,
@@ -110,12 +110,12 @@ var htmlSafeSet = [utf8.RuneSelf]bool{
 	'\u007f': true,
 }
 
-// safeSet holds the value true if the ASCII character with the given array
-// position can be represented inside a JSON string without any further
-// escaping.
-//
-// All values are true except for the ASCII control characters (0-31), the
-// double quote ("), and the backslash character ("\").
+
+
+
+
+
+
 var safeSet = [utf8.RuneSelf]bool{
 	' ':      true,
 	'!':      true,
@@ -217,11 +217,11 @@ var safeSet = [utf8.RuneSelf]bool{
 
 var hex = "0123456789abcdef"
 
-// WriteStringWithHTMLEscaped write string to stream with html special characters escaped
+
 func (stream *Stream) WriteStringWithHTMLEscaped(s string) {
 	valLen := len(s)
 	stream.buf = append(stream.buf, '"')
-	// write string, the fast path, without utf8 and escape support
+	
 	i := 0
 	for ; i < valLen; i++ {
 		c := s[i]
@@ -240,7 +240,7 @@ func (stream *Stream) WriteStringWithHTMLEscaped(s string) {
 
 func writeStringSlowPathWithHTMLEscaped(stream *Stream, i int, s string, valLen int) {
 	start := i
-	// for the remaining parts, we process them char by char
+	
 	for i < valLen {
 		if b := s[i]; b < utf8.RuneSelf {
 			if htmlSafeSet[b] {
@@ -260,11 +260,11 @@ func writeStringSlowPathWithHTMLEscaped(stream *Stream, i int, s string, valLen 
 			case '\t':
 				stream.writeTwoBytes('\\', 't')
 			default:
-				// This encodes bytes < 0x20 except for \t, \n and \r.
-				// If escapeHTML is set, it also escapes <, >, and &
-				// because they can lead to security holes when
-				// user-controlled strings are rendered into JSON
-				// and served to some browsers.
+				
+				
+				
+				
+				
 				stream.WriteRaw(`\u00`)
 				stream.writeTwoBytes(hex[b>>4], hex[b&0xF])
 			}
@@ -282,13 +282,13 @@ func writeStringSlowPathWithHTMLEscaped(stream *Stream, i int, s string, valLen 
 			start = i
 			continue
 		}
-		// U+2028 is LINE SEPARATOR.
-		// U+2029 is PARAGRAPH SEPARATOR.
-		// They are both technically valid characters in JSON strings,
-		// but don't work in JSONP, which has to be evaluated as JavaScript,
-		// and can lead to security holes there. It is valid JSON to
-		// escape them, so we do so unconditionally.
-		// See http://timelessrepo.com/json-isnt-a-javascript-subset for discussion.
+		
+		
+		
+		
+		
+		
+		
 		if c == '\u2028' || c == '\u2029' {
 			if start < i {
 				stream.WriteRaw(s[start:i])
@@ -307,11 +307,11 @@ func writeStringSlowPathWithHTMLEscaped(stream *Stream, i int, s string, valLen 
 	stream.writeByte('"')
 }
 
-// WriteString write string to stream without html escape
+
 func (stream *Stream) WriteString(s string) {
 	valLen := len(s)
 	stream.buf = append(stream.buf, '"')
-	// write string, the fast path, without utf8 and escape support
+	
 	i := 0
 	for ; i < valLen; i++ {
 		c := s[i]
@@ -330,7 +330,7 @@ func (stream *Stream) WriteString(s string) {
 
 func writeStringSlowPath(stream *Stream, i int, s string, valLen int) {
 	start := i
-	// for the remaining parts, we process them char by char
+	
 	for i < valLen {
 		if b := s[i]; b < utf8.RuneSelf {
 			if safeSet[b] {
@@ -350,11 +350,11 @@ func writeStringSlowPath(stream *Stream, i int, s string, valLen int) {
 			case '\t':
 				stream.writeTwoBytes('\\', 't')
 			default:
-				// This encodes bytes < 0x20 except for \t, \n and \r.
-				// If escapeHTML is set, it also escapes <, >, and &
-				// because they can lead to security holes when
-				// user-controlled strings are rendered into JSON
-				// and served to some browsers.
+				
+				
+				
+				
+				
 				stream.WriteRaw(`\u00`)
 				stream.writeTwoBytes(hex[b>>4], hex[b&0xF])
 			}

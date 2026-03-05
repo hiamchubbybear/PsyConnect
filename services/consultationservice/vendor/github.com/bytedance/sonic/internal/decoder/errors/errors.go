@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package errors
 
@@ -44,14 +30,14 @@ func (self SyntaxError) Description() string {
 }
 
 func (self SyntaxError) description() string {
-    /* check for empty source */
+    
     if self.Src == "" {
         return fmt.Sprintf("no sources available, the input json is empty: %#v", self)
     }
 
     p, x, q, y := calcBounds(len(self.Src), self.Pos)
 
-    /* compose the error description */
+    
     return fmt.Sprintf(
         "at index %d: %s\n\n\t%s\n\t%s^%s\n",
         self.Pos,
@@ -71,24 +57,24 @@ func calcBounds(size int, pos int) (lbound int, lwidth int, rbound int, rwidth i
     lbound = pos - i
     rbound = pos + i
 
-    /* prevent slicing before the beginning */
+    
     if lbound < 0 {
         lbound, rbound, i = 0, rbound - lbound, i + lbound
     }
 
-    /* prevent slicing beyond the end */
+    
     if n := size; rbound > n {
         n = rbound - n
         rbound = size
 
-        /* move the left bound if possible */
+        
         if lbound > n {
             i += n
             lbound -= n
         }
     }
 
-    /* left and right length */
+    
     lwidth = clamp_zero(i)
     rwidth = clamp_zero(rbound - lbound - i - 1)
 
@@ -110,7 +96,7 @@ func clamp_zero(v int) int {
     }
 }
 
-/** JIT Error Helpers **/
+
 
 var StackOverflow = &json.UnsupportedValueError {
     Str   : "Value nesting too deep",

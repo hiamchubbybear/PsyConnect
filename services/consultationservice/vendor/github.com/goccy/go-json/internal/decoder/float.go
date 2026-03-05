@@ -57,7 +57,7 @@ func floatBytes(s *Stream) []byte {
 			continue
 		} else if s.char() == nul {
 			if s.read() {
-				s.cursor-- // for retry current character
+				s.cursor-- 
 				continue
 			}
 		}

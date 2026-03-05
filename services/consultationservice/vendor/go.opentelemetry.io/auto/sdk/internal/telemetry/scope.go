@@ -1,5 +1,5 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
+
+
 
 package telemetry
 
@@ -11,7 +11,7 @@ import (
 	"io"
 )
 
-// Scope is the identifying values of the instrumentation scope.
+
 type Scope struct {
 	Name         string `json:"name,omitempty"`
 	Version      string `json:"version,omitempty"`
@@ -19,7 +19,7 @@ type Scope struct {
 	DroppedAttrs uint32 `json:"droppedAttributesCount,omitempty"`
 }
 
-// UnmarshalJSON decodes the OTLP formatted JSON contained in data into r.
+
 func (s *Scope) UnmarshalJSON(data []byte) error {
 	decoder := json.NewDecoder(bytes.NewReader(data))
 
@@ -35,7 +35,7 @@ func (s *Scope) UnmarshalJSON(data []byte) error {
 		keyIface, err := decoder.Token()
 		if err != nil {
 			if errors.Is(err, io.EOF) {
-				// Empty.
+				
 				return nil
 			}
 			return err
@@ -56,7 +56,7 @@ func (s *Scope) UnmarshalJSON(data []byte) error {
 		case "droppedAttributesCount", "dropped_attributes_count":
 			err = decoder.Decode(&s.DroppedAttrs)
 		default:
-			// Skip unknown.
+			
 		}
 
 		if err != nil {

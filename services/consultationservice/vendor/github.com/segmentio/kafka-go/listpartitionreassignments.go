@@ -8,55 +8,55 @@ import (
 	"github.com/segmentio/kafka-go/protocol/listpartitionreassignments"
 )
 
-// ListPartitionReassignmentsRequest is a request to the ListPartitionReassignments API.
+
 type ListPartitionReassignmentsRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// Topics we want reassignments for, mapped by their name, or nil to list everything.
+	
 	Topics map[string]ListPartitionReassignmentsRequestTopic
 
-	// Timeout is the amount of time to wait for the request to complete.
+	
 	Timeout time.Duration
 }
 
-// ListPartitionReassignmentsRequestTopic contains the requested partitions for a single
-// topic.
+
+
 type ListPartitionReassignmentsRequestTopic struct {
-	// The partitions to list partition reassignments for.
+	
 	PartitionIndexes []int
 }
 
-// ListPartitionReassignmentsResponse is a response from the ListPartitionReassignments API.
+
 type ListPartitionReassignmentsResponse struct {
-	// Error is set to a non-nil value including the code and message if a top-level
-	// error was encountered.
+	
+	
 	Error error
 
-	// Topics contains results for each topic, mapped by their name.
+	
 	Topics map[string]ListPartitionReassignmentsResponseTopic
 }
 
-// ListPartitionReassignmentsResponseTopic contains the detailed result of
-// ongoing reassignments for a topic.
+
+
 type ListPartitionReassignmentsResponseTopic struct {
-	// Partitions contains result for topic partitions.
+	
 	Partitions []ListPartitionReassignmentsResponsePartition
 }
 
-// ListPartitionReassignmentsResponsePartition contains the detailed result of
-// ongoing reassignments for a single partition.
+
+
 type ListPartitionReassignmentsResponsePartition struct {
-	// PartitionIndex contains index of the partition.
+	
 	PartitionIndex int
 
-	// Replicas contains the current replica set.
+	
 	Replicas []int
 
-	// AddingReplicas contains the set of replicas we are currently adding.
+	
 	AddingReplicas []int
 
-	// RemovingReplicas contains the set of replicas we are currently removing.
+	
 	RemovingReplicas []int
 }
 

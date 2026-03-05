@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-// pointerCoderFuncs is a set of pointer encoding functions.
+
 type pointerCoderFuncs struct {
 	mi        *MessageInfo
 	size      func(p pointer, f *coderFieldInfo, opts marshalOptions) int
@@ -23,7 +23,7 @@ type pointerCoderFuncs struct {
 	merge     func(dst, src pointer, f *coderFieldInfo, opts mergeOptions)
 }
 
-// valueCoderFuncs is a set of protoreflect.Value encoding functions.
+
 type valueCoderFuncs struct {
 	size      func(v protoreflect.Value, tagsize int, opts marshalOptions) int
 	marshal   func(b []byte, v protoreflect.Value, wiretag uint64, opts marshalOptions) ([]byte, error)
@@ -32,14 +32,14 @@ type valueCoderFuncs struct {
 	merge     func(dst, src protoreflect.Value, opts mergeOptions) protoreflect.Value
 }
 
-// fieldCoder returns pointer functions for a field, used for operating on
-// struct fields.
+
+
 func fieldCoder(fd protoreflect.FieldDescriptor, ft reflect.Type) (*MessageInfo, pointerCoderFuncs) {
 	switch {
 	case fd.IsMap():
 		return encoderFuncsForMap(fd, ft)
 	case fd.Cardinality() == protoreflect.Repeated && !fd.IsPacked():
-		// Repeated fields (not packed).
+		
 		if ft.Kind() != reflect.Slice {
 			break
 		}
@@ -127,10 +127,10 @@ func fieldCoder(fd protoreflect.FieldDescriptor, ft reflect.Type) (*MessageInfo,
 			return getMessageInfo(ft), makeGroupSliceFieldCoder(fd, ft)
 		}
 	case fd.Cardinality() == protoreflect.Repeated && fd.IsPacked():
-		// Packed repeated fields.
-		//
-		// Only repeated fields of primitive numeric types
-		// (Varint, Fixed32, or Fixed64 wire type) can be packed.
+		
+		
+		
+		
 		if ft.Kind() != reflect.Slice {
 			break
 		}
@@ -198,8 +198,8 @@ func fieldCoder(fd protoreflect.FieldDescriptor, ft reflect.Type) (*MessageInfo,
 	case fd.Kind() == protoreflect.GroupKind:
 		return getMessageInfo(ft), makeGroupFieldCoder(fd, ft)
 	case !fd.HasPresence() && fd.ContainingOneof() == nil:
-		// Populated oneof fields always encode even if set to the zero value,
-		// which normally are not encoded in proto3.
+		
+		
 		switch fd.Kind() {
 		case protoreflect.BoolKind:
 			if ft.Kind() == reflect.Bool {
@@ -432,8 +432,8 @@ func fieldCoder(fd protoreflect.FieldDescriptor, ft reflect.Type) (*MessageInfo,
 	panic(fmt.Sprintf("invalid type: no encoder for %v %v %v/%v", fd.FullName(), fd.Cardinality(), fd.Kind(), ft))
 }
 
-// encoderFuncsForValue returns value functions for a field, used for
-// extension values and map encoding.
+
+
 func encoderFuncsForValue(fd protoreflect.FieldDescriptor) valueCoderFuncs {
 	switch {
 	case fd.Cardinality() == protoreflect.Repeated && !fd.IsPacked():
@@ -467,9 +467,9 @@ func encoderFuncsForValue(fd protoreflect.FieldDescriptor) valueCoderFuncs {
 		case protoreflect.DoubleKind:
 			return coderDoubleSliceValue
 		case protoreflect.StringKind:
-			// We don't have a UTF-8 validating coder for repeated string fields.
-			// Value coders are used for extensions and maps.
-			// Extensions are never proto3, and maps never contain lists.
+			
+			
+			
 			return coderStringSliceValue
 		case protoreflect.BytesKind:
 			return coderBytesSliceValue

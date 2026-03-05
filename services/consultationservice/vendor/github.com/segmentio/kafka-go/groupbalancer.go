@@ -4,51 +4,51 @@ import (
 	"sort"
 )
 
-// GroupMember describes a single participant in a consumer group.
+
 type GroupMember struct {
-	// ID is the unique ID for this member as taken from the JoinGroup response.
+	
 	ID string
 
-	// Topics is a list of topics that this member is consuming.
+	
 	Topics []string
 
-	// UserData contains any information that the GroupBalancer sent to the
-	// consumer group coordinator.
+	
+	
 	UserData []byte
 }
 
-// GroupMemberAssignments holds MemberID => topic => partitions.
+
 type GroupMemberAssignments map[string]map[string][]int
 
-// GroupBalancer encapsulates the client side rebalancing logic.
+
 type GroupBalancer interface {
-	// ProtocolName of the GroupBalancer
+	
 	ProtocolName() string
 
-	// UserData provides the GroupBalancer an opportunity to embed custom
-	// UserData into the metadata.
-	//
-	// Will be used by JoinGroup to begin the consumer group handshake.
-	//
-	// See https://cwiki.apache.org/confluence/display/KAFKA/A+Guide+To+The+Kafka+Protocol#AGuideToTheKafkaProtocol-JoinGroupRequest
+	
+	
+	
+	
+	
+	
 	UserData() ([]byte, error)
 
-	// DefineMemberships returns which members will be consuming
-	// which topic partitions
+	
+	
 	AssignGroups(members []GroupMember, partitions []Partition) GroupMemberAssignments
 }
 
-// RangeGroupBalancer groups consumers by partition
-//
-// Example: 5 partitions, 2 consumers
-// 		C0: [0, 1, 2]
-// 		C1: [3, 4]
-//
-// Example: 6 partitions, 3 consumers
-// 		C0: [0, 1]
-// 		C1: [2, 3]
-// 		C2: [4, 5]
-//
+
+
+
+
+
+
+
+
+
+
+
 type RangeGroupBalancer struct{}
 
 func (r RangeGroupBalancer) ProtocolName() string {
@@ -89,17 +89,17 @@ func (r RangeGroupBalancer) AssignGroups(members []GroupMember, topicPartitions 
 	return groupAssignments
 }
 
-// RoundrobinGroupBalancer divides partitions evenly among consumers
-//
-// Example: 5 partitions, 2 consumers
-// 		C0: [0, 2, 4]
-// 		C1: [1, 3]
-//
-// Example: 6 partitions, 3 consumers
-// 		C0: [0, 3]
-// 		C1: [1, 4]
-// 		C2: [2, 5]
-//
+
+
+
+
+
+
+
+
+
+
+
 type RoundRobinGroupBalancer struct{}
 
 func (r RoundRobinGroupBalancer) ProtocolName() string {
@@ -135,25 +135,25 @@ func (r RoundRobinGroupBalancer) AssignGroups(members []GroupMember, topicPartit
 	return groupAssignments
 }
 
-// RackAffinityGroupBalancer makes a best effort to pair up consumers with
-// partitions whose leader is in the same rack.  This strategy can have
-// performance benefits by minimizing round trip latency between the consumer
-// and the broker.  In environments where network traffic across racks incurs
-// charges (such as cross AZ data transfer in AWS), this strategy is also a cost
-// optimization measure because it keeps network traffic within the local rack
-// where possible.
-//
-// The primary objective is to spread partitions evenly across consumers with a
-// secondary focus on maximizing the number of partitions where the leader and
-// the consumer are in the same rack.  For best affinity, it's recommended to
-// have a balanced spread of consumers and partition leaders across racks.
-//
-// This balancer requires Kafka version 0.10.0.0+ or later.  Earlier versions do
-// not return the brokers' racks in the metadata request.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type RackAffinityGroupBalancer struct {
-	// Rack is the name of the rack where this consumer is running.  It will be
-	// communicated to the consumer group leader via the UserData so that
-	// assignments can be made with affinity to the partition leader.
+	
+	
+	
 	Rack string
 }
 
@@ -210,17 +210,17 @@ func (r *RackAffinityGroupBalancer) assignTopic(members []GroupMember, partition
 	remainder := len(partitions) % len(members)
 	assignments := make(map[string][]int)
 
-	// assign as many as possible in zone.  this will assign up to partsPerMember
-	// to each consumer.  it will also prefer to allocate remainder partitions
-	// in zone if possible.
+	
+	
+	
 	for zone, parts := range zonedPartitions {
 		consumers := zonedConsumers[zone]
 		if len(consumers) == 0 {
 			continue
 		}
 
-		// don't over-allocate.  cap partition assignments at the calculated
-		// target.
+		
+		
 		partsPerMember := len(parts) / len(consumers)
 		if partsPerMember > targetPerMember {
 			partsPerMember = targetPerMember
@@ -231,9 +231,9 @@ func (r *RackAffinityGroupBalancer) assignTopic(members []GroupMember, partition
 			parts = parts[partsPerMember:]
 		}
 
-		// if we had enough partitions for each consumer in this zone to hit its
-		// target, attempt to use any leftover partitions to satisfy the total
-		// remainder by adding at most 1 partition per consumer.
+		
+		
+		
 		leftover := len(parts)
 		if partsPerMember == targetPerMember {
 			if leftover > remainder {
@@ -245,9 +245,9 @@ func (r *RackAffinityGroupBalancer) assignTopic(members []GroupMember, partition
 			remainder -= leftover
 		}
 
-		// this loop covers the case where we're assigning extra partitions or
-		// if there weren't enough to satisfy the targetPerMember and the zoned
-		// partitions didn't divide evenly.
+		
+		
+		
 		for i := 0; i < leftover; i++ {
 			assignments[consumers[i]] = append(assignments[consumers[i]], parts[i])
 		}
@@ -260,7 +260,7 @@ func (r *RackAffinityGroupBalancer) assignTopic(members []GroupMember, partition
 		}
 	}
 
-	// assign out remainders regardless of zone.
+	
 	var remaining []int
 	for _, partitions := range zonedPartitions {
 		remaining = append(remaining, partitions...)
@@ -269,9 +269,9 @@ func (r *RackAffinityGroupBalancer) assignTopic(members []GroupMember, partition
 	for _, member := range members {
 		assigned := assignments[member.ID]
 		delta := targetPerMember - len(assigned)
-		// if it were possible to assign the remainder in zone, it's been taken
-		// care of already.  now we will portion out any remainder to a member
-		// that can take it.
+		
+		
+		
 		if delta >= 0 && remainder > 0 {
 			delta++
 			remainder--
@@ -285,8 +285,8 @@ func (r *RackAffinityGroupBalancer) assignTopic(members []GroupMember, partition
 	return assignments
 }
 
-// findPartitions extracts the partition ids associated with the topic from the
-// list of Partitions provided.
+
+
 func findPartitions(topic string, partitions []Partition) []int {
 	var ids []int
 	for _, partition := range partitions {
@@ -297,7 +297,7 @@ func findPartitions(topic string, partitions []Partition) []int {
 	return ids
 }
 
-// findMembersByTopic groups the memberGroupMetadata by topic.
+
 func findMembersByTopic(members []GroupMember) map[string][]GroupMember {
 	membersByTopic := map[string][]GroupMember{}
 	for _, member := range members {
@@ -306,18 +306,18 @@ func findMembersByTopic(members []GroupMember) map[string][]GroupMember {
 		}
 	}
 
-	// normalize ordering of members to enabling grouping across topics by partitions
-	//
-	// Want:
-	// 		C0 [T0/P0, T1/P0]
-	// 		C1 [T0/P1, T1/P1]
-	//
-	// Not:
-	// 		C0 [T0/P0, T1/P1]
-	// 		C1 [T0/P1, T1/P0]
-	//
-	// Even though the later is still round robin, the partitions are crossed
-	//
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	for _, members := range membersByTopic {
 		sort.Slice(members, func(i, j int) bool {
 			return members[i].ID < members[j].ID
@@ -327,8 +327,8 @@ func findMembersByTopic(members []GroupMember) map[string][]GroupMember {
 	return membersByTopic
 }
 
-// findGroupBalancer returns the GroupBalancer with the specified protocolName
-// from the slice provided.
+
+
 func findGroupBalancer(protocolName string, balancers []GroupBalancer) (GroupBalancer, bool) {
 	for _, balancer := range balancers {
 		if balancer.ProtocolName() == protocolName {

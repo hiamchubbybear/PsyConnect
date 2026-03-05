@@ -1,4 +1,4 @@
-/* Reset + base */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,7 +10,7 @@ body {
   color: var(--color-text);
 }
 
-/* Page wrapper: center content + allow expand */
+
 .page-wrap {
   display: flex;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -18,10 +18,10 @@ body {
   padding: var(--spacing-2xl) 0;
 }
 
-/* Container: raised layer, shadow, flexible width */
+
 .container {
   width: 90%;
-  max-width: 1200px; /* full screen friendly */
+  max-width: 1200px; 
   min-height: 600px;
   background: var(--color-surface);
   border-radius: var(--border-radius-lg);
@@ -33,7 +33,7 @@ body {
   transition: all var(--transition-medium);
 }
 
-/* Header: spaced, elevated */
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -85,10 +85,10 @@ body {
   background: var(--color-surface);
 }
 
-/* Form: layered, wide columns */
+
 .form-grid {
   display: grid;
-  grid-template-columns: 180px 1fr; /* label + content */
+  grid-template-columns: 180px 1fr; 
   gap: var(--spacing-md) var(--spacing-2xl);
   align-items: start;
 }
@@ -108,7 +108,7 @@ body {
   margin-top: 4px;
 }
 
-/* Inputs: full width with padding */
+
 .input,
 .textarea {
   width: 100%;
@@ -126,7 +126,7 @@ body {
   resize: vertical;
 }
 
-/* Examples */
+
 .examples {
   margin-top: 10px;
   font-size: 14px;
@@ -134,7 +134,7 @@ body {
   text-align: right;
 }
 
-/* Toolbar */
+
 .toolbar {
   margin-top: 10px;
   display: flex;
@@ -159,7 +159,7 @@ body {
   cursor: pointer;
 }
 
-/* Upload */
+
 .upload-wrap {
   display: flex;
   justify-content: flex-end;
@@ -183,7 +183,7 @@ body {
   background: var(--color-surface-hover);
 }
 
-/* Anonymous toggle */
+
 .col-content .anon-pill {
   display: inline-flex;
   align-items: center;
@@ -200,7 +200,7 @@ body {
   font-weight: 500;
 }
 
-/* Responsive: mobile-friendly */
+
 @media (max-width: 900px) {
   .container {
     width: 95%;

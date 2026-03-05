@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -15,9 +15,9 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-// legacyEnumName returns the name of enums used in legacy code.
-// It is neither the protobuf full name nor the qualified Go name,
-// but rather an odd hybrid of both.
+
+
+
 func legacyEnumName(ed protoreflect.EnumDescriptor) string {
 	var protoPkg string
 	enumName := string(ed.FullName())
@@ -31,24 +31,24 @@ func legacyEnumName(ed protoreflect.EnumDescriptor) string {
 	return protoPkg + "." + strs.GoCamelCase(enumName)
 }
 
-// legacyWrapEnum wraps v as a protoreflect.Enum,
-// where v must be a int32 kind and not implement the v2 API already.
+
+
 func legacyWrapEnum(v reflect.Value) protoreflect.Enum {
 	et := legacyLoadEnumType(v.Type())
 	return et.New(protoreflect.EnumNumber(v.Int()))
 }
 
-var legacyEnumTypeCache sync.Map // map[reflect.Type]protoreflect.EnumType
+var legacyEnumTypeCache sync.Map 
 
-// legacyLoadEnumType dynamically loads a protoreflect.EnumType for t,
-// where t must be an int32 kind and not implement the v2 API already.
+
+
 func legacyLoadEnumType(t reflect.Type) protoreflect.EnumType {
-	// Fast-path: check if a EnumType is cached for this concrete type.
+	
 	if et, ok := legacyEnumTypeCache.Load(t); ok {
 		return et.(protoreflect.EnumType)
 	}
 
-	// Slow-path: derive enum descriptor and initialize EnumType.
+	
 	var et protoreflect.EnumType
 	ed := LegacyLoadEnumDesc(t)
 	et = &legacyEnumType{
@@ -64,7 +64,7 @@ func legacyLoadEnumType(t reflect.Type) protoreflect.EnumType {
 type legacyEnumType struct {
 	desc   protoreflect.EnumDescriptor
 	goType reflect.Type
-	m      sync.Map // map[protoreflect.EnumNumber]proto.Enum
+	m      sync.Map 
 }
 
 func (t *legacyEnumType) New(n protoreflect.EnumNumber) protoreflect.Enum {
@@ -108,19 +108,19 @@ var (
 	_ unwrapper         = (*legacyEnumWrapper)(nil)
 )
 
-var legacyEnumDescCache sync.Map // map[reflect.Type]protoreflect.EnumDescriptor
+var legacyEnumDescCache sync.Map 
 
-// LegacyLoadEnumDesc returns an EnumDescriptor derived from the Go type,
-// which must be an int32 kind and not implement the v2 API already.
-//
-// This is exported for testing purposes.
+
+
+
+
 func LegacyLoadEnumDesc(t reflect.Type) protoreflect.EnumDescriptor {
-	// Fast-path: check if an EnumDescriptor is cached for this concrete type.
+	
 	if ed, ok := legacyEnumDescCache.Load(t); ok {
 		return ed.(protoreflect.EnumDescriptor)
 	}
 
-	// Slow-path: initialize EnumDescriptor from the raw descriptor.
+	
 	ev := reflect.Zero(t).Interface()
 	if _, ok := ev.(protoreflect.Enum); ok {
 		panic(fmt.Sprintf("%v already implements proto.Enum", t))
@@ -147,39 +147,39 @@ func LegacyLoadEnumDesc(t reflect.Type) protoreflect.EnumDescriptor {
 	return ed
 }
 
-var aberrantEnumDescCache sync.Map // map[reflect.Type]protoreflect.EnumDescriptor
+var aberrantEnumDescCache sync.Map 
 
-// aberrantLoadEnumDesc returns an EnumDescriptor derived from the Go type,
-// which must not implement protoreflect.Enum or enumV1.
-//
-// If the type does not implement enumV1, then there is no reliable
-// way to derive the original protobuf type information.
-// We are unable to use the global enum registry since it is
-// unfortunately keyed by the protobuf full name, which we also do not know.
-// Thus, this produces some bogus enum descriptor based on the Go type name.
+
+
+
+
+
+
+
+
 func aberrantLoadEnumDesc(t reflect.Type) protoreflect.EnumDescriptor {
-	// Fast-path: check if an EnumDescriptor is cached for this concrete type.
+	
 	if ed, ok := aberrantEnumDescCache.Load(t); ok {
 		return ed.(protoreflect.EnumDescriptor)
 	}
 
-	// Slow-path: construct a bogus, but unique EnumDescriptor.
+	
 	ed := &filedesc.Enum{L2: new(filedesc.EnumL2)}
-	ed.L0.FullName = AberrantDeriveFullName(t) // e.g., github_com.user.repo.MyEnum
+	ed.L0.FullName = AberrantDeriveFullName(t) 
 	ed.L0.ParentFile = filedesc.SurrogateProto3
 	ed.L1.EditionFeatures = ed.L0.ParentFile.L1.EditionFeatures
 	ed.L2.Values.List = append(ed.L2.Values.List, filedesc.EnumValue{})
 
-	// TODO: Use the presence of a UnmarshalJSON method to determine proto2?
+	
 
 	vd := &ed.L2.Values.List[0]
-	vd.L0.FullName = ed.L0.FullName + "_UNKNOWN" // e.g., github_com.user.repo.MyEnum_UNKNOWN
+	vd.L0.FullName = ed.L0.FullName + "_UNKNOWN" 
 	vd.L0.ParentFile = ed.L0.ParentFile
 	vd.L0.Parent = ed
 
-	// TODO: We could use the String method to obtain some enum value names by
-	// starting at 0 and print the enum until it produces invalid identifiers.
-	// An exhaustive query is clearly impractical, but can be best-effort.
+	
+	
+	
 
 	if ed, ok := aberrantEnumDescCache.LoadOrStore(t, ed); ok {
 		return ed.(protoreflect.EnumDescriptor)
@@ -187,11 +187,11 @@ func aberrantLoadEnumDesc(t reflect.Type) protoreflect.EnumDescriptor {
 	return ed
 }
 
-// AberrantDeriveFullName derives a fully qualified protobuf name for the given Go type
-// The provided name is not guaranteed to be stable nor universally unique.
-// It should be sufficiently unique within a program.
-//
-// This is exported for testing purposes.
+
+
+
+
+
 func AberrantDeriveFullName(t reflect.Type) protoreflect.FullName {
 	sanitize := func(r rune) rune {
 		switch {

@@ -3,7 +3,7 @@
 
 package cpuinfo
 
-// go:noescape
+
 func x86extensions() (bmi1, bmi2 bool)
 
 func init() {

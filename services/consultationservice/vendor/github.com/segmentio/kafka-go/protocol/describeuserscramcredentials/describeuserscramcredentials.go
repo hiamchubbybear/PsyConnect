@@ -7,8 +7,8 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	Users []RequestUser `kafka:"min=v0,max=v0"`
@@ -21,16 +21,16 @@ func (r *Request) Broker(cluster protocol.Cluster) (protocol.Broker, error) {
 }
 
 type RequestUser struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	Name string `kafka:"min=v0,max=v0,compact"`
 }
 
 type Response struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	ThrottleTimeMs int32            `kafka:"min=v0,max=v0"`
@@ -42,8 +42,8 @@ type Response struct {
 func (r *Response) ApiKey() protocol.ApiKey { return protocol.DescribeUserScramCredentials }
 
 type ResponseResult struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	User            string           `kafka:"min=v0,max=v0,compact"`
@@ -53,8 +53,8 @@ type ResponseResult struct {
 }
 
 type CredentialInfo struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v0,max=v0,tag"`
 
 	Mechanism  int8  `kafka:"min=v0,max=v0"`

@@ -17,8 +17,8 @@ import (
 	"github.com/redis/go-redis/v9/internal/util"
 )
 
-// keylessCommands contains Redis commands that have empty key specifications (9th slot empty)
-// Only includes core Redis commands, excludes FT.*, ts.*, timeseries.*, search.* and subcommands
+
+
 var keylessCommands = map[string]struct{}{
 	"acl":          {},
 	"asking":       {},
@@ -67,20 +67,20 @@ var keylessCommands = map[string]struct{}{
 }
 
 type Cmder interface {
-	// command name.
-	// e.g. "set k v ex 10" -> "set", "cluster info" -> "cluster".
+	
+	
 	Name() string
 
-	// full command name.
-	// e.g. "set k v ex 10" -> "set", "cluster info" -> "cluster info".
+	
+	
 	FullName() string
 
-	// all args of the command.
-	// e.g. "set k v ex 10" -> "[set k v ex 10]".
+	
+	
 	Args() []interface{}
 
-	// format request and response string.
-	// e.g. "set k v ex 10" -> "set k v ex 10: OK", "get k" -> "get k: v".
+	
+	
 	String() string
 
 	stringArg(int) string
@@ -124,9 +124,9 @@ func writeCmd(wr *proto.Writer, cmd Cmder) error {
 	return wr.WriteArgs(cmd.Args())
 }
 
-// cmdFirstKeyPos returns the position of the first key in the command's arguments.
-// If the command does not have a key, it returns 0.
-// TODO: Use the data in CommandInfo to determine the first key position.
+
+
+
 func cmdFirstKeyPos(cmd Cmder) int {
 	if pos := cmd.firstKeyPos(); pos != 0 {
 		return int(pos)
@@ -134,7 +134,7 @@ func cmdFirstKeyPos(cmd Cmder) int {
 
 	name := cmd.Name()
 
-	// first check if the command is keyless
+	
 	if _, ok := keylessCommands[name]; ok {
 		return 0
 	}
@@ -149,7 +149,7 @@ func cmdFirstKeyPos(cmd Cmder) int {
 	case "publish":
 		return 1
 	case "memory":
-		// https://github.com/redis/redis/issues/7493
+		
 		if cmd.stringArg(1) == "usage" {
 			return 2
 		}
@@ -178,7 +178,7 @@ func cmdString(cmd Cmder, val interface{}) string {
 	return util.BytesToString(b)
 }
 
-//------------------------------------------------------------------------------
+
 
 type baseCmd struct {
 	ctx          context.Context
@@ -195,7 +195,7 @@ func (cmd *baseCmd) Name() string {
 	if len(cmd.args) == 0 {
 		return ""
 	}
-	// Cmd name must be lower cased.
+	
 	return internal.ToLower(cmd.stringArg(0))
 }
 
@@ -229,7 +229,7 @@ func (cmd *baseCmd) stringArg(pos int) string {
 	case []byte:
 		return string(v)
 	default:
-		// TODO: consider using appendArg
+		
 		return fmt.Sprint(v)
 	}
 }
@@ -263,7 +263,7 @@ func (cmd *baseCmd) readRawReply(rd *proto.Reader) (err error) {
 	return err
 }
 
-//------------------------------------------------------------------------------
+
 
 type Cmd struct {
 	baseCmd
@@ -548,7 +548,7 @@ func (cmd *Cmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
-//------------------------------------------------------------------------------
+
 
 type SliceCmd struct {
 	baseCmd
@@ -583,20 +583,20 @@ func (cmd *SliceCmd) String() string {
 	return cmdString(cmd, cmd.val)
 }
 
-// Scan scans the results from the map into a destination struct. The map keys
-// are matched in the Redis struct fields by the `redis:"field"` tag.
+
+
 func (cmd *SliceCmd) Scan(dst interface{}) error {
 	if cmd.err != nil {
 		return cmd.err
 	}
 
-	// Pass the list of keys and values.
-	// Skip the first two args for: HMGET key
+	
+	
 	var args []interface{}
 	if cmd.args[0] == "hmget" {
 		args = cmd.args[2:]
 	} else {
-		// Otherwise, it's: MGET field field ...
+		
 		args = cmd.args[1:]
 	}
 
@@ -608,7 +608,7 @@ func (cmd *SliceCmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
-//------------------------------------------------------------------------------
+
 
 type StatusCmd struct {
 	baseCmd
@@ -652,7 +652,7 @@ func (cmd *StatusCmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
-//------------------------------------------------------------------------------
+
 
 type IntCmd struct {
 	baseCmd
@@ -696,7 +696,7 @@ func (cmd *IntCmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
-//------------------------------------------------------------------------------
+
 
 type IntSliceCmd struct {
 	baseCmd
@@ -745,7 +745,7 @@ func (cmd *IntSliceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type DurationCmd struct {
 	baseCmd
@@ -788,8 +788,8 @@ func (cmd *DurationCmd) readReply(rd *proto.Reader) error {
 		return err
 	}
 	switch n {
-	// -2 if the key does not exist
-	// -1 if the key exists but has no associated expire
+	
+	
 	case -2, -1:
 		cmd.val = time.Duration(n)
 	default:
@@ -798,7 +798,7 @@ func (cmd *DurationCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type TimeCmd struct {
 	baseCmd
@@ -849,7 +849,7 @@ func (cmd *TimeCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type BoolCmd struct {
 	baseCmd
@@ -887,8 +887,8 @@ func (cmd *BoolCmd) String() string {
 func (cmd *BoolCmd) readReply(rd *proto.Reader) (err error) {
 	cmd.val, err = rd.ReadBool()
 
-	// `SET key value NX` returns nil when key already exists. But
-	// `SETNX key value` returns bool (0/1). So convert nil to bool.
+	
+	
 	if err == Nil {
 		cmd.val = false
 		err = nil
@@ -896,7 +896,7 @@ func (cmd *BoolCmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
-//------------------------------------------------------------------------------
+
 
 type StringCmd struct {
 	baseCmd
@@ -1000,7 +1000,7 @@ func (cmd *StringCmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
-//------------------------------------------------------------------------------
+
 
 type FloatCmd struct {
 	baseCmd
@@ -1040,7 +1040,7 @@ func (cmd *FloatCmd) readReply(rd *proto.Reader) (err error) {
 	return err
 }
 
-//------------------------------------------------------------------------------
+
 
 type FloatSliceCmd struct {
 	baseCmd
@@ -1095,7 +1095,7 @@ func (cmd *FloatSliceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type StringSliceCmd struct {
 	baseCmd
@@ -1153,7 +1153,7 @@ func (cmd *StringSliceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type KeyValue struct {
 	Key   string
@@ -1193,24 +1193,24 @@ func (cmd *KeyValueSliceCmd) String() string {
 	return cmdString(cmd, cmd.val)
 }
 
-// Many commands will respond to two formats:
-//  1. 1) "one"
-//  2. (double) 1
-//  2. 1) "two"
-//  2. (double) 2
-//
-// OR:
-//  1. "two"
-//  2. (double) 2
-//  3. "one"
-//  4. (double) 1
-func (cmd *KeyValueSliceCmd) readReply(rd *proto.Reader) error { // nolint:dupl
+
+
+
+
+
+
+
+
+
+
+
+func (cmd *KeyValueSliceCmd) readReply(rd *proto.Reader) error { 
 	n, err := rd.ReadArrayLen()
 	if err != nil {
 		return err
 	}
 
-	// If the n is 0, can't continue reading.
+	
 	if n == 0 {
 		cmd.val = make([]KeyValue, 0)
 		return nil
@@ -1247,7 +1247,7 @@ func (cmd *KeyValueSliceCmd) readReply(rd *proto.Reader) error { // nolint:dupl
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type BoolSliceCmd struct {
 	baseCmd
@@ -1296,7 +1296,7 @@ func (cmd *BoolSliceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type MapStringStringCmd struct {
 	baseCmd
@@ -1331,8 +1331,8 @@ func (cmd *MapStringStringCmd) String() string {
 	return cmdString(cmd, cmd.val)
 }
 
-// Scan scans the results from the map into a destination struct. The map keys
-// are matched in the Redis struct fields by the `redis:"field"` tag.
+
+
 func (cmd *MapStringStringCmd) Scan(dest interface{}) error {
 	if cmd.err != nil {
 		return cmd.err
@@ -1375,7 +1375,7 @@ func (cmd *MapStringStringCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type MapStringIntCmd struct {
 	baseCmd
@@ -1432,7 +1432,7 @@ func (cmd *MapStringIntCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// ------------------------------------------------------------------------------
+
 type MapStringSliceInterfaceCmd struct {
 	baseCmd
 	val map[string][]interface{}
@@ -1496,14 +1496,14 @@ func (cmd *MapStringSliceInterfaceCmd) readReply(rd *proto.Reader) (err error) {
 			}
 		}
 	case proto.RespArray:
-		// RESP2 response
+		
 		n, err := rd.ReadArrayLen()
 		if err != nil {
 			return err
 		}
 
 		for i := 0; i < n; i++ {
-			// Each entry in this array is itself an array with key details
+			
 			itemLen, err := rd.ReadArrayLen()
 			if err != nil {
 				return err
@@ -1515,7 +1515,7 @@ func (cmd *MapStringSliceInterfaceCmd) readReply(rd *proto.Reader) (err error) {
 			}
 			cmd.val[key] = make([]interface{}, 0, itemLen-1)
 			for j := 1; j < itemLen; j++ {
-				// Read the inner array for timestamp-value pairs
+				
 				data, err := rd.ReadReply()
 				if err != nil {
 					return err
@@ -1528,7 +1528,7 @@ func (cmd *MapStringSliceInterfaceCmd) readReply(rd *proto.Reader) (err error) {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type StringStructMapCmd struct {
 	baseCmd
@@ -1580,7 +1580,7 @@ func (cmd *StringStructMapCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XMessage struct {
 	ID     string
@@ -1686,7 +1686,7 @@ func stringInterfaceMapParser(rd *proto.Reader) (map[string]interface{}, error) 
 	return m, nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XStream struct {
 	Stream   string
@@ -1758,7 +1758,7 @@ func (cmd *XStreamSliceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XPending struct {
 	Count     int64
@@ -1841,7 +1841,7 @@ func (cmd *XPendingCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XPendingExt struct {
 	ID         string
@@ -1916,7 +1916,7 @@ func (cmd *XPendingExtCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XAutoClaimCmd struct {
 	baseCmd
@@ -1960,9 +1960,9 @@ func (cmd *XAutoClaimCmd) readReply(rd *proto.Reader) error {
 	}
 
 	switch n {
-	case 2, // Redis 6
-		3: // Redis 7:
-		// ok
+	case 2, 
+		3: 
+		
 	default:
 		return fmt.Errorf("redis: got %d elements in XAutoClaim reply, wanted 2/3", n)
 	}
@@ -1986,7 +1986,7 @@ func (cmd *XAutoClaimCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XAutoClaimJustIDCmd struct {
 	baseCmd
@@ -2030,9 +2030,9 @@ func (cmd *XAutoClaimJustIDCmd) readReply(rd *proto.Reader) error {
 	}
 
 	switch n {
-	case 2, // Redis 6
-		3: // Redis 7:
-		// ok
+	case 2, 
+		3: 
+		
 	default:
 		return fmt.Errorf("redis: got %d elements in XAutoClaimJustID reply, wanted 2/3", n)
 	}
@@ -2064,7 +2064,7 @@ func (cmd *XAutoClaimJustIDCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XInfoConsumersCmd struct {
 	baseCmd
@@ -2150,7 +2150,7 @@ func (cmd *XInfoConsumersCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XInfoGroupsCmd struct {
 	baseCmd
@@ -2163,8 +2163,8 @@ type XInfoGroup struct {
 	Pending         int64
 	LastDeliveredID string
 	EntriesRead     int64
-	// Lag represents the number of pending messages in the stream not yet
-	// delivered to this consumer group. Returns -1 when the lag cannot be determined.
+	
+	
 	Lag int64
 }
 
@@ -2246,9 +2246,9 @@ func (cmd *XInfoGroupsCmd) readReply(rd *proto.Reader) error {
 			case "lag":
 				group.Lag, err = rd.ReadInt()
 
-				// lag: the number of entries in the stream that are still waiting to be delivered
-				// to the group's consumers, or a NULL(Nil) when that number can't be determined.
-				// In that case, we return -1.
+				
+				
+				
 				if err != nil && err != Nil {
 					return err
 				} else if err == Nil {
@@ -2263,7 +2263,7 @@ func (cmd *XInfoGroupsCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XInfoStreamCmd struct {
 	baseCmd
@@ -2380,7 +2380,7 @@ func (cmd *XInfoStreamCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type XInfoStreamFullCmd struct {
 	baseCmd
@@ -2561,8 +2561,8 @@ func readStreamGroups(rd *proto.Reader) ([]XInfoStreamGroup, error) {
 					return nil, err
 				}
 			case "lag":
-				// lag: the number of entries in the stream that are still waiting to be delivered
-				// to the group's consumers, or a NULL(Nil) when that number can't be determined.
+				
+				
 				group.Lag, err = rd.ReadInt()
 				if err != nil && err != Nil {
 					return nil, err
@@ -2721,7 +2721,7 @@ func readXInfoStreamConsumers(rd *proto.Reader) ([]XInfoStreamConsumer, error) {
 	return consumers, nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type ZSliceCmd struct {
 	baseCmd
@@ -2756,13 +2756,13 @@ func (cmd *ZSliceCmd) String() string {
 	return cmdString(cmd, cmd.val)
 }
 
-func (cmd *ZSliceCmd) readReply(rd *proto.Reader) error { // nolint:dupl
+func (cmd *ZSliceCmd) readReply(rd *proto.Reader) error { 
 	n, err := rd.ReadArrayLen()
 	if err != nil {
 		return err
 	}
 
-	// If the n is 0, can't continue reading.
+	
 	if n == 0 {
 		cmd.val = make([]Z, 0)
 		return nil
@@ -2799,7 +2799,7 @@ func (cmd *ZSliceCmd) readReply(rd *proto.Reader) error { // nolint:dupl
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type ZWithKeyCmd struct {
 	baseCmd
@@ -2853,7 +2853,7 @@ func (cmd *ZWithKeyCmd) readReply(rd *proto.Reader) (err error) {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type ScanCmd struct {
 	baseCmd
@@ -2918,14 +2918,14 @@ func (cmd *ScanCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// Iterator creates a new ScanIterator.
+
 func (cmd *ScanCmd) Iterator() *ScanIterator {
 	return &ScanIterator{
 		cmd: cmd,
 	}
 }
 
-//------------------------------------------------------------------------------
+
 
 type ClusterNode struct {
 	ID                 string
@@ -2998,7 +2998,7 @@ func (cmd *ClusterSlotsCmd) readReply(rd *proto.Reader) error {
 			return err
 		}
 
-		// subtract start and end.
+		
 		nodes := make([]ClusterNode, n-2)
 
 		for j := 0; j < len(nodes); j++ {
@@ -3064,30 +3064,30 @@ func (cmd *ClusterSlotsCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
 
-// GeoLocation is used with GeoAdd to add geospatial location.
+
+
 type GeoLocation struct {
 	Name                      string
 	Longitude, Latitude, Dist float64
 	GeoHash                   int64
 }
 
-// GeoRadiusQuery is used with GeoRadius to query geospatial index.
+
 type GeoRadiusQuery struct {
 	Radius float64
-	// Can be m, km, ft, or mi. Default is km.
+	
 	Unit        string
 	WithCoord   bool
 	WithDist    bool
 	WithGeoHash bool
 	Count       int
-	// Can be ASC or DESC. Default is no sort order.
+	
 	Sort      string
 	Store     string
 	StoreDist string
 
-	// WithCoord+WithDist+WithGeoHash
+	
 	withLen int
 }
 
@@ -3170,7 +3170,7 @@ func (cmd *GeoLocationCmd) readReply(rd *proto.Reader) error {
 	cmd.locations = make([]GeoLocation, n)
 
 	for i := 0; i < len(cmd.locations); i++ {
-		// only name
+		
 		if cmd.q.withLen == 0 {
 			if cmd.locations[i].Name, err = rd.ReadString(); err != nil {
 				return err
@@ -3178,7 +3178,7 @@ func (cmd *GeoLocationCmd) readReply(rd *proto.Reader) error {
 			continue
 		}
 
-		// +name
+		
 		if err = rd.ReadFixedArrayLen(cmd.q.withLen + 1); err != nil {
 			return err
 		}
@@ -3212,28 +3212,28 @@ func (cmd *GeoLocationCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
 
-// GeoSearchQuery is used for GEOSearch/GEOSearchStore command query.
+
+
 type GeoSearchQuery struct {
 	Member string
 
-	// Latitude and Longitude when using FromLonLat option.
+	
 	Longitude float64
 	Latitude  float64
 
-	// Distance and unit when using ByRadius option.
-	// Can use m, km, ft, or mi. Default is km.
+	
+	
 	Radius     float64
 	RadiusUnit string
 
-	// Height, width and unit when using ByBox option.
-	// Can be m, km, ft, or mi. Default is km.
+	
+	
 	BoxWidth  float64
 	BoxHeight float64
 	BoxUnit   string
 
-	// Can be ASC or DESC. Default is no sort order.
+	
 	Sort     string
 	Count    int
 	CountAny bool
@@ -3250,9 +3250,9 @@ type GeoSearchLocationQuery struct {
 type GeoSearchStoreQuery struct {
 	GeoSearchQuery
 
-	// When using the StoreDist option, the command stores the items in a
-	// sorted set populated with their distance from the center of the circle or box,
-	// as a floating-point number, in the same unit specified for that shape.
+	
+	
+	
 	StoreDist bool
 }
 
@@ -3393,7 +3393,7 @@ func (cmd *GeoSearchLocationCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type GeoPos struct {
 	Longitude, Latitude float64
@@ -3467,7 +3467,7 @@ func (cmd *GeoPosCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type CommandInfo struct {
 	Name        string
@@ -3532,7 +3532,7 @@ func (cmd *CommandsInfoCmd) readReply(rd *proto.Reader) error {
 
 		switch nn {
 		case numArgRedis5, numArgRedis6, numArgRedis7:
-			// ok
+			
 		default:
 			return fmt.Errorf("redis: got %d elements in COMMAND reply, wanted 6/7/10", nn)
 		}
@@ -3621,7 +3621,7 @@ func (cmd *CommandsInfoCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type cmdsInfoCache struct {
 	fn func(ctx context.Context) (map[string]*CommandInfo, error)
@@ -3645,7 +3645,7 @@ func (c *cmdsInfoCache) Get(ctx context.Context) (map[string]*CommandInfo, error
 
 		lowerCmds := make(map[string]*CommandInfo, len(cmds))
 
-		// Extensions have cmd names in upper case. Convert them to lower case.
+		
 		for k, v := range cmds {
 			lowerCmds[internal.ToLower(k)] = v
 		}
@@ -3656,15 +3656,15 @@ func (c *cmdsInfoCache) Get(ctx context.Context) (map[string]*CommandInfo, error
 	return c.cmds, err
 }
 
-//------------------------------------------------------------------------------
+
 
 type SlowLog struct {
 	ID       int64
 	Time     time.Time
 	Duration time.Duration
 	Args     []string
-	// These are also optional fields emitted only by Redis 4.0 or greater:
-	// https://redis.io/commands/slowlog#output-format
+	
+	
 	ClientAddr string
 	ClientName string
 }
@@ -3766,7 +3766,7 @@ func (cmd *SlowLogCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//-----------------------------------------------------------------------
+
 
 type MapStringInterfaceCmd struct {
 	baseCmd
@@ -3830,7 +3830,7 @@ func (cmd *MapStringInterfaceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//-----------------------------------------------------------------------
+
 
 type MapStringStringSliceCmd struct {
 	baseCmd
@@ -3894,9 +3894,9 @@ func (cmd *MapStringStringSliceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// -----------------------------------------------------------------------
 
-// MapMapStringInterfaceCmd represents a command that returns a map of strings to interface{}.
+
+
 type MapMapStringInterfaceCmd struct {
 	baseCmd
 	val map[string]interface{}
@@ -3927,7 +3927,7 @@ func (cmd *MapMapStringInterfaceCmd) Val() map[string]interface{} {
 	return cmd.val
 }
 
-// readReply will try to parse the reply from the proto.Reader for both resp2 and resp3
+
 func (cmd *MapMapStringInterfaceCmd) readReply(rd *proto.Reader) (err error) {
 	data, err := rd.ReadReply()
 	if err != nil {
@@ -3936,7 +3936,7 @@ func (cmd *MapMapStringInterfaceCmd) readReply(rd *proto.Reader) (err error) {
 	resultMap := map[string]interface{}{}
 
 	switch midResponse := data.(type) {
-	case map[interface{}]interface{}: // resp3 will return map
+	case map[interface{}]interface{}: 
 		for k, v := range midResponse {
 			stringKey, ok := k.(string)
 			if !ok {
@@ -3944,24 +3944,24 @@ func (cmd *MapMapStringInterfaceCmd) readReply(rd *proto.Reader) (err error) {
 			}
 			resultMap[stringKey] = v
 		}
-	case []interface{}: // resp2 will return array of arrays
+	case []interface{}: 
 		n := len(midResponse)
 		for i := 0; i < n; i++ {
-			finalArr, ok := midResponse[i].([]interface{}) // final array that we need to transform to map
+			finalArr, ok := midResponse[i].([]interface{}) 
 			if !ok {
 				return fmt.Errorf("redis: unexpected response %#v", data)
 			}
 			m := len(finalArr)
-			if m%2 != 0 { // since this should be map, keys should be even number
+			if m%2 != 0 { 
 				return fmt.Errorf("redis: unexpected response %#v", data)
 			}
 
 			for j := 0; j < m; j += 2 {
-				stringKey, ok := finalArr[j].(string) // the first one
+				stringKey, ok := finalArr[j].(string) 
 				if !ok {
 					return fmt.Errorf("redis: invalid map key %#v", finalArr[i])
 				}
-				resultMap[stringKey] = finalArr[j+1] // second one is value
+				resultMap[stringKey] = finalArr[j+1] 
 			}
 		}
 	default:
@@ -3972,7 +3972,7 @@ func (cmd *MapMapStringInterfaceCmd) readReply(rd *proto.Reader) (err error) {
 	return nil
 }
 
-//-----------------------------------------------------------------------
+
 
 type MapStringInterfaceSliceCmd struct {
 	baseCmd
@@ -4037,7 +4037,7 @@ func (cmd *MapStringInterfaceSliceCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type KeyValuesCmd struct {
 	baseCmd
@@ -4099,7 +4099,7 @@ func (cmd *KeyValuesCmd) readReply(rd *proto.Reader) (err error) {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type ZSliceWithKeyCmd struct {
 	baseCmd
@@ -4312,7 +4312,7 @@ func (cmd *FunctionListCmd) readFunctions(rd *proto.Reader) ([]Function, error) 
 					return nil, err
 				}
 			case "flags":
-				// resp set
+				
 				nx, err := rd.ReadArrayLen()
 				if err != nil {
 					return nil, err
@@ -4334,16 +4334,16 @@ func (cmd *FunctionListCmd) readFunctions(rd *proto.Reader) ([]Function, error) 
 	return functions, nil
 }
 
-// FunctionStats contains information about the scripts currently executing on the server, and the available engines
-//   - Engines:
-//     Statistics about the engine like number of functions and number of libraries
-//   - RunningScript:
-//     The script currently running on the shard we're connecting to.
-//     For Redis Enterprise and Redis Cloud, this represents the
-//     function with the longest running time, across all the running functions, on all shards
-//   - RunningScripts
-//     All scripts currently running in a Redis Enterprise clustered database.
-//     Only available on Redis Enterprise
+
+
+
+
+
+
+
+
+
+
 type FunctionStats struct {
 	Engines   []Engine
 	isRunning bool
@@ -4359,8 +4359,8 @@ func (fs *FunctionStats) RunningScript() (RunningScript, bool) {
 	return fs.rs, fs.isRunning
 }
 
-// AllRunningScripts returns all scripts currently running in a Redis Enterprise clustered database.
-// Only available on Redis Enterprise
+
+
 func (fs *FunctionStats) AllRunningScripts() []RunningScript {
 	return fs.allrs
 }
@@ -4428,7 +4428,7 @@ func (cmd *FunctionStatsCmd) readReply(rd *proto.Reader) (err error) {
 			result.rs, result.isRunning, err = cmd.readRunningScript(rd)
 		case "engines":
 			result.Engines, err = cmd.readEngines(rd)
-		case "all_running_scripts": // Redis Enterprise only
+		case "all_running_scripts": 
 			result.allrs, result.isRunning, err = cmd.readRunningScripts(rd)
 		default:
 			return fmt.Errorf("redis: function stats unexpected key %s", key)
@@ -4559,9 +4559,9 @@ func (cmd *FunctionStatsCmd) readRunningScripts(rd *proto.Reader) ([]RunningScri
 	return runningScripts, len(runningScripts) > 0, nil
 }
 
-//------------------------------------------------------------------------------
 
-// LCSQuery is a parameter used for the LCS command
+
+
 type LCSQuery struct {
 	Key1         string
 	Key2         string
@@ -4571,7 +4571,7 @@ type LCSQuery struct {
 	WithMatchLen bool
 }
 
-// LCSMatch is the result set of the LCS command.
+
 type LCSMatch struct {
 	MatchString string
 	Matches     []LCSMatchedPosition
@@ -4582,7 +4582,7 @@ type LCSMatchedPosition struct {
 	Key1 LCSPosition
 	Key2 LCSPosition
 
-	// only for withMatchLen is true
+	
 	MatchLen int64
 }
 
@@ -4594,9 +4594,9 @@ type LCSPosition struct {
 type LCSCmd struct {
 	baseCmd
 
-	// 1: match string
-	// 2: match len
-	// 3: match idx LCSMatch
+	
+	
+	
 	readType uint8
 	val      *LCSMatch
 }
@@ -4649,22 +4649,22 @@ func (cmd *LCSCmd) readReply(rd *proto.Reader) (err error) {
 	lcs := &LCSMatch{}
 	switch cmd.readType {
 	case 1:
-		// match string
+		
 		if lcs.MatchString, err = rd.ReadString(); err != nil {
 			return err
 		}
 	case 2:
-		// match len
+		
 		if lcs.Len, err = rd.ReadInt(); err != nil {
 			return err
 		}
 	case 3:
-		// read LCSMatch
+		
 		if err = rd.ReadFixedMapLen(2); err != nil {
 			return err
 		}
 
-		// read matches or len field
+		
 		for i := 0; i < 2; i++ {
 			key, err := rd.ReadString()
 			if err != nil {
@@ -4673,12 +4673,12 @@ func (cmd *LCSCmd) readReply(rd *proto.Reader) (err error) {
 
 			switch key {
 			case "matches":
-				// read array of matched positions
+				
 				if lcs.Matches, err = cmd.readMatchedPositions(rd); err != nil {
 					return err
 				}
 			case "len":
-				// read match length
+				
 				if lcs.Len, err = rd.ReadInt(); err != nil {
 					return err
 				}
@@ -4710,7 +4710,7 @@ func (cmd *LCSCmd) readMatchedPositions(rd *proto.Reader) ([]LCSMatchedPosition,
 			return nil, err
 		}
 
-		// read match length if WithMatchLen is true
+		
 		if pn > 2 {
 			if positions[i].MatchLen, err = rd.ReadInt(); err != nil {
 				return nil, err
@@ -4735,7 +4735,7 @@ func (cmd *LCSCmd) readPosition(rd *proto.Reader) (pos LCSPosition, err error) {
 	return pos, nil
 }
 
-// ------------------------------------------------------------------------
+
 
 type KeyFlags struct {
 	Key   string
@@ -4813,7 +4813,7 @@ func (cmd *KeyFlagsCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// ---------------------------------------------------------------------------------------------------
+
 
 type ClusterLink struct {
 	Direction           string
@@ -4902,7 +4902,7 @@ func (cmd *ClusterLinksCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// ------------------------------------------------------------------------------------------------------------------
+
 
 type SlotRange struct {
 	Start int64
@@ -5052,7 +5052,7 @@ func (cmd *ClusterShardsCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// -----------------------------------------
+
 
 type RankScore struct {
 	Rank  int64
@@ -5112,102 +5112,99 @@ func (cmd *RankWithScoreCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// --------------------------------------------------------------------------------------------------
 
-// ClientFlags is redis-server client flags, copy from redis/src/server.h (redis 7.0)
+
+
 type ClientFlags uint64
 
 const (
-	ClientSlave            ClientFlags = 1 << 0  /* This client is a replica */
-	ClientMaster           ClientFlags = 1 << 1  /* This client is a master */
-	ClientMonitor          ClientFlags = 1 << 2  /* This client is a slave monitor, see MONITOR */
-	ClientMulti            ClientFlags = 1 << 3  /* This client is in a MULTI context */
-	ClientBlocked          ClientFlags = 1 << 4  /* The client is waiting in a blocking operation */
-	ClientDirtyCAS         ClientFlags = 1 << 5  /* Watched keys modified. EXEC will fail. */
-	ClientCloseAfterReply  ClientFlags = 1 << 6  /* Close after writing entire reply. */
-	ClientUnBlocked        ClientFlags = 1 << 7  /* This client was unblocked and is stored in server.unblocked_clients */
-	ClientScript           ClientFlags = 1 << 8  /* This is a non-connected client used by Lua */
-	ClientAsking           ClientFlags = 1 << 9  /* Client issued the ASKING command */
-	ClientCloseASAP        ClientFlags = 1 << 10 /* Close this client ASAP */
-	ClientUnixSocket       ClientFlags = 1 << 11 /* Client connected via Unix domain socket */
-	ClientDirtyExec        ClientFlags = 1 << 12 /* EXEC will fail for errors while queueing */
-	ClientMasterForceReply ClientFlags = 1 << 13 /* Queue replies even if is master */
-	ClientForceAOF         ClientFlags = 1 << 14 /* Force AOF propagation of current cmd. */
-	ClientForceRepl        ClientFlags = 1 << 15 /* Force replication of current cmd. */
-	ClientPrePSync         ClientFlags = 1 << 16 /* Instance don't understand PSYNC. */
-	ClientReadOnly         ClientFlags = 1 << 17 /* Cluster client is in read-only state. */
-	ClientPubSub           ClientFlags = 1 << 18 /* Client is in Pub/Sub mode. */
-	ClientPreventAOFProp   ClientFlags = 1 << 19 /* Don't propagate to AOF. */
-	ClientPreventReplProp  ClientFlags = 1 << 20 /* Don't propagate to slaves. */
+	ClientSlave            ClientFlags = 1 << 0  
+	ClientMaster           ClientFlags = 1 << 1  
+	ClientMonitor          ClientFlags = 1 << 2  
+	ClientMulti            ClientFlags = 1 << 3  
+	ClientBlocked          ClientFlags = 1 << 4  
+	ClientDirtyCAS         ClientFlags = 1 << 5  
+	ClientCloseAfterReply  ClientFlags = 1 << 6  
+	ClientUnBlocked        ClientFlags = 1 << 7  
+	ClientScript           ClientFlags = 1 << 8  
+	ClientAsking           ClientFlags = 1 << 9  
+	ClientCloseASAP        ClientFlags = 1 << 10 
+	ClientUnixSocket       ClientFlags = 1 << 11 
+	ClientDirtyExec        ClientFlags = 1 << 12 
+	ClientMasterForceReply ClientFlags = 1 << 13 
+	ClientForceAOF         ClientFlags = 1 << 14 
+	ClientForceRepl        ClientFlags = 1 << 15 
+	ClientPrePSync         ClientFlags = 1 << 16 
+	ClientReadOnly         ClientFlags = 1 << 17 
+	ClientPubSub           ClientFlags = 1 << 18 
+	ClientPreventAOFProp   ClientFlags = 1 << 19 
+	ClientPreventReplProp  ClientFlags = 1 << 20 
 	ClientPreventProp      ClientFlags = ClientPreventAOFProp | ClientPreventReplProp
-	ClientPendingWrite     ClientFlags = 1 << 21 /* Client has output to send but a-write handler is yet not installed. */
-	ClientReplyOff         ClientFlags = 1 << 22 /* Don't send replies to client. */
-	ClientReplySkipNext    ClientFlags = 1 << 23 /* Set ClientREPLY_SKIP for next cmd */
-	ClientReplySkip        ClientFlags = 1 << 24 /* Don't send just this reply. */
-	ClientLuaDebug         ClientFlags = 1 << 25 /* Run EVAL in debug mode. */
-	ClientLuaDebugSync     ClientFlags = 1 << 26 /* EVAL debugging without fork() */
-	ClientModule           ClientFlags = 1 << 27 /* Non connected client used by some module. */
-	ClientProtected        ClientFlags = 1 << 28 /* Client should not be freed for now. */
-	ClientExecutingCommand ClientFlags = 1 << 29 /* Indicates that the client is currently in the process of handling
-	   a command. usually this will be marked only during call()
-	   however, blocked clients might have this flag kept until they
-	   will try to reprocess the command. */
-	ClientPendingCommand      ClientFlags = 1 << 30 /* Indicates the client has a fully * parsed command ready for execution. */
-	ClientTracking            ClientFlags = 1 << 31 /* Client enabled keys tracking in order to perform client side caching. */
-	ClientTrackingBrokenRedir ClientFlags = 1 << 32 /* Target client is invalid. */
-	ClientTrackingBCAST       ClientFlags = 1 << 33 /* Tracking in BCAST mode. */
-	ClientTrackingOptIn       ClientFlags = 1 << 34 /* Tracking in opt-in mode. */
-	ClientTrackingOptOut      ClientFlags = 1 << 35 /* Tracking in opt-out mode. */
-	ClientTrackingCaching     ClientFlags = 1 << 36 /* CACHING yes/no was given, depending on optin/optout mode. */
-	ClientTrackingNoLoop      ClientFlags = 1 << 37 /* Don't send invalidation messages about writes performed by myself.*/
-	ClientInTimeoutTable      ClientFlags = 1 << 38 /* This client is in the timeout table. */
-	ClientProtocolError       ClientFlags = 1 << 39 /* Protocol error chatting with it. */
-	ClientCloseAfterCommand   ClientFlags = 1 << 40 /* Close after executing commands * and writing entire reply. */
-	ClientDenyBlocking        ClientFlags = 1 << 41 /* Indicate that the client should not be blocked. currently, turned on inside MULTI, Lua, RM_Call, and AOF client */
-	ClientReplRDBOnly         ClientFlags = 1 << 42 /* This client is a replica that only wants RDB without replication buffer. */
-	ClientNoEvict             ClientFlags = 1 << 43 /* This client is protected against client memory eviction. */
-	ClientAllowOOM            ClientFlags = 1 << 44 /* Client used by RM_Call is allowed to fully execute scripts even when in OOM */
-	ClientNoTouch             ClientFlags = 1 << 45 /* This client will not touch LFU/LRU stats. */
-	ClientPushing             ClientFlags = 1 << 46 /* This client is pushing notifications. */
+	ClientPendingWrite     ClientFlags = 1 << 21 
+	ClientReplyOff         ClientFlags = 1 << 22 
+	ClientReplySkipNext    ClientFlags = 1 << 23 
+	ClientReplySkip        ClientFlags = 1 << 24 
+	ClientLuaDebug         ClientFlags = 1 << 25 
+	ClientLuaDebugSync     ClientFlags = 1 << 26 
+	ClientModule           ClientFlags = 1 << 27 
+	ClientProtected        ClientFlags = 1 << 28 
+	ClientExecutingCommand ClientFlags = 1 << 29 
+	ClientPendingCommand      ClientFlags = 1 << 30 
+	ClientTracking            ClientFlags = 1 << 31 
+	ClientTrackingBrokenRedir ClientFlags = 1 << 32 
+	ClientTrackingBCAST       ClientFlags = 1 << 33 
+	ClientTrackingOptIn       ClientFlags = 1 << 34 
+	ClientTrackingOptOut      ClientFlags = 1 << 35 
+	ClientTrackingCaching     ClientFlags = 1 << 36 
+	ClientTrackingNoLoop      ClientFlags = 1 << 37 
+	ClientInTimeoutTable      ClientFlags = 1 << 38 
+	ClientProtocolError       ClientFlags = 1 << 39 
+	ClientCloseAfterCommand   ClientFlags = 1 << 40 
+	ClientDenyBlocking        ClientFlags = 1 << 41 
+	ClientReplRDBOnly         ClientFlags = 1 << 42 
+	ClientNoEvict             ClientFlags = 1 << 43 
+	ClientAllowOOM            ClientFlags = 1 << 44 
+	ClientNoTouch             ClientFlags = 1 << 45 
+	ClientPushing             ClientFlags = 1 << 46 
 )
 
-// ClientInfo is redis-server ClientInfo, not go-redis *Client
+
 type ClientInfo struct {
-	ID                 int64         // redis version 2.8.12, a unique 64-bit client ID
-	Addr               string        // address/port of the client
-	LAddr              string        // address/port of local address client connected to (bind address)
-	FD                 int64         // file descriptor corresponding to the socket
-	Name               string        // the name set by the client with CLIENT SETNAME
-	Age                time.Duration // total duration of the connection in seconds
-	Idle               time.Duration // idle time of the connection in seconds
-	Flags              ClientFlags   // client flags (see below)
-	DB                 int           // current database ID
-	Sub                int           // number of channel subscriptions
-	PSub               int           // number of pattern matching subscriptions
-	SSub               int           // redis version 7.0.3, number of shard channel subscriptions
-	Multi              int           // number of commands in a MULTI/EXEC context
-	Watch              int           // redis version 7.4 RC1, number of keys this client is currently watching.
-	QueryBuf           int           // qbuf, query buffer length (0 means no query pending)
-	QueryBufFree       int           // qbuf-free, free space of the query buffer (0 means the buffer is full)
-	ArgvMem            int           // incomplete arguments for the next command (already extracted from query buffer)
-	MultiMem           int           // redis version 7.0, memory is used up by buffered multi commands
-	BufferSize         int           // rbs, usable size of buffer
-	BufferPeak         int           // rbp, peak used size of buffer in last 5 sec interval
-	OutputBufferLength int           // obl, output buffer length
-	OutputListLength   int           // oll, output list length (replies are queued in this list when the buffer is full)
-	OutputMemory       int           // omem, output buffer memory usage
-	TotalMemory        int           // tot-mem, total memory consumed by this client in its various buffers
-	TotalNetIn         int           // tot-net-in, total network input
-	TotalNetOut        int           // tot-net-out, total network output
-	TotalCmds          int           // tot-cmds, total number of commands processed
-	IoThread           int           // io-thread id
-	Events             string        // file descriptor events (see below)
-	LastCmd            string        // cmd, last command played
-	User               string        // the authenticated username of the client
-	Redir              int64         // client id of current client tracking redirection
-	Resp               int           // redis version 7.0, client RESP protocol version
-	LibName            string        // redis version 7.2, client library name
-	LibVer             string        // redis version 7.2, client library version
+	ID                 int64         
+	Addr               string        
+	LAddr              string        
+	FD                 int64         
+	Name               string        
+	Age                time.Duration 
+	Idle               time.Duration 
+	Flags              ClientFlags   
+	DB                 int           
+	Sub                int           
+	PSub               int           
+	SSub               int           
+	Multi              int           
+	Watch              int           
+	QueryBuf           int           
+	QueryBufFree       int           
+	ArgvMem            int           
+	MultiMem           int           
+	BufferSize         int           
+	BufferPeak         int           
+	OutputBufferLength int           
+	OutputListLength   int           
+	OutputMemory       int           
+	TotalMemory        int           
+	TotalNetIn         int           
+	TotalNetOut        int           
+	TotalCmds          int           
+	IoThread           int           
+	Events             string        
+	LastCmd            string        
+	User               string        
+	Redir              int64         
+	Resp               int           
+	LibName            string        
+	LibVer             string        
 }
 
 type ClientInfoCmd struct {
@@ -5249,15 +5246,15 @@ func (cmd *ClientInfoCmd) readReply(rd *proto.Reader) (err error) {
 		return err
 	}
 
-	// sds o = catClientInfoString(sdsempty(), c);
-	// o = sdscatlen(o,"\n",1);
-	// addReplyVerbatim(c,o,sdslen(o),"txt");
-	// sdsfree(o);
+	
+	
+	
+	
 	cmd.val, err = parseClientInfo(strings.TrimSpace(txt))
 	return err
 }
 
-// fmt.Sscanf() cannot handle null values
+
 func parseClientInfo(txt string) (info *ClientInfo, err error) {
 	info = &ClientInfo{}
 	for _, s := range strings.Split(txt, " ") {
@@ -5399,7 +5396,7 @@ func parseClientInfo(txt string) (info *ClientInfo, err error) {
 	return info, nil
 }
 
-// -------------------------------------------
+
 
 type ACLLogEntry struct {
 	Count                int64
@@ -5508,23 +5505,23 @@ func (cmd *ACLLogCmd) readReply(rd *proto.Reader) error {
 	return nil
 }
 
-// LibraryInfo holds the library info.
+
 type LibraryInfo struct {
 	LibName *string
 	LibVer  *string
 }
 
-// WithLibraryName returns a valid LibraryInfo with library name only.
+
 func WithLibraryName(libName string) LibraryInfo {
 	return LibraryInfo{LibName: &libName}
 }
 
-// WithLibraryVersion returns a valid LibraryInfo with library version only.
+
 func WithLibraryVersion(libVer string) LibraryInfo {
 	return LibraryInfo{LibVer: &libVer}
 }
 
-// -------------------------------------------
+
 
 type InfoCmd struct {
 	baseCmd

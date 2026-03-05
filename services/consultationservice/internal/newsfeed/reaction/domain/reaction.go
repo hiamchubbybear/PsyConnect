@@ -15,7 +15,7 @@ type Reaction struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	PostID       string             `bson:"post_id" json:"post_id"`
 	UserID       string             `bson:"user_id" json:"user_id"`
-	ReactionType string             `bson:"reaction_type" json:"reaction_type"` // "up" or "down"
+	ReactionType string             `bson:"reaction_type" json:"reaction_type"` 
 	CreatedAt    time.Time          `bson:"created_at" json:"created_at"`
 }
 

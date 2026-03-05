@@ -16,7 +16,7 @@ type NotificationService struct {
 	spamPrevention *SpamPrevention
 }
 
-// SpamPrevention prevents sending duplicate notifications too quickly
+
 type SpamPrevention struct {
 	mu           sync.RWMutex
 	recentNotifs map[string]time.Time
@@ -51,13 +51,13 @@ func NewNotificationService(db *database.Database, fcm *firebase.FCMService) *No
 	return &NotificationService{
 		db:             db,
 		fcm:            fcm,
-		spamPrevention: NewSpamPrevention(60000), // 60 seconds
+		spamPrevention: NewSpamPrevention(60000), 
 	}
 }
 
-// SendToUser sends a notification to a specific user
+
 func (ns *NotificationService) SendToUser(userID, title, body, notifType string, metadata map[string]interface{}) error {
-	// Save to database
+	
 	metadataJSON, _ := json.Marshal(metadata)
 	notification := &database.Notification{
 		UserID:   userID,
@@ -75,7 +75,7 @@ func (ns *NotificationService) SendToUser(userID, title, body, notifType string,
 
 	log.Printf("✅ Notification saved to database for user: %s", userID)
 
-	// Try to send push notification
+	
 	if ns.fcm != nil {
 		token, err := ns.db.GetFCMToken(userID)
 		if err != nil {
@@ -83,7 +83,7 @@ func (ns *NotificationService) SendToUser(userID, title, body, notifType string,
 			return nil
 		}
 
-		// Convert metadata to string map for FCM
+		
 		dataMap := make(map[string]string)
 		for k, v := range metadata {
 			if str, ok := v.(string); ok {
@@ -104,7 +104,7 @@ func (ns *NotificationService) SendToUser(userID, title, body, notifType string,
 	return nil
 }
 
-// SendToUserWithSpamCheck sends notification with spam prevention
+
 func (ns *NotificationService) SendToUserWithSpamCheck(userID, title, body, notifType string, metadata map[string]interface{}) error {
 	if !ns.spamPrevention.CanSend(userID, notifType) {
 		log.Printf("  Spam prevention: skipping notification for user %s, type %s", userID, notifType)
@@ -114,17 +114,17 @@ func (ns *NotificationService) SendToUserWithSpamCheck(userID, title, body, noti
 	return ns.SendToUser(userID, title, body, notifType, metadata)
 }
 
-// GetNotifications retrieves notifications for a user
+
 func (ns *NotificationService) GetNotifications(userID string, limit, offset int) ([]database.Notification, error) {
 	return ns.db.GetNotifications(userID, limit, offset)
 }
 
-// MarkAsRead marks a notification as read
+
 func (ns *NotificationService) MarkAsRead(notificationID uint, userID string) error {
 	return ns.db.MarkAsRead(notificationID, userID)
 }
 
-// HandleIncomingCall sends a high priority data message for VoIP calls
+
 func (ns *NotificationService) HandleIncomingCall(receiverID string, payload interface{}) error {
 	if ns.fcm == nil {
 		log.Println(" FCM not configured, skipping call notification")
@@ -137,21 +137,21 @@ func (ns *NotificationService) HandleIncomingCall(receiverID string, payload int
 		return nil
 	}
 
-	// Prepare data map for FCM
+	
 	dataMap := make(map[string]string)
 
-	// Marshal the payload (caller info, session id, etc.) into a JSON string
+	
 	payloadBytes, err := json.Marshal(payload)
 	if err == nil {
 		dataMap["call_payload"] = string(payloadBytes)
 	}
 
 	dataMap["type"] = "consultation.incoming_call"
-	// Valid for VOIP triggers related
+	
 	dataMap["uuid"] = receiverID
 
-	// Title/Body might not be shown if it's a data-only message handled by client,
-	// but useful fallbacks.
+	
+	
 	return ns.fcm.SendPushNotification(token, "Incoming Call", "You have an incoming consultation call", dataMap)
 }
 

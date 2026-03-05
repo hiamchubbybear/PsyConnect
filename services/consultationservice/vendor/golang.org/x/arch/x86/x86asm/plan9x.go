@@ -1,6 +1,6 @@
-// Copyright 2014 The Go Authors.  All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package x86asm
 
@@ -11,13 +11,13 @@ import (
 
 type SymLookup func(uint64) (string, uint64)
 
-// GoSyntax returns the Go assembler syntax for the instruction.
-// The syntax was originally defined by Plan 9.
-// The pc is the program counter of the instruction, used for expanding
-// PC-relative addresses into absolute ones.
-// The symname function queries the symbol table for the program
-// being disassembled. Given a target address it returns the name and base
-// address of the symbol containing the target, if any; otherwise it returns "", 0.
+
+
+
+
+
+
+
 func GoSyntax(inst Inst, pc uint64, symname SymLookup) string {
 	if symname == nil {
 		symname = func(uint64) (string, uint64) { return "", 0 }
@@ -39,11 +39,11 @@ func GoSyntax(inst Inst, pc uint64, symname SymLookup) string {
 		}
 
 		switch {
-		// Don't show prefixes implied by the instruction text.
+		
 		case p&0xFF00 == PrefixImplicit:
 			continue
-		// Only REP and REPN are recognized repeaters. Plan 9 syntax
-		// treats them as separate opcodes.
+		
+		
 		case p&0xFF == PrefixREP:
 			rep = "REP; "
 		case p&0xFF == PrefixREPN:
@@ -56,7 +56,7 @@ func GoSyntax(inst Inst, pc uint64, symname SymLookup) string {
 	prefix := ""
 	switch last & 0xFF {
 	case 0, 0x66, 0x67:
-		// ignore
+		
 	default:
 		prefix += last.String() + " "
 	}
@@ -66,7 +66,7 @@ func GoSyntax(inst Inst, pc uint64, symname SymLookup) string {
 		s := inst.DataSize
 		if inst.MemBytes != 0 {
 			s = inst.MemBytes * 8
-		} else if inst.Args[1] == nil { // look for register-only 64-bit instruction, like PUSHQ AX
+		} else if inst.Args[1] == nil { 
 			if r, ok := inst.Args[0].(Reg); ok && RAX <= r && r <= R15 {
 				s = 64
 			}
@@ -84,8 +84,8 @@ func GoSyntax(inst Inst, pc uint64, symname SymLookup) string {
 	}
 
 	if inst.Op == CMP {
-		// Use reads-left-to-right ordering for comparisons.
-		// See issue 60920.
+		
+		
 		args[0], args[1] = args[1], args[0]
 	}
 
@@ -104,11 +104,11 @@ func plan9Arg(inst *Inst, pc uint64, symname func(uint64) (string, uint64), arg 
 		if pc == 0 {
 			break
 		}
-		// If the absolute address is the start of a symbol, use the name.
-		// Otherwise use the raw address, so that things like relative
-		// jumps show up as JMP 0x123 instead of JMP f+10(SB).
-		// It is usually easier to search for 0x123 than to do the mental
-		// arithmetic to find f+10.
+		
+		
+		
+		
+		
 		addr := pc + uint64(inst.Len) + uint64(a)
 		if s, base := symname(addr); s != "" && addr == base {
 			return fmt.Sprintf("%s(SB)", s)

@@ -1,0 +1,347 @@
+<div class="booking-page-container">
+  <!-- Back Button & Page Header -->
+  <div class="page-header">
+    <button class="btn-back" (click)="goBack()">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M19 12H5M5 12L12 19M5 12L12 5"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span>{{ "CONSULTATION.Booking.Cancel" | translate }}</span>
+    </button>
+  </div>
+
+  <div class="booking-content-card fade-in">
+    <!-- Header Section -->
+    <div class="booking-header">
+      <div class="header-main">
+        <h1 class="title">{{ "CONSULTATION.Booking.Title" | translate }}</h1>
+        <p class="subtitle">
+          {{ "CONSULTATION.Booking.Subtitle" | translate }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Loading State for Therapist -->
+    <div class="loading-overlay" *ngIf="isFetchingTherapist">
+      <div class="spinner-large"></div>
+      <p>Loading therapist information...</p>
+    </div>
+
+    <form
+      [formGroup]="bookingForm"
+      (ngSubmit)="onSubmit()"
+      *ngIf="!isFetchingTherapist && therapist"
+    >
+      <div class="booking-main-grid">
+        <!-- Left Column: Therapist & Meta -->
+        <div class="meta-column">
+          <div class="therapist-info-card">
+            <div class="avatar-wrapper">
+              <img
+                [src]="
+                  therapist.avatarUri | avatarFallback: therapist.profileId
+                "
+                [alt]="therapist.name"
+                class="avatar-img"
+              />
+            </div>
+            <div class="details">
+              <h3 class="name">{{ therapist.name }}</h3>
+              <p class="role">
+                {{
+                  therapist.professional_title ||
+                    therapist.professionalTitle ||
+                    "Therapist"
+                }}
+              </p>
+              <div class="price-pill">
+                <span class="amount"
+                  >{{
+                    therapist.rage_price || therapist.ragePrice || 0 | number
+                  }}đ</span
+                >
+                <span class="unit"
+                  >/ {{ "CONSULTATION.Booking.RatePerHour" | translate }}</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="info-sections">
+            <div class="info-item">
+              <div class="icon-box">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M12 6V12L16 14"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <div class="text">
+                <label>{{ "CONSULTATION.Booking.Timezone" | translate }}</label>
+                <span>{{ timezone }}</span>
+                <p class="hint">
+                  {{ "CONSULTATION.Booking.TimezoneDesc" | translate }}
+                </p>
+              </div>
+            </div>
+
+            <div class="info-item warning">
+              <div class="icon-box">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 8V12M12 16H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <div class="text">
+                <label>Note</label>
+                <p>
+                  {{ "CONSULTATION.Booking.ResponsibilityNote" | translate }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Form Fields -->
+        <div class="form-column">
+          <div class="form-section">
+            <h2 class="section-title">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  x="3"
+                  y="4"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  ry="2"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <line
+                  x1="16"
+                  y1="2"
+                  x2="16"
+                  y2="6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <line
+                  x1="8"
+                  y1="2"
+                  x2="8"
+                  y2="6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <line
+                  x1="3"
+                  y1="10"
+                  x2="21"
+                  y2="10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              {{ "CONSULTATION.Booking.SelectDateTime" | translate }}
+            </h2>
+
+            <div class="field-group">
+              <div class="field-container full">
+                <label>{{ "CONSULTATION.Booking.Date" | translate }}</label>
+                <input
+                  type="date"
+                  formControlName="scheduledDate"
+                  [min]="minDate"
+                  class="premium-input-large"
+                />
+              </div>
+
+              <div class="time-row">
+                <div class="field-container">
+                  <label>{{
+                    "CONSULTATION.Booking.StartTime" | translate
+                  }}</label>
+                  <input
+                    type="time"
+                    formControlName="startTime"
+                    class="premium-input-large"
+                  />
+                </div>
+                <div class="time-separator">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M5 12H19"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+                <div class="field-container">
+                  <label>{{
+                    "CONSULTATION.Booking.EndTime" | translate
+                  }}</label>
+                  <input
+                    type="time"
+                    formControlName="endTime"
+                    class="premium-input-large"
+                  />
+                </div>
+              </div>
+              <p class="field-hint">
+                {{ "CONSULTATION.Booking.SelectDateTimeDesc" | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h2 class="section-title">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M16 5V7M16 11V13M16 17V19"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M23 7L16 12L23 17V7Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              {{ "CONSULTATION.Booking.Mode" | translate }}
+            </h2>
+
+            <div class="mode-grid">
+              <label
+                class="mode-card"
+                *ngFor="let m of modes"
+                [class.active]="bookingForm.get('mode')?.value === m.value"
+              >
+                <input
+                  type="radio"
+                  formControlName="mode"
+                  [value]="m.value"
+                  hidden
+                />
+                <div class="indicator"></div>
+                <div class="mode-text">
+                  <span class="name">{{
+                    "CONSULTATION.Modes." +
+                      (m.value === "in-person"
+                        ? "InPerson"
+                        : (m.value | titlecase)) | translate
+                  }}</span>
+                </div>
+              </label>
+            </div>
+            <p class="field-hint">
+              {{ "CONSULTATION.Booking.ModeDesc" | translate }}
+            </p>
+          </div>
+
+          <div class="form-section agreement">
+            <label class="checkbox-container">
+              <input type="checkbox" formControlName="acceptResponsibility" />
+              <span class="checkmark"></span>
+              <span class="label-text">{{
+                "CONSULTATION.Booking.AcceptResponsibility" | translate
+              }}</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="submit"
+              class="btn-submit-premium"
+              [disabled]="bookingForm.invalid || isLoading"
+            >
+              <span *ngIf="!isLoading">{{
+                "CONSULTATION.Booking.Confirm" | translate
+              }}</span>
+              <div class="spinner-small" *ngIf="isLoading"></div>
+            </button>
+            <p class="terms-text">
+              {{ "CONSULTATION.Booking.TermsAgreement" | translate }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

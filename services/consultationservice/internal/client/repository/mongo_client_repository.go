@@ -28,7 +28,7 @@ func (r *MongoClientRepository) redisKey(profileID string) string {
 	return redis.NewKeyBuilder("psyconnect").Build("consultation", "client", profileID)
 }
 
-// domainToMongo converts domain entity to MongoDB document
+
 func (r *MongoClientRepository) domainToMongo(client *domain.Client) bson.M {
 	return bson.M{
 		"profile_id":         client.ProfileID,
@@ -53,7 +53,7 @@ func (r *MongoClientRepository) domainToMongo(client *domain.Client) bson.M {
 	}
 }
 
-// mongoToDomain converts MongoDB document to domain entity
+
 func (r *MongoClientRepository) mongoToDomain(doc bson.M) *domain.Client {
 	client := &domain.Client{
 		ProfileID:                  getString(doc, "profile_id"),
@@ -82,7 +82,7 @@ func (r *MongoClientRepository) mongoToDomain(doc bson.M) *domain.Client {
 }
 
 func (r *MongoClientRepository) Create(ctx context.Context, client *domain.Client) error {
-	// Check if client already exists
+	
 	filter := bson.M{"profile_id": client.ProfileID}
 	count, err := r.collection.CountDocuments(ctx, filter)
 	if err != nil {
@@ -94,7 +94,7 @@ func (r *MongoClientRepository) Create(ctx context.Context, client *domain.Clien
 		return errors.New("client with this profile already exists")
 	}
 
-	// Insert new client
+	
 	doc := r.domainToMongo(client)
 	_, err = r.collection.InsertOne(ctx, doc)
 	if err != nil {
@@ -102,7 +102,7 @@ func (r *MongoClientRepository) Create(ctx context.Context, client *domain.Clien
 		return errors.New("failed to insert client")
 	}
 
-	// Invalidate cache
+	
 	_ = r.redis.Delete(ctx, r.redisKey(client.ProfileID))
 
 	return nil
@@ -111,14 +111,14 @@ func (r *MongoClientRepository) Create(ctx context.Context, client *domain.Clien
 func (r *MongoClientRepository) GetByProfileID(ctx context.Context, profileID string) (*domain.Client, error) {
 	key := r.redisKey(profileID)
 
-	// Try cache first
+	
 	var cachedDoc bson.M
 	if err := r.redis.Get(ctx, key, &cachedDoc); err == nil {
 		log.Printf("Cache hit for client: %s", profileID)
 		return r.mongoToDomain(cachedDoc), nil
 	}
 
-	// Query database
+	
 	var doc bson.M
 	err := r.collection.FindOne(ctx, bson.M{"profile_id": profileID}).Decode(&doc)
 	if err != nil {
@@ -128,7 +128,7 @@ func (r *MongoClientRepository) GetByProfileID(ctx context.Context, profileID st
 		return nil, err
 	}
 
-	// Cache result
+	
 	_ = r.redis.Set(ctx, key, doc)
 
 	return r.mongoToDomain(doc), nil
@@ -178,7 +178,7 @@ func (r *MongoClientRepository) Update(ctx context.Context, profileID string, cl
 		return errors.New("failed to update client")
 	}
 
-	// Invalidate cache
+	
 	_ = r.redis.Delete(ctx, r.redisKey(profileID))
 
 	log.Printf("Client updated: %s", profileID)
@@ -195,13 +195,13 @@ func (r *MongoClientRepository) Delete(ctx context.Context, profileID string) er
 		return errors.New("client not found")
 	}
 
-	// Invalidate cache
+	
 	_ = r.redis.Delete(ctx, r.redisKey(profileID))
 
 	return nil
 }
 
-// Helper functions
+
 func getString(doc bson.M, key string) string {
 	if val, ok := doc[key].(string); ok {
 		return val

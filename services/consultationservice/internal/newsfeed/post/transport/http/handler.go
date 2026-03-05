@@ -87,7 +87,7 @@ func (h *Handler) CreatePost(c *gin.Context) {
 		return
 	}
 
-	// Cache the created post
+	
 	cacheKey := fmt.Sprintf("post:%s", post.ID.Hex())
 	h.redisClient.Set(ctx, cacheKey, post)
 
@@ -102,7 +102,7 @@ func (h *Handler) GetPostByID(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Try Redis cache first
+	
 	var post domain.Post
 	err := h.redisClient.Get(ctx, cacheKey, &post)
 	if err == nil {
@@ -112,7 +112,7 @@ func (h *Handler) GetPostByID(c *gin.Context) {
 		return
 	}
 
-	// Get from DB
+	
 	dbPost, err := h.getPostByIDUC.Execute(ctx, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
@@ -149,7 +149,7 @@ func (h *Handler) UpdatePost(c *gin.Context) {
 		return
 	}
 
-	// Invalidate cache
+	
 	cacheKey := fmt.Sprintf("post:%s", id)
 	h.redisClient.Delete(ctx, cacheKey)
 
@@ -173,7 +173,7 @@ func (h *Handler) DeletePost(c *gin.Context) {
 		return
 	}
 
-	// Invalidate cache
+	
 	cacheKey := fmt.Sprintf("post:%s", id)
 	h.redisClient.Delete(ctx, cacheKey)
 
@@ -193,10 +193,10 @@ func (h *Handler) GetFeed(c *gin.Context) {
 		viewedKey := fmt.Sprintf("user:%s:viewed", userID)
 		ids, err := h.redisClient.SMembers(ctx, viewedKey)
 		if err == nil {
-			// temporarily disable excluding viewed posts so the feed doesn't
-			// appear empty when there are only a few test posts
+			
+			
 			_ = ids
-			// excludeIDs = ids
+			
 		}
 	}
 
@@ -326,14 +326,14 @@ func (h *Handler) IncrementViewCount(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Track in DB
+	
 	err := h.incrementViewUC.Execute(ctx, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to increment view count"})
 		return
 	}
 
-	// Track in Redis for "Hide Viewed Posts"
+	
 	if userID != "" {
 		viewedKey := fmt.Sprintf("user:%s:viewed", userID)
 		h.redisClient.SAdd(ctx, viewedKey, id)
@@ -342,19 +342,19 @@ func (h *Handler) IncrementViewCount(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "View recorded"})
 }
 
-// Helper methods for user state population
+
 func (h *Handler) populateUserState(ctx context.Context, post *domain.Post, userID string) {
 	if userID == "" {
 		return
 	}
 
-	// Get user's reaction
+	
 	reaction, err := h.reactionRepo.GetUserReaction(ctx, post.ID.Hex(), userID)
 	if err == nil && reaction != nil {
 		post.UserVote = &reaction.ReactionType
 	}
 
-	// Get user's bookmark status
+	
 	isBookmarked, err := h.bookmarkRepo.IsBookmarked(ctx, userID, post.ID.Hex())
 	if err == nil {
 		post.UserBookmark = isBookmarked

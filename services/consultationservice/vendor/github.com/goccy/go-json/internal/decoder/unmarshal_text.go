@@ -147,7 +147,7 @@ func (d *unmarshalTextDecoder) DecodePath(ctx *RuntimeContext, cursor, depth int
 	return nil, 0, fmt.Errorf("json: unmarshal text decoder does not support decode path")
 }
 
-func unquoteBytes(s []byte) (t []byte, ok bool) { //nolint: nonamedreturns
+func unquoteBytes(s []byte) (t []byte, ok bool) { 
 	length := len(s)
 	if length < 2 || s[0] != '"' || s[length-1] != '"' {
 		return
@@ -155,9 +155,9 @@ func unquoteBytes(s []byte) (t []byte, ok bool) { //nolint: nonamedreturns
 	s = s[1 : length-1]
 	length -= 2
 
-	// Check for unusual characters. If there are none,
-	// then no unquoting is needed, so return a slice of the
-	// original bytes.
+	
+	
+	
 	r := 0
 	for r < length {
 		c := s[r]
@@ -181,9 +181,9 @@ func unquoteBytes(s []byte) (t []byte, ok bool) { //nolint: nonamedreturns
 	b := make([]byte, length+2*utf8.UTFMax)
 	w := copy(b, s[0:r])
 	for r < length {
-		// Out of room? Can only happen if s is full of
-		// malformed UTF-8 and we're replacing each
-		// byte with RuneError.
+		
+		
+		
 		if w >= len(b)-2*utf8.UTFMax {
 			nb := make([]byte, (len(b)+utf8.UTFMax)*2)
 			copy(nb, b[0:w])
@@ -232,28 +232,28 @@ func unquoteBytes(s []byte) (t []byte, ok bool) { //nolint: nonamedreturns
 				if utf16.IsSurrogate(rr) {
 					rr1 := getu4(s[r:])
 					if dec := utf16.DecodeRune(rr, rr1); dec != unicode.ReplacementChar {
-						// A valid pair; consume.
+						
 						r += 6
 						w += utf8.EncodeRune(b[w:], dec)
 						break
 					}
-					// Invalid surrogate; fall back to replacement rune.
+					
 					rr = unicode.ReplacementChar
 				}
 				w += utf8.EncodeRune(b[w:], rr)
 			}
 
-		// Quote, control characters are invalid.
+		
 		case c == '"', c < ' ':
 			return
 
-		// ASCII
+		
 		case c < utf8.RuneSelf:
 			b[w] = c
 			r++
 			w++
 
-		// Coerce to well-formed UTF-8.
+		
 		default:
 			rr, size := utf8.DecodeRune(s[r:])
 			r += size

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Klaus Post, released under MIT License. See LICENSE file.
+
 
 package cpuid
 
@@ -13,11 +13,11 @@ func detectOS(c *CPUInfo) bool {
 	if runtime.GOOS != "ios" {
 		tryToFillCPUInfoFomSysctl(c)
 	}
-	// There are no hw.optional sysctl values for the below features on Mac OS 11.0
-	// to detect their supported state dynamically. Assume the CPU features that
-	// Apple Silicon M1 supports to be available as a minimal set of features
-	// to all Go programs running on darwin/arm64.
-	// TODO: Add more if we know them.
+	
+	
+	
+	
+	
 	c.featureSet.setIf(runtime.GOOS != "ios", AESARM, PMULL, SHA1, SHA2)
 
 	return true
@@ -87,14 +87,14 @@ func tryToFillCPUInfoFomSysctl(c *CPUInfo) {
 	c.Cache.L2 = sysctlGetInt64(-1, "hw.l2cachesize")
 	c.Cache.L3 = sysctlGetInt64(-1, "hw.l3cachesize")
 
-	// from https://developer.arm.com/downloads/-/exploration-tools/feature-names-for-a-profile
+	
 	setFeature(c, "hw.optional.arm.FEAT_AES", AESARM)
 	setFeature(c, "hw.optional.AdvSIMD", ASIMD)
 	setFeature(c, "hw.optional.arm.FEAT_DotProd", ASIMDDP)
 	setFeature(c, "hw.optional.arm.FEAT_RDM", ASIMDRDM)
 	setFeature(c, "hw.optional.FEAT_CRC32", CRC32)
 	setFeature(c, "hw.optional.arm.FEAT_DPB", DCPOP)
-	// setFeature(c, "", EVTSTRM)
+	
 	setFeature(c, "hw.optional.arm.FEAT_FCMA", FCMA)
 	setFeature(c, "hw.optional.arm.FEAT_FHM", FHM)
 	setFeature(c, "hw.optional.arm.FEAT_FP", FP)
@@ -112,11 +112,11 @@ func tryToFillCPUInfoFomSysctl(c *CPUInfo) {
 	setFeature(c, "hw.optional.arm.FEAT_TLBIRANGE", TLB)
 	setFeature(c, "hw.optional.arm.FEAT_FlagM", TS)
 	setFeature(c, "hw.optional.arm.FEAT_FlagM2", TS)
-	// setFeature(c, "", SM3)
-	// setFeature(c, "", SM4)
+	
+	
 	setFeature(c, "hw.optional.arm.FEAT_SVE", SVE)
 
-	// from empirical observation
+	
 	setFeature(c, "hw.optional.AdvSIMD_HPFPCvt", ASIMDHP)
 	setFeature(c, "hw.optional.armv8_1_atomics", ATOMICS)
 	setFeature(c, "hw.optional.floatingpoint", FP)

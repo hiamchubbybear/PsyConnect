@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package auth
 
@@ -52,11 +52,11 @@ const (
 	responceNonceLength = 64
 )
 
-// Step takes a string provided from a server (or just an empty string for the
-// very first conversation step) and attempts to move the authentication
-// conversation forward.  It returns a string to be sent to the server or an
-// error if the server message is invalid.  Calling Step after a conversation
-// completes is also an error.
+
+
+
+
+
 func (ac *awsConversation) Step(challenge []byte) (response []byte, err error) {
 	switch ac.state {
 	case clientStarting:
@@ -74,14 +74,14 @@ func (ac *awsConversation) Step(challenge []byte) (response []byte, err error) {
 	return
 }
 
-// Done returns true if the conversation is completed or has errored.
+
 func (ac *awsConversation) Done() bool {
 	return ac.state == clientDone
 }
 
-// Valid returns true if the conversation successfully authenticated with the
-// server, including counter-validation that the server actually has the
-// user's stored credentials.
+
+
+
 func (ac *awsConversation) Valid() bool {
 	return ac.valid
 }
@@ -95,7 +95,7 @@ func getRegion(host string) (string, error) {
 	if len(host) > maxHostLength {
 		return "", errors.New("invalid STS host: too large")
 	}
-	// The implicit region for sts.amazonaws.com is us-east-1
+	
 	if host == "sts.amazonaws.com" {
 		return region, nil
 	}
@@ -103,7 +103,7 @@ func getRegion(host string) (string, error) {
 		return "", errors.New("invalid STS host: empty part")
 	}
 
-	// If the host has multiple parts, the second part is the region
+	
 	parts := strings.Split(host, ".")
 	if len(parts) >= 2 {
 		region = parts[1]
@@ -113,7 +113,7 @@ func getRegion(host string) (string, error) {
 }
 
 func (ac *awsConversation) firstMsg() []byte {
-	// Values are cached for use in final message parameters
+	
 	ac.nonce = make([]byte, 32)
 	_, _ = rand.Read(ac.nonce)
 
@@ -131,7 +131,7 @@ func (ac *awsConversation) finalMsg(s1 []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	// Check nonce prefix
+	
 	if sm.Nonce.Subtype != 0x00 {
 		return nil, errors.New("server reply contained unexpected binary subtype")
 	}
@@ -155,7 +155,7 @@ func (ac *awsConversation) finalMsg(s1 []byte) ([]byte, error) {
 	currentTime := time.Now().UTC()
 	body := "Action=GetCallerIdentity&Version=2011-06-15"
 
-	// Create http.Request
+	
 	req, _ := http.NewRequest("POST", "/", strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Content-Length", "43")
@@ -167,16 +167,16 @@ func (ac *awsConversation) finalMsg(s1 []byte) ([]byte, error) {
 	req.Header.Set("X-MongoDB-Server-Nonce", base64.StdEncoding.EncodeToString(sm.Nonce.Data))
 	req.Header.Set("X-MongoDB-GS2-CB-Flag", "n")
 
-	// Create signer with credentials
+	
 	signer := v4signer.NewSigner(ac.credentials)
 
-	// Get signed header
+	
 	_, err = signer.Sign(req, strings.NewReader(body), "sts", region, currentTime)
 	if err != nil {
 		return nil, err
 	}
 
-	// create message
+	
 	idx, msg := bsoncore.AppendDocumentStart(nil)
 	msg = bsoncore.AppendStringElement(msg, "a", req.Header.Get("Authorization"))
 	msg = bsoncore.AppendStringElement(msg, "d", req.Header.Get("X-Amz-Date"))

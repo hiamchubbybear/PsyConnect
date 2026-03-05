@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package ir
 
@@ -201,8 +187,8 @@ func OP_is_zero_ints() Op {
 
 type Instr struct {
 	o Op
-	u int            // union {op: 8, _: 8, vi: 48}, vi maybe int or len(str)
-	p unsafe.Pointer // maybe GoString.Ptr, or *GoType
+	u int            
+	p unsafe.Pointer 
 }
 
 func NewInsOp(op Op) Instr {
@@ -475,14 +461,14 @@ func (self Program) Disassemble() string {
 	tab := make([]bool, nb+1)
 	ret := make([]string, 0, nb+1)
 
-	/* prescan to get all the labels */
+	
 	for _, ins := range self {
 		if ins.isBranch() {
 			tab[ins.Vi()] = true
 		}
 	}
 
-	/* disassemble each instruction */
+	
 	for i, ins := range self {
 		if !tab[i] {
 			ret = append(ret, "\t"+ins.Disassemble())
@@ -491,11 +477,11 @@ func (self Program) Disassemble() string {
 		}
 	}
 
-	/* add the last label, if needed */
+	
 	if tab[nb] {
 		ret = append(ret, fmt.Sprintf("L_%d:", nb))
 	}
 
-	/* add an "end" indicator, and join all the strings */
+	
 	return strings.Join(append(ret, "\tend"), "\n")
 }

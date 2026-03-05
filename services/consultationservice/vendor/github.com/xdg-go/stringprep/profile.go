@@ -4,7 +4,7 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-// Profile represents a stringprep profile.
+
 type Profile struct {
 	Mappings  []Mapping
 	Normalize bool
@@ -14,13 +14,13 @@ type Profile struct {
 
 var errProhibited = "prohibited character"
 
-// Prepare transforms an input string to an output string following
-// the rules defined in the profile as defined by RFC-3454.
+
+
 func (p Profile) Prepare(s string) (string, error) {
-	// Optimistically, assume output will be same length as input
+	
 	temp := make([]rune, 0, len(s))
 
-	// Apply maps
+	
 	for _, r := range s {
 		rs, ok := p.applyMaps(r)
 		if ok {
@@ -30,7 +30,7 @@ func (p Profile) Prepare(s string) (string, error) {
 		}
 	}
 
-	// Normalize
+	
 	var out string
 	if p.Normalize {
 		out = norm.NFKC.String(string(temp))
@@ -38,14 +38,14 @@ func (p Profile) Prepare(s string) (string, error) {
 		out = string(temp)
 	}
 
-	// Check prohibited
+	
 	for _, r := range out {
 		if p.runeIsProhibited(r) {
 			return "", Error{Msg: errProhibited, Rune: r}
 		}
 	}
 
-	// Check BiDi allowed
+	
 	if p.CheckBiDi {
 		if err := passesBiDiRules(out); err != nil {
 			return "", err

@@ -1,8 +1,8 @@
 package stats
 
-// Mode gets the mode [most frequent value(s)] of a slice of float64s
+
 func Mode(input Float64Data) (mode []float64, err error) {
-	// Return the input if there's only one number
+	
 	l := input.Len()
 	if l == 1 {
 		return input, nil
@@ -11,8 +11,8 @@ func Mode(input Float64Data) (mode []float64, err error) {
 	}
 
 	c := sortedCopyDif(input)
-	// Traverse sorted array,
-	// tracking the longest repeating sequence
+	
+	
 	mode = make([]float64, 5)
 	cnt, maxCnt := 1, 1
 	for i := 1; i < l; i++ {
@@ -37,8 +37,8 @@ func Mode(input Float64Data) (mode []float64, err error) {
 		maxCnt = cnt
 	}
 
-	// Since length must be greater than 1,
-	// check for slices of distinct values
+	
+	
 	if maxCnt == 1 || len(mode)*maxCnt == l && maxCnt != l {
 		return Float64Data{}, nil
 	}

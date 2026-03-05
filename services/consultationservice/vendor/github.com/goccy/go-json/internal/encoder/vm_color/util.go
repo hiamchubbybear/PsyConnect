@@ -28,9 +28,9 @@ type emptyInterface struct {
 
 type nonEmptyInterface struct {
 	itab *struct {
-		ityp *runtime.Type // static interface type
-		typ  *runtime.Type // dynamic concrete type
-		// unused fields...
+		ityp *runtime.Type 
+		typ  *runtime.Type 
+		
 	}
 	ptr unsafe.Pointer
 }

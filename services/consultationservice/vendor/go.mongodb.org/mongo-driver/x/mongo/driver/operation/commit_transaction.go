@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -20,7 +20,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// CommitTransaction attempts to commit a transaction.
+
 type CommitTransaction struct {
 	authenticator driver.Authenticator
 	maxTime       *time.Duration
@@ -37,7 +37,7 @@ type CommitTransaction struct {
 	serverAPI     *driver.ServerAPIOptions
 }
 
-// NewCommitTransaction constructs and returns a new CommitTransaction.
+
 func NewCommitTransaction() *CommitTransaction {
 	return &CommitTransaction{}
 }
@@ -47,7 +47,7 @@ func (ct *CommitTransaction) processResponse(driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (ct *CommitTransaction) Execute(ctx context.Context) error {
 	if ct.deployment == nil {
 		return errors.New("the CommitTransaction operation must have a Deployment set before Execute can be called")
@@ -83,7 +83,7 @@ func (ct *CommitTransaction) command(dst []byte, _ description.SelectedServer) (
 	return dst, nil
 }
 
-// MaxTime specifies the maximum amount of time to allow the query to run on the server.
+
 func (ct *CommitTransaction) MaxTime(maxTime *time.Duration) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -93,7 +93,7 @@ func (ct *CommitTransaction) MaxTime(maxTime *time.Duration) *CommitTransaction 
 	return ct
 }
 
-// RecoveryToken sets the recovery token to use when committing or aborting a sharded transaction.
+
 func (ct *CommitTransaction) RecoveryToken(recoveryToken bsoncore.Document) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -103,7 +103,7 @@ func (ct *CommitTransaction) RecoveryToken(recoveryToken bsoncore.Document) *Com
 	return ct
 }
 
-// Session sets the session for this operation.
+
 func (ct *CommitTransaction) Session(session *session.Client) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -113,7 +113,7 @@ func (ct *CommitTransaction) Session(session *session.Client) *CommitTransaction
 	return ct
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (ct *CommitTransaction) ClusterClock(clock *session.ClusterClock) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -123,7 +123,7 @@ func (ct *CommitTransaction) ClusterClock(clock *session.ClusterClock) *CommitTr
 	return ct
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (ct *CommitTransaction) CommandMonitor(monitor *event.CommandMonitor) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -133,7 +133,7 @@ func (ct *CommitTransaction) CommandMonitor(monitor *event.CommandMonitor) *Comm
 	return ct
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (ct *CommitTransaction) Crypt(crypt driver.Crypt) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -143,7 +143,7 @@ func (ct *CommitTransaction) Crypt(crypt driver.Crypt) *CommitTransaction {
 	return ct
 }
 
-// Database sets the database to run this operation against.
+
 func (ct *CommitTransaction) Database(database string) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -153,7 +153,7 @@ func (ct *CommitTransaction) Database(database string) *CommitTransaction {
 	return ct
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (ct *CommitTransaction) Deployment(deployment driver.Deployment) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -163,7 +163,7 @@ func (ct *CommitTransaction) Deployment(deployment driver.Deployment) *CommitTra
 	return ct
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (ct *CommitTransaction) ServerSelector(selector description.ServerSelector) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -173,7 +173,7 @@ func (ct *CommitTransaction) ServerSelector(selector description.ServerSelector)
 	return ct
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (ct *CommitTransaction) WriteConcern(writeConcern *writeconcern.WriteConcern) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -183,8 +183,8 @@ func (ct *CommitTransaction) WriteConcern(writeConcern *writeconcern.WriteConcer
 	return ct
 }
 
-// Retry enables retryable mode for this operation. Retries are handled automatically in driver.Operation.Execute based
-// on how the operation is set.
+
+
 func (ct *CommitTransaction) Retry(retry driver.RetryMode) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -194,7 +194,7 @@ func (ct *CommitTransaction) Retry(retry driver.RetryMode) *CommitTransaction {
 	return ct
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (ct *CommitTransaction) ServerAPI(serverAPI *driver.ServerAPIOptions) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)
@@ -204,7 +204,7 @@ func (ct *CommitTransaction) ServerAPI(serverAPI *driver.ServerAPIOptions) *Comm
 	return ct
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (ct *CommitTransaction) Authenticator(authenticator driver.Authenticator) *CommitTransaction {
 	if ct == nil {
 		ct = new(CommitTransaction)

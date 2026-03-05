@@ -10,30 +10,30 @@ import (
 	"sync/atomic"
 )
 
-// Bytes is an interface implemented by types that represent immutable
-// sequences of bytes.
-//
-// Bytes values are used to abstract the location where record keys and
-// values are read from (e.g. in-memory buffers, network sockets, files).
-//
-// The Close method should be called to release resources held by the object
-// when the program is done with it.
-//
-// Bytes values are generally not safe to use concurrently from multiple
-// goroutines.
+
+
+
+
+
+
+
+
+
+
+
 type Bytes interface {
 	io.ReadCloser
-	// Returns the number of bytes remaining to be read from the payload.
+	
 	Len() int
 }
 
-// NewBytes constructs a Bytes value from b.
-//
-// The returned value references b, it does not make a copy of the backing
-// array.
-//
-// If b is nil, nil is returned to represent a null BYTES value in the kafka
-// protocol.
+
+
+
+
+
+
+
 func NewBytes(b []byte) Bytes {
 	if b == nil {
 		return nil
@@ -43,10 +43,10 @@ func NewBytes(b []byte) Bytes {
 	return r
 }
 
-// ReadAll is similar to ioutil.ReadAll, but it takes advantage of knowing the
-// length of b to minimize the memory footprint.
-//
-// The function returns a nil slice if b is nil.
+
+
+
+
 func ReadAll(b Bytes) ([]byte, error) {
 	if b == nil {
 		return nil, nil
@@ -71,11 +71,11 @@ func (rc *refCount) unref(onZero func()) {
 }
 
 const (
-	// Size of the memory buffer for a single page. We use a farily
-	// large size here (64 KiB) because batches exchanged with kafka
-	// tend to be multiple kilobytes in size, sometimes hundreds.
-	// Using large pages amortizes the overhead of the page metadata
-	// and algorithms to manage the pages.
+	
+	
+	
+	
+	
 	pageSize = 65536
 )
 
@@ -610,7 +610,7 @@ func (a *pageRefAllocator) newPageRef() *pageRef {
 func seek(cursor, limit, offset int64, whence int) (int64, error) {
 	switch whence {
 	case io.SeekStart:
-		// absolute offset
+		
 	case io.SeekCurrent:
 		offset = cursor + offset
 	case io.SeekEnd:

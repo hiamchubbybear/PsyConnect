@@ -1,18 +1,18 @@
-//
-// Copyright 2024 CloudWeGo Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package x86_64
 
@@ -26,10 +26,10 @@ import (
 	"sync/atomic"
 )
 
-// RelativeOffset represents an RIP-relative offset.
+
 type RelativeOffset int32
 
-// String implements the fmt.Stringer interface.
+
 func (self RelativeOffset) String() string {
 	if self == 0 {
 		return "(%rip)"
@@ -38,20 +38,20 @@ func (self RelativeOffset) String() string {
 	}
 }
 
-// RoundingControl represents a floating-point rounding option.
+
 type RoundingControl uint8
 
 const (
-	// RN_SAE represents "Round Nearest", which is the default rounding option.
+	
 	RN_SAE RoundingControl = iota
 
-	// RD_SAE represents "Round Down".
+	
 	RD_SAE
 
-	// RU_SAE represents "Round Up".
+	
 	RU_SAE
 
-	// RZ_SAE represents "Round towards Zero".
+	
 	RZ_SAE
 )
 
@@ -70,11 +70,11 @@ func (self RoundingControl) String() string {
 	}
 }
 
-// ExceptionControl represents the "Suppress All Exceptions" flag.
+
 type ExceptionControl uint8
 
 const (
-	// SAE represents the flag "Suppress All Exceptions" for floating point operations.
+	
 	SAE ExceptionControl = iota
 )
 
@@ -82,29 +82,29 @@ func (ExceptionControl) String() string {
 	return "sae"
 }
 
-// AddressType indicates which kind of value that an Addressable object contains.
+
 type AddressType uint
 
 const (
-	// None indicates the Addressable does not contain any addressable value.
+	
 	None AddressType = iota
 
-	// Memory indicates the Addressable contains a memory address.
+	
 	Memory
 
-	// Offset indicates the Addressable contains an RIP-relative offset.
+	
 	Offset
 
-	// Reference indicates the Addressable contains a label reference.
+	
 	Reference
 )
 
-// Disposable is a type of object that can be Free'd manually.
+
 type Disposable interface {
 	Free()
 }
 
-// Label represents a location within the program.
+
 type Label struct {
 	refs int64
 	Name string
@@ -119,15 +119,15 @@ func (self *Label) offset(p uintptr, n int) RelativeOffset {
 	}
 }
 
-// Free decreases the reference count of a Label, if the
-// refcount drops to 0, the Label will be recycled.
+
+
 func (self *Label) Free() {
 	if atomic.AddInt64(&self.refs, -1) == 0 {
-		//freeLabel(self)
+		
 	}
 }
 
-// String implements the fmt.Stringer interface.
+
 func (self *Label) String() string {
 	if self.Dest == nil {
 		return fmt.Sprintf("%s(%%rip)", self.Name)
@@ -136,13 +136,13 @@ func (self *Label) String() string {
 	}
 }
 
-// Retain increases the reference count of a Label.
+
 func (self *Label) Retain() *Label {
 	atomic.AddInt64(&self.refs, 1)
 	return self
 }
 
-// Evaluate implements the interface expr.Term.
+
 func (self *Label) Evaluate() (int64, error) {
 	if self.Dest != nil {
 		return int64(self.Dest.pc), nil
@@ -151,7 +151,7 @@ func (self *Label) Evaluate() (int64, error) {
 	}
 }
 
-// Addressable is a union to represent an addressable operand.
+
 type Addressable struct {
 	Type      AddressType
 	Memory    MemoryAddress
@@ -159,7 +159,7 @@ type Addressable struct {
 	Reference *Label
 }
 
-// String implements the fmt.Stringer interface.
+
 func (self *Addressable) String() string {
 	switch self.Type {
 	case None:
@@ -175,7 +175,7 @@ func (self *Addressable) String() string {
 	}
 }
 
-// MemoryOperand represents a memory operand for an instruction.
+
 type MemoryOperand struct {
 	refs      int64
 	Size      int
@@ -186,7 +186,7 @@ type MemoryOperand struct {
 }
 
 const (
-	_Sizes = 0b10000000100010111 // bit-mask for valid sizes (0, 1, 2, 4, 8, 16)
+	_Sizes = 0b10000000100010111 
 )
 
 func (self *MemoryOperand) isVMX(evex bool) bool {
@@ -266,33 +266,33 @@ func (self *MemoryOperand) ensureBroadcastValid() {
 	}
 }
 
-// Free decreases the reference count of a MemoryOperand, if the
-// refcount drops to 0, the Label will be recycled.
+
+
 func (self *MemoryOperand) Free() {
 	if atomic.AddInt64(&self.refs, -1) == 0 {
-		//freeMemoryOperand(self)
+		
 	}
 }
 
-// String implements the fmt.Stringer interface.
+
 func (self *MemoryOperand) String() string {
 	return self.Addr.String() + self.formatMask() + self.formatBroadcast()
 }
 
-// Retain increases the reference count of a MemoryOperand.
+
 func (self *MemoryOperand) Retain() *MemoryOperand {
 	atomic.AddInt64(&self.refs, 1)
 	return self
 }
 
-// EnsureValid checks if the memory operand is valid, if not, it panics.
+
 func (self *MemoryOperand) EnsureValid() {
 	self.ensureAddrValid()
 	self.ensureSizeValid()
 	self.ensureBroadcastValid()
 }
 
-// MemoryAddress represents a memory address.
+
 type MemoryAddress struct {
 	Base         Register
 	Index        Register
@@ -301,7 +301,7 @@ type MemoryAddress struct {
 }
 
 const (
-	_Scales = 0b100010111 // bit-mask for valid scales (0, 1, 2, 4, 8)
+	_Scales = 0b100010111 
 )
 
 func (self *MemoryAddress) isVMX(evex bool) bool {
@@ -321,52 +321,52 @@ func (self *MemoryAddress) isMem() bool {
 }
 
 func (self *MemoryAddress) isMemBase() bool {
-	return (self.Base == nil || isReg64(self.Base)) && // `Base` must be 64-bit if present
-		(self.Scale == 0) == (self.Index == nil) && // `Scale` and `Index` depends on each other
-		(_Scales&(1<<self.Scale)) != 0 // `Scale` can only be 0, 1, 2, 4 or 8
+	return (self.Base == nil || isReg64(self.Base)) && 
+		(self.Scale == 0) == (self.Index == nil) && 
+		(_Scales&(1<<self.Scale)) != 0 
 }
 
-// String implements the fmt.Stringer interface.
+
 func (self *MemoryAddress) String() string {
 	var dp int
 	var sb strings.Builder
 
-	/* the displacement part */
+	
 	if dp = int(self.Displacement); dp != 0 {
 		sb.WriteString(strconv.Itoa(dp))
 	}
 
-	/* the base register */
+	
 	if sb.WriteByte('('); self.Base != nil {
 		sb.WriteByte('%')
 		sb.WriteString(self.Base.String())
 	}
 
-	/* index is optional */
+	
 	if self.Index != nil {
 		sb.WriteString(",%")
 		sb.WriteString(self.Index.String())
 
-		/* scale is also optional */
+		
 		if self.Scale >= 2 {
 			sb.WriteByte(',')
 			sb.WriteString(strconv.Itoa(int(self.Scale)))
 		}
 	}
 
-	/* close the bracket */
+	
 	sb.WriteByte(')')
 	return sb.String()
 }
 
-// EnsureValid checks if the memory address is valid, if not, it panics.
+
 func (self *MemoryAddress) EnsureValid() {
 	if !self.isMemBase() || (self.Index != nil && !isIndexable(self.Index)) {
 		panic("not a valid memory address")
 	}
 }
 
-// Ref constructs a memory reference to a label.
+
 func Ref(ref *Label) (v *MemoryOperand) {
 	v = CreateMemoryOperand()
 	v.Addr.Type = Reference
@@ -374,17 +374,17 @@ func Ref(ref *Label) (v *MemoryOperand) {
 	return
 }
 
-// Abs construct a simple memory address that represents absolute addressing.
+
 func Abs(disp int32) *MemoryOperand {
 	return Sib(nil, nil, 0, disp)
 }
 
-// Ptr constructs a simple memory operand with base and displacement.
+
 func Ptr(base Register, disp int32) *MemoryOperand {
 	return Sib(base, nil, 0, disp)
 }
 
-// Sib constructs a simple memory operand that represents a complete memory address.
+
 func Sib(base Register, index Register, scale uint8, disp int32) (v *MemoryOperand) {
 	v = CreateMemoryOperand()
 	v.Addr.Type = Memory
@@ -396,7 +396,7 @@ func Sib(base Register, index Register, scale uint8, disp int32) (v *MemoryOpera
 	return
 }
 
-/** Operand Matching Helpers **/
+
 
 const _IntMask = (1 << reflect.Int) |
 	(1 << reflect.Int8) |

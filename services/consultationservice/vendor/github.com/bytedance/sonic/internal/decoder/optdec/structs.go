@@ -38,7 +38,7 @@ func (d *structDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) erro
 		val := NewNode(PtrOffset(next, 1))
 		next = val.Next()
 
-		// find field idx
+		
 		idx := d.fieldMap.Get(key, ctx.Options()&uint64(consts.OptionCaseSensitive) != 0)
         if idx == -1 {
             if Options(ctx.Options())&OptionDisableUnknown != 0 {
@@ -51,9 +51,9 @@ func (d *structDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) erro
 		elem := unsafe.Pointer(uintptr(vp) + offset)
 		err := d.fields[idx].fieldDec.FromDom(elem, val, ctx)
 
-		// deal with mismatch type errors
+		
 		if gerr == nil && err != nil {
-			// TODO: better error info
+			
 			gerr = err
 		}
 	}

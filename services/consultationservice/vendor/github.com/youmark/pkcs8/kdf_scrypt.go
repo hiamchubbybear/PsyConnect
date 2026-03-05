@@ -28,7 +28,7 @@ func (p scryptParams) DeriveKey(password []byte, size int) (key []byte, err erro
 		p.ParallelizationParameter, size)
 }
 
-// ScryptOpts contains options for the scrypt key derivation function.
+
 type ScryptOpts struct {
 	SaltSize                 int
 	CostParameter            int

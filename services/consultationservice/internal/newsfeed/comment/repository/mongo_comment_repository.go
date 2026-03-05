@@ -33,7 +33,7 @@ func (r *MongoCommentRepository) CreateComment(ctx context.Context, comment *dom
 	comment.ReplyCount = 0
 	comment.IsDeleted = false
 
-	// Calculate depth and path for nested comments
+	
 	if comment.ParentCommentID != "" {
 		parent, err := r.GetCommentByID(ctx, comment.ParentCommentID)
 		if err != nil {
@@ -47,7 +47,7 @@ func (r *MongoCommentRepository) CreateComment(ctx context.Context, comment *dom
 			comment.Path = parent.Path + "/" + parent.ID.Hex()
 		}
 
-		// Enforce max depth (3 levels: 0, 1, 2)
+		
 		if comment.Depth > 2 {
 			return errors.New("max depth exceeded")
 		}
@@ -62,12 +62,12 @@ func (r *MongoCommentRepository) CreateComment(ctx context.Context, comment *dom
 	}
 	comment.ID = result.InsertedID.(primitive.ObjectID)
 
-	// Increment parent reply count
+	
 	if comment.ParentCommentID != "" {
 		_ = r.IncrementReplyCount(ctx, comment.ParentCommentID)
 	}
 
-	// Invalidate cache
+	
 	r.invalidateCache(ctx, comment.PostID)
 	return nil
 }
@@ -94,7 +94,7 @@ func (r *MongoCommentRepository) UpdateComment(ctx context.Context, id, content 
 		return mongo.ErrNoDocuments
 	}
 
-	// Get comment to invalidate cache
+	
 	comment, _ := r.GetCommentByID(ctx, id)
 	if comment != nil {
 		r.invalidateCache(ctx, comment.PostID)
@@ -120,7 +120,7 @@ func (r *MongoCommentRepository) DeleteComment(ctx context.Context, id string) e
 		return mongo.ErrNoDocuments
 	}
 
-	// Get comment to invalidate cache
+	
 	comment, _ := r.GetCommentByID(ctx, id)
 	if comment != nil {
 		r.invalidateCache(ctx, comment.PostID)
@@ -148,7 +148,7 @@ func (r *MongoCommentRepository) GetCommentsByPost(ctx context.Context, postID s
 	filter := bson.M{
 		"post_id":           postID,
 		"is_deleted":        false,
-		"parent_comment_id": bson.M{"$exists": false}, // Only top-level comments
+		"parent_comment_id": bson.M{"$exists": false}, 
 	}
 
 	opts := options.Find().
@@ -191,7 +191,7 @@ func (r *MongoCommentRepository) GetReplies(ctx context.Context, parentCommentID
 }
 
 func (r *MongoCommentRepository) GetCommentsTree(ctx context.Context, postID string, maxDepth int, limit, skip int64) ([]domain.Comment, error) {
-	// Try cache first
+	
 	cacheKey := fmt.Sprintf("post:%s:comments:tree:%d:%d:%d", postID, maxDepth, limit, skip)
 	var cachedComments []domain.Comment
 	err := r.redis.Get(ctx, cacheKey, &cachedComments)
@@ -202,7 +202,7 @@ func (r *MongoCommentRepository) GetCommentsTree(ctx context.Context, postID str
 
 	log.Printf("[CommentRepo] CACHE MISS for key: %s", cacheKey)
 
-	// Get all comments for this post (up to maxDepth)
+	
 	filter := bson.M{
 		"post_id":    postID,
 		"is_deleted": false,
@@ -224,33 +224,33 @@ func (r *MongoCommentRepository) GetCommentsTree(ctx context.Context, postID str
 
 	log.Printf("[CommentRepo] Found %d raw comments in DB", len(allComments))
 
-	// Build tree structure
+	
 	tree := buildCommentTree(allComments)
 	log.Printf("[CommentRepo] Built tree with %d root comments", len(tree))
 
-	// Cache result (5 minutes)
+	
 	r.redis.Set(ctx, cacheKey, tree)
 
 	return tree, nil
 }
 
 func buildCommentTree(comments []domain.Comment) []domain.Comment {
-	// Create map for quick lookup
+	
 	commentMap := make(map[string]*domain.Comment)
 	for i := range comments {
 		id := comments[i].ID.Hex()
 		commentMap[id] = &comments[i]
-		comments[i].Replies = []domain.Comment{} // Initialize replies
+		comments[i].Replies = []domain.Comment{} 
 	}
 
-	// Build tree
+	
 	var rootComments []domain.Comment
 	for i := range comments {
 		if comments[i].ParentCommentID == "" {
-			// Root comment
+			
 			rootComments = append(rootComments, comments[i])
 		} else {
-			// Child comment - attach to parent
+			
 			if parent, exists := commentMap[comments[i].ParentCommentID]; exists {
 				parent.Replies = append(parent.Replies, comments[i])
 			}
@@ -292,11 +292,11 @@ func (r *MongoCommentRepository) DecrementReplyCount(ctx context.Context, commen
 }
 
 func (r *MongoCommentRepository) invalidateCache(ctx context.Context, postID string) {
-	// Invalidate post cache
+	
 	postCacheKey := fmt.Sprintf("post:%s", postID)
 	r.redis.Delete(ctx, postCacheKey)
 
-	// Invalidate comment tree caches for common depths
+	
 	for _, d := range []int{0, 1, 2, 5} {
 		treeCacheKey := fmt.Sprintf("post:%s:comments:tree:%d:20:0", postID, d)
 		r.redis.Delete(ctx, treeCacheKey)

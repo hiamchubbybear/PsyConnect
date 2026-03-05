@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	F = 0 /* character never appears in text */
-	T = 1 /* character appears in plain ASCII text */
-	I = 2 /* character appears in ISO-8859 text */
-	X = 3 /* character appears in non-ISO extended ASCII (Mac, IBM PC) */
+	F = 0 
+	T = 1 
+	I = 2 
+	X = 3 
 )
 
 var (
@@ -28,31 +28,31 @@ var (
 		{[]byte{0xFF, 0xFE}, "utf-16le"},
 	}
 
-	// https://github.com/file/file/blob/fa93fb9f7d21935f1c7644c47d2975d31f12b812/src/encoding.c#L241
+	
 	textChars = [256]byte{
-		/*                  BEL BS HT LF VT FF CR    */
-		F, F, F, F, F, F, F, T, T, T, T, T, T, T, F, F, /* 0x0X */
-		/*                              ESC          */
-		F, F, F, F, F, F, F, F, F, F, F, T, F, F, F, F, /* 0x1X */
-		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, /* 0x2X */
-		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, /* 0x3X */
-		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, /* 0x4X */
-		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, /* 0x5X */
-		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, /* 0x6X */
-		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, F, /* 0x7X */
-		/*            NEL                            */
-		X, X, X, X, X, T, X, X, X, X, X, X, X, X, X, X, /* 0x8X */
-		X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, /* 0x9X */
-		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, /* 0xaX */
-		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, /* 0xbX */
-		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, /* 0xcX */
-		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, /* 0xdX */
-		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, /* 0xeX */
-		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, /* 0xfX */
+		
+		F, F, F, F, F, F, F, T, T, T, T, T, T, T, F, F, 
+		
+		F, F, F, F, F, F, F, F, F, F, F, T, F, F, F, F, 
+		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, 
+		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, 
+		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, 
+		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, 
+		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, 
+		T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, F, 
+		
+		X, X, X, X, X, T, X, X, X, X, X, X, X, X, X, X, 
+		X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, 
+		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, 
+		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, 
+		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, 
+		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, 
+		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, 
+		I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, I, 
 	}
 )
 
-// FromBOM returns the charset declared in the BOM of content.
+
 func FromBOM(content []byte) string {
 	for _, b := range boms {
 		if bytes.HasPrefix(content, b.bom) {
@@ -62,8 +62,8 @@ func FromBOM(content []byte) string {
 	return ""
 }
 
-// FromPlain returns the charset of a plain text. It relies on BOM presence
-// and it falls back on checking each byte in content.
+
+
 func FromPlain(content []byte) string {
 	if len(content) == 0 {
 		return ""
@@ -72,8 +72,8 @@ func FromPlain(content []byte) string {
 		return cset
 	}
 	origContent := content
-	// Try to detect UTF-8.
-	// First eliminate any partial rune at the end.
+	
+	
 	for i := len(content) - 1; i >= 0 && i > len(content)-4; i-- {
 		b := content[i]
 		if b < 0x80 {
@@ -95,7 +95,7 @@ func FromPlain(content []byte) string {
 		return "utf-8"
 	}
 
-	// ASCII is a subset of UTF8. Follow W3C recommendation and replace with UTF8.
+	
 	if ascii(origContent) {
 		return "utf-8"
 	}
@@ -114,9 +114,9 @@ func latin(content []byte) string {
 			hasControlBytes = true
 		}
 	}
-	// Code range 0x80 to 0x9F is reserved for control characters in ISO-8859-1
-	// (so-called C1 Controls). Windows 1252, however, has printable punctuation
-	// characters in this range.
+	
+	
+	
 	if hasControlBytes {
 		return "windows-1252"
 	}
@@ -132,9 +132,9 @@ func ascii(content []byte) bool {
 	return true
 }
 
-// FromXML returns the charset of an XML document. It relies on the XML
-// header <?xml version="1.0" encoding="UTF-8"?> and falls back on the plain
-// text content.
+
+
+
 func FromXML(content []byte) string {
 	if cset := fromXML(content); cset != "" {
 		return cset
@@ -157,10 +157,10 @@ func fromXML(content []byte) string {
 	return strings.ToLower(xmlEncoding(string(t.Inst)))
 }
 
-// FromHTML returns the charset of an HTML document. It first looks if a BOM is
-// present and if so uses it to determine the charset. If no BOM is present,
-// it relies on the meta tag <meta charset="UTF-8"> and falls back on the
-// plain text content.
+
+
+
+
 func FromHTML(content []byte) string {
 	if cset := FromBOM(content); cset != "" {
 		return cset
@@ -293,9 +293,9 @@ func xmlEncoding(s string) string {
 	return v[1 : idx+1]
 }
 
-// trimLWS trims whitespace from beginning of the input.
-// TODO: find a way to call trimLWS once per detection instead of once in each
-// detector which needs the trimmed input.
+
+
+
 func trimLWS(in []byte) []byte {
 	firstNonWS := 0
 	for ; firstNonWS < len(in) && isWS(in[firstNonWS]); firstNonWS++ {

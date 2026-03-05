@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// SummaryStats is a data structure that carries a summary of observed values.
+
 type SummaryStats struct {
 	Avg   int64 `metric:"avg" type:"gauge"`
 	Min   int64 `metric:"min" type:"gauge"`
@@ -14,7 +14,7 @@ type SummaryStats struct {
 	Sum   int64 `metric:"sum" type:"counter"`
 }
 
-// DurationStats is a data structure that carries a summary of observed duration values.
+
 type DurationStats struct {
 	Avg   time.Duration `metric:"avg" type:"gauge"`
 	Min   time.Duration `metric:"min" type:"gauge"`
@@ -23,10 +23,10 @@ type DurationStats struct {
 	Sum   time.Duration `metric:"sum" type:"counter"`
 }
 
-// counter is an atomic incrementing counter which gets reset on snapshot.
-//
-// Since atomic is used to mutate the statistic the value must be 64-bit aligned.
-// See https://golang.org/pkg/sync/atomic/#pkg-note-BUG
+
+
+
+
 type counter int64
 
 func (c *counter) ptr() *int64 {
@@ -41,11 +41,11 @@ func (c *counter) snapshot() int64 {
 	return atomic.SwapInt64(c.ptr(), 0)
 }
 
-// gauge is an atomic integer that may be set to any arbitrary value, the value
-// does not change after a snapshot.
-//
-// Since atomic is used to mutate the statistic the value must be 64-bit aligned.
-// See https://golang.org/pkg/sync/atomic/#pkg-note-BUG
+
+
+
+
+
 type gauge int64
 
 func (g *gauge) ptr() *int64 {
@@ -60,11 +60,11 @@ func (g *gauge) snapshot() int64 {
 	return atomic.LoadInt64(g.ptr())
 }
 
-// minimum is an atomic integral type that keeps track of the minimum of all
-// values that it observed between snapshots.
-//
-// Since atomic is used to mutate the statistic the value must be 64-bit aligned.
-// See https://golang.org/pkg/sync/atomic/#pkg-note-BUG
+
+
+
+
+
 type minimum int64
 
 func (m *minimum) ptr() *int64 {
@@ -96,11 +96,11 @@ func (m *minimum) snapshot() int64 {
 	return v
 }
 
-// maximum is an atomic integral type that keeps track of the maximum of all
-// values that it observed between snapshots.
-//
-// Since atomic is used to mutate the statistic the value must be 64-bit aligned.
-// See https://golang.org/pkg/sync/atomic/#pkg-note-BUG
+
+
+
+
+
 type maximum int64
 
 func (m *maximum) ptr() *int64 {

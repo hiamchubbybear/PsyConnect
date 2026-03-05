@@ -84,7 +84,7 @@ func (wb *writeBuffer) writeVarBytes(b []byte) {
 		wb.writeVarInt(int64(len(b)))
 		wb.Write(b)
 	} else {
-		//-1 is used to indicate nil key
+		
 		wb.writeVarInt(-1)
 	}
 }
@@ -173,26 +173,26 @@ func (wb *writeBuffer) writeFetchRequestV2(correlationID int32, clientID, topic 
 		ClientID:      clientID,
 	}
 	h.Size = (h.size() - 4) +
-		4 + // replica ID
-		4 + // max wait time
-		4 + // min bytes
-		4 + // topic array length
+		4 + 
+		4 + 
+		4 + 
+		4 + 
 		sizeofString(topic) +
-		4 + // partition array length
-		4 + // partition
-		8 + // offset
-		4 // max bytes
+		4 + 
+		4 + 
+		8 + 
+		4 
 
 	h.writeTo(wb)
-	wb.writeInt32(-1) // replica ID
+	wb.writeInt32(-1) 
 	wb.writeInt32(milliseconds(maxWait))
 	wb.writeInt32(int32(minBytes))
 
-	// topic array
+	
 	wb.writeArrayLen(1)
 	wb.writeString(topic)
 
-	// partition array
+	
 	wb.writeArrayLen(1)
 	wb.writeInt32(partition)
 	wb.writeInt64(offset)
@@ -209,35 +209,35 @@ func (wb *writeBuffer) writeFetchRequestV5(correlationID int32, clientID, topic 
 		ClientID:      clientID,
 	}
 	h.Size = (h.size() - 4) +
-		4 + // replica ID
-		4 + // max wait time
-		4 + // min bytes
-		4 + // max bytes
-		1 + // isolation level
-		4 + // topic array length
+		4 + 
+		4 + 
+		4 + 
+		4 + 
+		1 + 
+		4 + 
 		sizeofString(topic) +
-		4 + // partition array length
-		4 + // partition
-		8 + // offset
-		8 + // log start offset
-		4 // max bytes
+		4 + 
+		4 + 
+		8 + 
+		8 + 
+		4 
 
 	h.writeTo(wb)
-	wb.writeInt32(-1) // replica ID
+	wb.writeInt32(-1) 
 	wb.writeInt32(milliseconds(maxWait))
 	wb.writeInt32(int32(minBytes))
 	wb.writeInt32(int32(maxBytes))
-	wb.writeInt8(isolationLevel) // isolation level 0 - read uncommitted
+	wb.writeInt8(isolationLevel) 
 
-	// topic array
+	
 	wb.writeArrayLen(1)
 	wb.writeString(topic)
 
-	// partition array
+	
 	wb.writeArrayLen(1)
 	wb.writeInt32(partition)
 	wb.writeInt64(offset)
-	wb.writeInt64(int64(0)) // log start offset only used when is sent by follower
+	wb.writeInt64(int64(0)) 
 	wb.writeInt32(int32(maxBytes))
 
 	return wb.Flush()
@@ -251,46 +251,46 @@ func (wb *writeBuffer) writeFetchRequestV10(correlationID int32, clientID, topic
 		ClientID:      clientID,
 	}
 	h.Size = (h.size() - 4) +
-		4 + // replica ID
-		4 + // max wait time
-		4 + // min bytes
-		4 + // max bytes
-		1 + // isolation level
-		4 + // session ID
-		4 + // session epoch
-		4 + // topic array length
+		4 + 
+		4 + 
+		4 + 
+		4 + 
+		1 + 
+		4 + 
+		4 + 
+		4 + 
 		sizeofString(topic) +
-		4 + // partition array length
-		4 + // partition
-		4 + // current leader epoch
-		8 + // fetch offset
-		8 + // log start offset
-		4 + // partition max bytes
-		4 // forgotten topics data
+		4 + 
+		4 + 
+		4 + 
+		8 + 
+		8 + 
+		4 + 
+		4 
 
 	h.writeTo(wb)
-	wb.writeInt32(-1) // replica ID
+	wb.writeInt32(-1) 
 	wb.writeInt32(milliseconds(maxWait))
 	wb.writeInt32(int32(minBytes))
 	wb.writeInt32(int32(maxBytes))
-	wb.writeInt8(isolationLevel) // isolation level 0 - read uncommitted
-	wb.writeInt32(0)             //FIXME
-	wb.writeInt32(-1)            //FIXME
+	wb.writeInt8(isolationLevel) 
+	wb.writeInt32(0)             
+	wb.writeInt32(-1)            
 
-	// topic array
+	
 	wb.writeArrayLen(1)
 	wb.writeString(topic)
 
-	// partition array
+	
 	wb.writeArrayLen(1)
 	wb.writeInt32(partition)
-	wb.writeInt32(-1) //FIXME
+	wb.writeInt32(-1) 
 	wb.writeInt64(offset)
-	wb.writeInt64(int64(0)) // log start offset only used when is sent by follower
+	wb.writeInt64(int64(0)) 
 	wb.writeInt32(int32(maxBytes))
 
-	// forgotten topics array
-	wb.writeArrayLen(0) // forgotten topics not supported yet
+	
+	wb.writeArrayLen(0) 
 
 	return wb.Flush()
 }
@@ -303,21 +303,21 @@ func (wb *writeBuffer) writeListOffsetRequestV1(correlationID int32, clientID, t
 		ClientID:      clientID,
 	}
 	h.Size = (h.size() - 4) +
-		4 + // replica ID
-		4 + // topic array length
-		sizeofString(topic) + // topic
-		4 + // partition array length
-		4 + // partition
-		8 // time
+		4 + 
+		4 + 
+		sizeofString(topic) + 
+		4 + 
+		4 + 
+		8 
 
 	h.writeTo(wb)
-	wb.writeInt32(-1) // replica ID
+	wb.writeInt32(-1) 
 
-	// topic array
+	
 	wb.writeArrayLen(1)
 	wb.writeString(topic)
 
-	// partition array
+	
 	wb.writeArrayLen(1)
 	wb.writeInt32(partition)
 	wb.writeInt64(time)
@@ -347,24 +347,24 @@ func (wb *writeBuffer) writeProduceRequestV2(codec CompressionCodec, correlation
 		ClientID:      clientID,
 	}
 	h.Size = (h.size() - 4) +
-		2 + // required acks
-		4 + // timeout
-		4 + // topic array length
-		sizeofString(topic) + // topic
-		4 + // partition array length
-		4 + // partition
-		4 + // message set size
+		2 + 
+		4 + 
+		4 + 
+		sizeofString(topic) + 
+		4 + 
+		4 + 
+		4 + 
 		size
 
 	h.writeTo(wb)
-	wb.writeInt16(requiredAcks) // required acks
+	wb.writeInt16(requiredAcks) 
 	wb.writeInt32(milliseconds(timeout))
 
-	// topic array
+	
 	wb.writeArrayLen(1)
 	wb.writeString(topic)
 
-	// partition array
+	
 	wb.writeArrayLen(1)
 	wb.writeInt32(partition)
 
@@ -390,25 +390,25 @@ func (wb *writeBuffer) writeProduceRequestV3(correlationID int32, clientID, topi
 
 	h.Size = (h.size() - 4) +
 		sizeofNullableString(transactionalID) +
-		2 + // required acks
-		4 + // timeout
-		4 + // topic array length
-		sizeofString(topic) + // topic
-		4 + // partition array length
-		4 + // partition
-		4 + // message set size
+		2 + 
+		4 + 
+		4 + 
+		sizeofString(topic) + 
+		4 + 
+		4 + 
+		4 + 
 		recordBatch.size
 
 	h.writeTo(wb)
 	wb.writeNullableString(transactionalID)
-	wb.writeInt16(requiredAcks) // required acks
+	wb.writeInt16(requiredAcks) 
 	wb.writeInt32(milliseconds(timeout))
 
-	// topic array
+	
 	wb.writeArrayLen(1)
 	wb.writeString(topic)
 
-	// partition array
+	
 	wb.writeArrayLen(1)
 	wb.writeInt32(partition)
 
@@ -427,25 +427,25 @@ func (wb *writeBuffer) writeProduceRequestV7(correlationID int32, clientID, topi
 	}
 	h.Size = (h.size() - 4) +
 		sizeofNullableString(transactionalID) +
-		2 + // required acks
-		4 + // timeout
-		4 + // topic array length
-		sizeofString(topic) + // topic
-		4 + // partition array length
-		4 + // partition
-		4 + // message set size
+		2 + 
+		4 + 
+		4 + 
+		sizeofString(topic) + 
+		4 + 
+		4 + 
+		4 + 
 		recordBatch.size
 
 	h.writeTo(wb)
 	wb.writeNullableString(transactionalID)
-	wb.writeInt16(requiredAcks) // required acks
+	wb.writeInt16(requiredAcks) 
 	wb.writeInt32(milliseconds(timeout))
 
-	// topic array
+	
 	wb.writeArrayLen(1)
 	wb.writeString(topic)
 
-	// partition array
+	
 	wb.writeArrayLen(1)
 	wb.writeInt32(partition)
 
@@ -459,17 +459,17 @@ func (wb *writeBuffer) writeRecordBatch(attributes int16, size int32, count int,
 		baseTimestamp   = timestamp(baseTime)
 		lastTimestamp   = timestamp(lastTime)
 		lastOffsetDelta = int32(count - 1)
-		producerID      = int64(-1)    // default producer id for now
-		producerEpoch   = int16(-1)    // default producer epoch for now
-		baseSequence    = int32(-1)    // default base sequence
-		recordCount     = int32(count) // record count
+		producerID      = int64(-1)    
+		producerEpoch   = int16(-1)    
+		baseSequence    = int32(-1)    
+		recordCount     = int32(count) 
 		writerBackup    = wb.w
 	)
 
-	// dry run to compute the checksum
+	
 	cw := &crc32Writer{table: crc32.MakeTable(crc32.Castagnoli)}
 	wb.w = cw
-	cw.writeInt16(attributes) // attributes, timestamp type 0 - create time, not part of a transaction, no control messages
+	cw.writeInt16(attributes) 
 	cw.writeInt32(lastOffsetDelta)
 	cw.writeInt64(baseTimestamp)
 	cw.writeInt64(lastTimestamp)
@@ -480,11 +480,11 @@ func (wb *writeBuffer) writeRecordBatch(attributes int16, size int32, count int,
 	write(wb)
 	wb.w = writerBackup
 
-	// actual write to the output buffer
+	
 	wb.writeInt64(int64(0))
-	wb.writeInt32(int32(size - 12)) // 12 = batch length + base offset sizes
-	wb.writeInt32(-1)               // partition leader epoch
-	wb.writeInt8(2)                 // magic byte
+	wb.writeInt32(int32(size - 12)) 
+	wb.writeInt32(-1)               
+	wb.writeInt8(2)                 
 	wb.writeInt32(int32(cw.crc32))
 
 	wb.writeInt16(attributes)
@@ -519,12 +519,12 @@ func compressMessageSet(codec CompressionCodec, msgs ...Message) (compressed *by
 }
 
 func (wb *writeBuffer) writeMessage(offset int64, attributes int8, time time.Time, key, value []byte, cw *crc32Writer) {
-	const magicByte = 1 // compatible with kafka 0.10.0.0+
+	const magicByte = 1 
 
 	timestamp := timestamp(time)
 	size := messageSize(key, value)
 
-	// dry run to compute the checksum
+	
 	cw.crc32 = 0
 	cw.writeInt8(magicByte)
 	cw.writeInt8(attributes)
@@ -532,7 +532,7 @@ func (wb *writeBuffer) writeMessage(offset int64, attributes int8, time time.Tim
 	cw.writeBytes(key)
 	cw.writeBytes(value)
 
-	// actual write to the output buffer
+	
 	wb.writeInt64(offset)
 	wb.writeInt32(size)
 	wb.writeInt32(int32(cw.crc32))
@@ -543,7 +543,7 @@ func (wb *writeBuffer) writeMessage(offset int64, attributes int8, time time.Tim
 	wb.writeBytes(value)
 }
 
-// Messages with magic >2 are called records. This method writes messages using message format 2.
+
 func (wb *writeBuffer) writeRecord(attributes int8, baseTime time.Time, offset int64, msg Message) {
 	timestampDelta := msg.Time.Sub(baseTime)
 	offsetDelta := int64(offset)
@@ -563,7 +563,7 @@ func (wb *writeBuffer) writeRecord(attributes int8, baseTime time.Time, offset i
 }
 
 func varIntLen(i int64) int {
-	u := uint64((i << 1) ^ (i >> 63)) // zig-zag encoding
+	u := uint64((i << 1) ^ (i >> 63)) 
 	n := 0
 
 	for u >= 0x80 {
@@ -591,22 +591,22 @@ func varArrayLen(n int, f func(int) int) int {
 }
 
 func messageSize(key, value []byte) int32 {
-	return 4 + // crc
-		1 + // magic byte
-		1 + // attributes
-		8 + // timestamp
+	return 4 + 
+		1 + 
+		1 + 
+		8 + 
 		sizeofBytes(key) +
 		sizeofBytes(value)
 }
 
 func messageSetSize(msgs ...Message) (size int32) {
 	for _, msg := range msgs {
-		size += 8 + // offset
-			4 + // message size
-			4 + // crc
-			1 + // magic byte
-			1 + // attributes
-			8 + // timestamp
+		size += 8 + 
+			4 + 
+			4 + 
+			1 + 
+			1 + 
+			8 + 
 			sizeofBytes(msg.Key) +
 			sizeofBytes(msg.Value)
 	}

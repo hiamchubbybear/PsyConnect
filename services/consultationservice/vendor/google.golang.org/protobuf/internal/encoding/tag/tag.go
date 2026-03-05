@@ -1,9 +1,9 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// Package tag marshals and unmarshals the legacy struct tags as generated
-// by historical versions of protoc-gen-go.
+
+
+
+
+
 package tag
 
 import (
@@ -19,16 +19,16 @@ import (
 
 var byteType = reflect.TypeOf(byte(0))
 
-// Unmarshal decodes the tag into a prototype.Field.
-//
-// The goType is needed to determine the original protoreflect.Kind since the
-// tag does not record sufficient information to determine that.
-// The type is the underlying field type (e.g., a repeated field may be
-// represented by []T, but the Go type passed in is just T).
-// A list of enum value descriptors must be provided for enum fields.
-// This does not populate the Enum or Message.
-//
-// This function is a best effort attempt; parsing errors are ignored.
+
+
+
+
+
+
+
+
+
+
 func Unmarshal(tag string, goType reflect.Type, evs protoreflect.EnumValueDescriptors) protoreflect.FieldDescriptor {
 	f := new(filedesc.Field)
 	f.L0.ParentFile = filedesc.SurrogateProto2
@@ -110,8 +110,8 @@ func Unmarshal(tag string, goType reflect.Type, evs protoreflect.EnumValueDescri
 		case s == "packed":
 			f.L1.EditionFeatures.IsPacked = true
 		case strings.HasPrefix(s, "def="):
-			// The default tag is special in that everything afterwards is the
-			// default regardless of the presence of commas.
+			
+			
 			s, i = tag[len("def="):], len(tag)
 			v, ev, _ := defval.Unmarshal(s, f.L1.Kind, evs, defval.GoTag)
 			f.L1.Default = filedesc.DefaultValue(v, ev)
@@ -121,22 +121,22 @@ func Unmarshal(tag string, goType reflect.Type, evs protoreflect.EnumValueDescri
 		tag = strings.TrimPrefix(tag[i:], ",")
 	}
 
-	// The generator uses the group message name instead of the field name.
-	// We obtain the real field name by lowercasing the group name.
+	
+	
 	if f.L1.Kind == protoreflect.GroupKind {
 		f.L0.FullName = protoreflect.FullName(strings.ToLower(string(f.L0.FullName)))
 	}
 	return f
 }
 
-// Marshal encodes the protoreflect.FieldDescriptor as a tag.
-//
-// The enumName must be provided if the kind is an enum.
-// Historically, the formulation of the enum "name" was the proto package
-// dot-concatenated with the generated Go identifier for the enum type.
-// Depending on the context on how Marshal is called, there are different ways
-// through which that information is determined. As such it is the caller's
-// responsibility to provide a function to obtain that information.
+
+
+
+
+
+
+
+
 func Marshal(fd protoreflect.FieldDescriptor, enumName string) string {
 	var tag []string
 	switch fd.Kind() {
@@ -169,20 +169,20 @@ func Marshal(fd protoreflect.FieldDescriptor, enumName string) string {
 	}
 	name := string(fd.Name())
 	if fd.Kind() == protoreflect.GroupKind {
-		// The name of the FieldDescriptor for a group field is
-		// lowercased. To find the original capitalization, we
-		// look in the field's MessageType.
+		
+		
+		
 		name = string(fd.Message().Name())
 	}
 	tag = append(tag, "name="+name)
 	if jsonName := fd.JSONName(); jsonName != "" && jsonName != name && !fd.IsExtension() {
-		// NOTE: The jsonName != name condition is suspect, but it preserve
-		// the exact same semantics from the previous generator.
+		
+		
 		tag = append(tag, "json="+jsonName)
 	}
-	// The previous implementation does not tag extension fields as proto3,
-	// even when the field is defined in a proto3 file. Match that behavior
-	// for consistency.
+	
+	
+	
 	if fd.Syntax() == protoreflect.Proto3 && !fd.IsExtension() {
 		tag = append(tag, "proto3")
 	}
@@ -192,7 +192,7 @@ func Marshal(fd protoreflect.FieldDescriptor, enumName string) string {
 	if fd.ContainingOneof() != nil {
 		tag = append(tag, "oneof")
 	}
-	// This must appear last in the tag, since commas in strings aren't escaped.
+	
 	if fd.HasDefault() {
 		def, _ := defval.Marshal(fd.Default(), fd.DefaultEnumValue(), fd.Kind(), defval.GoTag)
 		tag = append(tag, "def="+def)

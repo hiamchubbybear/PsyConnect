@@ -1,12 +1,12 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// Package defval marshals and unmarshals textual forms of default values.
-//
-// This package handles both the form historically used in Go struct field tags
-// and also the form used by google.protobuf.FieldDescriptorProto.default_value
-// since they differ in superficial ways.
+
+
+
+
+
+
+
+
 package defval
 
 import (
@@ -19,22 +19,22 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-// Format is the serialization format used to represent the default value.
+
 type Format int
 
 const (
 	_ Format = iota
 
-	// Descriptor uses the serialization format that protoc uses with the
-	// google.protobuf.FieldDescriptorProto.default_value field.
+	
+	
 	Descriptor
 
-	// GoTag uses the historical serialization format in Go struct field tags.
+	
 	GoTag
 )
 
-// Unmarshal deserializes the default string s according to the given kind k.
-// When k is an enum, a list of enum value descriptors must be provided.
+
+
 func Unmarshal(s string, k protoreflect.Kind, evs protoreflect.EnumValueDescriptors, f Format) (protoreflect.Value, protoreflect.EnumValueDescriptor, error) {
 	switch k {
 	case protoreflect.BoolKind:
@@ -55,14 +55,14 @@ func Unmarshal(s string, k protoreflect.Kind, evs protoreflect.EnumValueDescript
 		}
 	case protoreflect.EnumKind:
 		if f == GoTag {
-			// Go tags use the numeric form of the enum value.
+			
 			if n, err := strconv.ParseInt(s, 10, 32); err == nil {
 				if ev := evs.ByNumber(protoreflect.EnumNumber(n)); ev != nil {
 					return protoreflect.ValueOfEnum(ev.Number()), ev, nil
 				}
 			}
 		} else {
-			// Descriptor default_value use the enum identifier.
+			
 			ev := evs.ByName(protoreflect.Name(s))
 			if ev != nil {
 				return protoreflect.ValueOfEnum(ev.Number()), ev, nil
@@ -105,7 +105,7 @@ func Unmarshal(s string, k protoreflect.Kind, evs protoreflect.EnumValueDescript
 			}
 		}
 	case protoreflect.StringKind:
-		// String values are already unescaped and can be used as is.
+		
 		return protoreflect.ValueOfString(s), nil, nil
 	case protoreflect.BytesKind:
 		if b, ok := unmarshalBytes(s); ok {
@@ -115,9 +115,9 @@ func Unmarshal(s string, k protoreflect.Kind, evs protoreflect.EnumValueDescript
 	return protoreflect.Value{}, nil, errors.New("could not parse value for %v: %q", k, s)
 }
 
-// Marshal serializes v as the default string according to the given kind k.
-// When specifying the Descriptor format for an enum kind, the associated
-// enum value descriptor must be provided.
+
+
+
 func Marshal(v protoreflect.Value, ev protoreflect.EnumValueDescriptor, k protoreflect.Kind, f Format) (string, error) {
 	switch k {
 	case protoreflect.BoolKind:
@@ -161,7 +161,7 @@ func Marshal(v protoreflect.Value, ev protoreflect.EnumValueDescriptor, k protor
 			}
 		}
 	case protoreflect.StringKind:
-		// String values are serialized as is without any escaping.
+		
 		return v.String(), nil
 	case protoreflect.BytesKind:
 		if s, ok := marshalBytes(v.Bytes()); ok {
@@ -171,10 +171,10 @@ func Marshal(v protoreflect.Value, ev protoreflect.EnumValueDescriptor, k protor
 	return "", errors.New("could not format value for %v: %v", k, v)
 }
 
-// unmarshalBytes deserializes bytes by applying C unescaping.
+
 func unmarshalBytes(s string) ([]byte, bool) {
-	// Bytes values use the same escaping as the text format,
-	// however they lack the surrounding double quotes.
+	
+	
 	v, err := ptext.UnmarshalString(`"` + s + `"`)
 	if err != nil {
 		return nil, false
@@ -182,9 +182,9 @@ func unmarshalBytes(s string) ([]byte, bool) {
 	return []byte(v), true
 }
 
-// marshalBytes serializes bytes by using C escaping.
-// To match the exact output of protoc, this is identical to the
-// CEscape function in strutil.cc of the protoc source code.
+
+
+
 func marshalBytes(b []byte) (string, bool) {
 	var s []byte
 	for _, c := range b {

@@ -1,12 +1,12 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-//
-// Based on github.com/aws/aws-sdk-go by Amazon.com, Inc. with code from:
-// - github.com/aws/aws-sdk-go/blob/v1.44.225/aws/request/request.go
-// See THIRD-PARTY-NOTICES for original license terms
+
+
+
+
+
+
+
+
+
 
 package v4
 
@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-// Returns host from request
+
 func getHost(r *http.Request) string {
 	if r.Host != "" {
 		return r.Host
@@ -28,13 +28,13 @@ func getHost(r *http.Request) string {
 	return r.URL.Host
 }
 
-// Hostname returns u.Host, without any port number.
-//
-// If Host is an IPv6 literal with a port number, Hostname returns the
-// IPv6 literal without the square brackets. IPv6 literals may include
-// a zone identifier.
-//
-// Copied from the Go 1.8 standard library (net/url)
+
+
+
+
+
+
+
 func stripPort(hostport string) string {
 	colon := strings.IndexByte(hostport, ':')
 	if colon == -1 {
@@ -46,10 +46,10 @@ func stripPort(hostport string) string {
 	return hostport[:colon]
 }
 
-// Port returns the port part of u.Host, without the leading colon.
-// If u.Host doesn't contain a port, Port returns an empty string.
-//
-// Copied from the Go 1.8 standard library (net/url)
+
+
+
+
 func portOnly(hostport string) string {
 	colon := strings.IndexByte(hostport, ':')
 	if colon == -1 {
@@ -64,8 +64,8 @@ func portOnly(hostport string) string {
 	return hostport[colon+len(":"):]
 }
 
-// Returns true if the specified URI is using the standard port
-// (i.e. port 80 for HTTP URIs or 443 for HTTPS URIs)
+
+
 func isDefaultPort(scheme, port string) bool {
 	if port == "" {
 		return true

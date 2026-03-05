@@ -1,10 +1,10 @@
-// Copyright 2015 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package arm64
 
-// This order should be strictly consistent to that in a.out.go
+
 var cnames7 = []string{
 	"NONE",
 	"REG",

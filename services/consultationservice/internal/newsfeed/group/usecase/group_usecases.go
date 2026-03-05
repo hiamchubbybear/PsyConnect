@@ -13,7 +13,7 @@ var (
 	ErrAlreadyMember = errors.New("user is already a member of this group")
 )
 
-// CreateGroupUseCase handles the creation of a new group
+
 type CreateGroupUseCase struct {
 	groupRepo repository.GroupRepository
 }
@@ -31,7 +31,7 @@ func (uc *CreateGroupUseCase) Execute(ctx context.Context, group *domain.Group) 
 	return uc.groupRepo.CreateGroup(ctx, group)
 }
 
-// GetGroupsUseCase retrieves a list of groups
+
 type GetGroupsUseCase struct {
 	groupRepo repository.GroupRepository
 }
@@ -44,7 +44,7 @@ func (uc *GetGroupsUseCase) Execute(ctx context.Context, category, query string,
 	return uc.groupRepo.GetGroups(ctx, category, query, limit, skip)
 }
 
-// GetGroupByIDUseCase retrieves a single group by its ID
+
 type GetGroupByIDUseCase struct {
 	groupRepo repository.GroupRepository
 }
@@ -61,7 +61,7 @@ func (uc *GetGroupByIDUseCase) Execute(ctx context.Context, id string) (*domain.
 	return group, nil
 }
 
-// JoinGroupUseCase handles a user joining a group
+
 type JoinGroupUseCase struct {
 	groupRepo repository.GroupRepository
 }
@@ -71,13 +71,13 @@ func NewJoinGroupUseCase(groupRepo repository.GroupRepository) *JoinGroupUseCase
 }
 
 func (uc *JoinGroupUseCase) Execute(ctx context.Context, groupID string, userID string) error {
-	// Check if group exists
+	
 	_, err := uc.groupRepo.GetGroupByID(ctx, groupID)
 	if err != nil {
 		return ErrGroupNotFound
 	}
 
-	// Check if already a member
+	
 	isMember, err := uc.groupRepo.IsMember(ctx, groupID, userID)
 	if err != nil {
 		return err

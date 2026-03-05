@@ -7,8 +7,8 @@ import (
 	"syscall"
 )
 
-// Error represents the different error codes that may be returned by kafka.
-// https://kafka.apache.org/protocol#protocol_error_codes
+
+
 type Error int
 
 const (
@@ -121,20 +121,20 @@ const (
 	FetchSessionTopicIDError           Error = 106
 )
 
-// Error satisfies the error interface.
+
 func (e Error) Error() string {
 	return fmt.Sprintf("[%d] %s: %s", e, e.Title(), e.Description())
 }
 
-// Timeout returns true if the error was due to a timeout.
+
 func (e Error) Timeout() bool {
 	return e == RequestTimedOut
 }
 
-// Temporary returns true if the operation that generated the error may succeed
-// if retried at a later time.
-// Kafka error documentation specifies these as "retriable"
-// https://kafka.apache.org/protocol#protocol_error_codes
+
+
+
+
 func (e Error) Temporary() bool {
 	switch e {
 	case InvalidMessage,
@@ -172,7 +172,7 @@ func (e Error) Temporary() bool {
 	}
 }
 
-// Title returns a human readable title for the error.
+
 func (e Error) Title() string {
 	switch e {
 	case Unknown:
@@ -381,7 +381,7 @@ func (e Error) Title() string {
 	return ""
 }
 
-// Description returns a human readable description of cause of the error.
+
 func (e Error) Description() string {
 	switch e {
 	case Unknown:
@@ -665,28 +665,28 @@ func makeError(code int16, message string) error {
 	return fmt.Errorf("%w: %s", Error(code), message)
 }
 
-// WriteError is returned by kafka.(*Writer).WriteMessages when the writer is
-// not configured to write messages asynchronously. WriteError values contain
-// a list of errors where each entry matches the position of a message in the
-// WriteMessages call. The program can determine the status of each message by
-// looping over the error:
-//
-//	switch err := w.WriteMessages(ctx, msgs...).(type) {
-//	case nil:
-//	case kafka.WriteErrors:
-//		for i := range msgs {
-//			if err[i] != nil {
-//				// handle the error writing msgs[i]
-//				...
-//			}
-//		}
-//	default:
-//		// handle other errors
-//		...
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type WriteErrors []error
 
-// Count counts the number of non-nil errors in err.
+
 func (err WriteErrors) Count() int {
 	n := 0
 

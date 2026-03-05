@@ -213,7 +213,7 @@ func (h *Handler) DeleteClient(c *gin.Context) {
 	apiresponse.NewApiResponse(c, gin.H{"message": "Client deleted successfully"})
 }
 
-// Helper to convert domain to response
+
 func domainToResponse(client *domain.Client) map[string]interface{} {
 	return map[string]interface{}{
 		"profile_id":         client.ProfileID,

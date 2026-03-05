@@ -1,8 +1,8 @@
-// Copied from https://cs.opensource.google/go/x/exp/+/24438e51023af3bfc1db8aed43c1342817e8cfcd:rand/normal.go
 
-// Copyright 2009 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
+
 
 package rand
 
@@ -10,13 +10,7 @@ import (
 	"math"
 )
 
-/*
- * Normal distribution
- *
- * See "The Ziggurat Method for Generating Random Variables"
- * (Marsaglia & Tsang, 2000)
- * http://www.jstatsoft.org/v05/i08/paper [pdf]
- */
+
 
 const (
 	rn = 3.442619855899
@@ -29,25 +23,25 @@ func absInt32(i int32) uint32 {
 	return uint32(i)
 }
 
-// NormFloat64 returns a normally distributed float64 in the range
-// [-math.MaxFloat64, +math.MaxFloat64] with
-// standard normal distribution (mean = 0, stddev = 1).
-// To produce a different normal distribution, callers can
-// adjust the output using:
-//
-//	sample = NormFloat64() * desiredStdDev + desiredMean
+
+
+
+
+
+
+
 func (r *Rand) NormFloat64() float64 {
 	for {
-		j := int32(r.Uint32()) // Possibly negative
+		j := int32(r.Uint32()) 
 		i := j & 0x7F
 		x := float64(j) * float64(wn[i])
 		if absInt32(j) < kn[i] {
-			// This case should be hit better than 99% of the time.
+			
 			return x
 		}
 
 		if i == 0 {
-			// This extra work is only required for the base strip.
+			
 			for {
 				x = -math.Log(r.Float64()) * (1.0 / rn)
 				y := -math.Log(r.Float64())

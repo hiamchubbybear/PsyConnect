@@ -32,7 +32,7 @@ const (
 
 type structCache struct {
 	lock sync.Mutex
-	m    atomic.Value // map[reflect.Type]*cStruct
+	m    atomic.Value 
 }
 
 func (sc *structCache) Get(key reflect.Type) (c *cStruct, found bool) {
@@ -52,7 +52,7 @@ func (sc *structCache) Set(key reflect.Type, value *cStruct) {
 
 type tagCache struct {
 	lock sync.Mutex
-	m    atomic.Value // map[string]*cTag
+	m    atomic.Value 
 }
 
 func (tc *tagCache) Get(key string) (c *cTag, found bool) {
@@ -89,25 +89,25 @@ type cTag struct {
 	aliasTag             string
 	actualAliasTag       string
 	param                string
-	keys                 *cTag // only populated when using tag's 'keys' and 'endkeys' for map key validation
+	keys                 *cTag 
 	next                 *cTag
 	fn                   FuncCtx
 	typeof               tagType
 	hasTag               bool
 	hasAlias             bool
-	hasParam             bool // true if parameter used eg. eq= where the equal sign has been set
-	isBlockEnd           bool // indicates the current tag represents the last validation in the block
+	hasParam             bool 
+	isBlockEnd           bool 
 	runValidationWhenNil bool
 }
 
 func (v *Validate) extractStructCache(current reflect.Value, sName string) *cStruct {
 	v.structCache.lock.Lock()
-	defer v.structCache.lock.Unlock() // leave as defer! because if inner panics, it will never get unlocked otherwise!
+	defer v.structCache.lock.Unlock() 
 
 	typ := current.Type()
 
-	// could have been multiple trying to access, but once first is done this ensures struct
-	// isn't parsed again.
+	
+	
 	cs, ok := v.structCache.Get(typ)
 	if ok {
 		return cs
@@ -150,14 +150,14 @@ func (v *Validate) extractStructCache(current reflect.Value, sName string) *cStr
 			}
 		}
 
-		// NOTE: cannot use shared tag cache, because tags may be equal, but things like alias may be different
-		// and so only struct level caching can be used instead of combined with Field tag caching
+		
+		
 
 		if len(tag) > 0 {
 			ctag, _ = v.parseFieldTagsRecursive(tag, fld.Name, "", false)
 		} else {
-			// even if field doesn't have validations need cTag for traversing to potential inner/nested
-			// elements of the field.
+			
+			
 			ctag = new(cTag)
 		}
 
@@ -184,7 +184,7 @@ func (v *Validate) parseFieldTagsRecursive(tag string, fieldName string, alias s
 			alias = t
 		}
 
-		// check map for alias and process new tags, otherwise process as usual
+		
 		if tagsVal, found := v.aliases[t]; found {
 			if i == 0 {
 				firstCtag, current = v.parseFieldTagsRecursive(tagsVal, fieldName, t, true)
@@ -221,8 +221,8 @@ func (v *Validate) parseFieldTagsRecursive(tag string, fieldName string, alias s
 
 			current.typeof = typeKeys
 
-			// need to pass along only keys tag
-			// need to increment i to skip over the keys tags
+			
+			
 			b := make([]byte, 0, 64)
 
 			i++
@@ -243,8 +243,8 @@ func (v *Validate) parseFieldTagsRecursive(tag string, fieldName string, alias s
 		case endKeysTag:
 			current.typeof = typeEndKeys
 
-			// if there are more in tags then there was no keysTag defined
-			// and an error should be thrown
+			
+			
 			if i != len(tags)-1 {
 				panic(keysTagNotDefined)
 			}
@@ -274,7 +274,7 @@ func (v *Validate) parseFieldTagsRecursive(tag string, fieldName string, alias s
 			if t == isdefault {
 				current.typeof = typeIsDefault
 			}
-			// if a pipe character is needed within the param you must use the utf8Pipe representation "0x7C"
+			
 			orVals := strings.Split(t, orSeparator)
 
 			for j := 0; j < len(orVals); j++ {
@@ -319,14 +319,14 @@ func (v *Validate) parseFieldTagsRecursive(tag string, fieldName string, alias s
 }
 
 func (v *Validate) fetchCacheTag(tag string) *cTag {
-	// find cached tag
+	
 	ctag, found := v.tagCache.Get(tag)
 	if !found {
 		v.tagCache.lock.Lock()
 		defer v.tagCache.lock.Unlock()
 
-		// could have been multiple trying to access, but once first is done this ensures tag
-		// isn't parsed again.
+		
+		
 		ctag, found = v.tagCache.Get(tag)
 		if !found {
 			ctag, _ = v.parseFieldTagsRecursive(tag, "", "", false)

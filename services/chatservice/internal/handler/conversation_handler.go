@@ -55,7 +55,7 @@ func (h *ConversationHandler) GetConversationByUsers(c *gin.Context) {
 			return
 		}
 
-		// Inject system welcome message into the new conversation
+		
 		systemMsg := &model.Chat{
 			ID:             model.NewUUID(),
 			SenderID:       "SYSTEM",
@@ -116,7 +116,7 @@ func (h *ConversationHandler) GetRecentConversations(c *gin.Context) {
 		dtos = append(dtos, dto)
 	}
 
-	// Sort by last message timestamp descending
+	
 	sort.Slice(dtos, func(i, j int) bool {
 		var timeI, timeJ time.Time
 		if dtos[i].LastMessage != nil {

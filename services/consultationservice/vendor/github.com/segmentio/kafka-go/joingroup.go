@@ -13,97 +13,97 @@ import (
 	"github.com/segmentio/kafka-go/protocol/joingroup"
 )
 
-// JoinGroupRequest is the request structure for the JoinGroup function.
+
 type JoinGroupRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// GroupID of the group to join.
+	
 	GroupID string
 
-	// The duration after which the coordinator considers the consumer dead
-	// if it has not received a heartbeat.
+	
+	
 	SessionTimeout time.Duration
 
-	// The duration the coordination will wait for each member to rejoin when rebalancing the group.
+	
 	RebalanceTimeout time.Duration
 
-	// The ID assigned by the group coordinator.
+	
 	MemberID string
 
-	// The unique identifier for the consumer instance.
+	
 	GroupInstanceID string
 
-	// The name for the class of protocols implemented by the group being joined.
+	
 	ProtocolType string
 
-	// The list of protocols the member supports.
+	
 	Protocols []GroupProtocol
 }
 
-// GroupProtocol represents a consumer group protocol.
+
 type GroupProtocol struct {
-	// The protocol name.
+	
 	Name string
 
-	// The protocol metadata.
+	
 	Metadata GroupProtocolSubscription
 }
 
 type GroupProtocolSubscription struct {
-	// The Topics to subscribe to.
+	
 	Topics []string
 
-	// UserData assosiated with the subscription for the given protocol
+	
 	UserData []byte
 
-	// Partitions owned by this consumer.
+	
 	OwnedPartitions map[string][]int
 }
 
-// JoinGroupResponse is the response structure for the JoinGroup function.
+
 type JoinGroupResponse struct {
-	// An error that may have occurred when attempting to join the group.
-	//
-	// The errors contain the kafka error code. Programs may use the standard
-	// errors.Is function to test the error against kafka error codes.
+	
+	
+	
+	
 	Error error
 
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// The generation ID of the group.
+	
 	GenerationID int
 
-	// The group protocol selected by the coordinatior.
+	
 	ProtocolName string
 
-	// The group protocol name.
+	
 	ProtocolType string
 
-	// The leader of the group.
+	
 	LeaderID string
 
-	// The group member ID.
+	
 	MemberID string
 
-	// The members of the group.
+	
 	Members []JoinGroupResponseMember
 }
 
-// JoinGroupResponseMember represents a group memmber in a reponse to a JoinGroup request.
+
 type JoinGroupResponseMember struct {
-	// The group memmber ID.
+	
 	ID string
 
-	// The unique identifier of the consumer instance.
+	
 	GroupInstanceID string
 
-	// The group member metadata.
+	
 	Metadata GroupProtocolSubscription
 }
 
-// JoinGroup sends a join group request to the coordinator and returns the response.
+
 func (c *Client) JoinGroup(ctx context.Context, req *JoinGroupRequest) (*JoinGroupResponse, error) {
 	joinGroup := joingroup.Request{
 		GroupID:            req.GroupID,
@@ -242,25 +242,25 @@ func (t joinGroupRequestGroupProtocolV1) writeTo(wb *writeBuffer) {
 }
 
 type joinGroupRequestV1 struct {
-	// GroupID holds the unique group identifier
+	
 	GroupID string
 
-	// SessionTimeout holds the coordinator considers the consumer dead if it
-	// receives no heartbeat after this timeout in ms.
+	
+	
 	SessionTimeout int32
 
-	// RebalanceTimeout holds the maximum time that the coordinator will wait
-	// for each member to rejoin when rebalancing the group in ms
+	
+	
 	RebalanceTimeout int32
 
-	// MemberID assigned by the group coordinator or the zero string if joining
-	// for the first time.
+	
+	
 	MemberID string
 
-	// ProtocolType holds the unique name for class of protocols implemented by group
+	
 	ProtocolType string
 
-	// GroupProtocols holds the list of protocols that the member supports
+	
 	GroupProtocols []joinGroupRequestGroupProtocolV1
 }
 
@@ -283,7 +283,7 @@ func (t joinGroupRequestV1) writeTo(wb *writeBuffer) {
 }
 
 type joinGroupResponseMemberV1 struct {
-	// MemberID assigned by the group coordinator
+	
 	MemberID       string
 	MemberMetadata []byte
 }
@@ -309,19 +309,19 @@ func (t *joinGroupResponseMemberV1) readFrom(r *bufio.Reader, size int) (remain 
 }
 
 type joinGroupResponseV1 struct {
-	// ErrorCode holds response error code
+	
 	ErrorCode int16
 
-	// GenerationID holds the generation of the group.
+	
 	GenerationID int32
 
-	// GroupProtocol holds the group protocol selected by the coordinator
+	
 	GroupProtocol string
 
-	// LeaderID holds the leader of the group
+	
 	LeaderID string
 
-	// MemberID assigned by the group coordinator
+	
 	MemberID string
 	Members  []joinGroupResponseMemberV1
 }

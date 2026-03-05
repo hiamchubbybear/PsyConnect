@@ -1,16 +1,16 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
-// Package dns is intended for internal use only. It is made available to
-// facilitate use cases that require access to internal MongoDB driver
-// functionality and state. The API of this package is not stable and there is
-// no backward compatibility guarantee.
-//
-// WARNING: THIS PACKAGE IS EXPERIMENTAL AND MAY BE MODIFIED OR REMOVED WITHOUT
-// NOTICE! USE WITH EXTREME CAUTION!
+
+
+
+
+
+
+
+
+
+
+
+
 package dns
 
 import (
@@ -21,17 +21,17 @@ import (
 	"strings"
 )
 
-// Resolver resolves DNS records.
+
 type Resolver struct {
-	// Holds the functions to use for DNS lookups
+	
 	LookupSRV func(string, string, string) (string, []*net.SRV, error)
 	LookupTXT func(string) ([]string, error)
 }
 
-// DefaultResolver is a Resolver that uses the default Resolver from the net package.
+
 var DefaultResolver = &Resolver{net.LookupSRV, net.LookupTXT}
 
-// ParseHosts uses the srv string and service name to get the hosts.
+
 func (r *Resolver) ParseHosts(host string, srvName string, stopOnErr bool) ([]string, error) {
 	parsedHosts := strings.Split(host, ",")
 
@@ -41,17 +41,17 @@ func (r *Resolver) ParseHosts(host string, srvName string, stopOnErr bool) ([]st
 	return r.fetchSeedlistFromSRV(parsedHosts[0], srvName, stopOnErr)
 }
 
-// GetConnectionArgsFromTXT gets the TXT record associated with the host and returns the connection arguments.
+
 func (r *Resolver) GetConnectionArgsFromTXT(host string) ([]string, error) {
 	var connectionArgsFromTXT []string
 
-	// error ignored because not finding a TXT record should not be
-	// considered an error.
+	
+	
 	recordsFromTXT, _ := r.LookupTXT(host)
 
-	// This is a temporary fix to get around bug https://github.com/golang/go/issues/21472.
-	// It will currently incorrectly concatenate multiple TXT records to one
-	// on windows.
+	
+	
+	
 	if runtime.GOOS == "windows" {
 		recordsFromTXT = []string{strings.Join(recordsFromTXT, "")}
 	}
@@ -77,12 +77,12 @@ func (r *Resolver) fetchSeedlistFromSRV(host string, srvName string, stopOnErr b
 	_, _, err = net.SplitHostPort(host)
 
 	if err == nil {
-		// we were able to successfully extract a port from the host,
-		// but should not be able to when using SRV
+		
+		
 		return nil, fmt.Errorf("URI with srv must not include a port number")
 	}
 
-	// default to "mongodb" as service name if not supplied
+	
 	if srvName == "" {
 		srvName = "mongodb"
 	}

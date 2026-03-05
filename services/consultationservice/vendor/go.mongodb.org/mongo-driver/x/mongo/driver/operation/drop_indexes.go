@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -21,7 +21,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// DropIndexes performs an dropIndexes operation.
+
 type DropIndexes struct {
 	authenticator driver.Authenticator
 	index         any
@@ -40,9 +40,9 @@ type DropIndexes struct {
 	timeout       *time.Duration
 }
 
-// DropIndexesResult represents a dropIndexes result returned by the server.
+
 type DropIndexesResult struct {
-	// Number of indexes that existed before the drop was executed.
+	
 	NIndexesWas int32
 }
 
@@ -64,14 +64,14 @@ func buildDropIndexesResult(response bsoncore.Document) (DropIndexesResult, erro
 	return dir, nil
 }
 
-// NewDropIndexes constructs and returns a new DropIndexes.
+
 func NewDropIndexes(index any) *DropIndexes {
 	return &DropIndexes{
 		index: index,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (di *DropIndexes) Result() DropIndexesResult { return di.result }
 
 func (di *DropIndexes) processResponse(info driver.ResponseInfo) error {
@@ -80,7 +80,7 @@ func (di *DropIndexes) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (di *DropIndexes) Execute(ctx context.Context) error {
 	if di.deployment == nil {
 		return errors.New("the DropIndexes operation must have a Deployment set before Execute can be called")
@@ -121,7 +121,7 @@ func (di *DropIndexes) command(dst []byte, _ description.SelectedServer) ([]byte
 	return dst, nil
 }
 
-// Index specifies the name of the index to drop. If '*' is specified, all indexes will be dropped.
+
 func (di *DropIndexes) Index(index any) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -131,7 +131,7 @@ func (di *DropIndexes) Index(index any) *DropIndexes {
 	return di
 }
 
-// MaxTime specifies the maximum amount of time to allow the query to run on the server.
+
 func (di *DropIndexes) MaxTime(maxTime *time.Duration) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -141,7 +141,7 @@ func (di *DropIndexes) MaxTime(maxTime *time.Duration) *DropIndexes {
 	return di
 }
 
-// Session sets the session for this operation.
+
 func (di *DropIndexes) Session(session *session.Client) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -151,7 +151,7 @@ func (di *DropIndexes) Session(session *session.Client) *DropIndexes {
 	return di
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (di *DropIndexes) ClusterClock(clock *session.ClusterClock) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -161,7 +161,7 @@ func (di *DropIndexes) ClusterClock(clock *session.ClusterClock) *DropIndexes {
 	return di
 }
 
-// Collection sets the collection that this command will run against.
+
 func (di *DropIndexes) Collection(collection string) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -171,7 +171,7 @@ func (di *DropIndexes) Collection(collection string) *DropIndexes {
 	return di
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (di *DropIndexes) CommandMonitor(monitor *event.CommandMonitor) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -181,7 +181,7 @@ func (di *DropIndexes) CommandMonitor(monitor *event.CommandMonitor) *DropIndexe
 	return di
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (di *DropIndexes) Crypt(crypt driver.Crypt) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -191,7 +191,7 @@ func (di *DropIndexes) Crypt(crypt driver.Crypt) *DropIndexes {
 	return di
 }
 
-// Database sets the database to run this operation against.
+
 func (di *DropIndexes) Database(database string) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -201,7 +201,7 @@ func (di *DropIndexes) Database(database string) *DropIndexes {
 	return di
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (di *DropIndexes) Deployment(deployment driver.Deployment) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -211,7 +211,7 @@ func (di *DropIndexes) Deployment(deployment driver.Deployment) *DropIndexes {
 	return di
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (di *DropIndexes) ServerSelector(selector description.ServerSelector) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -221,7 +221,7 @@ func (di *DropIndexes) ServerSelector(selector description.ServerSelector) *Drop
 	return di
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (di *DropIndexes) WriteConcern(writeConcern *writeconcern.WriteConcern) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -231,7 +231,7 @@ func (di *DropIndexes) WriteConcern(writeConcern *writeconcern.WriteConcern) *Dr
 	return di
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (di *DropIndexes) ServerAPI(serverAPI *driver.ServerAPIOptions) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -241,7 +241,7 @@ func (di *DropIndexes) ServerAPI(serverAPI *driver.ServerAPIOptions) *DropIndexe
 	return di
 }
 
-// Timeout sets the timeout for this operation.
+
 func (di *DropIndexes) Timeout(timeout *time.Duration) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)
@@ -251,7 +251,7 @@ func (di *DropIndexes) Timeout(timeout *time.Duration) *DropIndexes {
 	return di
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (di *DropIndexes) Authenticator(authenticator driver.Authenticator) *DropIndexes {
 	if di == nil {
 		di = new(DropIndexes)

@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -11,7 +11,7 @@ import (
 )
 
 type EnumInfo struct {
-	GoReflectType reflect.Type // int32 kind
+	GoReflectType reflect.Type 
 	Desc          protoreflect.EnumDescriptor
 }
 

@@ -21,7 +21,7 @@ func NewAPI(emailSvc *email.EmailService, notifSvc *handlers.NotificationService
 	}
 }
 
-// Email endpoints
+
 
 type ActivateEmailRequest struct {
 	Username string `json:"username" binding:"required"`
@@ -65,7 +65,7 @@ func (a *API) SendAccountUpdateEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Account update email sent successfully"})
 }
 
-// Notification endpoints
+
 
 type SaveTokenRequest struct {
 	UserID string `json:"userId" binding:"required"`

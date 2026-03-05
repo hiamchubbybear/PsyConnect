@@ -13,7 +13,7 @@ import (
 
 type translation struct {
 	Locale           string      `json:"locale"`
-	Key              interface{} `json:"key"` // either string or integer
+	Key              interface{} `json:"key"` 
 	Translation      string      `json:"trans"`
 	PluralType       string      `json:"type,omitempty"`
 	PluralRule       string      `json:"rule,omitempty"`
@@ -26,17 +26,17 @@ const (
 	rangeType    = "Range"
 )
 
-// ImportExportFormat is the format of the file import or export
+
 type ImportExportFormat uint8
 
-// supported Export Formats
+
 const (
 	FormatJSON ImportExportFormat = iota
 )
 
-// Export writes the translations out to a file on disk.
-//
-// NOTE: this currently only works with string or int translations keys.
+
+
+
 func (t *UniversalTranslator) Export(format ImportExportFormat, dirname string) error {
 
 	_, err := os.Stat(dirname)
@@ -51,7 +51,7 @@ func (t *UniversalTranslator) Export(format ImportExportFormat, dirname string) 
 		}
 	}
 
-	// build up translations
+	
 	var trans []translation
 	var b []byte
 	var ext string
@@ -70,8 +70,8 @@ func (t *UniversalTranslator) Export(format ImportExportFormat, dirname string) 
 
 			for i, plural := range pluralTrans {
 
-				// leave enough for all plural rules
-				// but not all are set for all languages.
+				
+				
 				if plural == nil {
 					continue
 				}
@@ -90,8 +90,8 @@ func (t *UniversalTranslator) Export(format ImportExportFormat, dirname string) 
 
 			for i, plural := range pluralTrans {
 
-				// leave enough for all plural rules
-				// but not all are set for all languages.
+				
+				
 				if plural == nil {
 					continue
 				}
@@ -110,8 +110,8 @@ func (t *UniversalTranslator) Export(format ImportExportFormat, dirname string) 
 
 			for i, plural := range pluralTrans {
 
-				// leave enough for all plural rules
-				// but not all are set for all languages.
+				
+				
 				if plural == nil {
 					continue
 				}
@@ -147,9 +147,9 @@ func (t *UniversalTranslator) Export(format ImportExportFormat, dirname string) 
 	return nil
 }
 
-// Import reads the translations out of a file or directory on disk.
-//
-// NOTE: this currently only works with string or int translations keys.
+
+
+
 func (t *UniversalTranslator) Import(format ImportExportFormat, dirnameOrFilename string) error {
 
 	fi, err := os.Stat(dirnameOrFilename)
@@ -172,7 +172,7 @@ func (t *UniversalTranslator) Import(format ImportExportFormat, dirnameOrFilenam
 		return processFn(dirnameOrFilename)
 	}
 
-	// recursively go through directory
+	
 	walker := func(path string, info os.FileInfo, err error) error {
 
 		if info.IsDir() {
@@ -181,7 +181,7 @@ func (t *UniversalTranslator) Import(format ImportExportFormat, dirnameOrFilenam
 
 		switch format {
 		case FormatJSON:
-			// skip non JSON files
+			
 			if filepath.Ext(info.Name()) != ".json" {
 				return nil
 			}
@@ -193,9 +193,9 @@ func (t *UniversalTranslator) Import(format ImportExportFormat, dirnameOrFilenam
 	return filepath.Walk(dirnameOrFilename, walker)
 }
 
-// ImportByReader imports the the translations found within the contents read from the supplied reader.
-//
-// NOTE: generally used when assets have been embedded into the binary and are already in memory.
+
+
+
 func (t *UniversalTranslator) ImportByReader(format ImportExportFormat, reader io.Reader) error {
 
 	b, err := io.ReadAll(reader)

@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -65,7 +65,7 @@ func (mi *MessageInfo) checkInitializedPointer(p pointer) error {
 					if f.isLazy && p.Apply(f.offset).AtomicGetPointer().IsNil() {
 						lazy := *p.Apply(mi.lazyOffset).LazyInfoPtr()
 						if !lazy.AllowedPartial() {
-							// Nothing to see here, it was checked on unmarshal
+							
 							continue
 						}
 						mi.lazyUnmarshal(p, f.num)
@@ -120,9 +120,9 @@ var (
 	needsInitCheckMap sync.Map
 )
 
-// needsInitCheck reports whether a message needs to be checked for partial initialization.
-//
-// It returns true if the message transitively includes any required or extension fields.
+
+
+
 func needsInitCheck(md protoreflect.MessageDescriptor) bool {
 	if v, ok := needsInitCheckMap.Load(md); ok {
 		if has, ok := v.(bool); ok {
@@ -136,20 +136,20 @@ func needsInitCheck(md protoreflect.MessageDescriptor) bool {
 
 func needsInitCheckLocked(md protoreflect.MessageDescriptor) (has bool) {
 	if v, ok := needsInitCheckMap.Load(md); ok {
-		// If has is true, we've previously determined that this message
-		// needs init checks.
-		//
-		// If has is false, we've previously determined that it can never
-		// be uninitialized.
-		//
-		// If has is not a bool, we've just encountered a cycle in the
-		// message graph. In this case, it is safe to return false: If
-		// the message does have required fields, we'll detect them later
-		// in the graph traversal.
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		has, ok := v.(bool)
 		return ok && has
 	}
-	needsInitCheckMap.Store(md, struct{}{}) // avoid cycles while descending into this message
+	needsInitCheckMap.Store(md, struct{}{}) 
 	defer func() {
 		needsInitCheckMap.Store(md, has)
 	}()
@@ -161,7 +161,7 @@ func needsInitCheckLocked(md protoreflect.MessageDescriptor) (has bool) {
 	}
 	for i := 0; i < md.Fields().Len(); i++ {
 		fd := md.Fields().Get(i)
-		// Map keys are never messages, so just consider the map value.
+		
 		if fd.IsMap() {
 			fd = fd.MapValue()
 		}

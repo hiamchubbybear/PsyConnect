@@ -1,6 +1,6 @@
-// Copyright 2020 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package cpu
 
@@ -9,8 +9,8 @@ import (
 	"unsafe"
 )
 
-// Minimal copy of functionality from x/sys/unix so the cpu package can call
-// sysctl without depending on x/sys/unix.
+
+
 
 const (
 	_CTL_QUERY = -2
@@ -57,8 +57,8 @@ type sysctlNode struct {
 func sysctlNodes(mib []int32) ([]sysctlNode, error) {
 	var olen uintptr
 
-	// Get a list of all sysctl nodes below the given MIB by performing
-	// a sysctl for the given MIB with CTL_QUERY appended.
+	
+	
 	mib = append(mib, _CTL_QUERY)
 	qnode := sysctlNode{Flags: _SYSCTL_VERS_1}
 	qp := (*byte)(unsafe.Pointer(&qnode))
@@ -67,7 +67,7 @@ func sysctlNodes(mib []int32) ([]sysctlNode, error) {
 		return nil, err
 	}
 
-	// Now that we know the size, get the actual nodes.
+	
 	nodes := make([]sysctlNode, olen/sz)
 	np := (*byte)(unsafe.Pointer(&nodes[0]))
 	if err := sysctl(mib, np, &olen, qp, sz); err != nil {
@@ -78,7 +78,7 @@ func sysctlNodes(mib []int32) ([]sysctlNode, error) {
 }
 
 func nametomib(name string) ([]int32, error) {
-	// Split name into components.
+	
 	var parts []string
 	last := 0
 	for i := 0; i < len(name); i++ {
@@ -90,7 +90,7 @@ func nametomib(name string) ([]int32, error) {
 	parts = append(parts, name[last:])
 
 	mib := []int32{}
-	// Discover the nodes and construct the MIB OID.
+	
 	for partno, part := range parts {
 		nodes, err := sysctlNodes(mib)
 		if err != nil {
@@ -116,27 +116,27 @@ func nametomib(name string) ([]int32, error) {
 	return mib, nil
 }
 
-// aarch64SysctlCPUID is struct aarch64_sysctl_cpu_id from NetBSD's <aarch64/armreg.h>
+
 type aarch64SysctlCPUID struct {
-	midr      uint64 /* Main ID Register */
-	revidr    uint64 /* Revision ID Register */
-	mpidr     uint64 /* Multiprocessor Affinity Register */
-	aa64dfr0  uint64 /* A64 Debug Feature Register 0 */
-	aa64dfr1  uint64 /* A64 Debug Feature Register 1 */
-	aa64isar0 uint64 /* A64 Instruction Set Attribute Register 0 */
-	aa64isar1 uint64 /* A64 Instruction Set Attribute Register 1 */
-	aa64mmfr0 uint64 /* A64 Memory Model Feature Register 0 */
-	aa64mmfr1 uint64 /* A64 Memory Model Feature Register 1 */
-	aa64mmfr2 uint64 /* A64 Memory Model Feature Register 2 */
-	aa64pfr0  uint64 /* A64 Processor Feature Register 0 */
-	aa64pfr1  uint64 /* A64 Processor Feature Register 1 */
-	aa64zfr0  uint64 /* A64 SVE Feature ID Register 0 */
-	mvfr0     uint32 /* Media and VFP Feature Register 0 */
-	mvfr1     uint32 /* Media and VFP Feature Register 1 */
-	mvfr2     uint32 /* Media and VFP Feature Register 2 */
+	midr      uint64 
+	revidr    uint64 
+	mpidr     uint64 
+	aa64dfr0  uint64 
+	aa64dfr1  uint64 
+	aa64isar0 uint64 
+	aa64isar1 uint64 
+	aa64mmfr0 uint64 
+	aa64mmfr1 uint64 
+	aa64mmfr2 uint64 
+	aa64pfr0  uint64 
+	aa64pfr1  uint64 
+	aa64zfr0  uint64 
+	mvfr0     uint32 
+	mvfr1     uint32 
+	mvfr2     uint32 
 	pad       uint32
-	clidr     uint64 /* Cache Level ID Register */
-	ctr       uint64 /* Cache Type Register */
+	clidr     uint64 
+	ctr       uint64 
 }
 
 func sysctlCPUID(name string) (*aarch64SysctlCPUID, error) {

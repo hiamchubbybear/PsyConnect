@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package filedesc
 
@@ -21,11 +21,11 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-// Edition is an Enum for proto2.Edition
+
 type Edition int32
 
-// These values align with the value of Enum in descriptor.proto which allows
-// direct conversion between the proto enum and this enum.
+
+
 const (
 	EditionUnknown     Edition = 0
 	EditionProto2      Edition = 998
@@ -35,32 +35,32 @@ const (
 	EditionUnsupported Edition = 100000
 )
 
-// The types in this file may have a suffix:
-//	• L0: Contains fields common to all descriptors (except File) and
-//	must be initialized up front.
-//	• L1: Contains fields specific to a descriptor and
-//	must be initialized up front. If the associated proto uses Editions, the
-//  Editions features must always be resolved. If not explicitly set, the
-//  appropriate default must be resolved and set.
-//	• L2: Contains fields that are lazily initialized when constructing
-//	from the raw file descriptor. When constructing as a literal, the L2
-//	fields must be initialized up front.
-//
-// The types are exported so that packages like reflect/protodesc can
-// directly construct descriptors.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 type (
 	File struct {
 		fileRaw
 		L1 FileL1
 
-		once uint32     // atomically set if L2 is valid
-		mu   sync.Mutex // protects L2
+		once uint32     
+		mu   sync.Mutex 
 		L2   *FileL2
 	}
 	FileL1 struct {
 		Syntax  protoreflect.Syntax
-		Edition Edition // Only used if Syntax == Editions
+		Edition Edition 
 		Path    string
 		Package protoreflect.FullName
 
@@ -77,47 +77,47 @@ type (
 		Locations SourceLocations
 	}
 
-	// EditionFeatures is a frequently-instantiated struct, so please take care
-	// to minimize padding when adding new fields to this struct (add them in
-	// the right place/order).
+	
+	
+	
 	EditionFeatures struct {
-		// StripEnumPrefix determines if the plugin generates enum value
-		// constants as-is, with their prefix stripped, or both variants.
+		
+		
 		StripEnumPrefix int
 
-		// IsFieldPresence is true if field_presence is EXPLICIT
-		// https://protobuf.dev/editions/features/#field_presence
+		
+		
 		IsFieldPresence bool
 
-		// IsFieldPresence is true if field_presence is LEGACY_REQUIRED
-		// https://protobuf.dev/editions/features/#field_presence
+		
+		
 		IsLegacyRequired bool
 
-		// IsOpenEnum is true if enum_type is OPEN
-		// https://protobuf.dev/editions/features/#enum_type
+		
+		
 		IsOpenEnum bool
 
-		// IsPacked is true if repeated_field_encoding is PACKED
-		// https://protobuf.dev/editions/features/#repeated_field_encoding
+		
+		
 		IsPacked bool
 
-		// IsUTF8Validated is true if utf_validation is VERIFY
-		// https://protobuf.dev/editions/features/#utf8_validation
+		
+		
 		IsUTF8Validated bool
 
-		// IsDelimitedEncoded is true if message_encoding is DELIMITED
-		// https://protobuf.dev/editions/features/#message_encoding
+		
+		
 		IsDelimitedEncoded bool
 
-		// IsJSONCompliant is true if json_format is ALLOW
-		// https://protobuf.dev/editions/features/#json_format
+		
+		
 		IsJSONCompliant bool
 
-		// GenerateLegacyUnmarshalJSON determines if the plugin generates the
-		// UnmarshalJSON([]byte) error method for enums.
+		
+		
 		GenerateLegacyUnmarshalJSON bool
-		// APILevel controls which API (Open, Hybrid or Opaque) should be used
-		// for generated code (.pb.go files).
+		
+		
 		APILevel int
 	}
 )
@@ -127,7 +127,7 @@ func (fd *File) Parent() protoreflect.Descriptor         { return nil }
 func (fd *File) Index() int                              { return 0 }
 func (fd *File) Syntax() protoreflect.Syntax             { return fd.L1.Syntax }
 
-// Not exported and just used to reconstruct the original FileDescriptor proto
+
 func (fd *File) Edition() int32                  { return int32(fd.L1.Edition) }
 func (fd *File) Name() protoreflect.Name         { return fd.L1.Package.Name() }
 func (fd *File) FullName() protoreflect.FullName { return fd.L1.Package }
@@ -160,17 +160,17 @@ func (fd *File) lazyInit() *FileL2 {
 func (fd *File) lazyInitOnce() {
 	fd.mu.Lock()
 	if fd.L2 == nil {
-		fd.lazyRawInit() // recursively initializes all L2 structures
+		fd.lazyRawInit() 
 	}
 	atomic.StoreUint32(&fd.once, 1)
 	fd.mu.Unlock()
 }
 
-// GoPackagePath is a pseudo-internal API for determining the Go package path
-// that this file descriptor is declared in.
-//
-// WARNING: This method is exempt from the compatibility promise and may be
-// removed in the future without warning.
+
+
+
+
+
 func (fd *File) GoPackagePath() string {
 	return fd.builder.GoPackagePath
 }
@@ -179,10 +179,10 @@ type (
 	Enum struct {
 		Base
 		L1 EnumL1
-		L2 *EnumL2 // protected by fileDesc.once
+		L2 *EnumL2 
 	}
 	EnumL1 struct {
-		eagerValues bool // controls whether EnumL2.Values is already populated
+		eagerValues bool 
 
 		EditionFeatures EditionFeatures
 	}
@@ -220,7 +220,7 @@ func (ed *Enum) ReservedRanges() protoreflect.EnumRanges { return &ed.lazyInit()
 func (ed *Enum) Format(s fmt.State, r rune)              { descfmt.FormatDesc(s, r, ed) }
 func (ed *Enum) ProtoType(protoreflect.EnumDescriptor)   {}
 func (ed *Enum) lazyInit() *EnumL2 {
-	ed.L0.ParentFile.lazyInit() // implicitly initializes L2
+	ed.L0.ParentFile.lazyInit() 
 	return ed.L2
 }
 func (ed *Enum) IsClosed() bool {
@@ -241,14 +241,14 @@ type (
 	Message struct {
 		Base
 		L1 MessageL1
-		L2 *MessageL2 // protected by fileDesc.once
+		L2 *MessageL2 
 	}
 	MessageL1 struct {
 		Enums        Enums
 		Messages     Messages
 		Extensions   Extensions
-		IsMapEntry   bool // promoted from google.protobuf.MessageOptions
-		IsMessageSet bool // promoted from google.protobuf.MessageOptions
+		IsMapEntry   bool 
+		IsMessageSet bool 
 
 		EditionFeatures EditionFeatures
 	}
@@ -258,9 +258,9 @@ type (
 		Oneofs                Oneofs
 		ReservedNames         Names
 		ReservedRanges        FieldRanges
-		RequiredNumbers       FieldNumbers // must be consistent with Fields.Cardinality
+		RequiredNumbers       FieldNumbers 
 		ExtensionRanges       FieldRanges
-		ExtensionRangeOptions []func() protoreflect.ProtoMessage // must be same length as ExtensionRanges
+		ExtensionRangeOptions []func() protoreflect.ProtoMessage 
 	}
 
 	Field struct {
@@ -270,13 +270,13 @@ type (
 	FieldL1 struct {
 		Options          func() protoreflect.ProtoMessage
 		Number           protoreflect.FieldNumber
-		Cardinality      protoreflect.Cardinality // must be consistent with Message.RequiredNumbers
+		Cardinality      protoreflect.Cardinality 
 		Kind             protoreflect.Kind
 		StringName       stringName
-		IsProto3Optional bool // promoted from google.protobuf.FieldDescriptorProto
-		IsLazy           bool // promoted from google.protobuf.FieldOptions
+		IsProto3Optional bool 
+		IsLazy           bool 
 		Default          defaultValue
-		ContainingOneof  protoreflect.OneofDescriptor // must be consistent with Message.Oneofs.Fields
+		ContainingOneof  protoreflect.OneofDescriptor 
 		Enum             protoreflect.EnumDescriptor
 		Message          protoreflect.MessageDescriptor
 
@@ -289,7 +289,7 @@ type (
 	}
 	OneofL1 struct {
 		Options func() protoreflect.ProtoMessage
-		Fields  OneofFields // must be consistent with Message.Fields.ContainingOneof
+		Fields  OneofFields 
 
 		EditionFeatures EditionFeatures
 	}
@@ -320,15 +320,15 @@ func (md *Message) Extensions() protoreflect.ExtensionDescriptors { return &md.L
 func (md *Message) ProtoType(protoreflect.MessageDescriptor)      {}
 func (md *Message) Format(s fmt.State, r rune)                    { descfmt.FormatDesc(s, r, md) }
 func (md *Message) lazyInit() *MessageL2 {
-	md.L0.ParentFile.lazyInit() // implicitly initializes L2
+	md.L0.ParentFile.lazyInit() 
 	return md.L2
 }
 
-// IsMessageSet is a pseudo-internal API for checking whether a message
-// should serialize in the proto1 message format.
-//
-// WARNING: This method is exempt from the compatibility promise and may be
-// removed in the future without warning.
+
+
+
+
+
 func (md *Message) IsMessageSet() bool {
 	return md.L1.IsMessageSet
 }
@@ -403,13 +403,13 @@ func (fd *Field) IsMapEntry() bool {
 func (fd *Field) Format(s fmt.State, r rune)             { descfmt.FormatDesc(s, r, fd) }
 func (fd *Field) ProtoType(protoreflect.FieldDescriptor) {}
 
-// EnforceUTF8 is a pseudo-internal API to determine whether to enforce UTF-8
-// validation for the string field. This exists for Google-internal use only
-// since proto3 did not enforce UTF-8 validity prior to the open-source release.
-// If this method does not exist, the default is to enforce valid UTF-8.
-//
-// WARNING: This method is exempt from the compatibility promise and may be
-// removed in the future without warning.
+
+
+
+
+
+
+
 func (fd *Field) EnforceUTF8() bool {
 	return fd.L1.EditionFeatures.IsUTF8Validated
 }
@@ -431,7 +431,7 @@ type (
 	Extension struct {
 		Base
 		L1 ExtensionL1
-		L2 *ExtensionL2 // protected by fileDesc.once
+		L2 *ExtensionL2 
 	}
 	ExtensionL1 struct {
 		Number          protoreflect.FieldNumber
@@ -444,7 +444,7 @@ type (
 	ExtensionL2 struct {
 		Options          func() protoreflect.ProtoMessage
 		StringName       stringName
-		IsProto3Optional bool // promoted from google.protobuf.FieldDescriptorProto
+		IsProto3Optional bool 
 		Default          defaultValue
 		Enum             protoreflect.EnumDescriptor
 		Message          protoreflect.MessageDescriptor
@@ -497,7 +497,7 @@ func (xd *Extension) Format(s fmt.State, r rune)                        { descfm
 func (xd *Extension) ProtoType(protoreflect.FieldDescriptor)            {}
 func (xd *Extension) ProtoInternal(pragma.DoNotImplement)               {}
 func (xd *Extension) lazyInit() *ExtensionL2 {
-	xd.L0.ParentFile.lazyInit() // implicitly initializes L2
+	xd.L0.ParentFile.lazyInit() 
 	return xd.L2
 }
 
@@ -505,7 +505,7 @@ type (
 	Service struct {
 		Base
 		L1 ServiceL1
-		L2 *ServiceL2 // protected by fileDesc.once
+		L2 *ServiceL2 
 	}
 	ServiceL1 struct{}
 	ServiceL2 struct {
@@ -537,7 +537,7 @@ func (sd *Service) Format(s fmt.State, r rune)               { descfmt.FormatDes
 func (sd *Service) ProtoType(protoreflect.ServiceDescriptor) {}
 func (sd *Service) ProtoInternal(pragma.DoNotImplement)      {}
 func (sd *Service) lazyInit() *ServiceL2 {
-	sd.L0.ParentFile.lazyInit() // implicitly initializes L2
+	sd.L0.ParentFile.lazyInit() 
 	return sd.L2
 }
 
@@ -555,8 +555,8 @@ func (md *Method) Format(s fmt.State, r rune)              { descfmt.FormatDesc(
 func (md *Method) ProtoType(protoreflect.MethodDescriptor) {}
 func (md *Method) ProtoInternal(pragma.DoNotImplement)     {}
 
-// Surrogate files are can be used to create standalone descriptors
-// where the syntax is only information derived from the parent file.
+
+
 var (
 	SurrogateProto2      = &File{L1: FileL1{Syntax: protoreflect.Proto2}, L2: &FileL2{}}
 	SurrogateProto3      = &File{L1: FileL1{Syntax: protoreflect.Proto3}, L2: &FileL2{}}
@@ -568,8 +568,8 @@ type (
 		L0 BaseL0
 	}
 	BaseL0 struct {
-		FullName   protoreflect.FullName // must be populated
-		ParentFile *File                 // must be populated
+		FullName   protoreflect.FullName 
+		ParentFile *File                 
 		Parent     protoreflect.Descriptor
 		Index      int
 	}
@@ -579,7 +579,7 @@ func (d *Base) Name() protoreflect.Name         { return d.L0.FullName.Name() }
 func (d *Base) FullName() protoreflect.FullName { return d.L0.FullName }
 func (d *Base) ParentFile() protoreflect.FileDescriptor {
 	if d.L0.ParentFile == SurrogateProto2 || d.L0.ParentFile == SurrogateProto3 {
-		return nil // surrogate files are not real parents
+		return nil 
 	}
 	return d.L0.ParentFile
 }
@@ -596,34 +596,34 @@ type stringName struct {
 	nameText string
 }
 
-// InitJSON initializes the name. It is exported for use by other internal packages.
+
 func (s *stringName) InitJSON(name string) {
 	s.hasJSON = true
 	s.nameJSON = name
 }
 
-// Returns true if this field is structured like the synthetic field of a proto2
-// group. This allows us to expand our treatment of delimited fields without
-// breaking proto2 files that have been upgraded to editions.
+
+
+
 func isGroupLike(fd protoreflect.FieldDescriptor) bool {
-	// Groups are always group types.
+	
 	if fd.Kind() != protoreflect.GroupKind {
 		return false
 	}
 
-	// Group fields are always the lowercase type name.
+	
 	if strings.ToLower(string(fd.Message().Name())) != string(fd.Name()) {
 		return false
 	}
 
-	// Groups could only be defined in the same file they're used.
+	
 	if fd.Message().ParentFile() != fd.ParentFile() {
 		return false
 	}
 
-	// Group messages are always defined in the same scope as the field.  File
-	// level extensions will compare NULL == NULL here, which is why the file
-	// comparison above is necessary to ensure both come from the same file.
+	
+	
+	
 	if fd.IsExtension() {
 		return fd.Parent() == fd.Message().Parent()
 	}
@@ -633,7 +633,7 @@ func isGroupLike(fd protoreflect.FieldDescriptor) bool {
 func (s *stringName) lazyInit(fd protoreflect.FieldDescriptor) *stringName {
 	s.once.Do(func() {
 		if fd.IsExtension() {
-			// For extensions, JSON and text are formatted the same way.
+			
 			var name string
 			if messageset.IsMessageSetExtension(fd) {
 				name = string("[" + fd.FullName().Parent() + "]")
@@ -643,12 +643,12 @@ func (s *stringName) lazyInit(fd protoreflect.FieldDescriptor) *stringName {
 			s.nameJSON = name
 			s.nameText = name
 		} else {
-			// Format the JSON name.
+			
 			if !s.hasJSON {
 				s.nameJSON = strs.JSONCamelCase(string(fd.Name()))
 			}
 
-			// Format the text name.
+			
 			s.nameText = string(fd.Name())
 			if isGroupLike(fd) {
 				s.nameText = string(fd.Message().Name())
@@ -664,8 +664,8 @@ func (s *stringName) getText(fd protoreflect.FieldDescriptor) string { return s.
 func DefaultValue(v protoreflect.Value, ev protoreflect.EnumValueDescriptor) defaultValue {
 	dv := defaultValue{has: v.IsValid(), val: v, enum: ev}
 	if b, ok := v.Interface().([]byte); ok {
-		// Store a copy of the default bytes, so that we can detect
-		// accidental mutations of the original value.
+		
+		
 		dv.bytes = append([]byte(nil), b...)
 	}
 	return dv
@@ -674,16 +674,16 @@ func DefaultValue(v protoreflect.Value, ev protoreflect.EnumValueDescriptor) def
 func unmarshalDefault(b []byte, k protoreflect.Kind, pf *File, ed protoreflect.EnumDescriptor) defaultValue {
 	var evs protoreflect.EnumValueDescriptors
 	if k == protoreflect.EnumKind {
-		// If the enum is declared within the same file, be careful not to
-		// blindly call the Values method, lest we bind ourselves in a deadlock.
+		
+		
 		if e, ok := ed.(*Enum); ok && e.L0.ParentFile == pf {
 			evs = &e.L2.Values
 		} else {
 			evs = ed.Values()
 		}
 
-		// If we are unable to resolve the enum dependency, use a placeholder
-		// enum value since we will not be able to parse the default value.
+		
+		
 		if ed.IsPlaceholder() && protoreflect.Name(b).IsValid() {
 			v := protoreflect.ValueOfEnum(0)
 			ev := PlaceholderEnumValue(ed.FullName().Parent().Append(protoreflect.Name(b)))
@@ -706,7 +706,7 @@ type defaultValue struct {
 }
 
 func (dv *defaultValue) get(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	// Return the zero value as the default if unpopulated.
+	
 	if !dv.has {
 		if fd.Cardinality() == protoreflect.Repeated {
 			return protoreflect.Value{}
@@ -739,9 +739,9 @@ func (dv *defaultValue) get(fd protoreflect.FieldDescriptor) protoreflect.Value 
 	}
 
 	if len(dv.bytes) > 0 && !bytes.Equal(dv.bytes, dv.val.Bytes()) {
-		// TODO: Avoid panic if we're running with the race detector
-		// and instead spawn a goroutine that periodically resets
-		// this value back to the original to induce a race.
+		
+		
+		
 		panic(fmt.Sprintf("detected mutation on the default bytes for %v", fd.FullName()))
 	}
 	return dv.val

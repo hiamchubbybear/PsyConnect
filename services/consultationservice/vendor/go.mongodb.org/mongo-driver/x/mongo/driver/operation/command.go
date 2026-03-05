@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2021-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -20,7 +20,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Command is used to run a generic operation.
+
 type Command struct {
 	authenticator  driver.Authenticator
 	command        bsoncore.Document
@@ -41,16 +41,16 @@ type Command struct {
 	logger         *logger.Logger
 }
 
-// NewCommand constructs and returns a new Command. Once the operation is executed, the result may only be accessed via
-// the Result() function.
+
+
 func NewCommand(command bsoncore.Document) *Command {
 	return &Command{
 		command: command,
 	}
 }
 
-// NewCursorCommand constructs a new Command. Once the operation is executed, the server response will be used to
-// construct a cursor, which can be accessed via the ResultCursor() function.
+
+
 func NewCursorCommand(command bsoncore.Document, cursorOpts driver.CursorOptions) *Command {
 	return &Command{
 		command:      command,
@@ -59,12 +59,12 @@ func NewCursorCommand(command bsoncore.Document, cursorOpts driver.CursorOptions
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (c *Command) Result() bsoncore.Document { return c.resultResponse }
 
-// ResultCursor returns the BatchCursor that was constructed using the command response. If the operation was not
-// configured to create a cursor (i.e. it was created using NewCommand rather than NewCursorCommand), this function
-// will return nil and an error.
+
+
+
 func (c *Command) ResultCursor() (*driver.BatchCursor, error) {
 	if !c.createCursor {
 		return nil, errors.New("command operation was not configured to create a cursor, but a result cursor was requested")
@@ -72,7 +72,7 @@ func (c *Command) ResultCursor() (*driver.BatchCursor, error) {
 	return c.resultCursor, nil
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (c *Command) Execute(ctx context.Context) error {
 	if c.deployment == nil {
 		return errors.New("the Command operation must have a Deployment set before Execute can be called")
@@ -112,7 +112,7 @@ func (c *Command) Execute(ctx context.Context) error {
 	}.Execute(ctx)
 }
 
-// Session sets the session for this operation.
+
 func (c *Command) Session(session *session.Client) *Command {
 	if c == nil {
 		c = new(Command)
@@ -122,7 +122,7 @@ func (c *Command) Session(session *session.Client) *Command {
 	return c
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (c *Command) ClusterClock(clock *session.ClusterClock) *Command {
 	if c == nil {
 		c = new(Command)
@@ -132,7 +132,7 @@ func (c *Command) ClusterClock(clock *session.ClusterClock) *Command {
 	return c
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (c *Command) CommandMonitor(monitor *event.CommandMonitor) *Command {
 	if c == nil {
 		c = new(Command)
@@ -142,7 +142,7 @@ func (c *Command) CommandMonitor(monitor *event.CommandMonitor) *Command {
 	return c
 }
 
-// Database sets the database to run this operation against.
+
 func (c *Command) Database(database string) *Command {
 	if c == nil {
 		c = new(Command)
@@ -152,7 +152,7 @@ func (c *Command) Database(database string) *Command {
 	return c
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (c *Command) Deployment(deployment driver.Deployment) *Command {
 	if c == nil {
 		c = new(Command)
@@ -162,7 +162,7 @@ func (c *Command) Deployment(deployment driver.Deployment) *Command {
 	return c
 }
 
-// ReadPreference set the read preference used with this operation.
+
 func (c *Command) ReadPreference(readPreference *readpref.ReadPref) *Command {
 	if c == nil {
 		c = new(Command)
@@ -172,7 +172,7 @@ func (c *Command) ReadPreference(readPreference *readpref.ReadPref) *Command {
 	return c
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (c *Command) ServerSelector(selector description.ServerSelector) *Command {
 	if c == nil {
 		c = new(Command)
@@ -182,7 +182,7 @@ func (c *Command) ServerSelector(selector description.ServerSelector) *Command {
 	return c
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (c *Command) Crypt(crypt driver.Crypt) *Command {
 	if c == nil {
 		c = new(Command)
@@ -192,7 +192,7 @@ func (c *Command) Crypt(crypt driver.Crypt) *Command {
 	return c
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (c *Command) ServerAPI(serverAPI *driver.ServerAPIOptions) *Command {
 	if c == nil {
 		c = new(Command)
@@ -202,7 +202,7 @@ func (c *Command) ServerAPI(serverAPI *driver.ServerAPIOptions) *Command {
 	return c
 }
 
-// Timeout sets the timeout for this operation.
+
 func (c *Command) Timeout(timeout *time.Duration) *Command {
 	if c == nil {
 		c = new(Command)
@@ -212,7 +212,7 @@ func (c *Command) Timeout(timeout *time.Duration) *Command {
 	return c
 }
 
-// Logger sets the logger for this operation.
+
 func (c *Command) Logger(logger *logger.Logger) *Command {
 	if c == nil {
 		c = new(Command)
@@ -222,7 +222,7 @@ func (c *Command) Logger(logger *logger.Logger) *Command {
 	return c
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (c *Command) Authenticator(authenticator driver.Authenticator) *Command {
 	if c == nil {
 		c = new(Command)

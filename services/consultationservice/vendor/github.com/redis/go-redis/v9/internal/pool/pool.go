@@ -12,14 +12,14 @@ import (
 )
 
 var (
-	// ErrClosed performs any operation on the closed client will return this error.
+	
 	ErrClosed = errors.New("redis: client is closed")
 
-	// ErrPoolExhausted is returned from a pool connection method
-	// when the maximum number of database connections in the pool has been reached.
+	
+	
 	ErrPoolExhausted = errors.New("redis: connection pool exhausted")
 
-	// ErrPoolTimeout timed out waiting to get a connection from the connection pool.
+	
 	ErrPoolTimeout = errors.New("redis: connection pool timeout")
 )
 
@@ -31,17 +31,17 @@ var timers = sync.Pool{
 	},
 }
 
-// Stats contains pool state information and accumulated stats.
-type Stats struct {
-	Hits           uint32 // number of times free connection was found in the pool
-	Misses         uint32 // number of times free connection was NOT found in the pool
-	Timeouts       uint32 // number of times a wait timeout occurred
-	WaitCount      uint32 // number of times a connection was waited
-	WaitDurationNs int64  // total time spent for waiting a connection in nanoseconds
 
-	TotalConns uint32 // number of total connections in the pool
-	IdleConns  uint32 // number of idle connections in the pool
-	StaleConns uint32 // number of stale connections removed from the pool
+type Stats struct {
+	Hits           uint32 
+	Misses         uint32 
+	Timeouts       uint32 
+	WaitCount      uint32 
+	WaitDurationNs int64  
+
+	TotalConns uint32 
+	IdleConns  uint32 
+	StaleConns uint32 
 }
 
 type Pooler interface {
@@ -83,7 +83,7 @@ type lastDialErrorWrap struct {
 type ConnPool struct {
 	cfg *Options
 
-	dialErrorsNum uint32 // atomic
+	dialErrorsNum uint32 
 	lastDialError atomic.Value
 
 	queue chan struct{}
@@ -98,7 +98,7 @@ type ConnPool struct {
 	stats          Stats
 	waitDurationNs atomic.Int64
 
-	_closed uint32 // atomic
+	_closed uint32 
 }
 
 var _ Pooler = (*ConnPool)(nil)
@@ -170,7 +170,7 @@ func (p *ConnPool) addIdleConn() error {
 	p.connsMu.Lock()
 	defer p.connsMu.Unlock()
 
-	// It is not allowed to add new connections to the closed connection pool.
+	
 	if p.closed() {
 		_ = cn.Close()
 		return ErrClosed
@@ -212,7 +212,7 @@ func (p *ConnPool) newConn(ctx context.Context, pooled bool) (*Conn, error) {
 
 	p.conns = append(p.conns, cn)
 	if pooled {
-		// If pool is full remove the cn on next Put.
+		
 		if p.poolSize >= p.cfg.PoolSize {
 			cn.pooled = false
 		} else {
@@ -281,7 +281,7 @@ func (p *ConnPool) getLastDialError() error {
 	return nil
 }
 
-// Get returns existed connection from the pool or creates a new one.
+
 func (p *ConnPool) Get(ctx context.Context) (*Conn, error) {
 	if p.closed() {
 		return nil, ErrClosed
@@ -458,7 +458,7 @@ func (p *ConnPool) closeConn(cn *Conn) error {
 	return cn.Close()
 }
 
-// Len returns total number of connections.
+
 func (p *ConnPool) Len() int {
 	p.connsMu.Lock()
 	n := len(p.conns)
@@ -466,7 +466,7 @@ func (p *ConnPool) Len() int {
 	return n
 }
 
-// IdleLen returns number of idle connections.
+
 func (p *ConnPool) IdleLen() int {
 	p.connsMu.Lock()
 	n := p.idleConnsLen

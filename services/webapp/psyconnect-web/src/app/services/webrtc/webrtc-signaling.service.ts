@@ -39,7 +39,7 @@ export class WebRTCSignalingService {
     private secureStorage: SecureStorageService
   ) {}
 
-  // Connect to WebSocket
+  
   connect(
     wsUrl: string,
     conversationId: string,
@@ -49,7 +49,7 @@ export class WebRTCSignalingService {
     this.currentUserId = currentUserId;
     this.conversationId = conversationId;
 
-    // Get JWT token from secure storage
+    
     const token = this.secureStorage.getItem<string>(
       environment.accessTokenKey
     );
@@ -58,7 +58,7 @@ export class WebRTCSignalingService {
       return;
     }
 
-    // Add token to URL query parameters
+    
     const url = `${wsUrl}?conversationId=${conversationId}&receiver=${receiverId}&token=${token}`;
     console.log('🔌 Connecting to WebSocket:', wsUrl);
 
@@ -89,7 +89,7 @@ export class WebRTCSignalingService {
     };
   }
 
-  // Handle incoming WebSocket messages
+  
   private handleMessage(message: WebSocketMessage) {
     console.log('📨 Received message:', message.type, message);
 
@@ -112,7 +112,7 @@ export class WebRTCSignalingService {
     }
   }
 
-  // Handle incoming call offer
+  
   private handleIncomingOffer(message: WebSocketMessage) {
     console.log('📞 Incoming call from:', message.senderId);
     console.log('📞 Message data:', message.data);
@@ -136,7 +136,7 @@ export class WebRTCSignalingService {
     );
   }
 
-  // Handle incoming answer
+  
   private async handleIncomingAnswer(message: WebSocketMessage) {
     console.log('📥 Received answer from:', message.senderId);
 
@@ -148,7 +148,7 @@ export class WebRTCSignalingService {
     await this.webrtcService.handleAnswer(answer);
   }
 
-  // Handle incoming ICE candidate
+  
   private async handleIncomingICE(message: WebSocketMessage) {
     console.log('🧊 Received ICE candidate from:', message.senderId);
 
@@ -161,16 +161,16 @@ export class WebRTCSignalingService {
     await this.webrtcService.addIceCandidate(candidate);
   }
 
-  // Handle call end
+  
   private handleIncomingLeave(message: WebSocketMessage) {
     console.log('👋 Call ended by:', message.senderId);
     this.webrtcService.endCall();
     this.incomingCallSubject.next(null);
   }
 
-  // Send offer
+  
   sendOffer(receiverId: string, offer: RTCSessionDescriptionInit): string {
-    // Generate session ID for this call
+    
     const sessionId = crypto.randomUUID();
 
     const message: WebSocketMessage = {
@@ -181,7 +181,7 @@ export class WebRTCSignalingService {
       data: {
         sdp: offer.sdp,
         type: offer.type,
-        sessionId: sessionId, // Include session ID in offer
+        sessionId: sessionId, 
       },
     };
 
@@ -195,10 +195,10 @@ export class WebRTCSignalingService {
     this.send(message);
     console.log('📤 Sent offer to:', receiverId, 'with sessionId:', sessionId);
 
-    return sessionId; // Return session ID
+    return sessionId; 
   }
 
-  // Send answer
+  
   sendAnswer(
     receiverId: string,
     answer: RTCSessionDescriptionInit,
@@ -220,7 +220,7 @@ export class WebRTCSignalingService {
     console.log('📤 Sent answer to:', receiverId);
   }
 
-  // Send ICE candidate
+  
   sendICECandidate(receiverId: string, candidate: RTCIceCandidate) {
     const message: WebSocketMessage = {
       type: 'ice',
@@ -238,7 +238,7 @@ export class WebRTCSignalingService {
     console.log('📤 Sent ICE candidate to:', receiverId);
   }
 
-  // Send leave (end call)
+  
   sendLeave(receiverId: string, sessionId?: string) {
     const message: WebSocketMessage = {
       type: 'leave',
@@ -254,7 +254,7 @@ export class WebRTCSignalingService {
     console.log('📤 Sent leave to:', receiverId);
   }
 
-  // Send message via WebSocket
+  
   private send(message: WebSocketMessage) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
@@ -263,7 +263,7 @@ export class WebRTCSignalingService {
     }
   }
 
-  // Disconnect WebSocket
+  
   disconnect() {
     if (this.ws) {
       this.ws.close();
@@ -271,7 +271,7 @@ export class WebRTCSignalingService {
     }
   }
 
-  // Clear incoming call
+  
   clearIncomingCall() {
     this.incomingCallSubject.next(null);
   }

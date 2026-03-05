@@ -11,25 +11,25 @@ var (
 	readerPool sync.Pool
 )
 
-// Codec is the implementation of a compress.Codec which supports creating
-// readers and writers for kafka messages compressed with gzip.
+
+
 type Codec struct {
-	// The compression level to configure on writers created by this codec.
-	// Acceptable values are defined in the standard gzip package.
-	//
-	// Default to gzip.DefaultCompressionLevel.
+	
+	
+	
+	
 	Level int
 
 	writerPool sync.Pool
 }
 
-// Code implements the compress.Codec interface.
+
 func (c *Codec) Code() int8 { return 1 }
 
-// Name implements the compress.Codec interface.
+
 func (c *Codec) Name() string { return "gzip" }
 
-// NewReader implements the compress.Codec interface.
+
 func (c *Codec) NewReader(r io.Reader) io.ReadCloser {
 	var err error
 	z, _ := readerPool.Get().(*gzip.Reader)
@@ -47,7 +47,7 @@ func (c *Codec) NewReader(r io.Reader) io.ReadCloser {
 	return &reader{Reader: z}
 }
 
-// NewWriter implements the compress.Codec interface.
+
 func (c *Codec) NewWriter(w io.Writer) io.WriteCloser {
 	x := c.writerPool.Get()
 	z, _ := x.(*gzip.Writer)
@@ -76,13 +76,13 @@ func (r *reader) Close() (err error) {
 	if z := r.Reader; z != nil {
 		r.Reader = nil
 		err = z.Close()
-		// Pass it an empty reader, which is a zero-size value implementing the
-		// flate.Reader interface to avoid the construction of a bufio.Reader in
-		// the call to Reset.
-		//
-		// Note: we could also not reset the reader at all, but that would cause
-		// the underlying reader to be retained until the gzip.Reader is freed,
-		// which may not be desirable.
+		
+		
+		
+		
+		
+		
+		
 		z.Reset(emptyReader{})
 		readerPool.Put(z)
 	}

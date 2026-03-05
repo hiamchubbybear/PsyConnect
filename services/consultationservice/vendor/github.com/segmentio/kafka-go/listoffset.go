@@ -10,32 +10,32 @@ import (
 	"github.com/segmentio/kafka-go/protocol/listoffsets"
 )
 
-// OffsetRequest represents a request to retrieve a single partition offset.
+
 type OffsetRequest struct {
 	Partition int
 	Timestamp int64
 }
 
-// FirstOffsetOf constructs an OffsetRequest which asks for the first offset of
-// the parition given as argument.
+
+
 func FirstOffsetOf(partition int) OffsetRequest {
 	return OffsetRequest{Partition: partition, Timestamp: FirstOffset}
 }
 
-// LastOffsetOf constructs an OffsetRequest which asks for the last offset of
-// the partition given as argument.
+
+
 func LastOffsetOf(partition int) OffsetRequest {
 	return OffsetRequest{Partition: partition, Timestamp: LastOffset}
 }
 
-// TimeOffsetOf constructs an OffsetRequest which asks for a partition offset
-// at a given time.
+
+
 func TimeOffsetOf(partition int, at time.Time) OffsetRequest {
 	return OffsetRequest{Partition: partition, Timestamp: timestamp(at)}
 }
 
-// PartitionOffsets carries information about offsets available in a topic
-// partition.
+
+
 type PartitionOffsets struct {
 	Partition   int
 	FirstOffset int64
@@ -44,38 +44,38 @@ type PartitionOffsets struct {
 	Error       error
 }
 
-// ListOffsetsRequest represents a request sent to a kafka broker to list of the
-// offsets of topic partitions.
+
+
 type ListOffsetsRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// A mapping of topic names to list of partitions that the program wishes to
-	// get the offsets for.
+	
+	
 	Topics map[string][]OffsetRequest
 
-	// The isolation level for the request.
-	//
-	// Defaults to ReadUncommitted.
-	//
-	// This field requires the kafka broker to support the ListOffsets API in
-	// version 2 or above (otherwise the value is ignored).
+	
+	
+	
+	
+	
+	
 	IsolationLevel IsolationLevel
 }
 
-// ListOffsetsResponse represents a response from a kafka broker to a offset
-// listing request.
+
+
 type ListOffsetsResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// Mappings of topics names to partition offsets, there will be one entry
-	// for each topic in the request.
+	
+	
 	Topics map[string][]PartitionOffsets
 }
 
-// ListOffsets sends an offset request to a kafka broker and returns the
-// response.
+
+
 func (c *Client) ListOffsets(ctx context.Context, req *ListOffsetsRequest) (*ListOffsetsResponse, error) {
 	type topicPartition struct {
 		topic     string

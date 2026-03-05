@@ -1,4 +1,4 @@
-// Package lz4block provides LZ4 BlockSize types and pools of buffers.
+
 package lz4block
 
 import "sync"
@@ -10,8 +10,8 @@ const (
 	Block4Mb
 )
 
-// In legacy mode all blocks are compressed regardless
-// of the compressed size: use the bound size.
+
+
 var Block8Mb = uint32(CompressBlockBound(8 << 20))
 
 var (
@@ -32,7 +32,7 @@ func Index(b uint32) BlockSizeIndex {
 		return 6
 	case Block4Mb:
 		return 7
-	case Block8Mb: // only valid in legacy mode
+	case Block8Mb: 
 		return 3
 	}
 	return 0
@@ -70,7 +70,7 @@ func (b BlockSizeIndex) Get() []byte {
 }
 
 func Put(buf []byte) {
-	// Safeguard: do not allow invalid buffers.
+	
 	switch c := cap(buf); uint32(c) {
 	case Block64Kb:
 		BlockPool64K.Put(buf[:c])

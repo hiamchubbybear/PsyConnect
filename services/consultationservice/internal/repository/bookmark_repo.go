@@ -32,7 +32,7 @@ func NewBookmarkRepo() BookmarkRepository {
 }
 
 func (r *bookmarkRepo) AddBookmark(ctx context.Context, userID, postID string) error {
-	// Check if already bookmarked
+	
 	isBookmarked, err := r.IsBookmarked(ctx, userID, postID)
 	if err != nil {
 		return err

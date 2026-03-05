@@ -5,7 +5,7 @@ import (
 	"unicode/utf16"
 )
 
-// ReadString read string from iterator
+
 func (iter *Iterator) ReadString() (ret string) {
 	c := iter.nextToken()
 	if c == '"' {

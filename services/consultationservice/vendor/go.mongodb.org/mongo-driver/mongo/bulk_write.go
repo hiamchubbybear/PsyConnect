@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package mongo
 
@@ -27,7 +27,7 @@ type bulkWriteBatch struct {
 	indexes  []int
 }
 
-// bulkWrite performs a bulkwrite operation
+
 type bulkWrite struct {
 	comment                  interface{}
 	ordered                  *bool
@@ -505,7 +505,7 @@ func createBatches(models []WriteModel, ordered bool) []bulkWriteBatch {
 	batches[deleteOneCommand].canRetry = true
 	batches[updateOneCommand].canRetry = true
 
-	// TODO(GODRIVER-1157): fix batching once operation retryability is fixed
+	
 	for i, model := range models {
 		switch model.(type) {
 		case *InsertOneModel:
@@ -532,14 +532,14 @@ func createBatches(models []WriteModel, ordered bool) []bulkWriteBatch {
 func createOrderedBatches(models []WriteModel) []bulkWriteBatch {
 	var batches []bulkWriteBatch
 	var prevKind writeCommandKind = -1
-	i := -1 // batch index
+	i := -1 
 
 	for ind, model := range models {
 		var createNewBatch bool
 		var canRetry bool
 		var newKind writeCommandKind
 
-		// TODO(GODRIVER-1157): fix batching once operation retryability is fixed
+		
 		switch model.(type) {
 		case *InsertOneModel:
 			createNewBatch = prevKind != insertCommand
@@ -571,7 +571,7 @@ func createOrderedBatches(models []WriteModel) []bulkWriteBatch {
 		} else {
 			batches[i].models = append(batches[i].models, model)
 			if !canRetry {
-				batches[i].canRetry = false // don't make it true if it was already false
+				batches[i].canRetry = false 
 			}
 			batches[i].indexes = append(batches[i].indexes, ind)
 		}
@@ -594,10 +594,10 @@ func (bw *bulkWrite) mergeResults(newResult BulkWriteResult) {
 	}
 }
 
-// WriteCommandKind is the type of command represented by a Write
+
 type writeCommandKind int8
 
-// These constants represent the valid types of write commands.
+
 const (
 	insertCommand writeCommandKind = iota
 	updateOneCommand

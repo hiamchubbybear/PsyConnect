@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package caching
 
@@ -49,7 +35,7 @@ func NewFieldLookup(fields []resolver.FieldMeta) FieldLookup {
 	isAsc := true
 	n := len(fields)
 
-	// when field name has non-ascii, use the fallback methods to use strings.ToLower
+	
 	for _, f := range fields {
 		if !isAscii(f.Name) {
 			isAsc = false
@@ -69,7 +55,7 @@ func NewFieldLookup(fields []resolver.FieldMeta) FieldLookup {
 	return f
 }
 
-// Map for keys nums max 8, idx is in [0, 8)
+
 type SmallFieldMap struct {
 	keys []string
 	lowerKeys []string
@@ -112,31 +98,20 @@ func (self *SmallFieldMap) Get(name string, caseSensitive bool) int {
 }
 
 
-/*
-1. select by the length: 0 ~ 32 and larger lengths
-2. simd match the aligned prefix of the keys: 4/8/16/32 bytes or larger keys
-3. check the key with strict match
-4. check the key with case-insensitive match
-5. find the index 
 
-Mem Layout:
-     fixed 33 * 5 bytes  165 bytes |||  variable keys  ||| variable lowerkeys
-| length metadata array[33] ||| key0.0 | u8 | key0.1 | u8 | ...  || key1.0 | u8 | key1.1 | u8 | ...  ||| lowerkeys info ...
 
-*/
 
-// Map for keys nums max 255, idx is in [0, 255), idx 255 means not found.
-// keysoffset
-// | metadata | aligned key0 | aligned key1 | ... |
-// 1 ~ 8
-// 8 ~ 16
-// 16 ~ 32
-// > 32 keys use the long keys entry lists
-// use bytes to reduce GC
+
+
+
+
+
+
+
 type NormalFieldMap struct {
 	keys  			[]byte
 	longKeys		[]keyEntry
-	// offset for lower
+	
 	lowOffset	    int
 }
 
@@ -154,9 +129,9 @@ func NewNormalFieldMap(n int) *NormalFieldMap {
 const _HdrSlot = 33
 const _HdrSize = _HdrSlot * 5
 
-// use native SIMD to accelerate it
+
 func (self *NormalFieldMap) Get(name string, caseSensitive bool) int {
-	// small keys use native C
+	
 	if len(name) <= 32 {
 		_ = native.LookupSmallKey
 		lowOffset := self.lowOffset
@@ -208,7 +183,7 @@ func (self *NormalFieldMap) Getdouble(name string) int {
 		return self.getCaseInsensitive(name)
 	}
 
-	// check the fixed length keys, not found the target length
+	
 	cnt := int(self.keys[5 * len(name)])
 	if cnt == 0 {
 		return -1
@@ -267,7 +242,7 @@ func (self *NormalFieldMap) Set(fields []resolver.FieldMeta) {
 		panic("normal field map should use in small struct")
 	}
 
-	// allocate the flat map in []byte
+	
 	var keyLenSum [_HdrSlot]keysInfo
 
 	for i := 0; i < _HdrSlot; i++ {
@@ -281,32 +256,32 @@ func (self *NormalFieldMap) Set(fields []resolver.FieldMeta) {
 	for _, f := range(fields) {
 		len := len(f.Name)
 		if len <= 32 {
-			kvLen += len + 1 // key + index
+			kvLen += len + 1 
 			keyLenSum[len].counts++
 			keyLenSum[len].lenSum += len + 1
 		}
 
 	}
 
-	// add a padding size at last to make it friendly for SIMD.
+	
 	self.keys = make([]byte, _HdrSize + 2 * kvLen, _HdrSize + 2 * kvLen + _PaddingSize)
 	self.lowOffset = _HdrSize + kvLen
 
-	// initialize all keys offset
+	
 	self.keys[0] = byte(keyLenSum[0].counts)
-	// self.keys[1:5] = 0 // offset is always zero here.
+	
 	i := 1
 	p := ((*rt.GoSlice)(unsafe.Pointer(&self.keys))).Ptr
 	for i < _HdrSlot {
 		keyLenSum[i].offset = keyLenSum[i-1].offset + keyLenSum[i-1].lenSum
 		self.keys[i * 5] = byte(keyLenSum[i].counts)
-		// write the offset into []byte
+		
 		*(*int32)(unsafe.Pointer(uintptr(p) + uintptr(i * 5 + 1))) = int32(keyLenSum[i].offset)
 		i += 1
 
 	}
 
-	// fill the key into bytes
+	
 	for i, f := range(fields) {
 		len := len(f.Name)
 		if len <= 32 {
@@ -324,7 +299,7 @@ func (self *NormalFieldMap) Set(fields []resolver.FieldMeta) {
 
 }
 
-// use hashnap
+
 type FallbackFieldMap struct {
 	oders  []string
 	inner  map[string]int
@@ -356,7 +331,7 @@ type FallbackFieldMap struct {
 		self.oders[i] = name
 		self.inner[name] = i
 	
-		/* add the case-insensitive version, prefer the one with smaller field ID */
+		
 		key := strings.ToLower(name)
 		if v, ok := self.backup[key]; !ok || i < v {
 			self.backup[key] = i

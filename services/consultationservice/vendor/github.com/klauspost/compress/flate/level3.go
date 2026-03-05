@@ -2,13 +2,13 @@ package flate
 
 import "fmt"
 
-// fastEncL3
+
 type fastEncL3 struct {
 	fastGen
 	table [1 << 16]tableEntryPrev
 }
 
-// Encode uses a similar algorithm to level 2, will check up to two candidates.
+
 func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 	const (
 		inputMargin            = 12 - 1
@@ -22,7 +22,7 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 		panic(fmt.Sprint("e.cur < 0: ", e.cur))
 	}
 
-	// Protect against e.cur wraparound.
+	
 	for e.cur >= bufferReset {
 		if len(e.hist) == 0 {
 			for i := range e.table[:] {
@@ -31,7 +31,7 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 			e.cur = maxMatchOffset
 			break
 		}
-		// Shift down everything in the table that isn't already too far away.
+		
 		minOff := e.cur + int32(len(e.hist)) - maxMatchOffset
 		for i := range e.table[:] {
 			v := e.table[i]
@@ -52,24 +52,24 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 
 	s := e.addBlock(src)
 
-	// Skip if too small.
+	
 	if len(src) < minNonLiteralBlockSize {
-		// We do not fill the token table.
-		// This will be picked up by caller.
+		
+		
 		dst.n = uint16(len(src))
 		return
 	}
 
-	// Override src
+	
 	src = e.hist
 	nextEmit := s
 
-	// sLimit is when to stop looking for offset/length copies. The inputMargin
-	// lets us use a fast path for emitLiteral in the main loop, while we are
-	// looking for copies.
+	
+	
+	
 	sLimit := int32(len(src) - inputMargin)
 
-	// nextEmit is where in src the next emitLiteral should start from.
+	
 	cv := load6432(src, s)
 	for {
 		const skipLog = 7
@@ -85,15 +85,15 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 			candidates := e.table[nextHash]
 			now := load6432(src, nextS)
 
-			// Safe offset distance until s + 4...
+			
 			minOffset := e.cur + s - (maxMatchOffset - 4)
 			e.table[nextHash] = tableEntryPrev{Prev: candidates.Cur, Cur: tableEntry{offset: s + e.cur}}
 
-			// Check both candidates
+			
 			candidate = candidates.Cur
 			if candidate.offset < minOffset {
 				cv = now
-				// Previous will also be invalid, we have nothing.
+				
 				continue
 			}
 
@@ -101,7 +101,7 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 				if candidates.Prev.offset < minOffset || uint32(cv) != load3232(src, candidates.Prev.offset-e.cur) {
 					break
 				}
-				// Both match and are valid, pick longest.
+				
 				offset := s - (candidate.offset - e.cur)
 				o2 := s - (candidates.Prev.offset - e.cur)
 				l1, l2 := matchLen(src[s+4:], src[s-offset+4:]), matchLen(src[s+4:], src[s-o2+4:])
@@ -110,8 +110,8 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 				}
 				break
 			} else {
-				// We only check if value mismatches.
-				// Offset will always be invalid in other cases.
+				
+				
 				candidate = candidates.Prev
 				if candidate.offset > minOffset && uint32(cv) == load3232(src, candidate.offset-e.cur) {
 					break
@@ -120,24 +120,24 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 			cv = now
 		}
 
-		// Call emitCopy, and then see if another emitCopy could be our next
-		// move. Repeat until we find no match for the input immediately after
-		// what was consumed by the last emitCopy call.
-		//
-		// If we exit this loop normally then we need to call emitLiteral next,
-		// though we don't yet know how big the literal will be. We handle that
-		// by proceeding to the next iteration of the main loop. We also can
-		// exit this loop via goto if we get close to exhausting the input.
+		
+		
+		
+		
+		
+		
+		
+		
 		for {
-			// Invariant: we have a 4-byte match at s, and no need to emit any
-			// literal bytes prior to s.
+			
+			
 
-			// Extend the 4-byte match as long as possible.
-			//
+			
+			
 			t := candidate.offset - e.cur
 			l := e.matchlenLong(s+4, t+4, src) + 4
 
-			// Extend backwards
+			
 			for t > 0 && s > nextEmit && src[t-1] == src[s-1] {
 				s--
 				t--
@@ -164,7 +164,7 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 
 			if s >= sLimit {
 				t += l
-				// Index first pair after match end.
+				
 				if int(t+8) < len(src) && t > 0 {
 					cv = load6432(src, t)
 					nextHash := hashLen(cv, tableBits, hashBytes)
@@ -176,15 +176,15 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 				goto emitRemainder
 			}
 
-			// Store every 5th hash in-between.
+			
 			for i := s - l + 2; i < s-5; i += 6 {
 				nextHash := hashLen(load6432(src, i), tableBits, hashBytes)
 				e.table[nextHash] = tableEntryPrev{
 					Prev: e.table[nextHash].Cur,
 					Cur:  tableEntry{offset: e.cur + i}}
 			}
-			// We could immediately start working at s now, but to improve
-			// compression we first update the hash table at s-2 to s.
+			
+			
 			x := load6432(src, s-2)
 			prevHash := hashLen(x, tableBits, hashBytes)
 
@@ -208,18 +208,18 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 				Cur:  tableEntry{offset: s + e.cur},
 			}
 
-			// Check both candidates
+			
 			candidate = candidates.Cur
 			minOffset := e.cur + s - (maxMatchOffset - 4)
 
 			if candidate.offset > minOffset {
 				if uint32(cv) == load3232(src, candidate.offset-e.cur) {
-					// Found a match...
+					
 					continue
 				}
 				candidate = candidates.Prev
 				if candidate.offset > minOffset && uint32(cv) == load3232(src, candidate.offset-e.cur) {
-					// Match at prev...
+					
 					continue
 				}
 			}
@@ -231,7 +231,7 @@ func (e *fastEncL3) Encode(dst *tokens, src []byte) {
 
 emitRemainder:
 	if int(nextEmit) < len(src) {
-		// If nothing was added, don't encode literals.
+		
 		if dst.n == 0 {
 			return
 		}

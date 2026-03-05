@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package filedesc
 
@@ -14,8 +14,8 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-// fileRaw is a data struct used when initializing a file descriptor from
-// a raw FileDescriptorProto.
+
+
 type fileRaw struct {
 	builder       Builder
 	allEnums      []Enum
@@ -29,8 +29,8 @@ func newRawFile(db Builder) *File {
 	fd.initDecls(db.NumEnums, db.NumMessages, db.NumExtensions, db.NumServices)
 	fd.unmarshalSeed(db.RawDescriptor)
 
-	// Extended message targets are eagerly resolved since registration
-	// needs this information at program init time.
+	
+	
 	for i := range fd.allExtensions {
 		xd := &fd.allExtensions[i]
 		xd.L1.Extendee = fd.resolveMessageDependency(xd.L1.Extendee, listExtTargets, int32(i))
@@ -40,12 +40,12 @@ func newRawFile(db Builder) *File {
 	return fd
 }
 
-// initDecls pre-allocates slices for the exact number of enums, messages
-// (including map entries), extensions, and services declared in the proto file.
-// This is done to avoid regrowing the slice, which would change the address
-// for any previously seen declaration.
-//
-// The alloc methods "allocates" slices by pulling from the capacity.
+
+
+
+
+
+
 func (fd *File) initDecls(numEnums, numMessages, numExtensions, numServices int32) {
 	fd.allEnums = make([]Enum, 0, numEnums)
 	fd.allMessages = make([]Message, 0, numMessages)
@@ -78,8 +78,8 @@ func (fd *File) allocServices(n int) []Service {
 	return xs
 }
 
-// checkDecls performs a sanity check that the expected number of expected
-// declarations matches the number that were found in the descriptor proto.
+
+
 func (fd *File) checkDecls() {
 	switch {
 	case len(fd.allEnums) != cap(fd.allEnums):
@@ -172,11 +172,11 @@ func (fd *File) unmarshalSeed(b []byte) {
 		default:
 			m := protowire.ConsumeFieldValue(num, typ, b)
 			b = b[m:]
-			prevField = -1 // ignore known field numbers of unknown wire type
+			prevField = -1 
 		}
 	}
 
-	// If syntax is missing, it is assumed to be proto2.
+	
 	if fd.L1.Syntax == 0 {
 		fd.L1.Syntax = protoreflect.Proto2
 		fd.L1.Edition = EditionProto2
@@ -184,13 +184,13 @@ func (fd *File) unmarshalSeed(b []byte) {
 
 	fd.L1.EditionFeatures = getFeaturesFor(fd.L1.Edition)
 
-	// Parse editions features from options if any
+	
 	if options != nil {
 		fd.unmarshalSeedOptions(options)
 	}
 
-	// Must allocate all declarations before parsing each descriptor type
-	// to ensure we handled all descriptors in "flattened ordering".
+	
+	
 	if numEnums > 0 {
 		fd.L1.Enums.List = fd.allocEnums(numEnums)
 	}
@@ -290,8 +290,8 @@ func (ed *Enum) unmarshalSeed(b []byte, sb *strs.Builder, pf *File, pd protorefl
 		}
 	}
 
-	// Only construct enum value descriptors for top-level enums since
-	// they are needed for registration.
+	
+	
 	if pd != pf {
 		return
 	}
@@ -368,12 +368,12 @@ func (md *Message) unmarshalSeed(b []byte, sb *strs.Builder, pf *File, pd protor
 		default:
 			m := protowire.ConsumeFieldValue(num, typ, b)
 			b = b[m:]
-			prevField = -1 // ignore known field numbers of unknown wire type
+			prevField = -1 
 		}
 	}
 
-	// Must allocate all declarations before parsing each descriptor type
-	// to ensure we handled all descriptors in "flattened ordering".
+	
+	
 	if numEnums > 0 {
 		md.L1.Enums.List = pf.allocEnums(numEnums)
 	}
@@ -546,8 +546,8 @@ func putBuilder(b *strs.Builder) {
 	nameBuilderPool.Put(b)
 }
 
-// makeFullName converts b to a protoreflect.FullName,
-// where b must start with a leading dot.
+
+
 func makeFullName(sb *strs.Builder, b []byte) protoreflect.FullName {
 	if len(b) == 0 || b[0] != '.' {
 		panic("name reference must be fully qualified")

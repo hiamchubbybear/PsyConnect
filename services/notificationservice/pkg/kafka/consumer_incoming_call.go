@@ -6,7 +6,7 @@ import (
 )
 
 func (c *Consumer) handleIncomingCall(data []byte) error {
-	// Define the event structure that matches what Chat Service sends
+	
 	type IncomingCallEvent struct {
 		EventID   string `json:"eventId"`
 		EventType string `json:"eventType"`
@@ -25,11 +25,11 @@ func (c *Consumer) handleIncomingCall(data []byte) error {
 		return err
 	}
 
-	// Log for debugging
+	
 	log.Printf("Received incoming call event: %s from %s to %s", event.EventID, event.Data.CallerID, event.Data.RecipientID)
 
-	// Call the notification service to send FCM
-	// We pass the whole Data struct as payload, or map it to what HandleIncomingCall expects
-	// Assuming HandleIncomingCall takes (receiverID string, payload interface{})
+	
+	
+	
 	return c.notifSvc.HandleIncomingCall(event.Data.RecipientID, event.Data)
 }

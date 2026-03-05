@@ -12,7 +12,7 @@ export class CommentService {
 
   constructor(private http: HttpClient) {}
 
-  // Get comments tree for a post (with nested replies)
+  
   getComments(
     postId: string,
     limit: number = 20,
@@ -29,7 +29,7 @@ export class CommentService {
     );
   }
 
-  // Create comment
+  
   createComment(
     postId: string,
     comment: CreateCommentRequest
@@ -40,19 +40,19 @@ export class CommentService {
     );
   }
 
-  // Update comment
+  
   updateComment(commentId: string, content: string): Observable<Comment> {
     return this.http.put<Comment>(`${this.apiUrl}/comments/${commentId}`, {
       content,
     });
   }
 
-  // Delete comment
+  
   deleteComment(commentId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/comments/${commentId}`);
   }
 
-  // Get replies
+  
   getReplies(commentId: string): Observable<Comment[]> {
     return this.http.get<Comment[]>(
       `${this.apiUrl}/comments/${commentId}/replies`

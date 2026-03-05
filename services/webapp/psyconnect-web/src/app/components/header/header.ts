@@ -9,7 +9,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
-import { RouterModule, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter, Subscription } from 'rxjs';
 import { Auth } from '../../services/auth/auth';
@@ -19,6 +19,7 @@ import {
   UserProfile,
 } from '../../services/profile/profile-service';
 import { ThemeService } from '../../services/theme/theme-service';
+import { AvatarFallbackPipe } from '../../shared/pipes/avatar-fallback.pipe';
 import { TranslationService } from '../../shared/translate/translate-service';
 import {
   DropdownComponent,
@@ -27,7 +28,6 @@ import {
 import { AvatarMenuComponent } from '../avatar-menu/avatar-menu';
 import { HeaderStateService } from './header-state';
 import { NotificationDropdownComponent } from './notification-dropdown/notification-dropdown';
-import { AvatarFallbackPipe } from '../../shared/pipes/avatar-fallback.pipe';
 
 @Component({
   selector: 'app-header',
@@ -59,10 +59,11 @@ export class Header implements OnInit, OnDestroy {
   ];
 
   isMini = false;
+  isFeedRoute = false;
 
   currentUser: any = null;
   userAvatarUrl: string | null = null;
-  userProfileId: string | null = null; // Use to hash the fallback avatar string
+  userProfileId: string | null = null; 
   userName = 'Anonymous';
   isMenuOpen = false;
   isHidden = false;
@@ -93,10 +94,12 @@ export class Header implements OnInit, OnDestroy {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {
+        this.isFeedRoute = this.router.url.includes('/feature/feed');
         this.cdr.markForCheck();
       });
   }
   ngOnInit() {
+    this.isFeedRoute = this.router.url.includes('/feature/feed');
     this.userSubscription = this.headerState.isMini$.subscribe((value) => {
       this.isMini = value;
       this.cdr.markForCheck();
@@ -153,6 +156,10 @@ export class Header implements OnInit, OnDestroy {
     this.themeService.toggleTheme();
     this.isDark = !this.isDark;
   }
+  toggleSearch() {
+    const currentState = this.headerState.isSearchOpen();
+    this.headerState.setSearchOpen(!currentState);
+  }
   onLanguageChange(option: DropdownOption | null) {
     if (option) {
       this.setLanguage(option.value);
@@ -166,7 +173,13 @@ export class Header implements OnInit, OnDestroy {
   @HostListener('window:scroll', [])
   onScroll() {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    if (scrollTop > this.lastScrollTop + 10 && scrollTop > 60) {
+    const isSearchOpen = this.headerState.isSearchOpen();
+
+    if (
+      scrollTop > this.lastScrollTop + 10 &&
+      scrollTop > 60 &&
+      !isSearchOpen
+    ) {
       this.isHidden = true;
       this.headerState.setMini(true);
     } else if (scrollTop < this.lastScrollTop - 5) {

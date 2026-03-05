@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package goobj
 
@@ -10,14 +10,14 @@ import (
 	"encoding/binary"
 )
 
-// CUFileIndex is used to index the filenames that are stored in the
-// per-package/per-CU FileList.
+
+
 type CUFileIndex uint32
 
-// FuncInfo is serialized as a symbol (aux symbol). The symbol data is
-// the binary encoding of the struct below.
-//
-// TODO: make each pcdata a separate symbol?
+
+
+
+
 type FuncInfo struct {
 	Args   uint32
 	Locals uint32
@@ -107,11 +107,11 @@ func (a *FuncInfo) Read(b []byte) {
 	}
 }
 
-// FuncInfoLengths is a cache containing a roadmap of offsets and
-// lengths for things within a serialized FuncInfo. Each length field
-// stores the number of items (e.g. files, inltree nodes, etc), and the
-// corresponding "off" field stores the byte offset of the start of
-// the items in question.
+
+
+
+
+
 type FuncInfoLengths struct {
 	NumPcdata      uint32
 	PcdataOff      uint32
@@ -154,27 +154,27 @@ func (*FuncInfo) ReadLocals(b []byte) uint32 { return binary.LittleEndian.Uint32
 
 func (*FuncInfo) ReadFuncID(b []byte) uint32 { return binary.LittleEndian.Uint32(b[8:]) }
 
-// return start and end offsets.
+
 func (*FuncInfo) ReadPcsp(b []byte) (uint32, uint32) {
 	return binary.LittleEndian.Uint32(b[12:]), binary.LittleEndian.Uint32(b[16:])
 }
 
-// return start and end offsets.
+
 func (*FuncInfo) ReadPcfile(b []byte) (uint32, uint32) {
 	return binary.LittleEndian.Uint32(b[16:]), binary.LittleEndian.Uint32(b[20:])
 }
 
-// return start and end offsets.
+
 func (*FuncInfo) ReadPcline(b []byte) (uint32, uint32) {
 	return binary.LittleEndian.Uint32(b[20:]), binary.LittleEndian.Uint32(b[24:])
 }
 
-// return start and end offsets.
+
 func (*FuncInfo) ReadPcinline(b []byte, pcdataoffset uint32) (uint32, uint32) {
 	return binary.LittleEndian.Uint32(b[24:]), binary.LittleEndian.Uint32(b[pcdataoffset:])
 }
 
-// return start and end offsets.
+
 func (*FuncInfo) ReadPcdata(b []byte, pcdataoffset uint32, k uint32) (uint32, uint32) {
 	return binary.LittleEndian.Uint32(b[pcdataoffset+4*k:]), binary.LittleEndian.Uint32(b[pcdataoffset+4+4*k:])
 }
@@ -194,7 +194,7 @@ func (*FuncInfo) ReadInlTree(b []byte, inltreeoff uint32, k uint32) InlTreeNode 
 	return result
 }
 
-// InlTreeNode is the serialized form of FileInfo.InlTree.
+
 type InlTreeNode struct {
 	Parent   int32
 	File     CUFileIndex
@@ -217,7 +217,7 @@ func (inl *InlTreeNode) Write(w *bytes.Buffer) {
 	writeUint32(uint32(inl.ParentPC))
 }
 
-// Read an InlTreeNode from b, return the remaining bytes.
+
 func (inl *InlTreeNode) Read(b []byte) []byte {
 	readUint32 := func() uint32 {
 		x := binary.LittleEndian.Uint32(b)

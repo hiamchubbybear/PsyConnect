@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2023-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -20,7 +20,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// CreateSearchIndexes performs a createSearchIndexes operation.
+
 type CreateSearchIndexes struct {
 	authenticator driver.Authenticator
 	indexes       bsoncore.Document
@@ -37,12 +37,12 @@ type CreateSearchIndexes struct {
 	timeout       *time.Duration
 }
 
-// CreateSearchIndexResult represents a single search index result in CreateSearchIndexesResult.
+
 type CreateSearchIndexResult struct {
 	Name string
 }
 
-// CreateSearchIndexesResult represents a createSearchIndexes result returned by the server.
+
 type CreateSearchIndexesResult struct {
 	IndexesCreated []CreateSearchIndexResult
 }
@@ -83,14 +83,14 @@ func buildCreateSearchIndexesResult(response bsoncore.Document) (CreateSearchInd
 	return csir, nil
 }
 
-// NewCreateSearchIndexes constructs and returns a new CreateSearchIndexes.
+
 func NewCreateSearchIndexes(indexes bsoncore.Document) *CreateSearchIndexes {
 	return &CreateSearchIndexes{
 		indexes: indexes,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (csi *CreateSearchIndexes) Result() CreateSearchIndexesResult { return csi.result }
 
 func (csi *CreateSearchIndexes) processResponse(info driver.ResponseInfo) error {
@@ -99,7 +99,7 @@ func (csi *CreateSearchIndexes) processResponse(info driver.ResponseInfo) error 
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (csi *CreateSearchIndexes) Execute(ctx context.Context) error {
 	if csi.deployment == nil {
 		return errors.New("the CreateSearchIndexes operation must have a Deployment set before Execute can be called")
@@ -130,7 +130,7 @@ func (csi *CreateSearchIndexes) command(dst []byte, _ description.SelectedServer
 	return dst, nil
 }
 
-// Indexes specifies an array containing index specification documents for the indexes being created.
+
 func (csi *CreateSearchIndexes) Indexes(indexes bsoncore.Document) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -140,7 +140,7 @@ func (csi *CreateSearchIndexes) Indexes(indexes bsoncore.Document) *CreateSearch
 	return csi
 }
 
-// Session sets the session for this operation.
+
 func (csi *CreateSearchIndexes) Session(session *session.Client) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -150,7 +150,7 @@ func (csi *CreateSearchIndexes) Session(session *session.Client) *CreateSearchIn
 	return csi
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (csi *CreateSearchIndexes) ClusterClock(clock *session.ClusterClock) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -160,7 +160,7 @@ func (csi *CreateSearchIndexes) ClusterClock(clock *session.ClusterClock) *Creat
 	return csi
 }
 
-// Collection sets the collection that this command will run against.
+
 func (csi *CreateSearchIndexes) Collection(collection string) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -170,7 +170,7 @@ func (csi *CreateSearchIndexes) Collection(collection string) *CreateSearchIndex
 	return csi
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (csi *CreateSearchIndexes) CommandMonitor(monitor *event.CommandMonitor) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -180,7 +180,7 @@ func (csi *CreateSearchIndexes) CommandMonitor(monitor *event.CommandMonitor) *C
 	return csi
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (csi *CreateSearchIndexes) Crypt(crypt driver.Crypt) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -190,7 +190,7 @@ func (csi *CreateSearchIndexes) Crypt(crypt driver.Crypt) *CreateSearchIndexes {
 	return csi
 }
 
-// Database sets the database to run this operation against.
+
 func (csi *CreateSearchIndexes) Database(database string) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -200,7 +200,7 @@ func (csi *CreateSearchIndexes) Database(database string) *CreateSearchIndexes {
 	return csi
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (csi *CreateSearchIndexes) Deployment(deployment driver.Deployment) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -210,7 +210,7 @@ func (csi *CreateSearchIndexes) Deployment(deployment driver.Deployment) *Create
 	return csi
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (csi *CreateSearchIndexes) ServerSelector(selector description.ServerSelector) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -220,7 +220,7 @@ func (csi *CreateSearchIndexes) ServerSelector(selector description.ServerSelect
 	return csi
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (csi *CreateSearchIndexes) ServerAPI(serverAPI *driver.ServerAPIOptions) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -230,7 +230,7 @@ func (csi *CreateSearchIndexes) ServerAPI(serverAPI *driver.ServerAPIOptions) *C
 	return csi
 }
 
-// Timeout sets the timeout for this operation.
+
 func (csi *CreateSearchIndexes) Timeout(timeout *time.Duration) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)
@@ -240,7 +240,7 @@ func (csi *CreateSearchIndexes) Timeout(timeout *time.Duration) *CreateSearchInd
 	return csi
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (csi *CreateSearchIndexes) Authenticator(authenticator driver.Authenticator) *CreateSearchIndexes {
 	if csi == nil {
 		csi = new(CreateSearchIndexes)

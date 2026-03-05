@@ -11,7 +11,7 @@ export class SocialService {
 
   constructor(private http: HttpClient) {}
 
-  // Follow/Unfollow
+  
   followUser(userId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/users/${userId}/follow`, {});
   }
@@ -32,7 +32,7 @@ export class SocialService {
     });
   }
 
-  // Bookmarks
+  
   addBookmark(postId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/posts/${postId}/bookmark`, {});
   }
@@ -47,7 +47,7 @@ export class SocialService {
     });
   }
 
-  // Share
+  
   sharePost(postId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/posts/${postId}/share`, {});
   }

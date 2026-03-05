@@ -1,13 +1,13 @@
-// Copyright 2016 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package sys
 
 import "encoding/binary"
 
-// ArchFamily represents a family of one or more related architectures.
-// For example, ppc64 and ppc64le are both members of the PPC64 family.
+
+
 type ArchFamily byte
 
 const (
@@ -24,26 +24,26 @@ const (
 	Wasm
 )
 
-// Arch represents an individual architecture.
+
 type Arch struct {
 	Name   string
 	Family ArchFamily
 
 	ByteOrder binary.ByteOrder
 
-	// PtrSize is the size in bytes of pointers and the
-	// predeclared "int", "uint", and "uintptr" types.
+	
+	
 	PtrSize int
 
-	// RegSize is the size in bytes of general purpose registers.
+	
 	RegSize int
 
-	// MinLC is the minimum length of an instruction code.
+	
 	MinLC int
 }
 
-// InFamily reports whether a is a member of any of the specified
-// architecture families.
+
+
 func (a *Arch) InFamily(xs ...ArchFamily) bool {
 	for _, x := range xs {
 		if a.Family == x {

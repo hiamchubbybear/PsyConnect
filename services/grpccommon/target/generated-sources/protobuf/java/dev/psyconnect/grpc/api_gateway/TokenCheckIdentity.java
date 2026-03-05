@@ -1034,6 +1034,1324 @@ public final class TokenCheckIdentity {
 
   }
 
+  public interface UserInfoRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:identity.UserInfoRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string profile_id = 1;</code>
+     * @return The profileId.
+     */
+    java.lang.String getProfileId();
+    /**
+     * <code>string profile_id = 1;</code>
+     * @return The bytes for profileId.
+     */
+    com.google.protobuf.ByteString
+        getProfileIdBytes();
+  }
+  /**
+   * Protobuf type {@code identity.UserInfoRequest}
+   */
+  public static final class UserInfoRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:identity.UserInfoRequest)
+      UserInfoRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use UserInfoRequest.newBuilder() to construct.
+    private UserInfoRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private UserInfoRequest() {
+      profileId_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new UserInfoRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest.class, dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest.Builder.class);
+    }
+
+    public static final int PROFILE_ID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object profileId_;
+    /**
+     * <code>string profile_id = 1;</code>
+     * @return The profileId.
+     */
+    @java.lang.Override
+    public java.lang.String getProfileId() {
+      java.lang.Object ref = profileId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        profileId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string profile_id = 1;</code>
+     * @return The bytes for profileId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getProfileIdBytes() {
+      java.lang.Object ref = profileId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        profileId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(profileId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, profileId_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(profileId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, profileId_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest)) {
+        return super.equals(obj);
+      }
+      dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest other = (dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest) obj;
+
+      if (!getProfileId()
+          .equals(other.getProfileId())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + PROFILE_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getProfileId().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code identity.UserInfoRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:identity.UserInfoRequest)
+        dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest.class, dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest.Builder.class);
+      }
+
+      // Construct using dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        profileId_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest getDefaultInstanceForType() {
+        return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest build() {
+        dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest buildPartial() {
+        dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest result = new dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest(this);
+        result.profileId_ = profileId_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest) {
+          return mergeFrom((dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest other) {
+        if (other == dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest.getDefaultInstance()) return this;
+        if (!other.getProfileId().isEmpty()) {
+          profileId_ = other.profileId_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                profileId_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+
+      private java.lang.Object profileId_ = "";
+      /**
+       * <code>string profile_id = 1;</code>
+       * @return The profileId.
+       */
+      public java.lang.String getProfileId() {
+        java.lang.Object ref = profileId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          profileId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string profile_id = 1;</code>
+       * @return The bytes for profileId.
+       */
+      public com.google.protobuf.ByteString
+          getProfileIdBytes() {
+        java.lang.Object ref = profileId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          profileId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string profile_id = 1;</code>
+       * @param value The profileId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setProfileId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        profileId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string profile_id = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearProfileId() {
+        
+        profileId_ = getDefaultInstance().getProfileId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string profile_id = 1;</code>
+       * @param value The bytes for profileId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setProfileIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        profileId_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:identity.UserInfoRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:identity.UserInfoRequest)
+    private static final dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest();
+    }
+
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<UserInfoRequest>
+        PARSER = new com.google.protobuf.AbstractParser<UserInfoRequest>() {
+      @java.lang.Override
+      public UserInfoRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<UserInfoRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<UserInfoRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface UserInfoResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:identity.UserInfoResponse)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bool success = 1;</code>
+     * @return The success.
+     */
+    boolean getSuccess();
+
+    /**
+     * <code>string email = 2;</code>
+     * @return The email.
+     */
+    java.lang.String getEmail();
+    /**
+     * <code>string email = 2;</code>
+     * @return The bytes for email.
+     */
+    com.google.protobuf.ByteString
+        getEmailBytes();
+
+    /**
+     * <code>string username = 3;</code>
+     * @return The username.
+     */
+    java.lang.String getUsername();
+    /**
+     * <code>string username = 3;</code>
+     * @return The bytes for username.
+     */
+    com.google.protobuf.ByteString
+        getUsernameBytes();
+  }
+  /**
+   * Protobuf type {@code identity.UserInfoResponse}
+   */
+  public static final class UserInfoResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:identity.UserInfoResponse)
+      UserInfoResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use UserInfoResponse.newBuilder() to construct.
+    private UserInfoResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private UserInfoResponse() {
+      email_ = "";
+      username_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new UserInfoResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse.class, dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse.Builder.class);
+    }
+
+    public static final int SUCCESS_FIELD_NUMBER = 1;
+    private boolean success_;
+    /**
+     * <code>bool success = 1;</code>
+     * @return The success.
+     */
+    @java.lang.Override
+    public boolean getSuccess() {
+      return success_;
+    }
+
+    public static final int EMAIL_FIELD_NUMBER = 2;
+    private volatile java.lang.Object email_;
+    /**
+     * <code>string email = 2;</code>
+     * @return The email.
+     */
+    @java.lang.Override
+    public java.lang.String getEmail() {
+      java.lang.Object ref = email_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        email_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string email = 2;</code>
+     * @return The bytes for email.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getEmailBytes() {
+      java.lang.Object ref = email_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        email_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int USERNAME_FIELD_NUMBER = 3;
+    private volatile java.lang.Object username_;
+    /**
+     * <code>string username = 3;</code>
+     * @return The username.
+     */
+    @java.lang.Override
+    public java.lang.String getUsername() {
+      java.lang.Object ref = username_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        username_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string username = 3;</code>
+     * @return The bytes for username.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getUsernameBytes() {
+      java.lang.Object ref = username_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        username_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (success_ != false) {
+        output.writeBool(1, success_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(email_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, email_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(username_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, username_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (success_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, success_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(email_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, email_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(username_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, username_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse)) {
+        return super.equals(obj);
+      }
+      dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse other = (dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse) obj;
+
+      if (getSuccess()
+          != other.getSuccess()) return false;
+      if (!getEmail()
+          .equals(other.getEmail())) return false;
+      if (!getUsername()
+          .equals(other.getUsername())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SUCCESS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getSuccess());
+      hash = (37 * hash) + EMAIL_FIELD_NUMBER;
+      hash = (53 * hash) + getEmail().hashCode();
+      hash = (37 * hash) + USERNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getUsername().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code identity.UserInfoResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:identity.UserInfoResponse)
+        dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse.class, dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse.Builder.class);
+      }
+
+      // Construct using dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        success_ = false;
+
+        email_ = "";
+
+        username_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.internal_static_identity_UserInfoResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse getDefaultInstanceForType() {
+        return dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse build() {
+        dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse buildPartial() {
+        dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse result = new dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse(this);
+        result.success_ = success_;
+        result.email_ = email_;
+        result.username_ = username_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse) {
+          return mergeFrom((dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse other) {
+        if (other == dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse.getDefaultInstance()) return this;
+        if (other.getSuccess() != false) {
+          setSuccess(other.getSuccess());
+        }
+        if (!other.getEmail().isEmpty()) {
+          email_ = other.email_;
+          onChanged();
+        }
+        if (!other.getUsername().isEmpty()) {
+          username_ = other.username_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                success_ = input.readBool();
+
+                break;
+              } // case 8
+              case 18: {
+                email_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 18
+              case 26: {
+                username_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+
+      private boolean success_ ;
+      /**
+       * <code>bool success = 1;</code>
+       * @return The success.
+       */
+      @java.lang.Override
+      public boolean getSuccess() {
+        return success_;
+      }
+      /**
+       * <code>bool success = 1;</code>
+       * @param value The success to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSuccess(boolean value) {
+        
+        success_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool success = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSuccess() {
+        
+        success_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object email_ = "";
+      /**
+       * <code>string email = 2;</code>
+       * @return The email.
+       */
+      public java.lang.String getEmail() {
+        java.lang.Object ref = email_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          email_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string email = 2;</code>
+       * @return The bytes for email.
+       */
+      public com.google.protobuf.ByteString
+          getEmailBytes() {
+        java.lang.Object ref = email_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          email_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string email = 2;</code>
+       * @param value The email to set.
+       * @return This builder for chaining.
+       */
+      public Builder setEmail(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        email_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string email = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearEmail() {
+        
+        email_ = getDefaultInstance().getEmail();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string email = 2;</code>
+       * @param value The bytes for email to set.
+       * @return This builder for chaining.
+       */
+      public Builder setEmailBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        email_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object username_ = "";
+      /**
+       * <code>string username = 3;</code>
+       * @return The username.
+       */
+      public java.lang.String getUsername() {
+        java.lang.Object ref = username_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          username_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string username = 3;</code>
+       * @return The bytes for username.
+       */
+      public com.google.protobuf.ByteString
+          getUsernameBytes() {
+        java.lang.Object ref = username_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          username_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string username = 3;</code>
+       * @param value The username to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUsername(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        username_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string username = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearUsername() {
+        
+        username_ = getDefaultInstance().getUsername();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string username = 3;</code>
+       * @param value The bytes for username to set.
+       * @return This builder for chaining.
+       */
+      public Builder setUsernameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        username_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:identity.UserInfoResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:identity.UserInfoResponse)
+    private static final dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse();
+    }
+
+    public static dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<UserInfoResponse>
+        PARSER = new com.google.protobuf.AbstractParser<UserInfoResponse>() {
+      @java.lang.Override
+      public UserInfoResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<UserInfoResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<UserInfoResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public dev.psyconnect.grpc.api_gateway.TokenCheckIdentity.UserInfoResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_identity_TokenRequest_descriptor;
   private static final 
@@ -1044,6 +2362,16 @@ public final class TokenCheckIdentity {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_identity_TokenResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_identity_UserInfoRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_identity_UserInfoRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_identity_UserInfoResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_identity_UserInfoResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -1055,10 +2383,15 @@ public final class TokenCheckIdentity {
     java.lang.String[] descriptorData = {
       "\n\032token_check_identity.proto\022\010identity\"\035" +
       "\n\014TokenRequest\022\r\n\005token\030\001 \001(\t\"\036\n\rTokenRe" +
-      "sponse\022\r\n\005valid\030\001 \001(\0102R\n\014TokenService\022B\n" +
-      "\017TokenCheckValid\022\026.identity.TokenRequest" +
-      "\032\027.identity.TokenResponseB!\n\037dev.psyconn" +
-      "ect.grpc.api_gatewayb\006proto3"
+      "sponse\022\r\n\005valid\030\001 \001(\010\"%\n\017UserInfoRequest" +
+      "\022\022\n\nprofile_id\030\001 \001(\t\"D\n\020UserInfoResponse" +
+      "\022\017\n\007success\030\001 \001(\010\022\r\n\005email\030\002 \001(\t\022\020\n\010user" +
+      "name\030\003 \001(\t2\246\001\n\017IdentityService\022B\n\017TokenC" +
+      "heckValid\022\026.identity.TokenRequest\032\027.iden" +
+      "tity.TokenResponse\022O\n\026GetUserInfoByProfi" +
+      "leId\022\031.identity.UserInfoRequest\032\032.identi" +
+      "ty.UserInfoResponseB!\n\037dev.psyconnect.gr" +
+      "pc.api_gatewayb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -1076,6 +2409,18 @@ public final class TokenCheckIdentity {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_identity_TokenResponse_descriptor,
         new java.lang.String[] { "Valid", });
+    internal_static_identity_UserInfoRequest_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_identity_UserInfoRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_identity_UserInfoRequest_descriptor,
+        new java.lang.String[] { "ProfileId", });
+    internal_static_identity_UserInfoResponse_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+    internal_static_identity_UserInfoResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_identity_UserInfoResponse_descriptor,
+        new java.lang.String[] { "Success", "Email", "Username", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

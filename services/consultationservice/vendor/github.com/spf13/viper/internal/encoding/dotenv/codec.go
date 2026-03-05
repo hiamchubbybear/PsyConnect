@@ -11,8 +11,8 @@ import (
 
 const keyDelimiter = "_"
 
-// Codec implements the encoding.Encoder and encoding.Decoder interfaces for encoding data containing environment variables
-// (commonly called as dotenv format).
+
+
 type Codec struct{}
 
 func (Codec) Encode(v map[string]any) ([]byte, error) {

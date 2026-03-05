@@ -78,7 +78,7 @@ func (c cmdable) ACLCat(ctx context.Context) *StringSliceCmd {
 }
 
 func (c cmdable) ACLCatArgs(ctx context.Context, options *ACLCatArgs) *StringSliceCmd {
-	// if there is a category passed, build new cmd, if there isn't - use the ACLCat method
+	
 	if options != nil && options.Category != "" {
 		cmd := NewStringSliceCmd(ctx, "acl", "cat", options.Category)
 		_ = c(ctx, cmd)

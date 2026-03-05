@@ -1,4 +1,4 @@
-// src/app/features/profile/components/profile-card/profile-card.component.ts
+
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';

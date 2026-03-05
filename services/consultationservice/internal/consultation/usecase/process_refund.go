@@ -35,10 +35,10 @@ func (uc *ProcessRefundUseCase) Execute(ctx context.Context, sessionID string) (
 		return "", errors.New("session is not paid, cannot refund")
 	}
 
-	// Mocking Refund Transaction ID
+	
 	refundTraceID := "REFUND-" + uuid.New().String()
 
-	// In real setup, call external payment gateway refund API here
+	
 
 	session.PaymentStatus = domain2.PaymentRefunded
 	session.RefundTraceID = &refundTraceID
@@ -49,7 +49,7 @@ func (uc *ProcessRefundUseCase) Execute(ctx context.Context, sessionID string) (
 		return "", err
 	}
 
-	// Send Event
+	
 	if uc.producer != nil {
 		_ = uc.producer.SendSessionEvent("notification.push.consultation-updated", session)
 	}

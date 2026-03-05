@@ -10,27 +10,27 @@ import (
 	"github.com/segmentio/kafka-go/protocol/createacls"
 )
 
-// CreateACLsRequest represents a request sent to a kafka broker to add
-// new ACLs.
+
+
 type CreateACLsRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// List of ACL to create.
+	
 	ACLs []ACLEntry
 }
 
-// CreateACLsResponse represents a response from a kafka broker to an ACL
-// creation request.
+
+
 type CreateACLsResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// List of errors that occurred while attempting to create
-	// the ACLs.
-	//
-	// The errors contain the kafka error code. Programs may use the standard
-	// errors.Is function to test the error against kafka error codes.
+	
+	
+	
+	
+	
 	Errors []error
 }
 
@@ -57,12 +57,12 @@ func (apt ACLPermissionType) String() string {
 	return s
 }
 
-// MarshalText transforms an ACLPermissionType into its string representation.
+
 func (apt ACLPermissionType) MarshalText() ([]byte, error) {
 	return []byte(apt.String()), nil
 }
 
-// UnmarshalText takes a string representation of the resource type and converts it to an ACLPermissionType.
+
 func (apt *ACLPermissionType) UnmarshalText(text []byte) error {
 	normalized := strings.ToLower(string(text))
 	mapping := map[string]ACLPermissionType{
@@ -121,12 +121,12 @@ func (aot ACLOperationType) String() string {
 	return s
 }
 
-// MarshalText transforms an ACLOperationType into its string representation.
+
 func (aot ACLOperationType) MarshalText() ([]byte, error) {
 	return []byte(aot.String()), nil
 }
 
-// UnmarshalText takes a string representation of the resource type and converts it to an ACLPermissionType.
+
 func (aot *ACLOperationType) UnmarshalText(text []byte) error {
 	normalized := strings.ToLower(string(text))
 	mapping := map[string]ACLOperationType{
@@ -164,8 +164,8 @@ type ACLEntry struct {
 	PermissionType      ACLPermissionType
 }
 
-// CreateACLs sends ACLs creation request to a kafka broker and returns the
-// response.
+
+
 func (c *Client) CreateACLs(ctx context.Context, req *CreateACLsRequest) (*CreateACLsResponse, error) {
 	acls := make([]createacls.RequestACLs, 0, len(req.ACLs))
 

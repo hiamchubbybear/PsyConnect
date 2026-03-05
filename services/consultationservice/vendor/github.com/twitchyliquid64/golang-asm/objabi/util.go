@@ -1,6 +1,6 @@
-// Copyright 2015 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package objabi
 
@@ -19,7 +19,7 @@ func envOr(key, value string) string {
 }
 
 var (
-	defaultGOROOT string // set by linker
+	defaultGOROOT string 
 
 	GOROOT   = envOr("GOROOT", defaultGOROOT)
 	GOARCH   = envOr("GOARCH", "amd64")
@@ -37,11 +37,11 @@ var (
 
 const (
 	ElfRelocOffset   = 256
-	MachoRelocOffset = 2048           // reserve enough space for ELF relocations
-	Go115AMD64       = "alignedjumps" // Should be "alignedjumps" or "normaljumps"; this replaces environment variable introduced in CL 219357.
+	MachoRelocOffset = 2048           
+	Go115AMD64       = "alignedjumps" 
 )
 
-// TODO(1.16): assuming no issues in 1.15 release, remove this and related constant.
+
 func goamd64() string {
 	return Go115AMD64
 }
@@ -55,7 +55,7 @@ func goarm() int {
 	case "7":
 		return 7
 	}
-	// Fail here, rather than validate at multiple call sites.
+	
 	log.Fatalf("Invalid GOARM value. Must be 5, 6, or 7.")
 	panic("unreachable")
 }
@@ -113,7 +113,7 @@ func gowasm() (f gowasmFeatures) {
 		case "signext":
 			f.SignExt = true
 		case "":
-			// ignore
+			
 		default:
 			log.Fatalf("Invalid GOWASM value. No such feature: " + opt)
 		}
@@ -132,17 +132,17 @@ func init() {
 		}
 	}
 
-	// regabi is only supported on amd64.
+	
 	if GOARCH != "amd64" {
 		Regabi_enabled = 0
 	}
 }
 
-// Note: must agree with runtime.framepointer_enabled.
+
 var Framepointer_enabled = GOARCH == "amd64" || GOARCH == "arm64" && (GOOS == "linux" || GOOS == "darwin")
 
 func addexp(s string) {
-	// Could do general integer parsing here, but the runtime copy doesn't yet.
+	
 	v := 1
 	name := s
 	if len(name) > 2 && name[:2] == "no" {
@@ -169,10 +169,10 @@ var (
 	Regabi_enabled            int
 )
 
-// Toolchain experiments.
-// These are controlled by the GOEXPERIMENT environment
-// variable recorded when the toolchain is built.
-// This list is also known to cmd/gc.
+
+
+
+
 var exper = []struct {
 	name string
 	val  *int

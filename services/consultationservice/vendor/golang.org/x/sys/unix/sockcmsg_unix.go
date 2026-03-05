@@ -1,10 +1,10 @@
-// Copyright 2011 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 //go:build aix || darwin || dragonfly || freebsd || linux || netbsd || openbsd || solaris || zos
 
-// Socket control messages
+
 
 package unix
 
@@ -12,14 +12,14 @@ import (
 	"unsafe"
 )
 
-// CmsgLen returns the value to store in the Len field of the Cmsghdr
-// structure, taking into account any necessary alignment.
+
+
 func CmsgLen(datalen int) int {
 	return cmsgAlignOf(SizeofCmsghdr) + datalen
 }
 
-// CmsgSpace returns the number of bytes an ancillary element with
-// payload of the passed data length occupies.
+
+
 func CmsgSpace(datalen int) int {
 	return cmsgAlignOf(SizeofCmsghdr) + cmsgAlignOf(datalen)
 }
@@ -28,14 +28,14 @@ func (h *Cmsghdr) data(offset uintptr) unsafe.Pointer {
 	return unsafe.Pointer(uintptr(unsafe.Pointer(h)) + uintptr(cmsgAlignOf(SizeofCmsghdr)) + offset)
 }
 
-// SocketControlMessage represents a socket control message.
+
 type SocketControlMessage struct {
 	Header Cmsghdr
 	Data   []byte
 }
 
-// ParseSocketControlMessage parses b as an array of socket control
-// messages.
+
+
 func ParseSocketControlMessage(b []byte) ([]SocketControlMessage, error) {
 	var msgs []SocketControlMessage
 	i := 0
@@ -51,9 +51,9 @@ func ParseSocketControlMessage(b []byte) ([]SocketControlMessage, error) {
 	return msgs, nil
 }
 
-// ParseOneSocketControlMessage parses a single socket control message from b, returning the message header,
-// message data (a slice of b), and the remainder of b after that single message.
-// When there are no remaining messages, len(remainder) == 0.
+
+
+
 func ParseOneSocketControlMessage(b []byte) (hdr Cmsghdr, data []byte, remainder []byte, err error) {
 	h, dbuf, err := socketControlMessageHeaderAndData(b)
 	if err != nil {
@@ -73,8 +73,8 @@ func socketControlMessageHeaderAndData(b []byte) (*Cmsghdr, []byte, error) {
 	return h, b[cmsgAlignOf(SizeofCmsghdr):h.Len], nil
 }
 
-// UnixRights encodes a set of open file descriptors into a socket
-// control message for sending to another process.
+
+
 func UnixRights(fds ...int) []byte {
 	datalen := len(fds) * 4
 	b := make([]byte, CmsgSpace(datalen))
@@ -88,8 +88,8 @@ func UnixRights(fds ...int) []byte {
 	return b
 }
 
-// ParseUnixRights decodes a socket control message that contains an
-// integer array of open file descriptors from another process.
+
+
 func ParseUnixRights(m *SocketControlMessage) ([]int, error) {
 	if m.Header.Level != SOL_SOCKET {
 		return nil, EINVAL

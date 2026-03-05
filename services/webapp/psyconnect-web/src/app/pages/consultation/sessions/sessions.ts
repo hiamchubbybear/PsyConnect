@@ -32,7 +32,7 @@ export class Sessions implements OnInit {
     this.isLoading = true;
     this.sessionService.getAllSessions().subscribe({
       next: (data: any) => {
-        // API returns either array or wrapped object
+        
         this.sessions = Array.isArray(data)
           ? data
           : data?.data || data?.sessions || [];

@@ -1,7 +1,7 @@
-// Copyright 2011 The Snappy-Go Authors. All rights reserved.
-// Modified for deflate by Klaus Post (c) 2015.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
+
 
 package flate
 
@@ -36,17 +36,17 @@ func newFastEnc(level int) fastEnc {
 }
 
 const (
-	tableBits       = 15             // Bits used in the table
-	tableSize       = 1 << tableBits // Size of the table
-	tableShift      = 32 - tableBits // Right-shift to get the tableBits most significant bits of a uint32.
-	baseMatchOffset = 1              // The smallest match offset
-	baseMatchLength = 3              // The smallest match length per the RFC section 3.2.5
-	maxMatchOffset  = 1 << 15        // The largest match offset
+	tableBits       = 15             
+	tableSize       = 1 << tableBits 
+	tableShift      = 32 - tableBits 
+	baseMatchOffset = 1              
+	baseMatchLength = 3              
+	maxMatchOffset  = 1 << 15        
 
-	bTableBits   = 17                                               // Bits used in the big tables
-	bTableSize   = 1 << bTableBits                                  // Size of the table
-	allocHistory = maxStoreBlockSize * 5                            // Size to preallocate for history.
-	bufferReset  = (1 << 31) - allocHistory - maxStoreBlockSize - 1 // Reset the buffer offset when reaching this.
+	bTableBits   = 17                                               
+	bTableSize   = 1 << bTableBits                                  
+	allocHistory = maxStoreBlockSize * 5                            
+	bufferReset  = (1 << 31) - allocHistory - maxStoreBlockSize - 1 
 )
 
 const (
@@ -70,16 +70,16 @@ type tableEntry struct {
 	offset int32
 }
 
-// fastGen maintains the table for matches,
-// and the previous byte block for level 2.
-// This is the generic implementation.
+
+
+
 type fastGen struct {
 	hist []byte
 	cur  int32
 }
 
 func (e *fastGen) addBlock(src []byte) int32 {
-	// check if we have space already
+	
 	if len(e.hist)+len(src) > cap(e.hist) {
 		if cap(e.hist) == 0 {
 			e.hist = make([]byte, 0, allocHistory)
@@ -87,9 +87,9 @@ func (e *fastGen) addBlock(src []byte) int32 {
 			if cap(e.hist) < maxMatchOffset*2 {
 				panic("unexpected buffer size")
 			}
-			// Move down
+			
 			offset := int32(len(e.hist)) - maxMatchOffset
-			// copy(e.hist[0:maxMatchOffset], e.hist[offset:])
+			
 			*(*[maxMatchOffset]byte)(e.hist) = *(*[maxMatchOffset]byte)(e.hist[offset:])
 			e.cur += offset
 			e.hist = e.hist[:maxMatchOffset]
@@ -105,16 +105,16 @@ type tableEntryPrev struct {
 	Prev tableEntry
 }
 
-// hash7 returns the hash of the lowest 7 bytes of u to fit in a hash table with h bits.
-// Preferably h should be a constant and should always be <64.
+
+
 func hash7(u uint64, h uint8) uint32 {
 	return uint32(((u << (64 - 56)) * prime7bytes) >> ((64 - h) & reg8SizeMask64))
 }
 
-// hashLen returns a hash of the lowest mls bytes of with length output bits.
-// mls must be >=3 and <=8. Any other value will return hash for 4 bytes.
-// length should always be < 32.
-// Preferably length and mls should be a constant for inlining.
+
+
+
+
 func hashLen(u uint64, length, mls uint8) uint32 {
 	switch mls {
 	case 3:
@@ -132,9 +132,9 @@ func hashLen(u uint64, length, mls uint8) uint32 {
 	}
 }
 
-// matchlen will return the match length between offsets and t in src.
-// The maximum length returned is maxMatchLength - 4.
-// It is assumed that s > t, that t >=0 and s < len(src).
+
+
+
 func (e *fastGen) matchlen(s, t int32, src []byte) int32 {
 	if debugDecode {
 		if t >= s {
@@ -155,12 +155,12 @@ func (e *fastGen) matchlen(s, t int32, src []byte) int32 {
 		s1 = len(src)
 	}
 
-	// Extend the match to be as long as possible.
+	
 	return int32(matchLen(src[s:s1], src[t:]))
 }
 
-// matchlenLong will return the match length between offsets and t in src.
-// It is assumed that s > t, that t >=0 and s < len(src).
+
+
 func (e *fastGen) matchlenLong(s, t int32, src []byte) int32 {
 	if debugDeflate {
 		if t >= s {
@@ -176,25 +176,25 @@ func (e *fastGen) matchlenLong(s, t int32, src []byte) int32 {
 			panic(fmt.Sprint(s, "-", t, "(", s-t, ") > maxMatchLength (", maxMatchOffset, ")"))
 		}
 	}
-	// Extend the match to be as long as possible.
+	
 	return int32(matchLen(src[s:], src[t:]))
 }
 
-// Reset the encoding table.
+
 func (e *fastGen) Reset() {
 	if cap(e.hist) < allocHistory {
 		e.hist = make([]byte, 0, allocHistory)
 	}
-	// We offset current position so everything will be out of reach.
-	// If we are above the buffer reset it will be cleared anyway since len(hist) == 0.
+	
+	
 	if e.cur <= bufferReset {
 		e.cur += maxMatchOffset + int32(len(e.hist))
 	}
 	e.hist = e.hist[:0]
 }
 
-// matchLen returns the maximum length.
-// 'a' must be the shortest of the two.
+
+
 func matchLen(a, b []byte) int {
 	var checked int
 

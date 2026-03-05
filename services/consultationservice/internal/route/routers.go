@@ -115,7 +115,6 @@ func RouterInit(
 		therapist.PATCH("/me/availability", therapistHandler.UpdateAvailability)
 
 		therapist.GET("/:id", therapistHandler.GetTherapistByID)
-		therapist.GET("/search", therapistHandler.SearchTherapists)
 	}
 
 	client := api.Group("/clients")
@@ -143,10 +142,10 @@ func RouterInit(
 		session.GET("/:id", sessionHandler.GetSession)
 		session.POST("/:id/call/start", sessionHandler.StartCall)
 
-		// Payment & Refund Routes
-		session.GET("/:id/payment-url", sessionHandler.GetPaymentURL)          // Mock Payment URL
-		session.POST("/webhook/payment", sessionHandler.ProcessPaymentWebhook) // Payment Webhook
-		session.POST("/:id/refund", sessionHandler.RefundSession)              // Process Refund
+		
+		session.GET("/:id/payment-url", sessionHandler.GetPaymentURL)          
+		session.POST("/webhook/payment", sessionHandler.ProcessPaymentWebhook) 
+		session.POST("/:id/refund", sessionHandler.RefundSession)              
 	}
 
 	adminSession := api.Group("/admin/sessions")
@@ -166,6 +165,7 @@ func RouterInit(
 	{
 		uncategoryGroupV1.GET("/clients", clientHandler.GetAllClients)
 		uncategoryGroupV1.GET("/therapist/:id", therapistHandler.GetTherapistByID)
+		uncategoryGroupV1.GET("/search/therapists", therapistHandler.SearchTherapists)
 		uncategoryGroupV1.GET("/me/recommend/top", swipeHandler.PopTop5V1)
 		uncategoryGroupV1.GET("/client/:id", clientHandler.GetClientByID)
 	}

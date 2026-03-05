@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bson
 
@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 )
 
-// BSON element types as described in https://bsonspec.org/spec.html.
+
 const (
 	TypeDouble           = bsontype.Double
 	TypeString           = bsontype.String
@@ -35,7 +35,7 @@ const (
 	TypeMaxKey           = bsontype.MaxKey
 )
 
-// BSON binary element subtypes as described in https://bsonspec.org/spec.html.
+
 const (
 	TypeBinaryGeneric     = bsontype.BinaryGeneric
 	TypeBinaryFunction    = bsontype.BinaryFunction

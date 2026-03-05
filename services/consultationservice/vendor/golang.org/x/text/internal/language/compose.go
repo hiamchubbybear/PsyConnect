@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package language
 
@@ -9,17 +9,17 @@ import (
 	"strings"
 )
 
-// A Builder allows constructing a Tag from individual components.
-// Its main user is Compose in the top-level language package.
+
+
 type Builder struct {
 	Tag Tag
 
-	private    string // the x extension
+	private    string 
 	variants   []string
 	extensions []string
 }
 
-// Make returns a new Tag from the current settings.
+
 func (b *Builder) Make() Tag {
 	t := b.Tag
 
@@ -38,8 +38,8 @@ func (b *Builder) Make() Tag {
 		t.pExt = uint16(p)
 		p += appendTokens(buf[p:], b.extensions...)
 		t.str = string(buf[:p])
-		// We may not always need to remake the string, but when or when not
-		// to do so is rather tricky.
+		
+		
 		scan := makeScanner(buf[:p])
 		t, _ = parse(&scan, "")
 		return t
@@ -51,13 +51,13 @@ func (b *Builder) Make() Tag {
 	return t
 }
 
-// SetTag copies all the settings from a given Tag. Any previously set values
-// are discarded.
+
+
 func (b *Builder) SetTag(t Tag) {
 	b.Tag.LangID = t.LangID
 	b.Tag.RegionID = t.RegionID
 	b.Tag.ScriptID = t.ScriptID
-	// TODO: optimize
+	
 	b.variants = b.variants[:0]
 	if variants := t.Variants(); variants != "" {
 		for _, vr := range strings.Split(variants[1:], "-") {
@@ -70,9 +70,9 @@ func (b *Builder) SetTag(t Tag) {
 	}
 }
 
-// AddExt adds extension e to the tag. e must be a valid extension as returned
-// by Tag.Extension. If the extension already exists, it will be discarded,
-// except for a -u extension, where non-existing key-type pairs will added.
+
+
+
 func (b *Builder) AddExt(e string) {
 	if e[0] == 'x' {
 		if b.private == "" {
@@ -91,10 +91,10 @@ func (b *Builder) AddExt(e string) {
 	b.extensions = append(b.extensions, e)
 }
 
-// SetExt sets the extension e to the tag. e must be a valid extension as
-// returned by Tag.Extension. If the extension already exists, it will be
-// overwritten, except for a -u extension, where the individual key-type pairs
-// will be set.
+
+
+
+
 func (b *Builder) SetExt(e string) {
 	if e[0] == 'x' {
 		b.private = e
@@ -113,7 +113,7 @@ func (b *Builder) SetExt(e string) {
 	b.extensions = append(b.extensions, e)
 }
 
-// AddVariant adds any number of variants.
+
 func (b *Builder) AddVariant(v ...string) {
 	for _, v := range v {
 		if v != "" {
@@ -122,14 +122,14 @@ func (b *Builder) AddVariant(v ...string) {
 	}
 }
 
-// ClearVariants removes any variants previously added, including those
-// copied from a Tag in SetTag.
+
+
 func (b *Builder) ClearVariants() {
 	b.variants = b.variants[:0]
 }
 
-// ClearExtensions removes any extensions previously added, including those
-// copied from a Tag in SetTag.
+
+
 func (b *Builder) ClearExtensions() {
 	b.private = ""
 	b.extensions = b.extensions[:0]

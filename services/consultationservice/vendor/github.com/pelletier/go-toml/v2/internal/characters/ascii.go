@@ -10,11 +10,11 @@ var invalidAsciiTable = [256]bool{
 	0x06: true,
 	0x07: true,
 	0x08: true,
-	// 0x09 TAB
-	// 0x0A LF
+	
+	
 	0x0B: true,
 	0x0C: true,
-	// 0x0D CR
+	
 	0x0E: true,
 	0x0F: true,
 	0x10: true,
@@ -33,7 +33,7 @@ var invalidAsciiTable = [256]bool{
 	0x1D: true,
 	0x1E: true,
 	0x1F: true,
-	// 0x20 - 0x7E Printable ASCII characters
+	
 	0x7F: true,
 }
 

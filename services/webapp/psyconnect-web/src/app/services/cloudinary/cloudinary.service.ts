@@ -24,11 +24,11 @@ export class CloudinaryService {
       const sanitizedUsername = username
         .replace(/[^a-zA-Z0-9]/g, '_')
         .toLowerCase();
-      // Add random suffix to avoid collisions for multiple post attachments
+      
       const randomSuffix = Math.random().toString(36).substring(2, 8);
       const basePublicId = `${publicIdPrefix}_${sanitizedUsername}_${randomSuffix}`;
 
-      // 1. Get signature from Backend
+      
       const signParams: any = {
         timestamp: timestamp,
         public_id: basePublicId,
@@ -54,7 +54,7 @@ export class CloudinaryService {
 
       const { signature, apiKey, cloudName } = signResponse.data;
 
-      // 2. Upload to Cloudinary using the signature
+      
       const formData = new FormData();
       formData.append('file', imageFile);
       formData.append('api_key', apiKey);

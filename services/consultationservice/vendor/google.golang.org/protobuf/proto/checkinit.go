@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package proto
 
@@ -10,10 +10,10 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 )
 
-// CheckInitialized returns an error if any required fields in m are not set.
+
 func CheckInitialized(m Message) error {
-	// Treat a nil message interface as an "untyped" empty message,
-	// which we assume to have no required fields.
+	
+	
 	if m == nil {
 		return nil
 	}
@@ -21,7 +21,7 @@ func CheckInitialized(m Message) error {
 	return checkInitialized(m.ProtoReflect())
 }
 
-// CheckInitialized returns an error if any required fields in m are not set.
+
 func checkInitialized(m protoreflect.Message) error {
 	if methods := protoMethods(m); methods != nil && methods.CheckInitialized != nil {
 		_, err := methods.CheckInitialized(protoiface.CheckInitializedInput{

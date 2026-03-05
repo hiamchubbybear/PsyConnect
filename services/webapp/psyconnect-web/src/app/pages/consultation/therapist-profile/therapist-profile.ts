@@ -28,7 +28,7 @@ export class TherapistProfileComponent implements OnInit {
   existingProfile: TherapistV1 | null = null;
   isEditMode = false;
 
-  // Reference data
+  
   weekdays = WEEKDAYS;
   timeSlots = TIME_SLOTS;
   consultationModes = CONSULTATION_MODES;
@@ -116,13 +116,13 @@ export class TherapistProfileComponent implements OnInit {
         },
       });
 
-      // Add degrees
+      
       const degreesArray = this.degrees;
       profile.professional_info.degrees?.forEach((degree) => {
         degreesArray.push(this.createDegreeGroup(degree));
       });
 
-      // Add certifications
+      
       const certsArray = this.certifications;
       profile.professional_info.certifications?.forEach((cert) => {
         certsArray.push(this.createCertificationGroup(cert));
@@ -240,7 +240,7 @@ export class TherapistProfileComponent implements OnInit {
     return '';
   }
 
-  // Helper methods for checkbox arrays
+  
   toggleLanguage(language: string, checked: boolean) {
     const current = this.profileForm.value.languages || [];
     const updated = checked

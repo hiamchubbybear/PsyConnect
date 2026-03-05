@@ -5,7 +5,7 @@ import (
 )
 
 type saslAuthenticateRequestV0 struct {
-	// Data holds the SASL payload
+	
 	Data []byte
 }
 
@@ -22,7 +22,7 @@ func (t saslAuthenticateRequestV0) writeTo(wb *writeBuffer) {
 }
 
 type saslAuthenticateResponseV0 struct {
-	// ErrorCode holds response error code
+	
 	ErrorCode int16
 
 	ErrorMessage string

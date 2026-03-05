@@ -3,13 +3,16 @@ package kafka
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"notificationservice/pkg/config"
 	"notificationservice/pkg/email"
 	"notificationservice/pkg/handlers"
 	"notificationservice/pkg/models"
+
 	"github.com/segmentio/kafka-go"
 )
 
@@ -21,17 +24,17 @@ type Consumer struct {
 }
 
 func NewConsumer(cfg *config.Config, emailSvc *email.EmailService, notifSvc *handlers.NotificationService) *Consumer {
-	// All topics
+	
 	topics := []string{
-		// Email topics
+		
 		"notification.user-create",
 		"notification.user-activate",
 		"notification.account-change",
 		"notification.user-reset",
-		// Therapist topics
+		
 		"notification.therapist-approve",
 		"notification.therapist-reject",
-		// Push notification topics
+		
 		"notification.push.new-message",
 		"notification.push.consultation-created",
 		"notification.push.consultation-updated",
@@ -43,7 +46,7 @@ func NewConsumer(cfg *config.Config, emailSvc *email.EmailService, notifSvc *han
 		"notification.push.new-review",
 		"notification.push.new-client",
 		"notification.push.system",
-		// Social topics
+		
 		"notification.social.post-upvote",
 		"notification.social.post-bookmark",
 		"notification.social.post-share",
@@ -102,7 +105,7 @@ func (c *Consumer) processMessage(msg kafka.Message) error {
 	topic := msg.Topic
 
 	switch topic {
-	// Email topics
+	
 	case "notification.user-create":
 		return c.handleUserCreate(msg.Value)
 	case "notification.user-activate":
@@ -112,13 +115,13 @@ func (c *Consumer) processMessage(msg kafka.Message) error {
 	case "notification.account-change":
 		return c.handleAccountChange(msg.Value)
 
-	// Therapist topics
+	
 	case "notification.therapist-approve":
 		return c.handleTherapistApprove(msg.Value)
 	case "notification.therapist-reject":
 		return c.handleTherapistReject(msg.Value)
 
-	// Push notification topics
+	
 	case "notification.push.new-message":
 		return c.handleNewMessage(msg.Value)
 	case "notification.push.consultation-created":
@@ -145,7 +148,7 @@ func (c *Consumer) processMessage(msg kafka.Message) error {
 	case "consultation.incoming_call":
 		return c.handleIncomingCall(msg.Value)
 
-	// Social topics
+	
 	case "notification.social.post-upvote":
 		return c.handlePostUpvote(msg.Value)
 	case "notification.social.post-bookmark":
@@ -163,7 +166,7 @@ func (c *Consumer) processMessage(msg kafka.Message) error {
 	}
 }
 
-// Email handlers
+
 func (c *Consumer) handleUserCreate(data []byte) error {
 	var notif models.UserCreateNotification
 	if err := json.Unmarshal(data, &notif); err != nil {
@@ -200,7 +203,7 @@ func (c *Consumer) handleAccountChange(data []byte) error {
 	return c.emailSvc.SendAccountChangeEmail(notif.Email, notif.Username)
 }
 
-// Therapist handlers
+
 func (c *Consumer) handleTherapistApprove(data []byte) error {
 	var notif models.TherapistApproveNotification
 	if err := json.Unmarshal(data, &notif); err != nil {
@@ -231,7 +234,7 @@ func (c *Consumer) handleTherapistReject(data []byte) error {
 	)
 }
 
-// Push notification handlers
+
 func (c *Consumer) handleNewMessage(data []byte) error {
 	var notif models.NewMessageNotification
 	if err := json.Unmarshal(data, &notif); err != nil {
@@ -255,13 +258,78 @@ func (c *Consumer) handleConsultationCreated(data []byte) error {
 	if err := json.Unmarshal(data, &notif); err != nil {
 		return err
 	}
-	return c.notifSvc.SendToUser(
-		notif.UserID,
-		"New consultation request",
-		"A client has just booked a consultation with you.",
+
+	log.Printf(" Session created: %s between %s and %s", notif.SessionID, notif.ClientName, notif.TherapistName)
+
+	
+	if notif.ClientEmail != "" {
+		err := c.emailSvc.SendSessionCreatedEmail(
+			notif.ClientEmail,
+			notif.ClientName,
+			"client",
+			notif.TherapistName,
+			notif.DateStr,
+			notif.StartTimeStr,
+			notif.Mode,
+		)
+		if err != nil {
+			log.Printf(" Failed to send Gmail to client: %v", err)
+		}
+	}
+
+	
+	if notif.TherapistEmail != "" {
+		err := c.emailSvc.SendSessionCreatedEmail(
+			notif.TherapistEmail,
+			notif.TherapistName,
+			"therapist",
+			notif.ClientName,
+			notif.DateStr,
+			notif.StartTimeStr,
+			notif.Mode,
+		)
+		if err != nil {
+			log.Printf(" Failed to send Gmail to therapist: %v", err)
+		}
+	}
+
+	
+	clientMsg := fmt.Sprintf("You have an upcoming %s session with %s on %s at %s.",
+		strings.ToLower(notif.Mode), notif.TherapistName, notif.DateStr, notif.StartTimeStr)
+	_ = c.notifSvc.SendToUser(
+		notif.ClientID,
+		"Session Confirmed",
+		clientMsg,
 		"consultation-created",
-		map[string]interface{}{},
+		map[string]interface{}{
+			"sessionId":     notif.SessionID,
+			"therapistId":   notif.TherapistID,
+			"therapistName": notif.TherapistName,
+			"startTime":     notif.StartTimeStr,
+			"date":          notif.DateStr,
+			"type":          "session_banner",
+		},
 	)
+
+	
+	therapistMsg := fmt.Sprintf("New %s session booked by %s on %s at %s.",
+		strings.ToLower(notif.Mode), notif.ClientName, notif.DateStr, notif.StartTimeStr)
+	_ = c.notifSvc.SendToUser(
+		notif.TherapistID,
+		"New Booking",
+		therapistMsg,
+		"consultation-created",
+		map[string]interface{}{
+			"sessionId":  notif.SessionID,
+			"clientId":   notif.ClientID,
+			"clientName": notif.ClientName,
+			"startTime":  notif.StartTimeStr,
+			"date":       notif.DateStr,
+			"type":       "session_banner",
+		},
+	)
+
+	return nil
 }
 
 func (c *Consumer) handleConsultationUpdated(data []byte) error {
@@ -398,7 +466,7 @@ func (c *Consumer) handleSystem(data []byte) error {
 	)
 }
 
-// Social handlers
+
 func (c *Consumer) handlePostUpvote(data []byte) error {
 	var notif models.PostUpvoteNotification
 	if err := json.Unmarshal(data, &notif); err != nil {

@@ -58,7 +58,7 @@ type CreateSessionRequest struct {
 	LocationInfo  *domain.LocationInfo    `json:"location_info,omitempty"`
 }
 
-// Only client can be use this
+
 func (h *Handler) CreateSession(c *gin.Context) {
 	var req CreateSessionRequest
 	userId := c.GetHeader("X-Profile-Id")
@@ -145,7 +145,7 @@ func (h *Handler) GetSessionsByProfile(c *gin.Context) {
 	apiresponse.NewApiResponse(c, sessions)
 }
 
-// DeleteSession Deprecated
+
 func (h *Handler) DeleteSession(c *gin.Context) {
 	sessionID := c.Param("id")
 	if sessionID == "" {
@@ -197,7 +197,7 @@ func (h *Handler) RefundSession(c *gin.Context) {
 	apiresponse.NewApiResponse(c, gin.H{"message": "Refund successful", "refund_trace_id": traceID})
 }
 
-// GetCalendar returns sessions within a date range formatted as calendar events
+
 func (h *Handler) GetCalendar(c *gin.Context) {
 	profileID := c.GetHeader("X-Profile-Id")
 	if profileID == "" {
@@ -218,7 +218,7 @@ func (h *Handler) GetCalendar(c *gin.Context) {
 	apiresponse.NewApiResponse(c, gin.H{"events": events})
 }
 
-// GetOverview returns a summary dashboard for the authenticated user
+
 func (h *Handler) GetOverview(c *gin.Context) {
 	profileID := c.GetHeader("X-Profile-Id")
 	if profileID == "" {

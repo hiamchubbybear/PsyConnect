@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// FindAndModify performs a findAndModify operation.
+
 type FindAndModify struct {
 	authenticator            driver.Authenticator
 	arrayFilters             bsoncore.Array
@@ -57,19 +57,19 @@ type FindAndModify struct {
 	result FindAndModifyResult
 }
 
-// LastErrorObject represents information about updates and upserts returned by the server.
+
 type LastErrorObject struct {
-	// True if an update modified an existing document
+	
 	UpdatedExisting bool
-	// Object ID of the upserted document.
+	
 	Upserted interface{}
 }
 
-// FindAndModifyResult represents a findAndModify result returned by the server.
+
 type FindAndModifyResult struct {
-	// Either the old or modified document, depending on the value of the new parameter.
+	
 	Value bsoncore.Document
-	// Contains information about updates and upserts.
+	
 	LastErrorObject LastErrorObject
 }
 
@@ -85,7 +85,7 @@ func buildFindAndModifyResult(response bsoncore.Document) (FindAndModifyResult, 
 			var ok bool
 			famr.Value, ok = element.Value().DocumentOK()
 
-			// The 'value' field returned by a FindAndModify can be null in the case that no document was found.
+			
 			if element.Value().Type != bsontype.Null && !ok {
 				return famr, fmt.Errorf("response field 'value' is type document or null, but received BSON type %s", element.Value().Type)
 			}
@@ -105,14 +105,14 @@ func buildFindAndModifyResult(response bsoncore.Document) (FindAndModifyResult, 
 	return famr, nil
 }
 
-// NewFindAndModify constructs and returns a new FindAndModify.
+
 func NewFindAndModify(query bsoncore.Document) *FindAndModify {
 	return &FindAndModify{
 		query: query,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (fam *FindAndModify) Result() FindAndModifyResult { return fam.result }
 
 func (fam *FindAndModify) processResponse(info driver.ResponseInfo) error {
@@ -123,7 +123,7 @@ func (fam *FindAndModify) processResponse(info driver.ResponseInfo) error {
 
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (fam *FindAndModify) Execute(ctx context.Context) error {
 	if fam.deployment == nil {
 		return errors.New("the FindAndModify operation must have a Deployment set before Execute can be called")
@@ -222,7 +222,7 @@ func (fam *FindAndModify) command(dst []byte, desc description.SelectedServer) (
 	return dst, nil
 }
 
-// ArrayFilters specifies an array of filter documents that determines which array elements to modify for an update operation on an array field.
+
 func (fam *FindAndModify) ArrayFilters(arrayFilters bsoncore.Array) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -232,7 +232,7 @@ func (fam *FindAndModify) ArrayFilters(arrayFilters bsoncore.Array) *FindAndModi
 	return fam
 }
 
-// BypassDocumentValidation specifies if document validation can be skipped when executing the operation.
+
 func (fam *FindAndModify) BypassDocumentValidation(bypassDocumentValidation bool) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -242,7 +242,7 @@ func (fam *FindAndModify) BypassDocumentValidation(bypassDocumentValidation bool
 	return fam
 }
 
-// Collation specifies a collation to be used.
+
 func (fam *FindAndModify) Collation(collation bsoncore.Document) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -252,7 +252,7 @@ func (fam *FindAndModify) Collation(collation bsoncore.Document) *FindAndModify 
 	return fam
 }
 
-// Comment sets a value to help trace an operation.
+
 func (fam *FindAndModify) Comment(comment bsoncore.Value) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -262,7 +262,7 @@ func (fam *FindAndModify) Comment(comment bsoncore.Value) *FindAndModify {
 	return fam
 }
 
-// Fields specifies a subset of fields to return.
+
 func (fam *FindAndModify) Fields(fields bsoncore.Document) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -272,7 +272,7 @@ func (fam *FindAndModify) Fields(fields bsoncore.Document) *FindAndModify {
 	return fam
 }
 
-// MaxTime specifies the maximum amount of time to allow the operation to run on the server.
+
 func (fam *FindAndModify) MaxTime(maxTime *time.Duration) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -282,7 +282,7 @@ func (fam *FindAndModify) MaxTime(maxTime *time.Duration) *FindAndModify {
 	return fam
 }
 
-// NewDocument specifies whether to return the modified document or the original. Defaults to false (return original).
+
 func (fam *FindAndModify) NewDocument(newDocument bool) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -292,7 +292,7 @@ func (fam *FindAndModify) NewDocument(newDocument bool) *FindAndModify {
 	return fam
 }
 
-// Query specifies the selection criteria for the modification.
+
 func (fam *FindAndModify) Query(query bsoncore.Document) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -302,7 +302,7 @@ func (fam *FindAndModify) Query(query bsoncore.Document) *FindAndModify {
 	return fam
 }
 
-// Remove specifies that the matched document should be removed. Defaults to false.
+
 func (fam *FindAndModify) Remove(remove bool) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -312,7 +312,7 @@ func (fam *FindAndModify) Remove(remove bool) *FindAndModify {
 	return fam
 }
 
-// Sort determines which document the operation modifies if the query matches multiple documents.The first document matched by the sort order will be modified.
+
 func (fam *FindAndModify) Sort(sort bsoncore.Document) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -322,7 +322,7 @@ func (fam *FindAndModify) Sort(sort bsoncore.Document) *FindAndModify {
 	return fam
 }
 
-// Update specifies the update document to perform on the matched document.
+
 func (fam *FindAndModify) Update(update bsoncore.Value) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -332,7 +332,7 @@ func (fam *FindAndModify) Update(update bsoncore.Value) *FindAndModify {
 	return fam
 }
 
-// Upsert specifies whether or not to create a new document if no documents match the query when doing an update. Defaults to false.
+
 func (fam *FindAndModify) Upsert(upsert bool) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -342,7 +342,7 @@ func (fam *FindAndModify) Upsert(upsert bool) *FindAndModify {
 	return fam
 }
 
-// Session sets the session for this operation.
+
 func (fam *FindAndModify) Session(session *session.Client) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -352,7 +352,7 @@ func (fam *FindAndModify) Session(session *session.Client) *FindAndModify {
 	return fam
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (fam *FindAndModify) ClusterClock(clock *session.ClusterClock) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -362,7 +362,7 @@ func (fam *FindAndModify) ClusterClock(clock *session.ClusterClock) *FindAndModi
 	return fam
 }
 
-// Collection sets the collection that this command will run against.
+
 func (fam *FindAndModify) Collection(collection string) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -372,7 +372,7 @@ func (fam *FindAndModify) Collection(collection string) *FindAndModify {
 	return fam
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (fam *FindAndModify) CommandMonitor(monitor *event.CommandMonitor) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -382,7 +382,7 @@ func (fam *FindAndModify) CommandMonitor(monitor *event.CommandMonitor) *FindAnd
 	return fam
 }
 
-// Database sets the database to run this operation against.
+
 func (fam *FindAndModify) Database(database string) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -392,7 +392,7 @@ func (fam *FindAndModify) Database(database string) *FindAndModify {
 	return fam
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (fam *FindAndModify) Deployment(deployment driver.Deployment) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -402,7 +402,7 @@ func (fam *FindAndModify) Deployment(deployment driver.Deployment) *FindAndModif
 	return fam
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (fam *FindAndModify) ServerSelector(selector description.ServerSelector) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -412,7 +412,7 @@ func (fam *FindAndModify) ServerSelector(selector description.ServerSelector) *F
 	return fam
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (fam *FindAndModify) WriteConcern(writeConcern *writeconcern.WriteConcern) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -422,9 +422,9 @@ func (fam *FindAndModify) WriteConcern(writeConcern *writeconcern.WriteConcern) 
 	return fam
 }
 
-// Retry enables retryable writes for this operation. Retries are not handled automatically,
-// instead a boolean is returned from Execute and SelectAndExecute that indicates if the
-// operation can be retried. Retrying is handled by calling RetryExecute.
+
+
+
 func (fam *FindAndModify) Retry(retry driver.RetryMode) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -434,7 +434,7 @@ func (fam *FindAndModify) Retry(retry driver.RetryMode) *FindAndModify {
 	return fam
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (fam *FindAndModify) Crypt(crypt driver.Crypt) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -444,7 +444,7 @@ func (fam *FindAndModify) Crypt(crypt driver.Crypt) *FindAndModify {
 	return fam
 }
 
-// Hint specifies the index to use.
+
 func (fam *FindAndModify) Hint(hint bsoncore.Value) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -454,7 +454,7 @@ func (fam *FindAndModify) Hint(hint bsoncore.Value) *FindAndModify {
 	return fam
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (fam *FindAndModify) ServerAPI(serverAPI *driver.ServerAPIOptions) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -464,7 +464,7 @@ func (fam *FindAndModify) ServerAPI(serverAPI *driver.ServerAPIOptions) *FindAnd
 	return fam
 }
 
-// Let specifies the let document to use. This option is only valid for server versions 5.0 and above.
+
 func (fam *FindAndModify) Let(let bsoncore.Document) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -474,7 +474,7 @@ func (fam *FindAndModify) Let(let bsoncore.Document) *FindAndModify {
 	return fam
 }
 
-// Timeout sets the timeout for this operation.
+
 func (fam *FindAndModify) Timeout(timeout *time.Duration) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -484,7 +484,7 @@ func (fam *FindAndModify) Timeout(timeout *time.Duration) *FindAndModify {
 	return fam
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (fam *FindAndModify) Authenticator(authenticator driver.Authenticator) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)
@@ -494,7 +494,7 @@ func (fam *FindAndModify) Authenticator(authenticator driver.Authenticator) *Fin
 	return fam
 }
 
-// BypassEmptyTsReplacement sets the bypassEmptyTsReplacement to use for this operation.
+
 func (fam *FindAndModify) BypassEmptyTsReplacement(bypassEmptyTsReplacement bool) *FindAndModify {
 	if fam == nil {
 		fam = new(FindAndModify)

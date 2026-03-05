@@ -1,17 +1,17 @@
-//
-// Copyright (c) 2011-2019 Canonical Ltd
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package yaml
 
@@ -77,7 +77,7 @@ func (e *encoder) destroy() {
 }
 
 func (e *encoder) emit() {
-	// This will internally delete the e.event value.
+	
 	e.must(yaml_emitter_emit(&e.emitter, &e.event))
 }
 
@@ -284,13 +284,13 @@ func (e *encoder) slicev(tag string, in reflect.Value) {
 	e.emit()
 }
 
-// isBase60 returns whether s is in base 60 notation as defined in YAML 1.1.
-//
-// The base 60 float notation in YAML 1.1 is a terrible idea and is unsupported
-// in YAML 1.2 and by this package, but these should be marshalled quoted for
-// the time being for compatibility with other parsers.
+
+
+
+
+
 func isBase60Float(s string) (result bool) {
-	// Fast path.
+	
 	if s == "" {
 		return false
 	}
@@ -298,19 +298,19 @@ func isBase60Float(s string) (result bool) {
 	if !(c == '+' || c == '-' || c >= '0' && c <= '9') || strings.IndexByte(s, ':') < 0 {
 		return false
 	}
-	// Do the full match.
+	
 	return base60float.MatchString(s)
 }
 
-// From http://yaml.org/type/float.html, except the regular expression there
-// is bogus. In practice parsers do not enforce the "\.[0-9_]*" suffix.
+
+
 var base60float = regexp.MustCompile(`^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+(?:\.[0-9_]*)?$`)
 
-// isOldBool returns whether s is bool notation as defined in YAML 1.1.
-//
-// We continue to force strings that YAML 1.1 would interpret as booleans to be
-// rendered as quotes strings so that the marshalled output valid for YAML 1.1
-// parsing.
+
+
+
+
+
 func isOldBool(s string) (result bool) {
 	switch s {
 	case "y", "Y", "yes", "Yes", "YES", "on", "On", "ON",
@@ -333,20 +333,20 @@ func (e *encoder) stringv(tag string, in reflect.Value) {
 		if tag != "" {
 			failf("cannot marshal invalid UTF-8 data as %s", shortTag(tag))
 		}
-		// It can't be encoded directly as YAML so use a binary tag
-		// and encode it as base64.
+		
+		
 		tag = binaryTag
 		s = encodeBase64(s)
 	case tag == "":
-		// Check to see if it would resolve to a specific
-		// tag when encoded unquoted. If it doesn't,
-		// there's no need to quote it.
+		
+		
+		
 		rtag, _ := resolve("", s)
 		canUsePlain = rtag == strTag && !(isBase60Float(s) || isOldBool(s))
 	}
-	// Note: it's possible for user code to emit invalid YAML
-	// if they explicitly specify a tag and a string containing
-	// text that's incompatible with that tag.
+	
+	
+	
 	switch {
 	case strings.Contains(s, "\n"):
 		if e.flow {
@@ -389,7 +389,7 @@ func (e *encoder) timev(tag string, in reflect.Value) {
 }
 
 func (e *encoder) floatv(tag string, in reflect.Value) {
-	// Issue #352: When formatting, use the precision of the underlying value
+	
 	precision := 64
 	if in.Kind() == reflect.Float32 {
 		precision = 32
@@ -412,7 +412,7 @@ func (e *encoder) nilv() {
 }
 
 func (e *encoder) emitScalar(value, anchor, tag string, style yaml_scalar_style_t, head, line, foot, tail []byte) {
-	// TODO Kill this function. Replace all initialize calls by their underlining Go literals.
+	
 	implicit := tag == ""
 	if !implicit {
 		tag = longTag(tag)
@@ -430,14 +430,14 @@ func (e *encoder) nodev(in reflect.Value) {
 }
 
 func (e *encoder) node(node *Node, tail string) {
-	// Zero nodes behave as nil.
+	
 	if node.Kind == 0 && node.IsZero() {
 		e.nilv()
 		return
 	}
 
-	// If the tag was not explicitly requested, and dropping it won't change the
-	// implicit tag of the value, don't include it in the presentation.
+	
+	
 	var tag = node.Tag
 	var stag = shortTag(tag)
 	var forceQuoting bool
@@ -506,10 +506,10 @@ func (e *encoder) node(node *Node, tail string) {
 		e.event.head_comment = []byte(node.HeadComment)
 		e.emit()
 
-		// The tail logic below moves the foot comment of prior keys to the following key,
-		// since the value for each key may be a nested structure and the foot needs to be
-		// processed only the entirety of the value is streamed. The last tail is processed
-		// with the mapping end event.
+		
+		
+		
+		
 		var tail string
 		for i := 0; i+1 < len(node.Content); i += 2 {
 			k := node.Content[i]
@@ -548,8 +548,8 @@ func (e *encoder) node(node *Node, tail string) {
 			if stag != "" {
 				failf("cannot marshal invalid UTF-8 data as %s", stag)
 			}
-			// It can't be encoded directly as YAML so use a binary tag
-			// and encode it as base64.
+			
+			
 			tag = binaryTag
 			value = encodeBase64(value)
 		}

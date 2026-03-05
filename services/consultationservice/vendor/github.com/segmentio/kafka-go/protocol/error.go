@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Error represents client-side protocol errors.
+
 type Error string
 
 func (e Error) Error() string { return string(e) }
@@ -14,28 +14,28 @@ func Errorf(msg string, args ...interface{}) Error {
 }
 
 const (
-	// ErrNoTopic is returned when a request needs to be sent to a specific.
+	
 	ErrNoTopic Error = "topic not found"
 
-	// ErrNoPartition is returned when a request needs to be sent to a specific
-	// partition, but the client did not find it in the cluster metadata.
+	
+	
 	ErrNoPartition Error = "topic partition not found"
 
-	// ErrNoLeader is returned when a request needs to be sent to a partition
-	// leader, but the client could not determine what the leader was at this
-	// time.
+	
+	
+	
 	ErrNoLeader Error = "topic partition has no leader"
 
-	// ErrNoRecord is returned when attempting to write a message containing an
-	// empty record set (which kafka forbids).
-	//
-	// We handle this case client-side because kafka will close the connection
-	// that it received an empty produce request on, causing all concurrent
-	// requests to be aborted.
+	
+	
+	
+	
+	
+	
 	ErrNoRecord Error = "record set contains no records"
 
-	// ErrNoReset is returned by ResetRecordReader when the record reader does
-	// not support being reset.
+	
+	
 	ErrNoReset Error = "record sequence does not support reset"
 )
 

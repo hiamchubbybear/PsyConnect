@@ -16,7 +16,7 @@ type MongoSessionRepository struct {
 	collection *mongo.Collection
 }
 
-// NewMongoSessionRepository creates a new MongoSessionRepository
+
 func NewMongoSessionRepository(collection *mongo.Collection) *MongoSessionRepository {
 	return &MongoSessionRepository{
 		collection: collection,

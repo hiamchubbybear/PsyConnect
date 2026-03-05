@@ -6,7 +6,7 @@ import (
 	"github.com/cloudwego/base64x/internal/native"
 )
 
-// HACK: maintain these only to prevent breakchange, because sonic-go linkname these
+
 var (
 	_subr__b64decode uintptr
 	_subr__b64encode uintptr

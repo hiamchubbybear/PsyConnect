@@ -1,6 +1,6 @@
-// Copyright 2019+ Klaus Post. All rights reserved.
-// License information can be found in the LICENSE file.
-// Based on work by Yann Collet, released under BSD License.
+
+
+
 
 package zstd
 
@@ -19,12 +19,12 @@ type frameDec struct {
 
 	WindowSize uint64
 
-	// Frame history passed between blocks
+	
 	history history
 
 	rawInput byteBuffer
 
-	// Byte buffer that can be reused for small input blocks.
+	
 	bBuf byteBuf
 
 	FrameContentSize uint64
@@ -35,11 +35,11 @@ type frameDec struct {
 }
 
 const (
-	// MinWindowSize is the minimum Window Size, which is 1 KB.
+	
 	MinWindowSize = 1 << 10
 
-	// MaxWindowSize is the maximum encoder window size
-	// and the default decoder maximum window size.
+	
+	
 	MaxWindowSize = 1 << 29
 )
 
@@ -58,17 +58,17 @@ func newFrameDec(o decoderOptions) *frameDec {
 	return &d
 }
 
-// reset will read the frame header and prepare for block decoding.
-// If nothing can be read from the input, io.EOF will be returned.
-// Any other error indicated that the stream contained data, but
-// there was a problem.
+
+
+
+
 func (d *frameDec) reset(br byteBuffer) error {
 	d.HasCheckSum = false
 	d.WindowSize = 0
 	var signature [4]byte
 	for {
 		var err error
-		// Check if we can read more...
+		
 		b, err := br.readSmall(1)
 		switch err {
 		case io.EOF, io.ErrUnexpectedEOF:
@@ -78,7 +78,7 @@ func (d *frameDec) reset(br byteBuffer) error {
 		default:
 			return err
 		}
-		// Read the rest, don't allow io.ErrUnexpectedEOF
+		
 		b, err = br.readSmall(3)
 		switch err {
 		case io.EOF:
@@ -93,10 +93,10 @@ func (d *frameDec) reset(br byteBuffer) error {
 			if debugDecoder {
 				println("Not skippable", hex.EncodeToString(signature[:]), hex.EncodeToString([]byte(skippableFrameMagic)))
 			}
-			// Break if not skippable frame.
+			
 			break
 		}
-		// Read size to skip
+		
 		b, err = br.readSmall(4)
 		if err != nil {
 			if debugDecoder {
@@ -121,7 +121,7 @@ func (d *frameDec) reset(br byteBuffer) error {
 		return ErrMagicMismatch
 	}
 
-	// Read Frame_Header_Descriptor
+	
 	fhd, err := br.readByte()
 	if err != nil {
 		if debugDecoder {
@@ -135,8 +135,8 @@ func (d *frameDec) reset(br byteBuffer) error {
 		return errors.New("reserved bit set on frame header")
 	}
 
-	// Read Window_Descriptor
-	// https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md#window_descriptor
+	
+	
 	d.WindowSize = 0
 	if !d.SingleSegment {
 		wd, err := br.readByte()
@@ -153,8 +153,8 @@ func (d *frameDec) reset(br byteBuffer) error {
 		d.WindowSize = windowBase + windowAdd
 	}
 
-	// Read Dictionary_ID
-	// https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md#dictionary_id
+	
+	
 	d.DictionaryID = 0
 	if size := fhd & 3; size != 0 {
 		if size == 3 {
@@ -181,8 +181,8 @@ func (d *frameDec) reset(br byteBuffer) error {
 		d.DictionaryID = id
 	}
 
-	// Read Frame_Content_Size
-	// https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md#frame_content_size
+	
+	
 	var fcsSize int
 	v := fhd >> 6
 	switch v {
@@ -204,7 +204,7 @@ func (d *frameDec) reset(br byteBuffer) error {
 		case 1:
 			d.FrameContentSize = uint64(b[0])
 		case 2:
-			// When FCS_Field_Size is 2, the offset of 256 is added.
+			
 			d.FrameContentSize = uint64(b[0]) | (uint64(b[1]) << 8) + 256
 		case 4:
 			d.FrameContentSize = uint64(b[0]) | (uint64(b[1]) << 8) | (uint64(b[2]) << 16) | (uint64(b[3]) << 24)
@@ -218,7 +218,7 @@ func (d *frameDec) reset(br byteBuffer) error {
 		}
 	}
 
-	// Move this to shared.
+	
 	d.HasCheckSum = fhd&(1<<2) != 0
 	if d.HasCheckSum {
 		if d.crc == nil {
@@ -235,7 +235,7 @@ func (d *frameDec) reset(br byteBuffer) error {
 	}
 
 	if d.WindowSize == 0 && d.SingleSegment {
-		// We may not need window in this case.
+		
 		d.WindowSize = d.FrameContentSize
 		if d.WindowSize < MinWindowSize {
 			d.WindowSize = MinWindowSize
@@ -248,7 +248,7 @@ func (d *frameDec) reset(br byteBuffer) error {
 		}
 	}
 
-	// The minimum Window_Size is 1 KB.
+	
 	if d.WindowSize < MinWindowSize {
 		if debugDecoder {
 			println("got window size: ", d.WindowSize)
@@ -257,14 +257,14 @@ func (d *frameDec) reset(br byteBuffer) error {
 	}
 	d.history.windowSize = int(d.WindowSize)
 	if !d.o.lowMem || d.history.windowSize < maxBlockSize {
-		// Alloc 2x window size if not low-mem, or window size below 2MB.
+		
 		d.history.allocFrameBuffer = d.history.windowSize * 2
 	} else {
 		if d.o.lowMem {
-			// Alloc with 1MB extra.
+			
 			d.history.allocFrameBuffer = d.history.windowSize + maxBlockSize/2
 		} else {
-			// Alloc with 2MB extra.
+			
 			d.history.allocFrameBuffer = d.history.windowSize + maxBlockSize
 		}
 	}
@@ -273,12 +273,12 @@ func (d *frameDec) reset(br byteBuffer) error {
 		println("Frame: Dict:", d.DictionaryID, "FrameContentSize:", d.FrameContentSize, "singleseg:", d.SingleSegment, "window:", d.WindowSize, "crc:", d.HasCheckSum)
 	}
 
-	// history contains input - maybe we do something
+	
 	d.rawInput = br
 	return nil
 }
 
-// next will start decoding the next block from stream.
+
 func (d *frameDec) next(block *blockDec) error {
 	if debugDecoder {
 		println("decoding new block")
@@ -286,17 +286,17 @@ func (d *frameDec) next(block *blockDec) error {
 	err := block.reset(d.rawInput, d.WindowSize)
 	if err != nil {
 		println("block error:", err)
-		// Signal the frame decoder we have a problem.
+		
 		block.sendErr(err)
 		return err
 	}
 	return nil
 }
 
-// checkCRC will check the checksum, assuming the frame has one.
-// Will return ErrCRCMismatch if crc check failed, otherwise nil.
+
+
 func (d *frameDec) checkCRC() error {
-	// We can overwrite upper tmp now
+	
 	buf, err := d.rawInput.readSmall(4)
 	if err != nil {
 		println("CRC missing?", err)
@@ -318,7 +318,7 @@ func (d *frameDec) checkCRC() error {
 	return nil
 }
 
-// consumeCRC skips over the checksum, assuming the frame has one.
+
 func (d *frameDec) consumeCRC() error {
 	_, err := d.rawInput.readSmall(4)
 	if err != nil {
@@ -327,14 +327,14 @@ func (d *frameDec) consumeCRC() error {
 	return err
 }
 
-// runDecoder will run the decoder for the remainder of the frame.
+
 func (d *frameDec) runDecoder(dst []byte, dec *blockDec) ([]byte, error) {
 	saved := d.history.b
 
-	// We use the history for output to avoid copying it.
+	
 	d.history.b = dst
 	d.history.ignoreBuffer = len(dst)
-	// Store input length, so we only check new data.
+	
 	crcStart := len(dst)
 	d.history.decoders.maxSyncLen = 0
 	if d.o.limitToCap {
@@ -354,7 +354,7 @@ func (d *frameDec) runDecoder(dst []byte, dec *blockDec) ([]byte, error) {
 			println("maxSyncLen:", d.history.decoders.maxSyncLen)
 		}
 		if !d.o.limitToCap && uint64(cap(dst)) < d.history.decoders.maxSyncLen {
-			// Alloc for output
+			
 			dst2 := make([]byte, len(dst), d.history.decoders.maxSyncLen+compressedBlockOverAlloc)
 			copy(dst2, dst)
 			dst = dst2

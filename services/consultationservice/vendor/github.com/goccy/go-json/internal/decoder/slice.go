@@ -26,9 +26,9 @@ type sliceDecoder struct {
 	fieldName         string
 }
 
-// If use reflect.SliceHeader, data type is uintptr.
-// In this case, Go compiler cannot trace reference created by newArray().
-// So, define using unsafe.Pointer as data type
+
+
+
 type sliceHeader struct {
 	data unsafe.Pointer
 	len  int
@@ -62,7 +62,7 @@ func newSliceDecoder(dec Decoder, elemType *runtime.Type, size uintptr, structNa
 func (d *sliceDecoder) newSlice(src *sliceHeader) *sliceHeader {
 	slice := d.arrayPool.Get().(*sliceHeader)
 	if src.len > 0 {
-		// copy original elem
+		
 		if slice.cap < src.cap {
 			data := newArray(d.elemType, src.cap)
 			slice = &sliceHeader{data: data, len: src.len, cap: src.cap}
@@ -143,12 +143,12 @@ func (d *sliceDecoder) DecodeStream(s *Stream, depth int64, p unsafe.Pointer) er
 				}
 				ep := unsafe.Pointer(uintptr(data) + uintptr(idx)*d.size)
 
-				// if srcLen is greater than idx, keep the original reference
+				
 				if srcLen <= idx {
 					if d.isElemPointerType {
-						**(**unsafe.Pointer)(unsafe.Pointer(&ep)) = nil // initialize elem pointer
+						**(**unsafe.Pointer)(unsafe.Pointer(&ep)) = nil 
 					} else {
-						// assign new element to the slice
+						
 						typedmemmove(d.elemType, ep, unsafe_New(d.elemType))
 					}
 				}
@@ -252,12 +252,12 @@ func (d *sliceDecoder) Decode(ctx *RuntimeContext, cursor, depth int64, p unsafe
 					copySlice(d.elemType, dst, src)
 				}
 				ep := unsafe.Pointer(uintptr(data) + uintptr(idx)*d.size)
-				// if srcLen is greater than idx, keep the original reference
+				
 				if srcLen <= idx {
 					if d.isElemPointerType {
-						**(**unsafe.Pointer)(unsafe.Pointer(&ep)) = nil // initialize elem pointer
+						**(**unsafe.Pointer)(unsafe.Pointer(&ep)) = nil 
 					} else {
-						// assign new element to the slice
+						
 						typedmemmove(d.elemType, ep, unsafe_New(d.elemType))
 					}
 				}

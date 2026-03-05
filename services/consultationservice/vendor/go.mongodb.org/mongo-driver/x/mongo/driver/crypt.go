@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package driver
 
@@ -26,16 +26,16 @@ const (
 	defaultKmsTimeout = 10 * time.Second
 )
 
-// CollectionInfoFn is a callback used to retrieve collection information.
+
 type CollectionInfoFn func(ctx context.Context, db string, filter bsoncore.Document) (bsoncore.Document, error)
 
-// KeyRetrieverFn is a callback used to retrieve keys from the key vault.
+
 type KeyRetrieverFn func(ctx context.Context, filter bsoncore.Document) ([]bsoncore.Document, error)
 
-// MarkCommandFn is a callback used to add encryption markings to a command.
+
 type MarkCommandFn func(ctx context.Context, db string, cmd bsoncore.Document) (bsoncore.Document, error)
 
-// CryptOptions specifies options to configure a Crypt instance.
+
 type CryptOptions struct {
 	MongoCrypt           *mongocrypt.MongoCrypt
 	CollInfoFn           CollectionInfoFn
@@ -46,35 +46,35 @@ type CryptOptions struct {
 	BypassQueryAnalysis  bool
 }
 
-// Crypt is an interface implemented by types that can encrypt and decrypt instances of
-// bsoncore.Document.
-//
-// Users should rely on the driver's crypt type (used by default) for encryption and decryption
-// unless they are perfectly confident in another implementation of Crypt.
+
+
+
+
+
 type Crypt interface {
-	// Encrypt encrypts the given command.
+	
 	Encrypt(ctx context.Context, db string, cmd bsoncore.Document) (bsoncore.Document, error)
-	// Decrypt decrypts the given command response.
+	
 	Decrypt(ctx context.Context, cmdResponse bsoncore.Document) (bsoncore.Document, error)
-	// CreateDataKey creates a data key using the given KMS provider and options.
+	
 	CreateDataKey(ctx context.Context, kmsProvider string, opts *options.DataKeyOptions) (bsoncore.Document, error)
-	// EncryptExplicit encrypts the given value with the given options.
+	
 	EncryptExplicit(ctx context.Context, val bsoncore.Value, opts *options.ExplicitEncryptionOptions) (byte, []byte, error)
-	// EncryptExplicitExpression encrypts the given expression with the given options.
+	
 	EncryptExplicitExpression(ctx context.Context, val bsoncore.Document, opts *options.ExplicitEncryptionOptions) (bsoncore.Document, error)
-	// DecryptExplicit decrypts the given encrypted value.
+	
 	DecryptExplicit(ctx context.Context, subtype byte, data []byte) (bsoncore.Value, error)
-	// Close cleans up any resources associated with the Crypt instance.
+	
 	Close()
-	// BypassAutoEncryption returns true if auto-encryption should be bypassed.
+	
 	BypassAutoEncryption() bool
-	// RewrapDataKey attempts to rewrap the document data keys matching the filter, preparing the re-wrapped documents
-	// to be returned as a slice of bsoncore.Document.
+	
+	
 	RewrapDataKey(ctx context.Context, filter []byte, opts *options.RewrapManyDataKeyOptions) ([]bsoncore.Document, error)
 }
 
-// crypt consumes the libmongocrypt.MongoCrypt type to iterate the mongocrypt state machine and perform encryption
-// and decryption.
+
+
 type crypt struct {
 	mongoCrypt *mongocrypt.MongoCrypt
 	collInfoFn CollectionInfoFn
@@ -85,7 +85,7 @@ type crypt struct {
 	bypassAutoEncryption bool
 }
 
-// NewCrypt creates a new Crypt instance configured with the given AutoEncryptionOptions.
+
 func NewCrypt(opts *CryptOptions) Crypt {
 	c := &crypt{
 		mongoCrypt:           opts.MongoCrypt,
@@ -98,7 +98,7 @@ func NewCrypt(opts *CryptOptions) Crypt {
 	return c
 }
 
-// Encrypt encrypts the given command.
+
 func (c *crypt) Encrypt(ctx context.Context, db string, cmd bsoncore.Document) (bsoncore.Document, error) {
 	if c.bypassAutoEncryption {
 		return cmd, nil
@@ -113,7 +113,7 @@ func (c *crypt) Encrypt(ctx context.Context, db string, cmd bsoncore.Document) (
 	return c.executeStateMachine(ctx, cryptCtx, db)
 }
 
-// Decrypt decrypts the given command response.
+
 func (c *crypt) Decrypt(ctx context.Context, cmdResponse bsoncore.Document) (bsoncore.Document, error) {
 	cryptCtx, err := c.mongoCrypt.CreateDecryptionContext(cmdResponse)
 	if err != nil {
@@ -124,7 +124,7 @@ func (c *crypt) Decrypt(ctx context.Context, cmdResponse bsoncore.Document) (bso
 	return c.executeStateMachine(ctx, cryptCtx, "")
 }
 
-// CreateDataKey creates a data key using the given KMS provider and options.
+
 func (c *crypt) CreateDataKey(ctx context.Context, kmsProvider string, opts *options.DataKeyOptions) (bsoncore.Document, error) {
 	cryptCtx, err := c.mongoCrypt.CreateDataKeyContext(kmsProvider, opts)
 	if err != nil {
@@ -135,8 +135,8 @@ func (c *crypt) CreateDataKey(ctx context.Context, kmsProvider string, opts *opt
 	return c.executeStateMachine(ctx, cryptCtx, "")
 }
 
-// RewrapDataKey attempts to rewrap the document data keys matching the filter, preparing the re-wrapped documents to
-// be returned as a slice of bsoncore.Document.
+
+
 func (c *crypt) RewrapDataKey(ctx context.Context, filter []byte,
 	opts *options.RewrapManyDataKeyOptions) ([]bsoncore.Document, error) {
 
@@ -154,14 +154,14 @@ func (c *crypt) RewrapDataKey(ctx context.Context, filter []byte,
 		return nil, nil
 	}
 
-	// mongocrypt_ctx_rewrap_many_datakey_init wraps the documents in a BSON of the form { "v": [(BSON document), ...] }
-	// where each BSON document in the slice is a document containing a rewrapped datakey.
+	
+	
 	rewrappedDocumentBytes, err := rewrappedBSON.LookupErr("v")
 	if err != nil {
 		return nil, err
 	}
 
-	// Parse the resulting BSON as individual documents.
+	
 	rewrappedDocsArray, ok := rewrappedDocumentBytes.ArrayOK()
 	if !ok {
 		return nil, fmt.Errorf("expected results from mongocrypt_ctx_rewrap_many_datakey_init to be an array")
@@ -175,8 +175,8 @@ func (c *crypt) RewrapDataKey(ctx context.Context, filter []byte,
 	rewrappedDocuments := []bsoncore.Document{}
 	for _, rewrappedDocumentValue := range rewrappedDocumentValues {
 		if rewrappedDocumentValue.Type != bsontype.EmbeddedDocument {
-			// If a value in the document's array returned by mongocrypt is anything other than an embedded document,
-			// then something is wrong and we should terminate the routine.
+			
+			
 			return nil, fmt.Errorf("expected value of type %q, got: %q",
 				bsontype.EmbeddedDocument.String(),
 				rewrappedDocumentValue.Type.String())
@@ -186,7 +186,7 @@ func (c *crypt) RewrapDataKey(ctx context.Context, filter []byte,
 	return rewrappedDocuments, nil
 }
 
-// EncryptExplicit encrypts the given value with the given options.
+
 func (c *crypt) EncryptExplicit(ctx context.Context, val bsoncore.Value, opts *options.ExplicitEncryptionOptions) (byte, []byte, error) {
 	idx, doc := bsoncore.AppendDocumentStart(nil)
 	doc = bsoncore.AppendValueElement(doc, "v", val)
@@ -207,7 +207,7 @@ func (c *crypt) EncryptExplicit(ctx context.Context, val bsoncore.Value, opts *o
 	return sub, data, nil
 }
 
-// EncryptExplicitExpression encrypts the given expression with the given options.
+
 func (c *crypt) EncryptExplicitExpression(ctx context.Context, expr bsoncore.Document, opts *options.ExplicitEncryptionOptions) (bsoncore.Document, error) {
 	idx, doc := bsoncore.AppendDocumentStart(nil)
 	doc = bsoncore.AppendDocumentElement(doc, "v", expr)
@@ -228,7 +228,7 @@ func (c *crypt) EncryptExplicitExpression(ctx context.Context, expr bsoncore.Doc
 	return encryptedExpr, nil
 }
 
-// DecryptExplicit decrypts the given encrypted value.
+
 func (c *crypt) DecryptExplicit(ctx context.Context, subtype byte, data []byte) (bsoncore.Value, error) {
 	idx, doc := bsoncore.AppendDocumentStart(nil)
 	doc = bsoncore.AppendBinaryElement(doc, "v", subtype, data)
@@ -248,7 +248,7 @@ func (c *crypt) DecryptExplicit(ctx context.Context, subtype byte, data []byte) 
 	return res.Lookup("v"), nil
 }
 
-// Close cleans up any resources associated with the Crypt instance.
+
 func (c *crypt) Close() {
 	c.mongoCrypt.Close()
 }
@@ -366,7 +366,7 @@ func (c *crypt) decryptKey(kmsCtx *mongocrypt.KmsContext) error {
 		return err
 	}
 
-	// add a port to the address if it's not already present
+	
 	addr := host
 	if idx := strings.IndexByte(host, ':'); idx == -1 {
 		addr = fmt.Sprintf("%s:%d", host, defaultKmsPort)

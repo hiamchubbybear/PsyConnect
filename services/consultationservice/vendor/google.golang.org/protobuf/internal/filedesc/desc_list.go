@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package filedesc
 
@@ -29,7 +29,7 @@ func (p *FileImports) ProtoInternal(pragma.DoNotImplement) {}
 type Names struct {
 	List []protoreflect.Name
 	once sync.Once
-	has  map[protoreflect.Name]int // protected by once
+	has  map[protoreflect.Name]int 
 }
 
 func (p *Names) Len() int                            { return len(p.List) }
@@ -49,16 +49,16 @@ func (p *Names) lazyInit() *Names {
 	return p
 }
 
-// CheckValid reports any errors with the set of names with an error message
-// that completes the sentence: "ranges is invalid because it has ..."
+
+
 func (p *Names) CheckValid() error {
 	for s, n := range p.lazyInit().has {
 		switch {
 		case n > 1:
 			return errors.New("duplicate name: %q", s)
 		case false && !s.IsValid():
-			// NOTE: The C++ implementation does not validate the identifier.
-			// See https://github.com/protocolbuffers/protobuf/issues/6335.
+			
+			
 			return errors.New("invalid name: %q", s)
 		}
 	}
@@ -66,9 +66,9 @@ func (p *Names) CheckValid() error {
 }
 
 type EnumRanges struct {
-	List   [][2]protoreflect.EnumNumber // start inclusive; end inclusive
+	List   [][2]protoreflect.EnumNumber 
 	once   sync.Once
-	sorted [][2]protoreflect.EnumNumber // protected by once
+	sorted [][2]protoreflect.EnumNumber 
 }
 
 func (p *EnumRanges) Len() int                             { return len(p.List) }
@@ -78,9 +78,9 @@ func (p *EnumRanges) Has(n protoreflect.EnumNumber) bool {
 		i := len(ls) / 2
 		switch r := enumRange(ls[i]); {
 		case n < r.Start():
-			ls = ls[:i] // search lower
+			ls = ls[:i] 
 		case n > r.End():
-			ls = ls[i+1:] // search upper
+			ls = ls[i+1:] 
 		default:
 			return true
 		}
@@ -99,8 +99,8 @@ func (p *EnumRanges) lazyInit() *EnumRanges {
 	return p
 }
 
-// CheckValid reports any errors with the set of names with an error message
-// that completes the sentence: "ranges is invalid because it has ..."
+
+
 func (p *EnumRanges) CheckValid() error {
 	var rp enumRange
 	for i, r := range p.lazyInit().sorted {
@@ -118,8 +118,8 @@ func (p *EnumRanges) CheckValid() error {
 
 type enumRange [2]protoreflect.EnumNumber
 
-func (r enumRange) Start() protoreflect.EnumNumber { return r[0] } // inclusive
-func (r enumRange) End() protoreflect.EnumNumber   { return r[1] } // inclusive
+func (r enumRange) Start() protoreflect.EnumNumber { return r[0] } 
+func (r enumRange) End() protoreflect.EnumNumber   { return r[1] } 
 func (r enumRange) String() string {
 	if r.Start() == r.End() {
 		return fmt.Sprintf("%d", r.Start())
@@ -128,9 +128,9 @@ func (r enumRange) String() string {
 }
 
 type FieldRanges struct {
-	List   [][2]protoreflect.FieldNumber // start inclusive; end exclusive
+	List   [][2]protoreflect.FieldNumber 
 	once   sync.Once
-	sorted [][2]protoreflect.FieldNumber // protected by once
+	sorted [][2]protoreflect.FieldNumber 
 }
 
 func (p *FieldRanges) Len() int                              { return len(p.List) }
@@ -140,9 +140,9 @@ func (p *FieldRanges) Has(n protoreflect.FieldNumber) bool {
 		i := len(ls) / 2
 		switch r := fieldRange(ls[i]); {
 		case n < r.Start():
-			ls = ls[:i] // search lower
+			ls = ls[:i] 
 		case n > r.End():
-			ls = ls[i+1:] // search upper
+			ls = ls[i+1:] 
 		default:
 			return true
 		}
@@ -161,8 +161,8 @@ func (p *FieldRanges) lazyInit() *FieldRanges {
 	return p
 }
 
-// CheckValid reports any errors with the set of ranges with an error message
-// that completes the sentence: "ranges is invalid because it has ..."
+
+
 func (p *FieldRanges) CheckValid(isMessageSet bool) error {
 	var rp fieldRange
 	for i, r := range p.lazyInit().sorted {
@@ -182,14 +182,14 @@ func (p *FieldRanges) CheckValid(isMessageSet bool) error {
 	return nil
 }
 
-// isValidFieldNumber reports whether the field number is valid.
-// Unlike the FieldNumber.IsValid method, it allows ranges that cover the
-// reserved number range.
+
+
+
 func isValidFieldNumber(n protoreflect.FieldNumber, isMessageSet bool) bool {
 	return protowire.MinValidNumber <= n && (n <= protowire.MaxValidNumber || isMessageSet)
 }
 
-// CheckOverlap reports an error if p and q overlap.
+
 func (p *FieldRanges) CheckOverlap(q *FieldRanges) error {
 	rps := p.lazyInit().sorted
 	rqs := q.lazyInit().sorted
@@ -210,8 +210,8 @@ func (p *FieldRanges) CheckOverlap(q *FieldRanges) error {
 
 type fieldRange [2]protoreflect.FieldNumber
 
-func (r fieldRange) Start() protoreflect.FieldNumber { return r[0] }     // inclusive
-func (r fieldRange) End() protoreflect.FieldNumber   { return r[1] - 1 } // inclusive
+func (r fieldRange) Start() protoreflect.FieldNumber { return r[0] }     
+func (r fieldRange) End() protoreflect.FieldNumber   { return r[1] - 1 } 
 func (r fieldRange) String() string {
 	if r.Start() == r.End() {
 		return fmt.Sprintf("%d", r.Start())
@@ -222,7 +222,7 @@ func (r fieldRange) String() string {
 type FieldNumbers struct {
 	List []protoreflect.FieldNumber
 	once sync.Once
-	has  map[protoreflect.FieldNumber]struct{} // protected by once
+	has  map[protoreflect.FieldNumber]struct{} 
 }
 
 func (p *FieldNumbers) Len() int                           { return len(p.List) }
@@ -245,10 +245,10 @@ func (p *FieldNumbers) ProtoInternal(pragma.DoNotImplement) {}
 type OneofFields struct {
 	List   []protoreflect.FieldDescriptor
 	once   sync.Once
-	byName map[protoreflect.Name]protoreflect.FieldDescriptor        // protected by once
-	byJSON map[string]protoreflect.FieldDescriptor                   // protected by once
-	byText map[string]protoreflect.FieldDescriptor                   // protected by once
-	byNum  map[protoreflect.FieldNumber]protoreflect.FieldDescriptor // protected by once
+	byName map[protoreflect.Name]protoreflect.FieldDescriptor        
+	byJSON map[string]protoreflect.FieldDescriptor                   
+	byText map[string]protoreflect.FieldDescriptor                   
+	byNum  map[protoreflect.FieldNumber]protoreflect.FieldDescriptor 
 }
 
 func (p *OneofFields) Len() int                               { return len(p.List) }
@@ -276,7 +276,7 @@ func (p *OneofFields) lazyInit() *OneofFields {
 			p.byText = make(map[string]protoreflect.FieldDescriptor, len(p.List))
 			p.byNum = make(map[protoreflect.FieldNumber]protoreflect.FieldDescriptor, len(p.List))
 			for _, f := range p.List {
-				// Field names and numbers are guaranteed to be unique.
+				
 				p.byName[f.Name()] = f
 				p.byJSON[f.JSONName()] = f
 				p.byText[f.TextName()] = f
@@ -288,14 +288,14 @@ func (p *OneofFields) lazyInit() *OneofFields {
 }
 
 type SourceLocations struct {
-	// List is a list of SourceLocations.
-	// The SourceLocation.Next field does not need to be populated
-	// as it will be lazily populated upon first need.
+	
+	
+	
 	List []protoreflect.SourceLocation
 
-	// File is the parent file descriptor that these locations are relative to.
-	// If non-nil, ByDescriptor verifies that the provided descriptor
-	// is a child of this file descriptor.
+	
+	
+	
 	File protoreflect.FileDescriptor
 
 	once   sync.Once
@@ -315,14 +315,14 @@ func (p *SourceLocations) ByPath(path protoreflect.SourcePath) protoreflect.Sour
 }
 func (p *SourceLocations) ByDescriptor(desc protoreflect.Descriptor) protoreflect.SourceLocation {
 	if p.File != nil && desc != nil && p.File != desc.ParentFile() {
-		return protoreflect.SourceLocation{} // mismatching parent files
+		return protoreflect.SourceLocation{} 
 	}
 	var pathArr [16]int32
 	path := pathArr[:0]
 	for {
 		switch desc.(type) {
 		case protoreflect.FileDescriptor:
-			// Reverse the path since it was constructed in reverse.
+			
 			for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
 				path[i], path[j] = path[j], path[i]
 			}
@@ -414,21 +414,21 @@ func (p *SourceLocations) ByDescriptor(desc protoreflect.Descriptor) protoreflec
 func (p *SourceLocations) lazyInit() *SourceLocations {
 	p.once.Do(func() {
 		if len(p.List) > 0 {
-			// Collect all the indexes for a given path.
+			
 			pathIdxs := make(map[pathKey][]int, len(p.List))
 			for i, l := range p.List {
 				k := newPathKey(l.Path)
 				pathIdxs[k] = append(pathIdxs[k], i)
 			}
 
-			// Update the next index for all locations.
+			
 			p.byPath = make(map[pathKey]int, len(p.List))
 			for k, idxs := range pathIdxs {
 				for i := 0; i < len(idxs)-1; i++ {
 					p.List[idxs[i]].Next = idxs[i+1]
 				}
 				p.List[idxs[len(idxs)-1]].Next = 0
-				p.byPath[k] = idxs[0] // record the first location for this path
+				p.byPath[k] = idxs[0] 
 			}
 		}
 	})
@@ -436,10 +436,10 @@ func (p *SourceLocations) lazyInit() *SourceLocations {
 }
 func (p *SourceLocations) ProtoInternal(pragma.DoNotImplement) {}
 
-// pathKey is a comparable representation of protoreflect.SourcePath.
+
 type pathKey struct {
-	arr [16]uint8 // first n-1 path segments; last element is the length
-	str string    // used if the path does not fit in arr
+	arr [16]uint8 
+	str string    
 }
 
 func newPathKey(p protoreflect.SourcePath) (k pathKey) {

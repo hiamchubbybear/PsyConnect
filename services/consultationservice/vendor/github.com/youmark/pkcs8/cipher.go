@@ -55,6 +55,6 @@ func cbcDecrypt(block cipher.Block, key, iv, ciphertext []byte) ([]byte, error) 
 	mode := cipher.NewCBCDecrypter(block, iv)
 	plaintext := make([]byte, len(ciphertext))
 	mode.CryptBlocks(plaintext, ciphertext)
-	// TODO: remove padding
+	
 	return plaintext, nil
 }

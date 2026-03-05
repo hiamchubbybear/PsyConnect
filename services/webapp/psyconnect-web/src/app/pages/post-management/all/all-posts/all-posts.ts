@@ -69,12 +69,12 @@ export class AllPosts implements OnInit {
   applyFilters() {
     let filtered = [...this.posts];
 
-    // Filter by status
+    
     if (this.selectedFilter !== 'all') {
       filtered = filtered.filter(p => p.status === this.selectedFilter);
     }
 
-    // Search
+    
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(p =>
@@ -83,7 +83,7 @@ export class AllPosts implements OnInit {
       );
     }
 
-    // Sort
+    
     filtered.sort((a, b) => {
       switch (this.selectedSort) {
         case 'newest':
@@ -117,7 +117,7 @@ export class AllPosts implements OnInit {
 
   deletePost(postId: string) {
     if (confirm('Are you sure you want to delete this post?')) {
-      // TODO: Implement delete
+      
       console.log('Delete post:', postId);
     }
   }

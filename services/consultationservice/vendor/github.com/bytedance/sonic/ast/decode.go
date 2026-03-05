@@ -1,18 +1,4 @@
-/*
- * Copyright 2022 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package ast
 
@@ -27,7 +13,7 @@ import (
 	"github.com/bytedance/sonic/internal/utils"
 )
 
-// Hack: this is used for both checking space and cause friendly compile errors in 32-bit arch.
+
 const _Sonic_Not_Support_32Bit_Arch__Checking_32Bit_Arch_Here = (1 << ' ') | (1 << '\t') | (1 << '\r') | (1 << '\n')
 
 var bytesNull   = []byte("null")
@@ -169,7 +155,7 @@ func decodeInt64(src string, pos int) (ret int, v int64, err error) {
 
     v, err = strconv.ParseInt(vv, 10, 64)
     if err != nil {
-        //NOTICE: allow overflow here
+        
         if err.(*strconv.NumError).Err == strconv.ErrRange {
             return ret, 0, err
         }
@@ -213,7 +199,7 @@ func decodeFloat64(src string, pos int) (ret int, v float64, err error) {
 
     v, err = strconv.ParseFloat(vv, 64)
     if err != nil {
-        //NOTICE: allow overflow here
+        
         if err.(*strconv.NumError).Err == strconv.ErrRange {
             return ret, 0, err
         }
@@ -303,7 +289,7 @@ func skipString(src string, pos int) (ret int, ep int) {
     sp := uintptr(rt.IndexChar(src, pos))
     se := uintptr(rt.IndexChar(src, len(src)))
 
-    // not start with quote
+    
     if *(*byte)(unsafe.Pointer(sp)) != '"' {
         return -int(types.ERR_INVALID_CHAR), -1
     }
@@ -326,7 +312,7 @@ func skipString(src string, pos int) (ret int, ep int) {
     }
 
     runtime.KeepAlive(src)
-    // not found the closed quote until EOF
+    
     return -int(types.ERR_EOF), -1
 }
 
@@ -528,11 +514,11 @@ func skipArray(src string, pos int) (ret int, start int) {
     }
 }
 
-// DecodeString decodes a JSON string from pos and return golang string.
-//   - needEsc indicates if to unescaped escaping chars
-//   - hasEsc tells if the returned string has escaping chars
-//   - validStr enables validating UTF8 charset
-//
+
+
+
+
+
 func _DecodeString(src string, pos int, needEsc bool, validStr bool) (v string, ret int, hasEsc bool) {
     p := NewParserObj(src)
     p.p = pos
@@ -542,15 +528,15 @@ func _DecodeString(src string, pos int, needEsc bool, validStr bool) (v string, 
         if validStr && !validate_utf8(str) {
            return "", -int(types.ERR_INVALID_UTF8), false
         }
-        /* fast path: no escape sequence */
+        
         if val.Ep == -1 {
             return str, p.p, false
         } else if !needEsc {
             return str, p.p, true
         }
-        /* unquote the string */
+        
         out, err := unquote(str)
-        /* check for errors */
+        
         if err != 0 {
             return "", -int(err), true
         } else {

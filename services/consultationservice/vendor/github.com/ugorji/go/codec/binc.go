@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
+
+
 
 package codec
 
@@ -10,13 +10,13 @@ import (
 	"unicode/utf8"
 )
 
-// Symbol management:
-// - symbols are stored in a symbol map during encoding and decoding.
-// - the symbols persist until the (En|De)coder ResetXXX method is called.
+
+
+
 
 const bincDoPrune = true
 
-// vd as low 4 bits (there are 16 slots)
+
 const (
 	bincVdSpecial byte = iota
 	bincVdPosInt
@@ -30,12 +30,12 @@ const (
 
 	bincVdTimestamp
 	bincVdSmallInt
-	_ // bincVdUnicodeOther
+	_ 
 	bincVdSymbol
 
-	_               // bincVdDecimal
-	_               // open slot
-	_               // open slot
+	_               
+	_               
+	_               
 	bincVdCustomExt = 0x0f
 )
 
@@ -52,15 +52,15 @@ const (
 )
 
 const (
-	_ byte = iota // bincFlBin16
+	_ byte = iota 
 	bincFlBin32
-	_ // bincFlBin32e
+	_ 
 	bincFlBin64
-	_ // bincFlBin64e
-	// others not currently supported
+	_ 
+	
 )
 
-const bincBdNil = 0 // bincVdSpecial<<4 | bincSpNil // staticcheck barfs on this (SA4016)
+const bincBdNil = 0 
 
 var (
 	bincdescSpecialVsNames = map[byte]string{
@@ -106,7 +106,7 @@ func bincdesc(vd, vs byte) (s string) {
 }
 
 type bincEncState struct {
-	m map[string]uint16 // symbols
+	m map[string]uint16 
 }
 
 func (e bincEncState) captureState() interface{}   { return e.m }
@@ -290,9 +290,9 @@ func (e *bincEncDriver) WriteMapStart(length int) {
 }
 
 func (e *bincEncDriver) EncodeSymbol(v string) {
-	//symbols only offer benefit when string length > 1.
-	//This is because strings with length 1 take only 2 bytes to store
-	//(bd with embedded length, and single byte for string val).
+	
+	
+	
 
 	l := len(v)
 	if l == 0 {
@@ -320,7 +320,7 @@ func (e *bincEncDriver) EncodeSymbol(v string) {
 		e.m[v] = ui
 		var lenprec uint8
 		if l <= math.MaxUint8 {
-			// lenprec = 0
+			
 		} else if l <= math.MaxUint16 {
 			lenprec = 1
 		} else if int64(l) <= math.MaxUint32 {
@@ -381,8 +381,8 @@ func (e *bincEncDriver) EncodeStringBytesRaw(v []byte) {
 }
 
 func (e *bincEncDriver) encBytesLen(c charEncoding, length uint64) {
-	// MARKER: we currently only support UTF-8 (string) and RAW (bytearray).
-	// We should consider supporting bincUnicodeOther.
+	
+	
 
 	if c == cRAW {
 		e.encLen(bincVdByteArray<<4, length)
@@ -414,7 +414,7 @@ func (e *bincEncDriver) encLenNumber(bd byte, v uint64) {
 	}
 }
 
-//------------------------------------
+
 
 type bincDecState struct {
 	bdRead bool
@@ -423,7 +423,7 @@ type bincDecState struct {
 	vs     byte
 
 	_ bool
-	// MARKER: consider using binary search here instead of a map (ie bincDecSymbol)
+	
 	s map[uint16][]byte
 }
 
@@ -464,7 +464,7 @@ func (d *bincDecDriver) advanceNil() (null bool) {
 	}
 	if d.bd == bincBdNil {
 		d.bdRead = false
-		return true // null = true
+		return true 
 	}
 	return
 }
@@ -543,7 +543,7 @@ func (d *bincDecDriver) decFloatVal() (f float64) {
 	case bincFlBin64:
 		f = math.Float64frombits(bigen.Uint64(d.decFloatPre64()))
 	default:
-		// ok = false
+		
 		d.d.errorf("read float supports only float32/64 - %s %x-%x/%s", msgBadDesc, d.vd, d.vs, bincdesc(d.vd, d.vs))
 	}
 	return
@@ -616,17 +616,17 @@ func (d *bincDecDriver) decInteger() (ui uint64, neg, ok bool) {
 		ui = uint64(d.vs) + 1
 	} else if vd == bincVdSpecial {
 		if vs == bincSpZero {
-			// i = 0
+			
 		} else if vs == bincSpNegOne {
 			neg = true
 			ui = 1
 		} else {
 			ok = false
-			// d.d.errorf("integer decode has invalid special value %x-%x/%s", d.vd, d.vs, bincdesc(d.vd, d.vs))
+			
 		}
 	} else {
 		ok = false
-		// d.d.errorf("integer can only be decoded from int/uint. d.bd: 0x%x, d.vd: 0x%x", d.bd, d.vd)
+		
 	}
 	return
 }
@@ -645,7 +645,7 @@ func (d *bincDecDriver) decFloat() (f float64, ok bool) {
 			f = math.Inf(-1)
 		} else {
 			ok = false
-			// d.d.errorf("float - invalid special value %x-%x/%s", d.vd, d.vs, bincdesc(d.vd, d.vs))
+			
 		}
 	} else if vd == bincVdFloat {
 		f = d.decFloatVal()
@@ -687,7 +687,7 @@ func (d *bincDecDriver) DecodeBool() (b bool) {
 		return
 	}
 	if d.bd == (bincVdSpecial | bincSpFalse) {
-		// b = false
+		
 	} else if d.bd == (bincVdSpecial | bincSpTrue) {
 		b = true
 	} else {
@@ -741,7 +741,7 @@ func (d *bincDecDriver) decLenNumber() (v uint64) {
 	return
 }
 
-// func (d *bincDecDriver) decStringBytes(bs []byte, zerocopy bool) (bs2 []byte) {
+
 func (d *bincDecDriver) DecodeStringAsBytes() (bs2 []byte) {
 	d.d.decByteState = decByteStateNone
 	if d.advanceNil() {
@@ -759,8 +759,8 @@ func (d *bincDecDriver) DecodeStringAsBytes() (bs2 []byte) {
 			bs2 = decByteSlice(d.d.r(), slen, d.d.h.MaxInitLen, d.d.b[:])
 		}
 	case bincVdSymbol:
-		// zerocopy doesn't apply for symbols,
-		// as the values must be stored in a table for later use.
+		
+		
 		var symbol uint16
 		vs := d.vs
 		if vs&0x8 == 0 {
@@ -785,8 +785,8 @@ func (d *bincDecDriver) DecodeStringAsBytes() (bs2 []byte) {
 			case 3:
 				slen = int(bigen.Uint64(d.d.decRd.readn8()))
 			}
-			// As we are using symbols, do not store any part of
-			// the parameter bs in the map, as it might be a shared buffer.
+			
+			
 			bs2 = decByteSlice(d.d.r(), slen, d.d.h.MaxInitLen, nil)
 			d.s[symbol] = bs2
 		}
@@ -918,16 +918,16 @@ func (d *bincDecDriver) DecodeNaked() {
 			n.f = float64(0)
 		case bincSpZero:
 			n.v = valueTypeUint
-			n.u = uint64(0) // int8(0)
+			n.u = uint64(0) 
 		case bincSpNegOne:
 			n.v = valueTypeInt
-			n.i = int64(-1) // int8(-1)
+			n.i = int64(-1) 
 		default:
 			d.d.errorf("cannot infer value - unrecognized special value %x-%x/%s", d.vd, d.vs, bincdesc(d.vd, d.vs))
 		}
 	case bincVdSmallInt:
 		n.v = valueTypeUint
-		n.u = uint64(int8(d.vs)) + 1 // int8(d.vs) + 1
+		n.u = uint64(int8(d.vs)) + 1 
 	case bincVdPosInt:
 		n.v = valueTypeUint
 		n.u = d.decUint()
@@ -1032,12 +1032,12 @@ func (d *bincDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 	switch d.vd {
 	case bincVdSpecial:
 		switch d.vs {
-		case bincSpNil, bincSpFalse, bincSpTrue, bincSpNan, bincSpPosInf: // pass
-		case bincSpNegInf, bincSpZeroFloat, bincSpZero, bincSpNegOne: // pass
+		case bincSpNil, bincSpFalse, bincSpTrue, bincSpNan, bincSpPosInf: 
+		case bincSpNegInf, bincSpZeroFloat, bincSpZero, bincSpNegOne: 
 		default:
 			d.d.errorf("cannot infer value - unrecognized special value %x-%x/%s", d.vd, d.vs, bincdesc(d.vd, d.vs))
 		}
-	case bincVdSmallInt: // pass
+	case bincVdSmallInt: 
 	case bincVdPosInt, bincVdNegInt:
 		bs := d.uintBytes()
 		h.appendN(&v, bs...)
@@ -1078,7 +1078,7 @@ func (d *bincDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 		h.appendN(&v, d.d.decRd.readx(uint(d.vs))...)
 	case bincVdCustomExt:
 		clen = fnLen(d.vs)
-		h.append1(&v, d.d.decRd.readn1()) // tag
+		h.append1(&v, d.d.decRd.readn1()) 
 		h.appendN(&v, d.d.decRd.readx(clen)...)
 	case bincVdArray:
 		clen = fnLen(d.vs)
@@ -1097,49 +1097,49 @@ func (d *bincDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 	return
 }
 
-//------------------------------------
 
-// BincHandle is a Handle for the Binc Schema-Free Encoding Format
-// defined at https://github.com/ugorji/binc .
-//
-// BincHandle currently supports all Binc features with the following EXCEPTIONS:
-//   - only integers up to 64 bits of precision are supported.
-//     big integers are unsupported.
-//   - Only IEEE 754 binary32 and binary64 floats are supported (ie Go float32 and float64 types).
-//     extended precision and decimal IEEE 754 floats are unsupported.
-//   - Only UTF-8 strings supported.
-//     Unicode_Other Binc types (UTF16, UTF32) are currently unsupported.
-//
-// Note that these EXCEPTIONS are temporary and full support is possible and may happen soon.
+
+
+
+
+
+
+
+
+
+
+
+
+
 type BincHandle struct {
 	BasicHandle
 	binaryEncodingType
-	// noElemSeparators
+	
 
-	// AsSymbols defines what should be encoded as symbols.
-	//
-	// Encoding as symbols can reduce the encoded size significantly.
-	//
-	// However, during decoding, each string to be encoded as a symbol must
-	// be checked to see if it has been seen before. Consequently, encoding time
-	// will increase if using symbols, because string comparisons has a clear cost.
-	//
-	// Values:
-	// - 0: default: library uses best judgement
-	// - 1: use symbols
-	// - 2: do not use symbols
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	AsSymbols uint8
 
-	// AsSymbols: may later on introduce more options ...
-	// - m: map keys
-	// - s: struct fields
-	// - n: none
-	// - a: all: same as m, s, ...
+	
+	
+	
+	
+	
 
-	// _ [7]uint64 // padding (cache-aligned)
+	
 }
 
-// Name returns the name of the handle: binc
+
 func (h *BincHandle) Name() string { return "binc" }
 
 func (h *BincHandle) desc(bd byte) string { return bincdesc(bd>>4, bd&0x0f) }
@@ -1160,58 +1160,58 @@ func (h *BincHandle) newDecDriver() decDriver {
 	return d
 }
 
-// var timeDigits = [...]byte{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
 
-// EncodeTime encodes a time.Time as a []byte, including
-// information on the instant in time and UTC offset.
-//
-// Format Description
-//
-//	A timestamp is composed of 3 components:
-//
-//	- secs: signed integer representing seconds since unix epoch
-//	- nsces: unsigned integer representing fractional seconds as a
-//	  nanosecond offset within secs, in the range 0 <= nsecs < 1e9
-//	- tz: signed integer representing timezone offset in minutes east of UTC,
-//	  and a dst (daylight savings time) flag
-//
-//	When encoding a timestamp, the first byte is the descriptor, which
-//	defines which components are encoded and how many bytes are used to
-//	encode secs and nsecs components. *If secs/nsecs is 0 or tz is UTC, it
-//	is not encoded in the byte array explicitly*.
-//
-//	    Descriptor 8 bits are of the form `A B C DDD EE`:
-//	        A:   Is secs component encoded? 1 = true
-//	        B:   Is nsecs component encoded? 1 = true
-//	        C:   Is tz component encoded? 1 = true
-//	        DDD: Number of extra bytes for secs (range 0-7).
-//	             If A = 1, secs encoded in DDD+1 bytes.
-//	                 If A = 0, secs is not encoded, and is assumed to be 0.
-//	                 If A = 1, then we need at least 1 byte to encode secs.
-//	                 DDD says the number of extra bytes beyond that 1.
-//	                 E.g. if DDD=0, then secs is represented in 1 byte.
-//	                      if DDD=2, then secs is represented in 3 bytes.
-//	        EE:  Number of extra bytes for nsecs (range 0-3).
-//	             If B = 1, nsecs encoded in EE+1 bytes (similar to secs/DDD above)
-//
-//	Following the descriptor bytes, subsequent bytes are:
-//
-//	    secs component encoded in `DDD + 1` bytes (if A == 1)
-//	    nsecs component encoded in `EE + 1` bytes (if B == 1)
-//	    tz component encoded in 2 bytes (if C == 1)
-//
-//	secs and nsecs components are integers encoded in a BigEndian
-//	2-complement encoding format.
-//
-//	tz component is encoded as 2 bytes (16 bits). Most significant bit 15 to
-//	Least significant bit 0 are described below:
-//
-//	    Timezone offset has a range of -12:00 to +14:00 (ie -720 to +840 minutes).
-//	    Bit 15 = have\_dst: set to 1 if we set the dst flag.
-//	    Bit 14 = dst\_on: set to 1 if dst is in effect at the time, or 0 if not.
-//	    Bits 13..0 = timezone offset in minutes. It is a signed integer in Big Endian format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func bincEncodeTime(t time.Time) []byte {
-	// t := rv2i(rv).(time.Time)
+	
 	tsecs, tnsecs := t.Unix(), t.Nanosecond()
 	var (
 		bd byte
@@ -1240,13 +1240,13 @@ func bincEncodeTime(t time.Time) []byte {
 	}
 	if l != nil {
 		bd = bd | 0x20
-		// Note that Go Libs do not give access to dst flag.
+		
 		_, zoneOffset := t.Zone()
-		// zoneName, zoneOffset := t.Zone()
+		
 		zoneOffset /= 60
 		z := uint16(zoneOffset)
 		btmp := bigen.PutUint16(z)
-		// clear dst flags
+		
 		bs[i] = btmp[0] & 0x3f
 		bs[i+1] = btmp[1]
 		i = i + 2
@@ -1255,7 +1255,7 @@ func bincEncodeTime(t time.Time) []byte {
 	return bs[0:i]
 }
 
-// bincDecodeTime decodes a []byte into a time.Time.
+
 func bincDecodeTime(bs []byte) (tt time.Time, err error) {
 	bd := bs[0]
 	var (
@@ -1271,7 +1271,7 @@ func bincDecodeTime(bs []byte) (tt time.Time, err error) {
 		n = ((bd >> 2) & 0x7) + 1
 		i2 = i + n
 		copy(btmp[8-n:], bs[i:i2])
-		// if first bit of bs[i] is set, then fill btmp[0..8-n] with 0xff (ie sign extend it)
+		
 		if bs[i]&(1<<7) != 0 {
 			copy(btmp[0:8-n], bsAll0xff)
 		}
@@ -1290,26 +1290,26 @@ func bincDecodeTime(bs []byte) (tt time.Time, err error) {
 		tt = time.Unix(tsec, int64(tnsec)).UTC()
 		return
 	}
-	// In stdlib time.Parse, when a date is parsed without a zone name, it uses "" as zone name.
-	// However, we need name here, so it can be shown when time is printf.d.
-	// Zone name is in form: UTC-08:00.
-	// Note that Go Libs do not give access to dst flag, so we ignore dst bits
+	
+	
+	
+	
 
 	tz = bigen.Uint16([2]byte{bs[i], bs[i+1]})
-	// sign extend sign bit into top 2 MSB (which were dst bits):
-	if tz&(1<<13) == 0 { // positive
-		tz = tz & 0x3fff //clear 2 MSBs: dst bits
-	} else { // negative
-		tz = tz | 0xc000 //set 2 MSBs: dst bits
+	
+	if tz&(1<<13) == 0 { 
+		tz = tz & 0x3fff 
+	} else { 
+		tz = tz | 0xc000 
 	}
 	tzint := int16(tz)
 	if tzint == 0 {
 		tt = time.Unix(tsec, int64(tnsec)).UTC()
 	} else {
-		// For Go Time, do not use a descriptive timezone.
-		// It's unnecessary, and makes it harder to do a reflect.DeepEqual.
-		// The Offset already tells what the offset should be, if not on UTC and unknown zone name.
-		// var zoneName = timeLocUTCName(tzint)
+		
+		
+		
+		
 		tt = time.Unix(tsec, int64(tnsec)).In(time.FixedZone("", int(tzint)*60))
 	}
 	return

@@ -10,16 +10,16 @@ import (
 
 type readBytesFunc func(*bufio.Reader, int, int) (int, error)
 
-// messageSetReader processes the messages encoded into a fetch response.
-// The response may contain a mix of Record Batches (newer format) and Messages
-// (older format).
+
+
+
 type messageSetReader struct {
-	*readerStack      // used for decompressing compressed messages and record batches
-	empty        bool // if true, short circuits messageSetReader methods
-	debug        bool // enable debug log messages
-	// How many bytes are expected to remain in the response.
-	//
-	// This is used to detect truncation of the response.
+	*readerStack      
+	empty        bool 
+	debug        bool 
+	
+	
+	
 	lengthRemain int
 
 	decompressed *bytes.Buffer
@@ -30,22 +30,22 @@ type readerStack struct {
 	remain int
 	base   int64
 	parent *readerStack
-	count  int            // how many messages left in the current message set
-	header messagesHeader // the current header for a subset of messages within the set.
+	count  int            
+	header messagesHeader 
 }
 
-// messagesHeader describes a set of records. there may be many messagesHeader's in a message set.
+
 type messagesHeader struct {
 	firstOffset int64
 	length      int32
 	crc         int32
 	magic       int8
-	// v1 composes attributes specific to v0 and v1 message headers
+	
 	v1 struct {
 		attributes int8
 		timestamp  int64
 	}
-	// v2 composes attributes specific to v2 message headers
+	
 	v2 struct {
 		leaderEpoch     int32
 		attributes      int16
@@ -108,9 +108,9 @@ func (r *messageSetReader) discard() (err error) {
 	case r.empty:
 	case r.readerStack == nil:
 	default:
-		// rewind up to the top-most reader b/c it's the only one that's doing
-		// actual i/o.  the rest are byte buffers that have been pushed on the stack
-		// while reading compressed message sets.
+		
+		
+		
 		for r.parent != nil {
 			r.readerStack = r.parent
 		}
@@ -132,7 +132,7 @@ func (r *messageSetReader) readMessage(min int64, key readBytesFunc, val readByt
 	switch r.header.magic {
 	case 0, 1:
 		offset, timestamp, headers, err = r.readMessageV1(min, key, val)
-		// Set an invalid value so that it can be ignored
+		
 		lastOffset = -1
 	case 2:
 		offset, lastOffset, timestamp, headers, err = r.readMessageV2(min, key, val)
@@ -163,15 +163,15 @@ func (r *messageSetReader) readMessageV1(min int64, key readBytesFunc, val readB
 			r.log("Reading with codec=%T", codec)
 		}
 		if codec != nil {
-			// discard next four bytes...will be -1 to indicate null key
+			
 			if err = r.discardN(4); err != nil {
 				return
 			}
 
-			// read and decompress the contained message set.
+			
 			r.decompressed.Reset()
 			if err = r.readBytesWith(func(br *bufio.Reader, sz int, n int) (remain int, err error) {
-				// x4 as a guess that the average compression ratio is near 75%
+				
 				r.decompressed.Grow(4 * n)
 				limitReader := io.LimitedReader{R: br, N: int64(n)}
 				codecReader := codec.NewReader(&limitReader)
@@ -183,25 +183,25 @@ func (r *messageSetReader) readMessageV1(min int64, key readBytesFunc, val readB
 				return
 			}
 
-			// the compressed message's offset will be equal to the offset of
-			// the last message in the set.  within the compressed set, the
-			// offsets will be relative, so we have to scan through them to
-			// get the base offset.  for example, if there are four compressed
-			// messages at offsets 10-13, then the container message will have
-			// offset 13 and the contained messages will be 0,1,2,3.  the base
-			// offset for the container, then is 13-3=10.
+			
+			
+			
+			
+			
+			
+			
 			if offset, err = extractOffset(offset, r.decompressed.Bytes()); err != nil {
 				return
 			}
 
-			// mark the outer message as being read
+			
 			r.markRead()
 
-			// then push the decompressed bytes onto the stack.
+			
 			r.readerStack = &readerStack{
-				// Allocate a buffer of size 0, which gets capped at 16 bytes
-				// by the bufio package. We are already reading buffered data
-				// here, no need to reserve another 4KB buffer.
+				
+				
+				
 				reader: bufio.NewReaderSize(r.decompressed, 0),
 				remain: r.decompressed.Len(),
 				base:   offset,
@@ -210,29 +210,29 @@ func (r *messageSetReader) readMessageV1(min int64, key readBytesFunc, val readB
 			continue
 		}
 
-		// adjust the offset in case we're reading compressed messages.  the
-		// base will be zero otherwise.
+		
+		
 		offset += r.base
 
-		// When the messages are compressed kafka may return messages at an
-		// earlier offset than the one that was requested, it's the client's
-		// responsibility to ignore those.
-		//
-		// At this point, the message header has been read, so discarding
-		// the rest of the message means we have to discard the key, and then
-		// the value. Each of those are preceded by a 4-byte length. Discarding
-		// them is then reading that length variable and then discarding that
-		// amount.
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		if offset < min {
-			// discard the key
+			
 			if err = r.discardBytes(); err != nil {
 				return
 			}
-			// discard the value
+			
 			if err = r.discardBytes(); err != nil {
 				return
 			}
-			// since we have fully consumed the message, mark as read
+			
 			r.markRead()
 			continue
 		}
@@ -254,13 +254,13 @@ func (r *messageSetReader) readMessageV2(_ int64, key readBytesFunc, val readByt
 	if err = r.readHeader(); err != nil {
 		return
 	}
-	if r.count == int(r.header.v2.count) { // first time reading this set, so check for compression headers.
+	if r.count == int(r.header.v2.count) { 
 		var codec CompressionCodec
 		if codec, err = r.header.compression(); err != nil {
 			return
 		}
 		if codec != nil {
-			batchRemain := int(r.header.length - 49) // TODO: document this magic number
+			batchRemain := int(r.header.length - 49) 
 			if batchRemain > r.remain {
 				err = errShortRead
 				return
@@ -270,7 +270,7 @@ func (r *messageSetReader) readMessageV2(_ int64, key readBytesFunc, val readByt
 				return
 			}
 			r.decompressed.Reset()
-			// x4 as a guess that the average compression ratio is near 75%
+			
 			r.decompressed.Grow(4 * batchRemain)
 			limitReader := io.LimitedReader{R: r.reader, N: int64(batchRemain)}
 			codecReader := codec.NewReader(&limitReader)
@@ -281,16 +281,16 @@ func (r *messageSetReader) readMessageV2(_ int64, key readBytesFunc, val readByt
 			}
 			r.remain -= batchRemain - int(limitReader.N)
 			r.readerStack = &readerStack{
-				reader: bufio.NewReaderSize(r.decompressed, 0), // the new stack reads from the decompressed buffer
+				reader: bufio.NewReaderSize(r.decompressed, 0), 
 				remain: r.decompressed.Len(),
-				base:   -1, // base is unused here
+				base:   -1, 
 				parent: r.readerStack,
 				header: r.header,
 				count:  r.count,
 			}
-			// all of the messages in this set are in the decompressed set just pushed onto the reader
-			// stack. here we set the parent count to 0 so that when the child set is exhausted, the
-			// reader will then try to read the header of the next message set
+			
+			
+			
 			r.readerStack.parent.count = 0
 		}
 	}
@@ -405,7 +405,7 @@ func (r *messageSetReader) runFunc(rbFunc readBytesFunc) (err error) {
 
 func (r *messageSetReader) readHeader() (err error) {
 	if r.count > 0 {
-		// currently reading a set of messages, no need to read a header until they are exhausted.
+		
 		return
 	}
 	r.header = messagesHeader{}
@@ -429,8 +429,8 @@ func (r *messageSetReader) readHeader() (err error) {
 			return
 		}
 		r.count = 1
-		// Set arbitrary non-zero length so that we always assume the
-		// message is truncated since bytes remain.
+		
+		
 		r.lengthRemain = 1
 		if r.debug {
 			r.log("Read v0 header with offset=%d len=%d magic=%d attributes=%d", r.header.firstOffset, r.header.length, r.header.magic, r.header.v1.attributes)
@@ -444,8 +444,8 @@ func (r *messageSetReader) readHeader() (err error) {
 			return
 		}
 		r.count = 1
-		// Set arbitrary non-zero length so that we always assume the
-		// message is truncated since bytes remain.
+		
+		
 		r.lengthRemain = 1
 		if r.debug {
 			r.log("Read v1 header with remain=%d offset=%d magic=%d and attributes=%d", r.remain, r.header.firstOffset, r.header.magic, r.header.v1.attributes)
@@ -480,7 +480,7 @@ func (r *messageSetReader) readHeader() (err error) {
 			return
 		}
 		r.count = int(r.header.v2.count)
-		// Subtracts the header bytes from the length
+		
 		r.lengthRemain = int(r.header.length) - 49
 		if r.debug {
 			r.log("Read v2 header with count=%d offset=%d len=%d magic=%d attributes=%d", r.count, r.header.firstOffset, r.header.length, r.header.magic, r.header.v2.attributes)

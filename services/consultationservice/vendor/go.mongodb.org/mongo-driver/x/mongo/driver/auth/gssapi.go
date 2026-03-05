@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 //go:build gssapi && (windows || linux || darwin)
 // +build gssapi
@@ -20,7 +20,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/auth/internal/gssapi"
 )
 
-// GSSAPI is the mechanism name for GSSAPI.
+
 const GSSAPI = "GSSAPI"
 
 func newGSSAPIAuthenticator(cred *Cred, _ *http.Client) (Authenticator, error) {
@@ -36,7 +36,7 @@ func newGSSAPIAuthenticator(cred *Cred, _ *http.Client) (Authenticator, error) {
 	}, nil
 }
 
-// GSSAPIAuthenticator uses the GSSAPI algorithm over SASL to authenticate a connection.
+
 type GSSAPIAuthenticator struct {
 	Username    string
 	Password    string
@@ -44,7 +44,7 @@ type GSSAPIAuthenticator struct {
 	Props       map[string]string
 }
 
-// Auth authenticates the connection.
+
 func (a *GSSAPIAuthenticator) Auth(ctx context.Context, cfg *Config) error {
 	target := cfg.Description.Addr.String()
 	hostname, _, err := net.SplitHostPort(target)
@@ -60,7 +60,7 @@ func (a *GSSAPIAuthenticator) Auth(ctx context.Context, cfg *Config) error {
 	return ConductSaslConversation(ctx, cfg, sourceExternal, client)
 }
 
-// Reauth reauthenticates the connection.
+
 func (a *GSSAPIAuthenticator) Reauth(_ context.Context, _ *driver.AuthConfig) error {
 	return newAuthError("GSSAPI does not support reauthentication", nil)
 }

@@ -1,20 +1,6 @@
 // +build !amd64,!arm64 go1.25 !go1.17 arm64,!go1.20
 
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package sonic
 
@@ -33,7 +19,7 @@ type frozenConfig struct {
     Config
 }
 
-// Froze convert the Config to API
+
 func (cfg Config) Froze() API {
     api := &frozenConfig{Config: cfg}
     return api
@@ -47,15 +33,15 @@ func (cfg frozenConfig) marshalOptions(val interface{}, prefix, indent string) (
     err := enc.Encode(val)
 	out := w.Bytes()
 
-	// json.Encoder always appends '\n' after encoding,
-	// which is not same with json.Marshal()
+	
+	
 	if len(out) > 0 && out[len(out)-1] == '\n' {
 		out = out[:len(out)-1]
 	}
 	return out, err
 }
 
-// Marshal is implemented by sonic
+
 func (cfg frozenConfig) Marshal(val interface{}) ([]byte, error) {
     if !cfg.EscapeHTML {
         return cfg.marshalOptions(val, "", "")
@@ -63,13 +49,13 @@ func (cfg frozenConfig) Marshal(val interface{}) ([]byte, error) {
     return json.Marshal(val)
 }
 
-// MarshalToString is implemented by sonic
+
 func (cfg frozenConfig) MarshalToString(val interface{}) (string, error) {
     out, err := cfg.Marshal(val)
     return string(out), err
 }
 
-// MarshalIndent is implemented by sonic
+
 func (cfg frozenConfig) MarshalIndent(val interface{}, prefix, indent string) ([]byte, error) {
     if !cfg.EscapeHTML {
         return cfg.marshalOptions(val, prefix, indent)
@@ -77,7 +63,7 @@ func (cfg frozenConfig) MarshalIndent(val interface{}, prefix, indent string) ([
     return json.MarshalIndent(val, prefix, indent)
 }
 
-// UnmarshalFromString is implemented by sonic
+
 func (cfg frozenConfig) UnmarshalFromString(buf string, val interface{}) error {
     r := bytes.NewBufferString(buf)
     dec := json.NewDecoder(r)
@@ -90,12 +76,12 @@ func (cfg frozenConfig) UnmarshalFromString(buf string, val interface{}) error {
     return dec.Decode(val)
 }
 
-// Unmarshal is implemented by sonic
+
 func (cfg frozenConfig) Unmarshal(buf []byte, val interface{}) error {
     return cfg.UnmarshalFromString(string(buf), val)
 }
 
-// NewEncoder is implemented by sonic
+
 func (cfg frozenConfig) NewEncoder(writer io.Writer) Encoder {
     enc := json.NewEncoder(writer)
     if !cfg.EscapeHTML {
@@ -104,7 +90,7 @@ func (cfg frozenConfig) NewEncoder(writer io.Writer) Encoder {
     return enc
 }
 
-// NewDecoder is implemented by sonic
+
 func (cfg frozenConfig) NewDecoder(reader io.Reader) Decoder {
     dec := json.NewDecoder(reader)
     if cfg.UseNumber {
@@ -116,17 +102,17 @@ func (cfg frozenConfig) NewDecoder(reader io.Reader) Decoder {
     return dec
 }
 
-// Valid is implemented by sonic
+
 func (cfg frozenConfig) Valid(data []byte) bool {
     return json.Valid(data)
 }
 
-// Pretouch compiles vt ahead-of-time to avoid JIT compilation on-the-fly, in
-// order to reduce the first-hit latency at **amd64** Arch.
-// Opts are the compile options, for example, "option.WithCompileRecursiveDepth" is
-// a compile option to set the depth of recursive compile for the nested struct type.
-// * This is the none implement for !amd64.
-// It will be useful for someone who develop with !amd64 arch,like Mac M1.
+
+
+
+
+
+
 func Pretouch(vt reflect.Type, opts ...option.CompileOption) error {
     return nil
 }

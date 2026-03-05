@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package jitdec
 
@@ -111,8 +97,8 @@ const (
 )
 
 const (
-    _MAX_ILBUF = 100000     // cutoff at 100k of IL instructions
-    _MAX_FIELDS = 50        // cutoff at 50 fields struct
+    _MAX_ILBUF = 100000     
+    _MAX_FIELDS = 50        
 )
 
 var _OpNames = [256]string {
@@ -240,8 +226,8 @@ func _OP_map_key_uintptr() _Op {
 }
 
 type _Instr struct {
-    u uint64            // union {op: 8, vb: 8, vi: 48}, iv maybe int or len([]int)
-    p unsafe.Pointer    // maybe GoSlice.Data, *GoType or *caching.FieldMap
+    u uint64            
+    p unsafe.Pointer    
 }
 
 func packOp(op _Op) uint64 {
@@ -381,12 +367,12 @@ func (self _Instr) formatSwitchLabels() string {
     var v int
     var m []string
 
-    /* format each label */
+    
     for i, v = range self.vs() {
         m = append(m, fmt.Sprintf("%d=L_%d", i, v))
     }
 
-    /* join them with "," */
+    
     return strings.Join(m, ", ")
 }
 
@@ -395,24 +381,24 @@ func (self _Instr) formatStructFields() string {
     var r []string
     var m []struct{i int; n string}
 
-    /* extract all the fields */
+    
     for i = 0; i < self.vf().N; i++ {
         if v := self.vf().At(i); v.Hash != 0 {
             m = append(m, struct{i int; n string}{i: v.ID, n: v.Name})
         }
     }
 
-    /* sort by field name */
+    
     sort.Slice(m, func(i, j int) bool {
         return m[i].n < m[j].n
     })
 
-    /* format each field */
+    
     for _, v := range m {
         r = append(r, fmt.Sprintf("%s=%d", v.n, v.i))
     }
 
-    /* join them with "," */
+    
     return strings.Join(r, ", ")
 }
 
@@ -475,7 +461,7 @@ func (self _Program) disassemble() string {
     tab := make([]bool, nb + 1)
     ret := make([]string, 0, nb + 1)
 
-    /* prescan to get all the labels */
+    
     for _, ins := range self {
         if ins.isBranch() {
             if ins.op() != _OP_switch {
@@ -488,7 +474,7 @@ func (self _Program) disassemble() string {
         }
     }
 
-    /* disassemble each instruction */
+    
     for i, ins := range self {
         if !tab[i] {
             ret = append(ret, "\t" + ins.disassemble())
@@ -497,12 +483,12 @@ func (self _Program) disassemble() string {
         }
     }
 
-    /* add the last label, if needed */
+    
     if tab[nb] {
         ret = append(ret, fmt.Sprintf("L_%d:", nb))
     }
 
-    /* add an "end" indicator, and join all the strings */
+    
     return strings.Join(append(ret, "\tend"), "\n")
 }
 
@@ -548,7 +534,7 @@ const (
 func (self *_Compiler) checkMarshaler(p *_Program, vt reflect.Type, flags int, exec bool) bool {
     pt := reflect.PtrTo(vt)
 
-    /* check for `json.Unmarshaler` with pointer receiver */
+    
     if pt.Implements(jsonUnmarshalerType) {
         if exec {
             p.add(_OP_lspace)
@@ -557,7 +543,7 @@ func (self *_Compiler) checkMarshaler(p *_Program, vt reflect.Type, flags int, e
         return true
     }
 
-    /* check for `json.Unmarshaler` */
+    
     if vt.Implements(jsonUnmarshalerType) {
         if exec {
             p.add(_OP_lspace)
@@ -567,11 +553,11 @@ func (self *_Compiler) checkMarshaler(p *_Program, vt reflect.Type, flags int, e
     }
 
     if flags == checkMarshalerFlags_quoted {
-        // text marshaler shouldn't be supported for quoted string
+        
         return false
     }
 
-    /* check for `encoding.TextMarshaler` with pointer receiver */
+    
     if pt.Implements(encodingTextUnmarshalerType) {
         if exec {
             p.add(_OP_lspace)
@@ -580,7 +566,7 @@ func (self *_Compiler) checkMarshaler(p *_Program, vt reflect.Type, flags int, e
         return true
     }
 
-    /* check for `encoding.TextUnmarshaler` */
+    
     if vt.Implements(encodingTextUnmarshalerType) {
         if exec {
             p.add(_OP_lspace)
@@ -593,7 +579,7 @@ func (self *_Compiler) checkMarshaler(p *_Program, vt reflect.Type, flags int, e
 }
 
 func (self *_Compiler) compileOne(p *_Program, sp int, vt reflect.Type) {
-    /* check for recursive nesting */
+    
     ok := self.tab[vt]
     if ok {
         p.rtt(_OP_recurse, vt)
@@ -604,7 +590,7 @@ func (self *_Compiler) compileOne(p *_Program, sp int, vt reflect.Type) {
         return
     }
 
-    /* enter the recursion */
+    
     p.add(_OP_lspace)
     self.tab[vt] = true
     self.compileOps(p, sp, vt)
@@ -690,7 +676,7 @@ func (self *_Compiler) compileMapOp(p *_Program, sp int, vt reflect.Type, op _Op
     skip2 := p.pc()
     p.rtt(op, vt)
 
-    /* match the value separator */
+    
     p.add(_OP_lspace)
     p.chr(_OP_match_char, ':')
     self.compileOne(p, sp + 2, vt.Elem())
@@ -706,7 +692,7 @@ func (self *_Compiler) compileMapOp(p *_Program, sp int, vt reflect.Type, op _Op
     skip3 := p.pc()
     p.rtt(op, vt)
 
-    /* match the value separator */
+    
     p.add(_OP_lspace)
     p.chr(_OP_match_char, ':')
     self.compileOne(p, sp + 2, vt.Elem())
@@ -728,7 +714,7 @@ func (self *_Compiler) compilePtr(p *_Program, sp int, et reflect.Type) {
     i := p.pc()
     p.add(_OP_is_null)
 
-    /* dereference all the way down */
+    
     for et.Kind() == reflect.Ptr {
         if self.checkMarshaler(p, et, 0, true) {
             return
@@ -737,18 +723,16 @@ func (self *_Compiler) compilePtr(p *_Program, sp int, et reflect.Type) {
         p.rtt(_OP_deref, et)
     }
 
-    /* check for recursive nesting */
+    
     ok := self.tab[et]
     if ok {
         p.rtt(_OP_recurse, et)
     } else {
-        /* enter the recursion */
+        
         p.add(_OP_lspace)
         self.tab[et] = true
 
-        /* not inline the pointer type
-        * recursing the defined pointer type's elem will cause issue379.
-        */
+        
         self.compileOps(p, sp, et)
     }
     delete(self.tab, et)
@@ -756,11 +740,11 @@ func (self *_Compiler) compilePtr(p *_Program, sp int, et reflect.Type) {
     j := p.pc()
     p.add(_OP_goto)
 
-    // set val pointer as nil
+    
     p.pin(i)
     p.add(_OP_nil_1)
 
-    // nothing todo
+    
     p.pin(j)
 }
 
@@ -775,7 +759,7 @@ func (self *_Compiler) compileArray(p *_Program, sp int, vt reflect.Type) {
     v := []int{p.pc()}
     p.chr(_OP_check_char, ']')
 
-    /* decode every item */
+    
     for i := 1; i <= vt.Len(); i++ {
         self.compileOne(p, sp + 1, vt.Elem())
         p.add(_OP_load)
@@ -786,20 +770,20 @@ func (self *_Compiler) compileArray(p *_Program, sp int, vt reflect.Type) {
         p.chr(_OP_match_char, ',')
     }
 
-    /* drop rest of the array */
+    
     p.add(_OP_array_skip)
     w := p.pc()
     p.add(_OP_goto)
     p.rel(v)
 
-    /* check for pointer data */
+    
     if rt.UnpackType(vt.Elem()).PtrData == 0 {
         p.int(_OP_array_clear, int(vt.Size()))
     } else {
         p.int(_OP_array_clear_p, int(vt.Size()))
     }
 
-    /* restore the stack */
+    
     p.pin(w)
     p.add(_OP_drop)
 
@@ -831,7 +815,7 @@ func (self *_Compiler) compileSliceBin(p *_Program, sp int, vt reflect.Type) {
     y := p.pc()
     p.add(_OP_goto)
 
-    // unmarshal `null` and `"` is different
+    
     p.pin(i)
     p.add(_OP_nil_3)
     y2 := p.pc()
@@ -914,7 +898,7 @@ func (self *_Compiler) compileStructBody(p *_Program, sp int, vt reflect.Type) {
     fv := resolver.ResolveStruct(vt)
     fm, sw := caching.CreateFieldMap(len(fv)), make([]int, len(fv))
 
-    /* start of object */
+    
     p.tag(sp)
     n := p.pc()
     p.add(_OP_is_null)
@@ -923,7 +907,7 @@ func (self *_Compiler) compileStructBody(p *_Program, sp int, vt reflect.Type) {
     p.chr(_OP_check_char_0, '{')
     p.rtt(_OP_dismatch_err, vt)
 
-    /* special case for empty object */
+    
     if len(fv) == 0 {
         p.pin(j)
         s := p.pc()
@@ -955,7 +939,7 @@ func (self *_Compiler) compileStructBody(p *_Program, sp int, vt reflect.Type) {
     p.chr(_OP_match_char, ',')
 
 
-    /* match the remaining fields */
+    
     p.add(_OP_lspace)
     p.chr(_OP_match_char, '"')
     p.fmv(_OP_struct_field, fm)
@@ -965,26 +949,26 @@ func (self *_Compiler) compileStructBody(p *_Program, sp int, vt reflect.Type) {
     p.add(_OP_object_next)
     p.int(_OP_goto, y0)
 
-    /* process each field */
+    
     for i, f := range fv {
         sw[i] = p.pc()
         fm.Set(f.Name, i)
 
-        /* index to the field */
+        
         for _, o := range f.Path {
             if p.int(_OP_index, int(o.Size)); o.Kind == resolver.F_deref {
                 p.rtt(_OP_deref, o.Type)
             }
         }
 
-        /* check for "stringnize" option */
+        
         if (f.Opts & resolver.F_stringize) == 0 {
             self.compileOne(p, sp + 1, f.Type)
         } else {
             self.compileStructFieldStr(p, sp + 1, f.Type)
         }
 
-        /* load the state, and try next field */
+        
         p.add(_OP_load)
         p.int(_OP_goto, y0)
     }
@@ -1005,8 +989,8 @@ func (self *_Compiler) compileStructFieldStrUnmarshal(p *_Program, vt reflect.Ty
 }
 
 func (self *_Compiler) compileStructFieldStr(p *_Program, sp int, vt reflect.Type) {
-    // according to std, json.Unmarshaler should be called before stringize
-    // see https://github.com/bytedance/sonic/issues/670
+    
+    
     if self.checkMarshaler(p, vt, checkMarshalerFlags_quoted, false) {
         self.compileStructFieldStrUnmarshal(p, vt)
         return
@@ -1016,12 +1000,12 @@ func (self *_Compiler) compileStructFieldStr(p *_Program, sp int, vt reflect.Typ
     ft := vt
     sv := false
 
-    /* dereference the pointer if needed */
+    
     if ft.Kind() == reflect.Ptr {
         ft = ft.Elem()
     }
 
-    /* check if it can be stringized */
+    
     switch ft.Kind() {
         case reflect.Bool    : sv = true
         case reflect.Int     : sv = true
@@ -1040,13 +1024,13 @@ func (self *_Compiler) compileStructFieldStr(p *_Program, sp int, vt reflect.Typ
         case reflect.String  : sv = true
     }
 
-    /* if it's not, ignore the "string" and follow the regular path */
+    
     if !sv {
         self.compileOne(p, sp, vt)
         return
     }
 
-    /* remove the leading space, and match the leading quote */
+    
     vk := vt.Kind()
     p.add(_OP_lspace)
     n0 := p.pc()
@@ -1054,11 +1038,11 @@ func (self *_Compiler) compileStructFieldStr(p *_Program, sp int, vt reflect.Typ
     
     skip := self.checkIfSkip(p, stringType, '"')
 
-    /* also check for inner "null" */
+    
     n1 = p.pc()
     p.add(_OP_is_null_quote)
 
-    /* dereference the pointer only when it is not null */
+    
     if vk == reflect.Ptr {
         vt = vt.Elem()
         p.rtt(_OP_deref, vt)
@@ -1067,7 +1051,7 @@ func (self *_Compiler) compileStructFieldStr(p *_Program, sp int, vt reflect.Typ
     n2 := p.pc()
     p.chr(_OP_check_char_0, '"')
 
-    /* string opcode selector */
+    
     _OP_string := func() _Op {
         if ft == jsonNumberType {
             return _OP_num
@@ -1076,7 +1060,7 @@ func (self *_Compiler) compileStructFieldStr(p *_Program, sp int, vt reflect.Typ
         }
     }
 
-    /* compile for each type */
+    
     switch vt.Kind() {
         case reflect.Bool    : p.add(_OP_bool)
         case reflect.Int     : p.add(_OP_int())
@@ -1096,17 +1080,17 @@ func (self *_Compiler) compileStructFieldStr(p *_Program, sp int, vt reflect.Typ
         default              : panic("not reachable")
     }
 
-    /* the closing quote is not needed when parsing a pure string */
+    
     if vt == jsonNumberType || vt.Kind() != reflect.String {
         p.chr(_OP_match_char, '"')
     }
 
-    /* pin the `is_null_quote` jump location */
+    
     if n1 != -1 && vk != reflect.Ptr {
         p.pin(n1)
     }
 
-    /* "null" but not a pointer, act as if the field is not present */
+    
     if vk != reflect.Ptr {
         pc2 := p.pc()
         p.add(_OP_goto)
@@ -1118,11 +1102,11 @@ func (self *_Compiler) compileStructFieldStr(p *_Program, sp int, vt reflect.Typ
         return
     }
 
-    /* the "null" case of the pointer */
+    
     pc := p.pc()
     p.add(_OP_goto)
-    p.pin(n0) // `is_null` jump location
-    p.pin(n1) // `is_null_quote` jump location
+    p.pin(n0) 
+    p.pin(n1) 
     p.add(_OP_nil_1)
     pc2 := p.pc()
     p.add(_OP_goto)
@@ -1138,14 +1122,14 @@ func (self *_Compiler) compileInterface(p *_Program, vt reflect.Type) {
     i := p.pc()
     p.add(_OP_is_null)
 
-    /* check for empty interface */
+    
     if vt.NumMethod() == 0 {
         p.add(_OP_any)
     } else {
         p.rtt(_OP_dyn, vt)
     }
 
-    /* finish the OpCode */
+    
     j := p.pc()
     p.add(_OP_goto)
     p.pin(i)
@@ -1164,13 +1148,13 @@ func (self *_Compiler) compileUnmarshalEnd(p *_Program, vt reflect.Type, i int) 
     j := p.pc()
     k := vt.Kind()
 
-    /* not a pointer */
+    
     if k != reflect.Ptr {
         p.pin(i)
         return
     }
 
-    /* it seems that in Go JSON library, "null" takes priority over any kind of unmarshaler */
+    
     p.add(_OP_goto)
     p.pin(i)
     p.add(_OP_nil_1)
@@ -1182,12 +1166,12 @@ func (self *_Compiler) compileUnmarshalJson(p *_Program, vt reflect.Type, flags 
     v := _OP_unmarshal
     p.add(_OP_is_null)
 
-    /* check for dynamic interface */
+    
     if vt.Kind() == reflect.Interface {
         v = _OP_dyn
     }
 
-    /* call the unmarshaler */
+    
     p.rtti(v, vt, flags)
     self.compileUnmarshalEnd(p, vt, i)
 }
@@ -1197,14 +1181,14 @@ func (self *_Compiler) compileUnmarshalText(p *_Program, vt reflect.Type, iv int
     v := _OP_unmarshal_text
     p.add(_OP_is_null)
 
-    /* check for dynamic interface */
+    
     if vt.Kind() == reflect.Interface {
         v = _OP_dyn
     } else {
         p.chr(_OP_match_char, '"')
     }
 
-    /* call the unmarshaler */
+    
     p.rtti(v, vt, iv)
     self.compileUnmarshalEnd(p, vt, i)
 }

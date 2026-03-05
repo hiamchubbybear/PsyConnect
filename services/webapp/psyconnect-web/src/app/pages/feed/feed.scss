@@ -1,30 +1,105 @@
+@use "../../styles/variable" as v;
+
 .container {
   max-width: 1200px;
-  margin: 0 auto;
   padding: 0 2rem 2rem;
 }
 
-// ─── Sticky inline search bar (replaces Welcome banner) ───────────────────────
-.feed-search-bar {
-  position: sticky;
-  top: 0; // sticks to topbar bottom edge
-  z-index: 50;
-  background: var(--color-bg);
-  padding: 0.75rem 0 0.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border, rgba(0, 0, 0, 0.06));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+.feed-main {
+  position: relative; 
 
-  // In dark mode the bg may need transparency
-  background: var(--color-bg, #fff);
+  .feed-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(
+      255,
+      255,
+      255,
+      0.4
+    ); 
+    backdrop-filter: blur(20px); 
+    z-index: 40; 
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+  }
 
-  // Override search component to be more compact in this context
-  app-search {
-    display: block;
-    max-width: 100%;
+  [data-theme="dark"] & .feed-overlay {
+    background: rgba(10, 15, 30, 0.7); 
+    backdrop-filter: blur(15px);
+  }
+
+  .feed-search-overlay-container {
+    position: relative;
+    z-index: 45; 
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 1.5rem;
+    padding-top: 1rem;
+    animation: searchSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    ::ng-deep app-search {
+      display: block;
+      width: 100%;
+
+      .search-bar {
+        transform: scale(0.98);
+        animation: searchScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        box-shadow:
+          0 10px 25px -5px rgba(0, 0, 0, 0.1),
+          0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        padding: 0.75rem 1.25rem;
+        min-height: 50px;
+
+        .bar-input {
+          font-size: 1.1rem;
+        }
+      }
+
+      .search-results-dropdown {
+        margin-top: 0.5rem;
+        border-radius: v.$border-radius-lg;
+        box-shadow: v.$shadow-lg;
+        border: 1px solid var(--color-border);
+      }
+    }
+  }
+
+  &.search-active {
+    .feed-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 }
+
+@keyframes searchSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes searchScaleUp {
+  0% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
 
 .avatar,
 .avatar.small {
@@ -134,6 +209,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  position: sticky;
+  top: 80px; 
+  height: fit-content;
+  align-self: flex-start;
 }
 
 .therapist {
@@ -289,7 +368,7 @@ h4 {
   }
 }
 
-// Feed switcher tabs (Segmented Control Pill Style)
+
 .feed-switcher {
   display: inline-flex;
   background: var(--color-surface-low, #f3f4f6);
@@ -321,7 +400,7 @@ h4 {
   }
 }
 
-// Reaction picker dropdown
+
 .reaction-wrapper {
   position: relative;
 
@@ -378,7 +457,7 @@ h4 {
   }
 }
 
-// Tags
+
 .post-tags {
   display: flex;
   flex-wrap: wrap;
@@ -402,7 +481,7 @@ h4 {
   }
 }
 
-// Avatar placeholder
+
 .avatar-placeholder {
   width: 100%;
   height: 100%;
@@ -415,7 +494,7 @@ h4 {
   font-size: 1.125rem;
 }
 
-// Loading state
+
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -444,7 +523,7 @@ h4 {
   }
 }
 
-// Error state
+
 .error-state {
   display: flex;
   flex-direction: column;
@@ -460,7 +539,7 @@ h4 {
   }
 }
 
-// Empty state
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -476,7 +555,7 @@ h4 {
   }
 }
 
-// Responsive
+
 @media (max-width: 960px) {
   .container {
     padding: 1rem;
@@ -494,7 +573,7 @@ h4 {
   }
 }
 
-// Premium Author Card Styles
+
 .meta {
   position: relative;
 
@@ -512,14 +591,14 @@ h4 {
     animation: fadeInCard 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-origin: top left;
 
-    // Cover Area
+    
     &__cover {
       height: 80px;
       background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
       position: relative;
     }
 
-    // Avatar overlapping cover
+    
     &__avatar-wrapper {
       position: absolute;
       top: 40px;
@@ -556,7 +635,7 @@ h4 {
       }
     }
 
-    // Content Area
+    
     &__content {
       padding: 3rem 1.5rem 1.5rem;
       display: flex;

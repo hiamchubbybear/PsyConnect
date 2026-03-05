@@ -16,7 +16,7 @@ import (
 var (
 	jsonNumberType   = reflect.TypeOf(json.Number(""))
 	typeAddr         *runtime.TypeAddr
-	cachedDecoderMap unsafe.Pointer // map[uintptr]decoder
+	cachedDecoderMap unsafe.Pointer 
 	cachedDecoder    []Decoder
 	initOnce         sync.Once
 )
@@ -355,7 +355,7 @@ func compileStruct(typ *runtime.Type, structName, fieldName string, structTypeTo
 		if field.Anonymous && !tag.IsTaggedKey {
 			if stDec, ok := dec.(*structDecoder); ok {
 				if runtime.Type2RType(field.Type) == typ {
-					// recursive definition
+					
 					continue
 				}
 				for k, v := range stDec.fieldMap {
@@ -374,7 +374,7 @@ func compileStruct(typ *runtime.Type, structName, fieldName string, structTypeTo
 			} else if pdec, ok := dec.(*ptrDecoder); ok {
 				contentDec := pdec.contentDecoder()
 				if pdec.typ == typ {
-					// recursive definition
+					
 					continue
 				}
 				var fieldSetErr error
@@ -443,7 +443,7 @@ func compileStruct(typ *runtime.Type, structName, fieldName string, structTypeTo
 		fieldMap[set.key] = set
 		lower := strings.ToLower(set.key)
 		if _, exists := fieldMap[lower]; !exists {
-			// first win
+			
 			fieldMap[lower] = set
 		}
 	}

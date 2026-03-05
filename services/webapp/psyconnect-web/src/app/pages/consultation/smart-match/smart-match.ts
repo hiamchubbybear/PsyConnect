@@ -8,7 +8,6 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { MatchingService } from '../../../services/consultation/matching.service';
 import { SwipeService } from '../../../services/swipe/swipe.service';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
-import { BookingDialogComponent } from '../booking-dialog/booking-dialog';
 
 @Component({
   selector: 'consultation-smart-match',
@@ -110,18 +109,8 @@ export class SmartMatchComponent implements OnInit {
 
   onBookSession() {
     if (!this.currentTherapist) return;
-
-    const dialogRef = this.dialog.open(BookingDialogComponent, {
-      width: '500px',
-      data: { therapist: this.currentTherapist },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        // Session created successfully
-        this.router.navigate(['/feature/consultation/sessions']);
-      }
-    });
+    const therapistId = this.currentTherapist.profileId;
+    this.router.navigate(['/feature/consultation/book', therapistId]);
   }
 
   onMessage() {

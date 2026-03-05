@@ -19,34 +19,34 @@ var (
 	errInvalidWritePartition = errors.New("writes must NOT set Partition on kafka.Message")
 )
 
-// Conn represents a connection to a kafka broker.
-//
-// Instances of Conn are safe to use concurrently from multiple goroutines.
+
+
+
 type Conn struct {
-	// base network connection
+	
 	conn net.Conn
 
-	// number of inflight requests on the connection.
+	
 	inflight int32
 
-	// offset management (synchronized on the mutex field)
+	
 	mutex  sync.Mutex
 	offset int64
 
-	// read buffer (synchronized on rlock)
+	
 	rlock sync.Mutex
 	rbuf  bufio.Reader
 
-	// write buffer (synchronized on wlock)
+	
 	wlock sync.Mutex
 	wbuf  bufio.Writer
 	wb    writeBuffer
 
-	// deadline management
+	
 	wdeadline connDeadline
 	rdeadline connDeadline
 
-	// immutable values of the connection object
+	
 	clientID      string
 	topic         string
 	partition     int32
@@ -55,14 +55,14 @@ type Conn struct {
 	broker        int32
 	rack          string
 
-	// correlation ID generator (synchronized on wlock)
+	
 	correlationID int32
 
-	// number of replica acks required when publishing to a partition
+	
 	requiredAcks int32
 
-	// lazily loaded API versions used by this connection
-	apiVersions atomic.Value // apiVersionMap
+	
+	apiVersions atomic.Value 
 
 	transactionalID *string
 }
@@ -83,7 +83,7 @@ func (v apiVersionMap) negotiate(key apiKey, sortedSupportedVersions ...apiVersi
 	return -1
 }
 
-// ConnConfig is a configuration object used to create new instances of Conn.
+
 type ConnConfig struct {
 	ClientID  string
 	Topic     string
@@ -91,37 +91,37 @@ type ConnConfig struct {
 	Broker    int
 	Rack      string
 
-	// The transactional id to use for transactional delivery. Idempotent
-	// deliver should be enabled if transactional id is configured.
-	// For more details look at transactional.id description here: http://kafka.apache.org/documentation.html#producerconfigs
-	// Empty string means that this connection can't be transactional.
+	
+	
+	
+	
 	TransactionalID string
 }
 
-// ReadBatchConfig is a configuration object used for reading batches of messages.
+
 type ReadBatchConfig struct {
-	// MinBytes indicates to the broker the minimum batch size that the consumer
-	// will accept. Setting a high minimum when consuming from a low-volume topic
-	// may result in delayed delivery when the broker does not have enough data to
-	// satisfy the defined minimum.
+	
+	
+	
+	
 	MinBytes int
 
-	// MaxBytes indicates to the broker the maximum batch size that the consumer
-	// will accept. The broker will truncate a message to satisfy this maximum, so
-	// choose a value that is high enough for your largest message size.
+	
+	
+	
 	MaxBytes int
 
-	// IsolationLevel controls the visibility of transactional records.
-	// ReadUncommitted makes all records visible. With ReadCommitted only
-	// non-transactional and committed records are visible.
+	
+	
+	
 	IsolationLevel IsolationLevel
 
-	// MaxWait is the amount of time for the broker while waiting to hit the
-	// min/max byte targets.  This setting is independent of any network-level
-	// timeouts or deadlines.
-	//
-	// For backward compatibility, when this field is left zero, kafka-go will
-	// infer the max wait from the connection's read deadline.
+	
+	
+	
+	
+	
+	
 	MaxWait time.Duration
 }
 
@@ -133,8 +133,8 @@ const (
 )
 
 var (
-	// DefaultClientID is the default value used as ClientID of kafka
-	// connections.
+	
+	
 	DefaultClientID string
 )
 
@@ -144,7 +144,7 @@ func init() {
 	DefaultClientID = fmt.Sprintf("%s@%s (github.com/segmentio/kafka-go)", progname, hostname)
 }
 
-// NewConn returns a new kafka connection for the given topic and partition.
+
 func NewConn(conn net.Conn, topic string, partition int) *Conn {
 	return NewConnWith(conn, ConnConfig{
 		Topic:     topic,
@@ -159,8 +159,8 @@ func emptyToNullable(transactionalID string) (result *string) {
 	return result
 }
 
-// NewConnWith returns a new kafka connection configured with config.
-// The offset is initialized to FirstOffset.
+
+
 func NewConnWith(conn net.Conn, config ConnConfig) *Conn {
 	if len(config.ClientID) == 0 {
 		config.ClientID = DefaultClientID
@@ -186,9 +186,9 @@ func NewConnWith(conn net.Conn, config ConnConfig) *Conn {
 
 	c.wb.w = &c.wbuf
 
-	// The fetch request needs to ask for a MaxBytes value that is at least
-	// enough to load the control data of the response. To avoid having to
-	// recompute it on every read, it is cached here in the Conn value.
+	
+	
+	
 	c.fetchMinSize = (fetchResponseV2{
 		Topics: []fetchResponseTopicV2{{
 			TopicName: config.Topic,
@@ -235,8 +235,8 @@ func (c *Conn) loadVersions() (apiVersionMap, error) {
 	return v, nil
 }
 
-// Broker returns a Broker value representing the kafka broker that this
-// connection was established to.
+
+
 func (c *Conn) Broker() Broker {
 	addr := c.conn.RemoteAddr()
 	host, port, _ := splitHostPortNumber(addr.String())
@@ -248,7 +248,7 @@ func (c *Conn) Broker() Broker {
 	}
 }
 
-// Controller requests kafka for the current controller and returns its URL.
+
 func (c *Conn) Controller() (broker Broker, err error) {
 	err = c.readOperation(
 		func(deadline time.Time, id int32) error {
@@ -275,7 +275,7 @@ func (c *Conn) Controller() (broker Broker, err error) {
 	return broker, err
 }
 
-// Brokers retrieve the broker list from the Kafka metadata.
+
 func (c *Conn) Brokers() ([]Broker, error) {
 	var brokers []Broker
 	err := c.readOperation(
@@ -304,7 +304,7 @@ func (c *Conn) Brokers() ([]Broker, error) {
 	return brokers, err
 }
 
-// DeleteTopics deletes the specified topics.
+
 func (c *Conn) DeleteTopics(topics ...string) error {
 	_, err := c.deleteTopics(deleteTopicsRequestV0{
 		Topics: topics,
@@ -312,9 +312,9 @@ func (c *Conn) DeleteTopics(topics ...string) error {
 	return err
 }
 
-// findCoordinator finds the coordinator for the specified group or transaction
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_FindCoordinator
+
+
+
 func (c *Conn) findCoordinator(request findCoordinatorRequestV0) (findCoordinatorResponseV0, error) {
 	var response findCoordinatorResponseV0
 
@@ -339,9 +339,9 @@ func (c *Conn) findCoordinator(request findCoordinatorRequestV0) (findCoordinato
 	return response, nil
 }
 
-// heartbeat sends a heartbeat message required by consumer groups
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_Heartbeat
+
+
+
 func (c *Conn) heartbeat(request heartbeatRequestV0) (heartbeatResponseV0, error) {
 	var response heartbeatResponseV0
 
@@ -365,9 +365,9 @@ func (c *Conn) heartbeat(request heartbeatRequestV0) (heartbeatResponseV0, error
 	return response, nil
 }
 
-// joinGroup attempts to join a consumer group
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_JoinGroup
+
+
+
 func (c *Conn) joinGroup(request joinGroupRequestV1) (joinGroupResponseV1, error) {
 	var response joinGroupResponseV1
 
@@ -391,9 +391,9 @@ func (c *Conn) joinGroup(request joinGroupRequestV1) (joinGroupResponseV1, error
 	return response, nil
 }
 
-// leaveGroup leaves the consumer from the consumer group
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_LeaveGroup
+
+
+
 func (c *Conn) leaveGroup(request leaveGroupRequestV0) (leaveGroupResponseV0, error) {
 	var response leaveGroupResponseV0
 
@@ -417,9 +417,9 @@ func (c *Conn) leaveGroup(request leaveGroupRequestV0) (leaveGroupResponseV0, er
 	return response, nil
 }
 
-// listGroups lists all the consumer groups
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_ListGroups
+
+
+
 func (c *Conn) listGroups(request listGroupsRequestV1) (listGroupsResponseV1, error) {
 	var response listGroupsResponseV1
 
@@ -443,9 +443,9 @@ func (c *Conn) listGroups(request listGroupsRequestV1) (listGroupsResponseV1, er
 	return response, nil
 }
 
-// offsetCommit commits the specified topic partition offsets
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_OffsetCommit
+
+
+
 func (c *Conn) offsetCommit(request offsetCommitRequestV2) (offsetCommitResponseV2, error) {
 	var response offsetCommitResponseV2
 
@@ -473,10 +473,10 @@ func (c *Conn) offsetCommit(request offsetCommitRequestV2) (offsetCommitResponse
 	return response, nil
 }
 
-// offsetFetch fetches the offsets for the specified topic partitions.
-// -1 indicates that there is no offset saved for the partition.
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_OffsetFetch
+
+
+
+
 func (c *Conn) offsetFetch(request offsetFetchRequestV1) (offsetFetchResponseV1, error) {
 	var response offsetFetchResponseV1
 
@@ -504,9 +504,9 @@ func (c *Conn) offsetFetch(request offsetFetchRequestV1) (offsetFetchResponseV1,
 	return response, nil
 }
 
-// syncGroup completes the handshake to join a consumer group
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_SyncGroup
+
+
+
 func (c *Conn) syncGroup(request syncGroupRequestV0) (syncGroupResponseV0, error) {
 	var response syncGroupResponseV0
 
@@ -530,60 +530,60 @@ func (c *Conn) syncGroup(request syncGroupRequestV0) (syncGroupResponseV0, error
 	return response, nil
 }
 
-// Close closes the kafka connection.
+
 func (c *Conn) Close() error {
 	return c.conn.Close()
 }
 
-// LocalAddr returns the local network address.
+
 func (c *Conn) LocalAddr() net.Addr {
 	return c.conn.LocalAddr()
 }
 
-// RemoteAddr returns the remote network address.
+
 func (c *Conn) RemoteAddr() net.Addr {
 	return c.conn.RemoteAddr()
 }
 
-// SetDeadline sets the read and write deadlines associated with the connection.
-// It is equivalent to calling both SetReadDeadline and SetWriteDeadline.
-//
-// A deadline is an absolute time after which I/O operations fail with a timeout
-// (see type Error) instead of blocking. The deadline applies to all future and
-// pending I/O, not just the immediately following call to Read or Write. After
-// a deadline has been exceeded, the connection may be closed if it was found to
-// be in an unrecoverable state.
-//
-// A zero value for t means I/O operations will not time out.
+
+
+
+
+
+
+
+
+
+
 func (c *Conn) SetDeadline(t time.Time) error {
 	c.rdeadline.setDeadline(t)
 	c.wdeadline.setDeadline(t)
 	return nil
 }
 
-// SetReadDeadline sets the deadline for future Read calls and any
-// currently-blocked Read call.
-// A zero value for t means Read will not time out.
+
+
+
 func (c *Conn) SetReadDeadline(t time.Time) error {
 	c.rdeadline.setDeadline(t)
 	return nil
 }
 
-// SetWriteDeadline sets the deadline for future Write calls and any
-// currently-blocked Write call.
-// Even if write times out, it may return n > 0, indicating that some of the
-// data was successfully written.
-// A zero value for t means Write will not time out.
+
+
+
+
+
 func (c *Conn) SetWriteDeadline(t time.Time) error {
 	c.wdeadline.setDeadline(t)
 	return nil
 }
 
-// Offset returns the current offset of the connection as pair of integers,
-// where the first one is an offset value and the second one indicates how
-// to interpret it.
-//
-// See Seek for more details about the offset and whence values.
+
+
+
+
+
 func (c *Conn) Offset() (offset int64, whence int) {
 	c.mutex.Lock()
 	offset = c.offset
@@ -603,24 +603,24 @@ func (c *Conn) Offset() (offset int64, whence int) {
 }
 
 const (
-	SeekStart    = 0 // Seek relative to the first offset available in the partition.
-	SeekAbsolute = 1 // Seek to an absolute offset.
-	SeekEnd      = 2 // Seek relative to the last offset available in the partition.
-	SeekCurrent  = 3 // Seek relative to the current offset.
+	SeekStart    = 0 
+	SeekAbsolute = 1 
+	SeekEnd      = 2 
+	SeekCurrent  = 3 
 
-	// This flag may be combined to any of the SeekAbsolute and SeekCurrent
-	// constants to skip the bound check that the connection would do otherwise.
-	// Programs can use this flag to avoid making a metadata request to the kafka
-	// broker to read the current first and last offsets of the partition.
+	
+	
+	
+	
 	SeekDontCheck = 1 << 30
 )
 
-// Seek sets the offset for the next read or write operation according to whence, which
-// should be one of SeekStart, SeekAbsolute, SeekEnd, or SeekCurrent.
-// When seeking relative to the end, the offset is subtracted from the current offset.
-// Note that for historical reasons, these do not align with the usual whence constants
-// as in lseek(2) or os.Seek.
-// The method returns the new absolute offset of the connection.
+
+
+
+
+
+
 func (c *Conn) Seek(offset int64, whence int) (int64, error) {
 	seekDontCheck := (whence & SeekDontCheck) != 0
 	whence &= ^SeekDontCheck
@@ -685,62 +685,62 @@ func (c *Conn) Seek(offset int64, whence int) (int64, error) {
 	return offset, nil
 }
 
-// Read reads the message at the current offset from the connection, advancing
-// the offset on success so the next call to a read method will produce the next
-// message.
-// The method returns the number of bytes read, or an error if something went
-// wrong.
-//
-// While it is safe to call Read concurrently from multiple goroutines it may
-// be hard for the program to predict the results as the connection offset will
-// be read and written by multiple goroutines, they could read duplicates, or
-// messages may be seen by only some of the goroutines.
-//
-// The method fails with io.ErrShortBuffer if the buffer passed as argument is
-// too small to hold the message value.
-//
-// This method is provided to satisfy the net.Conn interface but is much less
-// efficient than using the more general purpose ReadBatch method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (c *Conn) Read(b []byte) (int, error) {
 	batch := c.ReadBatch(1, len(b))
 	n, err := batch.Read(b)
 	return n, coalesceErrors(silentEOF(err), batch.Close())
 }
 
-// ReadMessage reads the message at the current offset from the connection,
-// advancing the offset on success so the next call to a read method will
-// produce the next message.
-//
-// Because this method allocate memory buffers for the message key and value
-// it is less memory-efficient than Read, but has the advantage of never
-// failing with io.ErrShortBuffer.
-//
-// While it is safe to call Read concurrently from multiple goroutines it may
-// be hard for the program to predict the results as the connection offset will
-// be read and written by multiple goroutines, they could read duplicates, or
-// messages may be seen by only some of the goroutines.
-//
-// This method is provided for convenience purposes but is much less efficient
-// than using the more general purpose ReadBatch method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (c *Conn) ReadMessage(maxBytes int) (Message, error) {
 	batch := c.ReadBatch(1, maxBytes)
 	msg, err := batch.ReadMessage()
 	return msg, coalesceErrors(silentEOF(err), batch.Close())
 }
 
-// ReadBatch reads a batch of messages from the kafka server. The method always
-// returns a non-nil Batch value. If an error occurred, either sending the fetch
-// request or reading the response, the error will be made available by the
-// returned value of  the batch's Close method.
-//
-// While it is safe to call ReadBatch concurrently from multiple goroutines it
-// may be hard for the program to predict the results as the connection offset
-// will be read and written by multiple goroutines, they could read duplicates,
-// or messages may be seen by only some of the goroutines.
-//
-// A program doesn't specify the number of messages in wants from a batch, but
-// gives the minimum and maximum number of bytes that it wants to receive from
-// the kafka server.
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (c *Conn) ReadBatch(minBytes, maxBytes int) *Batch {
 	return c.ReadBatchWith(ReadBatchConfig{
 		MinBytes: minBytes,
@@ -748,8 +748,8 @@ func (c *Conn) ReadBatch(minBytes, maxBytes int) *Batch {
 	})
 }
 
-// ReadBatchWith in every way is similar to ReadBatch. ReadBatch is configured
-// with the default values in ReadBatchConfig except for minBytes and maxBytes.
+
+
 func (c *Conn) ReadBatchWith(cfg ReadBatchConfig) *Batch {
 
 	var adjustedDeadline time.Time
@@ -781,17 +781,17 @@ func (c *Conn) ReadBatchWith(cfg ReadBatchConfig) *Batch {
 		now := time.Now()
 		var timeout time.Duration
 		if cfg.MaxWait > 0 {
-			// explicitly-configured case: no changes are made to the deadline,
-			// and the timeout is sent exactly as specified.
+			
+			
 			timeout = cfg.MaxWait
 		} else {
-			// default case: use the original logic to adjust the conn's
-			// deadline.T
+			
+			
 			deadline = adjustDeadlineForRTT(deadline, now, defaultRTT)
 			timeout = deadlineToTimeout(deadline, now)
 		}
-		// save this variable outside of the closure for later use in detecting
-		// truncated messages.
+		
+		
 		adjustedDeadline = deadline
 		switch fetchVersion {
 		case v10:
@@ -874,45 +874,45 @@ func (c *Conn) ReadBatchWith(cfg ReadBatchConfig) *Batch {
 		deadline:      adjustedDeadline,
 		throttle:      makeDuration(throttle),
 		lock:          lock,
-		topic:         c.topic,          // topic is copied to Batch to prevent race with Batch.close
-		partition:     int(c.partition), // partition is copied to Batch to prevent race with Batch.close
+		topic:         c.topic,          
+		partition:     int(c.partition), 
 		offset:        offset,
 		highWaterMark: highWaterMark,
-		// there shouldn't be a short read on initially setting up the batch.
-		// as such, any io.EOF is re-mapped to an io.ErrUnexpectedEOF so that we
-		// don't accidentally signal that we successfully reached the end of the
-		// batch.
+		
+		
+		
+		
 		err: dontExpectEOF(err),
 	}
 }
 
-// ReadOffset returns the offset of the first message with a timestamp equal or
-// greater to t.
+
+
 func (c *Conn) ReadOffset(t time.Time) (int64, error) {
 	return c.readOffset(timestamp(t))
 }
 
-// ReadFirstOffset returns the first offset available on the connection.
+
 func (c *Conn) ReadFirstOffset() (int64, error) {
 	return c.readOffset(FirstOffset)
 }
 
-// ReadLastOffset returns the last offset available on the connection.
+
 func (c *Conn) ReadLastOffset() (int64, error) {
 	return c.readOffset(LastOffset)
 }
 
-// ReadOffsets returns the absolute first and last offsets of the topic used by
-// the connection.
+
+
 func (c *Conn) ReadOffsets() (first, last int64, err error) {
-	// We have to submit two different requests to fetch the first and last
-	// offsets because kafka refuses requests that ask for multiple offsets
-	// on the same topic and partition.
+	
+	
+	
 	if first, err = c.ReadFirstOffset(); err != nil {
 		return
 	}
 	if last, err = c.ReadLastOffset(); err != nil {
-		first = 0 // don't leak the value on error
+		first = 0 
 		return
 	}
 	return
@@ -925,15 +925,15 @@ func (c *Conn) readOffset(t int64) (offset int64, err error) {
 		},
 		func(deadline time.Time, size int) error {
 			return expectZeroSize(readArrayWith(&c.rbuf, size, func(r *bufio.Reader, size int) (int, error) {
-				// We skip the topic name because we've made a request for
-				// a single topic.
+				
+				
 				size, err := discardString(r, size)
 				if err != nil {
 					return size, err
 				}
 
-				// Reading the array of partitions, there will be only one
-				// partition which gives the offset we're looking for.
+				
+				
 				return readArrayWith(r, size, func(r *bufio.Reader, size int) (int, error) {
 					var p partitionOffsetV1
 					size, err := p.readFrom(r, size)
@@ -952,12 +952,12 @@ func (c *Conn) readOffset(t int64) (offset int64, err error) {
 	return
 }
 
-// ReadPartitions returns the list of available partitions for the given list of
-// topics.
-//
-// If the method is called with no topic, it uses the topic configured on the
-// connection. If there are none, the method fetches all partitions of the kafka
-// cluster.
+
+
+
+
+
+
 func (c *Conn) ReadPartitions(topics ...string) (partitions []Partition, err error) {
 
 	if len(topics) == 0 {
@@ -965,8 +965,8 @@ func (c *Conn) ReadPartitions(topics ...string) (partitions []Partition, err err
 			defaultTopics := [...]string{c.topic}
 			topics = defaultTopics[:]
 		} else {
-			// topics needs to be explicitly nil-ed out or the broker will
-			// interpret it as a request for 0 partitions instead of all.
+			
+			
 			topics = nil
 		}
 	}
@@ -1027,9 +1027,9 @@ func readBrokerMetadata(brokerMetadata []brokerMetadataV1) map[int32]Broker {
 func (c *Conn) readTopicMetadatav1(brokers map[int32]Broker, topicMetadata []topicMetadataV1) (partitions []Partition, err error) {
 	for _, t := range topicMetadata {
 		if t.TopicErrorCode != 0 && (c.topic == "" || t.TopicName == c.topic) {
-			// We only report errors if they happened for the topic of
-			// the connection, otherwise the topic will simply have no
-			// partitions in the result set.
+			
+			
+			
 			return nil, Error(t.TopicErrorCode)
 		}
 		for _, p := range t.Partitions {
@@ -1049,9 +1049,9 @@ func (c *Conn) readTopicMetadatav1(brokers map[int32]Broker, topicMetadata []top
 func (c *Conn) readTopicMetadatav6(brokers map[int32]Broker, topicMetadata []topicMetadataV6) (partitions []Partition, err error) {
 	for _, t := range topicMetadata {
 		if t.TopicErrorCode != 0 && (c.topic == "" || t.TopicName == c.topic) {
-			// We only report errors if they happened for the topic of
-			// the connection, otherwise the topic will simply have no
-			// partitions in the result set.
+			
+			
+			
 			return nil, Error(t.TopicErrorCode)
 		}
 		for _, p := range t.Partitions {
@@ -1073,10 +1073,10 @@ func makeBrokers(brokers map[int32]Broker, ids ...int32) []Broker {
 	for i, id := range ids {
 		br, ok := brokers[id]
 		if !ok {
-			// When the broker id isn't found in the current list of known
-			// brokers, use a placeholder to report that the cluster has
-			// logical knowledge of the broker but no information about the
-			// physical host where it is running.
+			
+			
+			
+			
 			br.ID = int(id)
 		}
 		b[i] = br
@@ -1084,41 +1084,41 @@ func makeBrokers(brokers map[int32]Broker, ids ...int32) []Broker {
 	return b
 }
 
-// Write writes a message to the kafka broker that this connection was
-// established to. The method returns the number of bytes written, or an error
-// if something went wrong.
-//
-// The operation either succeeds or fail, it never partially writes the message.
-//
-// This method is exposed to satisfy the net.Conn interface but is less efficient
-// than the more general purpose WriteMessages method.
+
+
+
+
+
+
+
+
 func (c *Conn) Write(b []byte) (int, error) {
 	return c.WriteCompressedMessages(nil, Message{Value: b})
 }
 
-// WriteMessages writes a batch of messages to the connection's topic and
-// partition, returning the number of bytes written. The write is an atomic
-// operation, it either fully succeeds or fails.
+
+
+
 func (c *Conn) WriteMessages(msgs ...Message) (int, error) {
 	return c.WriteCompressedMessages(nil, msgs...)
 }
 
-// WriteCompressedMessages writes a batch of messages to the connection's topic
-// and partition, returning the number of bytes written. The write is an atomic
-// operation, it either fully succeeds or fails.
-//
-// If the compression codec is not nil, the messages will be compressed.
+
+
+
+
+
 func (c *Conn) WriteCompressedMessages(codec CompressionCodec, msgs ...Message) (nbytes int, err error) {
 	nbytes, _, _, _, err = c.writeCompressedMessages(codec, msgs...)
 	return
 }
 
-// WriteCompressedMessagesAt writes a batch of messages to the connection's topic
-// and partition, returning the number of bytes written, partition and offset numbers
-// and timestamp assigned by the kafka broker to the message set. The write is an atomic
-// operation, it either fully succeeds or fails.
-//
-// If the compression codec is not nil, the messages will be compressed.
+
+
+
+
+
+
 func (c *Conn) WriteCompressedMessagesAt(codec CompressionCodec, msgs ...Message) (nbytes int, partition int32, offset int64, appendTime time.Time, err error) {
 	return c.writeCompressedMessages(codec, msgs...)
 }
@@ -1130,8 +1130,8 @@ func (c *Conn) writeCompressedMessages(codec CompressionCodec, msgs ...Message) 
 
 	writeTime := time.Now()
 	for i, msg := range msgs {
-		// users may believe they can set the Topic and/or Partition
-		// on the kafka message.
+		
+		
 		if msg.Topic != "" && msg.Topic != c.topic {
 			err = errInvalidWriteTopic
 			return
@@ -1211,15 +1211,15 @@ func (c *Conn) writeCompressedMessages(codec CompressionCodec, msgs ...Message) 
 		},
 		func(deadline time.Time, size int) error {
 			return expectZeroSize(readArrayWith(&c.rbuf, size, func(r *bufio.Reader, size int) (int, error) {
-				// Skip the topic, we've produced the message to only one topic,
-				// no need to waste resources loading it in memory.
+				
+				
 				size, err := discardString(r, size)
 				if err != nil {
 					return size, err
 				}
 
-				// Read the list of partitions, there should be only one since
-				// we've produced a message to a single partition.
+				
+				
 				size, err = readArrayWith(r, size, func(r *bufio.Reader, size int) (int, error) {
 					switch produceVersion {
 					case v7:
@@ -1253,8 +1253,8 @@ func (c *Conn) writeCompressedMessages(codec CompressionCodec, msgs ...Message) 
 					return size, err
 				}
 
-				// The response is trailed by the throttle time, also skipping
-				// since it's not interesting here.
+				
+				
 				return discardInt32(r, size)
 			}))
 		},
@@ -1267,8 +1267,8 @@ func (c *Conn) writeCompressedMessages(codec CompressionCodec, msgs ...Message) 
 	return
 }
 
-// SetRequiredAcks sets the number of acknowledges from replicas that the
-// connection requests when producing messages.
+
+
 func (c *Conn) SetRequiredAcks(n int) error {
 	switch n {
 	case -1, 1:
@@ -1371,9 +1371,9 @@ func (c *Conn) doRequest(d *connDeadline, write func(time.Time, int32) error) (i
 	d.unsetConnWriteDeadline()
 
 	if err != nil {
-		// When an error occurs there's no way to know if the connection is in a
-		// recoverable state so we're better off just giving up at this point to
-		// avoid any risk of corrupting the following operations.
+		
+		
+		
 		c.conn.Close()
 		c.leave()
 	}
@@ -1401,22 +1401,22 @@ func (c *Conn) waitResponse(d *connDeadline, id int32) (deadline time.Time, size
 		if id == rid {
 			c.skipResponseSizeAndID()
 			size, lock = int(rsz-4), &c.rlock
-			// Don't unlock the read mutex to yield ownership to the caller.
+			
 			break
 		}
 
 		if c.concurrency() == 1 {
-			// If the goroutine is the only one waiting on this connection it
-			// should be impossible to read a correlation id different from the
-			// one it expects. This is a sign that the data we are reading on
-			// the wire is corrupted and the connection needs to be closed.
+			
+			
+			
+			
 			err = io.ErrNoProgress
 			c.rlock.Unlock()
 			break
 		}
 
-		// Optimistically release the read lock if a response has already
-		// been received but the current operation is not the target for it.
+		
+		
 		c.rlock.Unlock()
 	}
 
@@ -1437,11 +1437,11 @@ func (c *Conn) ApiVersions() ([]ApiVersion, error) {
 	deadline := &c.rdeadline
 
 	if deadline.deadline().IsZero() {
-		// ApiVersions is called automatically when API version negotiation
-		// needs to happen, so we are not guaranteed that a read deadline has
-		// been set yet. Fallback to use the write deadline in case it was
-		// set, for example when version negotiation is initiated during a
-		// produce request.
+		
+		
+		
+		
+		
 		deadline = &c.wdeadline
 	}
 
@@ -1494,8 +1494,8 @@ func (c *Conn) ApiVersions() ([]ApiVersion, error) {
 	return r, nil
 }
 
-// connDeadline is a helper type to implement read/write deadline management on
-// the kafka connection.
+
+
 type connDeadline struct {
 	mutex sync.Mutex
 	value time.Time
@@ -1555,21 +1555,21 @@ func (d *connDeadline) unsetConnWriteDeadline() {
 	d.mutex.Unlock()
 }
 
-// saslHandshake sends the SASL handshake message.  This will determine whether
-// the Mechanism is supported by the cluster.  If it's not, this function will
-// error out with UnsupportedSASLMechanism.
-//
-// If the mechanism is unsupported, the handshake request will reply with the
-// list of the cluster's configured mechanisms, which could potentially be used
-// to facilitate negotiation.  At the moment, we are not negotiating the
-// mechanism as we believe that brokers are usually known to the client, and
-// therefore the client should already know which mechanisms are supported.
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_SaslHandshake
+
+
+
+
+
+
+
+
+
+
+
 func (c *Conn) saslHandshake(mechanism string) error {
-	// The wire format for V0 and V1 is identical, but the version
-	// number will affect how the SASL authentication
-	// challenge/responses are sent
+	
+	
+	
 	var resp saslHandshakeResponseV0
 
 	version, err := c.negotiateVersion(saslHandshake, v0, v1)
@@ -1593,14 +1593,14 @@ func (c *Conn) saslHandshake(mechanism string) error {
 	return err
 }
 
-// saslAuthenticate sends the SASL authenticate message.  This function must
-// be immediately preceded by a successful saslHandshake.
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_SaslAuthenticate
+
+
+
+
 func (c *Conn) saslAuthenticate(data []byte) ([]byte, error) {
-	// if we sent a v1 handshake, then we must encapsulate the authentication
-	// request in a saslAuthenticateRequest.  otherwise, we read and write raw
-	// bytes.
+	
+	
+	
 	version, err := c.negotiateVersion(saslHandshake, v0, v1)
 	if err != nil {
 		return nil, err
@@ -1625,8 +1625,8 @@ func (c *Conn) saslAuthenticate(data []byte) ([]byte, error) {
 		return response.Data, err
 	}
 
-	// fall back to opaque bytes on the wire.  the broker is expecting these if
-	// it just processed a v0 sasl handshake.
+	
+	
 	c.wb.writeInt32(int32(len(data)))
 	if _, err := c.wb.Write(data); err != nil {
 		return nil, err

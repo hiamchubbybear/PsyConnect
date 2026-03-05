@@ -40,15 +40,15 @@ func ReadResponse(r io.Reader, apiKey ApiKey, apiVersion int16) (correlationID i
 	correlationID = d.readInt32()
 	if err = d.err; err != nil {
 		if errors.Is(err, io.ErrUnexpectedEOF) {
-			// If a Writer/Reader is configured without TLS and connects
-			// to a broker expecting TLS the only message we return to the
-			// caller is io.ErrUnexpetedEOF which is opaque. This section
-			// tries to determine if that's what has happened.
-			// We first deconstruct the initial 4 bytes of the message
-			// from the size which was read earlier.
-			// Next, we examine those bytes to see if they looks like a TLS
-			// error message. If they do we wrap the io.ErrUnexpectedEOF
-			// with some context.
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			if looksLikeUnexpectedTLS(size) {
 				err = fmt.Errorf("%w: broker appears to be expecting TLS", io.ErrUnexpectedEOF)
 			}
@@ -61,13 +61,13 @@ func ReadResponse(r io.Reader, apiKey ApiKey, apiVersion int16) (correlationID i
 	res := &t.responses[apiVersion-minVersion]
 
 	if res.flexible {
-		// In the flexible case, there's a tag buffer at the end of the response header
+		
 		taggedCount := int(d.readUnsignedVarInt())
 		for i := 0; i < taggedCount; i++ {
-			d.readUnsignedVarInt() // tagID
+			d.readUnsignedVarInt() 
 			size := d.readUnsignedVarInt()
 
-			// Just throw away the values for now
+			
 			d.read(int(size))
 		}
 	}
@@ -114,16 +114,16 @@ func WriteResponse(w io.Writer, apiVersion int16, correlationID int32, msg Messa
 	defer b.unref()
 
 	e := &encoder{writer: b}
-	e.writeInt32(0) // placeholder for the response size
+	e.writeInt32(0) 
 	e.writeInt32(correlationID)
 	if r.flexible {
-		// Flexible messages use extra space for a tag buffer,
-		// which begins with a size value. Since we're not writing any fields into the
-		// latter, we can just write zero for now.
-		//
-		// See
-		// https://cwiki.apache.org/confluence/display/KAFKA/KIP-482%3A+The+Kafka+Protocol+should+Support+Optional+Tagged+Fields
-		// for details.
+		
+		
+		
+		
+		
+		
+		
 		e.writeUnsignedVarInt(0)
 	}
 	r.encode(e, v)
@@ -142,9 +142,9 @@ const (
 	tlsAlertByte byte = 0x15
 )
 
-// looksLikeUnexpectedTLS returns true if the size passed in resemble
-// the TLS alert message that is returned to a client which sends
-// an invalid ClientHello message.
+
+
+
 func looksLikeUnexpectedTLS(size int32) bool {
 	var sizeBytes [4]byte
 	binary.BigEndian.PutUint32(sizeBytes[:], uint32(size))

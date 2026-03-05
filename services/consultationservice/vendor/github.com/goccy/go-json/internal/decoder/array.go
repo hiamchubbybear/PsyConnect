@@ -19,7 +19,7 @@ type arrayDecoder struct {
 }
 
 func newArrayDecoder(dec Decoder, elemType *runtime.Type, alen int, structName, fieldName string) *arrayDecoder {
-	// workaround to avoid checkptr errors. cannot use `*(*unsafe.Pointer)(unsafe_New(elemType))` directly.
+	
 	zeroValuePtr := unsafe_New(elemType)
 	zeroValue := **(**unsafe.Pointer)(unsafe.Pointer(&zeroValuePtr))
 	return &arrayDecoder{

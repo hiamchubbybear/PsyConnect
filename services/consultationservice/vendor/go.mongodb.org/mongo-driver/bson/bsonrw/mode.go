@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsonrw
 
@@ -73,9 +73,9 @@ func (m mode) TypeString() string {
 	return str
 }
 
-// TransitionError is an error returned when an invalid progressing a
-// ValueReader or ValueWriter state machine occurs.
-// If read is false, the error is for writing
+
+
+
 type TransitionError struct {
 	name        string
 	parent      mode

@@ -83,7 +83,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             }
         }
 
-        // Audit logging
+        
         Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
         if (route != null) {
             log.info("Audit: userId={} profileId={} route={}", userId, profileId, route.getId());

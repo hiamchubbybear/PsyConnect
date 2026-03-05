@@ -7,8 +7,8 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that v5+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v5,max=v5,tag"`
 
 	Topics       []RequestTopic `kafka:"min=v0,max=v5"`
@@ -41,8 +41,8 @@ type RequestConfig struct {
 }
 
 type Response struct {
-	// We need at least one tagged field to indicate that v5+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v5,max=v5,tag"`
 
 	ThrottleTimeMs int32           `kafka:"min=v2,max=v5"`

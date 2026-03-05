@@ -1,4 +1,4 @@
-/* SVG Icon Styles - Minimal and Clean */
+
 
 .icon-svg,
 .detail-icon,
@@ -9,21 +9,21 @@
   display: inline-block;
   vertical-align: middle;
   transition: all 0.2s ease;
-  opacity: 1 !important; /* Force visibility for debugging */
-  /* Let SVG use currentColor from parent */
-  color: var(--color-text, #333) !important; /* Fallback to dark gray */
+  opacity: 1 !important; 
+  
+  color: var(--color-text, #333) !important; 
 }
 
-/* Dark mode - inherit color from theme */
+
 [data-theme="dark"] .icon-svg,
 [data-theme="dark"] .detail-icon,
 [data-theme="dark"] .action-icon-img,
 [data-theme="dark"] .stat-icon-img {
   opacity: 1 !important;
-  color: var(--color-text, #fff) !important; /* Fallback to white */
+  color: var(--color-text, #fff) !important; 
 }
 
-/* Icon sizing variants */
+
 .icon-svg-sm {
   width: 16px;
   height: 16px;
@@ -44,14 +44,14 @@
   height: 32px;
 }
 
-/* Detail icons in cards */
+
 .detail-icon {
   width: 18px;
   height: 18px;
   margin-right: 8px;
 }
 
-/* Action icons */
+
 .action-icon-img {
   width: 18px;
   height: 18px;
@@ -74,14 +74,14 @@
   color: var(--color-primary, #4a9eff);
 }
 
-/* Stat icons */
+
 .stat-icon-img {
   width: 18px;
   height: 18px;
   margin-right: 4px;
 }
 
-/* Back button icon */
+
 .btn-back-modern .icon-svg {
   width: 20px;
   height: 20px;
@@ -92,7 +92,7 @@
   transform: translateX(-2px);
 }
 
-/* Accessibility */
+
 .icon-svg:focus,
 .detail-icon:focus,
 .action-icon-img:focus {

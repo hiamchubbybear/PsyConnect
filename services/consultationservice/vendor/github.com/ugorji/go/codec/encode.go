@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
+
+
 
 package codec
 
@@ -13,13 +13,13 @@ import (
 	"time"
 )
 
-// defEncByteBufSize is the default size of []byte used
-// for bufio buffer or []byte (when nil passed)
-const defEncByteBufSize = 1 << 10 // 4:16, 6:64, 8:256, 10:1024
+
+
+const defEncByteBufSize = 1 << 10 
 
 var errEncoderNotInitialized = errors.New("Encoder not initialized")
 
-// encDriver abstracts the actual codec (binc vs msgpack, etc)
+
 type encDriver interface {
 	EncodeNil()
 	EncodeInt(i int64)
@@ -29,7 +29,7 @@ type encDriver interface {
 	EncodeFloat64(f float64)
 	EncodeRawExt(re *RawExt)
 	EncodeExt(v interface{}, basetype reflect.Type, xtag uint64, ext Ext)
-	// EncodeString using cUTF8, honor'ing StringToRaw flag
+	
 	EncodeString(v string)
 	EncodeStringBytesRaw(v []byte)
 	EncodeTime(time.Time)
@@ -38,7 +38,7 @@ type encDriver interface {
 	WriteMapStart(length int)
 	WriteMapEnd()
 
-	// reset will reset current encoding runtime state, and cached information from the handle
+	
 	reset()
 
 	encoder() *Encoder
@@ -66,7 +66,7 @@ func (encDriverNoopContainerWriter) WriteArrayEnd()             {}
 func (encDriverNoopContainerWriter) WriteMapStart(length int)   {}
 func (encDriverNoopContainerWriter) WriteMapEnd()               {}
 
-// encStructFieldObj[Slice] is used for sorting when there are missing fields and canonical flag is set
+
 type encStructFieldObj struct {
 	key   string
 	rv    reflect.Value
@@ -83,101 +83,101 @@ func (p encStructFieldObjSlice) Less(i, j int) bool {
 	return p[uint(i)].key < p[uint(j)].key
 }
 
-// EncodeOptions captures configuration options during encode.
+
 type EncodeOptions struct {
-	// WriterBufferSize is the size of the buffer used when writing.
-	//
-	// if > 0, we use a smart buffer internally for performance purposes.
+	
+	
+	
 	WriterBufferSize int
 
-	// ChanRecvTimeout is the timeout used when selecting from a chan.
-	//
-	// Configuring this controls how we receive from a chan during the encoding process.
-	//   - If ==0, we only consume the elements currently available in the chan.
-	//   - if  <0, we consume until the chan is closed.
-	//   - If  >0, we consume until this timeout.
+	
+	
+	
+	
+	
+	
 	ChanRecvTimeout time.Duration
 
-	// StructToArray specifies to encode a struct as an array, and not as a map
+	
 	StructToArray bool
 
-	// Canonical representation means that encoding a value will always result in the same
-	// sequence of bytes.
-	//
-	// This only affects maps, as the iteration order for maps is random.
-	//
-	// The implementation MAY use the natural sort order for the map keys if possible:
-	//
-	//     - If there is a natural sort order (ie for number, bool, string or []byte keys),
-	//       then the map keys are first sorted in natural order and then written
-	//       with corresponding map values to the strema.
-	//     - If there is no natural sort order, then the map keys will first be
-	//       encoded into []byte, and then sorted,
-	//       before writing the sorted keys and the corresponding map values to the stream.
-	//
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	Canonical bool
 
-	// CheckCircularRef controls whether we check for circular references
-	// and error fast during an encode.
-	//
-	// If enabled, an error is received if a pointer to a struct
-	// references itself either directly or through one of its fields (iteratively).
-	//
-	// This is opt-in, as there may be a performance hit to checking circular references.
+	
+	
+	
+	
+	
+	
+	
 	CheckCircularRef bool
 
-	// RecursiveEmptyCheck controls how we determine whether a value is empty.
-	//
-	// If true, we descend into interfaces and pointers to reursively check if value is empty.
-	//
-	// We *might* check struct fields one by one to see if empty
-	// (if we cannot directly check if a struct value is equal to its zero value).
-	// If so, we honor IsZero, Comparable, IsCodecEmpty(), etc.
-	// Note: This *may* make OmitEmpty more expensive due to the large number of reflect calls.
-	//
-	// If false, we check if the value is equal to its zero value (newly allocated state).
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	RecursiveEmptyCheck bool
 
-	// Raw controls whether we encode Raw values.
-	// This is a "dangerous" option and must be explicitly set.
-	// If set, we blindly encode Raw values as-is, without checking
-	// if they are a correct representation of a value in that format.
-	// If unset, we error out.
+	
+	
+	
+	
+	
 	Raw bool
 
-	// StringToRaw controls how strings are encoded.
-	//
-	// As a go string is just an (immutable) sequence of bytes,
-	// it can be encoded either as raw bytes or as a UTF string.
-	//
-	// By default, strings are encoded as UTF-8.
-	// but can be treated as []byte during an encode.
-	//
-	// Note that things which we know (by definition) to be UTF-8
-	// are ALWAYS encoded as UTF-8 strings.
-	// These include encoding.TextMarshaler, time.Format calls, struct field names, etc.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	StringToRaw bool
 
-	// OptimumSize controls whether we optimize for the smallest size.
-	//
-	// Some formats will use this flag to determine whether to encode
-	// in the smallest size possible, even if it takes slightly longer.
-	//
-	// For example, some formats that support half-floats might check if it is possible
-	// to store a float64 as a half float. Doing this check has a small performance cost,
-	// but the benefit is that the encoded message will be smaller.
+	
+	
+	
+	
+	
+	
+	
+	
 	OptimumSize bool
 
-	// NoAddressableReadonly controls whether we try to force a non-addressable value
-	// to be addressable so we can call a pointer method on it e.g. for types
-	// that support Selfer, json.Marshaler, etc.
-	//
-	// Use it in the very rare occurrence that your types modify a pointer value when calling
-	// an encode callback function e.g. JsonMarshal, TextMarshal, BinaryMarshal or CodecEncodeSelf.
+	
+	
+	
+	
+	
+	
 	NoAddressableReadonly bool
 }
 
-// ---------------------------------------------
+
 
 func (e *Encoder) rawExt(f *codecFnInfo, rv reflect.Value) {
 	e.e.EncodeRawExt(rv2i(rv).(*RawExt))
@@ -302,7 +302,7 @@ func (e *Encoder) kErr(f *codecFnInfo, rv reflect.Value) {
 
 func chanToSlice(rv reflect.Value, rtslice reflect.Type, timeout time.Duration) (rvcs reflect.Value) {
 	rvcs = rvZeroK(rtslice, reflect.Slice)
-	if timeout < 0 { // consume until close
+	if timeout < 0 { 
 		for {
 			recv, recvOk := rv.Recv()
 			if !recvOk {
@@ -334,8 +334,8 @@ func (e *Encoder) kSeqFn(rtelem reflect.Type) (fn *codecFn) {
 	for rtelem.Kind() == reflect.Ptr {
 		rtelem = rtelem.Elem()
 	}
-	// if kind is reflect.Interface, do not pre-determine the encoding type,
-	// because preEncodeValue may break it down to a concrete type and kInterface will bomb.
+	
+	
 	if rtelem.Kind() != reflect.Interface {
 		fn = e.h.fn(rtelem)
 	}
@@ -348,10 +348,10 @@ func (e *Encoder) kSliceWMbs(rv reflect.Value, ti *typeInfo) {
 		e.mapStart(0)
 	} else {
 		e.haltOnMbsOddLen(l)
-		e.mapStart(l >> 1) // e.mapStart(l / 2)
+		e.mapStart(l >> 1) 
 		fn := e.kSeqFn(ti.elem)
 		for j := 0; j < l; j++ {
-			if j&1 == 0 { // j%2 == 0 {
+			if j&1 == 0 { 
 				e.mapElemKey()
 			} else {
 				e.mapElemValue()
@@ -381,10 +381,10 @@ func (e *Encoder) kArrayWMbs(rv reflect.Value, ti *typeInfo) {
 		e.mapStart(0)
 	} else {
 		e.haltOnMbsOddLen(l)
-		e.mapStart(l >> 1) // e.mapStart(l / 2)
+		e.mapStart(l >> 1) 
 		fn := e.kSeqFn(ti.elem)
 		for j := 0; j < l; j++ {
-			if j&1 == 0 { // j%2 == 0 {
+			if j&1 == 0 { 
 				e.mapElemKey()
 			} else {
 				e.mapElemValue()
@@ -447,8 +447,8 @@ func (e *Encoder) kArray(f *codecFnInfo, rv reflect.Value) {
 }
 
 func (e *Encoder) kSliceBytesChan(rv reflect.Value) {
-	// do not use range, so that the number of elements encoded
-	// does not change, and encoding does not hang waiting on someone to close chan.
+	
+	
 
 	bs0 := e.blist.peek(32, true)
 	bs := bs0
@@ -461,7 +461,7 @@ func (e *Encoder) kSliceBytesChan(rv reflect.Value) {
 
 L1:
 	switch timeout := e.h.ChanRecvTimeout; {
-	case timeout == 0: // only consume available
+	case timeout == 0: 
 		for {
 			select {
 			case b := <-ch:
@@ -470,18 +470,18 @@ L1:
 				break L1
 			}
 		}
-	case timeout > 0: // consume until timeout
+	case timeout > 0: 
 		tt := time.NewTimer(timeout)
 		for {
 			select {
 			case b := <-ch:
 				bs = append(bs, b)
 			case <-tt.C:
-				// close(tt.C)
+				
 				break L1
 			}
 		}
-	default: // consume until close
+	default: 
 		for b := range ch {
 			bs = append(bs, b)
 		}
@@ -503,7 +503,7 @@ func (e *Encoder) kStructSfi(f *codecFnInfo) []*structFieldInfo {
 
 func (e *Encoder) kStructNoOmitempty(f *codecFnInfo, rv reflect.Value) {
 	var tisfi []*structFieldInfo
-	if f.ti.toArray || e.h.StructToArray { // toArray
+	if f.ti.toArray || e.h.StructToArray { 
 		tisfi = f.ti.sfi.source()
 		e.arrayStart(len(tisfi))
 		for _, si := range tisfi {
@@ -581,9 +581,9 @@ func (e *Encoder) kStruct(f *codecFnInfo, rv reflect.Value) {
 
 		e.mapStart(newlen + len(mf2s))
 
-		// When there are missing fields, and Canonical flag is set,
-		// we cannot have the missing fields and struct fields sorted independently.
-		// We have to capture them together and sort as a unit.
+		
+		
+		
 
 		if len(mf2s) > 0 && e.h.Canonical {
 			mf2w := make([]encStructFieldObj, newlen+len(mf2s))
@@ -626,19 +626,19 @@ func (e *Encoder) kStruct(f *codecFnInfo, rv reflect.Value) {
 		e.mapEnd()
 	} else {
 		newlen = len(tisfi)
-		for i, si := range tisfi { // use unsorted array (to match sequence in struct)
+		for i, si := range tisfi { 
 			kv.r = si.path.field(rv)
-			// use the zero value.
-			// if a reference or struct, set to nil (so you do not output too much)
+			
+			
 			if si.path.omitEmpty && isEmptyValue(kv.r, e.h.TypeInfos, recur) {
 				switch kv.r.Kind() {
 				case reflect.Struct, reflect.Interface, reflect.Ptr, reflect.Array, reflect.Map, reflect.Slice:
-					kv.r = reflect.Value{} //encode as nil
+					kv.r = reflect.Value{} 
 				}
 			}
 			fkvs[i] = kv
 		}
-		// encode it all
+		
 		e.arrayStart(newlen)
 		for j = 0; j < newlen; j++ {
 			e.arrayElem()
@@ -647,9 +647,9 @@ func (e *Encoder) kStruct(f *codecFnInfo, rv reflect.Value) {
 		e.arrayEnd()
 	}
 
-	// do not use defer. Instead, use explicit pool return at end of function.
-	// defer has a cost we are trying to avoid.
-	// If there is a panic and these slices are not returned, it is ok.
+	
+	
+	
 	e.slist.put(fkvs)
 }
 
@@ -661,13 +661,13 @@ func (e *Encoder) kMap(f *codecFnInfo, rv reflect.Value) {
 		return
 	}
 
-	// determine the underlying key and val encFn's for the map.
-	// This eliminates some work which is done for each loop iteration i.e.
-	// rv.Type(), ref.ValueOf(rt).Pointer(), then check map/list for fn.
-	//
-	// However, if kind is reflect.Interface, do not pre-determine the
-	// encoding type, because preEncodeValue may break it down to
-	// a concrete type and kInterface will bomb.
+	
+	
+	
+	
+	
+	
+	
 
 	var keyFn, valFn *codecFn
 
@@ -687,7 +687,7 @@ func (e *Encoder) kMap(f *codecFnInfo, rv reflect.Value) {
 	var rvv = mapAddrLoopvarRV(f.ti.elem, vtypeKind)
 
 	rtkey := f.ti.key
-	var keyTypeIsString = stringTypId == rt2id(rtkey) // rtkeyid
+	var keyTypeIsString = stringTypId == rt2id(rtkey) 
 	if keyTypeIsString {
 		keyFn = e.h.fn(rtkey)
 	} else {
@@ -726,12 +726,12 @@ func (e *Encoder) kMap(f *codecFnInfo, rv reflect.Value) {
 }
 
 func (e *Encoder) kMapCanonical(ti *typeInfo, rv, rvv reflect.Value, keyFn, valFn *codecFn) {
-	// The base kind of the type of the map key is sufficient for ordering.
-	// We only do out of band if that kind is not ordered (number or string), bool or time.Time.
-	// If the key is a predeclared type, directly call methods on encDriver e.g. EncodeString
-	// but if not, call encodeValue, in case it has an extension registered or otherwise.
+	
+	
+	
+	
 	rtkey := ti.key
-	rtkeydecl := rtkey.PkgPath() == "" && rtkey.Name() != "" // key type is predeclared
+	rtkeydecl := rtkey.PkgPath() == "" && rtkey.Name() != "" 
 
 	mks := rv.MapKeys()
 	rtkeyKind := rtkey.Kind()
@@ -741,12 +741,12 @@ func (e *Encoder) kMapCanonical(ti *typeInfo, rv, rvv reflect.Value, keyFn, valF
 
 	switch rtkeyKind {
 	case reflect.Bool:
-		// though bool keys make no sense in a map, it *could* happen.
-		// in that case, we MUST support it in reflection mode,
-		// as that is the fallback for even codecgen and others.
+		
+		
+		
 
-		// sort the keys so that false comes before true
-		// ie if 2 keys in order (true, false), then swap them
+		
+		
 		if len(mks) == 2 && mks[0].Bool() {
 			mks[0], mks[1] = mks[1], mks[0]
 		}
@@ -868,14 +868,14 @@ func (e *Encoder) kMapCanonical(ti *typeInfo, rv, rvv reflect.Value, keyFn, valF
 			break
 		}
 
-		// out-of-band
-		// first encode each key to a []byte first, then sort them, then record
+		
+		
 		bs0 := e.blist.get(len(mks) * 16)
 		mksv := bs0
 		mksbv := make([]bytesRv, len(mks))
 
 		func() {
-			// replicate sideEncode logic
+			
 			defer func(wb bytesEncAppender, bytes bool, c containerState, state interface{}) {
 				e.wb = wb
 				e.bytes = bytes
@@ -883,7 +883,7 @@ func (e *Encoder) kMapCanonical(ti *typeInfo, rv, rvv reflect.Value, keyFn, valF
 				e.e.restoreState(state)
 			}(e.wb, e.bytes, e.c, e.e.captureState())
 
-			// e2 := NewEncoderBytes(&mksv, e.hh)
+			
 			e.wb = bytesEncAppender{mksv[:0], &mksv}
 			e.bytes = true
 			e.c = 0
@@ -917,14 +917,14 @@ func (e *Encoder) kMapCanonical(ti *typeInfo, rv, rvv reflect.Value, keyFn, valF
 	}
 }
 
-// Encoder writes an object to an output stream in a supported format.
-//
-// Encoder is NOT safe for concurrent use i.e. a Encoder cannot be used
-// concurrently in multiple goroutines.
-//
-// However, as Encoder could be allocation heavy to initialize, a Reset method is provided
-// so its state can be reused to decode new input streams repeatedly.
-// This is the idiomatic way to use.
+
+
+
+
+
+
+
+
 type Encoder struct {
 	panicHdl
 
@@ -932,37 +932,37 @@ type Encoder struct {
 
 	h *BasicHandle
 
-	// hopefully, reduce derefencing cost by laying the encWriter inside the Encoder
+	
 	encWr
 
-	// ---- cpu cache line boundary
+	
 	hh Handle
 
 	blist bytesFreelist
 	err   error
 
-	// ---- cpu cache line boundary
+	
 
-	// ---- writable fields during execution --- *try* to keep in sep cache line
+	
 
-	// ci holds interfaces during an encoding (if CheckCircularRef=true)
-	//
-	// We considered using a []uintptr (slice of pointer addresses) retrievable via rv.UnsafeAddr.
-	// However, it is possible for the same pointer to point to 2 different types e.g.
-	//    type T struct { tHelper }
-	//    Here, for var v T; &v and &v.tHelper are the same pointer.
-	// Consequently, we need a tuple of type and pointer, which interface{} natively provides.
-	ci []interface{} // []uintptr
+	
+	
+	
+	
+	
+	
+	
+	ci []interface{} 
 
 	perType encPerType
 
 	slist sfiRvFreelist
 }
 
-// NewEncoder returns an Encoder for encoding into an io.Writer.
-//
-// For efficiency, Users are encouraged to configure WriterBufferSize on the handle
-// OR pass in a memory buffered writer (eg bufio.Writer, bytes.Buffer).
+
+
+
+
 func NewEncoder(w io.Writer, h Handle) *Encoder {
 	e := h.newEncDriver().encoder()
 	if w != nil {
@@ -971,11 +971,11 @@ func NewEncoder(w io.Writer, h Handle) *Encoder {
 	return e
 }
 
-// NewEncoderBytes returns an encoder for encoding directly and efficiently
-// into a byte slice, using zero-copying to temporary slices.
-//
-// It will potentially replace the output byte slice pointed to.
-// After encoding, the out parameter contains the encoded contents.
+
+
+
+
+
 func NewEncoderBytes(out *[]byte, h Handle) *Encoder {
 	e := h.newEncDriver().encoder()
 	if out != nil {
@@ -1012,10 +1012,10 @@ func (e *Encoder) resetCommon() {
 	e.err = nil
 }
 
-// Reset resets the Encoder with a new output stream.
-//
-// This accommodates using the state of the Encoder,
-// where it has "cached" information about sub-engines.
+
+
+
+
 func (e *Encoder) Reset(w io.Writer) {
 	e.bytes = false
 	if e.wf == nil {
@@ -1025,106 +1025,106 @@ func (e *Encoder) Reset(w io.Writer) {
 	e.resetCommon()
 }
 
-// ResetBytes resets the Encoder with a new destination output []byte.
+
 func (e *Encoder) ResetBytes(out *[]byte) {
 	e.bytes = true
 	e.wb.reset(encInBytes(out), out)
 	e.resetCommon()
 }
 
-// Encode writes an object into a stream.
-//
-// Encoding can be configured via the struct tag for the fields.
-// The key (in the struct tags) that we look at is configurable.
-//
-// By default, we look up the "codec" key in the struct field's tags,
-// and fall bak to the "json" key if "codec" is absent.
-// That key in struct field's tag value is the key name,
-// followed by an optional comma and options.
-//
-// To set an option on all fields (e.g. omitempty on all fields), you
-// can create a field called _struct, and set flags on it. The options
-// which can be set on _struct are:
-//   - omitempty: so all fields are omitted if empty
-//   - toarray: so struct is encoded as an array
-//   - int: so struct key names are encoded as signed integers (instead of strings)
-//   - uint: so struct key names are encoded as unsigned integers (instead of strings)
-//   - float: so struct key names are encoded as floats (instead of strings)
-//
-// More details on these below.
-//
-// Struct values "usually" encode as maps. Each exported struct field is encoded unless:
-//   - the field's tag is "-", OR
-//   - the field is empty (empty or the zero value) and its tag specifies the "omitempty" option.
-//
-// When encoding as a map, the first string in the tag (before the comma)
-// is the map key string to use when encoding.
-// ...
-// This key is typically encoded as a string.
-// However, there are instances where the encoded stream has mapping keys encoded as numbers.
-// For example, some cbor streams have keys as integer codes in the stream, but they should map
-// to fields in a structured object. Consequently, a struct is the natural representation in code.
-// For these, configure the struct to encode/decode the keys as numbers (instead of string).
-// This is done with the int,uint or float option on the _struct field (see above).
-//
-// However, struct values may encode as arrays. This happens when:
-//   - StructToArray Encode option is set, OR
-//   - the tag on the _struct field sets the "toarray" option
-//
-// Note that omitempty is ignored when encoding struct values as arrays,
-// as an entry must be encoded for each field, to maintain its position.
-//
-// Values with types that implement MapBySlice are encoded as stream maps.
-//
-// The empty values (for omitempty option) are false, 0, any nil pointer
-// or interface value, and any array, slice, map, or string of length zero.
-//
-// Anonymous fields are encoded inline except:
-//   - the struct tag specifies a replacement name (first value)
-//   - the field is of an interface type
-//
-// Examples:
-//
-//	// NOTE: 'json:' can be used as struct tag key, in place 'codec:' below.
-//	type MyStruct struct {
-//	    _struct bool    `codec:",omitempty"`   //set omitempty for every field
-//	    Field1 string   `codec:"-"`            //skip this field
-//	    Field2 int      `codec:"myName"`       //Use key "myName" in encode stream
-//	    Field3 int32    `codec:",omitempty"`   //use key "Field3". Omit if empty.
-//	    Field4 bool     `codec:"f4,omitempty"` //use key "f4". Omit if empty.
-//	    io.Reader                              //use key "Reader".
-//	    MyStruct        `codec:"my1"           //use key "my1".
-//	    MyStruct                               //inline it
-//	    ...
-//	}
-//
-//	type MyStruct struct {
-//	    _struct bool    `codec:",toarray"`     //encode struct as an array
-//	}
-//
-//	type MyStruct struct {
-//	    _struct bool    `codec:",uint"`        //encode struct with "unsigned integer" keys
-//	    Field1 string   `codec:"1"`            //encode Field1 key using: EncodeInt(1)
-//	    Field2 string   `codec:"2"`            //encode Field2 key using: EncodeInt(2)
-//	}
-//
-// The mode of encoding is based on the type of the value. When a value is seen:
-//   - If a Selfer, call its CodecEncodeSelf method
-//   - If an extension is registered for it, call that extension function
-//   - If implements encoding.(Binary|Text|JSON)Marshaler, call Marshal(Binary|Text|JSON) method
-//   - Else encode it based on its reflect.Kind
-//
-// Note that struct field names and keys in map[string]XXX will be treated as symbols.
-// Some formats support symbols (e.g. binc) and will properly encode the string
-// only once in the stream, and use a tag to refer to it thereafter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (e *Encoder) Encode(v interface{}) (err error) {
-	// tried to use closure, as runtime optimizes defer with no params.
-	// This seemed to be causing weird issues (like circular reference found, unexpected panic, etc).
-	// Also, see https://github.com/golang/go/issues/14939#issuecomment-417836139
+	
+	
+	
 	if !debugging {
 		defer func() {
-			// if error occurred during encoding, return that error;
-			// else if error occurred on end'ing (i.e. during flush), return that error.
+			
+			
 			if x := recover(); x != nil {
 				panicValToErr(e, x, &e.err)
 				err = e.err
@@ -1136,9 +1136,9 @@ func (e *Encoder) Encode(v interface{}) (err error) {
 	return
 }
 
-// MustEncode is like Encode, but panics if unable to Encode.
-//
-// Note: This provides insight to the code location that triggered the error.
+
+
+
 func (e *Encoder) MustEncode(v interface{}) {
 	halt.onerror(e.err)
 	if e.hh == nil {
@@ -1154,16 +1154,16 @@ func (e *Encoder) MustEncode(v interface{}) {
 	}
 }
 
-// Release is a no-op.
-//
-// Deprecated: Pooled resources are not used with an Encoder.
-// This method is kept for compatibility reasons only.
+
+
+
+
 func (e *Encoder) Release() {
 }
 
 func (e *Encoder) encode(iv interface{}) {
-	// MARKER: a switch with only concrete types can be optimized.
-	// consequently, we deal with nil and interfaces outside the switch.
+	
+	
 
 	if iv == nil {
 		e.e.EncodeNil()
@@ -1177,8 +1177,8 @@ func (e *Encoder) encode(iv interface{}) {
 	}
 
 	switch v := iv.(type) {
-	// case nil:
-	// case Selfer:
+	
+	
 	case Raw:
 		e.rawBytes(v)
 	case reflect.Value:
@@ -1267,21 +1267,21 @@ func (e *Encoder) encode(iv interface{}) {
 			e.e.EncodeStringBytesRaw(*v)
 		}
 	default:
-		// we can't check non-predefined types, as they might be a Selfer or extension.
+		
 		if skipFastpathTypeSwitchInDirectCall || !fastpathEncodeTypeSwitch(iv, e) {
 			e.encodeValue(rv, nil)
 		}
 	}
 }
 
-// encodeValue will encode a value.
-//
-// Note that encodeValue will handle nil in the stream early, so that the
-// subsequent calls i.e. kXXX methods, etc do not have to handle it themselves.
-func (e *Encoder) encodeValue(rv reflect.Value, fn *codecFn) {
-	// if a valid fn is passed, it MUST BE for the dereferenced type of rv
 
-	// MARKER: We check if value is nil here, so that the kXXX method do not have to.
+
+
+
+func (e *Encoder) encodeValue(rv reflect.Value, fn *codecFn) {
+	
+
+	
 
 	var sptr interface{}
 	var rvp reflect.Value
@@ -1310,7 +1310,7 @@ TOP:
 		if rvpValid && e.h.CheckCircularRef {
 			sptr = rv2i(rvp)
 			for _, vv := range e.ci {
-				if eq4i(sptr, vv) { // error if sptr already seen
+				if eq4i(sptr, vv) { 
 					e.errorf("circular reference found: %p, %T", sptr, sptr)
 				}
 			}
@@ -1330,8 +1330,8 @@ TOP:
 		fn = e.h.fn(rv.Type())
 	}
 
-	if !fn.i.addrE { // typically, addrE = false, so check it first
-		// keep rv same
+	if !fn.i.addrE { 
+		
 	} else if rvpValid {
 		rv = rvp
 	} else {
@@ -1339,25 +1339,25 @@ TOP:
 	}
 	fn.fe(e, &fn.i, rv)
 
-	if sptr != nil { // remove sptr
+	if sptr != nil { 
 		e.ci = e.ci[:len(e.ci)-1]
 	}
 }
 
-// encodeValueNonNil can encode a number, bool, or string
-// OR non-nil values of kind map, slice and chan.
+
+
 func (e *Encoder) encodeValueNonNil(rv reflect.Value, fn *codecFn) {
 	if fn == nil {
 		fn = e.h.fn(rv.Type())
 	}
 
-	if fn.i.addrE { // typically, addrE = false, so check it first
+	if fn.i.addrE { 
 		rv = e.addrRV(rv, fn.i.ti.rt, fn.i.ti.ptr)
 	}
 	fn.fe(e, &fn.i, rv)
 }
 
-// addrRV returns a addressable value which may be readonly
+
 func (e *Encoder) addrRV(rv reflect.Value, typ, ptrType reflect.Type) (rva reflect.Value) {
 	if rv.CanAddr() {
 		return rvAddr(rv, ptrType)
@@ -1384,7 +1384,7 @@ func (e *Encoder) marshalAsis(bs []byte, fnerr error) {
 	if bs == nil {
 		e.e.EncodeNil()
 	} else {
-		e.encWr.writeb(bs) // e.asis(bs)
+		e.encWr.writeb(bs) 
 	}
 }
 
@@ -1409,9 +1409,9 @@ func (e *Encoder) wrapErr(v error, err *error) {
 	*err = wrapCodecErr(v, e.hh.Name(), 0, true)
 }
 
-// ---- container tracker methods
-// Note: We update the .c after calling the callback.
-// This way, the callback can know what the last status was.
+
+
+
 
 func (e *Encoder) mapStart(length int) {
 	e.e.WriteMapStart(length)
@@ -1454,27 +1454,27 @@ func (e *Encoder) arrayEnd() {
 	e.c = 0
 }
 
-// ----------
+
 
 func (e *Encoder) haltOnMbsOddLen(length int) {
-	if length&1 != 0 { // similar to &1==1 or %2 == 1
+	if length&1 != 0 { 
 		e.errorf("mapBySlice requires even slice length, but got %v", length)
 	}
 }
 
 func (e *Encoder) atEndOfEncode() {
-	// e.e.atEndOfEncode()
+	
 	if e.js {
 		e.jsondriver().atEndOfEncode()
 	}
 }
 
 func (e *Encoder) sideEncode(v interface{}, basetype reflect.Type, bs *[]byte) {
-	// rv := baseRV(v)
-	// e2 := NewEncoderBytes(bs, e.hh)
-	// e2.encodeValue(rv, e2.h.fnNoExt(basetype))
-	// e2.atEndOfEncode()
-	// e2.w().end()
+	
+	
+	
+	
+	
 
 	defer func(wb bytesEncAppender, bytes bool, c containerState, state interface{}) {
 		e.wb = wb
@@ -1488,7 +1488,7 @@ func (e *Encoder) sideEncode(v interface{}, basetype reflect.Type, bs *[]byte) {
 	e.c = 0
 	e.e.resetState()
 
-	// must call using fnNoExt
+	
 	rv := baseRV(v)
 	e.encodeValue(rv, e.h.fnNoExt(basetype))
 	e.atEndOfEncode()
@@ -1505,13 +1505,13 @@ func encInBytes(out *[]byte) (in []byte) {
 
 func encStructFieldKey(encName string, ee encDriver, w *encWr,
 	keyType valueType, encNameAsciiAlphaNum bool, js bool) {
-	// use if-else-if, not switch (which compiles to binary-search)
-	// since keyType is typically valueTypeString, branch prediction is pretty good.
+	
+	
 
 	if keyType == valueTypeString {
-		if js && encNameAsciiAlphaNum { // keyType == valueTypeString
+		if js && encNameAsciiAlphaNum { 
 			w.writeqstr(encName)
-		} else { // keyType == valueTypeString
+		} else { 
 			ee.EncodeString(encName)
 		}
 	} else if keyType == valueTypeInt {

@@ -1,7 +1,7 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
 
-package internal // import "go.opentelemetry.io/otel/internal"
+
+
+package internal 
 
 //go:generate gotmpl --body=./shared/matchers/expectation.go.tmpl "--data={}" --out=matchers/expectation.go
 //go:generate gotmpl --body=./shared/matchers/expecter.go.tmpl "--data={}" --out=matchers/expecter.go

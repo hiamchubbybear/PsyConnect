@@ -1,6 +1,6 @@
-// Copyright 2024 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -98,9 +98,9 @@ func sizeOpaqueGroup(p pointer, f *coderFieldInfo, opts marshalOptions) (size in
 }
 
 func appendOpaqueGroup(b []byte, p pointer, f *coderFieldInfo, opts marshalOptions) ([]byte, error) {
-	b = protowire.AppendVarint(b, f.wiretag) // start group
+	b = protowire.AppendVarint(b, f.wiretag) 
 	b, err := f.mi.marshalAppendPointer(b, p.AtomicGetPointer(), opts)
-	b = protowire.AppendVarint(b, f.wiretag+1) // end group
+	b = protowire.AppendVarint(b, f.wiretag+1) 
 	return b, err
 }
 
@@ -120,7 +120,7 @@ func makeOpaqueRepeatedMessageFieldCoder(fd protoreflect.FieldDescriptor, ft ref
 	if ft.Kind() != reflect.Ptr || ft.Elem().Kind() != reflect.Slice {
 		panic(fmt.Sprintf("invalid field: %v: unsupported type for opaque repeated message: %v", fd.FullName(), ft))
 	}
-	mt := ft.Elem().Elem() // *[]*T -> *T
+	mt := ft.Elem().Elem() 
 	mi := getMessageInfo(mt)
 	if mi == nil {
 		panic(fmt.Sprintf("invalid field: %v: unsupported message type %v", fd.FullName(), mt))
@@ -236,12 +236,12 @@ func appendOpaqueGroupSlice(b []byte, p pointer, f *coderFieldInfo, opts marshal
 	s := p.AtomicGetPointer().PointerSlice()
 	var err error
 	for _, v := range s {
-		b = protowire.AppendVarint(b, f.wiretag) // start group
+		b = protowire.AppendVarint(b, f.wiretag) 
 		b, err = f.mi.marshalAppendPointer(b, v, opts)
 		if err != nil {
 			return b, err
 		}
-		b = protowire.AppendVarint(b, f.wiretag+1) // end group
+		b = protowire.AppendVarint(b, f.wiretag+1) 
 	}
 	return b, nil
 }

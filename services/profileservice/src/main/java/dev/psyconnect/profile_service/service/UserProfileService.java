@@ -57,16 +57,8 @@ public class UserProfileService {
         var temp = userProfileRepository.save(profile);
         eventPublisher.publishEvent(new OnProfileCreatedEvent(this, temp.getProfileId()));
 
-        // Create user settings directly (no Kafka)
         userSettingService.resetSettings(temp.getProfileId());
 
-        // kafkaService.sendLog(buildLog(
-        //         "profile-service",
-        //         request.getProfileId(),
-        //         "Create profile",
-        //         "Success",
-        //         Map.of("metadata", temp.toString()),
-        //         LogLevel.LOG));
         var response = userProfileMapper.toUserProfile(temp);
         response.setDob(request.getDob());
         return response;

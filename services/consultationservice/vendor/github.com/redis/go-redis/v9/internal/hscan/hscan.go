@@ -7,17 +7,17 @@ import (
 	"strconv"
 )
 
-// decoderFunc represents decoding functions for default built-in types.
+
 type decoderFunc func(reflect.Value, string) error
 
-// Scanner is the interface implemented by themselves,
-// which will override the decoding behavior of decoderFunc.
+
+
 type Scanner interface {
 	ScanRedis(s string) error
 }
 
 var (
-	// List of built-in decoders indexed by their numeric constant values (eg: reflect.Bool = 1).
+	
 	decoders = []decoderFunc{
 		reflect.Bool:          decodeBool,
 		reflect.Int:           decodeInt,
@@ -46,16 +46,16 @@ var (
 		reflect.UnsafePointer: decodeUnsupported,
 	}
 
-	// Global map of struct field specs that is populated once for every new
-	// struct type that is scanned. This caches the field types and the corresponding
-	// decoder functions to avoid iterating through struct fields on subsequent scans.
+	
+	
+	
 	globalStructMap = newStructMap()
 )
 
 func Struct(dst interface{}) (StructValue, error) {
 	v := reflect.ValueOf(dst)
 
-	// The destination to scan into should be a struct pointer.
+	
 	if v.Kind() != reflect.Ptr || v.IsNil() {
 		return StructValue{}, fmt.Errorf("redis.Scan(non-pointer %T)", dst)
 	}
@@ -71,8 +71,8 @@ func Struct(dst interface{}) (StructValue, error) {
 	}, nil
 }
 
-// Scan scans the results from a key-value Redis map result set to a destination struct.
-// The Redis keys are matched to the struct's field with the `redis` tag.
+
+
 func Scan(dst interface{}, keys []interface{}, vals []interface{}) error {
 	if len(keys) != len(vals) {
 		return errors.New("args should have the same number of keys and vals")
@@ -83,7 +83,7 @@ func Scan(dst interface{}, keys []interface{}, vals []interface{}) error {
 		return err
 	}
 
-	// Iterate through the (key, value) sequence.
+	
 	for i := 0; i < len(vals); i++ {
 		key, ok := keys[i].(string)
 		if !ok {
@@ -179,7 +179,7 @@ func decodeFloat32(f reflect.Value, s string) error {
 	return nil
 }
 
-// although the default is float64, but we better define it.
+
 func decodeFloat64(f reflect.Value, s string) error {
 	v, err := strconv.ParseFloat(s, 64)
 	if err != nil {
@@ -195,7 +195,7 @@ func decodeString(f reflect.Value, s string) error {
 }
 
 func decodeSlice(f reflect.Value, s string) error {
-	// []byte slice ([]uint8).
+	
 	if f.Type().Elem().Kind() == reflect.Uint8 {
 		f.SetBytes([]byte(s))
 	}

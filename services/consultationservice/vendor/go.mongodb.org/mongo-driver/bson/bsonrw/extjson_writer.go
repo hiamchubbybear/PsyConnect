@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsonrw
 
@@ -22,16 +22,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// ExtJSONValueWriterPool is a pool for ExtJSON ValueWriters.
-//
-// Deprecated: ExtJSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
 type ExtJSONValueWriterPool struct {
 	pool sync.Pool
 }
 
-// NewExtJSONValueWriterPool creates a new pool for ValueWriter instances that write to ExtJSON.
-//
-// Deprecated: ExtJSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
 func NewExtJSONValueWriterPool() *ExtJSONValueWriterPool {
 	return &ExtJSONValueWriterPool{
 		pool: sync.Pool{
@@ -42,9 +42,9 @@ func NewExtJSONValueWriterPool() *ExtJSONValueWriterPool {
 	}
 }
 
-// Get retrieves a ExtJSON ValueWriter from the pool and resets it to use w as the destination.
-//
-// Deprecated: ExtJSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
 func (bvwp *ExtJSONValueWriterPool) Get(w io.Writer, canonical, escapeHTML bool) ValueWriter {
 	vw := bvwp.pool.Get().(*extJSONValueWriter)
 	if writer, ok := w.(*SliceWriter); ok {
@@ -57,10 +57,10 @@ func (bvwp *ExtJSONValueWriterPool) Get(w io.Writer, canonical, escapeHTML bool)
 	return vw
 }
 
-// Put inserts a ValueWriter into the pool. If the ValueWriter is not a ExtJSON ValueWriter, nothing
-// happens and ok will be false.
-//
-// Deprecated: ExtJSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
+
 func (bvwp *ExtJSONValueWriterPool) Put(vw ValueWriter) (ok bool) {
 	bvw, ok := vw.(*extJSONValueWriter)
 	if !ok {
@@ -91,15 +91,15 @@ type extJSONValueWriter struct {
 	newlines   bool
 }
 
-// NewExtJSONValueWriter creates a ValueWriter that writes Extended JSON to w.
+
 func NewExtJSONValueWriter(w io.Writer, canonical, escapeHTML bool) (ValueWriter, error) {
 	if w == nil {
 		return nil, errNilWriter
 	}
 
-	// Enable newlines for all Extended JSON value writers created by NewExtJSONValueWriter. We
-	// expect these value writers to be used with an Encoder, which should add newlines after
-	// encoded Extended JSON documents.
+	
+	
+	
 	return newExtJSONWriter(w, canonical, escapeHTML, true), nil
 }
 
@@ -144,10 +144,10 @@ func (ejvw *extJSONValueWriter) reset(buf []byte, canonical, escapeHTML bool) {
 }
 
 func (ejvw *extJSONValueWriter) advanceFrame() {
-	if ejvw.frame+1 >= int64(len(ejvw.stack)) { // We need to grow the stack
+	if ejvw.frame+1 >= int64(len(ejvw.stack)) { 
 		length := len(ejvw.stack)
 		if length+1 >= cap(ejvw.stack) {
-			// double it
+			
 			buf := make([]ejvwState, 2*cap(ejvw.stack)+1)
 			copy(buf, ejvw.stack)
 			ejvw.stack = buf
@@ -168,7 +168,7 @@ func (ejvw *extJSONValueWriter) pop() {
 	case mElement, mValue:
 		ejvw.frame--
 	case mDocument, mArray, mCodeWithScope:
-		ejvw.frame -= 2 // we pop twice to jump over the mElement: mDocument -> mElement -> mDocument/mTopLevel/etc...
+		ejvw.frame -= 2 
 	}
 }
 
@@ -564,7 +564,7 @@ func (ejvw *extJSONValueWriter) WriteDocumentEnd() error {
 		return fmt.Errorf("incorrect mode to end document: %s", ejvw.stack[ejvw.frame].mode)
 	}
 
-	// close the document
+	
 	if ejvw.buf[len(ejvw.buf)-1] == ',' {
 		ejvw.buf[len(ejvw.buf)-1] = '}'
 	} else {
@@ -578,9 +578,9 @@ func (ejvw *extJSONValueWriter) WriteDocumentEnd() error {
 	case mDocument:
 		ejvw.buf = append(ejvw.buf, ',')
 	case mTopLevel:
-		// If the value writer has newlines enabled, end top-level documents with a newline so that
-		// multiple documents encoded to the same writer are separated by newlines. That matches the
-		// Go json.Encoder behavior and also works with bsonrw.NewExtJSONValueReader.
+		
+		
+		
 		if ejvw.newlines {
 			ejvw.buf = append(ejvw.buf, '\n')
 		}
@@ -610,7 +610,7 @@ func (ejvw *extJSONValueWriter) WriteArrayElement() (ValueWriter, error) {
 func (ejvw *extJSONValueWriter) WriteArrayEnd() error {
 	switch ejvw.stack[ejvw.frame].mode {
 	case mArray:
-		// close the array
+		
 		if ejvw.buf[len(ejvw.buf)-1] == ',' {
 			ejvw.buf[len(ejvw.buf)-1] = ']'
 		} else {
@@ -637,8 +637,8 @@ func formatDouble(f float64) string {
 	case math.IsNaN(f):
 		s = "NaN"
 	default:
-		// Print exactly one decimalType place for integers; otherwise, print as many are necessary to
-		// perfectly represent it.
+		
+		
 		s = strconv.FormatFloat(f, 'G', -1, 64)
 		if !strings.ContainsRune(s, 'E') && !strings.ContainsRune(s, '.') {
 			s += ".0"
@@ -682,11 +682,11 @@ func writeStringWithEscapes(s string, buf *bytes.Buffer, escapeHTML bool) {
 				buf.WriteByte('\\')
 				buf.WriteByte('f')
 			default:
-				// This encodes bytes < 0x20 except for \t, \n and \r.
-				// If escapeHTML is set, it also escapes <, >, and &
-				// because they can lead to security holes when
-				// user-controlled strings are rendered into JSON
-				// and served to some browsers.
+				
+				
+				
+				
+				
 				buf.WriteString(`\u00`)
 				buf.WriteByte(hexChars[b>>4])
 				buf.WriteByte(hexChars[b&0xF])
@@ -705,13 +705,13 @@ func writeStringWithEscapes(s string, buf *bytes.Buffer, escapeHTML bool) {
 			start = i
 			continue
 		}
-		// U+2028 is LINE SEPARATOR.
-		// U+2029 is PARAGRAPH SEPARATOR.
-		// They are both technically valid characters in JSON strings,
-		// but don't work in JSONP, which has to be evaluated as JavaScript,
-		// and can lead to security holes there. It is valid JSON to
-		// escape them, so we do so unconditionally.
-		// See http://timelessrepo.com/json-isnt-a-javascript-subset for discussion.
+		
+		
+		
+		
+		
+		
+		
 		if c == '\u2028' || c == '\u2029' {
 			if start < i {
 				buf.WriteString(s[start:i])

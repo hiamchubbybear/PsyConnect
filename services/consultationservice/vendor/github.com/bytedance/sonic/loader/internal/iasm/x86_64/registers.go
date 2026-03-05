@@ -1,18 +1,18 @@
-//
-// Copyright 2024 CloudWeGo Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package x86_64
 
@@ -20,7 +20,7 @@ import (
 	"fmt"
 )
 
-// Register represents a hardware register.
+
 type Register interface {
 	fmt.Stringer
 	implRegister()
@@ -41,13 +41,13 @@ type (
 	ZMMRegister byte
 )
 
-// RegisterMask is a KRegister used to mask another register.
+
 type RegisterMask struct {
 	Z bool
 	K KRegister
 }
 
-// String implements the fmt.Stringer interface.
+
 func (self RegisterMask) String() string {
 	if !self.Z {
 		return fmt.Sprintf("{%%%s}", self.K)
@@ -56,13 +56,13 @@ func (self RegisterMask) String() string {
 	}
 }
 
-// MaskedRegister is a Register masked by a RegisterMask.
+
 type MaskedRegister struct {
 	Reg  Register
 	Mask RegisterMask
 }
 
-// String implements the fmt.Stringer interface.
+
 func (self MaskedRegister) String() string {
 	return self.Reg.String() + self.Mask.String()
 }
@@ -353,7 +353,7 @@ func (self ZMMRegister) String() string {
 	}
 }
 
-// Registers maps register name into Register instances.
+
 var Registers = map[string]Register{
 	"al":    AL,
 	"cl":    CL,
@@ -537,7 +537,7 @@ var Registers = map[string]Register{
 	"zmm31": ZMM31,
 }
 
-/** Register Name Tables **/
+
 
 var r8names = [...]string{
 	AL:   "al",

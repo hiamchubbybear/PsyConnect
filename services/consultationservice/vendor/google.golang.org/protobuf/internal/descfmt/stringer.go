@@ -1,8 +1,8 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// Package descfmt provides functionality to format descriptors.
+
+
+
+
 package descfmt
 
 import (
@@ -66,7 +66,7 @@ func formatListOpt(vs list, isRoot, allowMulti bool) string {
 			if r[0]+1 == r[1] {
 				ss = append(ss, fmt.Sprintf("%d", r[0]))
 			} else {
-				ss = append(ss, fmt.Sprintf("%d:%d", r[0], r[1])) // enum ranges are end exclusive
+				ss = append(ss, fmt.Sprintf("%d:%d", r[0], r[1])) 
 			}
 		}
 		return start + joinStrings(ss, false) + end
@@ -76,7 +76,7 @@ func formatListOpt(vs list, isRoot, allowMulti bool) string {
 			if r[0] == r[1] {
 				ss = append(ss, fmt.Sprintf("%d", r[0]))
 			} else {
-				ss = append(ss, fmt.Sprintf("%d:%d", r[0], int64(r[1])+1)) // enum ranges are end inclusive
+				ss = append(ss, fmt.Sprintf("%d:%d", r[0], int64(r[1])+1)) 
 			}
 		}
 		return start + joinStrings(ss, false) + end
@@ -284,9 +284,9 @@ type records struct {
 	recs       [][2]string
 	allowMulti bool
 
-	// record is a function that will be called for every Append() or
-	// AppendRecs() call, to be used for testing with the
-	// InternalFormatDescOptForTesting function.
+	
+	
+	
 	record func(string)
 }
 
@@ -319,7 +319,7 @@ func (rs *records) Append(v reflect.Value, accessors ...methodAndName) {
 			}
 		}
 
-		// Ignore zero values.
+		
 		var isZero bool
 		switch rv.Kind() {
 		case reflect.Interface, reflect.Slice:
@@ -340,7 +340,7 @@ func (rs *records) Append(v reflect.Value, accessors ...methodAndName) {
 			continue
 		}
 
-		// Format the value.
+		
 		var s string
 		v := rv.Interface()
 		switch v := v.(type) {
@@ -364,7 +364,7 @@ func (rs *records) Append(v reflect.Value, accessors ...methodAndName) {
 func (rs *records) Join() string {
 	var ss []string
 
-	// In single line mode, simply join all records with commas.
+	
 	if !rs.allowMulti {
 		for _, r := range rs.recs {
 			ss = append(ss, r[0]+formatColon(0)+r[1])
@@ -372,7 +372,7 @@ func (rs *records) Join() string {
 		return joinStrings(ss, false)
 	}
 
-	// In allowMulti line mode, align single line records for more readable output.
+	
 	var maxLen int
 	flush := func(i int) {
 		for _, r := range rs.recs[len(ss):i] {
@@ -393,13 +393,13 @@ func (rs *records) Join() string {
 }
 
 func formatColon(padding int) string {
-	// Deliberately introduce instability into the debug output to
-	// discourage users from performing string comparisons.
-	// This provides us flexibility to change the output in the future.
+	
+	
+	
 	if detrand.Bool() {
-		return ":" + strings.Repeat(" ", 1+padding) // use non-breaking spaces (U+00a0)
+		return ":" + strings.Repeat(" ", 1+padding) 
 	} else {
-		return ":" + strings.Repeat(" ", 1+padding) // use regular spaces (U+0020)
+		return ":" + strings.Repeat(" ", 1+padding) 
 	}
 }
 

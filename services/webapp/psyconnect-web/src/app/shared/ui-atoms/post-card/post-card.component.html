@@ -7,7 +7,7 @@
       <div class="avatar">
         <!-- Placeholder or actual avatar -->
         <img
-          [src]="post.author_avatar | avatarFallback:post.author_id"
+          [src]="post.author_avatar | avatarFallback: post.author_id"
           [alt]="post.author_name"
         />
       </div>
@@ -25,8 +25,7 @@
   <div class="post-content">
     <h3 class="post-title">{{ post.title }}</h3>
     <p class="post-excerpt">
-      {{ post.content | slice: 0 : 150
-      }}{{ post.content.length > 150 ? "..." : "" }}
+      {{ post.content }}
     </p>
 
     <div class="post-media" *ngIf="post.image_url">

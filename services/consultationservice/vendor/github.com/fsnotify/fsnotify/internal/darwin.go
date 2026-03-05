@@ -15,7 +15,7 @@ var (
 
 var maxfiles uint64
 
-// Go 1.19 will do this automatically: https://go-review.googlesource.com/c/go/+/393354/
+
 func SetRlimit() {
 	var l syscall.Rlimit
 	err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &l)

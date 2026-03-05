@@ -49,7 +49,7 @@ export class Login implements OnInit {
   loading = false;
   apiUrl = environment.apiUrl;
   shakeErrors = false;
-  showEmailForm = false; // State to toggle between method selection and email form
+  showEmailForm = false; 
 
   constructor(
     private fb: FormBuilder,

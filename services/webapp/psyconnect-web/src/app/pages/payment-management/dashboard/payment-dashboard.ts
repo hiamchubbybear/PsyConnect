@@ -24,7 +24,7 @@ export class DashboardComponent {
     },
   };
 
-  // Income Report Chart
+  
   incomeChartData: ChartConfiguration<'bar'>['data'] = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
     datasets: [
@@ -36,7 +36,7 @@ export class DashboardComponent {
     ],
   };
 
-  // Spending Categories Chart
+  
   spendingChartData: ChartConfiguration<'bar'>['data'] = {
     labels: ['Marketing', 'Operations', 'HR', 'Tech', 'Others'],
     datasets: [
@@ -48,7 +48,7 @@ export class DashboardComponent {
     ],
   };
 
-  // Transactions Data
+  
   transactions = [
     {
       id: 'T001',
@@ -80,7 +80,7 @@ export class DashboardComponent {
     },
   ];
 
-  // Customers Data
+  
   customers = [
     {
       name: 'Nguyen Van E',

@@ -331,15 +331,13 @@ public class UserAccountService implements UserDetailsService, IUserAccountServi
     }
 
     public Boolean requestActivateAccount(RequestActivationAccount requestActivationAccount) {
-        // Find user by email
+
         Account account = accountRepository
                 .findByEmail(requestActivationAccount.getEmail())
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
 
-        // Check if already activated
         if (account.isActivated()) throw new CustomExceptionHandler(ErrorCode.ACTIVATED);
 
-        // Build notification request with data from database
         ActivateAccountNotificationRequest req = ActivateAccountNotificationRequest.builder()
                 .email(account.getEmail())
                 .fullname(account.getUsername())

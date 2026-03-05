@@ -20,7 +20,7 @@ func (ctx *Context) Options() uint64 {
 	return ctx.Parser.options
 }
 
-/************************* Stack and Pool Helper *******************/
+
 
 type parentStat struct {
 	con 	unsafe.Pointer
@@ -108,7 +108,7 @@ func (self *efacePool) ConvTnum(val json.Number, dst unsafe.Pointer) {
 	self.tstring.ConvNum(val, (*interface{})(dst))
 }
 
-/********************************************************/
+
 
 func canUseFastMap( opts uint64, root *rt.GoType) bool {
 	return envs.UseFastMap && (opts & (1 << _F_copy_string)) == 0 &&  (opts & (1 << _F_use_int64)) == 0  && (root == rt.AnyType || root == rt.MapEfaceType || root == rt.SliceEfaceType) 
@@ -177,7 +177,7 @@ func (arr Array) Len() int {
 	return int(uint64(carr.val) & ConLenMask)
 }
 
-// / Helper functions to eliminate CGO calls
+
 func (val Node) Type() uint8 {
 	ctype := ptrCast(val.cptr)
 	return uint8(ctype.typ & TypeMask)
@@ -312,7 +312,7 @@ func (self Node) AsByte(ctx *Context) (uint8, bool) {
 	}
 }
 
-/********* Parse Node String into Value ***************/
+
 
 func (val Node) ParseI64(ctx *Context) (int64, bool) {
 	s, ok := val.AsStrRef(ctx)
@@ -383,7 +383,7 @@ func (val Node) ParseF64(ctx *Context) (float64, bool) {
 }
 
 func (val Node) ParseString(ctx *Context) (string, bool) {
-	// should not use AsStrRef
+	
 	s, ok := val.AsStr(ctx)
 	if !ok {
 		return "", false
@@ -402,7 +402,7 @@ func (val Node) ParseString(ctx *Context) (string, bool) {
 
 
 func (val Node) ParseNumber(ctx *Context) (json.Number, bool) {
-	// should not use AsStrRef
+	
 	s, ok := val.AsStr(ctx)
 	if !ok {
 		return json.Number(""), false
@@ -413,7 +413,7 @@ func (val Node) ParseNumber(ctx *Context) (json.Number, bool) {
 	}
 
 	end, ok := SkipNumberFast(s, 0)
-	// has error or trailing chars
+	
 	if !ok || end != len(s) {
 		return json.Number(""),  false
 	}
@@ -473,7 +473,7 @@ func (val Node) AsStringText(ctx *Context) ([]byte, bool) {
 		return nil, false
 	}
 
-	// clone to new bytes
+	
 	s, b := val.AsStrRef(ctx)
 	return []byte(s), b
 }
@@ -503,7 +503,7 @@ func (val Node) Position() int {
 }
 
 func (val Node) AsNumber(ctx *Context) (json.Number, bool) {
-	// parse JSON string as number
+	
 	if val.IsStr() {
 		s, _ := val.AsStr(ctx)
 		if !ValidNumberFast(s) {
@@ -517,12 +517,12 @@ func (val Node) AsNumber(ctx *Context) (json.Number, bool) {
 }
 
 func (val Node) NonstrAsNumber(ctx *Context) (json.Number, bool) {
-	// deal with raw number
+	
 	if val.IsRawNumber() {
 		return val.Number(ctx), true
 	}
 
-	// deal with parse number
+	
 	if !val.IsNumber() {
 		return json.Number(""), false
 	}
@@ -536,7 +536,7 @@ func (val Node) NonstrAsNumber(ctx *Context) (json.Number, bool) {
 }
 
 func (val Node) AsRaw(ctx *Context) string {
-	// fast path for unescaped strings
+	
 	switch val.Type() {
 	case KNull:
 		return "null"
@@ -548,7 +548,7 @@ func (val Node) AsRaw(ctx *Context) string {
 		node := ptrCast(val.cptr)
 		len := int(node.val)
 		offset := val.Position()
-		// add start and end quote
+		
 		ref := rt.Str2Mem(ctx.Parser.Json)[offset-1 : offset+len+1]
 		return rt.Mem2Str(ref)
 	case KRawNumber: fallthrough
@@ -566,7 +566,7 @@ func (val Node) AsRaw(ctx *Context) string {
 	panic("should always be valid json here")
 }
 
-// reference from the input JSON as possible
+
 func (val Node) StringRef(ctx *Context) string {
 	return val.Raw(ctx)
 }
@@ -577,7 +577,7 @@ func ptrCast(p uintptr) *node {
 }
 
 func (val Node) StringCopyEsc(ctx *Context) string {
-	// check whether there are in padded
+	
 	node := ptrCast(val.cptr)
 	len := int(node.val)
 	offset := val.Position()
@@ -601,7 +601,7 @@ func (val *Object) Children() uintptr {
 }
 
 func (val *Node) Equal(ctx *Context, lhs string) bool {
-	// check whether escaped
+	
 	cstr := ptrCast(val.cptr)
 	offset := int(val.Position())
 	len := int(cstr.val)
@@ -900,7 +900,7 @@ func (val *Node) AsSliceBytes(ctx *Context) ([]byte, error) {
 	return b64, nil
 }
 
-// AsEface will always ok, because we have parse in native.
+
 func (node *Node) AsEface(ctx *Context) (interface{}, error) {
 	if ctx.efacePool != nil {
 		iter := NewNodeIter(*node)
@@ -936,7 +936,7 @@ func castU64(val float64) uint64 {
 }
 
 func AsEfaceFast(iter *NodeIter, ctx *Context) interface{} {
-	var mp, sp, parent unsafe.Pointer // current container pointer
+	var mp, sp, parent unsafe.Pointer 
 	var node Node
 	var size int
 	var isObj bool
@@ -1004,12 +1004,12 @@ _object_key:
 		key = node.StringCopyEsc(ctx)
 	}
 
-	// interface{} slot in map bucket
+	
 	val = rt.Mapassign_faststr(rt.MapEfaceMapType, mp, key)
 	vt = &(*rt.GoEface)(val).Type
 	vp = &(*rt.GoEface)(val).Value
 
-	// parse value node
+	
 	node = iter.Next()
 	switch node.Type() {
 		case KObject:
@@ -1035,7 +1035,7 @@ _object_key:
 			}
 
 			newSp := ctx.efacePool.GetSlice(newSize)
-			// pack to []interface{}
+			
 			ctx.efacePool.ConvTSlice(rt.GoSlice{
 				Ptr: newSp,
 				Len: newSize,
@@ -1057,7 +1057,7 @@ _object_key:
 			rt.ConvTBool(true, (*interface{})(val))
 		case KFalse:
 			rt.ConvTBool(false, (*interface{})(val))
-		case KNull: /* skip */
+		case KNull: 
 		case KUint:
 			ctx.efacePool.ConvF64(float64(node.U64()), val)
 		case KSint: 
@@ -1070,7 +1070,7 @@ _object_key:
 			panic("unreachable for as eface")
 	}
 	
-	// check size 
+	
 	size -= 1
 	if size != 0 {
 		goto _object_key;
@@ -1078,7 +1078,7 @@ _object_key:
 
 	parent, size, isObj = ctx.Stack.Pop()
 
-	// parent is empty
+	
 	if parent == nil {
 		if isObj {
 			return rt.GoEface {
@@ -1091,7 +1091,7 @@ _object_key:
 		}
 	}
 
-	// continue to parse parent
+	
 	if isObj {
 		mp = parent
 		goto _object_key;
@@ -1101,11 +1101,11 @@ _object_key:
 	}
 
 _arr_val:
-	// interface{} slot in slice
+	
 	vt = &(*rt.GoEface)(val).Type
 	vp = &(*rt.GoEface)(val).Value
 
-	// parse value node
+	
 	node = iter.Next()
 	switch node.Type() {
 		case KObject:
@@ -1115,7 +1115,7 @@ _arr_val:
 			*vp = newMp
 			remain := size - 1
 			if newSize != 0 {
-				// push next array elem into stack
+				
 				if remain > 0 {
 					ctx.Stack.Push(val, remain, false)
 				}
@@ -1132,7 +1132,7 @@ _arr_val:
 			}
 			
 			newSp := ctx.efacePool.GetSlice(newSize)
-			// pack to []interface{}
+			
 			ctx.efacePool.ConvTSlice(rt.GoSlice {
 				Ptr: newSp,
 				Len: newSize,
@@ -1156,7 +1156,7 @@ _arr_val:
 			rt.ConvTBool(true, (*interface{})(val))
 		case KFalse:
 			rt.ConvTBool(false, (*interface{})(val))
-		case KNull: /* skip */
+		case KNull: 
 		case KUint:
 			ctx.efacePool.ConvF64(float64(node.U64()), val)
 		case KSint: 
@@ -1168,7 +1168,7 @@ _arr_val:
 		default: panic("unreachable for as eface")
 	}
 
-	// check size 
+	
 	size -= 1
 	if size != 0 {
 		val = rt.PtrAdd(val, rt.AnyType.Size)
@@ -1178,7 +1178,7 @@ _arr_val:
 
 	parent, size, isObj = ctx.Stack.Pop()
 
-	// parent is empty
+	
 	if parent == nil {
 		if isObj {
 			return rt.GoEface {
@@ -1191,7 +1191,7 @@ _arr_val:
 		}
 	}
 
-	// continue to parse parent
+	
 	if isObj {
 		mp = parent
 		goto _object_key;
@@ -1249,11 +1249,11 @@ func (node *Node) AsEfaceFallback(ctx *Context) (interface{}, error) {
 		*node = NewNode(PtrOffset(node.cptr, 1))
 		return nil, nil
 	default:
-		// use float64
+		
 		if ctx.Parser.options & (1 << _F_use_number) != 0 {
 			num, ok := node.AsNumber(ctx)
 			if !ok {
-				// skip the unmacthed type
+				
 				*node = NewNode(node.Next())
 				return nil, newUnmatched(node.Position(), rt.JsonNumberType)
 			} else {
@@ -1261,27 +1261,27 @@ func (node *Node) AsEfaceFallback(ctx *Context) (interface{}, error) {
 				return num, nil
 			}
 		} else if  ctx.Parser.options & (1 << _F_use_int64) != 0 {
-			// first try int64
+			
 			i, ok := node.AsI64(ctx)
 			if ok {
 				*node = NewNode(PtrOffset(node.cptr, 1))
 				return i, nil
 			}
 
-			// is not integer, then use float64
+			
 			f, ok := node.AsF64(ctx)
 			if ok {
 				*node = NewNode(PtrOffset(node.cptr, 1))
 				return f, nil
 			}
 		
-			// skip the unmacthed type
+			
 			*node = NewNode(node.Next())
 			return nil, newUnmatched(node.Position(), rt.Int64Type)
 		} else {
 			num, ok := node.AsF64(ctx)
 			if !ok {
-				// skip the unmacthed type
+				
 				*node = NewNode(node.Next())
 				return nil, newUnmatched(node.Position(), rt.Float64Type)
 			} else {

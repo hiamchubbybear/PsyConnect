@@ -26,7 +26,7 @@
   --color-text-muted: #{v.$color-text-muted};
   --color-text-hover: #b7b7ba;
 
-  --header-height: 50px; // Defined global header height
+  --header-height: 50px; 
 
   --color-primary: #{v.$color-primary};
   --color-primary-hover: #{v.$color-primary-hover};
@@ -119,28 +119,28 @@
 
   --shadow-lg: 0 6px 24px rgba(0, 0, 0, 0.12);
 
-  // Icon theme adaptation
-  --icon-invert: 0; // Light mode: black icons
+  
+  --icon-invert: 0; 
 }
 
 [data-theme="dark"] {
-  // Slate/Navy Palette for Dark Mode
+  
   --color-bg-contrast: #fff;
-  --color-bg: #0f172a; // Slate 900 - Deep Blue-Gray
-  --color-bg-secondary: #1e293b; // Slate 800 - Lighter than bg for cards
+  --color-bg: #0f172a; 
+  --color-bg-secondary: #1e293b; 
 
   --color-surface-low: #0f172a;
-  --color-surface-mid: #1e293b; // Slate 800
-  --color-surface-high: #334155; // Slate 700
-  --color-surface-overlay: #475569; // Slate 600
+  --color-surface-mid: #1e293b; 
+  --color-surface-high: #334155; 
+  --color-surface-overlay: #475569; 
 
-  --color-text: #f8fafc; // Slate 50
-  --color-text-muted: #94a3b8; // Slate 400
-  --color-text-hover: #e2e8f0; // Slate 200
+  --color-text: #f8fafc; 
+  --color-text-muted: #94a3b8; 
+  --color-text-hover: #e2e8f0; 
 
-  // Primary & Accent handling
-  --color-primary: #3b82f6; // Blue 500 - Clear on dark
-  --color-primary-hover: #2563eb; // Blue 600
+  
+  --color-primary: #3b82f6; 
+  --color-primary-hover: #2563eb; 
   --color-primary-rgb: 59, 130, 246;
   --color-bg-rgb: 15, 23, 42;
   --color-bg-secondary-rgb: 30, 41, 59;
@@ -151,18 +151,18 @@
   --color-accent-hover: #2563eb;
   --color-accent-bg: rgba(59, 130, 246, 0.15);
 
-  --color-border: rgba(148, 163, 184, 0.1); // Slate-based border
-  --color-surface: #1e293b; // Slate 800
+  --color-border: rgba(148, 163, 184, 0.1); 
+  --color-surface: #1e293b; 
 
-  // Icon theme adaptation
+  
   --icon-invert: 1;
 
-  --header-bg: #1e293b; // Slate 800
+  --header-bg: #1e293b; 
   --header-text: #f8fafc;
-  --header-border: #334155; // Slate 700
-  --header-link-text: #cbd5e1; // Slate 300
-  --header-link-hover: #60a5fa; // Blue 400 (Light Blue for links)
-  --header-link-arrow: #64748b; // Slate 500
+  --header-border: #334155; 
+  --header-link-text: #cbd5e1; 
+  --header-link-hover: #60a5fa; 
+  --header-link-arrow: #64748b; 
   --header-shadow: #{v.$shadow-sm};
   --footer-a: #94a3b8;
   --footer-line: #334155;
@@ -172,21 +172,21 @@
   --dropdown-text: #f8fafc;
   --dropdown-item-hover-bg: #334155;
   --dropdown-item-hover-text: #3b82f6;
-  --dropdown-shadow: #{v.$shadow-lg}; // Deeper shadow for dark mode
+  --dropdown-shadow: #{v.$shadow-lg}; 
   --dropdown-badge-bg: #2563eb;
   --dropdown-badge-bg-hover: #1d4ed8;
   --dropdown-badge-text: #ffffff;
 
-  // Alerts
-  --color-success-bg: #052e16; // Deep Green
+  
+  --color-success-bg: #052e16; 
   --color-success-text: #4ade80;
   --color-success-border: #14532d;
 
-  --color-error-bg: #450a0a; // Deep Red
+  --color-error-bg: #450a0a; 
   --color-error-text: #f87171;
   --color-error-border: #7f1d1d;
 
-  --color-warning-bg: #422006; // Deep Orange
+  --color-warning-bg: #422006; 
   --color-warning-text: #fbbf24;
   --color-warning-border: #78350f;
 
@@ -196,7 +196,7 @@
   --shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 
   --icon-theme-color: brightness(0) invert(1);
-  --overlay-bg: rgba(15, 23, 42, 0.8); // Slate 900 based overlay
+  --overlay-bg: rgba(15, 23, 42, 0.8); 
   --color-on-accent: #000000;
   --color-icon: #94a3b8;
   --color-icon-hover: #f8fafc;
@@ -230,15 +230,15 @@ body {
   font-family: v.$font-primary;
   font-size: 14px;
   font-weight: 400;
-  line-height: 1.4286; // 20px / 14px
+  line-height: 1.4286; 
   color: var(--color-text);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   font-optical-sizing: auto;
-  // Inter OpenType alternates — rounder glyphs like Figma
-  // cv11 = single-storey 'a', cv02 = alternate 'g', cv03 = alternate 'y'
+  
+  
   font-feature-settings:
     "cv11" 1,
     "cv02" 1,
@@ -537,7 +537,7 @@ a {
   font-weight: 500;
   font-size: v.$font-size-md;
   line-height: 1.5;
-  gap: 0.5rem; // Space between icon and text
+  gap: 0.5rem; 
 
   &:disabled,
   &.disabled {
@@ -556,12 +556,12 @@ a {
   @include button-base;
   padding: 0.75rem 1.5rem;
   border: 1px solid transparent;
-  border-radius: 9999px; // Pill shape for modern look
+  border-radius: 9999px; 
   font-weight: 600;
   letter-spacing: 0.01em;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  // Sizes
+  
   &.btn-sm {
     padding: 0.5rem 1rem;
     font-size: v.$font-size-sm;
@@ -572,11 +572,11 @@ a {
     font-size: v.$font-size-lg;
   }
 
-  // Variants
+  
   &.btn-primary {
-    background: var(--color-primary); // Fallback
+    background: var(--color-primary); 
     background: linear-gradient(135deg, var(--color-primary) 0%, #8b5cf6 100%);
-    color: white !important; // Ensure text is white
+    color: white !important; 
     border: none;
     box-shadow:
       0 4px 6px -1px rgba(var(--color-primary-rgb), 0.1),
@@ -666,7 +666,7 @@ a {
 .content {
   flex: 1;
   box-sizing: border-box;
-  padding-top: 70px; // Header height (50px) + spacing
+  padding-top: 70px; 
   padding-left: v.$spacing-lg;
   padding-right: v.$spacing-lg;
 
@@ -675,9 +675,9 @@ a {
     padding-right: v.$spacing-xl;
   }
 
-  // When sidebar is visible (applied to parent .app-layout)
+  
   .app-layout.sidebar-visible & {
-    padding-left: 88px; // Sidebar (68px) + Gap (20px)
+    padding-left: 88px; 
 
     @media (min-width: v.$breakpoint-md) {
       padding-left: 100px;
@@ -714,7 +714,7 @@ a {
 @import "mascot-animations";
 @import "emote-theme";
 
-// Micro-interactions
+
 @keyframes bounce-scale {
   0% {
     transform: scale(1);
@@ -729,7 +729,7 @@ a {
 
 .vote-btn,
 .icon-btn {
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Bouncy transition
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
 
   &:active {
     transform: scale(0.9);

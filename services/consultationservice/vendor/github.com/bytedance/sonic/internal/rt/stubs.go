@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package rt
 
@@ -26,7 +12,7 @@ import (
 func Memmove(to unsafe.Pointer, from unsafe.Pointer, n uintptr)
 //go:noescape
 //go:linkname MemEqual runtime.memequal
-//goland:noinspection GoUnusedParameter
+
 func MemEqual(a unsafe.Pointer, b unsafe.Pointer, size uintptr) bool
 
 //go:linkname Mapiternext runtime.mapiternext
@@ -43,11 +29,11 @@ func IsValidNumber(s string) bool
 
 //go:nosplit
 //go:linkname MemclrHasPointers runtime.memclrHasPointers
-//goland:noinspection GoUnusedParameter
+
 func MemclrHasPointers(ptr unsafe.Pointer, n uintptr)
 
 //go:linkname MemclrNoHeapPointers runtime.memclrNoHeapPointers
-//goland:noinspection GoUnusedParameter
+
 func MemclrNoHeapPointers(ptr unsafe.Pointer, n uintptr)
 
 //go:linkname newarray runtime.newarray
@@ -65,7 +51,7 @@ func ClearMemory(et *GoType, ptr unsafe.Pointer, size uintptr) {
 	}
 }
 
-// runtime.maxElementSize
+
 const _max_map_element_size uintptr = 128
 
 func IsMapfast(vt reflect.Type) bool {
@@ -73,7 +59,7 @@ func IsMapfast(vt reflect.Type) bool {
 }
 
 //go:linkname Mallocgc runtime.mallocgc
-//goland:noinspection GoUnusedParameter
+
 func Mallocgc(size uintptr, typ *GoType, needzero bool) unsafe.Pointer
 
 //go:linkname Makemap reflect.makemap
@@ -83,19 +69,19 @@ func Makemap(*GoType, int) unsafe.Pointer
 func MakemapSmall() unsafe.Pointer
 
 //go:linkname Mapassign runtime.mapassign
-//goland:noinspection GoUnusedParameter
+
 func Mapassign(t *GoMapType, h unsafe.Pointer, k unsafe.Pointer) unsafe.Pointer
 
 //go:linkname Mapassign_fast32 runtime.mapassign_fast32
-//goland:noinspection GoUnusedParameter
+
 func Mapassign_fast32(t *GoMapType, h unsafe.Pointer, k uint32) unsafe.Pointer
 
 //go:linkname Mapassign_fast64 runtime.mapassign_fast64
-//goland:noinspection GoUnusedParameter
+
 func Mapassign_fast64(t *GoMapType, h unsafe.Pointer, k uint64) unsafe.Pointer
 
 //go:linkname Mapassign_faststr runtime.mapassign_faststr
-//goland:noinspection GoUnusedParameter
+
 func Mapassign_faststr(t *GoMapType, h unsafe.Pointer, s string) unsafe.Pointer
 
 type MapStrAssign func (t *GoMapType, h unsafe.Pointer, s string) unsafe.Pointer
@@ -139,7 +125,7 @@ var emptyBytes = make([]byte, 0, 0)
 var EmptySlice = *(*GoSlice)(unsafe.Pointer(&emptyBytes))
 
 //go:linkname MakeSliceStd runtime.makeslice
-//goland:noinspection GoUnusedParameter
+
 func MakeSliceStd(et *GoType, len int, cap int) unsafe.Pointer
 
 func MakeSlice(oldPtr unsafe.Pointer, et *GoType, newLen int) *GoSlice {
@@ -163,7 +149,7 @@ func MakeSlice(oldPtr unsafe.Pointer, et *GoType, newLen int) *GoSlice {
 
 	new := GrowSlice(et, *old, newLen)
 
-	// we should clear the memory from [oldLen:newLen]
+	
 	if et.PtrData == 0 {
 		oldlenmem := uintptr(old.Len) * et.Size
 		newlenmem := uintptr(newLen) * et.Size
@@ -176,23 +162,23 @@ func MakeSlice(oldPtr unsafe.Pointer, et *GoType, newLen int) *GoSlice {
 
 //go:nosplit
 //go:linkname Throw runtime.throw
-//goland:noinspection GoUnusedParameter
+
 func Throw(s string)
 
 //go:linkname ConvT64 runtime.convT64
-//goland:noinspection GoUnusedParameter
+
 func ConvT64(v uint64) unsafe.Pointer
 
 //go:linkname ConvTslice runtime.convTslice
-//goland:noinspection GoUnusedParameter
+
 func ConvTslice(v []byte) unsafe.Pointer
 
 //go:linkname ConvTstring runtime.convTstring
-//goland:noinspection GoUnusedParameter
+
 func ConvTstring(v string) unsafe.Pointer
 
 //go:linkname Mapassign_fast64ptr runtime.mapassign_fast64ptr
-//goland:noinspection GoUnusedParameter
+
 func Mapassign_fast64ptr(t *GoMapType, h unsafe.Pointer, k unsafe.Pointer) unsafe.Pointer
 
 //go:noescape

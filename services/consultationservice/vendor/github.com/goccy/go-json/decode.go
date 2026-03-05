@@ -26,7 +26,7 @@ type emptyInterface struct {
 }
 
 func unmarshal(data []byte, v interface{}, optFuncs ...DecodeOptionFunc) error {
-	src := make([]byte, len(data)+1) // append nul byte to the end
+	src := make([]byte, len(data)+1) 
 	copy(src, data)
 
 	header := (*emptyInterface)(unsafe.Pointer(&v))
@@ -54,7 +54,7 @@ func unmarshal(data []byte, v interface{}, optFuncs ...DecodeOptionFunc) error {
 }
 
 func unmarshalContext(ctx context.Context, data []byte, v interface{}, optFuncs ...DecodeOptionFunc) error {
-	src := make([]byte, len(data)+1) // append nul byte to the end
+	src := make([]byte, len(data)+1) 
 	copy(src, data)
 
 	header := (*emptyInterface)(unsafe.Pointer(&v))
@@ -91,7 +91,7 @@ func extractFromPath(path *Path, data []byte, optFuncs ...DecodeOptionFunc) ([][
 	if path.path.RootSelectorOnly {
 		return [][]byte{data}, nil
 	}
-	src := make([]byte, len(data)+1) // append nul byte to the end
+	src := make([]byte, len(data)+1) 
 	copy(src, data)
 
 	ctx := decoder.TakeRuntimeContext()
@@ -115,7 +115,7 @@ func extractFromPath(path *Path, data []byte, optFuncs ...DecodeOptionFunc) ([][
 }
 
 func unmarshalNoEscape(data []byte, v interface{}, optFuncs ...DecodeOptionFunc) error {
-	src := make([]byte, len(data)+1) // append nul byte to the end
+	src := make([]byte, len(data)+1) 
 	copy(src, data)
 
 	header := (*emptyInterface)(unsafe.Pointer(&v))
@@ -159,7 +159,7 @@ func validateEndBuf(src []byte, cursor int64) error {
 	}
 }
 
-//nolint:staticcheck
+
 //go:nosplit
 func noescape(p unsafe.Pointer) unsafe.Pointer {
 	x := uintptr(p)
@@ -173,10 +173,10 @@ func validateType(typ *runtime.Type, p uintptr) error {
 	return nil
 }
 
-// NewDecoder returns a new decoder that reads from r.
-//
-// The decoder introduces its own buffering and may
-// read data from r beyond the JSON values requested.
+
+
+
+
 func NewDecoder(r io.Reader) *Decoder {
 	s := decoder.NewStream(r)
 	return &Decoder{
@@ -184,23 +184,23 @@ func NewDecoder(r io.Reader) *Decoder {
 	}
 }
 
-// Buffered returns a reader of the data remaining in the Decoder's
-// buffer. The reader is valid until the next call to Decode.
+
+
 func (d *Decoder) Buffered() io.Reader {
 	return d.s.Buffered()
 }
 
-// Decode reads the next JSON-encoded value from its
-// input and stores it in the value pointed to by v.
-//
-// See the documentation for Unmarshal for details about
-// the conversion of JSON into a Go value.
+
+
+
+
+
 func (d *Decoder) Decode(v interface{}) error {
 	return d.DecodeWithOption(v)
 }
 
-// DecodeContext reads the next JSON-encoded value from its
-// input and stores it in the value pointed to by v with context.Context.
+
+
 func (d *Decoder) DecodeContext(ctx context.Context, v interface{}) error {
 	d.s.Option.Flags |= decoder.ContextOption
 	d.s.Option.Context = ctx
@@ -212,7 +212,7 @@ func (d *Decoder) DecodeWithOption(v interface{}, optFuncs ...DecodeOptionFunc) 
 	typ := header.typ
 	ptr := uintptr(header.ptr)
 	typeptr := uintptr(unsafe.Pointer(typ))
-	// noescape trick for header.typ ( reflect.*rtype )
+	
 	copiedType := *(**runtime.Type)(unsafe.Pointer(&typeptr))
 
 	if err := validateType(copiedType, ptr); err != nil {
@@ -245,9 +245,9 @@ func (d *Decoder) Token() (Token, error) {
 	return d.s.Token()
 }
 
-// DisallowUnknownFields causes the Decoder to return an error when the destination
-// is a struct and the input contains object keys which do not match any
-// non-ignored, exported fields in the destination.
+
+
+
 func (d *Decoder) DisallowUnknownFields() {
 	d.s.DisallowUnknownFields = true
 }
@@ -256,8 +256,8 @@ func (d *Decoder) InputOffset() int64 {
 	return d.s.TotalOffset()
 }
 
-// UseNumber causes the Decoder to unmarshal a number into an interface{} as a
-// Number instead of as a float64.
+
+
 func (d *Decoder) UseNumber() {
 	d.s.UseNumber = true
 }

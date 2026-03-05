@@ -3,13 +3,13 @@
 
 package xxhash
 
-// Sum64 computes the 64-bit xxHash digest of b with a zero seed.
+
 func Sum64(b []byte) uint64 {
-	// A simpler version would be
-	//   d := New()
-	//   d.Write(b)
-	//   return d.Sum64()
-	// but this is faster, particularly for small inputs.
+	
+	
+	
+	
+	
 
 	n := len(b)
 	var h uint64

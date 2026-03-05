@@ -9,22 +9,22 @@ import (
 
 type Type interface {
 	Kind() reflect.Kind
-	// New return pointer to data of this type
+	
 	New() interface{}
-	// UnsafeNew return the allocated space pointed by unsafe.Pointer
+	
 	UnsafeNew() unsafe.Pointer
-	// PackEFace cast a unsafe pointer to object represented pointer
+	
 	PackEFace(ptr unsafe.Pointer) interface{}
-	// Indirect dereference object represented pointer to this type
+	
 	Indirect(obj interface{}) interface{}
-	// UnsafeIndirect dereference pointer to this type
+	
 	UnsafeIndirect(ptr unsafe.Pointer) interface{}
-	// Type1 returns reflect.Type
+	
 	Type1() reflect.Type
 	Implements(thatType Type) bool
 	String() string
 	RType() uintptr
-	// interface{} of this type has pointer like behavior
+	
 	LikePtr() bool
 	IsNullable() bool
 	IsNil(obj interface{}) bool
@@ -277,11 +277,11 @@ func likePtrType(typ reflect.Type) bool {
 	return false
 }
 
-// NoEscape hides a pointer from escape analysis.  noescape is
-// the identity function but escape analysis doesn't think the
-// output depends on the input.  noescape is inlined and currently
-// compiles down to zero instructions.
-// USE CAREFULLY!
+
+
+
+
+
 //go:nosplit
 func NoEscape(p unsafe.Pointer) unsafe.Pointer {
 	x := uintptr(p)

@@ -1,7 +1,7 @@
-// ============================================
-// Mood Tracker Component Styles (Redesigned)
-// Based on UI Reference - Solid Colors & Line Chart
-// ============================================
+
+
+
+
 
 .mood-tracker-card {
   background: var(--color-bg);
@@ -60,9 +60,9 @@
   letter-spacing: 0.5px;
 }
 
-// ============================================
-// Mood Selector (Simplified - Solid Colors)
-// ============================================
+
+
+
 
 .mood-selector {
   margin-bottom: var(--spacing-xl);
@@ -117,7 +117,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: var(--mood-color); // Solid color, no gradient
+  background: var(--mood-color); 
   border: 3px solid transparent;
   display: flex;
   align-items: center;
@@ -129,7 +129,7 @@
   .mood-icon {
     width: 36px;
     height: 36px;
-    // SVG will be white on colored backgrounds
+    
     filter: brightness(0) invert(1);
     pointer-events: none;
   }
@@ -144,9 +144,9 @@
   letter-spacing: 0.5px;
 }
 
-// ============================================
-// Mood Note
-// ============================================
+
+
+
 
 .mood-note {
   margin-top: var(--spacing-xl);
@@ -185,9 +185,9 @@
   margin-top: var(--spacing-md);
 }
 
-// ============================================
-// Mood Logged State
-// ============================================
+
+
+
 
 .mood-logged {
   text-align: center;
@@ -222,9 +222,9 @@
   }
 }
 
-// ============================================
-// Mood Analysis (Line Chart)
-// ============================================
+
+
+
 
 .mood-analysis {
   background: var(--color-bg);
@@ -285,7 +285,7 @@
   color: var(--color-text-secondary);
 }
 
-// Line Chart SVG
+
 .mood-chart-container {
   width: 100%;
   overflow: hidden;
@@ -327,9 +327,9 @@
   }
 }
 
-// ============================================
-// Mood Influences
-// ============================================
+
+
+
 
 .mood-influences {
   background: var(--color-bg);
@@ -400,18 +400,18 @@
 .influence-icon {
   width: 18px;
   height: 18px;
-  // Adapt to theme - use current text color
+  
   filter: brightness(0) saturate(100%) invert(var(--icon-invert, 0));
 
-  // Override for active state
+  
   .active & {
-    filter: brightness(0) invert(1); // White when active
+    filter: brightness(0) invert(1); 
   }
 }
 
-// ============================================
-// Insights (Collapsible)
-// ============================================
+
+
+
 
 .mood-insights-details {
   background: var(--color-bg);
@@ -490,7 +490,7 @@
   }
 }
 
-// Mood Chart (Distribution)
+
 .mood-chart {
   display: flex;
   flex-direction: column;
@@ -538,11 +538,11 @@
   height: 16px;
   vertical-align: middle;
   margin-right: 4px;
-  // Adapt to current text color
+  
   filter: brightness(0) saturate(100%) invert(var(--icon-invert, 0));
 }
 
-// Average Mood
+
 .average-mood {
   display: flex;
   align-items: center;
@@ -576,7 +576,7 @@
   margin: 0;
 }
 
-// Patterns
+
 .pattern-list {
   list-style: none;
   padding: 0;
@@ -599,7 +599,7 @@
 .pattern-icon {
   width: 20px;
   height: 20px;
-  // Adapt to theme
+  
   filter: brightness(0) saturate(100%) invert(var(--icon-invert, 0));
 }
 
@@ -616,14 +616,14 @@
   .average-mood-icon {
     width: 40px;
     height: 40px;
-    // White on colored background
+    
     filter: brightness(0) invert(1);
   }
 }
 
-// ============================================
-// Animations
-// ============================================
+
+
+
 
 @keyframes slideDown {
   from {
@@ -654,9 +654,9 @@
   }
 }
 
-// ============================================
-// Responsive
-// ============================================
+
+
+
 
 @media (max-width: 768px) {
   .mood-options {

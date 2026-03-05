@@ -1,18 +1,4 @@
-/**
- * Copyright 2023 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package ast
 
@@ -67,20 +53,20 @@ func (self *linkedNodes) MoveOne(source int,  target int) {
     if source < 0 || source >= self.size || target < 0 || target >= self.size {
         return
     }
-    // reserve source
+    
     n := *self.At(source)
     if source < target {
-        // move every element (source,target] one step back
+        
         for i:=source; i<target; i++ {
             *self.At(i) = *self.At(i+1)
         } 
     } else {
-        // move every element [target,source) one step forward
+        
         for i:=source; i>target; i-- {
             *self.At(i) = *self.At(i-1)
         }
     } 
-    // set target
+    
     *self.At(target) = n
 }
 
@@ -304,17 +290,17 @@ func (self *linkedPairs) growTailLength(l int) {
     self.tail = tmp
 }
 
-// linear search
+
 func (self *linkedPairs) Get(key string) (*Pair, int) {
     if self.index != nil {
-        // fast-path
+        
         i, ok := self.index[caching.StrHash(key)]
         if ok {
             n := self.At(i)
             if n.Key == key {
                 return n, i
             }
-            // hash conflicts
+            
             goto linear_search
         } else {
             return nil, -1
@@ -362,7 +348,7 @@ func (self *linkedPairs) copyPairs(to []Pair, from []Pair, l int) {
     copy(to, from)
     if self.index != nil {
         for i:=0; i<l; i++ {
-            // NOTICE: in case of user not pass hash, just cal it
+            
             h := caching.StrHash(from[i].Key)
             from[i].hash = h
             self.index[h] = i
@@ -415,7 +401,7 @@ func (self *linkedPairs) Sort() {
     sort.Stable(self)
 }
 
-// Compare two strings from the pos d.
+
 func lessFrom(a, b string, d int) bool {
     l := len(a)
     if l > len(b) {

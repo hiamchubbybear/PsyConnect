@@ -1,6 +1,6 @@
-// Package huff0 provides fast huffman encoding as used in zstd.
-//
-// See README.md at https://github.com/klauspost/compress/tree/master/huff0 for details.
+
+
+
 package huff0
 
 import (
@@ -16,112 +16,112 @@ import (
 const (
 	maxSymbolValue = 255
 
-	// zstandard limits tablelog to 11, see:
-	// https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md#huffman-tree-description
+	
+	
 	tableLogMax     = 11
 	tableLogDefault = 11
 	minTablelog     = 5
 	huffNodesLen    = 512
 
-	// BlockSizeMax is maximum input size for a single block uncompressed.
+	
 	BlockSizeMax = 1<<18 - 1
 )
 
 var (
-	// ErrIncompressible is returned when input is judged to be too hard to compress.
+	
 	ErrIncompressible = errors.New("input is not compressible")
 
-	// ErrUseRLE is returned from the compressor when the input is a single byte value repeated.
+	
 	ErrUseRLE = errors.New("input is single value repeated")
 
-	// ErrTooBig is return if input is too large for a single block.
+	
 	ErrTooBig = errors.New("input too big")
 
-	// ErrMaxDecodedSizeExceeded is return if input is too large for a single block.
+	
 	ErrMaxDecodedSizeExceeded = errors.New("maximum output size exceeded")
 )
 
 type ReusePolicy uint8
 
 const (
-	// ReusePolicyAllow will allow reuse if it produces smaller output.
+	
 	ReusePolicyAllow ReusePolicy = iota
 
-	// ReusePolicyPrefer will re-use aggressively if possible.
-	// This will not check if a new table will produce smaller output,
-	// except if the current table is impossible to use or
-	// compressed output is bigger than input.
+	
+	
+	
+	
 	ReusePolicyPrefer
 
-	// ReusePolicyNone will disable re-use of tables.
-	// This is slightly faster than ReusePolicyAllow but may produce larger output.
+	
+	
 	ReusePolicyNone
 
-	// ReusePolicyMust must allow reuse and produce smaller output.
+	
 	ReusePolicyMust
 )
 
 type Scratch struct {
 	count [maxSymbolValue + 1]uint32
 
-	// Per block parameters.
-	// These can be used to override compression parameters of the block.
-	// Do not touch, unless you know what you are doing.
+	
+	
+	
 
-	// Out is output buffer.
-	// If the scratch is re-used before the caller is done processing the output,
-	// set this field to nil.
-	// Otherwise the output buffer will be re-used for next Compression/Decompression step
-	// and allocation will be avoided.
+	
+	
+	
+	
+	
 	Out []byte
 
-	// OutTable will contain the table data only, if a new table has been generated.
-	// Slice of the returned data.
+	
+	
 	OutTable []byte
 
-	// OutData will contain the compressed data.
-	// Slice of the returned data.
+	
+	
 	OutData []byte
 
-	// MaxDecodedSize will set the maximum allowed output size.
-	// This value will automatically be set to BlockSizeMax if not set.
-	// Decoders will return ErrMaxDecodedSizeExceeded is this limit is exceeded.
+	
+	
+	
 	MaxDecodedSize int
 
 	br byteReader
 
-	// MaxSymbolValue will override the maximum symbol value of the next block.
+	
 	MaxSymbolValue uint8
 
-	// TableLog will attempt to override the tablelog for the next block.
-	// Must be <= 11 and >= 5.
+	
+	
 	TableLog uint8
 
-	// Reuse will specify the reuse policy
+	
 	Reuse ReusePolicy
 
-	// WantLogLess allows to specify a log 2 reduction that should at least be achieved,
-	// otherwise the block will be returned as incompressible.
-	// The reduction should then at least be (input size >> WantLogLess)
-	// If WantLogLess == 0 any improvement will do.
+	
+	
+	
+	
 	WantLogLess uint8
 
-	symbolLen      uint16 // Length of active part of the symbol table.
-	maxCount       int    // count of the most probable symbol
-	clearCount     bool   // clear count
-	actualTableLog uint8  // Selected tablelog.
-	prevTableLog   uint8  // Tablelog for previous table
-	prevTable      cTable // Table used for previous compression.
-	cTable         cTable // compression table
-	dt             dTable // decompression table
+	symbolLen      uint16 
+	maxCount       int    
+	clearCount     bool   
+	actualTableLog uint8  
+	prevTableLog   uint8  
+	prevTable      cTable 
+	cTable         cTable 
+	dt             dTable 
 	nodes          []nodeElt
 	tmpOut         [4][]byte
 	fse            *fse.Scratch
-	decPool        sync.Pool // *[4][256]byte buffers.
+	decPool        sync.Pool 
 	huffWeight     [maxSymbolValue + 1]byte
 }
 
-// TransferCTable will transfer the previously used compression table.
+
 func (s *Scratch) TransferCTable(src *Scratch) {
 	if cap(s.prevTable) < len(src.prevTable) {
 		s.prevTable = make(cTable, 0, maxSymbolValue+1)
@@ -179,23 +179,23 @@ type cTable []cTableEntry
 
 func (c cTable) write(s *Scratch) error {
 	var (
-		// precomputed conversion table
+		
 		bitsToWeight [tableLogMax + 1]byte
 		huffLog      = s.actualTableLog
-		// last weight is not saved.
+		
 		maxSymbolValue = uint8(s.symbolLen - 1)
 		huffWeight     = s.huffWeight[:256]
 	)
 	const (
 		maxFSETableLog = 6
 	)
-	// convert to weight
+	
 	bitsToWeight[0] = 0
 	for n := uint8(1); n < huffLog+1; n++ {
 		bitsToWeight[n] = huffLog + 1 - n
 	}
 
-	// Acquire histogram for FSE.
+	
 	hist := s.fse.Histogram()
 	hist = hist[:256]
 	for i := range hist[:16] {
@@ -207,7 +207,7 @@ func (c cTable) write(s *Scratch) error {
 		hist[v]++
 	}
 
-	// FSE compress if feasible.
+	
 	if maxSymbolValue >= 2 {
 		huffMaxCnt := uint32(0)
 		huffMax := uint8(0)
@@ -228,17 +228,17 @@ func (c cTable) write(s *Scratch) error {
 			s.Out = append(s.Out, b...)
 			return nil
 		}
-		// Unable to compress (RLE/uncompressible)
+		
 	}
-	// write raw values as 4-bits (max : 15)
+	
 	if maxSymbolValue > (256 - 128) {
-		// should not happen : likely means source cannot be compressed
+		
 		return ErrIncompressible
 	}
 	op := s.Out
-	// special case, pack weights 4 bits/weight.
+	
 	op = append(op, 128|(maxSymbolValue-1))
-	// be sure it doesn't cause msan issue in final combination
+	
 	huffWeight[maxSymbolValue] = 0
 	for n := uint16(0); n < uint16(maxSymbolValue); n += 2 {
 		op = append(op, (huffWeight[n]<<4)|huffWeight[n+1])
@@ -249,23 +249,23 @@ func (c cTable) write(s *Scratch) error {
 
 func (c cTable) estTableSize(s *Scratch) (sz int, err error) {
 	var (
-		// precomputed conversion table
+		
 		bitsToWeight [tableLogMax + 1]byte
 		huffLog      = s.actualTableLog
-		// last weight is not saved.
+		
 		maxSymbolValue = uint8(s.symbolLen - 1)
 		huffWeight     = s.huffWeight[:256]
 	)
 	const (
 		maxFSETableLog = 6
 	)
-	// convert to weight
+	
 	bitsToWeight[0] = 0
 	for n := uint8(1); n < huffLog+1; n++ {
 		bitsToWeight[n] = huffLog + 1 - n
 	}
 
-	// Acquire histogram for FSE.
+	
 	hist := s.fse.Histogram()
 	hist = hist[:256]
 	for i := range hist[:16] {
@@ -277,7 +277,7 @@ func (c cTable) estTableSize(s *Scratch) (sz int, err error) {
 		hist[v]++
 	}
 
-	// FSE compress if feasible.
+	
 	if maxSymbolValue >= 2 {
 		huffMaxCnt := uint32(0)
 		huffMax := uint8(0)
@@ -297,20 +297,20 @@ func (c cTable) estTableSize(s *Scratch) (sz int, err error) {
 			sz += 1 + len(b)
 			return sz, nil
 		}
-		// Unable to compress (RLE/uncompressible)
+		
 	}
-	// write raw values as 4-bits (max : 15)
+	
 	if maxSymbolValue > (256 - 128) {
-		// should not happen : likely means source cannot be compressed
+		
 		return 0, ErrIncompressible
 	}
-	// special case, pack weights 4 bits/weight.
+	
 	sz += 1 + int(maxSymbolValue/2)
 	return sz, nil
 }
 
-// estimateSize returns the estimated size in bytes of the input represented in the
-// histogram supplied.
+
+
 func (c cTable) estimateSize(hist []uint32) int {
 	nbBits := uint32(7)
 	for i, v := range c[:len(hist)] {
@@ -319,7 +319,7 @@ func (c cTable) estimateSize(hist []uint32) int {
 	return int(nbBits >> 3)
 }
 
-// minSize returns the minimum possible size considering the shannon limit.
+
 func (s *Scratch) minSize(total int) int {
 	nbBits := float64(7)
 	fTotal := float64(total)

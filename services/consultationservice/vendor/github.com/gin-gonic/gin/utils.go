@@ -1,6 +1,6 @@
-// Copyright 2014 Manu Martinez-Almeida. All rights reserved.
-// Use of this source code is governed by a MIT style
-// license that can be found in the LICENSE file.
+
+
+
 
 package gin
 
@@ -15,10 +15,10 @@ import (
 	"unicode"
 )
 
-// BindKey indicates a default bind key.
+
 const BindKey = "_gin-gonic/gin/bindkey"
 
-// Bind is a helper function for given interface object and returns a Gin middleware.
+
 func Bind(val any) HandlerFunc {
 	value := reflect.ValueOf(val)
 	if value.Kind() == reflect.Ptr {
@@ -36,24 +36,24 @@ func Bind(val any) HandlerFunc {
 	}
 }
 
-// WrapF is a helper function for wrapping http.HandlerFunc and returns a Gin middleware.
+
 func WrapF(f http.HandlerFunc) HandlerFunc {
 	return func(c *Context) {
 		f(c.Writer, c.Request)
 	}
 }
 
-// WrapH is a helper function for wrapping http.Handler and returns a Gin middleware.
+
 func WrapH(h http.Handler) HandlerFunc {
 	return func(c *Context) {
 		h.ServeHTTP(c.Writer, c.Request)
 	}
 }
 
-// H is a shortcut for map[string]any
+
 type H map[string]any
 
-// MarshalXML allows type H to be used with xml.Marshal.
+
 func (h H) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	start.Name = xml.Name{
 		Space: "",
@@ -153,7 +153,7 @@ func resolveAddress(addr []string) string {
 	}
 }
 
-// https://stackoverflow.com/questions/53069040/checking-a-string-contains-only-ascii-characters
+
 func isASCII(s string) bool {
 	for i := 0; i < len(s); i++ {
 		if s[i] > unicode.MaxASCII {

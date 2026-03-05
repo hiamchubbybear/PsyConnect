@@ -26,103 +26,103 @@ import (
 	"github.com/segmentio/kafka-go/sasl"
 )
 
-// Request is an interface implemented by types that represent messages sent
-// from kafka clients to brokers.
+
+
 type Request = protocol.Message
 
-// Response is an interface implemented by types that represent messages sent
-// from kafka brokers in response to client requests.
+
+
 type Response = protocol.Message
 
-// RoundTripper is an interface implemented by types which support interacting
-// with kafka brokers.
+
+
 type RoundTripper interface {
-	// RoundTrip sends a request to a kafka broker and returns the response that
-	// was received, or a non-nil error.
-	//
-	// The context passed as first argument can be used to asynchronnously abort
-	// the call if needed.
+	
+	
+	
+	
+	
 	RoundTrip(context.Context, net.Addr, Request) (Response, error)
 }
 
-// Transport is an implementation of the RoundTripper interface.
-//
-// Transport values manage a pool of connections and automatically discovers the
-// clusters layout to route requests to the appropriate brokers.
-//
-// Transport values are safe to use concurrently from multiple goroutines.
-//
-// Note: The intent is for the Transport to become the underlying layer of the
-// kafka.Reader and kafka.Writer types.
+
+
+
+
+
+
+
+
+
 type Transport struct {
-	// A function used to establish connections to the kafka cluster.
+	
 	Dial func(context.Context, string, string) (net.Conn, error)
 
-	// Time limit set for establishing connections to the kafka cluster. This
-	// limit includes all round trips done to establish the connections (TLS
-	// handshake, SASL negotiation, etc...).
-	//
-	// Defaults to 5s.
+	
+	
+	
+	
+	
 	DialTimeout time.Duration
 
-	// Maximum amount of time that connections will remain open and unused.
-	// The transport will manage to automatically close connections that have
-	// been idle for too long, and re-open them on demand when the transport is
-	// used again.
-	//
-	// Defaults to 30s.
+	
+	
+	
+	
+	
+	
 	IdleTimeout time.Duration
 
-	// TTL for the metadata cached by this transport. Note that the value
-	// configured here is an upper bound, the transport randomizes the TTLs to
-	// avoid getting into states where multiple clients end up synchronized and
-	// cause bursts of requests to the kafka broker.
-	//
-	// Default to 6s.
+	
+	
+	
+	
+	
+	
 	MetadataTTL time.Duration
 
-	// Topic names for the metadata cached by this transport. If this field is left blank,
-	// metadata information of all topics in the cluster will be retrieved.
+	
+	
 	MetadataTopics []string
 
-	// Unique identifier that the transport communicates to the brokers when it
-	// sends requests.
+	
+	
 	ClientID string
 
-	// An optional configuration for TLS connections established by this
-	// transport.
-	//
-	// If the Server
+	
+	
+	
+	
 	TLS *tls.Config
 
-	// SASL configures the Transfer to use SASL authentication.
+	
 	SASL sasl.Mechanism
 
-	// An optional resolver used to translate broker host names into network
-	// addresses.
-	//
-	// The resolver will be called for every request (not every connection),
-	// making it possible to implement ACL policies by validating that the
-	// program is allowed to connect to the kafka broker. This also means that
-	// the resolver should probably provide a caching layer to avoid storming
-	// the service discovery backend with requests.
-	//
-	// When set, the Dial function is not responsible for performing name
-	// resolution, and is always called with a pre-resolved address.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	Resolver BrokerResolver
 
-	// The background context used to control goroutines started internally by
-	// the transport.
-	//
-	// If nil, context.Background() is used instead.
+	
+	
+	
+	
 	Context context.Context
 
 	mutex sync.RWMutex
 	pools map[networkAddress]*connPool
 }
 
-// DefaultTransport is the default transport used by kafka clients in this
-// package.
+
+
 var DefaultTransport RoundTripper = &Transport{
 	Dial: (&net.Dialer{
 		Timeout:   3 * time.Second,
@@ -130,8 +130,8 @@ var DefaultTransport RoundTripper = &Transport{
 	}).DialContext,
 }
 
-// CloseIdleConnections closes all idle connections immediately, and marks all
-// connections that are in use to be closed when they become idle again.
+
+
 func (t *Transport) CloseIdleConnections() {
 	t.mutex.Lock()
 	defer t.mutex.Unlock()
@@ -145,36 +145,36 @@ func (t *Transport) CloseIdleConnections() {
 	}
 }
 
-// RoundTrip sends a request to a kafka cluster and returns the response, or an
-// error if no responses were received.
-//
-// Message types are available in sub-packages of the protocol package. Each
-// kafka API is implemented in a different sub-package. For example, the request
-// and response types for the Fetch API are available in the protocol/fetch
-// package.
-//
-// The type of the response message will match the type of the request. For
-// example, if RoundTrip was called with a *fetch.Request as argument, the value
-// returned will be of type *fetch.Response. It is safe for the program to do a
-// type assertion after checking that no error was returned.
-//
-// This example illustrates the way this method is expected to be used:
-//
-//	r, err := transport.RoundTrip(ctx, addr, &fetch.Request{ ... })
-//	if err != nil {
-//		...
-//	} else {
-//		res := r.(*fetch.Response)
-//		...
-//	}
-//
-// The transport automatically selects the highest version of the API that is
-// supported by both the kafka-go package and the kafka broker. The negotiation
-// happens transparently once when connections are established.
-//
-// This API was introduced in version 0.4 as a way to leverage the lower-level
-// features of the kafka protocol, but also provide a more efficient way of
-// managing connections to kafka brokers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (t *Transport) RoundTrip(ctx context.Context, addr net.Addr, req Request) (Response, error) {
 	p := t.grabPool(addr)
 	defer p.unref()
@@ -278,9 +278,9 @@ func (e event) trigger() { close(e) }
 
 type connPool struct {
 	refc uintptr
-	// Immutable fields of the connection pool. Connections access these field
-	// on their parent pool in a ready-only fashion, so no synchronization is
-	// required.
+	
+	
+	
 	dial           func(context.Context, string, string) (net.Conn, error)
 	dialTimeout    time.Duration
 	idleTimeout    time.Duration
@@ -290,23 +290,23 @@ type connPool struct {
 	tls            *tls.Config
 	sasl           sasl.Mechanism
 	resolver       BrokerResolver
-	// Signaling mechanisms to orchestrate communications between the pool and
-	// the rest of the program.
-	once   sync.Once  // ensure that `ready` is triggered only once
-	ready  event      // triggered after the first metadata update
-	wake   chan event // used to force metadata updates
+	
+	
+	once   sync.Once  
+	ready  event      
+	wake   chan event 
 	cancel context.CancelFunc
-	// Mutable fields of the connection pool, access must be synchronized.
+	
 	mutex sync.RWMutex
-	conns map[int32]*connGroup // data connections used for produce/fetch/etc...
-	ctrl  *connGroup           // control connections used for metadata requests
-	state atomic.Value         // cached cluster state
+	conns map[int32]*connGroup 
+	ctrl  *connGroup           
+	state atomic.Value         
 }
 
 type connPoolState struct {
-	metadata *meta.Response   // last metadata response seen by the pool
-	err      error            // last error from metadata requests
-	layout   protocol.Cluster // cluster layout built from metadata response
+	metadata *meta.Response   
+	err      error            
+	layout   protocol.Cluster 
 }
 
 func (p *connPool) grabState() connPoolState {
@@ -337,8 +337,8 @@ func (p *connPool) unref() {
 }
 
 func (p *connPool) roundTrip(ctx context.Context, req Request) (Response, error) {
-	// This first select should never block after the first metadata response
-	// that would mark the pool as `ready`.
+	
+	
 	select {
 	case <-p.ready:
 	case <-ctx.Done():
@@ -350,19 +350,19 @@ func (p *connPool) roundTrip(ctx context.Context, req Request) (Response, error)
 
 	switch m := req.(type) {
 	case *meta.Request:
-		// We serve metadata requests directly from the transport cache unless
-		// we would like to auto create a topic that isn't in our cache.
-		//
-		// This reduces the number of round trips to kafka brokers while keeping
-		// the logic simple when applying partitioning strategies.
+		
+		
+		
+		
+		
 		if state.err != nil {
 			return nil, state.err
 		}
 
 		cachedMeta := filterMetadataResponse(m, state.metadata)
-		// requestNeeded indicates if we need to send this metadata request to the server.
-		// It's true when we want to auto-create topics and we don't have the topic in our
-		// cache.
+		
+		
+		
 		var requestNeeded bool
 		if m.AllowAutoTopicCreation {
 			for _, topic := range cachedMeta.Topics {
@@ -378,9 +378,9 @@ func (p *connPool) roundTrip(ctx context.Context, req Request) (Response, error)
 		}
 
 	case protocol.Splitter:
-		// Messages that implement the Splitter interface trigger the creation of
-		// multiple requests that are all merged back into a single results by
-		// a merger.
+		
+		
+		
 		messages, merger, err := m.Split(state.layout)
 		if err != nil {
 			return nil, err
@@ -403,11 +403,11 @@ func (p *connPool) roundTrip(ctx context.Context, req Request) (Response, error)
 
 	switch resp := r.(type) {
 	case *createtopics.Response:
-		// Force an update of the metadata when adding topics,
-		// otherwise the cached state would get out of sync.
+		
+		
 		topicsToRefresh := make([]string, 0, len(resp.Topics))
 		for _, topic := range resp.Topics {
-			// fixes issue 672: don't refresh topics that failed to create, it causes the library to hang indefinitely
+			
 			if topic.ErrorCode != 0 {
 				continue
 			}
@@ -418,17 +418,17 @@ func (p *connPool) roundTrip(ctx context.Context, req Request) (Response, error)
 		p.refreshMetadata(ctx, topicsToRefresh)
 	case *meta.Response:
 		m := req.(*meta.Request)
-		// If we get here with allow auto topic creation then
-		// we didn't have that topic in our cache, so we should update
-		// the cache.
+		
+		
+		
 		if m.AllowAutoTopicCreation {
 			topicsToRefresh := make([]string, 0, len(resp.Topics))
 			for _, topic := range resp.Topics {
-				// Don't refresh topics that failed to create, since that may
-				// mean that enable automatic topic creation is not enabled.
-				// That causes the library to hang indefinitely, same as
-				// don't refresh topics that failed to create,
-				// createtopics process. Fixes issue 806.
+				
+				
+				
+				
+				
 				if topic.ErrorCode != 0 {
 					continue
 				}
@@ -442,11 +442,11 @@ func (p *connPool) roundTrip(ctx context.Context, req Request) (Response, error)
 	return r, nil
 }
 
-// refreshMetadata forces an update of the cached cluster metadata, and waits
-// for the given list of topics to appear. This waiting mechanism is necessary
-// to account for the fact that topic creation is asynchronous in kafka, and
-// causes subsequent requests to fail while the cluster state is propagated to
-// all the brokers.
+
+
+
+
+
 func (p *connPool) refreshMetadata(ctx context.Context, expectTopics []string) {
 	minBackoff := 100 * time.Millisecond
 	maxBackoff := 2 * time.Second
@@ -497,16 +497,16 @@ func (p *connPool) setReady() {
 	p.once.Do(p.ready.trigger)
 }
 
-// update is called periodically by the goroutine running the discover method
-// to refresh the cluster layout information used by the transport to route
-// requests to brokers.
+
+
+
 func (p *connPool) update(ctx context.Context, metadata *meta.Response, err error) {
 	var layout protocol.Cluster
 
 	if metadata != nil {
 		metadata.ThrottleTimeMs = 0
 
-		// Normalize the lists so we can apply binary search on them.
+		
 		sortMetadataBrokers(metadata.Brokers)
 		sortMetadataTopics(metadata.Topics)
 
@@ -523,9 +523,9 @@ func (p *connPool) update(ctx context.Context, metadata *meta.Response, err erro
 	delBrokers := make(map[int32]struct{})
 
 	if err != nil {
-		// Only update the error on the transport if the cluster layout was
-		// unknown. This ensures that we prioritize a previously known state
-		// of the cluster to reduce the impact of transient failures.
+		
+		
+		
 		if state.metadata != nil {
 			return
 		}
@@ -554,14 +554,14 @@ func (p *connPool) update(ctx context.Context, metadata *meta.Response, err erro
 	defer p.setState(state)
 
 	if len(addBrokers) != 0 || len(delBrokers) != 0 {
-		// Only acquire the lock when there is a change of layout. This is an
-		// infrequent event so we don't risk introducing regular contention on
-		// the mutex if we were to lock it on every update.
+		
+		
+		
 		p.mutex.Lock()
 		defer p.mutex.Unlock()
 
 		if ctx.Err() != nil {
-			return // the pool has been closed, no need to update
+			return 
 		}
 
 		for id := range delBrokers {
@@ -583,9 +583,9 @@ func (p *connPool) update(ctx context.Context, metadata *meta.Response, err erro
 	}
 }
 
-// discover is the entry point of an internal goroutine for the transport which
-// periodically requests updates of the cluster metadata and refreshes the
-// transport cached cluster layout.
+
+
+
 func (p *connPool) discover(ctx context.Context, wake <-chan event) {
 	prng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	metadataTTL := func() time.Duration {
@@ -638,9 +638,9 @@ func (p *connPool) discover(ctx context.Context, wake <-chan event) {
 	}
 }
 
-// grabBrokerConn returns a connection to a specific broker represented by the
-// broker id passed as argument. If the broker id was not known, an error is
-// returned.
+
+
+
 func (p *connPool) grabBrokerConn(ctx context.Context, brokerID int32) (*conn, error) {
 	p.mutex.RLock()
 	g := p.conns[brokerID]
@@ -651,19 +651,19 @@ func (p *connPool) grabBrokerConn(ctx context.Context, brokerID int32) (*conn, e
 	return g.grabConnOrConnect(ctx)
 }
 
-// grabClusterConn returns the connection to the kafka cluster that the pool is
-// configured to connect to.
-//
-// The transport uses a shared `control` connection to the cluster for any
-// requests that aren't supposed to be sent to specific brokers (e.g. Fetch or
-// Produce requests). Requests intended to be routed to specific brokers are
-// dispatched on a separate pool of connections that the transport maintains.
-// This split help avoid head-of-line blocking situations where control requests
-// like Metadata would be queued behind large responses from Fetch requests for
-// example.
-//
-// In either cases, the requests are multiplexed so we can keep a minimal number
-// of connections open (N+1, where N is the number of brokers in the cluster).
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (p *connPool) grabClusterConn(ctx context.Context) (*conn, error) {
 	return p.ctrl.grabConnOrConnect(ctx)
 }
@@ -673,9 +673,9 @@ func (p *connPool) sendRequest(ctx context.Context, req Request, state connPoolS
 
 	switch m := req.(type) {
 	case protocol.BrokerMessage:
-		// Some requests are supposed to be sent to specific brokers (e.g. the
-		// partition leaders). They implement the BrokerMessage interface to
-		// delegate the routing decision to each message type.
+		
+		
+		
 		broker, err := m.Broker(state.layout)
 		if err != nil {
 			return reject(err)
@@ -683,11 +683,11 @@ func (p *connPool) sendRequest(ctx context.Context, req Request, state connPoolS
 		brokerID = broker.ID
 
 	case protocol.GroupMessage:
-		// Some requests are supposed to be sent to a group coordinator,
-		// look up which broker is currently the coordinator for the group
-		// so we can get a connection to that broker.
-		//
-		// TODO: should we cache the coordinator info?
+		
+		
+		
+		
+		
 		p := p.sendRequest(ctx, &findcoordinator.Request{Key: m.Group()}, state)
 		r, err := p.await(ctx)
 		if err != nil {
@@ -793,7 +793,7 @@ func makeLayout(metadataResponse *meta.Response) protocol.Cluster {
 
 	for _, topic := range metadataResponse.Topics {
 		if topic.IsInternal {
-			continue // TODO: do we need to expose those?
+			continue 
 		}
 		layout.Topics[topic.Name] = protocol.Topic{
 			Name:       topic.Name,
@@ -813,8 +813,8 @@ func makePartitions(metadataPartitions []meta.ResponsePartition) map[int32]proto
 		numBrokerIDs += len(p.ReplicaNodes) + len(p.IsrNodes) + len(p.OfflineReplicas)
 	}
 
-	// Reduce the memory footprint a bit by allocating a single buffer to write
-	// all broker ids.
+	
+	
 	brokerIDs := make([]int32, 0, numBrokerIDs)
 
 	for _, p := range metadataPartitions {
@@ -869,15 +869,15 @@ type connRequest struct {
 	res async
 }
 
-// The promise interface is used as a message passing abstraction to coordinate
-// between goroutines that handle requests and responses.
+
+
 type promise interface {
-	// Waits until the promise is resolved, rejected, or the context canceled.
+	
 	await(context.Context) (Response, error)
 }
 
-// async is an implementation of the promise interface which supports resolving
-// or rejecting the await call asynchronously.
+
+
 type async chan interface{}
 
 func (p async) await(ctx context.Context) (Response, error) {
@@ -885,7 +885,7 @@ func (p async) await(ctx context.Context) (Response, error) {
 	case x := <-p:
 		switch v := x.(type) {
 		case nil:
-			return nil, nil // A nil response is ok (e.g. when RequiredAcks is None)
+			return nil, nil 
 		case Response:
 			return v, nil
 		case error:
@@ -902,9 +902,9 @@ func (p async) resolve(res Response) { p <- res }
 
 func (p async) reject(err error) { p <- err }
 
-// rejected is an implementation of the promise interface which is always
-// returns an error. Values of this type are constructed using the reject
-// function.
+
+
+
 type rejected struct{ err error }
 
 func reject(err error) promise { return &rejected{err: err} }
@@ -913,8 +913,8 @@ func (p *rejected) await(ctx context.Context) (Response, error) {
 	return nil, p.err
 }
 
-// joined is an implementation of the promise interface which merges results
-// from multiple promises into one await call using a merger.
+
+
 type joined struct {
 	promises []promise
 	requests []Request
@@ -944,27 +944,27 @@ func (p *joined) await(ctx context.Context) (Response, error) {
 	return p.merger.Merge(p.requests, results)
 }
 
-// Default dialer used by the transport connections when no Dial function
-// was configured by the program.
+
+
 var defaultDialer = net.Dialer{
 	Timeout:   3 * time.Second,
 	DualStack: true,
 }
 
-// connGroup represents a logical connection group to a kafka broker. The
-// actual network connections are lazily open before sending requests, and
-// closed if they are unused for longer than the idle timeout.
+
+
+
 type connGroup struct {
 	addr   net.Addr
 	broker Broker
-	// Immutable state of the connection.
+	
 	pool *connPool
-	// Shared state of the connection, this is synchronized on the mutex through
-	// calls to the synchronized method. Both goroutines of the connection share
-	// the state maintained in these fields.
+	
+	
+	
 	mutex     sync.Mutex
 	closed    bool
-	idleConns []*conn // stack of idle connections
+	idleConns []*conn 
 }
 
 func (g *connGroup) closeIdleConns() {
@@ -1150,9 +1150,9 @@ func (g *connGroup) connect(ctx context.Context, addr net.Addr) (*conn, error) {
 	var err error
 
 	if len(address) > 1 {
-		// Shuffle the list of addresses to randomize the order in which
-		// connections are attempted. This prevents routing all connections
-		// to the first broker (which will usually succeed).
+		
+		
+		
 		rand.Shuffle(len(address), func(i, j int) {
 			network[i], network[j] = network[j], network[i]
 			address[i], address[j] = address[j], address[i]
@@ -1282,9 +1282,9 @@ func (c *conn) roundTrip(ctx context.Context, pc *protocol.Conn, req Request) (R
 	return pc.RoundTrip(req)
 }
 
-// authenticateSASL performs all of the required requests to authenticate this
-// connection.  If any step fails, this function returns with an error.  A nil
-// error indicates successful authentication.
+
+
+
 func authenticateSASL(ctx context.Context, pc *protocol.Conn, mechanism sasl.Mechanism) error {
 	if err := saslHandshakeRoundTrip(pc, mechanism.Name()); err != nil {
 		return err
@@ -1299,9 +1299,9 @@ func authenticateSASL(ctx context.Context, pc *protocol.Conn, mechanism sasl.Mec
 		challenge, err := saslAuthenticateRoundTrip(pc, state)
 		if err != nil {
 			if errors.Is(err, io.EOF) {
-				// the broker may communicate a failed exchange by closing the
-				// connection (esp. in the case where we're passing opaque sasl
-				// data over the wire since there's no protocol info).
+				
+				
+				
 				return SASLAuthenticationFailed
 			}
 
@@ -1317,17 +1317,17 @@ func authenticateSASL(ctx context.Context, pc *protocol.Conn, mechanism sasl.Mec
 	return nil
 }
 
-// saslHandshake sends the SASL handshake message.  This will determine whether
-// the Mechanism is supported by the cluster.  If it's not, this function will
-// error out with UnsupportedSASLMechanism.
-//
-// If the mechanism is unsupported, the handshake request will reply with the
-// list of the cluster's configured mechanisms, which could potentially be used
-// to facilitate negotiation.  At the moment, we are not negotiating the
-// mechanism as we believe that brokers are usually known to the client, and
-// therefore the client should already know which mechanisms are supported.
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_SaslHandshake
+
+
+
+
+
+
+
+
+
+
+
 func saslHandshakeRoundTrip(pc *protocol.Conn, mechanism string) error {
 	msg, err := pc.RoundTrip(&saslhandshake.Request{
 		Mechanism: mechanism,
@@ -1342,10 +1342,10 @@ func saslHandshakeRoundTrip(pc *protocol.Conn, mechanism string) error {
 	return err
 }
 
-// saslAuthenticate sends the SASL authenticate message.  This function must
-// be immediately preceded by a successful saslHandshake.
-//
-// See http://kafka.apache.org/protocol.html#The_Messages_SaslAuthenticate
+
+
+
+
 func saslAuthenticateRoundTrip(pc *protocol.Conn, data []byte) ([]byte, error) {
 	msg, err := pc.RoundTrip(&saslauthenticate.Request{
 		AuthBytes: data,

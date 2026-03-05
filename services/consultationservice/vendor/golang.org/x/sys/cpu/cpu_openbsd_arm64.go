@@ -1,6 +1,6 @@
-// Copyright 2022 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package cpu
 
@@ -9,19 +9,19 @@ import (
 	"unsafe"
 )
 
-// Minimal copy of functionality from x/sys/unix so the cpu package can call
-// sysctl without depending on x/sys/unix.
+
+
 
 const (
-	// From OpenBSD's sys/sysctl.h.
+	
 	_CTL_MACHDEP = 7
 
-	// From OpenBSD's machine/cpu.h.
+	
 	_CPU_ID_AA64ISAR0 = 2
 	_CPU_ID_AA64ISAR1 = 3
 )
 
-// Implemented in the runtime package (runtime/sys_openbsd3.go)
+
 func syscall_syscall6(fn, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2 uintptr, err syscall.Errno)
 
 //go:linkname syscall_syscall6 syscall.syscall6
@@ -50,7 +50,7 @@ func sysctlUint64(mib []uint32) (uint64, bool) {
 func doinit() {
 	setMinimalFeatures()
 
-	// Get ID_AA64ISAR0 and ID_AA64ISAR1 from sysctl.
+	
 	isar0, ok := sysctlUint64([]uint32{_CTL_MACHDEP, _CPU_ID_AA64ISAR0})
 	if !ok {
 		return

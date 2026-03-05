@@ -1,17 +1,17 @@
-//
-// Copyright (c) 2011-2019 Canonical Ltd
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package yaml
 
@@ -98,8 +98,8 @@ func (l keyList) Less(i, j int) bool {
 	return len(ar) < len(br)
 }
 
-// keyFloat returns a float value for v if it is a number/bool
-// and whether it is a number/bool or not.
+
+
 func keyFloat(v reflect.Value) (f float64, ok bool) {
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -117,8 +117,8 @@ func keyFloat(v reflect.Value) (f float64, ok bool) {
 	return 0, false
 }
 
-// numLess returns whether a < b.
-// a and b must necessarily have the same kind.
+
+
 func numLess(a, b reflect.Value) bool {
 	switch a.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:

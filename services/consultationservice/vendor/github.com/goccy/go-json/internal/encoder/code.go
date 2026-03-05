@@ -247,9 +247,9 @@ func (c *SliceCode) Kind() CodeKind {
 }
 
 func (c *SliceCode) ToOpcode(ctx *compileContext) Opcodes {
-	// header => opcode => elem => end
-	//             ^        |
-	//             |________|
+	
+	
+	
 	size := c.typ.Elem().Size()
 	header := newSliceHeaderCode(ctx, c.typ)
 	ctx.incIndex()
@@ -285,9 +285,9 @@ func (c *ArrayCode) Kind() CodeKind {
 }
 
 func (c *ArrayCode) ToOpcode(ctx *compileContext) Opcodes {
-	// header => opcode => elem => end
-	//             ^        |
-	//             |________|
+	
+	
+	
 	elem := c.typ.Elem()
 	alen := c.typ.Len()
 	size := elem.Size()
@@ -331,9 +331,9 @@ func (c *MapCode) Kind() CodeKind {
 }
 
 func (c *MapCode) ToOpcode(ctx *compileContext) Opcodes {
-	// header => code => value => code => key => code => value => code => end
-	//                                     ^                       |
-	//                                     |_______________________|
+	
+	
+	
 	header := newMapHeaderCode(ctx, c.typ)
 	ctx.incIndex()
 
@@ -395,8 +395,8 @@ func (c *StructCode) lastFieldCode(field *StructFieldCode, firstField *Opcode) *
 }
 
 func (c *StructCode) lastAnonymousFieldCode(firstField *Opcode) *Opcode {
-	// firstField is special StructHead operation for anonymous structure.
-	// So, StructHead's next operation is truly struct head operation.
+	
+	
 	for firstField.Op == OpStructHead || firstField.Op == OpStructField {
 		firstField = firstField.Next
 	}
@@ -408,9 +408,9 @@ func (c *StructCode) lastAnonymousFieldCode(firstField *Opcode) *Opcode {
 }
 
 func (c *StructCode) ToOpcode(ctx *compileContext) Opcodes {
-	// header => code => structField => code => end
-	//                        ^          |
-	//                        |__________|
+	
+	
+	
 	if c.isRecursive {
 		recursive := newRecursiveCode(ctx, c.typ, &CompiledCode{})
 		recursive.Type = c.typ
@@ -478,9 +478,9 @@ func (c *StructCode) ToOpcode(ctx *compileContext) Opcodes {
 }
 
 func (c *StructCode) ToAnonymousOpcode(ctx *compileContext) Opcodes {
-	// header => code => structField => code => end
-	//                        ^          |
-	//                        |__________|
+	
+	
+	
 	if c.isRecursive {
 		recursive := newRecursiveCode(ctx, c.typ, &CompiledCode{})
 		recursive.Type = c.typ
@@ -971,7 +971,7 @@ func convertPtrOp(code *Opcode) OpType {
 	ptrHeadOp := code.Op.HeadToPtrHead()
 	if code.Op != ptrHeadOp {
 		if code.PtrNum > 0 {
-			// ptr field and ptr head
+			
 			code.PtrNum--
 		}
 		return ptrHeadOp

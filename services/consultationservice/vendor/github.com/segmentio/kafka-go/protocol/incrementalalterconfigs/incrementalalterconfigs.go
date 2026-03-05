@@ -15,7 +15,7 @@ func init() {
 	protocol.Register(&Request{}, &Response{})
 }
 
-// Detailed API definition: https://kafka.apache.org/protocol#The_Messages_IncrementalAlterConfigs
+
 type Request struct {
 	Resources    []RequestResource `kafka:"min=v0,max=v0"`
 	ValidateOnly bool              `kafka:"min=v0,max=v0"`
@@ -36,9 +36,9 @@ type RequestConfig struct {
 func (r *Request) ApiKey() protocol.ApiKey { return protocol.IncrementalAlterConfigs }
 
 func (r *Request) Broker(cluster protocol.Cluster) (protocol.Broker, error) {
-	// Check that at most only one broker is being updated.
-	//
-	// TODO: Support updating multiple brokers in a single request.
+	
+	
+	
 	brokers := map[string]struct{}{}
 	for _, resource := range r.Resources {
 		if resource.ResourceType == resourceTypeBroker {

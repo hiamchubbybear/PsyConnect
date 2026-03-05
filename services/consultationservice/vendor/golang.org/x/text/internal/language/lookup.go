@@ -1,6 +1,6 @@
-// Copyright 2013 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package language
 
@@ -13,8 +13,8 @@ import (
 	"golang.org/x/text/internal/tag"
 )
 
-// findIndex tries to find the given tag in idx and returns a standardized error
-// if it could not be found.
+
+
 func findIndex(idx tag.Index, key []byte, form string) (index int, err error) {
 	if !tag.FixCase(form, key) {
 		return 0, ErrSyntax
@@ -34,8 +34,8 @@ func searchUint(imap []uint16, key uint16) int {
 
 type Language uint16
 
-// getLangID returns the langID of s if s is a canonical subtag
-// or langUnknown if s is not a canonical subtag.
+
+
 func getLangID(s []byte) (Language, error) {
 	if len(s) == 2 {
 		return getLangISO2(s)
@@ -43,14 +43,14 @@ func getLangID(s []byte) (Language, error) {
 	return getLangISO3(s)
 }
 
-// TODO language normalization as well as the AliasMaps could be moved to the
-// higher level package, but it is a bit tricky to separate the generation.
+
+
 
 func (id Language) Canonicalize() (Language, AliasType) {
 	return normLang(id)
 }
 
-// normLang returns the mapped langID of id according to mapping m.
+
 func normLang(id Language) (Language, AliasType) {
 	k := sort.Search(len(AliasMap), func(i int) bool {
 		return AliasMap[i].From >= uint16(id)
@@ -61,8 +61,8 @@ func normLang(id Language) (Language, AliasType) {
 	return id, AliasTypeUnknown
 }
 
-// getLangISO2 returns the langID for the given 2-letter ISO language code
-// or unknownLang if this does not exist.
+
+
 func getLangISO2(s []byte) (Language, error) {
 	if !tag.FixCase("zz", s) {
 		return 0, ErrSyntax
@@ -84,8 +84,8 @@ func strToInt(s []byte) uint {
 	return v
 }
 
-// converts the given integer to the original ASCII string passed to strToInt.
-// len(s) must match the number of characters obtained.
+
+
 func intToStr(v uint, s []byte) {
 	for i := len(s) - 1; i >= 0; i-- {
 		s[i] = byte(v%base) + 'a'
@@ -93,16 +93,16 @@ func intToStr(v uint, s []byte) {
 	}
 }
 
-// getLangISO3 returns the langID for the given 3-letter ISO language code
-// or unknownLang if this does not exist.
+
+
 func getLangISO3(s []byte) (Language, error) {
 	if tag.FixCase("und", s) {
-		// first try to match canonical 3-letter entries
+		
 		for i := lang.Index(s[:2]); i != -1; i = lang.Next(s[:2], i) {
 			if e := lang.Elem(i); e[3] == 0 && e[2] == s[2] {
-				// We treat "und" as special and always translate it to "unspecified".
-				// Note that ZZ and Zzzz are private use and are not treated as
-				// unspecified by default.
+				
+				
+				
 				id := Language(i)
 				if id == nonCanonicalUnd {
 					return 0, nil
@@ -117,7 +117,7 @@ func getLangISO3(s []byte) (Language, error) {
 		if langNoIndex[n/8]&(1<<(n%8)) != 0 {
 			return Language(n) + langNoIndexOffset, nil
 		}
-		// Check for non-canonical uses of ISO3.
+		
 		for i := lang.Index(s[:1]); i != -1; i = lang.Next(s[:1], i) {
 			if e := lang.Elem(i); e[2] == s[1] && e[3] == s[2] {
 				return Language(i), nil
@@ -128,8 +128,8 @@ func getLangISO3(s []byte) (Language, error) {
 	return 0, ErrSyntax
 }
 
-// StringToBuf writes the string to b and returns the number of bytes
-// written.  cap(b) must be >= 3.
+
+
 func (id Language) StringToBuf(b []byte) int {
 	if id >= langNoIndexOffset {
 		intToStr(uint(id)-langNoIndexOffset, b[:3])
@@ -144,9 +144,9 @@ func (id Language) StringToBuf(b []byte) int {
 	return copy(b, l[:2])
 }
 
-// String returns the BCP 47 representation of the langID.
-// Use b as variable name, instead of id, to ensure the variable
-// used is consistent with that of Base in which this type is embedded.
+
+
+
 func (b Language) String() string {
 	if b == 0 {
 		return "und"
@@ -163,7 +163,7 @@ func (b Language) String() string {
 	return l[:2]
 }
 
-// ISO3 returns the ISO 639-3 language code.
+
 func (b Language) ISO3() string {
 	if b == 0 || b >= langNoIndexOffset {
 		return b.String()
@@ -174,18 +174,18 @@ func (b Language) ISO3() string {
 	} else if l[2] == 0 {
 		return altLangISO3.Elem(int(l[3]))[:3]
 	}
-	// This allocation will only happen for 3-letter ISO codes
-	// that are non-canonical BCP 47 language identifiers.
+	
+	
 	return l[0:1] + l[2:4]
 }
 
-// IsPrivateUse reports whether this language code is reserved for private use.
+
 func (b Language) IsPrivateUse() bool {
 	return langPrivateStart <= b && b <= langPrivateEnd
 }
 
-// SuppressScript returns the script marked as SuppressScript in the IANA
-// language tag repository, or 0 if there is no such script.
+
+
 func (b Language) SuppressScript() Script {
 	if b < langNoIndexOffset {
 		return Script(suppressScript[b])
@@ -195,8 +195,8 @@ func (b Language) SuppressScript() Script {
 
 type Region uint16
 
-// getRegionID returns the region id for s if s is a valid 2-letter region code
-// or unknownRegion.
+
+
 func getRegionID(s []byte) (Region, error) {
 	if len(s) == 3 {
 		if isAlpha(s[0]) {
@@ -209,8 +209,8 @@ func getRegionID(s []byte) (Region, error) {
 	return getRegionISO2(s)
 }
 
-// getRegionISO2 returns the regionID for the given 2-letter ISO country code
-// or unknownRegion if this does not exist.
+
+
 func getRegionISO2(s []byte) (Region, error) {
 	i, err := findIndex(regionISO, s, "ZZ")
 	if err != nil {
@@ -219,8 +219,8 @@ func getRegionISO2(s []byte) (Region, error) {
 	return Region(i) + isoRegionOffset, nil
 }
 
-// getRegionISO3 returns the regionID for the given 3-letter ISO country code
-// or unknownRegion if this does not exist.
+
+
 func getRegionISO3(s []byte) (Region, error) {
 	if tag.FixCase("ZZZ", s) {
 		for i := regionISO.Index(s[:1]); i != -1; i = regionISO.Next(s[:1], i) {
@@ -247,7 +247,7 @@ func getRegionM49(n int) (Region, error) {
 		)
 		idx := n >> searchBits
 		buf := fromM49[m49Index[idx]:m49Index[idx+1]]
-		val := uint16(n) << regionBits // we rely on bits shifting out
+		val := uint16(n) << regionBits 
 		i := sort.Search(len(buf), func(i int) bool {
 			return buf[i] >= val
 		})
@@ -260,9 +260,9 @@ func getRegionM49(n int) (Region, error) {
 	return 0, e
 }
 
-// normRegion returns a region if r is deprecated or 0 otherwise.
-// TODO: consider supporting BYS (-> BLR), CSK (-> 200 or CZ), PHI (-> PHL) and AFI (-> DJ).
-// TODO: consider mapping split up regions to new most populous one (like CLDR).
+
+
+
 func normRegion(r Region) Region {
 	m := regionOldMap
 	k := sort.Search(len(m), func(i int) bool {
@@ -284,8 +284,8 @@ func (r Region) typ() byte {
 	return regionTypes[r]
 }
 
-// String returns the BCP 47 representation for the region.
-// It returns "ZZ" for an unspecified region.
+
+
 func (r Region) String() string {
 	if r < isoRegionOffset {
 		if r == 0 {
@@ -297,9 +297,9 @@ func (r Region) String() string {
 	return regionISO.Elem(int(r))[:2]
 }
 
-// ISO3 returns the 3-letter ISO code of r.
-// Note that not all regions have a 3-letter ISO code.
-// In such cases this method returns "ZZZ".
+
+
+
 func (r Region) ISO3() string {
 	if r < isoRegionOffset {
 		return "ZZZ"
@@ -315,30 +315,30 @@ func (r Region) ISO3() string {
 	return reg[0:1] + reg[2:4]
 }
 
-// M49 returns the UN M.49 encoding of r, or 0 if this encoding
-// is not defined for r.
+
+
 func (r Region) M49() int {
 	return int(m49[r])
 }
 
-// IsPrivateUse reports whether r has the ISO 3166 User-assigned status. This
-// may include private-use tags that are assigned by CLDR and used in this
-// implementation. So IsPrivateUse and IsCountry can be simultaneously true.
+
+
+
 func (r Region) IsPrivateUse() bool {
 	return r.typ()&iso3166UserAssigned != 0
 }
 
 type Script uint16
 
-// getScriptID returns the script id for string s. It assumes that s
-// is of the format [A-Z][a-z]{3}.
+
+
 func getScriptID(idx tag.Index, s []byte) (Script, error) {
 	i, err := findIndex(idx, s, "Zzzz")
 	return Script(i), err
 }
 
-// String returns the script code in title case.
-// It returns "Zzzz" for an unspecified script.
+
+
 func (s Script) String() string {
 	if s == 0 {
 		return "Zzzz"
@@ -346,7 +346,7 @@ func (s Script) String() string {
 	return script.Elem(int(s))
 }
 
-// IsPrivateUse reports whether this script code is reserved for private use.
+
 func (s Script) IsPrivateUse() bool {
 	return _Qaaa <= s && s <= _Qabx
 }
@@ -357,42 +357,42 @@ const (
 )
 
 var (
-	// grandfatheredMap holds a mapping from legacy and grandfathered tags to
-	// their base language or index to more elaborate tag.
+	
+	
 	grandfatheredMap = map[[maxLen]byte]int16{
-		[maxLen]byte{'a', 'r', 't', '-', 'l', 'o', 'j', 'b', 'a', 'n'}: _jbo, // art-lojban
-		[maxLen]byte{'i', '-', 'a', 'm', 'i'}:                          _ami, // i-ami
-		[maxLen]byte{'i', '-', 'b', 'n', 'n'}:                          _bnn, // i-bnn
-		[maxLen]byte{'i', '-', 'h', 'a', 'k'}:                          _hak, // i-hak
-		[maxLen]byte{'i', '-', 'k', 'l', 'i', 'n', 'g', 'o', 'n'}:      _tlh, // i-klingon
-		[maxLen]byte{'i', '-', 'l', 'u', 'x'}:                          _lb,  // i-lux
-		[maxLen]byte{'i', '-', 'n', 'a', 'v', 'a', 'j', 'o'}:           _nv,  // i-navajo
-		[maxLen]byte{'i', '-', 'p', 'w', 'n'}:                          _pwn, // i-pwn
-		[maxLen]byte{'i', '-', 't', 'a', 'o'}:                          _tao, // i-tao
-		[maxLen]byte{'i', '-', 't', 'a', 'y'}:                          _tay, // i-tay
-		[maxLen]byte{'i', '-', 't', 's', 'u'}:                          _tsu, // i-tsu
-		[maxLen]byte{'n', 'o', '-', 'b', 'o', 'k'}:                     _nb,  // no-bok
-		[maxLen]byte{'n', 'o', '-', 'n', 'y', 'n'}:                     _nn,  // no-nyn
-		[maxLen]byte{'s', 'g', 'n', '-', 'b', 'e', '-', 'f', 'r'}:      _sfb, // sgn-BE-FR
-		[maxLen]byte{'s', 'g', 'n', '-', 'b', 'e', '-', 'n', 'l'}:      _vgt, // sgn-BE-NL
-		[maxLen]byte{'s', 'g', 'n', '-', 'c', 'h', '-', 'd', 'e'}:      _sgg, // sgn-CH-DE
-		[maxLen]byte{'z', 'h', '-', 'g', 'u', 'o', 'y', 'u'}:           _cmn, // zh-guoyu
-		[maxLen]byte{'z', 'h', '-', 'h', 'a', 'k', 'k', 'a'}:           _hak, // zh-hakka
-		[maxLen]byte{'z', 'h', '-', 'm', 'i', 'n', '-', 'n', 'a', 'n'}: _nan, // zh-min-nan
-		[maxLen]byte{'z', 'h', '-', 'x', 'i', 'a', 'n', 'g'}:           _hsn, // zh-xiang
+		[maxLen]byte{'a', 'r', 't', '-', 'l', 'o', 'j', 'b', 'a', 'n'}: _jbo, 
+		[maxLen]byte{'i', '-', 'a', 'm', 'i'}:                          _ami, 
+		[maxLen]byte{'i', '-', 'b', 'n', 'n'}:                          _bnn, 
+		[maxLen]byte{'i', '-', 'h', 'a', 'k'}:                          _hak, 
+		[maxLen]byte{'i', '-', 'k', 'l', 'i', 'n', 'g', 'o', 'n'}:      _tlh, 
+		[maxLen]byte{'i', '-', 'l', 'u', 'x'}:                          _lb,  
+		[maxLen]byte{'i', '-', 'n', 'a', 'v', 'a', 'j', 'o'}:           _nv,  
+		[maxLen]byte{'i', '-', 'p', 'w', 'n'}:                          _pwn, 
+		[maxLen]byte{'i', '-', 't', 'a', 'o'}:                          _tao, 
+		[maxLen]byte{'i', '-', 't', 'a', 'y'}:                          _tay, 
+		[maxLen]byte{'i', '-', 't', 's', 'u'}:                          _tsu, 
+		[maxLen]byte{'n', 'o', '-', 'b', 'o', 'k'}:                     _nb,  
+		[maxLen]byte{'n', 'o', '-', 'n', 'y', 'n'}:                     _nn,  
+		[maxLen]byte{'s', 'g', 'n', '-', 'b', 'e', '-', 'f', 'r'}:      _sfb, 
+		[maxLen]byte{'s', 'g', 'n', '-', 'b', 'e', '-', 'n', 'l'}:      _vgt, 
+		[maxLen]byte{'s', 'g', 'n', '-', 'c', 'h', '-', 'd', 'e'}:      _sgg, 
+		[maxLen]byte{'z', 'h', '-', 'g', 'u', 'o', 'y', 'u'}:           _cmn, 
+		[maxLen]byte{'z', 'h', '-', 'h', 'a', 'k', 'k', 'a'}:           _hak, 
+		[maxLen]byte{'z', 'h', '-', 'm', 'i', 'n', '-', 'n', 'a', 'n'}: _nan, 
+		[maxLen]byte{'z', 'h', '-', 'x', 'i', 'a', 'n', 'g'}:           _hsn, 
 
-		// Grandfathered tags with no modern replacement will be converted as
-		// follows:
-		[maxLen]byte{'c', 'e', 'l', '-', 'g', 'a', 'u', 'l', 'i', 's', 'h'}: -1, // cel-gaulish
-		[maxLen]byte{'e', 'n', '-', 'g', 'b', '-', 'o', 'e', 'd'}:           -2, // en-GB-oed
-		[maxLen]byte{'i', '-', 'd', 'e', 'f', 'a', 'u', 'l', 't'}:           -3, // i-default
-		[maxLen]byte{'i', '-', 'e', 'n', 'o', 'c', 'h', 'i', 'a', 'n'}:      -4, // i-enochian
-		[maxLen]byte{'i', '-', 'm', 'i', 'n', 'g', 'o'}:                     -5, // i-mingo
-		[maxLen]byte{'z', 'h', '-', 'm', 'i', 'n'}:                          -6, // zh-min
+		
+		
+		[maxLen]byte{'c', 'e', 'l', '-', 'g', 'a', 'u', 'l', 'i', 's', 'h'}: -1, 
+		[maxLen]byte{'e', 'n', '-', 'g', 'b', '-', 'o', 'e', 'd'}:           -2, 
+		[maxLen]byte{'i', '-', 'd', 'e', 'f', 'a', 'u', 'l', 't'}:           -3, 
+		[maxLen]byte{'i', '-', 'e', 'n', 'o', 'c', 'h', 'i', 'a', 'n'}:      -4, 
+		[maxLen]byte{'i', '-', 'm', 'i', 'n', 'g', 'o'}:                     -5, 
+		[maxLen]byte{'z', 'h', '-', 'm', 'i', 'n'}:                          -6, 
 
-		// CLDR-specific tag.
-		[maxLen]byte{'r', 'o', 'o', 't'}:                                    0,  // root
-		[maxLen]byte{'e', 'n', '-', 'u', 's', '-', 'p', 'o', 's', 'i', 'x'}: -7, // en_US_POSIX"
+		
+		[maxLen]byte{'r', 'o', 'o', 't'}:                                    0,  
+		[maxLen]byte{'e', 'n', '-', 'u', 's', '-', 'p', 'o', 's', 'i', 'x'}: -7, 
 	}
 
 	altTagIndex = [...]uint8{0, 17, 31, 45, 61, 74, 86, 102}

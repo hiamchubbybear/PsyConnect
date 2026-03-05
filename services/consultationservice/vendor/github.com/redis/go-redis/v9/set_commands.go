@@ -29,7 +29,7 @@ type SetCmdable interface {
 	SUnionStore(ctx context.Context, destination string, keys ...string) *IntCmd
 }
 
-//------------------------------------------------------------------------------
+
 
 func (c cmdable) SAdd(ctx context.Context, key string, members ...interface{}) *IntCmd {
 	args := make([]interface{}, 2, 2+len(members))
@@ -114,7 +114,7 @@ func (c cmdable) SIsMember(ctx context.Context, key string, member interface{}) 
 	return cmd
 }
 
-// SMIsMember Redis `SMISMEMBER key member [member ...]` command.
+
 func (c cmdable) SMIsMember(ctx context.Context, key string, members ...interface{}) *BoolSliceCmd {
 	args := make([]interface{}, 2, 2+len(members))
 	args[0] = "smismember"
@@ -125,14 +125,14 @@ func (c cmdable) SMIsMember(ctx context.Context, key string, members ...interfac
 	return cmd
 }
 
-// SMembers Redis `SMEMBERS key` command output as a slice.
+
 func (c cmdable) SMembers(ctx context.Context, key string) *StringSliceCmd {
 	cmd := NewStringSliceCmd(ctx, "smembers", key)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// SMembersMap Redis `SMEMBERS key` command output as a map.
+
 func (c cmdable) SMembersMap(ctx context.Context, key string) *StringStructMapCmd {
 	cmd := NewStringStructMapCmd(ctx, "smembers", key)
 	_ = c(ctx, cmd)
@@ -145,28 +145,28 @@ func (c cmdable) SMove(ctx context.Context, source, destination string, member i
 	return cmd
 }
 
-// SPop Redis `SPOP key` command.
+
 func (c cmdable) SPop(ctx context.Context, key string) *StringCmd {
 	cmd := NewStringCmd(ctx, "spop", key)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// SPopN Redis `SPOP key count` command.
+
 func (c cmdable) SPopN(ctx context.Context, key string, count int64) *StringSliceCmd {
 	cmd := NewStringSliceCmd(ctx, "spop", key, count)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// SRandMember Redis `SRANDMEMBER key` command.
+
 func (c cmdable) SRandMember(ctx context.Context, key string) *StringCmd {
 	cmd := NewStringCmd(ctx, "srandmember", key)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// SRandMemberN Redis `SRANDMEMBER key count` command.
+
 func (c cmdable) SRandMemberN(ctx context.Context, key string, count int64) *StringSliceCmd {
 	cmd := NewStringSliceCmd(ctx, "srandmember", key, count)
 	_ = c(ctx, cmd)

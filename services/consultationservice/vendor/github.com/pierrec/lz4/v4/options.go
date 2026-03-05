@@ -16,16 +16,16 @@ type (
 		Apply(...Option) error
 		private()
 	}
-	// Option defines the parameters to setup an LZ4 Writer or Reader.
+	
 	Option func(applier) error
 )
 
-// String returns a string representation of the option with its parameter(s).
+
 func (o Option) String() string {
 	return o(nil).Error()
 }
 
-// Default options.
+
 var (
 	DefaultBlockSizeOption = BlockSizeOption(Block4Mb)
 	DefaultChecksumOption  = ChecksumOption(true)
@@ -40,10 +40,10 @@ const (
 	Block4Mb
 )
 
-// BlockSizeIndex defines the size of the blocks to be compressed.
+
 type BlockSize uint32
 
-// BlockSizeOption defines the maximum size of compressed blocks (default=Block4Mb).
+
 func BlockSizeOption(size BlockSize) Option {
 	return func(a applier) error {
 		switch w := a.(type) {
@@ -62,7 +62,7 @@ func BlockSizeOption(size BlockSize) Option {
 	}
 }
 
-// BlockChecksumOption enables or disables block checksum (default=false).
+
 func BlockChecksumOption(flag bool) Option {
 	return func(a applier) error {
 		switch w := a.(type) {
@@ -77,7 +77,7 @@ func BlockChecksumOption(flag bool) Option {
 	}
 }
 
-// ChecksumOption enables/disables all blocks or content checksum (default=true).
+
 func ChecksumOption(flag bool) Option {
 	return func(a applier) error {
 		switch w := a.(type) {
@@ -92,8 +92,8 @@ func ChecksumOption(flag bool) Option {
 	}
 }
 
-// SizeOption sets the size of the original uncompressed data (default=0). It is useful to know the size of the
-// whole uncompressed data stream.
+
+
 func SizeOption(size uint64) Option {
 	return func(a applier) error {
 		switch w := a.(type) {
@@ -109,8 +109,8 @@ func SizeOption(size uint64) Option {
 	}
 }
 
-// ConcurrencyOption sets the number of go routines used for compression.
-// If n <= 0, then the output of runtime.GOMAXPROCS(0) is used.
+
+
 func ConcurrencyOption(n int) Option {
 	if n <= 0 {
 		n = runtime.GOMAXPROCS(0)
@@ -131,7 +131,7 @@ func ConcurrencyOption(n int) Option {
 	}
 }
 
-// CompressionLevel defines the level of compression to use. The higher the better, but slower, compression.
+
 type CompressionLevel uint32
 
 const (
@@ -147,7 +147,7 @@ const (
 	Level9
 )
 
-// CompressionLevelOption defines the compression level (default=Fast).
+
 func CompressionLevelOption(level CompressionLevel) Option {
 	return func(a applier) error {
 		switch w := a.(type) {
@@ -169,8 +169,8 @@ func CompressionLevelOption(level CompressionLevel) Option {
 
 func onBlockDone(int) {}
 
-// OnBlockDoneOption is triggered when a block has been processed. For a Writer, it is when is has been compressed,
-// for a Reader, it is when it has been uncompressed.
+
+
 func OnBlockDoneOption(handler func(size int)) Option {
 	if handler == nil {
 		handler = onBlockDone
@@ -191,14 +191,14 @@ func OnBlockDoneOption(handler func(size int)) Option {
 	}
 }
 
-// LegacyOption provides support for writing LZ4 frames in the legacy format.
-//
-// See https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md#legacy-frame.
-//
-// NB. compressed Linux kernel images use a tweaked LZ4 legacy format where
-// the compressed stream is followed by the original (uncompressed) size of
-// the kernel (https://events.static.linuxfound.org/sites/events/files/lcjpcojp13_klee.pdf).
-// This is also supported as a special case.
+
+
+
+
+
+
+
+
 func LegacyOption(legacy bool) Option {
 	return func(a applier) error {
 		switch rw := a.(type) {

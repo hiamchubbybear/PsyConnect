@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
+
+
 
 package codec
 
@@ -17,13 +17,13 @@ const (
 	simpleVdFloat32       = 4
 	simpleVdFloat64       = 5
 
-	// each lasts for 4 (ie n, n+1, n+2, n+3)
+	
 	simpleVdPosInt = 8
 	simpleVdNegInt = 12
 
 	simpleVdTime = 24
 
-	// containers: each lasts for 4 (ie n, n+1, n+2, ... n+7)
+	
 	simpleVdString    = 216
 	simpleVdByteArray = 224
 	simpleVdArray     = 232
@@ -63,7 +63,7 @@ type simpleEncDriver struct {
 	encDriverNoopContainerWriter
 	encDriverNoState
 	h *SimpleHandle
-	// b [8]byte
+	
 	e Encoder
 }
 
@@ -130,7 +130,7 @@ func (e *simpleEncDriver) encUint(v uint64, bd uint8) {
 	} else if v <= math.MaxUint32 {
 		e.e.encWr.writen1(bd + 2)
 		bigen.writeUint32(e.e.w(), uint32(v))
-	} else { // if v <= math.MaxUint64 {
+	} else { 
 		e.e.encWr.writen1(bd + 3)
 		bigen.writeUint64(e.e.w(), v)
 	}
@@ -210,7 +210,7 @@ func (e *simpleEncDriver) EncodeString(v string) {
 }
 
 func (e *simpleEncDriver) EncodeStringBytesRaw(v []byte) {
-	// if e.h.EncZeroValuesAsNil && e.c != containerMapKey && v == nil {
+	
 	if v == nil {
 		e.EncodeNil()
 		return
@@ -220,7 +220,7 @@ func (e *simpleEncDriver) EncodeStringBytesRaw(v []byte) {
 }
 
 func (e *simpleEncDriver) EncodeTime(t time.Time) {
-	// if e.h.EncZeroValuesAsNil && e.c != containerMapKey && t.IsZero() {
+	
 	if t.IsZero() {
 		e.EncodeNil()
 		return
@@ -231,7 +231,7 @@ func (e *simpleEncDriver) EncodeTime(t time.Time) {
 	e.e.encWr.writeb(v)
 }
 
-//------------------------------------
+
 
 type simpleDecDriver struct {
 	h *SimpleHandle
@@ -262,7 +262,7 @@ func (d *simpleDecDriver) advanceNil() (null bool) {
 	}
 	if d.bd == simpleVdNil {
 		d.bdRead = false
-		return true // null = true
+		return true 
 	}
 	return
 }
@@ -333,14 +333,14 @@ func (d *simpleDecDriver) decInteger() (ui uint64, neg, ok bool) {
 		neg = true
 	default:
 		ok = false
-		// d.d.errorf("integer only valid from pos/neg integer1..8. Invalid descriptor: %v", d.bd)
+		
 	}
-	// DO NOT do this check below, because callers may only want the unsigned value:
-	//
-	// if ui > math.MaxInt64 {
-	// 	d.d.errorf("decIntAny: Integer out of range for signed int64: %v", ui)
-	//		return
-	// }
+	
+	
+	
+	
+	
+	
 	return
 }
 
@@ -371,7 +371,7 @@ func (d *simpleDecDriver) DecodeFloat64() (f float64) {
 	return
 }
 
-// bool can be decoded from bool only (single byte).
+
 func (d *simpleDecDriver) DecodeBool() (b bool) {
 	if d.advanceNil() {
 		return
@@ -410,7 +410,7 @@ func (d *simpleDecDriver) uint2Len(ui uint64) int {
 }
 
 func (d *simpleDecDriver) decLen() int {
-	switch d.bd & 7 { // d.bd % 8 {
+	switch d.bd & 7 { 
 	case 0:
 		return 0
 	case 1:
@@ -435,7 +435,7 @@ func (d *simpleDecDriver) DecodeBytes(bs []byte) (bsOut []byte) {
 	if d.advanceNil() {
 		return
 	}
-	// check if an "array" of uint8's (see ContainerType for how to infer if an array)
+	
 	if d.bd >= simpleVdArray && d.bd <= simpleVdMap+4 {
 		if bs == nil {
 			d.d.decByteState = decByteStateReuseBuf
@@ -627,7 +627,7 @@ func (d *simpleDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 
 	switch c {
 	case simpleVdNil, simpleVdFalse, simpleVdTrue, simpleVdString, simpleVdByteArray:
-		// pass
+		
 	case simpleVdPosInt, simpleVdNegInt:
 		h.append1(&v, d.d.decRd.readn1())
 	case simpleVdPosInt + 1, simpleVdNegInt + 1:
@@ -642,7 +642,7 @@ func (d *simpleDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 		h.appendN(&v, d.d.decRd.readx(uint(c))...)
 
 	default:
-		switch c & 7 { // c % 8 {
+		switch c & 7 { 
 		case 0:
 			length = 0
 		case 1:
@@ -674,7 +674,7 @@ func (d *simpleDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 		}
 
 		if bExt {
-			h.append1(&v, d.d.decRd.readn1()) // tag
+			h.append1(&v, d.d.decRd.readn1()) 
 		}
 
 		if length == 0 {
@@ -697,35 +697,35 @@ func (d *simpleDecDriver) nextValueBytesBdReadR(v0 []byte) (v []byte) {
 	return
 }
 
-//------------------------------------
 
-// SimpleHandle is a Handle for a very simple encoding format.
-//
-// simple is a simplistic codec similar to binc, but not as compact.
-//   - Encoding of a value is always preceded by the descriptor byte (bd)
-//   - True, false, nil are encoded fully in 1 byte (the descriptor)
-//   - Integers (intXXX, uintXXX) are encoded in 1, 2, 4 or 8 bytes (plus a descriptor byte).
-//     There are positive (uintXXX and intXXX >= 0) and negative (intXXX < 0) integers.
-//   - Floats are encoded in 4 or 8 bytes (plus a descriptor byte)
-//   - Length of containers (strings, bytes, array, map, extensions)
-//     are encoded in 0, 1, 2, 4 or 8 bytes.
-//     Zero-length containers have no length encoded.
-//     For others, the number of bytes is given by pow(2, bd%3)
-//   - maps are encoded as [bd] [length] [[key][value]]...
-//   - arrays are encoded as [bd] [length] [value]...
-//   - extensions are encoded as [bd] [length] [tag] [byte]...
-//   - strings/bytearrays are encoded as [bd] [length] [byte]...
-//   - time.Time are encoded as [bd] [length] [byte]...
-//
-// The full spec will be published soon.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type SimpleHandle struct {
 	binaryEncodingType
 	BasicHandle
-	// EncZeroValuesAsNil says to encode zero values for numbers, bool, string, etc as nil
+	
 	EncZeroValuesAsNil bool
 }
 
-// Name returns the name of the handle: simple
+
 func (h *SimpleHandle) Name() string { return "simple" }
 
 func (h *SimpleHandle) desc(bd byte) string { return simpledesc(bd) }

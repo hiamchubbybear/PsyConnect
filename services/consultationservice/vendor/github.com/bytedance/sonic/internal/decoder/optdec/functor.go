@@ -18,7 +18,7 @@ type ptrDecoder struct {
 	deref decFunc
 }
 
-// Pointer Value is allocated in the Caller
+
 func (d *ptrDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error {
 	if node.IsNull() {
 		*(*unsafe.Pointer)(vp) = nil
@@ -38,13 +38,13 @@ type embeddedFieldPtrDecoder struct {
 	fieldName  string
 }
 
-// Pointer Value is allocated in the Caller
+
 func (d *embeddedFieldPtrDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error {
 	if node.IsNull() {
 		return nil
 	}
 
-	// seek into the pointer
+	
 	vp = unsafe.Pointer(uintptr(vp) - uintptr(d.field.Path[0].Size))
 	for _, f := range d.field.Path {
 		deref := rt.UnpackType(f.Type)

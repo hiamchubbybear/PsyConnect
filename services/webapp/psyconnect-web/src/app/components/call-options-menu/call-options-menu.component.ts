@@ -25,7 +25,7 @@ export class CallOptionsMenuComponent {
     this.showMenu = false;
   }
 
-  // Close menu when clicking outside
+  
   closeMenu() {
     this.showMenu = false;
   }

@@ -175,7 +175,7 @@ export const PROFESSIONAL_TITLES = [
   { code: 'MA', display: 'Master of Arts (Counseling/Psychology)' },
 ];
 
-// Session Models
+
 export interface ConsultationSession {
   session_id: string;
   therapist_id: string;
@@ -217,7 +217,7 @@ export interface DeleteSessionRequest {
   sessionID: string;
 }
 
-// Matching Models
+
 export interface MatchRequest {
   client_id?: string;
   therapist_id?: string;
@@ -232,7 +232,7 @@ export interface MatchResponse {
   created_at: string;
 }
 
-// Social Models
+
 export interface Follow {
   follower_id: string;
   following_id: string;

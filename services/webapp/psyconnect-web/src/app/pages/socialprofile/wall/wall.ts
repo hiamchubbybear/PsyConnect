@@ -47,7 +47,7 @@ export class ProfilePageComponent implements OnInit {
       const userId = params['id'];
       const currentUser = this.userContext.getUser();
 
-      // If no ID or ID is current user, load own profile
+      
       if (
         !userId ||
         userId === currentUser?.accountId ||
@@ -106,10 +106,7 @@ export class ProfilePageComponent implements OnInit {
     });
   }
 
-  /**
-   * Transforms ProfileResponse.data shape into the shape expected by profile-card.html
-   * (user.name, user.avatarUrl, user.role, user.coverUrl)
-   */
+  
   private transformToCardFormat(profile: any): any {
     return {
       avatarUrl: profile.avatarUri || 'assets/images/default-avatar.png',

@@ -1,6 +1,6 @@
-// Copyright 2014 Manu Martinez-Almeida. All rights reserved.
-// Use of this source code is governed by a MIT style
-// license that can be found in the LICENSE file.
+
+
+
 
 package gin
 
@@ -16,30 +16,30 @@ const (
 	defaultStatus = http.StatusOK
 )
 
-// ResponseWriter ...
+
 type ResponseWriter interface {
 	http.ResponseWriter
 	http.Hijacker
 	http.Flusher
 	http.CloseNotifier
 
-	// Status returns the HTTP response status code of the current request.
+	
 	Status() int
 
-	// Size returns the number of bytes already written into the response http body.
-	// See Written()
+	
+	
 	Size() int
 
-	// WriteString writes the string into the response body.
+	
 	WriteString(string) (int, error)
 
-	// Written returns true if the response body was already written.
+	
 	Written() bool
 
-	// WriteHeaderNow forces to write the http header (status code + headers).
+	
 	WriteHeaderNow()
 
-	// Pusher get the http.Pusher for server push
+	
 	Pusher() http.Pusher
 }
 
@@ -104,7 +104,7 @@ func (w *responseWriter) Written() bool {
 	return w.size != noWritten
 }
 
-// Hijack implements the http.Hijacker interface.
+
 func (w *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if w.size < 0 {
 		w.size = 0
@@ -112,12 +112,12 @@ func (w *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	return w.ResponseWriter.(http.Hijacker).Hijack()
 }
 
-// CloseNotify implements the http.CloseNotifier interface.
+
 func (w *responseWriter) CloseNotify() <-chan bool {
 	return w.ResponseWriter.(http.CloseNotifier).CloseNotify()
 }
 
-// Flush implements the http.Flusher interface.
+
 func (w *responseWriter) Flush() {
 	w.WriteHeaderNow()
 	w.ResponseWriter.(http.Flusher).Flush()

@@ -15,11 +15,11 @@ import (
 	"github.com/redis/go-redis/v9/internal"
 )
 
-// KeepTTL is a Redis KEEPTTL option to keep existing TTL, it requires your redis-server version >= 6.0,
-// otherwise you will receive an error: (error) ERR syntax error.
-// For example:
-//
-//	rdb.Set(ctx, key, value, redis.KeepTTL)
+
+
+
+
+
 const KeepTTL = -1
 
 func usePrecise(dur time.Duration) bool {
@@ -84,11 +84,11 @@ func appendArg(dst []interface{}, arg interface{}) []interface{} {
 	case nil:
 		return dst
 	default:
-		// scan struct field
+		
 		v := reflect.ValueOf(arg)
 		if v.Type().Kind() == reflect.Ptr {
 			if v.IsNil() {
-				// error: arg is not a valid object
+				
 				return dst
 			}
 			v = v.Elem()
@@ -102,7 +102,7 @@ func appendArg(dst []interface{}, arg interface{}) []interface{} {
 	}
 }
 
-// appendStructField appends the field and value held by the structure v to dst, and returns the appended dst.
+
 func appendStructField(dst []interface{}, v reflect.Value) []interface{} {
 	typ := v.Type()
 	for i := 0; i < typ.NumField(); i++ {
@@ -117,7 +117,7 @@ func appendStructField(dst []interface{}, v reflect.Value) []interface{} {
 
 		field := v.Field(i)
 
-		// miss field
+		
 		if omitEmpty(opt) && isEmptyValue(field) {
 			continue
 		}
@@ -159,8 +159,8 @@ func isEmptyValue(v reflect.Value) bool {
 		if v.Type() == reflect.TypeOf(time.Time{}) {
 			return v.IsZero()
 		}
-		// Only supports the struct time.Time,
-		// subsequent iterations will follow the func Scan support decoder.
+		
+		
 	}
 	return false
 }
@@ -259,7 +259,7 @@ type cmdable func(ctx context.Context, cmd Cmder) error
 
 type statefulCmdable func(ctx context.Context, cmd Cmder) error
 
-//------------------------------------------------------------------------------
+
 
 func (c statefulCmdable) Auth(ctx context.Context, password string) *StatusCmd {
 	cmd := NewStatusCmd(ctx, "auth", password)
@@ -267,9 +267,9 @@ func (c statefulCmdable) Auth(ctx context.Context, password string) *StatusCmd {
 	return cmd
 }
 
-// AuthACL Perform an AUTH command, using the given user and pass.
-// Should be used to authenticate the current connection with one of the connections defined in the ACL list
-// when connecting to a Redis 6.0 instance, or greater, that is using the Redis ACL system.
+
+
+
 func (c statefulCmdable) AuthACL(ctx context.Context, username, password string) *StatusCmd {
 	cmd := NewStatusCmd(ctx, "auth", username, password)
 	_ = c(ctx, cmd)
@@ -302,14 +302,14 @@ func (c statefulCmdable) SwapDB(ctx context.Context, index1, index2 int) *Status
 	return cmd
 }
 
-// ClientSetName assigns a name to the connection.
+
 func (c statefulCmdable) ClientSetName(ctx context.Context, name string) *BoolCmd {
 	cmd := NewBoolCmd(ctx, "client", "setname", name)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// ClientSetInfo sends a CLIENT SETINFO command with the provided info.
+
 func (c statefulCmdable) ClientSetInfo(ctx context.Context, info LibraryInfo) *StatusCmd {
 	err := info.Validate()
 	if err != nil {
@@ -328,7 +328,7 @@ func (c statefulCmdable) ClientSetInfo(ctx context.Context, info LibraryInfo) *S
 	return cmd
 }
 
-// Validate checks if only one field in the struct is non-nil.
+
 func (info LibraryInfo) Validate() error {
 	if info.LibName != nil && info.LibVer != nil {
 		return errors.New("both LibName and LibVer cannot be set at the same time")
@@ -339,7 +339,7 @@ func (info LibraryInfo) Validate() error {
 	return nil
 }
 
-// Hello sets the resp protocol used.
+
 func (c statefulCmdable) Hello(ctx context.Context,
 	ver int, username, password, clientName string,
 ) *MapStringInterfaceCmd {
@@ -360,7 +360,7 @@ func (c statefulCmdable) Hello(ctx context.Context,
 	return cmd
 }
 
-//------------------------------------------------------------------------------
+
 
 func (c cmdable) Command(ctx context.Context) *CommandsInfoCmd {
 	cmd := NewCommandsInfoCmd(ctx, "command")
@@ -368,7 +368,7 @@ func (c cmdable) Command(ctx context.Context) *CommandsInfoCmd {
 	return cmd
 }
 
-// FilterBy is used for the `CommandList` command parameter.
+
 type FilterBy struct {
 	Module  string
 	ACLCat  string
@@ -412,7 +412,7 @@ func (c cmdable) CommandGetKeysAndFlags(ctx context.Context, commands ...interfa
 	return cmd
 }
 
-// ClientGetName returns the name of the connection.
+
 func (c cmdable) ClientGetName(ctx context.Context) *StringCmd {
 	cmd := NewStringCmd(ctx, "client", "getname")
 	_ = c(ctx, cmd)
@@ -441,7 +441,7 @@ func (c cmdable) Quit(_ context.Context) *StatusCmd {
 	panic("not implemented")
 }
 
-//------------------------------------------------------------------------------
+
 
 func (c cmdable) BgRewriteAOF(ctx context.Context) *StatusCmd {
 	cmd := NewStatusCmd(ctx, "bgrewriteaof")
@@ -461,9 +461,9 @@ func (c cmdable) ClientKill(ctx context.Context, ipPort string) *StatusCmd {
 	return cmd
 }
 
-// ClientKillByFilter is new style syntax, while the ClientKill is old
-//
-//	CLIENT KILL <option> [value] ... <option> [value]
+
+
+
 func (c cmdable) ClientKillByFilter(ctx context.Context, keys ...string) *IntCmd {
 	args := make([]interface{}, 2+len(keys))
 	args[0] = "client"
@@ -518,7 +518,7 @@ func (c cmdable) ClientInfo(ctx context.Context) *ClientInfoCmd {
 	return cmd
 }
 
-// ------------------------------------------------------------------------------------------------
+
 
 func (c cmdable) ConfigGet(ctx context.Context, parameter string) *MapStringStringCmd {
 	cmd := NewMapStringStringCmd(ctx, "config", "get", parameter)
@@ -619,11 +619,11 @@ func (c cmdable) shutdown(ctx context.Context, modifier string) *StatusCmd {
 	_ = c(ctx, cmd)
 	if err := cmd.Err(); err != nil {
 		if err == io.EOF {
-			// Server quit as expected.
+			
 			cmd.err = nil
 		}
 	} else {
-		// Server did not quit. String reply contains the reason.
+		
 		cmd.err = errors.New(cmd.val)
 		cmd.val = ""
 	}
@@ -684,10 +684,10 @@ func (c cmdable) MemoryUsage(ctx context.Context, key string, samples ...int) *I
 	return cmd
 }
 
-//------------------------------------------------------------------------------
 
-// ModuleLoadexConfig struct is used to specify the arguments for the MODULE LOADEX command of redis.
-// `MODULE LOADEX path [CONFIG name value [CONFIG name value ...]] [ARGS args [args ...]]`
+
+
+
 type ModuleLoadexConfig struct {
 	Path string
 	Conf map[string]interface{}
@@ -708,24 +708,14 @@ func (c *ModuleLoadexConfig) toArgs() []interface{} {
 	return args
 }
 
-// ModuleLoadex Redis `MODULE LOADEX path [CONFIG name value [CONFIG name value ...]] [ARGS args [args ...]]` command.
+
 func (c cmdable) ModuleLoadex(ctx context.Context, conf *ModuleLoadexConfig) *StringCmd {
 	cmd := NewStringCmd(ctx, conf.toArgs()...)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-/*
-Monitor - represents a Redis MONITOR command, allowing the user to capture
-and process all commands sent to a Redis server. This mimics the behavior of
-MONITOR in the redis-cli.
 
-Notes:
-- Using MONITOR blocks the connection to the server for itself. It needs a dedicated connection
-- The user should create a channel of type string
-- This runs concurrently in the background. Trigger via the Start and Stop functions
-See further: Redis MONITOR command: https://redis.io/commands/monitor
-*/
 func (c cmdable) Monitor(ctx context.Context, ch chan string) *MonitorCmd {
 	cmd := newMonitorCmd(ctx, ch)
 	_ = c(ctx, cmd)

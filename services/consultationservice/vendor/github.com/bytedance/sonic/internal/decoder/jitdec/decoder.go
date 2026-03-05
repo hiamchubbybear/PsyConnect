@@ -40,10 +40,10 @@ var (
 )
 
 
-// Decode parses the JSON-encoded data from current position and stores the result
-// in the value pointed to by val.
+
+
 func Decode(s *string, i *int, f uint64, val interface{}) error {
-    /* validate json if needed */
+    
     if (f & (1 << _F_validate_string)) != 0  && !utf8.ValidateString(*s){
         dbuf := utf8.CorrectWith(nil, rt.Str2Mem(*s), "\ufffd")
         *s = rt.Mem2Str(dbuf)
@@ -52,43 +52,43 @@ func Decode(s *string, i *int, f uint64, val interface{}) error {
     vv := rt.UnpackEface(val)
     vp := vv.Value
 
-    /* check for nil type */
+    
     if vv.Type == nil {
         return &json.InvalidUnmarshalError{}
     }
 
-    /* must be a non-nil pointer */
+    
     if vp == nil || vv.Type.Kind() != reflect.Ptr {
         return &json.InvalidUnmarshalError{Type: vv.Type.Pack()}
     }
 
     etp := rt.PtrElem(vv.Type)
 
-    /* check the defined pointer type for issue 379 */
+    
     if vv.Type.IsNamed() {
         newp := vp
         etp  = vv.Type
         vp   = unsafe.Pointer(&newp)
     }
 
-    /* create a new stack, and call the decoder */
+    
     sb := newStack()
     nb, err := decodeTypedPointer(*s, *i, etp, vp, sb, f)
-    /* return the stack back */
+    
     *i = nb
     freeStack(sb)
 
-    /* avoid GC ahead */
+    
     runtime.KeepAlive(vv)
     return err
 }
 
 
-// Pretouch compiles vt ahead-of-time to avoid JIT compilation on-the-fly, in
-// order to reduce the first-hit latency.
-//
-// Opts are the compile options, for example, "option.WithCompileRecursiveDepth" is
-// a compile option to set the depth of recursive compile for the nested struct type.
+
+
+
+
+
 func Pretouch(vt reflect.Type, opts ...option.CompileOption) error {
     cfg := option.DefaultCompileOptions()
     for _, opt := range opts {
@@ -98,7 +98,7 @@ func Pretouch(vt reflect.Type, opts ...option.CompileOption) error {
 }
 
 func pretouchType(_vt reflect.Type, opts option.CompileOptions) (map[reflect.Type]bool, error) {
-    /* compile function */
+    
     compiler := newCompiler().apply(opts)
     decoder := func(vt *rt.GoType, _ ...interface{}) (interface{}, error) {
         if pp, err := compiler.compile(_vt); err != nil {
@@ -110,7 +110,7 @@ func pretouchType(_vt reflect.Type, opts option.CompileOptions) (map[reflect.Typ
         }
     }
 
-    /* find or compile */
+    
     vt := rt.UnpackType(_vt)
     if val := programCache.Get(vt); val != nil {
         return nil, nil

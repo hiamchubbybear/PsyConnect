@@ -13,7 +13,7 @@ import (
 var noDeadline = time.Time{}
 
 type Conn struct {
-	usedAt  int64 // atomic
+	usedAt  int64 
 	netConn net.Conn
 
 	rd *proto.Reader
@@ -37,11 +37,11 @@ func NewConnWithBufferSize(netConn net.Conn, readBufSize, writeBufSize int) *Con
 		createdAt: time.Now(),
 	}
 
-	// Use specified buffer sizes, or fall back to 0.5MiB defaults if 0
+	
 	if readBufSize > 0 {
 		cn.rd = proto.NewReaderSize(netConn, readBufSize)
 	} else {
-		cn.rd = proto.NewReader(netConn) // Uses 0.5MiB default
+		cn.rd = proto.NewReader(netConn) 
 	}
 
 	if writeBufSize > 0 {
@@ -118,7 +118,7 @@ func (cn *Conn) WithWriter(
 
 func (cn *Conn) Close() error {
 	if cn.onClose != nil {
-		// ignore error
+		
 		_ = cn.onClose()
 	}
 	return cn.netConn.Close()

@@ -25,7 +25,7 @@ func NewChatService(chatRepo *repository.ChatRepository, producer *kafka.Produce
 func (s *ChatService) HandleChatMessage(hub *ws.Hub, message ws.Message) {
 	log.Printf("Handling chat message from: %s", message.SenderID)
 
-	// Unmarshal Data from json.RawMessage
+	
 	var data map[string]interface{}
 	if err := json.Unmarshal(message.Data, &data); err != nil {
 		log.Println("Invalid chat message: failed to parse data")
@@ -54,7 +54,7 @@ func (s *ChatService) HandleChatMessage(hub *ws.Hub, message ws.Message) {
 
 	log.Printf("Chat saved: sender=%s text=%s", newChat.SenderID, newChat.Text)
 
-	// Full payload for generic message handling
+	
 	payload := map[string]interface{}{
 		"id":             newChat.ID,
 		"senderId":       newChat.SenderID,
@@ -63,7 +63,7 @@ func (s *ChatService) HandleChatMessage(hub *ws.Hub, message ws.Message) {
 		"conversationId": newChat.ConversationID,
 	}
 
-	// Marshal payload to json.RawMessage
+	
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		log.Printf("Failed to marshal payload: %v", err)
@@ -87,7 +87,7 @@ func (s *ChatService) GetChatHistory(conversationID string, limit int, before ti
 func (s *ChatService) StartCall(payload *model.StartCallPayload) error {
 	log.Printf("Starting call in conversation %s from %s", payload.ConversationID, payload.CallerID)
 
-	// Construct Kafka event
+	
 	event := map[string]interface{}{
 		"eventId":   model.NewUUID(),
 		"timestamp": time.Now().UTC(),
@@ -108,7 +108,7 @@ func (s *ChatService) StartCall(payload *model.StartCallPayload) error {
 		return err
 	}
 
-	// Send to notification topic (as per producer.go's logic, SendNotification uses env.NotificationTopic)
+	
 	if err := s.producer.SendNotification(string(eventBytes)); err != nil {
 		log.Printf("Failed to send notification event: %v", err)
 		return err

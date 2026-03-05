@@ -1,6 +1,6 @@
-// Copyright 2019+ Klaus Post. All rights reserved.
-// License information can be found in the LICENSE file.
-// Based on work by Yann Collet, released under BSD License.
+
+
+
 
 package zstd
 
@@ -13,10 +13,10 @@ const (
 	prime8bytes = 0xcf1bbcdcb7a56463
 )
 
-// hashLen returns a hash of the lowest mls bytes of with length output bits.
-// mls must be >=3 and <=8. Any other value will return hash for 4 bytes.
-// length should always be < 32.
-// Preferably length and mls should be a constant for inlining.
+
+
+
+
 func hashLen(u uint64, length, mls uint8) uint32 {
 	switch mls {
 	case 3:

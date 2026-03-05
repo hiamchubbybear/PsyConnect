@@ -17,9 +17,7 @@
   gap: 20px;
 }
 
-/* =========================================
-   HERO CARDS GRID (Horizontal, Compact)
-   ========================================= */
+
 .hero-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -31,7 +29,7 @@
   border-radius: var(--border-radius-xl);
   padding: 16px 20px;
   display: flex;
-  flex-direction: row; /* Horizontal */
+  flex-direction: row; 
   align-items: center;
   box-shadow: var(--shadow-sm);
   transition:
@@ -107,9 +105,7 @@
   }
 }
 
-/* =========================================
-   BOTTOM LEFT ROW: Community & Schedule List
-   ========================================= */
+
 .content-row {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
@@ -120,7 +116,7 @@
   }
 }
 
-/* Community Promo */
+
 .promo-card {
   background: var(--color-surface-low);
   border-radius: var(--border-radius-xl);
@@ -176,7 +172,7 @@
   }
 }
 
-/* Schedule List */
+
 .schedule-list {
   background: transparent;
 
@@ -284,9 +280,7 @@
   }
 }
 
-/* =========================================
-   RIGHT RAIL: Calendar & Illustration
-   ========================================= */
+
 .right-rail {
   display: flex;
   flex-direction: column;
@@ -390,7 +384,7 @@
   }
 }
 
-/* Illustration Widget compact redesign */
+
 .illustration-widget {
   background: var(--color-surface-low);
   border-radius: var(--border-radius-xl);
@@ -440,7 +434,7 @@
   }
 }
 
-/* ── Overview Page (new stats-driven layout) ── */
+
 .discover-page {
   padding: 24px;
   max-width: 900px;
@@ -486,7 +480,7 @@
   }
 }
 
-/* Stats grid */
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -555,7 +549,7 @@
   }
 }
 
-/* Next Session Banner */
+
 .next-session-banner {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 12px;
@@ -613,7 +607,7 @@
   }
 }
 
-/* No upcoming */
+
 .no-upcoming {
   display: flex;
   align-items: center;
@@ -634,7 +628,7 @@
   }
 }
 
-/* Recent sessions */
+
 .recent-section {
   .section-title {
     font-size: 1rem;

@@ -1,8 +1,8 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// Package errors implements functions to manipulate errors.
+
+
+
+
 package errors
 
 import (
@@ -12,11 +12,11 @@ import (
 	"google.golang.org/protobuf/internal/detrand"
 )
 
-// Error is a sentinel matching all errors produced by this package.
+
 var Error = errors.New("protobuf error")
 
-// New formats a string according to the format specifier and arguments and
-// returns an error that has a "proto" prefix.
+
+
 func New(f string, x ...any) error {
 	return &prefixError{s: format(f, x...)}
 }
@@ -24,12 +24,12 @@ func New(f string, x ...any) error {
 type prefixError struct{ s string }
 
 var prefix = func() string {
-	// Deliberately introduce instability into the error message string to
-	// discourage users from performing error string comparisons.
+	
+	
 	if detrand.Bool() {
-		return "proto: " // use non-breaking spaces (U+00a0)
+		return "proto: " 
 	} else {
-		return "proto: " // use regular spaces (U+0020)
+		return "proto: " 
 	}
 }()
 
@@ -41,8 +41,8 @@ func (e *prefixError) Unwrap() error {
 	return Error
 }
 
-// Wrap returns an error that has a "proto" prefix, the formatted string described
-// by the format specifier and arguments, and a suffix of err. The error wraps err.
+
+
 func Wrap(err error, f string, x ...any) error {
 	return &wrapError{
 		s:   format(f, x...),
@@ -68,7 +68,7 @@ func (e *wrapError) Is(target error) bool {
 }
 
 func format(f string, x ...any) string {
-	// avoid "proto: " prefix when chaining
+	
 	for i := 0; i < len(x); i++ {
 		switch e := x[i].(type) {
 		case *prefixError:

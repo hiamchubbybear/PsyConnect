@@ -87,9 +87,6 @@ export class Profile {
       )
       .pipe(
         catchError((error) => {
-          if (error.status === 401) {
-            this.auth.logout();
-          }
           return throwError(() => error);
         }),
       );

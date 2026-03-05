@@ -1,8 +1,8 @@
-// Copyright 2014 The Go Authors.  All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// Package x86asm implements decoding of x86 machine code.
+
+
+
+
 package x86asm
 
 import (
@@ -10,78 +10,78 @@ import (
 	"fmt"
 )
 
-// An Inst is a single instruction.
+
 type Inst struct {
-	Prefix   Prefixes // Prefixes applied to the instruction.
-	Op       Op       // Opcode mnemonic
-	Opcode   uint32   // Encoded opcode bits, left aligned (first byte is Opcode>>24, etc)
-	Args     Args     // Instruction arguments, in Intel order
-	Mode     int      // processor mode in bits: 16, 32, or 64
-	AddrSize int      // address size in bits: 16, 32, or 64
-	DataSize int      // operand size in bits: 16, 32, or 64
-	MemBytes int      // size of memory argument in bytes: 1, 2, 4, 8, 16, and so on.
-	Len      int      // length of encoded instruction in bytes
-	PCRel    int      // length of PC-relative address in instruction encoding
-	PCRelOff int      // index of start of PC-relative address in instruction encoding
+	Prefix   Prefixes 
+	Op       Op       
+	Opcode   uint32   
+	Args     Args     
+	Mode     int      
+	AddrSize int      
+	DataSize int      
+	MemBytes int      
+	Len      int      
+	PCRel    int      
+	PCRelOff int      
 }
 
-// Prefixes is an array of prefixes associated with a single instruction.
-// The prefixes are listed in the same order as found in the instruction:
-// each prefix byte corresponds to one slot in the array. The first zero
-// in the array marks the end of the prefixes.
+
+
+
+
 type Prefixes [14]Prefix
 
-// A Prefix represents an Intel instruction prefix.
-// The low 8 bits are the actual prefix byte encoding,
-// and the top 8 bits contain distinguishing bits and metadata.
+
+
+
 type Prefix uint16
 
 const (
-	// Metadata about the role of a prefix in an instruction.
-	PrefixImplicit Prefix = 0x8000 // prefix is implied by instruction text
-	PrefixIgnored  Prefix = 0x4000 // prefix is ignored: either irrelevant or overridden by a later prefix
-	PrefixInvalid  Prefix = 0x2000 // prefix makes entire instruction invalid (bad LOCK)
+	
+	PrefixImplicit Prefix = 0x8000 
+	PrefixIgnored  Prefix = 0x4000 
+	PrefixInvalid  Prefix = 0x2000 
 
-	// Memory segment overrides.
-	PrefixES Prefix = 0x26 // ES segment override
-	PrefixCS Prefix = 0x2E // CS segment override
-	PrefixSS Prefix = 0x36 // SS segment override
-	PrefixDS Prefix = 0x3E // DS segment override
-	PrefixFS Prefix = 0x64 // FS segment override
-	PrefixGS Prefix = 0x65 // GS segment override
+	
+	PrefixES Prefix = 0x26 
+	PrefixCS Prefix = 0x2E 
+	PrefixSS Prefix = 0x36 
+	PrefixDS Prefix = 0x3E 
+	PrefixFS Prefix = 0x64 
+	PrefixGS Prefix = 0x65 
 
-	// Branch prediction.
-	PrefixPN Prefix = 0x12E // predict not taken (conditional branch only)
-	PrefixPT Prefix = 0x13E // predict taken (conditional branch only)
+	
+	PrefixPN Prefix = 0x12E 
+	PrefixPT Prefix = 0x13E 
 
-	// Size attributes.
-	PrefixDataSize Prefix = 0x66 // operand size override
+	
+	PrefixDataSize Prefix = 0x66 
 	PrefixData16   Prefix = 0x166
 	PrefixData32   Prefix = 0x266
-	PrefixAddrSize Prefix = 0x67 // address size override
+	PrefixAddrSize Prefix = 0x67 
 	PrefixAddr16   Prefix = 0x167
 	PrefixAddr32   Prefix = 0x267
 
-	// One of a kind.
-	PrefixLOCK     Prefix = 0xF0 // lock
-	PrefixREPN     Prefix = 0xF2 // repeat not zero
+	
+	PrefixLOCK     Prefix = 0xF0 
+	PrefixREPN     Prefix = 0xF2 
 	PrefixXACQUIRE Prefix = 0x1F2
 	PrefixBND      Prefix = 0x2F2
-	PrefixREP      Prefix = 0xF3 // repeat
+	PrefixREP      Prefix = 0xF3 
 	PrefixXRELEASE Prefix = 0x1F3
 
-	// The REX prefixes must be in the range [PrefixREX, PrefixREX+0x10).
-	// the other bits are set or not according to the intended use.
-	PrefixREX       Prefix = 0x40 // REX 64-bit extension prefix
-	PrefixREXW      Prefix = 0x08 // extension bit W (64-bit instruction width)
-	PrefixREXR      Prefix = 0x04 // extension bit R (r field in modrm)
-	PrefixREXX      Prefix = 0x02 // extension bit X (index field in sib)
-	PrefixREXB      Prefix = 0x01 // extension bit B (r/m field in modrm or base field in sib)
-	PrefixVEX2Bytes Prefix = 0xC5 // Short form of vex prefix
-	PrefixVEX3Bytes Prefix = 0xC4 // Long form of vex prefix
+	
+	
+	PrefixREX       Prefix = 0x40 
+	PrefixREXW      Prefix = 0x08 
+	PrefixREXR      Prefix = 0x04 
+	PrefixREXX      Prefix = 0x02 
+	PrefixREXB      Prefix = 0x01 
+	PrefixVEX2Bytes Prefix = 0xC5 
+	PrefixVEX3Bytes Prefix = 0xC4 
 )
 
-// IsREX reports whether p is a REX prefix byte.
+
 func (p Prefix) IsREX() bool {
 	return p&0xF0 == PrefixREX
 }
@@ -116,7 +116,7 @@ func (p Prefix) String() string {
 	return fmt.Sprintf("Prefix(%#x)", int(p))
 }
 
-// An Op is an x86 opcode.
+
 type Op uint32
 
 func (op Op) String() string {
@@ -127,30 +127,30 @@ func (op Op) String() string {
 	return opNames[i]
 }
 
-// An Args holds the instruction arguments.
-// If an instruction has fewer than 4 arguments,
-// the final elements in the array are nil.
+
+
+
 type Args [4]Arg
 
-// An Arg is a single instruction argument,
-// one of these types: Reg, Mem, Imm, Rel.
+
+
 type Arg interface {
 	String() string
 	isArg()
 }
 
-// Note that the implements of Arg that follow are all sized
-// so that on a 64-bit machine the data can be inlined in
-// the interface value instead of requiring an allocation.
 
-// A Reg is a single register.
-// The zero Reg value has no name but indicates “no register.”
+
+
+
+
+
 type Reg uint8
 
 const (
 	_ Reg = iota
 
-	// 8-bit
+	
 	AL
 	CL
 	DL
@@ -172,7 +172,7 @@ const (
 	R14B
 	R15B
 
-	// 16-bit
+	
 	AX
 	CX
 	DX
@@ -190,7 +190,7 @@ const (
 	R14W
 	R15W
 
-	// 32-bit
+	
 	EAX
 	ECX
 	EDX
@@ -208,7 +208,7 @@ const (
 	R14L
 	R15L
 
-	// 64-bit
+	
 	RAX
 	RCX
 	RDX
@@ -226,12 +226,12 @@ const (
 	R14
 	R15
 
-	// Instruction pointer.
-	IP  // 16-bit
-	EIP // 32-bit
-	RIP // 64-bit
+	
+	IP  
+	EIP 
+	RIP 
 
-	// 387 floating point registers.
+	
 	F0
 	F1
 	F2
@@ -241,7 +241,7 @@ const (
 	F6
 	F7
 
-	// MMX registers.
+	
 	M0
 	M1
 	M2
@@ -251,7 +251,7 @@ const (
 	M6
 	M7
 
-	// XMM registers.
+	
 	X0
 	X1
 	X2
@@ -269,7 +269,7 @@ const (
 	X14
 	X15
 
-	// Segment registers.
+	
 	ES
 	CS
 	SS
@@ -277,14 +277,14 @@ const (
 	FS
 	GS
 
-	// System registers.
+	
 	GDTR
 	IDTR
 	LDTR
 	MSW
 	TASK
 
-	// Control registers.
+	
 	CR0
 	CR1
 	CR2
@@ -302,7 +302,7 @@ const (
 	CR14
 	CR15
 
-	// Debug registers.
+	
 	DR0
 	DR1
 	DR2
@@ -320,7 +320,7 @@ const (
 	DR14
 	DR15
 
-	// Task registers.
+	
 	TR0
 	TR1
 	TR2
@@ -343,8 +343,8 @@ func (r Reg) String() string {
 	return regNames[i]
 }
 
-// A Mem is a memory reference.
-// The general form is Segment:[Base+Scale*Index+Disp].
+
+
 type Mem struct {
 	Segment Reg
 	Base    Reg
@@ -376,7 +376,7 @@ func (m Mem) String() string {
 	return "[" + base + plus + scale + index + disp + "]"
 }
 
-// A Rel is an offset relative to the current instruction pointer.
+
 type Rel int32
 
 func (Rel) isArg() {}
@@ -385,7 +385,7 @@ func (r Rel) String() string {
 	return fmt.Sprintf(".%+d", r)
 }
 
-// An Imm is an integer constant.
+
 type Imm int64
 
 func (Imm) isArg() {}
@@ -465,7 +465,7 @@ func isSegment(p Prefix) bool {
 	return false
 }
 
-// The Op definitions and string list are in tables.go.
+
 
 var prefixNames = map[Prefix]string{
 	PrefixCS:       "CS",

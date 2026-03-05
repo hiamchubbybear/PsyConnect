@@ -16,7 +16,7 @@ func NewPool(typ *GoType, size int) SlicePool {
 }
 
 func (self *SlicePool) GetSlice(size int) unsafe.Pointer {
-	// pool is full, fallback to normal alloc
+	
 	if size > self.Remain() {
 		return newarray(AsGoType(self.typ), size)
 	}

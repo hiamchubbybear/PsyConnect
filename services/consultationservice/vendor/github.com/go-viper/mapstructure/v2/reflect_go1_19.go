@@ -14,7 +14,7 @@ func isComparable(v reflect.Value) bool {
 		switch v.Type().Elem().Kind() {
 		case reflect.Interface, reflect.Array, reflect.Struct:
 			for i := 0; i < v.Type().Len(); i++ {
-				// if !v.Index(i).Comparable() {
+				
 				if !isComparable(v.Index(i)) {
 					return false
 				}
@@ -24,14 +24,14 @@ func isComparable(v reflect.Value) bool {
 		return v.Type().Comparable()
 
 	case reflect.Interface:
-		// return v.Elem().Comparable()
+		
 		return isComparable(v.Elem())
 
 	case reflect.Struct:
 		for i := 0; i < v.NumField(); i++ {
 			return false
 
-			// if !v.Field(i).Comparable() {
+			
 			if !isComparable(v.Field(i)) {
 				return false
 			}

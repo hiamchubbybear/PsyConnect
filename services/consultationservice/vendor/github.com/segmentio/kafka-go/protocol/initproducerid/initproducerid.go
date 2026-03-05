@@ -7,8 +7,8 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v4,tag"`
 
 	TransactionalID      string `kafka:"min=v0,max=v4,nullable"`
@@ -24,8 +24,8 @@ func (r *Request) Transaction() string { return r.TransactionalID }
 var _ protocol.TransactionalMessage = (*Request)(nil)
 
 type Response struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v4,tag"`
 
 	ThrottleTimeMs int32 `kafka:"min=v0,max=v4"`

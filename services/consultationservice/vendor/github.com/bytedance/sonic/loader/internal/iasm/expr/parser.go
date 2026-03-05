@@ -1,18 +1,18 @@
-//
-// Copyright 2024 CloudWeGo Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package expr
 
@@ -94,12 +94,12 @@ func tokenName(p int, v []rune) _Token {
 	}
 }
 
-// Repository represents a repository of Term's.
+
 type Repository interface {
 	Get(name string) (Term, error)
 }
 
-// Parser parses an expression string to it's AST representation.
+
 type Parser struct {
 	pos int
 	src []rune
@@ -156,12 +156,12 @@ func (self *Parser) int(p int, ss []rune) (_Token, error) {
 	var err error
 	var val uint64
 
-	/* find all the digits */
+	
 	for !self.eof() && self.hex(ss) {
 		ss = append(ss, self.rch())
 	}
 
-	/* parse the value */
+	
 	if val, err = strconv.ParseUint(string(ss), 0, 64); err != nil {
 		return _Token{}, err
 	} else {
@@ -195,16 +195,16 @@ func (self *Parser) next() (_Token, error) {
 		var p int
 		var c rune
 
-		/* check for EOF */
+		
 		if self.eof() {
 			return tokenEnd(self.pos), nil
 		}
 
-		/* read the next char */
+		
 		p = self.pos
 		c = self.rch()
 
-		/* parse the token if not a space */
+		
 		if !unicode.IsSpace(c) {
 			return self.read(p, c)
 		}
@@ -226,12 +226,12 @@ func (self *Parser) nest(nest int, repo Repository) (*Expr, error) {
 	var ret *Expr
 	var ntk _Token
 
-	/* evaluate the nested expression */
+	
 	if ret, err = self.expr(0, nest+1, repo); err != nil {
 		return nil, err
 	}
 
-	/* must follows with a ')' */
+	
 	if ntk, err = self.next(); err != nil {
 		return nil, err
 	} else if ntk.tag != _T_punc || ntk.u64 != ')' {
@@ -265,43 +265,43 @@ func (self *Parser) term(prec int, nest int, repo Repository) (*Expr, error) {
 	var err error
 	var val *Expr
 
-	/* parse the LHS operand */
+	
 	if val, err = self.expr(prec+1, nest, repo); err != nil {
 		return nil, err
 	}
 
-	/* parse all the operators of the same precedence */
+	
 	for {
 		var op int
 		var rv *Expr
 		var tk _Token
 
-		/* peek the next token */
+		
 		pp := self.pos
 		tk, err = self.next()
 
-		/* check for errors */
+		
 		if err != nil {
 			return nil, err
 		}
 
-		/* encountered EOF */
+		
 		if tk.tag == _T_end {
 			return val, nil
 		}
 
-		/* must be an operator */
+		
 		if tk.tag != _T_punc {
 			return nil, newSyntaxError(tk.pos, "operators expected")
 		}
 
-		/* check for the operator precedence */
+		
 		if op = int(tk.u64); !precedence[prec][op] {
 			self.pos = pp
 			return val, nil
 		}
 
-		/* evaluate the RHS operand, and combine the value */
+		
 		if rv, err = self.expr(prec+1, nest, repo); err != nil {
 			return nil, err
 		} else {
@@ -318,12 +318,12 @@ func (self *Parser) expr(prec int, nest int, repo Repository) (*Expr, error) {
 	}
 }
 
-// Parse parses the expression, and returns it's AST tree.
+
 func (self *Parser) Parse(repo Repository) (*Expr, error) {
 	return self.expr(0, 0, repo)
 }
 
-// SetSource resets the expression parser and sets the expression source.
+
 func (self *Parser) SetSource(src string) *Parser {
 	self.pos = 0
 	self.src = []rune(src)

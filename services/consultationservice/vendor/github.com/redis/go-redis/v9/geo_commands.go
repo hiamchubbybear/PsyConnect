@@ -33,7 +33,7 @@ func (c cmdable) GeoAdd(ctx context.Context, key string, geoLocation ...*GeoLoca
 	return cmd
 }
 
-// GeoRadius is a read-only GEORADIUS_RO command.
+
 func (c cmdable) GeoRadius(
 	ctx context.Context, key string, longitude, latitude float64, query *GeoRadiusQuery,
 ) *GeoLocationCmd {
@@ -46,7 +46,7 @@ func (c cmdable) GeoRadius(
 	return cmd
 }
 
-// GeoRadiusStore is a writing GEORADIUS command.
+
 func (c cmdable) GeoRadiusStore(
 	ctx context.Context, key string, longitude, latitude float64, query *GeoRadiusQuery,
 ) *IntCmd {
@@ -60,7 +60,7 @@ func (c cmdable) GeoRadiusStore(
 	return cmd
 }
 
-// GeoRadiusByMember is a read-only GEORADIUSBYMEMBER_RO command.
+
 func (c cmdable) GeoRadiusByMember(
 	ctx context.Context, key, member string, query *GeoRadiusQuery,
 ) *GeoLocationCmd {
@@ -73,7 +73,7 @@ func (c cmdable) GeoRadiusByMember(
 	return cmd
 }
 
-// GeoRadiusByMemberStore is a writing GEORADIUSBYMEMBER command.
+
 func (c cmdable) GeoRadiusByMemberStore(
 	ctx context.Context, key, member string, query *GeoRadiusQuery,
 ) *IntCmd {

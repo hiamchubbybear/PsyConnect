@@ -23,7 +23,7 @@ var (
 	marshalTextType        = reflect.TypeOf((*encoding.TextMarshaler)(nil)).Elem()
 	jsonNumberType         = reflect.TypeOf(json.Number(""))
 	cachedOpcodeSets       []*OpcodeSet
-	cachedOpcodeMap        unsafe.Pointer // map[uintptr]*OpcodeSet
+	cachedOpcodeMap        unsafe.Pointer 
 	typeAddr               *runtime.TypeAddr
 	initEncoderOnce        sync.Once
 )
@@ -99,7 +99,7 @@ func newCompiler() *Compiler {
 }
 
 func (c *Compiler) compile(typeptr uintptr) (*OpcodeSet, error) {
-	// noescape trick for header.typ ( reflect.*rtype )
+	
 	typ := *(**runtime.Type)(unsafe.Pointer(&typeptr))
 	code, err := c.typeToCode(typ)
 	if err != nil {
@@ -279,137 +279,137 @@ func (c *Compiler) typeToCodeWithPtr(typ *runtime.Type, isPtr bool) (Code, error
 
 const intSize = 32 << (^uint(0) >> 63)
 
-//nolint:unparam
+
 func (c *Compiler) intCode(typ *runtime.Type, isPtr bool) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: intSize, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) int8Code(typ *runtime.Type, isPtr bool) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: 8, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) int16Code(typ *runtime.Type, isPtr bool) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: 16, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) int32Code(typ *runtime.Type, isPtr bool) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: 32, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) int64Code(typ *runtime.Type, isPtr bool) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: 64, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uintCode(typ *runtime.Type, isPtr bool) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: intSize, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uint8Code(typ *runtime.Type, isPtr bool) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: 8, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uint16Code(typ *runtime.Type, isPtr bool) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: 16, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uint32Code(typ *runtime.Type, isPtr bool) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: 32, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uint64Code(typ *runtime.Type, isPtr bool) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: 64, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) float32Code(typ *runtime.Type, isPtr bool) (*FloatCode, error) {
 	return &FloatCode{typ: typ, bitSize: 32, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) float64Code(typ *runtime.Type, isPtr bool) (*FloatCode, error) {
 	return &FloatCode{typ: typ, bitSize: 64, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) stringCode(typ *runtime.Type, isPtr bool) (*StringCode, error) {
 	return &StringCode{typ: typ, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) boolCode(typ *runtime.Type, isPtr bool) (*BoolCode, error) {
 	return &BoolCode{typ: typ, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) intStringCode(typ *runtime.Type) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: intSize, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) int8StringCode(typ *runtime.Type) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: 8, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) int16StringCode(typ *runtime.Type) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: 16, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) int32StringCode(typ *runtime.Type) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: 32, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) int64StringCode(typ *runtime.Type) (*IntCode, error) {
 	return &IntCode{typ: typ, bitSize: 64, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uintStringCode(typ *runtime.Type) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: intSize, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uint8StringCode(typ *runtime.Type) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: 8, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uint16StringCode(typ *runtime.Type) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: 16, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uint32StringCode(typ *runtime.Type) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: 32, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) uint64StringCode(typ *runtime.Type) (*UintCode, error) {
 	return &UintCode{typ: typ, bitSize: 64, isString: true}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) bytesCode(typ *runtime.Type, isPtr bool) (*BytesCode, error) {
 	return &BytesCode{typ: typ, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) interfaceCode(typ *runtime.Type, isPtr bool) (*InterfaceCode, error) {
 	return &InterfaceCode{typ: typ, isPtr: isPtr}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) marshalJSONCode(typ *runtime.Type) (*MarshalJSONCode, error) {
 	return &MarshalJSONCode{
 		typ:                typ,
@@ -419,7 +419,7 @@ func (c *Compiler) marshalJSONCode(typ *runtime.Type) (*MarshalJSONCode, error) 
 	}, nil
 }
 
-//nolint:unparam
+
 func (c *Compiler) marshalTextCode(typ *runtime.Type) (*MarshalTextCode, error) {
 	return &MarshalTextCode{
 		typ:                typ,
@@ -491,9 +491,9 @@ func (c *Compiler) listElemCode(typ *runtime.Type) (Code, error) {
 	case typ.Kind() == reflect.Map:
 		return c.ptrCode(runtime.PtrTo(typ))
 	default:
-		// isPtr was originally used to indicate whether the type of top level is pointer.
-		// However, since the slice/array element is a specification that can get the pointer address, explicitly set isPtr to true.
-		// See here for related issues: https://github.com/goccy/go-json/issues/370
+		
+		
+		
 		code, err := c.typeToCodeWithPtr(typ, true)
 		if err != nil {
 			return nil, err
@@ -599,12 +599,12 @@ func (c *Compiler) structCode(typ *runtime.Type, isPtr bool) (*StructCode, error
 			structCode := field.getStruct()
 			if structCode != nil {
 				if indirect {
-					// if parent is indirect type, set child indirect property to true
+					
 					structCode.isIndirect = true
 				} else {
-					// if parent is not indirect type, set child indirect property to false.
-					// but if parent's indirect is false and isPtr is true, then indirect must be true.
-					// Do this only if indirectConversion is enabled at the end of compileStruct.
+					
+					
+					
 					structCode.isIndirect = false
 				}
 			}
@@ -664,8 +664,8 @@ func (c *Compiler) structFieldCode(structCode *StructCode, tag *runtime.StructTa
 		structCode.isIndirect = false
 		structCode.disableIndirectConversion = true
 	case isPtr && c.isPtrMarshalJSONType(fieldType):
-		// *struct{ field T }
-		// func (*T) MarshalJSON() ([]byte, error)
+		
+		
 		code, err := c.marshalJSONCode(fieldType)
 		if err != nil {
 			return nil, err
@@ -674,8 +674,8 @@ func (c *Compiler) structFieldCode(structCode *StructCode, tag *runtime.StructTa
 		fieldCode.isAddrForMarshaler = true
 		fieldCode.isNilCheck = false
 	case isPtr && c.isPtrMarshalTextType(fieldType):
-		// *struct{ field T }
-		// func (*T) MarshalText() ([]byte, error)
+		
+		
 		code, err := c.marshalTextCode(fieldType)
 		if err != nil {
 			return nil, err
@@ -743,7 +743,7 @@ func (c *Compiler) getFieldMapFromAnonymousParent(fields []*StructFieldCode) map
 	for _, field := range fields {
 		if field.isAnonymous {
 			for k, v := range c.getAnonymousFieldMap(field) {
-				// Do not handle tagged key when embedding more than once
+				
 				for _, vv := range v {
 					vv.isTaggedKey = false
 				}
@@ -822,14 +822,14 @@ func (c *Compiler) typeToStructTags(typ *runtime.Type) runtime.StructTags {
 	return tags
 }
 
-// *struct{ field T } => struct { field *T }
-// func (*T) MarshalJSON() ([]byte, error)
+
+
 func (c *Compiler) isMovePointerPositionFromHeadToFirstMarshalJSONFieldCase(typ *runtime.Type, isIndirectSpecialCase bool) bool {
 	return isIndirectSpecialCase && !c.isNilableType(typ) && c.isPtrMarshalJSONType(typ)
 }
 
-// *struct{ field T } => struct { field *T }
-// func (*T) MarshalText() ([]byte, error)
+
+
 func (c *Compiler) isMovePointerPositionFromHeadToFirstMarshalTextFieldCase(typ *runtime.Type, isIndirectSpecialCase bool) bool {
 	return isIndirectSpecialCase && !c.isNilableType(typ) && c.isPtrMarshalTextType(typ)
 }
@@ -841,11 +841,11 @@ func (c *Compiler) implementsMarshalJSON(typ *runtime.Type) bool {
 	if typ.Kind() != reflect.Ptr {
 		return true
 	}
-	// type kind is reflect.Ptr
+	
 	if !c.implementsMarshalJSONType(typ.Elem()) {
 		return true
 	}
-	// needs to dereference
+	
 	return false
 }
 
@@ -856,11 +856,11 @@ func (c *Compiler) implementsMarshalText(typ *runtime.Type) bool {
 	if typ.Kind() != reflect.Ptr {
 		return true
 	}
-	// type kind is reflect.Ptr
+	
 	if !typ.Elem().Implements(marshalTextType) {
 		return true
 	}
-	// needs to dereference
+	
 	return false
 }
 
@@ -914,17 +914,17 @@ func (c *Compiler) linkRecursiveCode(ctx *compileContext) {
 		lastCode := newEndOp(&compileContext{}, recursive.Type)
 		lastCode.Op = OpRecursiveEnd
 
-		// OpRecursiveEnd must set before call TotalLength
+		
 		code.End.Next = lastCode
 
 		totalLength := code.TotalLength()
 
-		// Idx, ElemIdx, Length must set after call TotalLength
+		
 		lastCode.Idx = uint32((totalLength + 1) * uintptrSize)
 		lastCode.ElemIdx = lastCode.Idx + uintptrSize
 		lastCode.Length = lastCode.Idx + 2*uintptrSize
 
-		// extend length to alloc slot for elemIdx + length
+		
 		curTotalLength := uintptr(recursive.TotalLength()) + 3
 		nextTotalLength := uintptr(totalLength) + 3
 

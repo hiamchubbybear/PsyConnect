@@ -1,9 +1,9 @@
 @use "sass:color";
 @use "../../styles/variable" as v;
 
-// ═══════════════════════════════════════════
-// HERO
-// ═══════════════════════════════════════════
+
+
+
 .hero {
   position: relative;
   overflow: hidden;
@@ -115,9 +115,9 @@
   }
 }
 
-// ═══════════════════════════════════════════
-// TRUST BAR
-// ═══════════════════════════════════════════
+
+
+
 .trust-bar {
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
@@ -171,9 +171,9 @@
   }
 }
 
-// ═══════════════════════════════════════════
-// FEATURES
-// ═══════════════════════════════════════════
+
+
+
 .features {
   padding: 5rem 0;
 
@@ -306,9 +306,9 @@
   }
 }
 
-// ═══════════════════════════════════════════
-// APP PREVIEW
-// ═══════════════════════════════════════════
+
+
+
 .app-preview {
   background: var(--color-bg-secondary);
   padding: 5rem 0;
@@ -384,9 +384,9 @@
   }
 }
 
-// ═══════════════════════════════════════════
-// CTA
-// ═══════════════════════════════════════════
+
+
+
 .cta {
   padding: 5rem 0;
   background: linear-gradient(
@@ -417,7 +417,7 @@
   }
 }
 
-// White / outline-white button variants for CTA
+
 .btn-white {
   background: #fff;
   color: v.$color-primary;
@@ -439,9 +439,9 @@
   }
 }
 
-// ═══════════════════════════════════════════
-// ANIMATIONS
-// ═══════════════════════════════════════════
+
+
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -461,12 +461,12 @@
   animation-delay: 0.15s;
 }
 
-// Dark mode overrides
+
 :host-context([data-theme="dark"]) {
   .hero {
     .blob-1,
     .blob-2 {
-      opacity: 0.18; // slightly more visible on dark bg
+      opacity: 0.18; 
     }
   }
 

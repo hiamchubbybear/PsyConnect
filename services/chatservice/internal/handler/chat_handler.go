@@ -216,13 +216,13 @@ func (h *ChatHandler) StartCall(c *gin.Context) {
 		return
 	}
 
-	// Basic validation
+	
 	if req.CallerID == "" || req.ReceiverID == "" || req.ConversationID == "" {
 		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing required fields")
 		return
 	}
 
-	// Generate SessionID if not present
+	
 	if req.SessionID == "" {
 		req.SessionID = model.NewUUID()
 	}

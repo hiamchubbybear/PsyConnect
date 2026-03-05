@@ -1,7 +1,7 @@
 @import "../../../app/styles/styles.scss";
 
-// Since variables are likely defined in global styles or imported
-// I'll assume usage of CSS variables as defined in .rules-style
+
+
 
 .landing-page {
   min-height: 100vh;
@@ -12,7 +12,7 @@
   overflow-x: hidden;
 }
 
-// --- Hero Section ---
+
 .hero {
   position: relative;
   display: flex;
@@ -118,7 +118,7 @@
   }
 }
 
-// --- Features Section ---
+
 .features {
   padding: var(--spacing-6xl) var(--spacing-xl);
   background-color: var(--color-bg-secondary);
@@ -146,7 +146,7 @@
 .feature-card {
   background: var(--color-bg);
   padding: var(--spacing-2xl);
-  border-radius: 1rem; // var(--radius-xl)
+  border-radius: 1rem; 
   border: 1px solid var(--color-border);
   transition:
     transform 0.2s ease,
@@ -163,17 +163,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.75rem; // var(--radius-lg)
+    border-radius: 0.75rem; 
     margin-bottom: var(--spacing-lg);
 
     &--primary {
-      background-color: rgba(99, 102, 241, 0.1); // Tint of primary
+      background-color: rgba(99, 102, 241, 0.1); 
       color: var(--color-primary);
     }
 
     &--success {
       background-color: rgba(34, 197, 94, 0.1);
-      color: #16a34a; // Success color
+      color: #16a34a; 
     }
 
     &--accent {
@@ -195,5 +195,5 @@
   }
 }
 
-// --- Button Styles (local overrides or additions) ---
-// --- Button Styles used from global styles.scss ---
+
+

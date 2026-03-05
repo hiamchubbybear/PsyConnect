@@ -6,7 +6,7 @@ import (
 	"context"
 )
 
-// PostRepository interface for updating comment count
+
 type PostRepository interface {
 	UpdateEngagementCount(ctx context.Context, id, field string, delta int) error
 	GetPostByID(ctx context.Context, id string) (interface{}, error)
@@ -35,7 +35,7 @@ func (uc *CreateCommentUseCase) Execute(ctx context.Context, postID, userID, con
 		return nil, err
 	}
 
-	// Update post comment count (only for root comments)
+	
 	if comment.IsRootComment() {
 		go uc.postRepo.UpdateEngagementCount(context.Background(), postID, "comment_count", 1)
 	}

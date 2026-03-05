@@ -7,9 +7,9 @@
 .avatar-trigger {
   display: flex;
   align-items: center;
-  gap: 0.5rem; // 8px
+  gap: 0.5rem; 
   cursor: pointer;
-  padding: 0.5rem 0.75rem; // 8px 12px
+  padding: 0.5rem 0.75rem; 
   border-radius: v.$border-radius-md;
   transition:
     background 0.2s ease,
@@ -40,7 +40,7 @@
   }
 }
 
-/* Dropdown Panel */
+
 .dropdown-panel {
   position: absolute;
   top: calc(100% + 0.5rem);
@@ -117,7 +117,7 @@
   }
 }
 
-/* Animation */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -129,7 +129,7 @@
   }
 }
 
-/* Responsive */
+
 @media (min-width: 768px) {
   .dropdown-panel {
     width: 280px;

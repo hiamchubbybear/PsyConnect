@@ -27,10 +27,10 @@ func parseInteger(b []byte) (int64, error) {
 }
 
 func parseLocalDate(b []byte) (LocalDate, error) {
-	// full-date      = date-fullyear "-" date-month "-" date-mday
-	// date-fullyear  = 4DIGIT
-	// date-month     = 2DIGIT  ; 01-12
-	// date-mday      = 2DIGIT  ; 01-28, 01-29, 01-30, 01-31 based on month/year
+	
+	
+	
+	
 	var date LocalDate
 
 	if len(b) != 10 || b[4] != '-' || b[7] != '-' {
@@ -76,10 +76,10 @@ func parseDecimalDigits(b []byte) (int, error) {
 }
 
 func parseDateTime(b []byte) (time.Time, error) {
-	// offset-date-time = full-date time-delim full-time
-	// full-time      = partial-time time-offset
-	// time-offset    = "Z" / time-numoffset
-	// time-numoffset = ( "+" / "-" ) time-hour ":" time-minute
+	
+	
+	
+	
 
 	dt, b, err := parseLocalDateTime(b)
 	if err != nil {
@@ -89,7 +89,7 @@ func parseDateTime(b []byte) (time.Time, error) {
 	var zone *time.Location
 
 	if len(b) == 0 {
-		// parser should have checked that when assigning the date time node
+		
 		panic("date time should have a timezone")
 	}
 
@@ -185,16 +185,16 @@ func parseLocalDateTime(b []byte) (LocalDateTime, []byte, error) {
 	return dt, rest, nil
 }
 
-// parseLocalTime is a bit different because it also returns the remaining
-// []byte that is didn't need. This is to allow parseDateTime to parse those
-// remaining bytes as a timezone.
+
+
+
 func parseLocalTime(b []byte) (LocalTime, []byte, error) {
 	var (
 		nspow = [10]int{0, 1e8, 1e7, 1e6, 1e5, 1e4, 1e3, 1e2, 1e1, 1e0}
 		t     LocalTime
 	)
 
-	// check if b matches to have expected format HH:MM:SS[.NNNNNN]
+	
 	const localTimeByteLen = 8
 	if len(b) < localTimeByteLen {
 		return t, nil, unstable.NewParserError(b, "times are expected to have the format HH:MM:SS[.NNNNNN]")
@@ -252,13 +252,13 @@ func parseLocalTime(b []byte) (LocalTime, []byte, error) {
 
 			const maxFracPrecision = 9
 			if i >= maxFracPrecision {
-				// go-toml allows decoding fractional seconds
-				// beyond the supported precision of 9
-				// digits. It truncates the fractional component
-				// to the supported precision and ignores the
-				// remaining digits.
-				//
-				// https://github.com/pelletier/go-toml/discussions/707
+				
+				
+				
+				
+				
+				
+				
 				continue
 			}
 
@@ -279,7 +279,7 @@ func parseLocalTime(b []byte) (LocalTime, []byte, error) {
 	return t, b, nil
 }
 
-//nolint:cyclop
+
 func parseFloat(b []byte) (float64, error) {
 	if len(b) == 4 && (b[0] == '+' || b[0] == '-') && b[1] == 'n' && b[2] == 'a' && b[3] == 'n' {
 		return math.NaN(), nil
@@ -418,7 +418,7 @@ func checkAndRemoveUnderscoresIntegers(b []byte) ([]byte, error) {
 		return nil, unstable.NewParserError(b[len(b)-1:], "number cannot end with underscore")
 	}
 
-	// fast path
+	
 	i := 0
 	for ; i < len(b); i++ {
 		if b[i] == '_' {
@@ -458,7 +458,7 @@ func checkAndRemoveUnderscoresFloats(b []byte) ([]byte, error) {
 		return nil, unstable.NewParserError(b[len(b)-1:], "number cannot end with underscore")
 	}
 
-	// fast path
+	
 	i := 0
 	for ; i < len(b); i++ {
 		if b[i] == '_' {
@@ -485,7 +485,7 @@ func checkAndRemoveUnderscoresFloats(b []byte) ([]byte, error) {
 			}
 			before = false
 		case '+', '-':
-			// signed exponents
+			
 			cleaned = append(cleaned, c)
 			before = false
 		case 'e', 'E':
@@ -510,14 +510,14 @@ func checkAndRemoveUnderscoresFloats(b []byte) ([]byte, error) {
 	return cleaned, nil
 }
 
-// isValidDate checks if a provided date is a date that exists.
+
 func isValidDate(year int, month int, day int) bool {
 	return month > 0 && month < 13 && day > 0 && day <= daysIn(month, year)
 }
 
-// daysBefore[m] counts the number of days in a non-leap year
-// before month m begins. There is an entry for m=12, counting
-// the number of days before January of next year (365).
+
+
+
 var daysBefore = [...]int32{
 	0,
 	31,

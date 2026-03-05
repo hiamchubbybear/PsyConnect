@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -27,10 +27,10 @@ func sizeMessageSet(mi *MessageInfo, p pointer, opts marshalOptions) (size int) 
 		num, _ := protowire.DecodeTag(xi.wiretag)
 		size += messageset.SizeField(num)
 		if fullyLazyExtensions(opts) {
-			// Don't expand the extension, instead use the buffer to calculate size
+			
 			if lb := x.lazyBuffer(); lb != nil {
-				// We got hold of the buffer, so it's still lazy.
-				// Don't count the tag size in the extension buffer, it's already added.
+				
+				
 				size += protowire.SizeTag(messageset.FieldMessage) + len(lb) - xi.tagsize
 				continue
 			}
@@ -54,7 +54,7 @@ func marshalMessageSet(mi *MessageInfo, b []byte, p pointer, opts marshalOptions
 	switch len(ext) {
 	case 0:
 	case 1:
-		// Fast-path for one extension: Don't bother sorting the keys.
+		
 		for _, x := range ext {
 			var err error
 			b, err = marshalMessageSetField(mi, b, x, opts)
@@ -63,8 +63,8 @@ func marshalMessageSet(mi *MessageInfo, b []byte, p pointer, opts marshalOptions
 			}
 		}
 	default:
-		// Sort the keys to provide a deterministic encoding.
-		// Not sure this is required, but the old code does it.
+		
+		
 		keys := make([]int, 0, len(ext))
 		for k := range ext {
 			keys = append(keys, int(k))
@@ -96,10 +96,10 @@ func marshalMessageSetField(mi *MessageInfo, b []byte, x ExtensionField, opts ma
 	b = messageset.AppendFieldStart(b, num)
 
 	if fullyLazyExtensions(opts) {
-		// Don't expand the extension if it's still in wire format, instead use the buffer content.
+		
 		if lb := x.lazyBuffer(); lb != nil {
-			// The tag inside the lazy buffer is a different tag (the extension
-			// number), but what we need here is the tag for FieldMessage:
+			
+			
 			b = protowire.AppendVarint(b, protowire.EncodeTag(messageset.FieldMessage, protowire.BytesType))
 			b = append(b, lb[xi.tagsize:]...)
 			b = messageset.AppendFieldEnd(b)

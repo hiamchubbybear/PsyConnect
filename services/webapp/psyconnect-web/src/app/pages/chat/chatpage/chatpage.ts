@@ -55,30 +55,30 @@ export class ChatComponent implements OnInit, OnDestroy {
   isLoadingFriends = true;
   isLoadingMessages = false;
 
-  // Consent dialog — shown once per browser session (stored in sessionStorage)
+  
   showConsentDialog = false;
   private readonly CONSENT_KEY = 'psy_chat_consent_accepted';
 
-  // Stranger contacts (users not in friends list but added via route param)
-  // persisted in sessionStorage so they survive contact switching
+  
+  
   private readonly STRANGERS_KEY = 'psy_chat_strangers';
   private strangers: Friend[] = [];
 
-  // WebRTC properties
+  
   showVideoCall = false;
   incomingCall: IncomingCall | null = null;
-  currentCallType: CallType = 'video'; // Track current call type
-  activeCallerId: string | null = null; // Store caller ID for answer
-  activeSessionId: string | null = null; // Store session ID for answer
-  private isEndingCall = false; // Prevent infinite loop
+  currentCallType: CallType = 'video'; 
+  activeCallerId: string | null = null; 
+  activeSessionId: string | null = null; 
+  private isEndingCall = false; 
 
-  // Ringtone audio
+  
   private ringtoneAudio: HTMLAudioElement | null = null;
   private outgoingAudio: HTMLAudioElement | null = null;
-  private audioUnlocked = false; // Track if audio context is unlocked
+  private audioUnlocked = false; 
   @ViewChild(VideoCallComponent) videoCallComponent?: VideoCallComponent;
 
-  private readonly GROUPING_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+  private readonly GROUPING_THRESHOLD = 5 * 60 * 1000; 
 
   constructor(
     private friendService: FriendService,
@@ -92,12 +92,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Show consent dialog on first visit (once per browser session)
+    
     if (!sessionStorage.getItem(this.CONSENT_KEY)) {
       this.showConsentDialog = true;
     }
 
-    // Restore stranger contacts from sessionStorage
+    
     try {
       const stored = sessionStorage.getItem(this.STRANGERS_KEY);
       this.strangers = stored ? JSON.parse(stored) : [];
@@ -105,8 +105,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.strangers = [];
     }
 
-    // Setup incoming call subscription IMMEDIATELY
-    // This ensures we can receive calls even if we haven't initiated a call
+    
+    
     console.log('👂 Setting up incoming call subscription in ngOnInit...');
     this.incomingCallSubscription =
       this.signalingService.incomingCall$.subscribe((call) => {
@@ -114,7 +114,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.incomingCall = call;
         console.log('✅ this.incomingCall set to:', this.incomingCall);
 
-        // Play ringtone when receiving call
+        
         if (call) {
           this.playRingtone();
         } else {
@@ -122,14 +122,14 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
       });
 
-    // Subscribe to call ended event to close UI when remote user hangs up
+    
     this.webrtcService.callEnded$.subscribe(() => {
       console.log('📞 Call ended by remote user');
-      // Only cleanup UI, don't send leave again (already sent by remote)
+      
       this.cleanupCallUI();
     });
 
-    // Load current user immediately, then load friends and conversations
+    
     this.chatService.getCurrentUser().subscribe((profile) => {
       if (profile) {
         this.currentUser = mapUserProfileToChatUser(profile);
@@ -138,7 +138,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Reactively handle route param changes (works even when component is reused)
+    
     this.sub = this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (!id || this.isLoadingFriends) return;
@@ -152,10 +152,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Unlock audio on first user interaction
+    
     this.unlockAudio();
 
-    // Load friend suggestions for empty state
+    
     this.friendService.getFriendSuggestions().subscribe({
       next: (suggestions) => {
         this.suggestedUsers = suggestions.slice(0, 4);
@@ -173,7 +173,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         '⚠️ loadFriendsAndConversations: profileId not ready yet:',
         userId,
       );
-      // Still load friends, just skip conversations
+      
       this.friendService.getMyFriends().subscribe({
         next: (friends) => {
           this.friends = friends;
@@ -207,9 +207,9 @@ export class ChatComponent implements OnInit, OnDestroy {
       next: ([friends, conversations]) => {
         console.log('✅ Friends and Conversations loaded');
 
-        // Enrich friends with conversation data
+        
         const enrichedFriends: Friend[] = friends.map((f): Friend => {
-          // Find conversation where participants includes f.profileId
+          
           const conv = conversations.find((c) =>
             c.participants?.includes(f.profileId),
           );
@@ -221,7 +221,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                   ? JSON.parse(parsedText)
                   : String(parsedText);
             } catch (e) {
-              // Ignore parse errors, text is unchanged
+              
             }
             return {
               ...f,
@@ -237,7 +237,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           return f;
         });
 
-        // Sort by recent activity
+        
         enrichedFriends.sort((a, b) => {
           const timeA = a.lastMessageTime?.getTime() || 0;
           const timeB = b.lastMessageTime?.getTime() || 0;
@@ -247,7 +247,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.friends = enrichedFriends;
         this.isLoadingFriends = false;
 
-        // Auto-select first friend if no param
+        
         const currentId = this.route.snapshot.paramMap.get('id');
         if (currentId) {
           const friend = this.friends.find((f) => f.profileId === currentId);
@@ -268,12 +268,12 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Unlock audio context for autoplay
+  
   private unlockAudio() {
     const unlock = () => {
       if (this.audioUnlocked) return;
 
-      // Play silent audio to unlock audio context
+      
       const silentAudio = new Audio();
       silentAudio.src =
         'data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
@@ -287,11 +287,11 @@ export class ChatComponent implements OnInit, OnDestroy {
           document.removeEventListener('touchstart', unlock);
         })
         .catch(() => {
-          // Ignore errors
+          
         });
     };
 
-    // Listen for first click/touch
+    
     document.addEventListener('click', unlock, { once: true });
     document.addEventListener('touchstart', unlock, { once: true });
   }
@@ -309,20 +309,16 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.router.navigate(['/feature/chat']);
   }
 
-  /**
-   * Open chat by raw profileId — works for users NOT yet in the friends list
-   * (e.g., navigating from therapist card in feed).
-   * Persists the stranger in sessionStorage so they stay in the sidebar.
-   */
+  
   openChatByProfileId(profileId: string) {
-    // Check existing friends first
+    
     const existingFriend = this.friends.find((f) => f.profileId === profileId);
     if (existingFriend) {
       this.onFriendSelected(existingFriend, false);
       return;
     }
 
-    // Check strangers list
+    
     const existingStranger = this.strangers.find(
       (f) => f.profileId === profileId,
     );
@@ -331,7 +327,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Create minimal friend entry and persist as stranger
+    
     const minimalFriend: Friend = {
       profileId,
       firstName: 'User',
@@ -344,7 +340,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.onFriendSelected(minimalFriend, false);
   }
 
-  /** Get merged list of friends + strangers for the sidebar */
+  
   get allContacts(): Friend[] {
     const friendIds = new Set(this.friends.map((f) => f.profileId));
     const uniqueStrangers = this.strangers.filter(
@@ -362,7 +358,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     } catch {}
   }
 
-  /** Consent dialog: user accepts → store in sessionStorage, close dialog */
+  
   acceptConsent() {
     sessionStorage.setItem(this.CONSENT_KEY, 'true');
     this.showConsentDialog = false;
@@ -387,13 +383,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messages.update((prev) => [...prev, sysMsg]);
   }
 
-  /** Consent dialog: user declines → navigate away */
+  
   declineConsent() {
     this.router.navigate(['/feature/feed']);
   }
 
   onFriendSelected(friend: Friend, updateUrl = false) {
-    // Cleanup previous WebSocket subscription
+    
     this.wsSubscription?.unsubscribe();
 
     this.selectedFriend.set(friend);
@@ -407,7 +403,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       .subscribe((conv) => {
         this.conversationId.set(conv.id);
 
-        // Load chat history FIRST
+        
         this.isLoadingMessages = true;
         this.chatService
           .getChatsByConversation(conv.id, this.currentUser.profileId)
@@ -417,14 +413,14 @@ export class ChatComponent implements OnInit, OnDestroy {
             const groupedMsgs = this.groupMessages(enrichedMsgs);
             this.messages.set(groupedMsgs);
 
-            // THEN connect WebSocket to receive new messages
+            
             this.wsSubscription = this.chatService
               .connect(friend.profileId, conv.id)
               .subscribe({
                 next: (wsMsg: any) => {
                   console.log('📨 Received WebSocket message:', wsMsg);
 
-                  // Check if this is a WebRTC signaling message
+                  
                   const webrtcTypes = ['offer', 'answer', 'ice', 'leave'];
                   if (webrtcTypes.includes(wsMsg.type)) {
                     console.log(
@@ -432,7 +428,7 @@ export class ChatComponent implements OnInit, OnDestroy {
                       wsMsg.type,
                     );
 
-                    // Stop outgoing tone immediately when answer received
+                    
                     if (wsMsg.type === 'answer') {
                       console.log(
                         '📞 Answer received - stopping outgoing tone',
@@ -445,12 +441,12 @@ export class ChatComponent implements OnInit, OnDestroy {
                     if (wsMsg.type === 'leave') {
                       console.log('👋 LEAVE message received:', wsMsg);
                     }
-                    // Forward to signaling service's message handler
+                    
                     (this.signalingService as any).handleMessage(wsMsg);
-                    return; // Don't process as chat message
+                    return; 
                   }
 
-                  // Extract actual message data from nested structure
+                  
                   const msg: Message = {
                     id: wsMsg.data?.id || '',
                     conversationId:
@@ -458,15 +454,15 @@ export class ChatComponent implements OnInit, OnDestroy {
                     senderId: wsMsg.senderId || wsMsg.data?.senderId,
                     content: wsMsg.data?.content || '',
                     timestamp: new Date(wsMsg.data?.timestamp || Date.now()),
-                    userName: '', // Will be enriched
-                    userAvatar: '', // Will be enriched
-                    isMine: false, // Will be enriched
+                    userName: '', 
+                    userAvatar: '', 
+                    isMine: false, 
                   };
 
-                  // Enrich with friend info
+                  
                   const enrichedMsg = this.enrichMessage(msg, friend);
 
-                  // Re-group all messages after adding new one
+                  
                   this.messages.update((prev) => {
                     const updated = [...prev, enrichedMsg];
                     return this.groupMessages(updated);
@@ -519,10 +515,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     };
   }
 
-  // WebRTC Handlers
+  
   handleCallRequest(callType: CallType) {
     console.log('📞', callType, 'call requested');
-    this.currentCallType = callType; // Store call type
+    this.currentCallType = callType; 
 
     const friend = this.selectedFriend();
     if (!friend || !this.conversationId()) {
@@ -530,9 +526,9 @@ export class ChatComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Start call notification API (Fire and forget, or wait?)
-    // This triggers the push notification to receiving user
-    const sessionId = crypto.randomUUID(); // Generate session ID locally
+    
+    
+    const sessionId = crypto.randomUUID(); 
     this.chatService
       .startCall({
         conversationId: this.conversationId(),
@@ -543,24 +539,24 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
       .subscribe();
 
-    // Store call info for ending call later
+    
     this.activeCallerId = friend.profileId;
-    // Session ID will be set when offer is created. Wait, I generated it above?
-    // Actually, sendOffer generates *another* session ID?
-    // WebRTCSignalingService.sendOffer generates sessionId.
-    // Ideally I should synchronise them, but for notification purposes, just sending A session ID is fine.
-    // The actual WebRTC session ID is what matters for connection.
-    // Let's rely on WebRTC service to manage the actual call flow.
+    
+    
+    
+    
+    
+    
 
-    // ... rest of existing logic ...
+    
 
-    // Store call info for ending call later
+    
     this.activeCallerId = friend.profileId;
-    // Session ID will be set when offer is created
+    
     console.log('✅ Set activeCallerId:', this.activeCallerId);
 
-    // Connect WebSocket for signaling if not already connected
-    // const wsUrl = 'ws://localhost:8083/ws';
+    
+    
     const wsUrl = environment.wsUrl;
     this.signalingService.connect(
       wsUrl,
@@ -569,23 +565,23 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.currentUser.profileId,
     );
 
-    // Show video call component
+    
     this.showVideoCall = true;
 
-    // Wait for WebSocket to connect before starting call
+    
     const connectionSub = this.signalingService.connected$.subscribe(
       (connected) => {
         if (connected) {
           console.log('✅ WebSocket ready, starting call...');
 
-          // Play outgoing tone
+          
           this.playOutgoingTone();
 
           setTimeout(() => {
             if (this.videoCallComponent) {
               this.videoCallComponent.startCall();
             }
-            connectionSub.unsubscribe(); // Cleanup
+            connectionSub.unsubscribe(); 
           }, 100);
         }
       },
@@ -593,7 +589,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onCallEnded() {
-    // Prevent infinite loop - if already ending, don't process again
+    
     if (this.isEndingCall) {
       console.log('⚠️  Already ending call, skipping...');
       return;
@@ -602,7 +598,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.isEndingCall = true;
     console.log('📞 Call ended - cleaning up...');
 
-    // Send leave message to remote user FIRST (only if we initiated the end)
+    
     if (this.activeCallerId && this.activeSessionId) {
       console.log('📤 Sending leave message to:', this.activeCallerId);
       this.signalingService.sendLeave(
@@ -611,42 +607,42 @@ export class ChatComponent implements OnInit, OnDestroy {
       );
     }
 
-    // End call in WebRTC service (stops all streams)
-    // This will emit callEnded$, but our flag prevents re-entry
+    
+    
     this.webrtcService.endCall();
 
-    // Cleanup UI (without calling endCall again)
+    
     this.cleanupCallUI();
 
     console.log('✅ Call cleanup complete');
 
-    // Reset flag after a delay
+    
     setTimeout(() => {
       this.isEndingCall = false;
     }, 1000);
   }
 
-  // Cleanup call UI without sending leave (for remote disconnect)
+  
   private cleanupCallUI() {
     console.log('🧹 Cleaning up call UI...');
 
-    // Stop all tones
+    
     this.stopRingtone();
     this.stopOutgoingTone();
 
-    // Play call end sound (only once)
+    
     if (!this.isEndingCall) {
       this.playCallEnd();
     }
 
-    // DON'T call webrtcService.endCall() here - it's already called by the service
-    // when it emits callEnded$. Calling it again creates infinite loop!
+    
+    
 
-    // Clear call session info
+    
     this.activeCallerId = null;
     this.activeSessionId = null;
 
-    // Close video call UI - CRITICAL!
+    
     this.showVideoCall = false;
     console.log('✅ showVideoCall set to false');
 
@@ -664,7 +660,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     console.log('📤 Calling sendOffer for friend:', friend.profileId);
     const sessionId = this.signalingService.sendOffer(friend.profileId, offer);
 
-    // Store session ID for ending call later
+    
     this.activeSessionId = sessionId;
     console.log('✅ Set activeSessionId:', this.activeSessionId);
   }
@@ -672,10 +668,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   onAnswer(answer: RTCSessionDescriptionInit) {
     console.log('📥 onAnswer called with:', answer);
 
-    // Stop outgoing tone when answer received (call connected)
+    
     this.stopOutgoingTone();
 
-    // Use stored activeCallerId and activeSessionId instead of incomingCall
+    
     if (!this.activeCallerId || !this.activeSessionId) {
       console.error('❌ No active call session info');
       return;
@@ -703,21 +699,21 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     console.log('📞 Accepting incoming call from:', this.incomingCall.callerId);
 
-    // Stop ringtone when accepting
+    
     this.stopRingtone();
 
-    // Store call info for onAnswer handler
+    
     this.activeCallerId = this.incomingCall.callerId;
     this.activeSessionId = this.incomingCall.sessionId;
     const offer = this.incomingCall.offer;
 
-    // Clear incoming call notification
+    
     this.incomingCall = null;
 
-    // Show video call component
+    
     this.showVideoCall = true;
 
-    // CRITICAL: Connect WebRTC signaling WebSocket BEFORE accepting call
+    
     const friend = this.selectedFriend();
     if (!friend) {
       console.error('❌ No friend selected');
@@ -733,7 +729,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.currentUser.profileId,
     );
 
-    // Wait for WebSocket to connect, then accept call
+    
     const connectionSub = this.signalingService.connected$.subscribe(
       (connected) => {
         if (connected) {
@@ -762,16 +758,16 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.incomingCall.sessionId,
     );
     this.signalingService.clearIncomingCall();
-    this.stopRingtone(); // Stop ringtone when rejecting
+    this.stopRingtone(); 
   }
 
-  // Ringtone methods
+  
   private playRingtone() {
     try {
       if (!this.ringtoneAudio) {
         this.ringtoneAudio = new Audio('/sounds/ring-tone.mp3');
         this.ringtoneAudio.loop = true;
-        this.ringtoneAudio.volume = 0.3; // Reduced from 0.5
+        this.ringtoneAudio.volume = 0.3; 
       }
       this.ringtoneAudio.play().catch((err) => {
         console.error('❌ Error playing ringtone:', err);
@@ -793,7 +789,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       if (!this.outgoingAudio) {
         this.outgoingAudio = new Audio('/sounds/outgoing-call.mp3');
         this.outgoingAudio.loop = true;
-        this.outgoingAudio.volume = 0.3; // Reduced from 0.5
+        this.outgoingAudio.volume = 0.3; 
       }
       this.outgoingAudio.play().catch((err) => {
         console.error('❌ Error playing outgoing tone:', err);
@@ -813,7 +809,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private playCallConnected() {
     try {
       const audio = new Audio('/sounds/call-connected.mp3');
-      audio.volume = 0.4; // Reduced from 0.7
+      audio.volume = 0.4; 
       audio.play().catch((err) => {
         console.error('❌ Error playing call connected sound:', err);
       });
@@ -825,7 +821,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private playCallEnd() {
     try {
       const audio = new Audio('/sounds/end-call.mp3');
-      audio.volume = 0.4; // Reduced from 0.7
+      audio.volume = 0.4; 
       audio.play().catch((err) => {
         console.error('❌ Error playing call end sound:', err);
       });

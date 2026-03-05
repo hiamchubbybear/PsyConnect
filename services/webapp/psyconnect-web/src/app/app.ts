@@ -56,7 +56,7 @@ export class App implements OnInit {
   showSidebar: boolean = false;
   showFooter = true;
 
-  minWidth = 320; // Support mobile/small screens
+  minWidth = 320; 
   minHeight = 400;
   screenOk = true;
   isAuthRoute = false;

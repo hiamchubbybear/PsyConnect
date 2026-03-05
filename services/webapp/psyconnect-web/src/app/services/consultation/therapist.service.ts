@@ -40,6 +40,7 @@ export class TherapistService {
     skip: number = 0,
   ): Observable<any> {
     const params = { q: query, limit: limit.toString(), skip: skip.toString() };
-    return this.http.get<any>(`${this.baseUrl}/search`, { params });
+    const searchUrl = `${environment.apiUrl}/${environment.apiVersion}/consultation/search/therapists`;
+    return this.http.get<any>(searchUrl, { params });
   }
 }

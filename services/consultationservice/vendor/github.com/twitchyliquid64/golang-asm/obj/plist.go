@@ -1,6 +1,6 @@
-// Copyright 2013 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package obj
 
@@ -12,15 +12,15 @@ import (
 
 type Plist struct {
 	Firstpc *Prog
-	Curfn   interface{} // holds a *gc.Node, if non-nil
+	Curfn   interface{} 
 }
 
-// ProgAlloc is a function that allocates Progs.
-// It is used to provide access to cached/bulk-allocated Progs to the assemblers.
+
+
 type ProgAlloc func() *Prog
 
 func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc, myimportpath string) {
-	// Build list of symbols, and assign instructions to lists.
+	
 	var curtext *LSym
 	var etext *Prog
 	var text []*LSym
@@ -40,7 +40,7 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc, myimportpath string
 		case ATEXT:
 			s := p.From.Sym
 			if s == nil {
-				// func _() { }
+				
 				curtext = nil
 				continue
 			}
@@ -50,8 +50,8 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc, myimportpath string
 			continue
 
 		case AFUNCDATA:
-			// Rewrite reference to go_args_stackmap(SB) to the Go-provided declaration information.
-			if curtext == nil { // func _() {}
+			
+			if curtext == nil { 
 				continue
 			}
 			if p.To.Sym.Name == "go_args_stackmap" {
@@ -75,7 +75,7 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc, myimportpath string
 		newprog = ctxt.NewProg
 	}
 
-	// Add reference to Go arguments for C or assembly functions without them.
+	
 	for _, s := range text {
 		if !strings.HasPrefix(s.Name, "\"\".") {
 			continue
@@ -99,7 +99,7 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc, myimportpath string
 		}
 	}
 
-	// Turn functions into machine code images.
+	
 	for _, s := range text {
 		mkfwd(s)
 		linkpatch(ctxt, s, newprog)
@@ -117,7 +117,7 @@ func Flushplist(ctxt *Link, plist *Plist, newprog ProgAlloc, myimportpath string
 
 func (ctxt *Link) InitTextSym(s *LSym, flag int) {
 	if s == nil {
-		// func _() { }
+		
 		return
 	}
 	if s.Func != nil {
@@ -140,7 +140,7 @@ func (ctxt *Link) InitTextSym(s *LSym, flag int) {
 	s.Type = objabi.STEXT
 	ctxt.Text = append(ctxt.Text, s)
 
-	// Set up DWARF entries for s
+	
 	ctxt.dwarfSym(s)
 }
 
@@ -173,16 +173,16 @@ func (ctxt *Link) Globl(s *LSym, size int64, flag int) {
 	}
 }
 
-// EmitEntryLiveness generates PCDATA Progs after p to switch to the
-// liveness map active at the entry of function s. It returns the last
-// Prog generated.
+
+
+
 func (ctxt *Link) EmitEntryLiveness(s *LSym, p *Prog, newprog ProgAlloc) *Prog {
 	pcdata := ctxt.EmitEntryStackMap(s, p, newprog)
 	pcdata = ctxt.EmitEntryRegMap(s, pcdata, newprog)
 	return pcdata
 }
 
-// Similar to EmitEntryLiveness, but just emit stack map.
+
 func (ctxt *Link) EmitEntryStackMap(s *LSym, p *Prog, newprog ProgAlloc) *Prog {
 	pcdata := Appendp(p, newprog)
 	pcdata.Pos = s.Func.Text.Pos
@@ -190,12 +190,12 @@ func (ctxt *Link) EmitEntryStackMap(s *LSym, p *Prog, newprog ProgAlloc) *Prog {
 	pcdata.From.Type = TYPE_CONST
 	pcdata.From.Offset = objabi.PCDATA_StackMapIndex
 	pcdata.To.Type = TYPE_CONST
-	pcdata.To.Offset = -1 // pcdata starts at -1 at function entry
+	pcdata.To.Offset = -1 
 
 	return pcdata
 }
 
-// Similar to EmitEntryLiveness, but just emit register map.
+
 func (ctxt *Link) EmitEntryRegMap(s *LSym, p *Prog, newprog ProgAlloc) *Prog {
 	pcdata := Appendp(p, newprog)
 	pcdata.Pos = s.Func.Text.Pos
@@ -208,10 +208,10 @@ func (ctxt *Link) EmitEntryRegMap(s *LSym, p *Prog, newprog ProgAlloc) *Prog {
 	return pcdata
 }
 
-// StartUnsafePoint generates PCDATA Progs after p to mark the
-// beginning of an unsafe point. The unsafe point starts immediately
-// after p.
-// It returns the last Prog generated.
+
+
+
+
 func (ctxt *Link) StartUnsafePoint(p *Prog, newprog ProgAlloc) *Prog {
 	pcdata := Appendp(p, newprog)
 	pcdata.As = APCDATA
@@ -223,10 +223,10 @@ func (ctxt *Link) StartUnsafePoint(p *Prog, newprog ProgAlloc) *Prog {
 	return pcdata
 }
 
-// EndUnsafePoint generates PCDATA Progs after p to mark the end of an
-// unsafe point, restoring the register map index to oldval.
-// The unsafe point ends right after p.
-// It returns the last Prog generated.
+
+
+
+
 func (ctxt *Link) EndUnsafePoint(p *Prog, newprog ProgAlloc, oldval int64) *Prog {
 	pcdata := Appendp(p, newprog)
 	pcdata.As = APCDATA
@@ -238,23 +238,23 @@ func (ctxt *Link) EndUnsafePoint(p *Prog, newprog ProgAlloc, oldval int64) *Prog
 	return pcdata
 }
 
-// MarkUnsafePoints inserts PCDATAs to mark nonpreemptible and restartable
-// instruction sequences, based on isUnsafePoint and isRestartable predicate.
-// p0 is the start of the instruction stream.
-// isUnsafePoint(p) returns true if p is not safe for async preemption.
-// isRestartable(p) returns true if we can restart at the start of p (this Prog)
-// upon async preemption. (Currently multi-Prog restartable sequence is not
-// supported.)
-// isRestartable can be nil. In this case it is treated as always returning false.
-// If isUnsafePoint(p) and isRestartable(p) are both true, it is treated as
-// an unsafe point.
+
+
+
+
+
+
+
+
+
+
 func MarkUnsafePoints(ctxt *Link, p0 *Prog, newprog ProgAlloc, isUnsafePoint, isRestartable func(*Prog) bool) {
 	if isRestartable == nil {
-		// Default implementation: nothing is restartable.
+		
 		isRestartable = func(*Prog) bool { return false }
 	}
 	prev := p0
-	prevPcdata := int64(-1) // entry PC data value
+	prevPcdata := int64(-1) 
 	prevRestart := int64(0)
 	for p := prev.Link; p != nil; p, prev = p.Link, p {
 		if p.As == APCDATA && p.From.Offset == objabi.PCDATA_RegMapIndex {
@@ -262,18 +262,18 @@ func MarkUnsafePoints(ctxt *Link, p0 *Prog, newprog ProgAlloc, isUnsafePoint, is
 			continue
 		}
 		if prevPcdata == objabi.PCDATA_RegMapUnsafe {
-			continue // already unsafe
+			continue 
 		}
 		if isUnsafePoint(p) {
 			q := ctxt.StartUnsafePoint(prev, newprog)
 			q.Pc = p.Pc
 			q.Link = p
-			// Advance to the end of unsafe point.
+			
 			for p.Link != nil && isUnsafePoint(p.Link) {
 				p = p.Link
 			}
 			if p.Link == nil {
-				break // Reached the end, don't bother marking the end
+				break 
 			}
 			p = ctxt.EndUnsafePoint(p, newprog, prevPcdata)
 			p.Pc = p.Link.Pc
@@ -295,11 +295,11 @@ func MarkUnsafePoints(ctxt *Link, p0 *Prog, newprog ProgAlloc, isUnsafePoint, is
 			q.Link = p
 
 			if p.Link == nil {
-				break // Reached the end, don't bother marking the end
+				break 
 			}
 			if isRestartable(p.Link) {
-				// Next Prog is also restartable. No need to mark the end
-				// of this sequence. We'll just go ahead mark the next one.
+				
+				
 				continue
 			}
 			p = Appendp(p, newprog)

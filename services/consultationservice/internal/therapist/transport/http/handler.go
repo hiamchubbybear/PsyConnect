@@ -30,7 +30,7 @@ func NewHandler(
 	}
 }
 
-// DTOs
+
 type ProfessionalTitleDTO struct {
 	Code    string `json:"code"`
 	Display string `json:"display"`
@@ -300,7 +300,7 @@ func (h *Handler) DeleteTherapist(c *gin.Context) {
 		return
 	}
 
-	// Warning: This is a hard delete
+	
 	if err := h.deleteTherapistUC.Execute(c.Request.Context(), profileID); err != nil {
 		apiresponse.ErrorHandler(c, http.StatusBadRequest, err.Error())
 		return

@@ -42,7 +42,7 @@ export class ActivateComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Get email from query params
+    
     this.route.queryParams.subscribe((params) => {
       this.email = params['email'] || '';
     });
@@ -60,13 +60,13 @@ export class ActivateComponent implements OnInit {
     const input = event.target;
     const value = input.value;
 
-    // Only allow numbers
+    
     if (value && !/^\d$/.test(value)) {
       input.value = '';
       return;
     }
 
-    // Update form value
+    
     const inputs = document.querySelectorAll('.code-input');
     let code = '';
     inputs.forEach((inp: any) => {
@@ -74,7 +74,7 @@ export class ActivateComponent implements OnInit {
     });
     this.activateForm.patchValue({ token: code });
 
-    // Auto-focus next input
+    
     if (value && index < 4) {
       const nextInput = inputs[index + 1] as HTMLInputElement;
       nextInput?.focus();
@@ -84,7 +84,7 @@ export class ActivateComponent implements OnInit {
   onCodeKeyDown(event: KeyboardEvent, index: number) {
     const input = event.target as HTMLInputElement;
 
-    // Handle backspace
+    
     if (event.key === 'Backspace' && !input.value && index > 0) {
       const inputs = document.querySelectorAll('.code-input');
       const prevInput = inputs[index - 1] as HTMLInputElement;
@@ -106,7 +106,7 @@ export class ActivateComponent implements OnInit {
 
     this.activateForm.patchValue({ token: digits });
 
-    // Focus last filled input
+    
     const lastIndex = Math.min(digits.length, 4);
     (inputs[lastIndex] as HTMLInputElement)?.focus();
   }
@@ -144,14 +144,14 @@ export class ActivateComponent implements OnInit {
         const errorCode = err.error?.code;
 
         if (errorCode === 103) {
-          // Token not found or expired
+          
           this.toastService.show(
             'activate.error.tokenExpired',
             'activate.error.title',
             ToastType.Error
           );
         } else if (errorCode === 604) {
-          // Already activated
+          
           this.toastService.show(
             'activate.error.alreadyActivated',
             'activate.error.title',

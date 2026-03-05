@@ -1,27 +1,27 @@
-// This files's processing codes are inspired by https://github.com/segmentio/encoding.
-// The license notation is as follows.
-//
-// # MIT License
-//
-// Copyright (c) 2019 Segment.io, Inc.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package encoder
 
 import (
@@ -36,15 +36,15 @@ func init() {
 
 	switch b[0] {
 	case 0xCD:
-		endianness = 0 // LE
+		endianness = 0 
 	case 0xAB:
-		endianness = 1 // BE
+		endianness = 1 
 	default:
 		panic("could not determine endianness")
 	}
 }
 
-// "00010203...96979899" cast to []uint16
+
 var intLELookup = [100]uint16{
 	0x3030, 0x3130, 0x3230, 0x3330, 0x3430, 0x3530, 0x3630, 0x3730, 0x3830, 0x3930,
 	0x3031, 0x3131, 0x3231, 0x3331, 0x3431, 0x3531, 0x3631, 0x3731, 0x3831, 0x3931,
@@ -119,9 +119,9 @@ func AppendInt(_ *RuntimeContext, out []byte, p uintptr, code *Opcode) []byte {
 	i--
 	u[i] = lookup[n]
 
-	i *= 2 // convert to byte index
+	i *= 2 
 	if n < 10 {
-		i++ // remove leading zero
+		i++ 
 	}
 	if negative {
 		i--
@@ -168,9 +168,9 @@ func AppendUint(_ *RuntimeContext, out []byte, p uintptr, code *Opcode) []byte {
 	i--
 	u[i] = lookup[n]
 
-	i *= 2 // convert to byte index
+	i *= 2 
 	if n < 10 {
-		i++ // remove leading zero
+		i++ 
 	}
 	return append(out, b[i:]...)
 }

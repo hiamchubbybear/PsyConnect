@@ -1,6 +1,6 @@
-// Copyright 2012 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package windows
 
@@ -22,13 +22,13 @@ const (
 	NameDnsDomain        = 12
 )
 
-// This function returns 1 byte BOOLEAN rather than the 4 byte BOOL.
-// http://blogs.msdn.com/b/drnick/archive/2007/12/19/windows-and-upn-format-credentials.aspx
-//sys	TranslateName(accName *uint16, accNameFormat uint32, desiredNameFormat uint32, translatedName *uint16, nSize *uint32) (err error) [failretval&0xff==0] = secur32.TranslateNameW
-//sys	GetUserNameEx(nameFormat uint32, nameBuffre *uint16, nSize *uint32) (err error) [failretval&0xff==0] = secur32.GetUserNameExW
 
-// TranslateAccountName converts a directory service
-// object name from one format to another.
+
+
+
+
+
+
 func TranslateAccountName(username string, from, to uint32, initSize int) (string, error) {
 	u, e := UTF16PtrFromString(username)
 	if e != nil {
@@ -51,7 +51,7 @@ func TranslateAccountName(username string, from, to uint32, initSize int) (strin
 }
 
 const (
-	// do not reorder
+	
 	NetSetupUnknownStatus = iota
 	NetSetupUnjoined
 	NetSetupWorkgroupName
@@ -65,13 +65,13 @@ type UserInfo10 struct {
 	FullName   *uint16
 }
 
-//sys	NetUserGetInfo(serverName *uint16, userName *uint16, level uint32, buf **byte) (neterr error) = netapi32.NetUserGetInfo
-//sys	NetGetJoinInformation(server *uint16, name **uint16, bufType *uint32) (neterr error) = netapi32.NetGetJoinInformation
-//sys	NetApiBufferFree(buf *byte) (neterr error) = netapi32.NetApiBufferFree
-//sys   NetUserEnum(serverName *uint16, level uint32, filter uint32, buf **byte, prefMaxLen uint32, entriesRead *uint32, totalEntries *uint32, resumeHandle *uint32) (neterr error) = netapi32.NetUserEnum
+
+
+
+
 
 const (
-	// do not reorder
+	
 	SidTypeUser = 1 + iota
 	SidTypeGroup
 	SidTypeDomain
@@ -125,8 +125,8 @@ const (
 	SECURITY_NT_NON_UNIQUE_RID          = 0x15
 )
 
-// Predefined domain-relative RIDs for local groups.
-// See https://msdn.microsoft.com/en-us/library/windows/desktop/aa379649(v=vs.85).aspx
+
+
 const (
 	DOMAIN_ALIAS_RID_ADMINS                         = 0x220
 	DOMAIN_ALIAS_RID_USERS                          = 0x221
@@ -155,28 +155,28 @@ const (
 	DOMAIN_ALIAS_RID_CERTSVC_DCOM_ACCESS_GROUP      = 0x23e
 )
 
-//sys	LookupAccountSid(systemName *uint16, sid *SID, name *uint16, nameLen *uint32, refdDomainName *uint16, refdDomainNameLen *uint32, use *uint32) (err error) = advapi32.LookupAccountSidW
-//sys	LookupAccountName(systemName *uint16, accountName *uint16, sid *SID, sidLen *uint32, refdDomainName *uint16, refdDomainNameLen *uint32, use *uint32) (err error) = advapi32.LookupAccountNameW
-//sys	ConvertSidToStringSid(sid *SID, stringSid **uint16) (err error) = advapi32.ConvertSidToStringSidW
-//sys	ConvertStringSidToSid(stringSid *uint16, sid **SID) (err error) = advapi32.ConvertStringSidToSidW
-//sys	GetLengthSid(sid *SID) (len uint32) = advapi32.GetLengthSid
-//sys	CopySid(destSidLen uint32, destSid *SID, srcSid *SID) (err error) = advapi32.CopySid
-//sys	AllocateAndInitializeSid(identAuth *SidIdentifierAuthority, subAuth byte, subAuth0 uint32, subAuth1 uint32, subAuth2 uint32, subAuth3 uint32, subAuth4 uint32, subAuth5 uint32, subAuth6 uint32, subAuth7 uint32, sid **SID) (err error) = advapi32.AllocateAndInitializeSid
-//sys	createWellKnownSid(sidType WELL_KNOWN_SID_TYPE, domainSid *SID, sid *SID, sizeSid *uint32) (err error) = advapi32.CreateWellKnownSid
-//sys	isWellKnownSid(sid *SID, sidType WELL_KNOWN_SID_TYPE) (isWellKnown bool) = advapi32.IsWellKnownSid
-//sys	FreeSid(sid *SID) (err error) [failretval!=0] = advapi32.FreeSid
-//sys	EqualSid(sid1 *SID, sid2 *SID) (isEqual bool) = advapi32.EqualSid
-//sys	getSidIdentifierAuthority(sid *SID) (authority *SidIdentifierAuthority) = advapi32.GetSidIdentifierAuthority
-//sys	getSidSubAuthorityCount(sid *SID) (count *uint8) = advapi32.GetSidSubAuthorityCount
-//sys	getSidSubAuthority(sid *SID, index uint32) (subAuthority *uint32) = advapi32.GetSidSubAuthority
-//sys	isValidSid(sid *SID) (isValid bool) = advapi32.IsValidSid
 
-// The security identifier (SID) structure is a variable-length
-// structure used to uniquely identify users or groups.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type SID struct{}
 
-// StringToSid converts a string-format security identifier
-// SID into a valid, functional SID.
+
+
 func StringToSid(s string) (*SID, error) {
 	var sid *SID
 	p, e := UTF16PtrFromString(s)
@@ -191,9 +191,9 @@ func StringToSid(s string) (*SID, error) {
 	return sid.Copy()
 }
 
-// LookupSID retrieves a security identifier SID for the account
-// and the name of the domain on which the account was found.
-// System specify target computer to search.
+
+
+
 func LookupSID(system, account string) (sid *SID, domain string, accType uint32, err error) {
 	if len(account) == 0 {
 		return nil, "", 0, syscall.EINVAL
@@ -228,7 +228,7 @@ func LookupSID(system, account string) (sid *SID, domain string, accType uint32,
 	}
 }
 
-// String converts SID to a string format suitable for display, storage, or transmission.
+
 func (sid *SID) String() string {
 	var s *uint16
 	e := ConvertSidToStringSid(sid, &s)
@@ -239,12 +239,12 @@ func (sid *SID) String() string {
 	return UTF16ToString((*[256]uint16)(unsafe.Pointer(s))[:])
 }
 
-// Len returns the length, in bytes, of a valid security identifier SID.
+
 func (sid *SID) Len() int {
 	return int(GetLengthSid(sid))
 }
 
-// Copy creates a duplicate of security identifier SID.
+
 func (sid *SID) Copy() (*SID, error) {
 	b := make([]byte, sid.Len())
 	sid2 := (*SID)(unsafe.Pointer(&b[0]))
@@ -255,18 +255,18 @@ func (sid *SID) Copy() (*SID, error) {
 	return sid2, nil
 }
 
-// IdentifierAuthority returns the identifier authority of the SID.
+
 func (sid *SID) IdentifierAuthority() SidIdentifierAuthority {
 	return *getSidIdentifierAuthority(sid)
 }
 
-// SubAuthorityCount returns the number of sub-authorities in the SID.
+
 func (sid *SID) SubAuthorityCount() uint8 {
 	return *getSidSubAuthorityCount(sid)
 }
 
-// SubAuthority returns the sub-authority of the SID as specified by
-// the index, which must be less than sid.SubAuthorityCount().
+
+
 func (sid *SID) SubAuthority(idx uint32) uint32 {
 	if idx >= uint32(sid.SubAuthorityCount()) {
 		panic("sub-authority index out of range")
@@ -274,24 +274,24 @@ func (sid *SID) SubAuthority(idx uint32) uint32 {
 	return *getSidSubAuthority(sid, idx)
 }
 
-// IsValid returns whether the SID has a valid revision and length.
+
 func (sid *SID) IsValid() bool {
 	return isValidSid(sid)
 }
 
-// Equals compares two SIDs for equality.
+
 func (sid *SID) Equals(sid2 *SID) bool {
 	return EqualSid(sid, sid2)
 }
 
-// IsWellKnown determines whether the SID matches the well-known sidType.
+
 func (sid *SID) IsWellKnown(sidType WELL_KNOWN_SID_TYPE) bool {
 	return isWellKnownSid(sid, sidType)
 }
 
-// LookupAccount retrieves the name of the account for this SID
-// and the name of the first domain on which this SID is found.
-// System specify target computer to search for.
+
+
+
 func (sid *SID) LookupAccount(system string) (account, domain string, accType uint32, err error) {
 	var sys *uint16
 	if len(system) > 0 {
@@ -318,7 +318,7 @@ func (sid *SID) LookupAccount(system string) (account, domain string, accType ui
 	}
 }
 
-// Various types of pre-specified SIDs that can be synthesized and compared at runtime.
+
 type WELL_KNOWN_SID_TYPE uint32
 
 const (
@@ -444,14 +444,14 @@ const (
 	WinBuiltinDeviceOwnersSid                     = 119
 )
 
-// Creates a SID for a well-known predefined alias, generally using the constants of the form
-// Win*Sid, for the local machine.
+
+
 func CreateWellKnownSid(sidType WELL_KNOWN_SID_TYPE) (*SID, error) {
 	return CreateWellKnownDomainSid(sidType, nil)
 }
 
-// Creates a SID for a well-known predefined alias, generally using the constants of the form
-// Win*Sid, for the domain specified by the domainSid parameter.
+
+
 func CreateWellKnownDomainSid(sidType WELL_KNOWN_SID_TYPE, domainSid *SID) (*SID, error) {
 	n := uint32(50)
 	for {
@@ -471,7 +471,7 @@ func CreateWellKnownDomainSid(sidType WELL_KNOWN_SID_TYPE, domainSid *SID) (*SID
 }
 
 const (
-	// do not reorder
+	
 	TOKEN_ASSIGN_PRIMARY = 1 << iota
 	TOKEN_DUPLICATE
 	TOKEN_IMPERSONATE
@@ -501,7 +501,7 @@ const (
 )
 
 const (
-	// do not reorder
+	
 	TokenUser = 1 + iota
 	TokenGroups
 	TokenPrivileges
@@ -533,7 +533,7 @@ const (
 	MaxTokenInfoClass
 )
 
-// Group attributes inside of Tokengroups.Groups[i].Attributes
+
 const (
 	SE_GROUP_MANDATORY          = 0x00000001
 	SE_GROUP_ENABLED_BY_DEFAULT = 0x00000002
@@ -547,7 +547,7 @@ const (
 	SE_GROUP_VALID_ATTRIBUTES   = SE_GROUP_MANDATORY | SE_GROUP_ENABLED_BY_DEFAULT | SE_GROUP_ENABLED | SE_GROUP_OWNER | SE_GROUP_USE_FOR_DENY_ONLY | SE_GROUP_LOGON_ID | SE_GROUP_RESOURCE | SE_GROUP_INTEGRITY | SE_GROUP_INTEGRITY_ENABLED
 )
 
-// Privilege attributes
+
 const (
 	SE_PRIVILEGE_ENABLED_BY_DEFAULT = 0x00000001
 	SE_PRIVILEGE_ENABLED            = 0x00000002
@@ -556,13 +556,13 @@ const (
 	SE_PRIVILEGE_VALID_ATTRIBUTES   = SE_PRIVILEGE_ENABLED_BY_DEFAULT | SE_PRIVILEGE_ENABLED | SE_PRIVILEGE_REMOVED | SE_PRIVILEGE_USED_FOR_ACCESS
 )
 
-// Token types
+
 const (
 	TokenPrimary       = 1
 	TokenImpersonation = 2
 )
 
-// Impersonation levels
+
 const (
 	SecurityAnonymous      = 0
 	SecurityIdentification = 1
@@ -595,20 +595,20 @@ type Tokenprimarygroup struct {
 
 type Tokengroups struct {
 	GroupCount uint32
-	Groups     [1]SIDAndAttributes // Use AllGroups() for iterating.
+	Groups     [1]SIDAndAttributes 
 }
 
-// AllGroups returns a slice that can be used to iterate over the groups in g.
+
 func (g *Tokengroups) AllGroups() []SIDAndAttributes {
 	return (*[(1 << 28) - 1]SIDAndAttributes)(unsafe.Pointer(&g.Groups[0]))[:g.GroupCount:g.GroupCount]
 }
 
 type Tokenprivileges struct {
 	PrivilegeCount uint32
-	Privileges     [1]LUIDAndAttributes // Use AllPrivileges() for iterating.
+	Privileges     [1]LUIDAndAttributes 
 }
 
-// AllPrivileges returns a slice that can be used to iterate over the privileges in p.
+
 func (p *Tokenprivileges) AllPrivileges() []LUIDAndAttributes {
 	return (*[(1 << 27) - 1]LUIDAndAttributes)(unsafe.Pointer(&p.Privileges[0]))[:p.PrivilegeCount:p.PrivilegeCount]
 }
@@ -621,73 +621,73 @@ func (tml *Tokenmandatorylabel) Size() uint32 {
 	return uint32(unsafe.Sizeof(Tokenmandatorylabel{})) + GetLengthSid(tml.Label.Sid)
 }
 
-// Authorization Functions
-//sys	checkTokenMembership(tokenHandle Token, sidToCheck *SID, isMember *int32) (err error) = advapi32.CheckTokenMembership
-//sys	isTokenRestricted(tokenHandle Token) (ret bool, err error) [!failretval] = advapi32.IsTokenRestricted
-//sys	OpenProcessToken(process Handle, access uint32, token *Token) (err error) = advapi32.OpenProcessToken
-//sys	OpenThreadToken(thread Handle, access uint32, openAsSelf bool, token *Token) (err error) = advapi32.OpenThreadToken
-//sys	ImpersonateSelf(impersonationlevel uint32) (err error) = advapi32.ImpersonateSelf
-//sys	RevertToSelf() (err error) = advapi32.RevertToSelf
-//sys	SetThreadToken(thread *Handle, token Token) (err error) = advapi32.SetThreadToken
-//sys	LookupPrivilegeValue(systemname *uint16, name *uint16, luid *LUID) (err error) = advapi32.LookupPrivilegeValueW
-//sys	AdjustTokenPrivileges(token Token, disableAllPrivileges bool, newstate *Tokenprivileges, buflen uint32, prevstate *Tokenprivileges, returnlen *uint32) (err error) = advapi32.AdjustTokenPrivileges
-//sys	AdjustTokenGroups(token Token, resetToDefault bool, newstate *Tokengroups, buflen uint32, prevstate *Tokengroups, returnlen *uint32) (err error) = advapi32.AdjustTokenGroups
-//sys	GetTokenInformation(token Token, infoClass uint32, info *byte, infoLen uint32, returnedLen *uint32) (err error) = advapi32.GetTokenInformation
-//sys	SetTokenInformation(token Token, infoClass uint32, info *byte, infoLen uint32) (err error) = advapi32.SetTokenInformation
-//sys	DuplicateTokenEx(existingToken Token, desiredAccess uint32, tokenAttributes *SecurityAttributes, impersonationLevel uint32, tokenType uint32, newToken *Token) (err error) = advapi32.DuplicateTokenEx
-//sys	GetUserProfileDirectory(t Token, dir *uint16, dirLen *uint32) (err error) = userenv.GetUserProfileDirectoryW
-//sys	getSystemDirectory(dir *uint16, dirLen uint32) (len uint32, err error) = kernel32.GetSystemDirectoryW
-//sys	getWindowsDirectory(dir *uint16, dirLen uint32) (len uint32, err error) = kernel32.GetWindowsDirectoryW
-//sys	getSystemWindowsDirectory(dir *uint16, dirLen uint32) (len uint32, err error) = kernel32.GetSystemWindowsDirectoryW
 
-// An access token contains the security information for a logon session.
-// The system creates an access token when a user logs on, and every
-// process executed on behalf of the user has a copy of the token.
-// The token identifies the user, the user's groups, and the user's
-// privileges. The system uses the token to control access to securable
-// objects and to control the ability of the user to perform various
-// system-related operations on the local computer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type Token Handle
 
-// OpenCurrentProcessToken opens an access token associated with current
-// process with TOKEN_QUERY access. It is a real token that needs to be closed.
-//
-// Deprecated: Explicitly call OpenProcessToken(CurrentProcess(), ...)
-// with the desired access instead, or use GetCurrentProcessToken for a
-// TOKEN_QUERY token.
+
+
+
+
+
+
 func OpenCurrentProcessToken() (Token, error) {
 	var token Token
 	err := OpenProcessToken(CurrentProcess(), TOKEN_QUERY, &token)
 	return token, err
 }
 
-// GetCurrentProcessToken returns the access token associated with
-// the current process. It is a pseudo token that does not need
-// to be closed.
+
+
+
 func GetCurrentProcessToken() Token {
 	return Token(^uintptr(4 - 1))
 }
 
-// GetCurrentThreadToken return the access token associated with
-// the current thread. It is a pseudo token that does not need
-// to be closed.
+
+
+
 func GetCurrentThreadToken() Token {
 	return Token(^uintptr(5 - 1))
 }
 
-// GetCurrentThreadEffectiveToken returns the effective access token
-// associated with the current thread. It is a pseudo token that does
-// not need to be closed.
+
+
+
 func GetCurrentThreadEffectiveToken() Token {
 	return Token(^uintptr(6 - 1))
 }
 
-// Close releases access to access token.
+
 func (t Token) Close() error {
 	return CloseHandle(Handle(t))
 }
 
-// getInfo retrieves a specified type of information about an access token.
+
 func (t Token) getInfo(class uint32, initSize int) (unsafe.Pointer, error) {
 	n := uint32(initSize)
 	for {
@@ -705,7 +705,7 @@ func (t Token) getInfo(class uint32, initSize int) (unsafe.Pointer, error) {
 	}
 }
 
-// GetTokenUser retrieves access token t user account information.
+
 func (t Token) GetTokenUser() (*Tokenuser, error) {
 	i, e := t.getInfo(TokenUser, 50)
 	if e != nil {
@@ -714,7 +714,7 @@ func (t Token) GetTokenUser() (*Tokenuser, error) {
 	return (*Tokenuser)(i), nil
 }
 
-// GetTokenGroups retrieves group accounts associated with access token t.
+
 func (t Token) GetTokenGroups() (*Tokengroups, error) {
 	i, e := t.getInfo(TokenGroups, 50)
 	if e != nil {
@@ -723,9 +723,9 @@ func (t Token) GetTokenGroups() (*Tokengroups, error) {
 	return (*Tokengroups)(i), nil
 }
 
-// GetTokenPrimaryGroup retrieves access token t primary group information.
-// A pointer to a SID structure representing a group that will become
-// the primary group of any objects created by a process using this access token.
+
+
+
 func (t Token) GetTokenPrimaryGroup() (*Tokenprimarygroup, error) {
 	i, e := t.getInfo(TokenPrimaryGroup, 50)
 	if e != nil {
@@ -734,8 +734,8 @@ func (t Token) GetTokenPrimaryGroup() (*Tokenprimarygroup, error) {
 	return (*Tokenprimarygroup)(i), nil
 }
 
-// GetUserProfileDirectory retrieves path to the
-// root directory of the access token t user's profile.
+
+
 func (t Token) GetUserProfileDirectory() (string, error) {
 	n := uint32(100)
 	for {
@@ -753,7 +753,7 @@ func (t Token) GetUserProfileDirectory() (string, error) {
 	}
 }
 
-// IsElevated returns whether the current token is elevated from a UAC perspective.
+
 func (token Token) IsElevated() bool {
 	var isElevated uint32
 	var outLen uint32
@@ -764,7 +764,7 @@ func (token Token) IsElevated() bool {
 	return outLen == uint32(unsafe.Sizeof(isElevated)) && isElevated != 0
 }
 
-// GetLinkedToken returns the linked token, which may be an elevated UAC token.
+
 func (token Token) GetLinkedToken() (Token, error) {
 	var linkedToken Token
 	var outLen uint32
@@ -775,8 +775,8 @@ func (token Token) GetLinkedToken() (Token, error) {
 	return linkedToken, nil
 }
 
-// GetSystemDirectory retrieves the path to current location of the system
-// directory, which is typically, though not always, `C:\Windows\System32`.
+
+
 func GetSystemDirectory() (string, error) {
 	n := uint32(MAX_PATH)
 	for {
@@ -792,10 +792,10 @@ func GetSystemDirectory() (string, error) {
 	}
 }
 
-// GetWindowsDirectory retrieves the path to current location of the Windows
-// directory, which is typically, though not always, `C:\Windows`. This may
-// be a private user directory in the case that the application is running
-// under a terminal server.
+
+
+
+
 func GetWindowsDirectory() (string, error) {
 	n := uint32(MAX_PATH)
 	for {
@@ -811,8 +811,8 @@ func GetWindowsDirectory() (string, error) {
 	}
 }
 
-// GetSystemWindowsDirectory retrieves the path to current location of the
-// Windows directory, which is typically, though not always, `C:\Windows`.
+
+
 func GetSystemWindowsDirectory() (string, error) {
 	n := uint32(MAX_PATH)
 	for {
@@ -828,7 +828,7 @@ func GetSystemWindowsDirectory() (string, error) {
 	}
 }
 
-// IsMember reports whether the access token t is a member of the provided SID.
+
 func (t Token) IsMember(sid *SID) (bool, error) {
 	var b int32
 	if e := checkTokenMembership(t, sid, &b); e != nil {
@@ -837,11 +837,11 @@ func (t Token) IsMember(sid *SID) (bool, error) {
 	return b != 0, nil
 }
 
-// IsRestricted reports whether the access token t is a restricted token.
+
 func (t Token) IsRestricted() (isRestricted bool, err error) {
 	isRestricted, err = isTokenRestricted(t)
 	if !isRestricted && err == syscall.EINVAL {
-		// If err is EINVAL, this returned ERROR_SUCCESS indicating a non-restricted token.
+		
 		err = nil
 	}
 	return
@@ -885,10 +885,10 @@ type WTS_SESSION_INFO struct {
 	State             uint32
 }
 
-//sys WTSQueryUserToken(session uint32, token *Token) (err error) = wtsapi32.WTSQueryUserToken
-//sys WTSEnumerateSessions(handle Handle, reserved uint32, version uint32, sessions **WTS_SESSION_INFO, count *uint32) (err error) = wtsapi32.WTSEnumerateSessionsW
-//sys WTSFreeMemory(ptr uintptr) = wtsapi32.WTSFreeMemory
-//sys WTSGetActiveConsoleSessionId() (sessionID uint32)
+
+
+
+
 
 type ACL struct {
 	aclRevision byte
@@ -915,7 +915,7 @@ type SECURITY_QUALITY_OF_SERVICE struct {
 	EffectiveOnly       byte
 }
 
-// Constants for the ContextTrackingMode field of SECURITY_QUALITY_OF_SERVICE.
+
 const (
 	SECURITY_STATIC_TRACKING  = 0
 	SECURITY_DYNAMIC_TRACKING = 1
@@ -929,7 +929,7 @@ type SecurityAttributes struct {
 
 type SE_OBJECT_TYPE uint32
 
-// Constants for type SE_OBJECT_TYPE
+
 const (
 	SE_UNKNOWN_OBJECT_TYPE     = 0
 	SE_FILE_OBJECT             = 1
@@ -949,7 +949,7 @@ const (
 
 type SECURITY_INFORMATION uint32
 
-// Constants for type SECURITY_INFORMATION
+
 const (
 	OWNER_SECURITY_INFORMATION            = 0x00000001
 	GROUP_SECURITY_INFORMATION            = 0x00000002
@@ -967,7 +967,7 @@ const (
 
 type SECURITY_DESCRIPTOR_CONTROL uint16
 
-// Constants for type SECURITY_DESCRIPTOR_CONTROL
+
 const (
 	SE_OWNER_DEFAULTED       = 0x0001
 	SE_GROUP_DEFAULTED       = 0x0002
@@ -987,7 +987,7 @@ const (
 
 type ACCESS_MASK uint32
 
-// Constants for type ACCESS_MASK
+
 const (
 	DELETE                   = 0x00010000
 	READ_CONTROL             = 0x00020000
@@ -1010,7 +1010,7 @@ const (
 
 type ACCESS_MODE uint32
 
-// Constants for type ACCESS_MODE
+
 const (
 	NOT_USED_ACCESS   = 0
 	GRANT_ACCESS      = 1
@@ -1021,7 +1021,7 @@ const (
 	SET_AUDIT_FAILURE = 6
 )
 
-// Constants for AceFlags and Inheritance fields
+
 const (
 	NO_INHERITANCE                     = 0x0
 	SUB_OBJECTS_ONLY_INHERIT           = 0x1
@@ -1042,7 +1042,7 @@ const (
 
 type MULTIPLE_TRUSTEE_OPERATION uint32
 
-// Constants for MULTIPLE_TRUSTEE_OPERATION
+
 const (
 	NO_MULTIPLE_TRUSTEE    = 0
 	TRUSTEE_IS_IMPERSONATE = 1
@@ -1050,7 +1050,7 @@ const (
 
 type TRUSTEE_FORM uint32
 
-// Constants for TRUSTEE_FORM
+
 const (
 	TRUSTEE_IS_SID              = 0
 	TRUSTEE_IS_NAME             = 1
@@ -1061,7 +1061,7 @@ const (
 
 type TRUSTEE_TYPE uint32
 
-// Constants for TRUSTEE_TYPE
+
 const (
 	TRUSTEE_IS_UNKNOWN          = 0
 	TRUSTEE_IS_USER             = 1
@@ -1074,7 +1074,7 @@ const (
 	TRUSTEE_IS_COMPUTER         = 8
 )
 
-// Constants for ObjectsPresent field
+
 const (
 	ACE_OBJECT_TYPE_PRESENT           = 0x1
 	ACE_INHERITED_OBJECT_TYPE_PRESENT = 0x2
@@ -1087,14 +1087,14 @@ type EXPLICIT_ACCESS struct {
 	Trustee           TRUSTEE
 }
 
-// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-ace_header
+
 type ACE_HEADER struct {
 	AceType  uint8
 	AceFlags uint8
 	AceSize  uint16
 }
 
-// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-access_allowed_ace
+
 type ACCESS_ALLOWED_ACE struct {
 	Header   ACE_HEADER
 	Mask     ACCESS_MASK
@@ -1102,13 +1102,13 @@ type ACCESS_ALLOWED_ACE struct {
 }
 
 const (
-	// Constants for AceType
-	// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-ace_header
+	
+	
 	ACCESS_ALLOWED_ACE_TYPE = 0
 	ACCESS_DENIED_ACE_TYPE  = 1
 )
 
-// This type is the union inside of TRUSTEE and must be created using one of the TrusteeValueFrom* functions.
+
 type TrusteeValue uintptr
 
 func TrusteeValueFromString(str string) TrusteeValue {
@@ -1147,65 +1147,65 @@ type OBJECTS_AND_NAME struct {
 	Name                    *uint16
 }
 
-//sys	getSecurityInfo(handle Handle, objectType SE_OBJECT_TYPE, securityInformation SECURITY_INFORMATION, owner **SID, group **SID, dacl **ACL, sacl **ACL, sd **SECURITY_DESCRIPTOR) (ret error) = advapi32.GetSecurityInfo
-//sys	SetSecurityInfo(handle Handle, objectType SE_OBJECT_TYPE, securityInformation SECURITY_INFORMATION, owner *SID, group *SID, dacl *ACL, sacl *ACL) (ret error) = advapi32.SetSecurityInfo
-//sys	getNamedSecurityInfo(objectName string, objectType SE_OBJECT_TYPE, securityInformation SECURITY_INFORMATION, owner **SID, group **SID, dacl **ACL, sacl **ACL, sd **SECURITY_DESCRIPTOR) (ret error) = advapi32.GetNamedSecurityInfoW
-//sys	SetNamedSecurityInfo(objectName string, objectType SE_OBJECT_TYPE, securityInformation SECURITY_INFORMATION, owner *SID, group *SID, dacl *ACL, sacl *ACL) (ret error) = advapi32.SetNamedSecurityInfoW
-//sys	SetKernelObjectSecurity(handle Handle, securityInformation SECURITY_INFORMATION, securityDescriptor *SECURITY_DESCRIPTOR) (err error) = advapi32.SetKernelObjectSecurity
 
-//sys	buildSecurityDescriptor(owner *TRUSTEE, group *TRUSTEE, countAccessEntries uint32, accessEntries *EXPLICIT_ACCESS, countAuditEntries uint32, auditEntries *EXPLICIT_ACCESS, oldSecurityDescriptor *SECURITY_DESCRIPTOR, sizeNewSecurityDescriptor *uint32, newSecurityDescriptor **SECURITY_DESCRIPTOR) (ret error) = advapi32.BuildSecurityDescriptorW
-//sys	initializeSecurityDescriptor(absoluteSD *SECURITY_DESCRIPTOR, revision uint32) (err error) = advapi32.InitializeSecurityDescriptor
 
-//sys	getSecurityDescriptorControl(sd *SECURITY_DESCRIPTOR, control *SECURITY_DESCRIPTOR_CONTROL, revision *uint32) (err error) = advapi32.GetSecurityDescriptorControl
-//sys	getSecurityDescriptorDacl(sd *SECURITY_DESCRIPTOR, daclPresent *bool, dacl **ACL, daclDefaulted *bool) (err error) = advapi32.GetSecurityDescriptorDacl
-//sys	getSecurityDescriptorSacl(sd *SECURITY_DESCRIPTOR, saclPresent *bool, sacl **ACL, saclDefaulted *bool) (err error) = advapi32.GetSecurityDescriptorSacl
-//sys	getSecurityDescriptorOwner(sd *SECURITY_DESCRIPTOR, owner **SID, ownerDefaulted *bool) (err error) = advapi32.GetSecurityDescriptorOwner
-//sys	getSecurityDescriptorGroup(sd *SECURITY_DESCRIPTOR, group **SID, groupDefaulted *bool) (err error) = advapi32.GetSecurityDescriptorGroup
-//sys	getSecurityDescriptorLength(sd *SECURITY_DESCRIPTOR) (len uint32) = advapi32.GetSecurityDescriptorLength
-//sys	getSecurityDescriptorRMControl(sd *SECURITY_DESCRIPTOR, rmControl *uint8) (ret error) [failretval!=0] = advapi32.GetSecurityDescriptorRMControl
-//sys	isValidSecurityDescriptor(sd *SECURITY_DESCRIPTOR) (isValid bool) = advapi32.IsValidSecurityDescriptor
 
-//sys	setSecurityDescriptorControl(sd *SECURITY_DESCRIPTOR, controlBitsOfInterest SECURITY_DESCRIPTOR_CONTROL, controlBitsToSet SECURITY_DESCRIPTOR_CONTROL) (err error) = advapi32.SetSecurityDescriptorControl
-//sys	setSecurityDescriptorDacl(sd *SECURITY_DESCRIPTOR, daclPresent bool, dacl *ACL, daclDefaulted bool) (err error) = advapi32.SetSecurityDescriptorDacl
-//sys	setSecurityDescriptorSacl(sd *SECURITY_DESCRIPTOR, saclPresent bool, sacl *ACL, saclDefaulted bool) (err error) = advapi32.SetSecurityDescriptorSacl
-//sys	setSecurityDescriptorOwner(sd *SECURITY_DESCRIPTOR, owner *SID, ownerDefaulted bool) (err error) = advapi32.SetSecurityDescriptorOwner
-//sys	setSecurityDescriptorGroup(sd *SECURITY_DESCRIPTOR, group *SID, groupDefaulted bool) (err error) = advapi32.SetSecurityDescriptorGroup
-//sys	setSecurityDescriptorRMControl(sd *SECURITY_DESCRIPTOR, rmControl *uint8) = advapi32.SetSecurityDescriptorRMControl
 
-//sys	convertStringSecurityDescriptorToSecurityDescriptor(str string, revision uint32, sd **SECURITY_DESCRIPTOR, size *uint32) (err error) = advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW
-//sys	convertSecurityDescriptorToStringSecurityDescriptor(sd *SECURITY_DESCRIPTOR, revision uint32, securityInformation SECURITY_INFORMATION, str **uint16, strLen *uint32) (err error) = advapi32.ConvertSecurityDescriptorToStringSecurityDescriptorW
 
-//sys	makeAbsoluteSD(selfRelativeSD *SECURITY_DESCRIPTOR, absoluteSD *SECURITY_DESCRIPTOR, absoluteSDSize *uint32, dacl *ACL, daclSize *uint32, sacl *ACL, saclSize *uint32, owner *SID, ownerSize *uint32, group *SID, groupSize *uint32) (err error) = advapi32.MakeAbsoluteSD
-//sys	makeSelfRelativeSD(absoluteSD *SECURITY_DESCRIPTOR, selfRelativeSD *SECURITY_DESCRIPTOR, selfRelativeSDSize *uint32) (err error) = advapi32.MakeSelfRelativeSD
 
-//sys	setEntriesInAcl(countExplicitEntries uint32, explicitEntries *EXPLICIT_ACCESS, oldACL *ACL, newACL **ACL) (ret error) = advapi32.SetEntriesInAclW
-//sys	GetAce(acl *ACL, aceIndex uint32, pAce **ACCESS_ALLOWED_ACE) (err error) = advapi32.GetAce
 
-// Control returns the security descriptor control bits.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (sd *SECURITY_DESCRIPTOR) Control() (control SECURITY_DESCRIPTOR_CONTROL, revision uint32, err error) {
 	err = getSecurityDescriptorControl(sd, &control, &revision)
 	return
 }
 
-// SetControl sets the security descriptor control bits.
+
 func (sd *SECURITY_DESCRIPTOR) SetControl(controlBitsOfInterest SECURITY_DESCRIPTOR_CONTROL, controlBitsToSet SECURITY_DESCRIPTOR_CONTROL) error {
 	return setSecurityDescriptorControl(sd, controlBitsOfInterest, controlBitsToSet)
 }
 
-// RMControl returns the security descriptor resource manager control bits.
+
 func (sd *SECURITY_DESCRIPTOR) RMControl() (control uint8, err error) {
 	err = getSecurityDescriptorRMControl(sd, &control)
 	return
 }
 
-// SetRMControl sets the security descriptor resource manager control bits.
+
 func (sd *SECURITY_DESCRIPTOR) SetRMControl(rmControl uint8) {
 	setSecurityDescriptorRMControl(sd, &rmControl)
 }
 
-// DACL returns the security descriptor DACL and whether it was defaulted. The dacl return value may be nil
-// if a DACL exists but is an "empty DACL", meaning fully permissive. If the DACL does not exist, err returns
-// ERROR_OBJECT_NOT_FOUND.
+
+
+
 func (sd *SECURITY_DESCRIPTOR) DACL() (dacl *ACL, defaulted bool, err error) {
 	var present bool
 	err = getSecurityDescriptorDacl(sd, &present, &dacl, &defaulted)
@@ -1215,14 +1215,14 @@ func (sd *SECURITY_DESCRIPTOR) DACL() (dacl *ACL, defaulted bool, err error) {
 	return
 }
 
-// SetDACL sets the absolute security descriptor DACL.
+
 func (absoluteSD *SECURITY_DESCRIPTOR) SetDACL(dacl *ACL, present, defaulted bool) error {
 	return setSecurityDescriptorDacl(absoluteSD, present, dacl, defaulted)
 }
 
-// SACL returns the security descriptor SACL and whether it was defaulted. The sacl return value may be nil
-// if a SACL exists but is an "empty SACL", meaning fully permissive. If the SACL does not exist, err returns
-// ERROR_OBJECT_NOT_FOUND.
+
+
+
 func (sd *SECURITY_DESCRIPTOR) SACL() (sacl *ACL, defaulted bool, err error) {
 	var present bool
 	err = getSecurityDescriptorSacl(sd, &present, &sacl, &defaulted)
@@ -1232,45 +1232,45 @@ func (sd *SECURITY_DESCRIPTOR) SACL() (sacl *ACL, defaulted bool, err error) {
 	return
 }
 
-// SetSACL sets the absolute security descriptor SACL.
+
 func (absoluteSD *SECURITY_DESCRIPTOR) SetSACL(sacl *ACL, present, defaulted bool) error {
 	return setSecurityDescriptorSacl(absoluteSD, present, sacl, defaulted)
 }
 
-// Owner returns the security descriptor owner and whether it was defaulted.
+
 func (sd *SECURITY_DESCRIPTOR) Owner() (owner *SID, defaulted bool, err error) {
 	err = getSecurityDescriptorOwner(sd, &owner, &defaulted)
 	return
 }
 
-// SetOwner sets the absolute security descriptor owner.
+
 func (absoluteSD *SECURITY_DESCRIPTOR) SetOwner(owner *SID, defaulted bool) error {
 	return setSecurityDescriptorOwner(absoluteSD, owner, defaulted)
 }
 
-// Group returns the security descriptor group and whether it was defaulted.
+
 func (sd *SECURITY_DESCRIPTOR) Group() (group *SID, defaulted bool, err error) {
 	err = getSecurityDescriptorGroup(sd, &group, &defaulted)
 	return
 }
 
-// SetGroup sets the absolute security descriptor owner.
+
 func (absoluteSD *SECURITY_DESCRIPTOR) SetGroup(group *SID, defaulted bool) error {
 	return setSecurityDescriptorGroup(absoluteSD, group, defaulted)
 }
 
-// Length returns the length of the security descriptor.
+
 func (sd *SECURITY_DESCRIPTOR) Length() uint32 {
 	return getSecurityDescriptorLength(sd)
 }
 
-// IsValid returns whether the security descriptor is valid.
+
 func (sd *SECURITY_DESCRIPTOR) IsValid() bool {
 	return isValidSecurityDescriptor(sd)
 }
 
-// String returns the SDDL form of the security descriptor, with a function signature that can be
-// used with %v formatting directives.
+
+
 func (sd *SECURITY_DESCRIPTOR) String() string {
 	var sddl *uint16
 	err := convertSecurityDescriptorToStringSecurityDescriptor(sd, 1, 0xff, &sddl, nil)
@@ -1281,7 +1281,7 @@ func (sd *SECURITY_DESCRIPTOR) String() string {
 	return UTF16PtrToString(sddl)
 }
 
-// ToAbsolute converts a self-relative security descriptor into an absolute one.
+
 func (selfRelativeSD *SECURITY_DESCRIPTOR) ToAbsolute() (absoluteSD *SECURITY_DESCRIPTOR, err error) {
 	control, _, err := selfRelativeSD.Control()
 	if err != nil {
@@ -1297,7 +1297,7 @@ func (selfRelativeSD *SECURITY_DESCRIPTOR) ToAbsolute() (absoluteSD *SECURITY_DE
 	switch err {
 	case ERROR_INSUFFICIENT_BUFFER:
 	case nil:
-		// makeAbsoluteSD is expected to fail, but it succeeds.
+		
 		return nil, ERROR_INTERNAL_ERROR
 	default:
 		return nil, err
@@ -1328,7 +1328,7 @@ func (selfRelativeSD *SECURITY_DESCRIPTOR) ToAbsolute() (absoluteSD *SECURITY_DE
 	return
 }
 
-// ToSelfRelative converts an absolute security descriptor into a self-relative one.
+
 func (absoluteSD *SECURITY_DESCRIPTOR) ToSelfRelative() (selfRelativeSD *SECURITY_DESCRIPTOR, err error) {
 	control, _, err := absoluteSD.Control()
 	if err != nil {
@@ -1343,7 +1343,7 @@ func (absoluteSD *SECURITY_DESCRIPTOR) ToSelfRelative() (selfRelativeSD *SECURIT
 	switch err {
 	case ERROR_INSUFFICIENT_BUFFER:
 	case nil:
-		// makeSelfRelativeSD is expected to fail, but it succeeds.
+		
 		return nil, ERROR_INTERNAL_ERROR
 	default:
 		return nil, err
@@ -1363,10 +1363,10 @@ func (selfRelativeSD *SECURITY_DESCRIPTOR) copySelfRelativeSecurityDescriptor() 
 	}
 
 	src := unsafe.Slice((*byte)(unsafe.Pointer(selfRelativeSD)), sdLen)
-	// SECURITY_DESCRIPTOR has pointers in it, which means checkptr expects for it to
-	// be aligned properly. When we're copying a Windows-allocated struct to a
-	// Go-allocated one, make sure that the Go allocation is aligned to the
-	// pointer size.
+	
+	
+	
+	
 	const psize = int(unsafe.Sizeof(uintptr(0)))
 	alloc := make([]uintptr, (sdLen+psize-1)/psize)
 	dst := unsafe.Slice((*byte)(unsafe.Pointer(&alloc[0])), sdLen)
@@ -1374,8 +1374,8 @@ func (selfRelativeSD *SECURITY_DESCRIPTOR) copySelfRelativeSecurityDescriptor() 
 	return (*SECURITY_DESCRIPTOR)(unsafe.Pointer(&dst[0]))
 }
 
-// SecurityDescriptorFromString converts an SDDL string describing a security descriptor into a
-// self-relative security descriptor object allocated on the Go heap.
+
+
 func SecurityDescriptorFromString(sddl string) (sd *SECURITY_DESCRIPTOR, err error) {
 	var winHeapSD *SECURITY_DESCRIPTOR
 	err = convertStringSecurityDescriptorToSecurityDescriptor(sddl, 1, &winHeapSD, nil)
@@ -1386,8 +1386,8 @@ func SecurityDescriptorFromString(sddl string) (sd *SECURITY_DESCRIPTOR, err err
 	return winHeapSD.copySelfRelativeSecurityDescriptor(), nil
 }
 
-// GetSecurityInfo queries the security information for a given handle and returns the self-relative security
-// descriptor result on the Go heap.
+
+
 func GetSecurityInfo(handle Handle, objectType SE_OBJECT_TYPE, securityInformation SECURITY_INFORMATION) (sd *SECURITY_DESCRIPTOR, err error) {
 	var winHeapSD *SECURITY_DESCRIPTOR
 	err = getSecurityInfo(handle, objectType, securityInformation, nil, nil, nil, nil, &winHeapSD)
@@ -1398,8 +1398,8 @@ func GetSecurityInfo(handle Handle, objectType SE_OBJECT_TYPE, securityInformati
 	return winHeapSD.copySelfRelativeSecurityDescriptor(), nil
 }
 
-// GetNamedSecurityInfo queries the security information for a given named object and returns the self-relative security
-// descriptor result on the Go heap.
+
+
 func GetNamedSecurityInfo(objectName string, objectType SE_OBJECT_TYPE, securityInformation SECURITY_INFORMATION) (sd *SECURITY_DESCRIPTOR, err error) {
 	var winHeapSD *SECURITY_DESCRIPTOR
 	err = getNamedSecurityInfo(objectName, objectType, securityInformation, nil, nil, nil, nil, &winHeapSD)
@@ -1410,9 +1410,9 @@ func GetNamedSecurityInfo(objectName string, objectType SE_OBJECT_TYPE, security
 	return winHeapSD.copySelfRelativeSecurityDescriptor(), nil
 }
 
-// BuildSecurityDescriptor makes a new security descriptor using the input trustees, explicit access lists, and
-// prior security descriptor to be merged, any of which can be nil, returning the self-relative security descriptor
-// result on the Go heap.
+
+
+
 func BuildSecurityDescriptor(owner *TRUSTEE, group *TRUSTEE, accessEntries []EXPLICIT_ACCESS, auditEntries []EXPLICIT_ACCESS, mergedSecurityDescriptor *SECURITY_DESCRIPTOR) (sd *SECURITY_DESCRIPTOR, err error) {
 	var winHeapSD *SECURITY_DESCRIPTOR
 	var winHeapSDSize uint32
@@ -1432,15 +1432,15 @@ func BuildSecurityDescriptor(owner *TRUSTEE, group *TRUSTEE, accessEntries []EXP
 	return winHeapSD.copySelfRelativeSecurityDescriptor(), nil
 }
 
-// NewSecurityDescriptor creates and initializes a new absolute security descriptor.
+
 func NewSecurityDescriptor() (absoluteSD *SECURITY_DESCRIPTOR, err error) {
 	absoluteSD = &SECURITY_DESCRIPTOR{}
 	err = initializeSecurityDescriptor(absoluteSD, 1)
 	return
 }
 
-// ACLFromEntries returns a new ACL on the Go heap containing a list of explicit entries as well as those of another ACL.
-// Both explicitEntries and mergedACL are optional and can be nil.
+
+
 func ACLFromEntries(explicitEntries []EXPLICIT_ACCESS, mergedACL *ACL) (acl *ACL, err error) {
 	var firstExplicitEntry *EXPLICIT_ACCESS
 	if len(explicitEntries) > 0 {

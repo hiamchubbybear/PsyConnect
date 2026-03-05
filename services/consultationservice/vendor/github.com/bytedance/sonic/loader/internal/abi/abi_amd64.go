@@ -1,18 +1,4 @@
-/*
- * Copyright 2022 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package abi
 
@@ -49,8 +35,8 @@ const (
 )
 
 const (
-	PtrSize  = 8 // pointer size
-	PtrAlign = 8 // pointer alignment
+	PtrSize  = 8 
+	PtrAlign = 8 
 )
 
 var iregOrderC = []Register{
@@ -82,9 +68,9 @@ func (self *Frame) argv(i int) *MemoryOperand {
 	return Ptr(RSP, int32(self.Prev()+self.desc.Args[i].Mem))
 }
 
-// spillv is used for growstack spill registers
+
 func (self *Frame) spillv(i int) *MemoryOperand {
-	// remain one slot for caller return pc
+	
 	return Ptr(RSP, PtrSize+int32(self.desc.Args[i].Mem))
 }
 
@@ -97,7 +83,7 @@ func (self *Frame) resv(i int) *MemoryOperand {
 }
 
 func (self *Frame) emitGrowStack(p *Program, entry *Label) {
-	// spill all register arguments
+	
 	for i, v := range self.desc.Args {
 		if v.InRegister {
 			if v.IsFloat == floatKind64 {
@@ -110,10 +96,10 @@ func (self *Frame) emitGrowStack(p *Program, entry *Label) {
 		}
 	}
 
-	// call runtime.morestack_noctxt
+	
 	p.MOVQ(F_morestack_noctxt, R12)
 	p.CALLQ(R12)
-	// load all register arguments
+	
 	for i, v := range self.desc.Args {
 		if v.InRegister {
 			if v.IsFloat == floatKind64 {
@@ -126,13 +112,13 @@ func (self *Frame) emitGrowStack(p *Program, entry *Label) {
 		}
 	}
 
-	// jump back to the function entry
+	
 	p.JMP(entry)
 }
 
 func (self *Frame) GrowStackTextSize() uint32 {
 	p := DefaultArch.CreateProgram()
-	// spill all register arguments
+	
 	for i, v := range self.desc.Args {
 		if v.InRegister {
 			if v.IsFloat == floatKind64 {
@@ -145,10 +131,10 @@ func (self *Frame) GrowStackTextSize() uint32 {
 		}
 	}
 
-	// call runtime.morestack_noctxt
+	
 	p.MOVQ(F_morestack_noctxt, R12)
 	p.CALLQ(R12)
-	// load all register arguments
+	
 	for i, v := range self.desc.Args {
 		if v.InRegister {
 			if v.IsFloat == floatKind64 {
@@ -161,7 +147,7 @@ func (self *Frame) GrowStackTextSize() uint32 {
 		}
 	}
 
-	// jump back to the function entry
+	
 	l := CreateLabel("")
 	p.Link(l)
 	p.JMP(l)
@@ -182,7 +168,7 @@ func (self *Frame) emitEpilogue(p *Program) {
 }
 
 func (self *Frame) emitReserveRegs(p *Program) {
-	// spill reserved registers
+	
 	for i, r := range ReservedRegs(self.ccall) {
 		switch r.(type) {
 		case Register64:
@@ -196,7 +182,7 @@ func (self *Frame) emitReserveRegs(p *Program) {
 }
 
 func (self *Frame) emitSpillPtrs(p *Program) {
-	// spill pointer argument registers
+	
 	for i, r := range self.desc.Args {
 		if r.InRegister && r.IsPointer {
 			p.MOVQ(r.Reg, self.argv(i))
@@ -205,7 +191,7 @@ func (self *Frame) emitSpillPtrs(p *Program) {
 }
 
 func (self *Frame) emitClearPtrs(p *Program) {
-	// spill pointer argument registers
+	
 	for i, r := range self.desc.Args {
 		if r.InRegister && r.IsPointer {
 			p.MOVQ(int64(0), self.argv(i))

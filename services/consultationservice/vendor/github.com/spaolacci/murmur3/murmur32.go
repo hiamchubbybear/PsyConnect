@@ -1,13 +1,13 @@
 package murmur3
 
-// http://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/hash/Murmur3_32HashFunction.java
+
 
 import (
 	"hash"
 	"unsafe"
 )
 
-// Make sure interfaces are correctly implemented.
+
 var (
 	_ hash.Hash   = new(digest32)
 	_ hash.Hash32 = new(digest32)
@@ -19,16 +19,16 @@ const (
 	c2_32 uint32 = 0x1b873593
 )
 
-// digest32 represents a partial evaluation of a 32 bites hash.
+
 type digest32 struct {
 	digest
-	h1 uint32 // Unfinalized running hash.
+	h1 uint32 
 }
 
-// New32 returns new 32-bit hasher
+
 func New32() hash.Hash32 { return New32WithSeed(0) }
 
-// New32WithSeed returns new 32-bit hasher set with explicit seed value
+
 func New32WithSeed(seed uint32) hash.Hash32 {
 	d := new(digest32)
 	d.seed = seed
@@ -46,7 +46,7 @@ func (d *digest32) Sum(b []byte) []byte {
 	return append(b, byte(h>>24), byte(h>>16), byte(h>>8), byte(h))
 }
 
-// Digest as many blocks as possible.
+
 func (d *digest32) bmix(p []byte) (tail []byte) {
 	h1 := d.h1
 
@@ -55,11 +55,11 @@ func (d *digest32) bmix(p []byte) (tail []byte) {
 		k1 := *(*uint32)(unsafe.Pointer(&p[i*4]))
 
 		k1 *= c1_32
-		k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
+		k1 = (k1 << 15) | (k1 >> 17) 
 		k1 *= c2_32
 
 		h1 ^= k1
-		h1 = (h1 << 13) | (h1 >> 19) // rotl32(h1, 13)
+		h1 = (h1 << 13) | (h1 >> 19) 
 		h1 = h1*4 + h1 + 0xe6546b64
 	}
 	d.h1 = h1
@@ -81,7 +81,7 @@ func (d *digest32) Sum32() (h1 uint32) {
 	case 1:
 		k1 ^= uint32(d.tail[0])
 		k1 *= c1_32
-		k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
+		k1 = (k1 << 15) | (k1 >> 17) 
 		k1 *= c2_32
 		h1 ^= k1
 	}
@@ -97,24 +97,20 @@ func (d *digest32) Sum32() (h1 uint32) {
 	return h1
 }
 
-/*
-func rotl32(x uint32, r byte) uint32 {
-	return (x << r) | (x >> (32 - r))
-}
-*/
 
-// Sum32 returns the MurmurHash3 sum of data. It is equivalent to the
-// following sequence (without the extra burden and the extra allocation):
-//     hasher := New32()
-//     hasher.Write(data)
-//     return hasher.Sum32()
+
+
+
+
+
+
 func Sum32(data []byte) uint32 { return Sum32WithSeed(data, 0) }
 
-// Sum32WithSeed returns the MurmurHash3 sum of data. It is equivalent to the
-// following sequence (without the extra burden and the extra allocation):
-//     hasher := New32WithSeed(seed)
-//     hasher.Write(data)
-//     return hasher.Sum32()
+
+
+
+
+
 func Sum32WithSeed(data []byte, seed uint32) uint32 {
 
 	h1 := seed
@@ -129,11 +125,11 @@ func Sum32WithSeed(data []byte, seed uint32) uint32 {
 		k1 := *(*uint32)(unsafe.Pointer(p))
 
 		k1 *= c1_32
-		k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
+		k1 = (k1 << 15) | (k1 >> 17) 
 		k1 *= c2_32
 
 		h1 ^= k1
-		h1 = (h1 << 13) | (h1 >> 19) // rotl32(h1, 13)
+		h1 = (h1 << 13) | (h1 >> 19) 
 		h1 = h1*4 + h1 + 0xe6546b64
 	}
 
@@ -150,7 +146,7 @@ func Sum32WithSeed(data []byte, seed uint32) uint32 {
 	case 1:
 		k1 ^= uint32(tail[0])
 		k1 *= c1_32
-		k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
+		k1 = (k1 << 15) | (k1 >> 17) 
 		k1 *= c2_32
 		h1 ^= k1
 	}

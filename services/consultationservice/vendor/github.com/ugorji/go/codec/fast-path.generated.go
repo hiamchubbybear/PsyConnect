@@ -1,36 +1,36 @@
 //go:build !notfastpath && !codec.notfastpath
 // +build !notfastpath,!codec.notfastpath
 
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
 
-// Code generated from fast-path.go.tmpl - DO NOT EDIT.
+
+
+
 
 package codec
 
-// Fast path functions try to create a fast path encode or decode implementation
-// for common maps and slices.
-//
-// We define the functions and register them in this single file
-// so as not to pollute the encode.go and decode.go, and create a dependency in there.
-// This file can be omitted without causing a build failure.
-//
-// The advantage of fast paths is:
-//	  - Many calls bypass reflection altogether
-//
-// Currently support
-//	  - slice of all builtin types (numeric, bool, string, []byte)
-//    - maps of builtin types to builtin or interface{} type, EXCEPT FOR
-//      keys of type uintptr, int8/16/32, uint16/32, float32/64, bool, interface{}
-//      AND values of type type int8/16/32, uint16/32
-// This should provide adequate "typical" implementations.
-//
-// Note that fast track decode functions must handle values for which an address cannot be obtained.
-// For example:
-//	 m2 := map[string]int{}
-//	 p2 := []interface{}{m2}
-//	 // decoding into p2 will bomb if fast track functions do not treat like unaddressable.
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import (
 	"reflect"
@@ -67,14 +67,14 @@ func (fastpathAslice) Swap(i, j int) {
 }
 
 func fastpathAvIndex(rtid uintptr) int {
-	// use binary search to grab the index (adapted from sort/search.go)
-	// Note: we use goto (instead of for loop) so this can be inlined.
-	// h, i, j := 0, 0, 56
+	
+	
+	
 	var h, i uint
 	var j uint = 56
 LOOP:
 	if i < j {
-		h = (i + j) >> 1 // avoid overflow when computing h // h = i + (j-i)/2
+		h = (i + j) >> 1 
 		if fastpathAvRtid[h] < rtid {
 			i = h + 1
 		} else {
@@ -88,7 +88,7 @@ LOOP:
 	return -1
 }
 
-// due to possible initialization loop error, make fastpath in an init()
+
 func init() {
 	var i uint = 0
 	fn := func(v interface{},
@@ -162,9 +162,9 @@ func init() {
 	sort.Sort(fastpathAslice{})
 }
 
-// -- encode
 
-// -- -- fast path type switch
+
+
 func fastpathEncodeTypeSwitch(iv interface{}, e *Encoder) bool {
 	switch v := iv.(type) {
 	case []interface{}:
@@ -616,13 +616,13 @@ func fastpathEncodeTypeSwitch(iv interface{}, e *Encoder) bool {
 			fastpathTV.EncMapInt32BoolV(*v, e)
 		}
 	default:
-		_ = v // workaround https://github.com/golang/go/issues/12927 seen in go1.4
+		_ = v 
 		return false
 	}
 	return true
 }
 
-// -- -- fast path functions
+
 func (e *Encoder) fastpathEncSliceIntfR(f *codecFnInfo, rv reflect.Value) {
 	var v []interface{}
 	if rv.Kind() == reflect.Array {
@@ -646,9 +646,9 @@ func (fastpathT) EncSliceIntfV(v []interface{}, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceIntfV(v []interface{}, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -680,9 +680,9 @@ func (fastpathT) EncSliceStringV(v []string, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceStringV(v []string, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -714,9 +714,9 @@ func (fastpathT) EncSliceBytesV(v [][]byte, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceBytesV(v [][]byte, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -748,9 +748,9 @@ func (fastpathT) EncSliceFloat32V(v []float32, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceFloat32V(v []float32, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -782,9 +782,9 @@ func (fastpathT) EncSliceFloat64V(v []float64, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceFloat64V(v []float64, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -811,9 +811,9 @@ func (fastpathT) EncSliceUint8V(v []uint8, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceUint8V(v []uint8, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -845,9 +845,9 @@ func (fastpathT) EncSliceUint64V(v []uint64, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceUint64V(v []uint64, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -879,9 +879,9 @@ func (fastpathT) EncSliceIntV(v []int, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceIntV(v []int, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -913,9 +913,9 @@ func (fastpathT) EncSliceInt32V(v []int32, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceInt32V(v []int32, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -947,9 +947,9 @@ func (fastpathT) EncSliceInt64V(v []int64, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceInt64V(v []int64, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -981,9 +981,9 @@ func (fastpathT) EncSliceBoolV(v []bool, e *Encoder) {
 }
 func (fastpathT) EncAsMapSliceBoolV(v []bool, e *Encoder) {
 	e.haltOnMbsOddLen(len(v))
-	e.mapStart(len(v) >> 1) // e.mapStart(len(v) / 2)
+	e.mapStart(len(v) >> 1) 
 	for j := range v {
-		if j&1 == 0 { // if j%2 == 0 {
+		if j&1 == 0 { 
 			e.mapElemKey()
 		} else {
 			e.mapElemValue()
@@ -2298,9 +2298,9 @@ func (fastpathT) EncMapInt32BoolV(v map[int32]bool, e *Encoder) {
 	e.mapEnd()
 }
 
-// -- decode
 
-// -- -- fast path type switch
+
+
 func fastpathDecodeTypeSwitch(iv interface{}, d *Decoder) bool {
 	var changed bool
 	var containerLen int
@@ -2833,7 +2833,7 @@ func fastpathDecodeTypeSwitch(iv interface{}, d *Decoder) bool {
 	case *map[int32]bool:
 		fastpathTV.DecMapInt32BoolX(v, d)
 	default:
-		_ = v // workaround https://github.com/golang/go/issues/12927 seen in go1.4
+		_ = v 
 		return false
 	}
 	return true
@@ -2956,13 +2956,13 @@ func fastpathDecodeSetZeroTypeSwitch(iv interface{}) bool {
 		*v = nil
 
 	default:
-		_ = v // workaround https://github.com/golang/go/issues/12927 seen in go1.4
+		_ = v 
 		return false
 	}
 	return true
 }
 
-// -- -- fast path functions
+
 
 func (d *Decoder) fastpathDecSliceIntfR(f *codecFnInfo, rv reflect.Value) {
 	var v []interface{}
@@ -3020,7 +3020,7 @@ func (fastpathT) DecSliceIntfY(v []interface{}, d *Decoder) (v2 []interface{}, c
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 16)
 			v = make([]interface{}, uint(xlen))
 			changed = true
@@ -3119,7 +3119,7 @@ func (fastpathT) DecSliceStringY(v []string, d *Decoder) (v2 []string, changed b
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 16)
 			v = make([]string, uint(xlen))
 			changed = true
@@ -3218,7 +3218,7 @@ func (fastpathT) DecSliceBytesY(v [][]byte, d *Decoder) (v2 [][]byte, changed bo
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 24)
 			v = make([][]byte, uint(xlen))
 			changed = true
@@ -3317,7 +3317,7 @@ func (fastpathT) DecSliceFloat32Y(v []float32, d *Decoder) (v2 []float32, change
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 4)
 			v = make([]float32, uint(xlen))
 			changed = true
@@ -3416,7 +3416,7 @@ func (fastpathT) DecSliceFloat64Y(v []float64, d *Decoder) (v2 []float64, change
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 8)
 			v = make([]float64, uint(xlen))
 			changed = true
@@ -3486,7 +3486,7 @@ func (fastpathT) DecSliceUint8Y(v []uint8, d *Decoder) (v2 []uint8, changed bool
 		break
 	default:
 		v2 = d.decodeBytesInto(v[:len(v):len(v)])
-		changed = !(len(v2) > 0 && len(v2) == len(v) && &v2[0] == &v[0]) // not same slice
+		changed = !(len(v2) > 0 && len(v2) == len(v) && &v2[0] == &v[0]) 
 		return
 	}
 	slh, containerLenS := d.decSliceHelperStart()
@@ -3523,7 +3523,7 @@ func (fastpathT) DecSliceUint8Y(v []uint8, d *Decoder) (v2 []uint8, changed bool
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 1)
 			v = make([]uint8, uint(xlen))
 			changed = true
@@ -3551,7 +3551,7 @@ func (fastpathT) DecSliceUint8N(v []uint8, d *Decoder) {
 		break
 	default:
 		v2 := d.decodeBytesInto(v[:len(v):len(v)])
-		if !(len(v2) > 0 && len(v2) == len(v) && &v2[0] == &v[0]) { // not same slice
+		if !(len(v2) > 0 && len(v2) == len(v) && &v2[0] == &v[0]) { 
 			copy(v, v2)
 		}
 		return
@@ -3632,7 +3632,7 @@ func (fastpathT) DecSliceUint64Y(v []uint64, d *Decoder) (v2 []uint64, changed b
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 8)
 			v = make([]uint64, uint(xlen))
 			changed = true
@@ -3731,7 +3731,7 @@ func (fastpathT) DecSliceIntY(v []int, d *Decoder) (v2 []int, changed bool) {
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 8)
 			v = make([]int, uint(xlen))
 			changed = true
@@ -3830,7 +3830,7 @@ func (fastpathT) DecSliceInt32Y(v []int32, d *Decoder) (v2 []int32, changed bool
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 4)
 			v = make([]int32, uint(xlen))
 			changed = true
@@ -3929,7 +3929,7 @@ func (fastpathT) DecSliceInt64Y(v []int64, d *Decoder) (v2 []int64, changed bool
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 8)
 			v = make([]int64, uint(xlen))
 			changed = true
@@ -4028,7 +4028,7 @@ func (fastpathT) DecSliceBoolY(v []bool, d *Decoder) (v2 []bool, changed bool) {
 	}
 	var j int
 	for j = 0; d.containerNext(j, containerLenS, hasLen); j++ {
-		if j == 0 && len(v) == 0 { // means hasLen == false
+		if j == 0 && len(v) == 0 { 
 			xlen = decInferLen(containerLenS, d.h.MaxInitLen, 1)
 			v = make([]bool, uint(xlen))
 			changed = true

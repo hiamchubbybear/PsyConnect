@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package types
 
@@ -26,8 +12,8 @@ type ValueType = int64
 type ParsingError uint
 type SearchingError uint
 
-// NOTE: !NOT MODIFIED ONLY.
-// This definitions are followed in native/types.h.
+
+
 
 const BufPaddingSize int     = 64
 
@@ -41,24 +27,24 @@ const (
     V_STRING  ValueType = 7
     V_DOUBLE  ValueType = 8
     V_INTEGER ValueType = 9
-    _         ValueType = 10    // V_KEY_SEP
-    _         ValueType = 11    // V_ELEM_SEP
-    _         ValueType = 12    // V_ARRAY_END
-    _         ValueType = 13    // V_OBJECT_END
+    _         ValueType = 10    
+    _         ValueType = 11    
+    _         ValueType = 12    
+    _         ValueType = 13    
     V_MAX
 )
 
 const (
-    // for native.Unquote() flags
+    
     B_DOUBLE_UNQUOTE  = 0
     B_UNICODE_REPLACE = 1
 
-    // for native.Value() flags
+    
     B_USE_NUMBER      = 1
     B_VALIDATE_STRING = 5
     B_ALLOW_CONTROL   = 31
 
-    // for native.SkipOne() flags
+    
     B_NO_VALIDATE_JSON= 6
 )
 
@@ -91,7 +77,7 @@ const (
     ERR_MISMATCH           ParsingError = 9
     ERR_INVALID_UTF8       ParsingError = 10
 
-    // error code used in ast
+    
     ERR_NOT_FOUND          ParsingError = 33
     ERR_UNSUPPORT_TYPE     ParsingError = 34
 )

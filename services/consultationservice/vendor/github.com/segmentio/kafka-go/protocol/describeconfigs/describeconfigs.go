@@ -14,7 +14,7 @@ func init() {
 	protocol.Register(&Request{}, &Response{})
 }
 
-// Detailed API definition: https://kafka.apache.org/protocol#The_Messages_DescribeConfigs
+
 type Request struct {
 	Resources            []RequestResource `kafka:"min=v0,max=v3"`
 	IncludeSynonyms      bool              `kafka:"min=v1,max=v3"`
@@ -24,7 +24,7 @@ type Request struct {
 func (r *Request) ApiKey() protocol.ApiKey { return protocol.DescribeConfigs }
 
 func (r *Request) Broker(cluster protocol.Cluster) (protocol.Broker, error) {
-	// Broker metadata requests must be sent to the associated broker
+	
 	for _, resource := range r.Resources {
 		if resource.ResourceType == resourceTypeBroker {
 			brokerID, err := strconv.Atoi(resource.ResourceName)
@@ -48,7 +48,7 @@ func (r *Request) Split(cluster protocol.Cluster) (
 	topicsMessage := Request{}
 
 	for _, resource := range r.Resources {
-		// Split out broker requests to separate brokers
+		
 		if resource.ResourceType == resourceTypeBroker {
 			messages = append(messages, &Request{
 				Resources: []RequestResource{resource},

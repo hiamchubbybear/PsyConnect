@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// CreatePostUseCase handles post creation
+
 type CreatePostUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -22,7 +22,7 @@ func (uc *CreatePostUseCase) Execute(ctx context.Context, post *domain.Post) err
 	return uc.postRepo.CreatePost(ctx, post)
 }
 
-// GetPostByIDUseCase retrieves a single post
+
 type GetPostByIDUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -35,7 +35,7 @@ func (uc *GetPostByIDUseCase) Execute(ctx context.Context, id string) (*domain.P
 	return uc.postRepo.GetPostByID(ctx, id)
 }
 
-// UpdatePostUseCase handles post updates with ownership verification
+
 type UpdatePostUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -45,7 +45,7 @@ func NewUpdatePostUseCase(postRepo repository.PostRepository) *UpdatePostUseCase
 }
 
 func (uc *UpdatePostUseCase) Execute(ctx context.Context, id, userID string, updates *domain.Post) error {
-	// Verify ownership
+	
 	existing, err := uc.postRepo.GetPostByID(ctx, id)
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func (uc *UpdatePostUseCase) Execute(ctx context.Context, id, userID string, upd
 	return uc.postRepo.UpdatePost(ctx, id, updates)
 }
 
-// DeletePostUseCase handles post deletion with ownership verification
+
 type DeletePostUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -68,7 +68,7 @@ func NewDeletePostUseCase(postRepo repository.PostRepository) *DeletePostUseCase
 }
 
 func (uc *DeletePostUseCase) Execute(ctx context.Context, id, userID string) error {
-	// Verify ownership
+	
 	existing, err := uc.postRepo.GetPostByID(ctx, id)
 	if err != nil {
 		return err
@@ -80,7 +80,7 @@ func (uc *DeletePostUseCase) Execute(ctx context.Context, id, userID string) err
 	return uc.postRepo.DeletePost(ctx, id)
 }
 
-// GetFeedUseCase retrieves user feed
+
 type GetFeedUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -93,7 +93,7 @@ func (uc *GetFeedUseCase) Execute(ctx context.Context, userIDs []string, exclude
 	return uc.postRepo.GetFeed(ctx, userIDs, excludeIDs, limit, skip)
 }
 
-// GetTrendingPostsUseCase retrieves trending posts
+
 type GetTrendingPostsUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -106,7 +106,7 @@ func (uc *GetTrendingPostsUseCase) Execute(ctx context.Context, limit int64) ([]
 	return uc.postRepo.GetTrendingPosts(ctx, limit)
 }
 
-// SearchPostsUseCase handles post search
+
 type SearchPostsUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -119,7 +119,7 @@ func (uc *SearchPostsUseCase) Execute(ctx context.Context, query string, limit, 
 	return uc.postRepo.SearchPosts(ctx, query, limit, skip)
 }
 
-// GetUserPostsUseCase retrieves posts by a specific user
+
 type GetUserPostsUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -132,7 +132,7 @@ func (uc *GetUserPostsUseCase) Execute(ctx context.Context, userID string, limit
 	return uc.postRepo.GetPostsByUser(ctx, userID, limit, skip)
 }
 
-// GetPostsByTagUseCase retrieves posts by tag
+
 type GetPostsByTagUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -145,7 +145,7 @@ func (uc *GetPostsByTagUseCase) Execute(ctx context.Context, tag string, limit, 
 	return uc.postRepo.GetPostsByTag(ctx, tag, limit, skip)
 }
 
-// GetPostsByCategoryUseCase retrieves posts by category
+
 type GetPostsByCategoryUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -158,7 +158,7 @@ func (uc *GetPostsByCategoryUseCase) Execute(ctx context.Context, category strin
 	return uc.postRepo.GetPostsByCategory(ctx, category, limit, skip)
 }
 
-// IncrementViewCountUseCase handles view count increment
+
 type IncrementViewCountUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -171,7 +171,7 @@ func (uc *IncrementViewCountUseCase) Execute(ctx context.Context, id string) err
 	return uc.postRepo.IncrementViewCount(ctx, id)
 }
 
-// GetPopularTagsUseCase retrieves most used hashtags
+
 type GetPopularTagsUseCase struct {
 	postRepo repository.PostRepository
 }
@@ -184,7 +184,7 @@ func (uc *GetPopularTagsUseCase) Execute(ctx context.Context, limit int) ([]stri
 	return uc.postRepo.GetPopularTags(ctx, limit)
 }
 
-// Errors
+
 var ErrNotAuthorized = &NotAuthorizedError{}
 
 type NotAuthorizedError struct{}

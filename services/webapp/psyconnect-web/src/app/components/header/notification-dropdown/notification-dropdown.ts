@@ -53,7 +53,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Initial fetch if user is logged in
+    
     const user = this.userContext.getUser();
     if (user) {
       this.notificationService.fetchNotifications(user.accountId);
@@ -82,7 +82,7 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
   onNotificationClick(notification: InAppNotification): void {
     this.isOpen = false;
 
-    // Mark as read when clicking
+    
     if (!notification.isRead) {
       const user = this.userContext.getUser();
       if (user) {
@@ -90,12 +90,12 @@ export class NotificationDropdownComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Navigation logic based on type
+    
     if (notification.type === 'like' || notification.type === 'comment') {
       const postId = notification.metadata?.postId;
       if (postId) {
-        // Here we could open a modal or navigate to a specific post page
-        // For now, let's just log it or potentially navigate to feed
+        
+        
         console.log('Navigating to post:', postId);
       }
     } else if (notification.type === 'follow') {

@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -22,41 +22,41 @@ func (xi *ExtensionInfo) initToLegacy() {
 	var parent protoiface.MessageV1
 	messageName := xd.ContainingMessage().FullName()
 	if mt, _ := protoregistry.GlobalTypes.FindMessageByName(messageName); mt != nil {
-		// Create a new parent message and unwrap it if possible.
+		
 		mv := mt.New().Interface()
 		t := reflect.TypeOf(mv)
 		if mv, ok := mv.(unwrapper); ok {
 			t = reflect.TypeOf(mv.protoUnwrap())
 		}
 
-		// Check whether the message implements the legacy v1 Message interface.
+		
 		mz := reflect.Zero(t).Interface()
 		if mz, ok := mz.(protoiface.MessageV1); ok {
 			parent = mz
 		}
 	}
 
-	// Determine the v1 extension type, which is unfortunately not the same as
-	// the v2 ExtensionType.GoType.
+	
+	
 	extType := xi.goType
 	switch extType.Kind() {
 	case reflect.Bool, reflect.Int32, reflect.Int64, reflect.Uint32, reflect.Uint64, reflect.Float32, reflect.Float64, reflect.String:
-		extType = reflect.PtrTo(extType) // T -> *T for singular scalar fields
+		extType = reflect.PtrTo(extType) 
 	}
 
-	// Reconstruct the legacy enum full name.
+	
 	var enumName string
 	if xd.Kind() == protoreflect.EnumKind {
 		enumName = legacyEnumName(xd.Enum())
 	}
 
-	// Derive the proto file that the extension was declared within.
+	
 	var filename string
 	if fd := xd.ParentFile(); fd != nil {
 		filename = fd.Path()
 	}
 
-	// For MessageSet extensions, the name used is the parent message.
+	
 	name := xd.FullName()
 	if messageset.IsMessageSetExtension(xd) {
 		name = name.Parent()
@@ -70,11 +70,11 @@ func (xi *ExtensionInfo) initToLegacy() {
 	xi.Filename = filename
 }
 
-// initFromLegacy initializes an ExtensionInfo from
-// the contents of the deprecated exported fields of the type.
+
+
 func (xi *ExtensionInfo) initFromLegacy() {
-	// The v1 API returns "type incomplete" descriptors where only the
-	// field number is specified. In such a case, use a placeholder.
+	
+	
 	if xi.ExtendedType == nil || xi.ExtensionType == nil {
 		xd := placeholderExtension{
 			name:   protoreflect.FullName(xi.Name),
@@ -84,7 +84,7 @@ func (xi *ExtensionInfo) initFromLegacy() {
 		return
 	}
 
-	// Resolve enum or message dependencies.
+	
 	var ed protoreflect.EnumDescriptor
 	var md protoreflect.MessageDescriptor
 	t := reflect.TypeOf(xi.ExtensionType)
@@ -104,14 +104,14 @@ func (xi *ExtensionInfo) initFromLegacy() {
 		md = LegacyLoadMessageDesc(t)
 	}
 
-	// Derive basic field information from the struct tag.
+	
 	var evs protoreflect.EnumValueDescriptors
 	if ed != nil {
 		evs = ed.Values()
 	}
 	fd := ptag.Unmarshal(xi.Tag, t, evs).(*filedesc.Field)
 
-	// Construct a v2 ExtensionType.
+	
 	xd := &filedesc.Extension{L2: new(filedesc.ExtensionL2)}
 	xd.L0.ParentFile = filedesc.SurrogateProto2
 	xd.L0.FullName = protoreflect.FullName(xi.Name)
@@ -124,7 +124,7 @@ func (xi *ExtensionInfo) initFromLegacy() {
 	xd.L2.Enum = ed
 	xd.L2.Message = md
 
-	// Derive real extension field name for MessageSets.
+	
 	if messageset.IsMessageSet(xd.L1.Extendee) && md.FullName() == xd.L0.FullName {
 		xd.L0.FullName = xd.L0.FullName.Append(messageset.ExtensionName)
 	}

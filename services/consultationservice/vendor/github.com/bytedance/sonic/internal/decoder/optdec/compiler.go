@@ -178,7 +178,7 @@ func (c *compiler) compilePtr(vt reflect.Type) decFunc {
 	c.enter(vt)
 	defer c.exit(vt)
 
-	// special logic for Named Ptr, issue 379
+	
 	if reflect.PtrTo(vt.Elem()) != vt {
 		c.namedPtr = true
 		return &ptrDecoder{
@@ -236,11 +236,11 @@ func (c *compiler) compileSlice(vt reflect.Type) decFunc {
 	c.enter(vt)
 	defer c.exit(vt)
 
-	// Some common slice, use a decoder, to avoid function calls
+	
 	et := rt.UnpackType(vt.Elem())
 
-	/* first checking `[]byte` */
-	if et.Kind() == reflect.Uint8 /* []byte */ {
+	
+	if et.Kind() == reflect.Uint8  {
 		return c.compileSliceBytes(vt)
 	}
 
@@ -324,7 +324,7 @@ func (c *compiler) compileInterface(vt reflect.Type) decFunc {
 func (c *compiler) compileMap(vt reflect.Type) decFunc {
 	c.enter(vt)
 	defer c.exit(vt)
-	// check the key unmarshaler at first
+	
 	decKey := tryCompileKeyUnmarshaler(vt)
 	if decKey != nil {
 		return &mapDecoder{
@@ -334,14 +334,14 @@ func (c *compiler) compileMap(vt reflect.Type) decFunc {
 		}
 	}
 
-	// Most common map, use a decoder, to avoid function calls
+	
 	if vt == reflect.TypeOf(map[string]interface{}{}) {
 		return &mapEfaceDecoder{}
 	} else if vt == reflect.TypeOf(map[string]string{}) {
 		return &mapStringDecoder{}
 	}
 
-	// Some common integer map later
+	
 	mt := rt.MapType(rt.UnpackType(vt))
 
 	if mt.Key.Kind() == reflect.String && mt.Key != rt.JsonNumberType {
@@ -384,7 +384,7 @@ func (c *compiler) compileMap(vt reflect.Type) decFunc {
 		}
 	}
 
-	// Generic map
+	
 	return &mapDecoder{
 		mapType: mt,
 		keyDec:  c.compileMapKey(vt),
@@ -395,12 +395,12 @@ func (c *compiler) compileMap(vt reflect.Type) decFunc {
 func tryCompileKeyUnmarshaler(vt reflect.Type) decKey {
 	pt := reflect.PtrTo(vt.Key())
 
-	/* check for `encoding.TextUnmarshaler` with pointer receiver */
+	
 	if pt.Implements(encodingTextUnmarshalerType) {
 		return decodeKeyTextUnmarshaler
 	}
 
-	/* NOTE: encoding/json not support map key with `json.Unmarshaler` */
+	
 	return nil
 }
 
@@ -414,7 +414,7 @@ func (c *compiler) compileMapKey(vt reflect.Type) decKey {
 		return decodeKeyU8
 	case reflect.Uint16:
 		return decodeKeyU16
-	// NOTE: actually, encoding/json can't use float as map key
+	
 	case reflect.Float32:
 		return decodeFloat32Key
 	case reflect.Float64:
@@ -429,11 +429,11 @@ func (c *compiler) compileMapKey(vt reflect.Type) decKey {
 	}
 }
 
-// maybe vt is a named type, and not a pointer receiver, see issue 379  
+
 func (c *compiler) tryCompilePtrUnmarshaler(vt reflect.Type, strOpt bool) decFunc {
 	pt := reflect.PtrTo(vt)
 
-	/* check for `json.Unmarshaler` with pointer receiver */
+	
 	if pt.Implements(jsonUnmarshalerType) {
 		return &unmarshalJSONDecoder{
 			typ: rt.UnpackType(pt),
@@ -441,9 +441,9 @@ func (c *compiler) tryCompilePtrUnmarshaler(vt reflect.Type, strOpt bool) decFun
 		}
 	}
 
-	/* check for `encoding.TextMarshaler` with pointer receiver */
+	
 	if pt.Implements(encodingTextUnmarshalerType) {
-		/* TextUnmarshal not support, string tag */
+		
 		if strOpt {
 			panicForInvalidStrType(vt)
 		}

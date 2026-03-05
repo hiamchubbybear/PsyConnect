@@ -203,7 +203,7 @@ export class ChatService {
     }
 
     const payload = {
-      type: 'chat', // Message type for backend routing
+      type: 'chat', 
       conversationId: msg.conversationId,
       senderId: msg.senderId,
       data: {

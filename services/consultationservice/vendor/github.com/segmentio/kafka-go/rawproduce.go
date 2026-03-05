@@ -11,42 +11,42 @@ import (
 	"github.com/segmentio/kafka-go/protocol/rawproduce"
 )
 
-// RawProduceRequest represents a request sent to a kafka broker to produce records
-// to a topic partition. The request contains a pre-encoded/raw record set.
+
+
 type RawProduceRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// The topic to produce the records to.
+	
 	Topic string
 
-	// The partition to produce the records to.
+	
 	Partition int
 
-	// The level of required acknowledgements to ask the kafka broker for.
+	
 	RequiredAcks RequiredAcks
 
-	// The message format version used when encoding the records.
-	//
-	// By default, the client automatically determine which version should be
-	// used based on the version of the Produce API supported by the server.
+	
+	
+	
+	
 	MessageVersion int
 
-	// An optional transaction id when producing to the kafka broker is part of
-	// a transaction.
+	
+	
 	TransactionalID string
 
-	// The sequence of records to produce to the topic partition.
+	
 	RawRecords protocol.RawRecordSet
 }
 
-// RawProduce sends a raw produce request to a kafka broker and returns the response.
-//
-// If the request contained no records, an error wrapping protocol.ErrNoRecord
-// is returned.
-//
-// When the request is configured with RequiredAcks=none, both the response and
-// the error will be nil on success.
+
+
+
+
+
+
+
 func (c *Client) RawProduce(ctx context.Context, req *RawProduceRequest) (*ProduceResponse, error) {
 	m, err := c.roundTrip(ctx, req.Addr, &rawproduce.Request{
 		TransactionalID: req.TransactionalID,

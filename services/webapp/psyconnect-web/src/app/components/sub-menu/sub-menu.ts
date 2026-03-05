@@ -1,4 +1,4 @@
-// src/app/submenu/sub-menu.component.ts
+
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 export type SubItem = {
   id: string;
   label: string;
-  icon?: string; // can be emoji or svg/icon class
+  icon?: string; 
   route?: string;
 };
 

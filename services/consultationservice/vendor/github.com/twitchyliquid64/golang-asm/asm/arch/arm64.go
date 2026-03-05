@@ -1,10 +1,10 @@
-// Copyright 2015 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// This file encapsulates some of the odd characteristics of the ARM64
-// instruction set, to minimize its interaction with the core of the
-// assembler.
+
+
+
+
+
+
 
 package arch
 
@@ -52,8 +52,8 @@ func jumpArm64(word string) bool {
 	return arm64Jump[word]
 }
 
-// IsARM64CMP reports whether the op (as defined by an arm.A* constant) is
-// one of the comparison instructions that require special handling.
+
+
 func IsARM64CMP(op obj.As) bool {
 	switch op {
 	case arm64.ACMN, arm64.ACMP, arm64.ATST,
@@ -65,9 +65,9 @@ func IsARM64CMP(op obj.As) bool {
 	return false
 }
 
-// IsARM64STLXR reports whether the op (as defined by an arm64.A*
-// constant) is one of the STLXR-like instructions that require special
-// handling.
+
+
+
 func IsARM64STLXR(op obj.As) bool {
 	switch op {
 	case arm64.ASTLXRB, arm64.ASTLXRH, arm64.ASTLXRW, arm64.ASTLXR,
@@ -75,16 +75,16 @@ func IsARM64STLXR(op obj.As) bool {
 		arm64.ASTXP, arm64.ASTXPW, arm64.ASTLXP, arm64.ASTLXPW:
 		return true
 	}
-	// atomic instructions
+	
 	if arm64.IsAtomicInstruction(op) {
 		return true
 	}
 	return false
 }
 
-// ARM64Suffix handles the special suffix for the ARM64.
-// It returns a boolean to indicate success; failure means
-// cond was unrecognized.
+
+
+
 func ARM64Suffix(prog *obj.Prog, cond string) bool {
 	if cond == "" {
 		return true
@@ -97,9 +97,9 @@ func ARM64Suffix(prog *obj.Prog, cond string) bool {
 	return true
 }
 
-// parseARM64Suffix parses the suffix attached to an ARM64 instruction.
-// The input is a single string consisting of period-separated condition
-// codes, such as ".P.W". An initial period is ignored.
+
+
+
 func parseARM64Suffix(cond string) (uint8, bool) {
 	if cond == "" {
 		return 0, true
@@ -114,7 +114,7 @@ func arm64RegisterNumber(name string, n int16) (int16, bool) {
 			return arm64.REG_F0 + n, true
 		}
 	case "R":
-		if 0 <= n && n <= 30 { // not 31
+		if 0 <= n && n <= 30 { 
 			return arm64.REG_R0 + n, true
 		}
 	case "V":
@@ -125,14 +125,14 @@ func arm64RegisterNumber(name string, n int16) (int16, bool) {
 	return 0, false
 }
 
-// IsARM64TBL reports whether the op (as defined by an arm64.A*
-// constant) is one of the table lookup instructions that require special
-// handling.
+
+
+
 func IsARM64TBL(op obj.As) bool {
 	return op == arm64.AVTBL
 }
 
-// ARM64RegisterExtension parses an ARM64 register with extension or arrangement.
+
 func ARM64RegisterExtension(a *obj.Addr, ext string, reg, num int16, isAmount, isIndex bool) error {
 	Rnum := (reg & 31) + int16(num<<5)
 	if isAmount {
@@ -161,7 +161,7 @@ func ARM64RegisterExtension(a *obj.Addr, ext string, reg, num int16, isAmount, i
 		if !isAmount {
 			return errors.New("invalid register extension")
 		}
-		// effective address of memory is a base register value and an offset register value.
+		
 		if a.Type == obj.TYPE_MEM {
 			a.Index = arm64.REG_UXTW + Rnum
 		} else {
@@ -287,7 +287,7 @@ func ARM64RegisterExtension(a *obj.Addr, ext string, reg, num int16, isAmount, i
 	return nil
 }
 
-// ARM64RegisterArrangement parses an ARM64 vector register arrangement.
+
 func ARM64RegisterArrangement(reg int16, name, arng string) (int64, error) {
 	var curQ, curSize uint16
 	if name[0] != 'V' {
@@ -327,7 +327,7 @@ func ARM64RegisterArrangement(reg int16, name, arng string) (int64, error) {
 	return (int64(curQ) & 1 << 30) | (int64(curSize&3) << 10), nil
 }
 
-// ARM64RegisterListOffset generates offset encoding according to AArch64 specification.
+
 func ARM64RegisterListOffset(firstReg, regCnt int, arrangement int64) (int64, error) {
 	offset := int64(firstReg)
 	switch regCnt {
@@ -343,8 +343,8 @@ func ARM64RegisterListOffset(firstReg, regCnt int, arrangement int64) (int64, er
 		return 0, errors.New("invalid register numbers in ARM64 register list")
 	}
 	offset |= arrangement
-	// arm64 uses the 60th bit to differentiate from other archs
-	// For more details, refer to: obj/arm64/list7.go
+	
+	
 	offset |= 1 << 60
 	return offset, nil
 }

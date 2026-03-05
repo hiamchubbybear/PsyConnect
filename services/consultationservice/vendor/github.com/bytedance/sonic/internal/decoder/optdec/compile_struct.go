@@ -10,7 +10,7 @@ import (
 )
 
 const (
-    _MAX_FIELDS = 50        // cutoff at 50 fields struct
+    _MAX_FIELDS = 50        
 )
 
 func (c *compiler) compileIntStringOption(vt reflect.Type) decFunc {
@@ -144,14 +144,14 @@ func (c *compiler) compileStructBody(vt reflect.Type) decFunc {
 
 	for _, f := range fv {
 		var dec decFunc
-		/* dealt with field tag options */
+		
 		if f.Opts&resolver.F_stringize != 0 {
 			dec = c.compileFieldStringOption(f.Type)
 		} else {
 			dec = c.compile(f.Type)
 		}
 
-		/* deal with embedded pointer fields */
+		
 		if f.Path[0].Kind == resolver.F_deref {
 			dec = &embeddedFieldPtrDecoder{
 				field:    	f,

@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -53,7 +53,7 @@ func (o unmarshalOptions) CanBeLazy() bool {
 	if o.resolver != protoregistry.GlobalTypes {
 		return false
 	}
-	// We ignore the UnmarshalInvalidateSizeCache even though it's not in the default set
+	
 	return (o.flags & ^(protoiface.UnmarshalAliasBuffer | protoiface.UnmarshalValidated | protoiface.UnmarshalCheckRequired)) == 0
 }
 
@@ -66,11 +66,11 @@ var lazyUnmarshalOptions = unmarshalOptions{
 }
 
 type unmarshalOutput struct {
-	n           int // number of bytes consumed
+	n           int 
 	initialized bool
 }
 
-// unmarshal is protoreflect.Methods.Unmarshal.
+
 func (mi *MessageInfo) unmarshal(in protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
 	var p pointer
 	if ms, ok := in.Message.(*messageState); ok {
@@ -92,12 +92,12 @@ func (mi *MessageInfo) unmarshal(in protoiface.UnmarshalInput) (protoiface.Unmar
 	}, err
 }
 
-// errUnknown is returned during unmarshaling to indicate a parse error that
-// should result in a field being placed in the unknown fields section (for example,
-// when the wire type doesn't match) as opposed to the entire unmarshal operation
-// failing (for example, when a field extends past the available input).
-//
-// This is a sentinel error which should never be visible to the user.
+
+
+
+
+
+
 var errUnknown = errors.New("unknown")
 
 func (mi *MessageInfo) unmarshalPointer(b []byte, p pointer, groupTag protowire.Number, opts unmarshalOptions) (out unmarshalOutput, err error) {
@@ -110,9 +110,9 @@ func (mi *MessageInfo) unmarshalPointer(b []byte, p pointer, groupTag protowire.
 		return unmarshalMessageSet(mi, b, p, opts)
 	}
 
-	lazyDecoding := LazyEnabled() // default
+	lazyDecoding := LazyEnabled() 
 	if opts.NoLazyDecoding() {
-		lazyDecoding = false // explicitly disabled
+		lazyDecoding = false 
 	}
 	if mi.lazyOffset.IsValid() && lazyDecoding {
 		return mi.unmarshalPointerLazy(b, p, groupTag, opts)
@@ -120,8 +120,8 @@ func (mi *MessageInfo) unmarshalPointer(b []byte, p pointer, groupTag protowire.
 	return mi.unmarshalPointerEager(b, p, groupTag, opts)
 }
 
-// unmarshalPointerEager is the message unmarshalling function for all messages that are not lazy.
-// The corresponding function for Lazy is in google_lazy.go.
+
+
 func (mi *MessageInfo) unmarshalPointerEager(b []byte, p pointer, groupTag protowire.Number, opts unmarshalOptions) (out unmarshalOutput, err error) {
 
 	initialized := true
@@ -135,7 +135,7 @@ func (mi *MessageInfo) unmarshalPointerEager(b []byte, p pointer, groupTag proto
 
 	start := len(b)
 	for len(b) > 0 {
-		// Parse the tag (field number and wire type).
+		
 		var tag uint64
 		if b[0] < 0x80 {
 			tag = uint64(b[0])
@@ -196,7 +196,7 @@ func (mi *MessageInfo) unmarshalPointerEager(b []byte, p pointer, groupTag proto
 			}
 
 		default:
-			// Possible extension.
+			
 			if exts == nil && mi.extensionOffset.IsValid() {
 				exts = p.Apply(mi.extensionOffset).Extensions()
 				if *exts == nil {
@@ -280,9 +280,9 @@ func (mi *MessageInfo) unmarshalExtension(b []byte, num protowire.Number, wtyp p
 	}
 	ival := x.Value()
 	if !ival.IsValid() && xi.unmarshalNeedsValue {
-		// Create a new message, list, or map value to fill in.
-		// For enums, create a prototype value to let the unmarshal func know the
-		// concrete type.
+		
+		
+		
 		ival = xt.New()
 	}
 	v, out, err := xi.funcs.unmarshal(b, ival, num, wtyp, opts)

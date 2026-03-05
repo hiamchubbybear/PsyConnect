@@ -9,25 +9,25 @@ import (
 	"github.com/pelletier/go-toml/v2/internal/danger"
 )
 
-// ParserError describes an error relative to the content of the document.
-//
-// It cannot outlive the instance of Parser it refers to, and may cause panics
-// if the parser is reset.
+
+
+
+
 type ParserError struct {
 	Highlight []byte
 	Message   string
-	Key       []string // optional
+	Key       []string 
 }
 
-// Error is the implementation of the error interface.
+
 func (e *ParserError) Error() string {
 	return e.Message
 }
 
-// NewParserError is a convenience function to create a ParserError
-//
-// Warning: Highlight needs to be a subslice of Parser.data, so only slices
-// returned by Parser.Raw are valid candidates.
+
+
+
+
 func NewParserError(highlight []byte, format string, args ...interface{}) error {
 	return &ParserError{
 		Highlight: highlight,
@@ -35,20 +35,20 @@ func NewParserError(highlight []byte, format string, args ...interface{}) error 
 	}
 }
 
-// Parser scans over a TOML-encoded document and generates an iterative AST.
-//
-// To prime the Parser, first reset it with the contents of a TOML document.
-// Then, process all top-level expressions sequentially. See Example.
-//
-// Don't forget to check Error() after you're done parsing.
-//
-// Each top-level expression needs to be fully processed before calling
-// NextExpression() again. Otherwise, calls to various Node methods may panic if
-// the parser has moved on the next expression.
-//
-// For performance reasons, go-toml doesn't make a copy of the input bytes to
-// the parser. Make sure to copy all the bytes you need to outlive the slice
-// given to the parser.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type Parser struct {
 	data    []byte
 	builder builder
@@ -60,14 +60,14 @@ type Parser struct {
 	KeepComments bool
 }
 
-// Data returns the slice provided to the last call to Reset.
+
 func (p *Parser) Data() []byte {
 	return p.data
 }
 
-// Range returns a range description that corresponds to a given slice of the
-// input. If the argument is not a subslice of the parser input, this function
-// panics.
+
+
+
 func (p *Parser) Range(b []byte) Range {
 	return Range{
 		Offset: uint32(danger.SubsliceOffset(p.data, b)),
@@ -75,13 +75,13 @@ func (p *Parser) Range(b []byte) Range {
 	}
 }
 
-// Raw returns the slice corresponding to the bytes in the given range.
+
 func (p *Parser) Raw(raw Range) []byte {
 	return p.data[raw.Offset : raw.Offset+raw.Length]
 }
 
-// Reset brings the parser to its initial state for a given input. It wipes an
-// reuses internal storage to reduce allocation.
+
+
 func (p *Parser) Reset(b []byte) {
 	p.builder.Reset()
 	p.ref = invalidReference
@@ -91,11 +91,11 @@ func (p *Parser) Reset(b []byte) {
 	p.first = true
 }
 
-// NextExpression parses the next top-level expression. If an expression was
-// successfully parsed, it returns true. If the parser is at the end of the
-// document or an error occurred, it returns false.
-//
-// Retrieve the parsed expression with Expression().
+
+
+
+
+
 func (p *Parser) NextExpression() bool {
 	if len(p.left) == 0 || p.err != nil {
 		return false
@@ -131,28 +131,28 @@ func (p *Parser) NextExpression() bool {
 	}
 }
 
-// Expression returns a pointer to the node representing the last successfully
-// parsed expression.
+
+
 func (p *Parser) Expression() *Node {
 	return p.builder.NodeAt(p.ref)
 }
 
-// Error returns any error that has occurred during parsing.
+
 func (p *Parser) Error() error {
 	return p.err
 }
 
-// Position describes a position in the input.
+
 type Position struct {
-	// Number of bytes from the beginning of the input.
+	
 	Offset int
-	// Line number, starting at 1.
+	
 	Line int
-	// Column number, starting at 1.
+	
 	Column int
 }
 
-// Shape describes the position of a range in the input.
+
 type Shape struct {
 	Start Position
 	End   Position
@@ -170,8 +170,8 @@ func (p *Parser) position(b []byte) Position {
 	}
 }
 
-// Shape returns the shape of the given range in the input.  Will
-// panic if the range is not a subslice of the input.
+
+
 func (p *Parser) Shape(r Range) Shape {
 	raw := p.Raw(r)
 	return Shape{
@@ -207,9 +207,9 @@ func (p *Parser) parseComment(b []byte) (reference, []byte, error) {
 }
 
 func (p *Parser) parseExpression(b []byte) (reference, []byte, error) {
-	// expression =  ws [ comment ]
-	// expression =/ ws keyval ws [ comment ]
-	// expression =/ ws table ws [ comment ]
+	
+	
+	
 	ref := invalidReference
 
 	b = p.parseWhitespace(b)
@@ -252,7 +252,7 @@ func (p *Parser) parseExpression(b []byte) (reference, []byte, error) {
 }
 
 func (p *Parser) parseTable(b []byte) (reference, []byte, error) {
-	// table = std-table / array-table
+	
 	if len(b) > 1 && b[1] == '[' {
 		return p.parseArrayTable(b)
 	}
@@ -261,9 +261,9 @@ func (p *Parser) parseTable(b []byte) (reference, []byte, error) {
 }
 
 func (p *Parser) parseArrayTable(b []byte) (reference, []byte, error) {
-	// array-table = array-table-open key array-table-close
-	// array-table-open  = %x5B.5B ws  ; [[ Double left square bracket
-	// array-table-close = ws %x5D.5D  ; ]] Double right square bracket
+	
+	
+	
 	ref := p.builder.Push(Node{
 		Kind: ArrayTable,
 	})
@@ -290,9 +290,9 @@ func (p *Parser) parseArrayTable(b []byte) (reference, []byte, error) {
 }
 
 func (p *Parser) parseStdTable(b []byte) (reference, []byte, error) {
-	// std-table = std-table-open key std-table-close
-	// std-table-open  = %x5B ws     ; [ Left square bracket
-	// std-table-close = ws %x5D     ; ] Right square bracket
+	
+	
+	
 	ref := p.builder.Push(Node{
 		Kind: Table,
 	})
@@ -315,7 +315,7 @@ func (p *Parser) parseStdTable(b []byte) (reference, []byte, error) {
 }
 
 func (p *Parser) parseKeyval(b []byte) (reference, []byte, error) {
-	// keyval = key keyval-sep val
+	
 	ref := p.builder.Push(Node{
 		Kind: KeyValue,
 	})
@@ -325,7 +325,7 @@ func (p *Parser) parseKeyval(b []byte) (reference, []byte, error) {
 		return invalidReference, nil, err
 	}
 
-	// keyval-sep = ws %x3D ws ; =
+	
 
 	b = p.parseWhitespace(b)
 
@@ -351,9 +351,9 @@ func (p *Parser) parseKeyval(b []byte) (reference, []byte, error) {
 	return ref, b, err
 }
 
-//nolint:cyclop,funlen
+
 func (p *Parser) parseVal(b []byte) (reference, []byte, error) {
-	// val = string / boolean / array / inline-table / date-time / float / integer
+	
 	ref := invalidReference
 
 	if len(b) == 0 {
@@ -449,11 +449,11 @@ func (p *Parser) parseLiteralString(b []byte) ([]byte, []byte, []byte, error) {
 }
 
 func (p *Parser) parseInlineTable(b []byte) (reference, []byte, error) {
-	// inline-table = inline-table-open [ inline-table-keyvals ] inline-table-close
-	// inline-table-open  = %x7B ws     ; {
-	// inline-table-close = ws %x7D     ; }
-	// inline-table-sep   = ws %x2C ws  ; , Comma
-	// inline-table-keyvals = keyval [ inline-table-sep inline-table-keyvals ]
+	
+	
+	
+	
+	
 	parent := p.builder.Push(Node{
 		Kind: InlineTable,
 		Raw:  p.Range(b[:1]),
@@ -509,15 +509,15 @@ func (p *Parser) parseInlineTable(b []byte) (reference, []byte, error) {
 	return parent, rest, err
 }
 
-//nolint:funlen,cyclop
+
 func (p *Parser) parseValArray(b []byte) (reference, []byte, error) {
-	// array = array-open [ array-values ] ws-comment-newline array-close
-	// array-open =  %x5B ; [
-	// array-close = %x5D ; ]
-	// array-values =  ws-comment-newline val ws-comment-newline array-sep array-values
-	// array-values =/ ws-comment-newline val ws-comment-newline [ array-sep ]
-	// array-sep = %x2C  ; , Comma
-	// ws-comment-newline = *( wschar / [ comment ] newline )
+	
+	
+	
+	
+	
+	
+	
 	arrayStart := b
 	b = b[1:]
 
@@ -525,8 +525,8 @@ func (p *Parser) parseValArray(b []byte) (reference, []byte, error) {
 		Kind: Array,
 	})
 
-	// First indicates whether the parser is looking for the first element
-	// (non-comment) of the array.
+	
+	
 	first := true
 
 	lastChild := invalidReference
@@ -577,7 +577,7 @@ func (p *Parser) parseValArray(b []byte) (reference, []byte, error) {
 			return parent, nil, NewParserError(b[0:1], "array elements must be separated by commas")
 		}
 
-		// TOML allows trailing commas in arrays.
+		
 		if len(b) > 0 && b[0] == ']' {
 			break
 		}
@@ -662,7 +662,7 @@ func (p *Parser) parseMultilineLiteralString(b []byte) ([]byte, []byte, []byte, 
 
 	i := 3
 
-	// skip the immediate new line
+	
 	if token[i] == '\n' {
 		i++
 	} else if token[i] == '\r' && token[i+1] == '\n' {
@@ -672,18 +672,18 @@ func (p *Parser) parseMultilineLiteralString(b []byte) ([]byte, []byte, []byte, 
 	return token, token[i : len(token)-3], rest, err
 }
 
-//nolint:funlen,gocognit,cyclop
+
 func (p *Parser) parseMultilineBasicString(b []byte) ([]byte, []byte, []byte, error) {
-	// ml-basic-string = ml-basic-string-delim [ newline ] ml-basic-body
-	// ml-basic-string-delim
-	// ml-basic-string-delim = 3quotation-mark
-	// ml-basic-body = *mlb-content *( mlb-quotes 1*mlb-content ) [ mlb-quotes ]
-	//
-	// mlb-content = mlb-char / newline / mlb-escaped-nl
-	// mlb-char = mlb-unescaped / escaped
-	// mlb-quotes = 1*2quotation-mark
-	// mlb-unescaped = wschar / %x21 / %x23-5B / %x5D-7E / non-ascii
-	// mlb-escaped-nl = escape ws newline *( wschar / newline )
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	token, escaped, rest, err := scanMultilineBasicString(b)
 	if err != nil {
 		return nil, nil, nil, err
@@ -691,14 +691,14 @@ func (p *Parser) parseMultilineBasicString(b []byte) ([]byte, []byte, []byte, er
 
 	i := 3
 
-	// skip the immediate new line
+	
 	if token[i] == '\n' {
 		i++
 	} else if token[i] == '\r' && token[i+1] == '\n' {
 		i += 2
 	}
 
-	// fast path
+	
 	startIdx := i
 	endIdx := len(token) - len(`"""`)
 
@@ -713,16 +713,16 @@ func (p *Parser) parseMultilineBasicString(b []byte) ([]byte, []byte, []byte, er
 
 	var builder bytes.Buffer
 
-	// The scanner ensures that the token starts and ends with quotes and that
-	// escapes are balanced.
+	
+	
 	for i < len(token)-3 {
 		c := token[i]
 
-		//nolint:nestif
+		
 		if c == '\\' {
-			// When the last non-whitespace character on a line is an unescaped \,
-			// it will be trimmed along with all whitespace (including newlines) up
-			// to the next non-whitespace character or closing delimiter.
+			
+			
+			
 
 			isLastNonWhitespaceOnLine := false
 			j := 1
@@ -753,7 +753,7 @@ func (p *Parser) parseMultilineBasicString(b []byte) ([]byte, []byte, []byte, er
 				continue
 			}
 
-			// handle escaping
+			
 			i++
 			c = token[i]
 
@@ -805,14 +805,14 @@ func (p *Parser) parseMultilineBasicString(b []byte) ([]byte, []byte, []byte, er
 }
 
 func (p *Parser) parseKey(b []byte) (reference, []byte, error) {
-	// key = simple-key / dotted-key
-	// simple-key = quoted-key / unquoted-key
-	//
-	// unquoted-key = 1*( ALPHA / DIGIT / %x2D / %x5F ) ; A-Z / a-z / 0-9 / - / _
-	// quoted-key = basic-string / literal-string
-	// dotted-key = simple-key 1*( dot-sep simple-key )
-	//
-	// dot-sep   = ws %x2E ws  ; . Period
+	
+	
+	
+	
+	
+	
+	
+	
 	raw, key, b, err := p.parseSimpleKey(b)
 	if err != nil {
 		return invalidReference, nil, err
@@ -852,9 +852,9 @@ func (p *Parser) parseSimpleKey(b []byte) (raw, key, rest []byte, err error) {
 		return nil, nil, nil, NewParserError(b, "expected key but found none")
 	}
 
-	// simple-key = quoted-key / unquoted-key
-	// unquoted-key = 1*( ALPHA / DIGIT / %x2D / %x5F ) ; A-Z / a-z / 0-9 / - / _
-	// quoted-key = basic-string / literal-string
+	
+	
+	
 	switch {
 	case b[0] == '\'':
 		return p.parseLiteralString(b)
@@ -868,22 +868,22 @@ func (p *Parser) parseSimpleKey(b []byte) (raw, key, rest []byte, err error) {
 	}
 }
 
-//nolint:funlen,cyclop
+
 func (p *Parser) parseBasicString(b []byte) ([]byte, []byte, []byte, error) {
-	// basic-string = quotation-mark *basic-char quotation-mark
-	// quotation-mark = %x22            ; "
-	// basic-char = basic-unescaped / escaped
-	// basic-unescaped = wschar / %x21 / %x23-5B / %x5D-7E / non-ascii
-	// escaped = escape escape-seq-char
-	// escape-seq-char =  %x22         ; "    quotation mark  U+0022
-	// escape-seq-char =/ %x5C         ; \    reverse solidus U+005C
-	// escape-seq-char =/ %x62         ; b    backspace       U+0008
-	// escape-seq-char =/ %x66         ; f    form feed       U+000C
-	// escape-seq-char =/ %x6E         ; n    line feed       U+000A
-	// escape-seq-char =/ %x72         ; r    carriage return U+000D
-	// escape-seq-char =/ %x74         ; t    tab             U+0009
-	// escape-seq-char =/ %x75 4HEXDIG ; uXXXX                U+XXXX
-	// escape-seq-char =/ %x55 8HEXDIG ; UXXXXXXXX            U+XXXXXXXX
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	token, escaped, rest, err := scanBasicString(b)
 	if err != nil {
 		return nil, nil, nil, err
@@ -892,9 +892,9 @@ func (p *Parser) parseBasicString(b []byte) ([]byte, []byte, []byte, error) {
 	startIdx := len(`"`)
 	endIdx := len(token) - len(`"`)
 
-	// Fast path. If there is no escape sequence, the string should just be
-	// an UTF-8 encoded string, which is the same as Go. In that case,
-	// validate the string and return a direct reference to the buffer.
+	
+	
+	
 	if !escaped {
 		str := token[startIdx:endIdx]
 		verr := characters.Utf8TomlValidAlreadyEscaped(str)
@@ -908,8 +908,8 @@ func (p *Parser) parseBasicString(b []byte) ([]byte, []byte, []byte, error) {
 
 	var builder bytes.Buffer
 
-	// The scanner ensures that the token starts and ends with quotes and that
-	// escapes are balanced.
+	
+	
 	for i < len(token)-1 {
 		c := token[i]
 		if c == '\\' {
@@ -994,15 +994,15 @@ func hexToRune(b []byte, length int) (rune, error) {
 }
 
 func (p *Parser) parseWhitespace(b []byte) []byte {
-	// ws = *wschar
-	// wschar =  %x20  ; Space
-	// wschar =/ %x09  ; Horizontal tab
+	
+	
+	
 	_, rest := scanWhitespace(b)
 
 	return rest
 }
 
-//nolint:cyclop
+
 func (p *Parser) parseIntOrFloatOrDateTime(b []byte) (reference, []byte, error) {
 	switch b[0] {
 	case 'i':
@@ -1054,8 +1054,8 @@ func (p *Parser) parseIntOrFloatOrDateTime(b []byte) (reference, []byte, error) 
 }
 
 func (p *Parser) scanDateTime(b []byte) (reference, []byte, error) {
-	// scans for contiguous characters in [0-9T:Z.+-], and up to one space if
-	// followed by a digit.
+	
+	
 	hasDate := false
 	hasTime := false
 	hasTz := false
@@ -1081,8 +1081,8 @@ byteLoop:
 		case c == ' ':
 			if !seenSpace && i+1 < len(b) && isDigit(b[i+1]) {
 				i += 2
-				// Avoid reaching past the end of the document in case the time
-				// is malformed. See TestIssue585.
+				
+				
 				if i >= len(b) {
 					i--
 				}
@@ -1118,7 +1118,7 @@ byteLoop:
 	}), b[i:], nil
 }
 
-//nolint:funlen,gocognit,cyclop
+
 func (p *Parser) scanIntOrFloat(b []byte) (reference, []byte, error) {
 	i := 0
 

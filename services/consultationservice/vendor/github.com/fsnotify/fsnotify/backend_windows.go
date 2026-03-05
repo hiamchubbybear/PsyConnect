@@ -1,8 +1,8 @@
 //go:build windows
 
-// Windows backend based on ReadDirectoryChangesW()
-//
-// https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-readdirectorychangesw
+
+
+
 
 package fsnotify
 
@@ -26,13 +26,13 @@ type readDirChangesW struct {
 	Events chan Event
 	Errors chan error
 
-	port  windows.Handle // Handle to completion port
-	input chan *input    // Inputs to the reader are sent on this channel
+	port  windows.Handle 
+	input chan *input    
 	quit  chan chan<- error
 
-	mu      sync.Mutex // Protects access to watches, closed
-	watches watchMap   // Map of watches (key: i-number)
-	closed  bool       // Set to true when Close() is first called
+	mu      sync.Mutex 
+	watches watchMap   
+	closed  bool       
 }
 
 func newBackend(ev chan Event, errs chan error) (backend, error) {
@@ -77,7 +77,7 @@ func (w *readDirChangesW) sendEvent(name, renamedFrom string, mask uint64) bool 
 	return true
 }
 
-// Returns true if the error was sent, or false if watcher is closed.
+
 func (w *readDirChangesW) sendError(err error) bool {
 	if err == nil {
 		return true
@@ -99,7 +99,7 @@ func (w *readDirChangesW) Close() error {
 	w.closed = true
 	w.mu.Unlock()
 
-	// Send "quit" message to the reader goroutine
+	
 	ch := make(chan error)
 	w.quit <- ch
 	if err := w.wakeupReader(); err != nil {
@@ -176,7 +176,7 @@ func (w *readDirChangesW) WatchList() []string {
 			for name := range watchEntry.names {
 				entries = append(entries, filepath.Join(watchEntry.path, name))
 			}
-			// the directory itself is being watched
+			
 			if watchEntry.mask != 0 {
 				entries = append(entries, watchEntry.path)
 			}
@@ -186,12 +186,12 @@ func (w *readDirChangesW) WatchList() []string {
 	return entries
 }
 
-// These options are from the old golang.org/x/exp/winfsnotify, where you could
-// add various options to the watch. This has long since been removed.
-//
-// The "sys" in the name is misleading as they're not part of any "system".
-//
-// This should all be removed at some point, and just use windows.FILE_NOTIFY_*
+
+
+
+
+
+
 const (
 	sysFSALLEVENTS  = 0xfff
 	sysFSCREATE     = 0x100
@@ -247,13 +247,13 @@ type inode struct {
 
 type watch struct {
 	ov      windows.Overlapped
-	ino     *inode            // i-number
-	recurse bool              // Recursive watch?
-	path    string            // Directory path
-	mask    uint64            // Directory itself is being watched with these notify flags
-	names   map[string]uint64 // Map of names being watched and their notify flags
-	rename  string            // Remembers the old name while renaming a file
-	buf     []byte            // buffer, allocated later
+	ino     *inode            
+	recurse bool              
+	path    string            
+	mask    uint64            
+	names   map[string]uint64 
+	rename  string            
+	buf     []byte            
 }
 
 type (
@@ -307,7 +307,7 @@ func (w *readDirChangesW) getIno(path string) (ino *inode, err error) {
 	return ino, nil
 }
 
-// Must run within the I/O thread.
+
 func (m watchMap) get(ino *inode) *watch {
 	if i := m[ino.volume]; i != nil {
 		return i[ino.index]
@@ -315,7 +315,7 @@ func (m watchMap) get(ino *inode) *watch {
 	return nil
 }
 
-// Must run within the I/O thread.
+
 func (m watchMap) set(ino *inode, watch *watch) {
 	i := m[ino.volume]
 	if i == nil {
@@ -325,7 +325,7 @@ func (m watchMap) set(ino *inode, watch *watch) {
 	i[ino.index] = watch
 }
 
-// Must run within the I/O thread.
+
 func (w *readDirChangesW) addWatch(pathname string, flags uint64, bufsize int) error {
 	pathname, recurse := recursivePath(pathname)
 
@@ -380,7 +380,7 @@ func (w *readDirChangesW) addWatch(pathname string, flags uint64, bufsize int) e
 	return nil
 }
 
-// Must run within the I/O thread.
+
 func (w *readDirChangesW) remWatch(pathname string) error {
 	pathname, recurse := recursivePath(pathname)
 
@@ -420,7 +420,7 @@ func (w *readDirChangesW) remWatch(pathname string) error {
 	return w.startRead(watch)
 }
 
-// Must run within the I/O thread.
+
 func (w *readDirChangesW) deleteWatch(watch *watch) {
 	for name, mask := range watch.names {
 		if mask&provisional == 0 {
@@ -436,7 +436,7 @@ func (w *readDirChangesW) deleteWatch(watch *watch) {
 	}
 }
 
-// Must run within the I/O thread.
+
 func (w *readDirChangesW) startRead(watch *watch) error {
 	err := windows.CancelIo(watch.ino.handle)
 	if err != nil {
@@ -458,7 +458,7 @@ func (w *readDirChangesW) startRead(watch *watch) error {
 		return nil
 	}
 
-	// We need to pass the array, rather than the slice.
+	
 	hdr := (*reflect.SliceHeader)(unsafe.Pointer(&watch.buf))
 	rdErr := windows.ReadDirectoryChanges(watch.ino.handle,
 		(*byte)(unsafe.Pointer(hdr.Data)), uint32(hdr.Len),
@@ -466,7 +466,7 @@ func (w *readDirChangesW) startRead(watch *watch) error {
 	if rdErr != nil {
 		err := os.NewSyscallError("ReadDirectoryChanges", rdErr)
 		if rdErr == windows.ERROR_ACCESS_DENIED && watch.mask&provisional == 0 {
-			// Watched directory was probably removed
+			
 			w.sendEvent(watch.path, "", watch.mask&sysFSDELETESELF)
 			err = nil
 		}
@@ -477,9 +477,9 @@ func (w *readDirChangesW) startRead(watch *watch) error {
 	return nil
 }
 
-// readEvents reads from the I/O completion port, converts the
-// received events into Event objects and sends them via the Events channel.
-// Entry point to the I/O thread.
+
+
+
 func (w *readDirChangesW) readEvents() {
 	var (
 		n   uint32
@@ -489,7 +489,7 @@ func (w *readDirChangesW) readEvents() {
 	runtime.LockOSThread()
 
 	for {
-		// This error is handled after the watch == nil check below.
+		
 		qErr := windows.GetQueuedCompletionStatus(w.port, &n, &key, &ov, windows.INFINITE)
 
 		watch := (*watch)(unsafe.Pointer(ov))
@@ -531,24 +531,24 @@ func (w *readDirChangesW) readEvents() {
 
 		switch qErr {
 		case nil:
-			// No error
+			
 		case windows.ERROR_MORE_DATA:
 			if watch == nil {
 				w.sendError(errors.New("ERROR_MORE_DATA has unexpectedly null lpOverlapped buffer"))
 			} else {
-				// The i/o succeeded but the buffer is full.
-				// In theory we should be building up a full packet.
-				// In practice we can get away with just carrying on.
+				
+				
+				
 				n = uint32(unsafe.Sizeof(watch.buf))
 			}
 		case windows.ERROR_ACCESS_DENIED:
-			// Watched directory was probably removed
+			
 			w.sendEvent(watch.path, "", watch.mask&sysFSDELETESELF)
 			w.deleteWatch(watch)
 			w.startRead(watch)
 			continue
 		case windows.ERROR_OPERATION_ABORTED:
-			// CancelIo was called on this handle
+			
 			continue
 		default:
 			w.sendError(os.NewSyscallError("GetQueuedCompletionPort", qErr))
@@ -562,13 +562,13 @@ func (w *readDirChangesW) readEvents() {
 				break
 			}
 
-			// Point "raw" to the event in the buffer
+			
 			raw := (*windows.FileNotifyInformation)(unsafe.Pointer(&watch.buf[offset]))
 
-			// Create a buf that is the size of the path name
+			
 			size := int(raw.FileNameLength / 2)
 			var buf []uint16
-			// TODO: Use unsafe.Slice in Go 1.17; https://stackoverflow.com/questions/51187973
+			
 			sh := (*reflect.SliceHeader)(unsafe.Pointer(&buf))
 			sh.Data = uintptr(unsafe.Pointer(&raw.FileName))
 			sh.Len = size
@@ -589,7 +589,7 @@ func (w *readDirChangesW) readEvents() {
 			case windows.FILE_ACTION_RENAMED_OLD_NAME:
 				watch.rename = name
 			case windows.FILE_ACTION_RENAMED_NEW_NAME:
-				// Update saved path of all sub-watches.
+				
 				old := filepath.Join(watch.path, watch.rename)
 				w.mu.Lock()
 				for _, watchMap := range w.watches {
@@ -626,15 +626,15 @@ func (w *readDirChangesW) readEvents() {
 				w.sendEvent(filepath.Join(watch.path, watch.rename), "", watch.names[name]&mask)
 			}
 
-			// Move to the next event in the buffer
+			
 			if raw.NextEntryOffset == 0 {
 				break
 			}
 			offset += raw.NextEntryOffset
 
-			// Error!
+			
 			if offset >= n {
-				//lint:ignore ST1005 Windows should be capitalized
+				
 				w.sendError(errors.New("Windows system assumed buffer larger than it is, events have likely been missed"))
 				break
 			}

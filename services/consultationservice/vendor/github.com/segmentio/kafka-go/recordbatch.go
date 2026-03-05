@@ -6,19 +6,19 @@ import (
 )
 
 const recordBatchHeaderSize int32 = 0 +
-	8 + // base offset
-	4 + // batch length
-	4 + // partition leader epoch
-	1 + // magic
-	4 + // crc
-	2 + // attributes
-	4 + // last offset delta
-	8 + // first timestamp
-	8 + // max timestamp
-	8 + // producer id
-	2 + // producer epoch
-	4 + // base sequence
-	4 // msg count
+	8 + 
+	4 + 
+	4 + 
+	1 + 
+	4 + 
+	2 + 
+	4 + 
+	8 + 
+	8 + 
+	8 + 
+	2 + 
+	4 + 
+	4 
 
 func recordBatchSize(msgs ...Message) (size int32) {
 	size = recordBatchHeaderSize
@@ -53,12 +53,12 @@ func compressRecordBatch(codec CompressionCodec, msgs ...Message) (compressed *b
 }
 
 type recordBatch struct {
-	// required input parameters
+	
 	codec      CompressionCodec
 	attributes int16
 	msgs       []Message
 
-	// parameters calculated during init
+	
 	compressed *bytes.Buffer
 	size       int32
 }
@@ -96,7 +96,7 @@ func (r *recordBatch) writeTo(wb *writeBuffer) {
 }
 
 func recordSize(msg *Message, timestampDelta time.Duration, offsetDelta int64) int {
-	return 1 + // attributes
+	return 1 + 
 		varIntLen(int64(milliseconds(timestampDelta))) +
 		varIntLen(offsetDelta) +
 		varBytesLen(msg.Key) +

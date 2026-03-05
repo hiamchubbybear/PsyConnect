@@ -1,16 +1,16 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
-// Package bsontype is a utility package that contains types for each BSON type and the
-// a stringifier for the Type to enable easier debugging when working with BSON.
-package bsontype // import "go.mongodb.org/mongo-driver/bson/bsontype"
 
-// BSON element types as described in https://bsonspec.org/spec.html.
-//
-// Deprecated: Use bson.Type* constants instead.
+
+
+
+
+
+
+package bsontype 
+
+
+
+
 const (
 	Double           Type = 0x01
 	String           Type = 0x02
@@ -35,9 +35,9 @@ const (
 	MaxKey           Type = 0x7F
 )
 
-// BSON binary element subtypes as described in https://bsonspec.org/spec.html.
-//
-// Deprecated: Use the bson.TypeBinary* constants instead.
+
+
+
 const (
 	BinaryGeneric     byte = 0x00
 	BinaryFunction    byte = 0x01
@@ -51,10 +51,10 @@ const (
 	BinaryUserDefined byte = 0x80
 )
 
-// Type represents a BSON type.
+
 type Type byte
 
-// String returns the string representation of the BSON type's name.
+
 func (bt Type) String() string {
 	switch bt {
 	case '\x01':
@@ -104,7 +104,7 @@ func (bt Type) String() string {
 	}
 }
 
-// IsValid will return true if the Type is valid.
+
 func (bt Type) IsValid() bool {
 	switch bt {
 	case Double, String, EmbeddedDocument, Array, Binary, Undefined, ObjectID, Boolean, DateTime, Null, Regex,

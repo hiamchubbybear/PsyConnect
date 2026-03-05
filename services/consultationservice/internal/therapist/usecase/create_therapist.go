@@ -40,11 +40,11 @@ type CreateTherapistRequest struct {
 	RagePrice         int
 	Currency          string
 
-	// Availability
+	
 	AvailabilityDays      []string
 	AvailabilityTimeSlots []string
 
-	// Other fields
+	
 	Experience       int
 	Rating           float64
 	AvatarOverride   string
@@ -83,7 +83,7 @@ func (uc *CreateTherapistUseCase) Execute(ctx context.Context, req CreateTherapi
 	therapist.AvatarOverride = req.AvatarOverride
 	therapist.Name = req.Name
 
-	// Map Professional Info
+	
 	therapist.ProfessionalInfo = domain.ProfessionalInfo{
 		Title: domain.ProfessionalTitle{
 			Code:    req.ProfessionalInfo.Title.Code,

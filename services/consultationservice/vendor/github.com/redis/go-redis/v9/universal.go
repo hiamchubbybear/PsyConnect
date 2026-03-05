@@ -9,21 +9,21 @@ import (
 	"github.com/redis/go-redis/v9/auth"
 )
 
-// UniversalOptions information is required by UniversalClient to establish
-// connections.
+
+
 type UniversalOptions struct {
-	// Either a single address or a seed list of host:port addresses
-	// of cluster/sentinel nodes.
+	
+	
 	Addrs []string
 
-	// ClientName will execute the `CLIENT SETNAME ClientName` command for each conn.
+	
 	ClientName string
 
-	// Database to be selected after connecting to the server.
-	// Only single-node and failover clients.
+	
+	
 	DB int
 
-	// Common options.
+	
 
 	Dialer    func(ctx context.Context, network, addr string) (net.Conn, error)
 	OnConnect func(ctx context.Context, cn *Conn) error
@@ -31,22 +31,22 @@ type UniversalOptions struct {
 	Protocol int
 	Username string
 	Password string
-	// CredentialsProvider allows the username and password to be updated
-	// before reconnecting. It should return the current username and password.
+	
+	
 	CredentialsProvider func() (username string, password string)
 
-	// CredentialsProviderContext is an enhanced parameter of CredentialsProvider,
-	// done to maintain API compatibility. In the future,
-	// there might be a merge between CredentialsProviderContext and CredentialsProvider.
-	// There will be a conflict between them; if CredentialsProviderContext exists, we will ignore CredentialsProvider.
+	
+	
+	
+	
 	CredentialsProviderContext func(ctx context.Context) (username string, password string, err error)
 
-	// StreamingCredentialsProvider is used to retrieve the credentials
-	// for the connection from an external source. Those credentials may change
-	// during the connection lifetime. This is useful for managed identity
-	// scenarios where the credentials are retrieved from an external source.
-	//
-	// Currently, this is a placeholder for the future implementation.
+	
+	
+	
+	
+	
+	
 	StreamingCredentialsProvider auth.StreamingCredentialsProvider
 
 	SentinelUsername string
@@ -61,7 +61,7 @@ type UniversalOptions struct {
 	WriteTimeout          time.Duration
 	ContextTimeoutEnabled bool
 
-	// PoolFIFO uses FIFO mode for each node connection pool GET/PUT (default LIFO).
+	
 	PoolFIFO bool
 
 	PoolSize        int
@@ -74,37 +74,37 @@ type UniversalOptions struct {
 
 	TLSConfig *tls.Config
 
-	// Only cluster clients.
+	
 
 	MaxRedirects   int
 	ReadOnly       bool
 	RouteByLatency bool
 	RouteRandomly  bool
 
-	// MasterName is the sentinel master name.
-	// Only for failover clients.
+	
+	
 	MasterName string
 
-	// DisableIndentity - Disable set-lib on connect.
-	//
-	// default: false
-	//
-	// Deprecated: Use DisableIdentity instead.
+	
+	
+	
+	
+	
 	DisableIndentity bool
 
-	// DisableIdentity is used to disable CLIENT SETINFO command on connect.
-	//
-	// default: false
+	
+	
+	
 	DisableIdentity bool
 
 	IdentitySuffix string
 	UnstableResp3  bool
 
-	// IsClusterMode can be used when only one Addrs is provided (e.g. Elasticache supports setting up cluster mode with configuration endpoint).
+	
 	IsClusterMode bool
 }
 
-// Cluster returns cluster options created from the universal options.
+
 func (o *UniversalOptions) Cluster() *ClusterOptions {
 	if len(o.Addrs) == 0 {
 		o.Addrs = []string{"127.0.0.1:6379"}
@@ -156,7 +156,7 @@ func (o *UniversalOptions) Cluster() *ClusterOptions {
 	}
 }
 
-// Failover returns failover options created from the universal options.
+
 func (o *UniversalOptions) Failover() *FailoverOptions {
 	if len(o.Addrs) == 0 {
 		o.Addrs = []string{"127.0.0.1:26379"}
@@ -213,7 +213,7 @@ func (o *UniversalOptions) Failover() *FailoverOptions {
 	}
 }
 
-// Simple returns basic options created from the universal options.
+
 func (o *UniversalOptions) Simple() *Options {
 	addr := "127.0.0.1:6379"
 	if len(o.Addrs) > 0 {
@@ -261,12 +261,12 @@ func (o *UniversalOptions) Simple() *Options {
 	}
 }
 
-// --------------------------------------------------------------------
 
-// UniversalClient is an abstract client which - based on the provided options -
-// represents either a ClusterClient, a FailoverClient, or a single-node Client.
-// This can be useful for testing cluster-specific applications locally or having different
-// clients in different environments.
+
+
+
+
+
 type UniversalClient interface {
 	Cmdable
 	AddHook(Hook)
@@ -286,16 +286,16 @@ var (
 	_ UniversalClient = (*Ring)(nil)
 )
 
-// NewUniversalClient returns a new multi client. The type of the returned client depends
-// on the following conditions:
-//
-//  1. If the MasterName option is specified with RouteByLatency, RouteRandomly or IsClusterMode,
-//     a FailoverClusterClient is returned.
-//  2. If the MasterName option is specified without RouteByLatency, RouteRandomly or IsClusterMode,
-//     a sentinel-backed FailoverClient is returned.
-//  3. If the number of Addrs is two or more, or IsClusterMode option is specified,
-//     a ClusterClient is returned.
-//  4. Otherwise, a single-node Client is returned.
+
+
+
+
+
+
+
+
+
+
 func NewUniversalClient(opts *UniversalOptions) UniversalClient {
 	if opts == nil {
 		panic("redis: NewUniversalClient nil options")

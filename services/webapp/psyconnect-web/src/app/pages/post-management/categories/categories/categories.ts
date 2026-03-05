@@ -31,7 +31,7 @@ export class Categories implements OnInit {
   }
 
   loadCategories() {
-    // Mock data
+    
     this.categories = [
       { id: '1', name: 'Mental Health', description: 'Posts about mental wellness', postCount: 45, color: '#3b82f6', icon: 'fa-brain' },
       { id: '2', name: 'Therapy', description: 'Therapy techniques and tips', postCount: 32, color: '#10b981', icon: 'fa-user-md' },

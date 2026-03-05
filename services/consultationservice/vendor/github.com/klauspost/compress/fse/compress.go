@@ -1,7 +1,7 @@
-// Copyright 2018 Klaus Post. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-// Based on work Copyright (c) 2013, Yann Collet, released under BSD License.
+
+
+
+
 
 package fse
 
@@ -10,11 +10,11 @@ import (
 	"fmt"
 )
 
-// Compress the input bytes. Input must be < 2GB.
-// Provide a Scratch buffer to avoid memory allocations.
-// Note that the output is also kept in the scratch buffer.
-// If input is too hard to compress, ErrIncompressible is returned.
-// If input is a single byte value repeated ErrUseRLE is returned.
+
+
+
+
+
 func Compress(in []byte, s *Scratch) ([]byte, error) {
 	if len(in) <= 1 {
 		return nil, ErrIncompressible
@@ -27,20 +27,20 @@ func Compress(in []byte, s *Scratch) ([]byte, error) {
 		return nil, err
 	}
 
-	// Create histogram, if none was provided.
+	
 	maxCount := s.maxCount
 	if maxCount == 0 {
 		maxCount = s.countSimple(in)
 	}
-	// Reset for next run.
+	
 	s.clearCount = true
 	s.maxCount = 0
 	if maxCount == len(in) {
-		// One symbol, use RLE
+		
 		return nil, ErrUseRLE
 	}
 	if maxCount == 1 || maxCount < (len(in)>>7) {
-		// Each symbol present maximum once or too well distributed.
+		
 		return nil, ErrIncompressible
 	}
 	s.optimalTableLog()
@@ -69,21 +69,21 @@ func Compress(in []byte, s *Scratch) ([]byte, error) {
 		return nil, err
 	}
 	s.Out = s.bw.out
-	// Check if we compressed.
+	
 	if len(s.Out) >= len(in) {
 		return nil, ErrIncompressible
 	}
 	return s.Out, nil
 }
 
-// cState contains the compression state of a stream.
+
 type cState struct {
 	bw         *bitWriter
 	stateTable []uint16
 	state      uint16
 }
 
-// init will initialize the compression state to the first symbol of the stream.
+
 func (c *cState) init(bw *bitWriter, ct *cTable, tableLog uint8, first symbolTransform) {
 	c.bw = bw
 	c.stateTable = ct.stateTable
@@ -94,7 +94,7 @@ func (c *cState) init(bw *bitWriter, ct *cTable, tableLog uint8, first symbolTra
 	c.state = c.stateTable[lu]
 }
 
-// encode the output symbol provided and write it to the bitstream.
+
 func (c *cState) encode(symbolTT symbolTransform) {
 	nbBitsOut := (uint32(c.state) + symbolTT.deltaNbBits) >> 16
 	dstState := int32(c.state>>(nbBitsOut&15)) + symbolTT.deltaFindState
@@ -102,7 +102,7 @@ func (c *cState) encode(symbolTT symbolTransform) {
 	c.state = c.stateTable[dstState]
 }
 
-// encode the output symbol provided and write it to the bitstream.
+
 func (c *cState) encodeZero(symbolTT symbolTransform) {
 	nbBitsOut := (uint32(c.state) + symbolTT.deltaNbBits) >> 16
 	dstState := int32(c.state>>(nbBitsOut&15)) + symbolTT.deltaFindState
@@ -110,14 +110,14 @@ func (c *cState) encodeZero(symbolTT symbolTransform) {
 	c.state = c.stateTable[dstState]
 }
 
-// flush will write the tablelog to the output and flush the remaining full bytes.
+
 func (c *cState) flush(tableLog uint8) {
 	c.bw.flush32()
 	c.bw.addBits16NC(c.state, tableLog)
 	c.bw.flush()
 }
 
-// compress is the main compression loop that will encode the input from the last byte to the first.
+
 func (s *Scratch) compress(src []byte) error {
 	if len(src) <= 2 {
 		return errors.New("compress: src too small")
@@ -125,11 +125,11 @@ func (s *Scratch) compress(src []byte) error {
 	tt := s.ct.symbolTT[:256]
 	s.bw.reset(s.Out)
 
-	// Our two states each encodes every second byte.
-	// Last byte encoded (first byte decoded) will always be encoded by c1.
+	
+	
 	var c1, c2 cState
 
-	// Encode so remaining size is divisible by 4.
+	
 	ip := len(src)
 	if ip&1 == 1 {
 		c1.init(&s.bw, &s.ct, s.actualTableLog, tt[src[ip-1]])
@@ -148,11 +148,11 @@ func (s *Scratch) compress(src []byte) error {
 	}
 	src = src[:ip]
 
-	// Main compression loop.
+	
 	switch {
 	case !s.zeroBits && s.actualTableLog <= 8:
-		// We can encode 4 symbols without requiring a flush.
-		// We do not need to check if any output is 0 bits.
+		
+		
 		for ; len(src) >= 4; src = src[:len(src)-4] {
 			s.bw.flush32()
 			v3, v2, v1, v0 := src[len(src)-4], src[len(src)-3], src[len(src)-2], src[len(src)-1]
@@ -162,7 +162,7 @@ func (s *Scratch) compress(src []byte) error {
 			c1.encode(tt[v3])
 		}
 	case !s.zeroBits:
-		// We do not need to check if any output is 0 bits.
+		
 		for ; len(src) >= 4; src = src[:len(src)-4] {
 			s.bw.flush32()
 			v3, v2, v1, v0 := src[len(src)-4], src[len(src)-3], src[len(src)-2], src[len(src)-1]
@@ -173,7 +173,7 @@ func (s *Scratch) compress(src []byte) error {
 			c1.encode(tt[v3])
 		}
 	case s.actualTableLog <= 8:
-		// We can encode 4 symbols without requiring a flush
+		
 		for ; len(src) >= 4; src = src[:len(src)-4] {
 			s.bw.flush32()
 			v3, v2, v1, v0 := src[len(src)-4], src[len(src)-3], src[len(src)-2], src[len(src)-1]
@@ -194,16 +194,16 @@ func (s *Scratch) compress(src []byte) error {
 		}
 	}
 
-	// Flush final state.
-	// Used to initialize state when decoding.
+	
+	
 	c2.flush(s.actualTableLog)
 	c1.flush(s.actualTableLog)
 
 	return s.bw.close()
 }
 
-// writeCount will write the normalized histogram count to header.
-// This is read back by readNCount.
+
+
 func (s *Scratch) writeCount() error {
 	var (
 		tableLog  = s.actualTableLog
@@ -213,10 +213,10 @@ func (s *Scratch) writeCount() error {
 
 		maxHeaderSize = ((int(s.symbolLen) * int(tableLog)) >> 3) + 3
 
-		// Write Table Size
+		
 		bitStream = uint32(tableLog - minTablelog)
 		bitCount  = uint(4)
-		remaining = int16(tableSize + 1) /* +1 for extra accuracy */
+		remaining = int16(tableSize + 1) 
 		threshold = int16(tableSize)
 		nbBits    = uint(tableLog + 1)
 	)
@@ -226,7 +226,7 @@ func (s *Scratch) writeCount() error {
 	outP := uint(0)
 	out := s.Out[:maxHeaderSize]
 
-	// stops at 1
+	
 	for remaining > 1 {
 		if previous0 {
 			start := charnum
@@ -265,9 +265,9 @@ func (s *Scratch) writeCount() error {
 		} else {
 			remaining -= count
 		}
-		count++ // +1 for extra accuracy
+		count++ 
 		if count >= threshold {
-			count += max // [0..max[ [max..threshold[ (...) [threshold+max 2*threshold[
+			count += max 
 		}
 		bitStream += uint32(count) << bitCount
 		bitCount += nbBits
@@ -304,29 +304,29 @@ func (s *Scratch) writeCount() error {
 	return nil
 }
 
-// symbolTransform contains the state transform for a symbol.
+
 type symbolTransform struct {
 	deltaFindState int32
 	deltaNbBits    uint32
 }
 
-// String prints values as a human readable string.
+
 func (s symbolTransform) String() string {
 	return fmt.Sprintf("dnbits: %08x, fs:%d", s.deltaNbBits, s.deltaFindState)
 }
 
-// cTable contains tables used for compression.
+
 type cTable struct {
 	tableSymbol []byte
 	stateTable  []uint16
 	symbolTT    []symbolTransform
 }
 
-// allocCtable will allocate tables needed for compression.
-// If existing tables a re big enough, they are simply re-used.
+
+
 func (s *Scratch) allocCtable() {
 	tableSize := 1 << s.actualTableLog
-	// get tableSymbol that is big enough.
+	
 	if cap(s.ct.tableSymbol) < tableSize {
 		s.ct.tableSymbol = make([]byte, tableSize)
 	}
@@ -344,7 +344,7 @@ func (s *Scratch) allocCtable() {
 	s.ct.symbolTT = s.ct.symbolTT[:256]
 }
 
-// buildCTable will populate the compression table so it is ready to be used.
+
 func (s *Scratch) buildCTable() error {
 	tableSize := uint32(1 << s.actualTableLog)
 	highThreshold := tableSize - 1
@@ -352,13 +352,13 @@ func (s *Scratch) buildCTable() error {
 
 	s.allocCtable()
 	tableSymbol := s.ct.tableSymbol[:tableSize]
-	// symbol start positions
+	
 	{
 		cumul[0] = 0
 		for ui, v := range s.norm[:s.symbolLen-1] {
-			u := byte(ui) // one less than reference
+			u := byte(ui) 
 			if v == -1 {
-				// Low proba symbol
+				
 				cumul[u+1] = cumul[u] + 1
 				tableSymbol[highThreshold] = u
 				highThreshold--
@@ -366,11 +366,11 @@ func (s *Scratch) buildCTable() error {
 				cumul[u+1] = cumul[u] + v
 			}
 		}
-		// Encode last symbol separately to avoid overflowing u
+		
 		u := int(s.symbolLen - 1)
 		v := s.norm[s.symbolLen-1]
 		if v == -1 {
-			// Low proba symbol
+			
 			cumul[u+1] = cumul[u] + 1
 			tableSymbol[highThreshold] = byte(u)
 			highThreshold--
@@ -382,13 +382,13 @@ func (s *Scratch) buildCTable() error {
 		}
 		cumul[s.symbolLen] = int16(tableSize) + 1
 	}
-	// Spread symbols
+	
 	s.zeroBits = false
 	{
 		step := tableStep(tableSize)
 		tableMask := tableSize - 1
 		var position uint32
-		// if any symbol > largeLimit, we may have 0 bits output.
+		
 		largeLimit := int16(1 << (s.actualTableLog - 1))
 		for ui, v := range s.norm[:s.symbolLen] {
 			symbol := byte(ui)
@@ -400,28 +400,28 @@ func (s *Scratch) buildCTable() error {
 				position = (position + step) & tableMask
 				for position > highThreshold {
 					position = (position + step) & tableMask
-				} /* Low proba area */
+				} 
 			}
 		}
 
-		// Check if we have gone through all positions
+		
 		if position != 0 {
 			return errors.New("position!=0")
 		}
 	}
 
-	// Build table
+	
 	table := s.ct.stateTable
 	{
 		tsi := int(tableSize)
 		for u, v := range tableSymbol {
-			// TableU16 : sorted by symbol order; gives next state value
+			
 			table[cumul[v]] = uint16(tsi + u)
 			cumul[v]++
 		}
 	}
 
-	// Build Symbol Transformation Table
+	
 	{
 		total := int16(0)
 		symbolTT := s.ct.symbolTT[:s.symbolLen]
@@ -449,9 +449,9 @@ func (s *Scratch) buildCTable() error {
 	return nil
 }
 
-// countSimple will create a simple histogram in s.count.
-// Returns the biggest count.
-// Does not update s.clearCount.
+
+
+
 func (s *Scratch) countSimple(in []byte) (max int) {
 	for _, v := range in {
 		s.count[v]++
@@ -470,7 +470,7 @@ func (s *Scratch) countSimple(in []byte) (max int) {
 	return int(m)
 }
 
-// minTableLog provides the minimum logSize to safely represent a distribution.
+
 func (s *Scratch) minTableLog() uint8 {
 	minBitsSrc := highBits(uint32(s.br.remain()-1)) + 1
 	minBitsSymbols := highBits(uint32(s.symbolLen-1)) + 2
@@ -480,19 +480,19 @@ func (s *Scratch) minTableLog() uint8 {
 	return uint8(minBitsSymbols)
 }
 
-// optimalTableLog calculates and sets the optimal tableLog in s.actualTableLog
+
 func (s *Scratch) optimalTableLog() {
 	tableLog := s.TableLog
 	minBits := s.minTableLog()
 	maxBitsSrc := uint8(highBits(uint32(s.br.remain()-1))) - 2
 	if maxBitsSrc < tableLog {
-		// Accuracy can be reduced
+		
 		tableLog = maxBitsSrc
 	}
 	if minBits > tableLog {
 		tableLog = minBits
 	}
-	// Need a minimum to safely represent all symbol values
+	
 	if tableLog < minTablelog {
 		tableLog = minTablelog
 	}
@@ -504,8 +504,8 @@ func (s *Scratch) optimalTableLog() {
 
 var rtbTable = [...]uint32{0, 473195, 504333, 520860, 550000, 700000, 750000, 830000}
 
-// normalizeCount will normalize the count of the symbols so
-// the total is equal to the table size.
+
+
 func (s *Scratch) normalizeCount() error {
 	var (
 		tableLog          = s.actualTableLog
@@ -519,8 +519,8 @@ func (s *Scratch) normalizeCount() error {
 	)
 
 	for i, cnt := range s.count[:s.symbolLen] {
-		// already handled
-		// if (count[s] == s.length) return 0;   /* rle special case */
+		
+		
 
 		if cnt == 0 {
 			s.norm[i] = 0
@@ -548,15 +548,15 @@ func (s *Scratch) normalizeCount() error {
 	}
 
 	if -stillToDistribute >= (s.norm[largest] >> 1) {
-		// corner case, need another normalization method
+		
 		return s.normalizeCount2()
 	}
 	s.norm[largest] += stillToDistribute
 	return nil
 }
 
-// Secondary normalization method.
-// To be used when primary method fails.
+
+
 func (s *Scratch) normalizeCount2() error {
 	const notYetAssigned = -2
 	var (
@@ -588,7 +588,7 @@ func (s *Scratch) normalizeCount2() error {
 	toDistribute := (1 << tableLog) - distributed
 
 	if (total / toDistribute) > lowOne {
-		// risk of rounding to zero
+		
 		lowOne = (total * 3) / (toDistribute * 2)
 		for i, cnt := range s.count[:s.symbolLen] {
 			if (s.norm[i] == notYetAssigned) && (cnt <= lowOne) {
@@ -601,9 +601,9 @@ func (s *Scratch) normalizeCount2() error {
 		toDistribute = (1 << tableLog) - distributed
 	}
 	if distributed == uint32(s.symbolLen)+1 {
-		// all values are pretty poor;
-		//   probably incompressible data (should have already been detected);
-		//   find max, then give all remaining points to max
+		
+		
+		
 		var maxV int
 		var maxC uint32
 		for i, cnt := range s.count[:s.symbolLen] {
@@ -617,7 +617,7 @@ func (s *Scratch) normalizeCount2() error {
 	}
 
 	if total == 0 {
-		// all of the symbols were low enough for the lowOne or lowThreshold
+		
 		for i := uint32(0); toDistribute > 0; i = (i + 1) % (uint32(s.symbolLen)) {
 			if s.norm[i] > 0 {
 				toDistribute--
@@ -630,7 +630,7 @@ func (s *Scratch) normalizeCount2() error {
 	var (
 		vStepLog = 62 - uint64(tableLog)
 		mid      = uint64((1 << (vStepLog - 1)) - 1)
-		rStep    = (((1 << vStepLog) * uint64(toDistribute)) + mid) / uint64(total) // scale on remaining
+		rStep    = (((1 << vStepLog) * uint64(toDistribute)) + mid) / uint64(total) 
 		tmpTotal = mid
 	)
 	for i, cnt := range s.count[:s.symbolLen] {
@@ -651,7 +651,7 @@ func (s *Scratch) normalizeCount2() error {
 	return nil
 }
 
-// validateNorm validates the normalized histogram table.
+
 func (s *Scratch) validateNorm() (err error) {
 	var total int
 	for _, v := range s.norm[:s.symbolLen] {

@@ -10,7 +10,7 @@ import (
 	"github.com/bytedance/sonic/internal/rt"
 )
 
-/** Decoder for most common map types: map[string]interface{}, map[string]string **/
+
 
 type mapEfaceDecoder struct {
 }
@@ -36,7 +36,7 @@ func (d *mapStringDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 	return node.AsMapString(ctx, vp)
 }
 
-/** Decoder for map with string key **/
+
 
 type mapStrKeyDecoder struct {
 	mapType *rt.GoMapType
@@ -56,7 +56,7 @@ func (d *mapStrKeyDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 		return error_mismatch(node, ctx, d.mapType.Pack())
 	}
 
-	// allocate map
+	
 	m := *(*unsafe.Pointer)(vp)
 	if m == nil {
 		m = rt.Makemap(&d.mapType.GoType, obj.Len())
@@ -81,7 +81,7 @@ func (d *mapStrKeyDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 	return gerr
 }
 
-/** Decoder for map with int32 or int64 key **/
+
 
 type mapI32KeyDecoder struct {
 	mapType *rt.GoMapType
@@ -100,7 +100,7 @@ func (d *mapI32KeyDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 		return error_mismatch(node, ctx, d.mapType.Pack())
 	}
 
-	// allocate map
+	
 	m := *(*unsafe.Pointer)(vp)
 	if m == nil {
 		m = rt.Makemap(&d.mapType.GoType, obj.Len())
@@ -153,7 +153,7 @@ func (d *mapI64KeyDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 		return error_mismatch(node, ctx, d.mapType.Pack())
 	}
 
-	// allocate map
+	
 	m := *(*unsafe.Pointer)(vp)
 	if m == nil {
 		m = rt.Makemap(&d.mapType.GoType, obj.Len())
@@ -188,7 +188,7 @@ func (d *mapI64KeyDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 	return gerr
 }
 
-/** Decoder for map with unt32 or uint64 key **/
+
 
 type mapU32KeyDecoder struct {
 	mapType *rt.GoMapType
@@ -207,7 +207,7 @@ func (d *mapU32KeyDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 		return error_mismatch(node, ctx, d.mapType.Pack())
 	}
 
-	// allocate map
+	
 	m := *(*unsafe.Pointer)(vp)
 	if m == nil {
 		m = rt.Makemap(&d.mapType.GoType, obj.Len())
@@ -257,7 +257,7 @@ func (d *mapU64KeyDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 	if !ok {
 		return  error_mismatch(node, ctx, d.mapType.Pack())
 	}
-	// allocate map
+	
 	m := *(*unsafe.Pointer)(vp)
 	if m == nil {
 		m = rt.Makemap(&d.mapType.GoType, obj.Len())
@@ -290,7 +290,7 @@ func (d *mapU64KeyDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 	return gerr
 }
 
-/** Decoder for generic cases */
+
 
 type decKey func(dec *mapDecoder, raw string) (interface{}, error)
 
@@ -391,11 +391,11 @@ func decodeFloat64Key(dec *mapDecoder, raw string) (interface{}, error) {
 }
 
 func decodeJsonNumberKey(dec *mapDecoder, raw string) (interface{}, error) {
-	// skip the quote
+	
 	raw = raw[1:len(raw)-1]
 	end, ok := SkipNumberFast(raw, 0)
 
-	// check trailing chars
+	
 	if !ok || end != len(raw) {
 		return nil, error_value(raw, rt.JsonNumberType.Pack())
 	}
@@ -420,7 +420,7 @@ func (d *mapDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error {
 		return error_mismatch(node, ctx, d.mapType.Pack())
 	}
 
-	// allocate map
+	
 	m := *(*unsafe.Pointer)(vp)
 	if m == nil {
 		m = rt.Makemap(&d.mapType.GoType, obj.Len())

@@ -2,25 +2,25 @@ package unstable
 
 import "fmt"
 
-// Kind represents the type of TOML structure contained in a given Node.
+
 type Kind int
 
 const (
-	// Meta
+	
 	Invalid Kind = iota
 	Comment
 	Key
 
-	// Top level structures
+	
 	Table
 	ArrayTable
 	KeyValue
 
-	// Containers values
+	
 	Array
 	InlineTable
 
-	// Values
+	
 	String
 	Bool
 	Float
@@ -31,7 +31,7 @@ const (
 	DateTime
 )
 
-// String implementation of fmt.Stringer.
+
 func (k Kind) String() string {
 	switch k {
 	case Invalid:

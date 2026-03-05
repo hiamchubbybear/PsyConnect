@@ -12,12 +12,12 @@ type LocationInfo struct {
 	Passcode    string   `json:"passcode,omitempty" bson:"passcode,omitempty"`
 	AddressLine string   `json:"address_line,omitempty" bson:"address_line,omitempty"`
 	City        string   `json:"city,omitempty" bson:"city,omitempty"`
-	Coordinates []string `json:"coordinates,omitempty" bson:"coordinates,omitempty"` // [longitude, latitude]
+	Coordinates []string `json:"coordinates,omitempty" bson:"coordinates,omitempty"` 
 }
 
 type TimeInfo struct {
 	Timezone      string `json:"timezone" bson:"timezone"`
-	ScheduledDate string `json:"scheduled_date" bson:"scheduled_date"` // YYYY-MM-DD
+	ScheduledDate string `json:"scheduled_date" bson:"scheduled_date"` 
 }
 
 type SessionLog struct {
@@ -51,7 +51,7 @@ func NewSession(clientID, therapistID string, price float64, startTime, endTime 
 		SessionId:     uuid.New().String(),
 		ClientID:      clientID,
 		TherapistID:   therapistID,
-		Status:        MatchStatusActive, // Consider changing to PAYMENT_PENDING when fully integrating payments
+		Status:        MatchStatusActive, 
 		PaymentStatus: "PENDING",
 		StartTime:     startTime,
 		EndTime:       endTime,

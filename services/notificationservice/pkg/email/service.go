@@ -31,13 +31,13 @@ func NewEmailService(cfg *config.Config) *EmailService {
 		templates: make(map[string]string),
 	}
 
-	// Load templates
+	
 	service.loadTemplates()
 
 	return service
 }
 
-// loadTemplates loads HTML email templates from files
+
 func (s *EmailService) loadTemplates() {
 	templates := map[string]string{
 		"verified":       "templates/verified.html",
@@ -56,11 +56,11 @@ func (s *EmailService) loadTemplates() {
 	}
 }
 
-// SendActivationEmail sends account activation email
+
 func (s *EmailService) SendActivationEmail(email, username, code, fullname string) error {
 	subject := "Verify Your Account - PsyConnect"
 
-	// Use template if available, otherwise fallback
+	
 	var body string
 	if template, ok := s.templates["verified"]; ok {
 		body = strings.ReplaceAll(template, "{USERNAME}", username)
@@ -72,11 +72,11 @@ func (s *EmailService) SendActivationEmail(email, username, code, fullname strin
 	return s.sendEmail(email, subject, body)
 }
 
-// SendPasswordResetEmail sends password reset email
+
 func (s *EmailService) SendPasswordResetEmail(email, username, code string) error {
 	subject := "Reset Your Password - PsyConnect"
 
-	// Use template if available, otherwise fallback
+	
 	var body string
 	if template, ok := s.templates["reset-password"]; ok {
 		body = strings.ReplaceAll(template, "{EMAIL}", email)
@@ -89,11 +89,11 @@ func (s *EmailService) SendPasswordResetEmail(email, username, code string) erro
 	return s.sendEmail(email, subject, body)
 }
 
-// SendAccountChangeEmail sends account change notification
+
 func (s *EmailService) SendAccountChangeEmail(email, username string) error {
 	subject := "Account Update Notification - PsyConnect"
 
-	// Use template if available, otherwise fallback
+	
 	var body string
 	if template, ok := s.templates["account-update"]; ok {
 		body = strings.ReplaceAll(template, "{USERNAME}", username)
@@ -104,7 +104,20 @@ func (s *EmailService) SendAccountChangeEmail(email, username string) error {
 	return s.sendEmail(email, subject, body)
 }
 
-// sendEmail is the core email sending function
+
+func (s *EmailService) SendSessionCreatedEmail(email, username, recipientRole, otherName, date, time, mode string) error {
+	subject := "Session Booked - PsyConnect"
+	if recipientRole == "therapist" {
+		subject = "New Session Booking - PsyConnect"
+	}
+
+	
+	body := s.buildSessionCreatedEmailFallback(username, recipientRole, otherName, date, time, mode)
+
+	return s.sendEmail(email, subject, body)
+}
+
+
 func (s *EmailService) sendEmail(to, subject, body string) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", s.config.SMTPFrom)
@@ -121,7 +134,7 @@ func (s *EmailService) sendEmail(to, subject, body string) error {
 	return nil
 }
 
-// Fallback templates (in case files are not found)
+
 
 func (s *EmailService) buildActivationEmailFallback(username, code, fullname string) string {
 	return fmt.Sprintf(`
@@ -353,4 +366,64 @@ func (s *EmailService) buildAccountChangeEmailFallback(username string) string {
   </body>
 </html>
 `, username, username)
+}
+
+func (s *EmailService) buildSessionCreatedEmailFallback(username, role, otherName, date, time, mode string) string {
+	greeting := "Confirmation of your upcoming session."
+	details := fmt.Sprintf("You have a session scheduled with <strong>%s</strong>.", otherName)
+	if role == "therapist" {
+		greeting = "A new session has been booked with you."
+		details = fmt.Sprintf("A client <strong>%s</strong> has booked a session with you.", otherName)
+	}
+
+	return fmt.Sprintf(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Confirmation - PsyConnect</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; color: #1e293b; }
+        .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .header { background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%); padding: 32px; text-align: center; color: white; }
+        .content { padding: 32px; }
+        .details-box { background: #f1f5f9; border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .detail-row { display: flex; margin-bottom: 12px; }
+        .detail-label { font-weight: 600; width: 80px; color: #64748b; }
+        .footer { padding: 24px; text-align: center; font-size: 14px; color: #94a3b8; border-top: 1px solid #f1f5f9; }
+        .btn { display: inline-block; background: #6366f1; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin:0; font-size: 24px;">PsyConnect</h1>
+            <p style="margin:8px 0 0 0; opacity: 0.9;">Session Confirmation</p>
+        </div>
+        <div class="content">
+            <h2 style="margin:0 0 16px 0; font-size: 20px;">Hi %s,</h2>
+            <p style="line-height: 1.6;">%s</p>
+            <p style="line-height: 1.6;">%s</p>
+
+            <div class="details-box">
+                <div class="detail-row"><span class="detail-label">Date</span> <span>%s</span></div>
+                <div class="detail-row"><span class="detail-label">Time</span> <span>%s</span></div>
+                <div class="detail-row"><span class="detail-label">Mode</span> <span style="text-transform: capitalize;">%s</span></div>
+            </div>
+
+            <p style="line-height: 1.6;">You can view the conversation or start the call directly from the PsyConnect app.</p>
+
+            <div style="text-align: center;">
+                <a href="https://psyconnect.dev/feature/consultation" class="btn">View Sessions</a>
+            </div>
+        </div>
+        <div class="footer">
+            &copy; 2025 PsyConnect. All rights reserved.<br>
+            Empowering Mental Wellness
+        </div>
+    </div>
+</body>
+</html>
+`, username, greeting, details, date, time, mode)
 }

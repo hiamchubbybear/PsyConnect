@@ -6,15 +6,15 @@ import (
 	"github.com/gabriel-vasile/mimetype/internal/magic"
 )
 
-// mimetype stores the list of MIME types in a tree structure with
-// "application/octet-stream" at the root of the hierarchy. The hierarchy
-// approach minimizes the number of checks that need to be done on the input
-// and allows for more precise results once the base type of file has been
-// identified.
-//
-// root is a detector which passes for any slice of bytes.
-// When a detector passes the check, the children detectors
-// are tried in order to find a more accurate MIME type.
+
+
+
+
+
+
+
+
+
 var root = newMIME("application/octet-stream", "",
 	func([]byte, uint32) bool { return true },
 	xpm, sevenZ, zip, pdf, fdf, ole, ps, psd, p7s, ogg, png, jpg, jxl, jp2, jpx,
@@ -24,19 +24,19 @@ var root = newMIME("application/octet-stream", "",
 	woff2, otf, ttc, eot, wasm, shx, dbf, dcm, rar, djvu, mobi, lit, bpg, cbor,
 	sqlite3, dwg, nes, lnk, macho, qcp, icns, hdr, mrc, mdb, accdb, zstd, cab,
 	rpm, xz, lzip, torrent, cpio, tzif, xcf, pat, gbr, glb, cabIS, jxr, parquet,
-	// Keep text last because it is the slowest check.
+	
 	text,
 )
 
-// errMIME is returned from Detect functions when err is not nil.
-// Detect could return root for erroneous cases, but it needs to lock mu in order to do so.
-// errMIME is same as root but it does not require locking.
+
+
+
 var errMIME = newMIME("application/octet-stream", "", func([]byte, uint32) bool { return false })
 
-// mu guards access to the root MIME tree. Access to root must be synchronized with this lock.
+
 var mu = &sync.RWMutex{}
 
-// The list of nodes appended to the root node.
+
 var (
 	xz   = newMIME("application/x-xz", ".xz", magic.Xz)
 	gzip = newMIME("application/gzip", ".gz", magic.Gzip).alias(
@@ -44,10 +44,10 @@ var (
 		"application/gzip-compressed", "application/x-gzip-compressed",
 		"gzip/document")
 	sevenZ = newMIME("application/x-7z-compressed", ".7z", magic.SevenZ)
-	// APK must be checked before JAR because APK is a subset of JAR.
-	// This means APK should be a child of JAR detector, but in practice,
-	// the decisive signature for JAR might be located at the end of the file
-	// and not reachable because of library readLimit.
+	
+	
+	
+	
 	zip = newMIME("application/zip", ".zip", magic.Zip, xlsx, docx, pptx, epub, apk, jar, odt, ods, odp, odg, odf, odc, sxc).
 		alias("application/x-zip", "application/x-zip-compressed")
 	tar = newMIME("application/x-tar", ".tar", magic.Tar)

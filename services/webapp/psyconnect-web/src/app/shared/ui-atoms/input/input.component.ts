@@ -26,27 +26,27 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() label?: string;
   @Input() placeholder = '';
   @Input() type = 'text';
-  @Input() icon?: string; // SVG path or icon name
+  @Input() icon?: string; 
   @Input() errorMessages: Record<string, string> = {};
   @Input() control?: FormControl;
 
-  // Internal state
+  
   value: any = '';
   isDisabled = false;
   showPassword = false;
 
   protected readonly objectKeys = Object.keys;
 
-  // ControlValueAccessor callbacks
+  
   onChange = (value: any) => {};
   onTouched = () => {};
 
   ngOnInit() {
-    // If control is not passed, we might need a dummy one or handle it differently
-    // But for this refactor, we expect [control] to be passed for error handling convenience
+    
+    
   }
 
-  // ControlValueAccessor implementation
+  
   writeValue(value: any): void {
     this.value = value;
   }
@@ -63,7 +63,7 @@ export class InputComponent implements ControlValueAccessor, OnInit {
     this.isDisabled = isDisabled;
   }
 
-  // Event handlers
+  
   onInput(event: Event) {
     const target = event.target as HTMLInputElement;
     this.value = target.value;

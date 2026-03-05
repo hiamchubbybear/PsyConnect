@@ -11,12 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// KafkaProducer interface for sending notifications
+
 type KafkaProducer interface {
 	SendToTopic(topic string, message string) error
 }
 
-// ProfileService interface for getting user profiles
+
 type ProfileService interface {
 	GetProfile(userID string) (interface{}, error)
 }
@@ -66,13 +66,13 @@ func (h *Handler) AddReaction(c *gin.Context) {
 		return
 	}
 
-	// Send notification for new upvotes
+	
 	if newReaction != nil && newReaction.IsUpvote() && (existing == nil || !existing.IsUpvote()) {
 		go h.sendUpvoteNotification(postID, userID)
 	}
 
 	if newReaction == nil {
-		// Reaction was removed
+		
 		c.JSON(http.StatusOK, gin.H{"message": "Reaction removed"})
 		return
 	}
@@ -87,7 +87,7 @@ func (h *Handler) RemoveReaction(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Use ToggleReaction with empty type to remove
+	
 	existing, _, err := h.toggleReactionUC.Execute(ctx, postID, userID, "")
 	if err != nil || existing == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reaction not found"})
@@ -113,8 +113,8 @@ func (h *Handler) GetPostReactions(c *gin.Context) {
 }
 
 func (h *Handler) sendUpvoteNotification(postID, voterID string) {
-	// This is a simplified version - in production you'd get post author from PostRepository
-	// For now, we'll just send the notification data
+	
+	
 	notificationData := map[string]interface{}{
 		"postId":  postID,
 		"voterId": voterID,

@@ -25,7 +25,7 @@ func sizeOfVarNullBytesIface(b Bytes) int {
 }
 
 func sizeOfVarInt(i int64) int {
-	return sizeOfUnsignedVarInt(uint64((i << 1) ^ (i >> 63))) // zig-zag encoding
+	return sizeOfUnsignedVarInt(uint64((i << 1) ^ (i >> 63))) 
 }
 
 func sizeOfUnsignedVarInt(i uint64) int {

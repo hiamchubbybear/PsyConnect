@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsoncodec
 
@@ -12,8 +12,8 @@ import (
 	"sync/atomic"
 )
 
-// Runtime check that the kind encoder and decoder caches can store any valid
-// reflect.Kind constant.
+
+
 func init() {
 	if s := reflect.Kind(len(kindEncoderCache{}.entries)).String(); s != "kind27" {
 		panic("The capacity of kindEncoderCache is too small.\n" +
@@ -21,12 +21,12 @@ func init() {
 	}
 }
 
-// statically assert array size
+
 var _ = (kindEncoderCache{}).entries[reflect.UnsafePointer]
 var _ = (kindDecoderCache{}).entries[reflect.UnsafePointer]
 
 type typeEncoderCache struct {
-	cache sync.Map // map[reflect.Type]ValueEncoder
+	cache sync.Map 
 }
 
 func (c *typeEncoderCache) Store(rt reflect.Type, enc ValueEncoder) {
@@ -59,7 +59,7 @@ func (c *typeEncoderCache) Clone() *typeEncoderCache {
 }
 
 type typeDecoderCache struct {
-	cache sync.Map // map[reflect.Type]ValueDecoder
+	cache sync.Map 
 }
 
 func (c *typeDecoderCache) Store(rt reflect.Type, dec ValueDecoder) {
@@ -91,16 +91,16 @@ func (c *typeDecoderCache) Clone() *typeDecoderCache {
 	return cc
 }
 
-// atomic.Value requires that all calls to Store() have the same concrete type
-// so we wrap the ValueEncoder with a kindEncoderCacheEntry to ensure the type
-// is always the same (since different concrete types may implement the
-// ValueEncoder interface).
+
+
+
+
 type kindEncoderCacheEntry struct {
 	enc ValueEncoder
 }
 
 type kindEncoderCache struct {
-	entries [reflect.UnsafePointer + 1]atomic.Value // *kindEncoderCacheEntry
+	entries [reflect.UnsafePointer + 1]atomic.Value 
 }
 
 func (c *kindEncoderCache) Store(rt reflect.Kind, enc ValueEncoder) {
@@ -128,16 +128,16 @@ func (c *kindEncoderCache) Clone() *kindEncoderCache {
 	return cc
 }
 
-// atomic.Value requires that all calls to Store() have the same concrete type
-// so we wrap the ValueDecoder with a kindDecoderCacheEntry to ensure the type
-// is always the same (since different concrete types may implement the
-// ValueDecoder interface).
+
+
+
+
 type kindDecoderCacheEntry struct {
 	dec ValueDecoder
 }
 
 type kindDecoderCache struct {
-	entries [reflect.UnsafePointer + 1]atomic.Value // *kindDecoderCacheEntry
+	entries [reflect.UnsafePointer + 1]atomic.Value 
 }
 
 func (c *kindDecoderCache) Store(rt reflect.Kind, dec ValueDecoder) {

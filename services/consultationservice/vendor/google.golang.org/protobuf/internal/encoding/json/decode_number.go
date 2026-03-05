@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package json
 
@@ -9,10 +9,10 @@ import (
 	"strconv"
 )
 
-// parseNumber reads the given []byte for a valid JSON number. If it is valid,
-// it returns the number of bytes.  Parsing logic follows the definition in
-// https://tools.ietf.org/html/rfc7159#section-6, and is based off
-// encoding/json.isValidNumber function.
+
+
+
+
 func parseNumber(input []byte) (int, bool) {
 	var n int
 
@@ -21,7 +21,7 @@ func parseNumber(input []byte) (int, bool) {
 		return 0, false
 	}
 
-	// Optional -
+	
 	if s[0] == '-' {
 		s = s[1:]
 		n++
@@ -30,7 +30,7 @@ func parseNumber(input []byte) (int, bool) {
 		}
 	}
 
-	// Digits
+	
 	switch {
 	case s[0] == '0':
 		s = s[1:]
@@ -48,7 +48,7 @@ func parseNumber(input []byte) (int, bool) {
 		return 0, false
 	}
 
-	// . followed by 1 or more digits.
+	
 	if len(s) >= 2 && s[0] == '.' && '0' <= s[1] && s[1] <= '9' {
 		s = s[2:]
 		n += 2
@@ -58,8 +58,8 @@ func parseNumber(input []byte) (int, bool) {
 		}
 	}
 
-	// e or E followed by an optional - or + and
-	// 1 or more digits.
+	
+	
 	if len(s) >= 2 && (s[0] == 'e' || s[0] == 'E') {
 		s = s[1:]
 		n++
@@ -76,7 +76,7 @@ func parseNumber(input []byte) (int, bool) {
 		}
 	}
 
-	// Check that next byte is a delimiter or it is at the end.
+	
 	if n < len(input) && isNotDelim(input[n]) {
 		return 0, false
 	}
@@ -84,8 +84,8 @@ func parseNumber(input []byte) (int, bool) {
 	return n, true
 }
 
-// numberParts is the result of parsing out a valid JSON number. It contains
-// the parts of a number. The parts are used for integer conversion.
+
+
 type numberParts struct {
 	neg  bool
 	intp []byte
@@ -93,9 +93,9 @@ type numberParts struct {
 	exp  []byte
 }
 
-// parseNumber constructs numberParts from given []byte. The logic here is
-// similar to consumeNumber above with the difference of having to construct
-// numberParts. The slice fields in numberParts are subslices of the input.
+
+
+
 func parseNumberParts(input []byte) (numberParts, bool) {
 	var neg bool
 	var intp []byte
@@ -107,7 +107,7 @@ func parseNumberParts(input []byte) (numberParts, bool) {
 		return numberParts{}, false
 	}
 
-	// Optional -
+	
 	if s[0] == '-' {
 		neg = true
 		s = s[1:]
@@ -116,10 +116,10 @@ func parseNumberParts(input []byte) (numberParts, bool) {
 		}
 	}
 
-	// Digits
+	
 	switch {
 	case s[0] == '0':
-		// Skip first 0 and no need to store.
+		
 		s = s[1:]
 
 	case '1' <= s[0] && s[0] <= '9':
@@ -136,7 +136,7 @@ func parseNumberParts(input []byte) (numberParts, bool) {
 		return numberParts{}, false
 	}
 
-	// . followed by 1 or more digits.
+	
 	if len(s) >= 2 && s[0] == '.' && '0' <= s[1] && s[1] <= '9' {
 		frac = s[1:]
 		n := 1
@@ -148,8 +148,8 @@ func parseNumberParts(input []byte) (numberParts, bool) {
 		frac = frac[:n]
 	}
 
-	// e or E followed by an optional - or + and
-	// 1 or more digits.
+	
+	
 	if len(s) >= 2 && (s[0] == 'e' || s[0] == 'E') {
 		s = s[1:]
 		exp = s
@@ -171,14 +171,14 @@ func parseNumberParts(input []byte) (numberParts, bool) {
 	return numberParts{
 		neg:  neg,
 		intp: intp,
-		frac: bytes.TrimRight(frac, "0"), // Remove unnecessary 0s to the right.
+		frac: bytes.TrimRight(frac, "0"), 
 		exp:  exp,
 	}, true
 }
 
-// normalizeToIntString returns an integer string in normal form without the
-// E-notation for given numberParts. It will return false if it is not an
-// integer or if the exponent exceeds than max/min int value.
+
+
+
 func normalizeToIntString(n numberParts) (string, bool) {
 	intpSize := len(n.intp)
 	fracSize := len(n.frac)
@@ -198,47 +198,47 @@ func normalizeToIntString(n numberParts) (string, bool) {
 
 	var num []byte
 	if exp >= 0 {
-		// For positive E, shift fraction digits into integer part and also pad
-		// with zeroes as needed.
+		
+		
 
-		// If there are more digits in fraction than the E value, then the
-		// number is not an integer.
+		
+		
 		if fracSize > exp {
 			return "", false
 		}
 
-		// Make sure resulting digits are within max value limit to avoid
-		// unnecessarily constructing a large byte slice that may simply fail
-		// later on.
-		const maxDigits = 20 // Max uint64 value has 20 decimal digits.
+		
+		
+		
+		const maxDigits = 20 
 		if intpSize+exp > maxDigits {
 			return "", false
 		}
 
-		// Set cap to make a copy of integer part when appended.
+		
 		num = n.intp[:len(n.intp):len(n.intp)]
 		num = append(num, n.frac...)
 		for i := 0; i < exp-fracSize; i++ {
 			num = append(num, '0')
 		}
 	} else {
-		// For negative E, shift digits in integer part out.
+		
 
-		// If there are fractions, then the number is not an integer.
+		
 		if fracSize > 0 {
 			return "", false
 		}
 
-		// index is where the decimal point will be after adjusting for negative
-		// exponent.
+		
+		
 		index := intpSize + exp
 		if index < 0 {
 			return "", false
 		}
 
 		num = n.intp
-		// If any of the digits being shifted to the right of the decimal point
-		// is non-zero, then the number is not an integer.
+		
+		
 		for i := index; i < intpSize; i++ {
 			if num[i] != '0' {
 				return "", false

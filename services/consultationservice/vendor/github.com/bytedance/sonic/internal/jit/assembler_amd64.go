@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package jit
 
@@ -43,18 +29,18 @@ type BaseAssembler struct {
     pendings map[string][]*obj.Prog
 }
 
-/** Instruction Encoders **/
+
 
 var _NOPS = [][16]byte {
-    {0x90},                                                     // NOP
-    {0x66, 0x90},                                               // 66 NOP
-    {0x0f, 0x1f, 0x00},                                         // NOP DWORD ptr [EAX]
-    {0x0f, 0x1f, 0x40, 0x00},                                   // NOP DWORD ptr [EAX + 00H]
-    {0x0f, 0x1f, 0x44, 0x00, 0x00},                             // NOP DWORD ptr [EAX + EAX*1 + 00H]
-    {0x66, 0x0f, 0x1f, 0x44, 0x00, 0x00},                       // 66 NOP DWORD ptr [EAX + EAX*1 + 00H]
-    {0x0f, 0x1f, 0x80, 0x00, 0x00, 0x00, 0x00},                 // NOP DWORD ptr [EAX + 00000000H]
-    {0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00},           // NOP DWORD ptr [EAX + EAX*1 + 00000000H]
-    {0x66, 0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00},     // 66 NOP DWORD ptr [EAX + EAX*1 + 00000000H]
+    {0x90},                                                     
+    {0x66, 0x90},                                               
+    {0x0f, 0x1f, 0x00},                                         
+    {0x0f, 0x1f, 0x40, 0x00},                                   
+    {0x0f, 0x1f, 0x44, 0x00, 0x00},                             
+    {0x66, 0x0f, 0x1f, 0x44, 0x00, 0x00},                       
+    {0x0f, 0x1f, 0x80, 0x00, 0x00, 0x00, 0x00},                 
+    {0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00},           
+    {0x66, 0x0f, 0x1f, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00},     
 }
 
 func (self *BaseAssembler) NOP() *obj.Prog {
@@ -88,26 +74,26 @@ func (self *BaseAssembler) Link(to string) {
     var p *obj.Prog
     var v []*obj.Prog
 
-    /* placeholder substitution */
+    
     if strings.Contains(to, "{n}") {
         to = strings.ReplaceAll(to, "{n}", strconv.Itoa(self.i))
     }
 
-    /* check for duplications */
+    
     if _, ok := self.labels[to]; ok {
         panic("label " + to + " has already been linked")
     }
 
-    /* get the pending links */
+    
     p = self.NOP()
     v = self.pendings[to]
 
-    /* patch all the pending jumps */
+    
     for _, q := range v {
         q.To.Val = p
     }
 
-    /* mark the label as resolved */
+    
     self.labels[to] = p
     delete(self.pendings, to)
 }
@@ -121,12 +107,12 @@ func (self *BaseAssembler) Sref(to string, d int64) {
     p.As = x86.ALONG
     p.From = Imm(-d)
 
-    /* placeholder substitution */
+    
     if strings.Contains(to, "{n}") {
         to = strings.ReplaceAll(to, "{n}", strconv.Itoa(self.i))
     }
 
-    /* record the patch point */
+    
     self.pb.Append(p)
     self.xrefs[to] = append(self.xrefs[to], p)
 }
@@ -139,19 +125,19 @@ func (self *BaseAssembler) Sjmp(op string, to string) {
     p := self.pb.New()
     p.As = As(op)
 
-    /* placeholder substitution */
+    
     if strings.Contains(to, "{n}") {
         to = strings.ReplaceAll(to, "{n}", strconv.Itoa(self.i))
     }
 
-    /* check for backward jumps */
+    
     if v, ok := self.labels[to]; ok {
         p.To.Val = v
     } else {
         self.pendings[to] = append(self.pendings[to], p)
     }
 
-    /* mark as a branch, and add to instruction buffer */
+    
     p.To.Type = obj.TYPE_BRANCH
     self.pb.Append(p)
 }
@@ -188,7 +174,7 @@ func (self *BaseAssembler) assignOperands(p *obj.Prog, args []obj.Addr) {
     }
 }
 
-/** Assembler Helpers **/
+
 
 func (self *BaseAssembler) Size() int {
     self.build()
@@ -215,7 +201,7 @@ func (self *BaseAssembler) Load(name string, frameSize int, argSize int, argStac
     return jitLoader.LoadOne(self.c, name, frameSize, argSize, argStackmap, localStackmap)
 }
 
-/** Assembler Stages **/
+
 
 func (self *BaseAssembler) init() {
     self.pb       = newBackend("amd64")

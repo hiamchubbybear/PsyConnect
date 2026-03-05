@@ -1,15 +1,15 @@
-// Copyright © 2014 Steve Francia <spf@spf13.com>.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
+
+
+
+
+
+
+
+
+
+
+
 
 package afero
 
@@ -27,7 +27,7 @@ import (
 	"github.com/spf13/afero/mem"
 )
 
-const chmodBits = os.ModePerm | os.ModeSetuid | os.ModeSetgid | os.ModeSticky // Only a subset of bits are allowed to be changed. Documented under os.Chmod()
+const chmodBits = os.ModePerm | os.ModeSetuid | os.ModeSetgid | os.ModeSticky 
 
 type MemMapFs struct {
 	mu   sync.RWMutex
@@ -42,8 +42,8 @@ func NewMemMapFs() Fs {
 func (m *MemMapFs) getData() map[string]*mem.FileData {
 	m.init.Do(func() {
 		m.data = make(map[string]*mem.FileData)
-		// Root should always exist, right?
-		// TODO: what about windows?
+		
+		
 		root := mem.CreateDir(FilePathSeparator)
 		mem.SetMode(root, os.ModeDir|0o755)
 		m.data[FilePathSeparator] = root
@@ -116,12 +116,12 @@ func (m *MemMapFs) registerWithParent(f *mem.FileData, perm os.FileMode) {
 		pdir := filepath.Dir(filepath.Clean(f.Name()))
 		err := m.lockfreeMkdir(pdir, perm)
 		if err != nil {
-			// log.Println("Mkdir error:", err)
+			
 			return
 		}
 		parent, err = m.lockfreeOpen(pdir)
 		if err != nil {
-			// log.Println("Open after Mkdir error:", err)
+			
 			return
 		}
 	}
@@ -136,7 +136,7 @@ func (m *MemMapFs) lockfreeMkdir(name string, perm os.FileMode) error {
 	name = normalizePath(name)
 	x, ok := m.getData()[name]
 	if ok {
-		// Only return ErrFileExists if it's a file, not a directory.
+		
 		i := mem.FileInfo{FileData: x}
 		if !i.IsDir() {
 			return ErrFileExists
@@ -162,7 +162,7 @@ func (m *MemMapFs) Mkdir(name string, perm os.FileMode) error {
 	}
 
 	m.mu.Lock()
-	// Dobule check that it doesn't exist.
+	
 	if _, ok := m.getData()[name]; ok {
 		m.mu.Unlock()
 		return &os.PathError{Op: "mkdir", Path: name, Err: ErrFileExists}
@@ -187,7 +187,7 @@ func (m *MemMapFs) MkdirAll(path string, perm os.FileMode) error {
 	return nil
 }
 
-// Handle some relative paths
+
 func normalizePath(path string) string {
 	path = filepath.Clean(path)
 

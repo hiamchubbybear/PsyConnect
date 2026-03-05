@@ -6,8 +6,10 @@ import { SecureStorageService } from '../../encrypt/secure';
 export class HeaderStateService {
   private key = 'headerIsMini';
   private miniSubject: BehaviorSubject<boolean>;
+  private searchOpenSubject = new BehaviorSubject<boolean>(false);
 
   isMini$;
+  isSearchOpen$ = this.searchOpenSubject.asObservable();
 
   constructor(private secureStorageService: SecureStorageService) {
     const initial = this.loadMiniState();
@@ -22,6 +24,14 @@ export class HeaderStateService {
 
   getMini(): boolean {
     return this.miniSubject.getValue();
+  }
+
+  setSearchOpen(isOpen: boolean) {
+    this.searchOpenSubject.next(isOpen);
+  }
+
+  isSearchOpen(): boolean {
+    return this.searchOpenSubject.getValue();
   }
 
   private loadMiniState(): boolean {

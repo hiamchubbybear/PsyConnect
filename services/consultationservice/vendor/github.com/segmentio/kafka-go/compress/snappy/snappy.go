@@ -8,8 +8,8 @@ import (
 	"github.com/klauspost/compress/snappy"
 )
 
-// Framing is an enumeration type used to enable or disable xerial framing of
-// snappy messages.
+
+
 type Framing int
 
 const (
@@ -17,7 +17,7 @@ const (
 	Unframed
 )
 
-// Compression level.
+
 type Compression int
 
 const (
@@ -32,25 +32,25 @@ var (
 	writerPool sync.Pool
 )
 
-// Codec is the implementation of a compress.Codec which supports creating
-// readers and writers for kafka messages compressed with snappy.
+
+
 type Codec struct {
-	// An optional framing to apply to snappy compression.
-	//
-	// Default to Framed.
+	
+	
+	
 	Framing Framing
 
-	// Compression level.
+	
 	Compression Compression
 }
 
-// Code implements the compress.Codec interface.
+
 func (c *Codec) Code() int8 { return 2 }
 
-// Name implements the compress.Codec interface.
+
 func (c *Codec) Name() string { return "snappy" }
 
-// NewReader implements the compress.Codec interface.
+
 func (c *Codec) NewReader(r io.Reader) io.ReadCloser {
 	x, _ := readerPool.Get().(*xerialReader)
 	if x != nil {
@@ -64,7 +64,7 @@ func (c *Codec) NewReader(r io.Reader) io.ReadCloser {
 	return &reader{xerialReader: x}
 }
 
-// NewWriter implements the compress.Codec interface.
+
 func (c *Codec) NewWriter(w io.Writer) io.WriteCloser {
 	x, _ := writerPool.Get().(*xerialWriter)
 	if x != nil {
@@ -81,7 +81,7 @@ func (c *Codec) NewWriter(w io.Writer) io.WriteCloser {
 	case BestCompression:
 		x.encode = s2.EncodeSnappyBest
 	default:
-		x.encode = snappy.Encode // aka. s2.EncodeSnappyBetter
+		x.encode = snappy.Encode 
 	}
 	return &writer{xerialWriter: x}
 }

@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// Just a dummy.
+
 var (
 	SyscallEACCES = errors.New("dummy")
 	UnixEACCES    = errors.New("dummy")

@@ -1,16 +1,16 @@
-// Copyright © 2015 Steve Francia <spf@spf13.com>.
-// Copyright 2013 tsuru authors. All rights reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package mem
 
@@ -33,7 +33,7 @@ const FilePathSeparator = string(filepath.Separator)
 var _ fs.ReadDirFile = &File{}
 
 type File struct {
-	// atomic requires 64-bit alignment for struct field access
+	
 	at           int64
 	readDirCount int64
 	closed       bool
@@ -188,7 +188,7 @@ func (f *File) Readdirnames(n int) (names []string, err error) {
 	return names, err
 }
 
-// Implements fs.ReadDirFile
+
 func (f *File) ReadDir(n int) ([]fs.DirEntry, error) {
 	fi, err := f.Readdir(n)
 	if err != nil {
@@ -314,7 +314,7 @@ type FileInfo struct {
 	*FileData
 }
 
-// Implements os.FileInfo
+
 func (s *FileInfo) Name() string {
 	s.Lock()
 	_, name := filepath.Split(s.name)

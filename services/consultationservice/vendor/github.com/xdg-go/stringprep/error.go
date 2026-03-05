@@ -2,8 +2,8 @@ package stringprep
 
 import "fmt"
 
-// Error describes problems encountered during stringprep, including what rune
-// was problematic.
+
+
 type Error struct {
 	Msg  string
 	Rune rune

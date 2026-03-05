@@ -9,13 +9,13 @@ import (
 	"github.com/segmentio/kafka-go/protocol/deleteacls"
 )
 
-// DeleteACLsRequest represents a request sent to a kafka broker to delete
-// ACLs.
+
+
 type DeleteACLsRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// List of ACL filters to use for deletion.
+	
 	Filters []DeleteACLsFilter
 }
 
@@ -29,13 +29,13 @@ type DeleteACLsFilter struct {
 	PermissionType            ACLPermissionType
 }
 
-// DeleteACLsResponse represents a response from a kafka broker to an ACL
-// deletion request.
+
+
 type DeleteACLsResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// List of the results from the deletion request.
+	
 	Results []DeleteACLsResult
 }
 
@@ -55,8 +55,8 @@ type DeleteACLsMatchingACLs struct {
 	PermissionType      ACLPermissionType
 }
 
-// DeleteACLs sends ACLs deletion request to a kafka broker and returns the
-// response.
+
+
 func (c *Client) DeleteACLs(ctx context.Context, req *DeleteACLsRequest) (*DeleteACLsResponse, error) {
 	filters := make([]deleteacls.RequestFilter, 0, len(req.Filters))
 

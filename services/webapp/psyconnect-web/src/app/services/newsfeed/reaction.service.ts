@@ -6,7 +6,7 @@ import { Reaction, ReactionType } from '../../models/reaction.model';
 
 interface VoteState {
   postId: string;
-  voteType: ReactionType | null; // null means no vote
+  voteType: ReactionType | null; 
   upvoteCount: number;
   downvoteCount: number;
 }
@@ -17,7 +17,7 @@ interface VoteState {
 export class ReactionService {
   private apiUrl = `${environment.apiUrl}/v1/consultation/posts`;
 
-  // Track user votes locally to prevent multiple votes
+  
   private userVotes = new Map<string, ReactionType | null>();
   private voteStates = new BehaviorSubject<Map<string, VoteState>>(new Map());
 
@@ -25,16 +25,14 @@ export class ReactionService {
     this.loadVotesFromStorage();
   }
 
-  /**
-   * Toggle vote - if same type clicked, remove vote. If different type, change vote.
-   */
+  
   toggleVote(
     postId: string,
     voteType: ReactionType
   ): Observable<Reaction | void> {
     const currentVote = this.userVotes.get(postId);
 
-    // If clicking same vote type, remove it
+    
     if (currentVote === voteType) {
       return this.removeReaction(postId).pipe(
         tap(() => {
@@ -44,7 +42,7 @@ export class ReactionService {
       );
     }
 
-    // Otherwise, add/change vote
+    
     return this.addReaction(postId, voteType).pipe(
       tap(() => {
         this.userVotes.set(postId, voteType);
@@ -53,30 +51,22 @@ export class ReactionService {
     );
   }
 
-  /**
-   * Get current user's vote for a post
-   */
+  
   getUserVote(postId: string): ReactionType | null {
     return this.userVotes.get(postId) || null;
   }
 
-  /**
-   * Check if user has voted on a post
-   */
+  
   hasVoted(postId: string): boolean {
     return this.userVotes.has(postId) && this.userVotes.get(postId) !== null;
   }
 
-  /**
-   * Check if user upvoted
-   */
+  
   hasUpvoted(postId: string): boolean {
     return this.userVotes.get(postId) === 'up';
   }
 
-  /**
-   * Check if user downvoted
-   */
+  
   hasDownvoted(postId: string): boolean {
     return this.userVotes.get(postId) === 'down';
   }
@@ -98,17 +88,13 @@ export class ReactionService {
     return this.http.get<Reaction[]>(`${this.apiUrl}/${postId}/reactions`);
   }
 
-  /**
-   * Save votes to localStorage for persistence
-   */
+  
   private saveVotesToStorage(): void {
     const votesObj = Object.fromEntries(this.userVotes);
     localStorage.setItem('user_votes', JSON.stringify(votesObj));
   }
 
-  /**
-   * Load votes from localStorage
-   */
+  
   private loadVotesFromStorage(): void {
     const stored = localStorage.getItem('user_votes');
     if (stored) {
@@ -121,9 +107,7 @@ export class ReactionService {
     }
   }
 
-  /**
-   * Clear all votes (for logout)
-   */
+  
   clearVotes(): void {
     this.userVotes.clear();
     localStorage.removeItem('user_votes');

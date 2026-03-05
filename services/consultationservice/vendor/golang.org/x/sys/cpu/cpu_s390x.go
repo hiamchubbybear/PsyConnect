@@ -1,6 +1,6 @@
-// Copyright 2020 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package cpu
 
@@ -29,48 +29,48 @@ func initOptions() {
 	}
 }
 
-// bitIsSet reports whether the bit at index is set. The bit index
-// is in big endian order, so bit index 0 is the leftmost bit.
+
+
 func bitIsSet(bits []uint64, index uint) bool {
 	return bits[index/64]&((1<<63)>>(index%64)) != 0
 }
 
-// facility is a bit index for the named facility.
+
 type facility uint8
 
 const (
-	// mandatory facilities
-	zarch  facility = 1  // z architecture mode is active
-	stflef facility = 7  // store-facility-list-extended
-	ldisp  facility = 18 // long-displacement
-	eimm   facility = 21 // extended-immediate
+	
+	zarch  facility = 1  
+	stflef facility = 7  
+	ldisp  facility = 18 
+	eimm   facility = 21 
 
-	// miscellaneous facilities
-	dfp    facility = 42 // decimal-floating-point
-	etf3eh facility = 30 // extended-translation 3 enhancement
+	
+	dfp    facility = 42 
+	etf3eh facility = 30 
 
-	// cryptography facilities
-	msa  facility = 17  // message-security-assist
-	msa3 facility = 76  // message-security-assist extension 3
-	msa4 facility = 77  // message-security-assist extension 4
-	msa5 facility = 57  // message-security-assist extension 5
-	msa8 facility = 146 // message-security-assist extension 8
-	msa9 facility = 155 // message-security-assist extension 9
+	
+	msa  facility = 17  
+	msa3 facility = 76  
+	msa4 facility = 77  
+	msa5 facility = 57  
+	msa8 facility = 146 
+	msa9 facility = 155 
 
-	// vector facilities
-	vx   facility = 129 // vector facility
-	vxe  facility = 135 // vector-enhancements 1
-	vxe2 facility = 148 // vector-enhancements 2
+	
+	vx   facility = 129 
+	vxe  facility = 135 
+	vxe2 facility = 148 
 )
 
-// facilityList contains the result of an STFLE call.
-// Bits are numbered in big endian order so the
-// leftmost bit (the MSB) is at index 0.
+
+
+
 type facilityList struct {
 	bits [4]uint64
 }
 
-// Has reports whether the given facilities are present.
+
 func (s *facilityList) Has(fs ...facility) bool {
 	if len(fs) == 0 {
 		panic("no facility bits provided")
@@ -83,38 +83,38 @@ func (s *facilityList) Has(fs ...facility) bool {
 	return true
 }
 
-// function is the code for the named cryptographic function.
+
 type function uint8
 
 const (
-	// KM{,A,C,CTR} function codes
-	aes128 function = 18 // AES-128
-	aes192 function = 19 // AES-192
-	aes256 function = 20 // AES-256
+	
+	aes128 function = 18 
+	aes192 function = 19 
+	aes256 function = 20 
 
-	// K{I,L}MD function codes
-	sha1     function = 1  // SHA-1
-	sha256   function = 2  // SHA-256
-	sha512   function = 3  // SHA-512
-	sha3_224 function = 32 // SHA3-224
-	sha3_256 function = 33 // SHA3-256
-	sha3_384 function = 34 // SHA3-384
-	sha3_512 function = 35 // SHA3-512
-	shake128 function = 36 // SHAKE-128
-	shake256 function = 37 // SHAKE-256
+	
+	sha1     function = 1  
+	sha256   function = 2  
+	sha512   function = 3  
+	sha3_224 function = 32 
+	sha3_256 function = 33 
+	sha3_384 function = 34 
+	sha3_512 function = 35 
+	shake128 function = 36 
+	shake256 function = 37 
 
-	// KLMD function codes
-	ghash function = 65 // GHASH
+	
+	ghash function = 65 
 )
 
-// queryResult contains the result of a Query function
-// call. Bits are numbered in big endian order so the
-// leftmost bit (the MSB) is at index 0.
+
+
+
 type queryResult struct {
 	bits [2]uint64
 }
 
-// Has reports whether the given functions are present.
+
 func (q *queryResult) Has(fns ...function) bool {
 	if len(fns) == 0 {
 		panic("no function codes provided")
@@ -130,17 +130,17 @@ func (q *queryResult) Has(fns ...function) bool {
 func doinit() {
 	initS390Xbase()
 
-	// We need implementations of stfle, km and so on
-	// to detect cryptographic features.
+	
+	
 	if !haveAsmFunctions() {
 		return
 	}
 
-	// optional cryptographic functions
+	
 	if S390X.HasMSA {
 		aes := []function{aes128, aes192, aes256}
 
-		// cipher message
+		
 		km, kmc := kmQuery(), kmcQuery()
 		S390X.HasAES = km.Has(aes...)
 		S390X.HasAESCBC = kmc.Has(aes...)
@@ -156,13 +156,13 @@ func doinit() {
 			}
 		}
 
-		// compute message digest
-		kimd := kimdQuery() // intermediate (no padding)
-		klmd := klmdQuery() // last (padding)
+		
+		kimd := kimdQuery() 
+		klmd := klmdQuery() 
 		S390X.HasSHA1 = kimd.Has(sha1) && klmd.Has(sha1)
 		S390X.HasSHA256 = kimd.Has(sha256) && klmd.Has(sha256)
 		S390X.HasSHA512 = kimd.Has(sha512) && klmd.Has(sha512)
-		S390X.HasGHASH = kimd.Has(ghash) // KLMD-GHASH does not exist
+		S390X.HasGHASH = kimd.Has(ghash) 
 		sha3 := []function{
 			sha3_224, sha3_256, sha3_384, sha3_512,
 			shake128, shake256,

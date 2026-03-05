@@ -8,7 +8,7 @@ func init() {
 	protocol.Register(&Request{}, &Response{})
 }
 
-// Detailed API definition: https://kafka.apache.org/protocol#The_Messages_DescribeGroups
+
 type Request struct {
 	Groups                      []string `kafka:"min=v0,max=v4"`
 	IncludeAuthorizedOperations bool     `kafka:"min=v3,max=v4"`
@@ -27,7 +27,7 @@ func (r *Request) Split(cluster protocol.Cluster) (
 ) {
 	messages := []protocol.Message{}
 
-	// Split requests by group since they'll need to go to different coordinators.
+	
 	for _, group := range r.Groups {
 		messages = append(
 			messages,

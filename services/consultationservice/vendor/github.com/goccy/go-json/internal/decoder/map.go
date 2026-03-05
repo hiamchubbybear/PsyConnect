@@ -36,7 +36,7 @@ const (
 	mapMaxElemSize = 128
 )
 
-// See detail: https://github.com/goccy/go-json/pull/283
+
 func canUseAssignFaststrType(key *runtime.Type, value *runtime.Type) bool {
 	indirectElem := value.Size() > mapMaxElemSize
 	if indirectElem {
@@ -48,7 +48,7 @@ func canUseAssignFaststrType(key *runtime.Type, value *runtime.Type) bool {
 //go:linkname makemap reflect.makemap
 func makemap(*runtime.Type, int) unsafe.Pointer
 
-//nolint:golint
+
 //go:linkname mapassign_faststr runtime.mapassign_faststr
 //go:noescape
 func mapassign_faststr(t *runtime.Type, m unsafe.Pointer, s string) unsafe.Pointer

@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -18,7 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Create represents a create operation.
+
 type Create struct {
 	authenticator                driver.Authenticator
 	capped                       *bool
@@ -49,7 +49,7 @@ type Create struct {
 	clusteredIndex               bsoncore.Document
 }
 
-// NewCreate constructs and returns a new Create.
+
 func NewCreate(collectionName string) *Create {
 	return &Create{
 		collectionName: &collectionName,
@@ -60,7 +60,7 @@ func (c *Create) processResponse(driver.ResponseInfo) error {
 	return nil
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (c *Create) Execute(ctx context.Context) error {
 	if c.deployment == nil {
 		return errors.New("the Create operation must have a Deployment set before Execute can be called")
@@ -140,7 +140,7 @@ func (c *Create) command(dst []byte, desc description.SelectedServer) ([]byte, e
 	return dst, nil
 }
 
-// Capped specifies if the collection is capped.
+
 func (c *Create) Capped(capped bool) *Create {
 	if c == nil {
 		c = new(Create)
@@ -150,7 +150,7 @@ func (c *Create) Capped(capped bool) *Create {
 	return c
 }
 
-// Collation specifies a collation. This option is only valid for server versions 3.4 and above.
+
 func (c *Create) Collation(collation bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -160,8 +160,8 @@ func (c *Create) Collation(collation bsoncore.Document) *Create {
 	return c
 }
 
-// ChangeStreamPreAndPostImages specifies how change streams opened against the collection can return pre-
-// and post-images of updated documents. This option is only valid for server versions 6.0 and above.
+
+
 func (c *Create) ChangeStreamPreAndPostImages(csppi bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -171,7 +171,7 @@ func (c *Create) ChangeStreamPreAndPostImages(csppi bsoncore.Document) *Create {
 	return c
 }
 
-// CollectionName specifies the name of the collection to create.
+
 func (c *Create) CollectionName(collectionName string) *Create {
 	if c == nil {
 		c = new(Create)
@@ -181,7 +181,7 @@ func (c *Create) CollectionName(collectionName string) *Create {
 	return c
 }
 
-// IndexOptionDefaults specifies a default configuration for indexes on the collection.
+
 func (c *Create) IndexOptionDefaults(indexOptionDefaults bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -191,7 +191,7 @@ func (c *Create) IndexOptionDefaults(indexOptionDefaults bsoncore.Document) *Cre
 	return c
 }
 
-// Max specifies the maximum number of documents allowed in a capped collection.
+
 func (c *Create) Max(max int64) *Create {
 	if c == nil {
 		c = new(Create)
@@ -201,7 +201,7 @@ func (c *Create) Max(max int64) *Create {
 	return c
 }
 
-// Pipeline specifies the agggregtion pipeline to be run against the source to create the view.
+
 func (c *Create) Pipeline(pipeline bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -211,7 +211,7 @@ func (c *Create) Pipeline(pipeline bsoncore.Document) *Create {
 	return c
 }
 
-// Size specifies the maximum size in bytes for a capped collection.
+
 func (c *Create) Size(size int64) *Create {
 	if c == nil {
 		c = new(Create)
@@ -221,7 +221,7 @@ func (c *Create) Size(size int64) *Create {
 	return c
 }
 
-// StorageEngine specifies the storage engine to use for the index.
+
 func (c *Create) StorageEngine(storageEngine bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -231,7 +231,7 @@ func (c *Create) StorageEngine(storageEngine bsoncore.Document) *Create {
 	return c
 }
 
-// ValidationAction specifies what should happen if a document being inserted does not pass validation.
+
 func (c *Create) ValidationAction(validationAction string) *Create {
 	if c == nil {
 		c = new(Create)
@@ -241,8 +241,8 @@ func (c *Create) ValidationAction(validationAction string) *Create {
 	return c
 }
 
-// ValidationLevel specifies how strictly the server applies validation rules to existing documents in the collection
-// during update operations.
+
+
 func (c *Create) ValidationLevel(validationLevel string) *Create {
 	if c == nil {
 		c = new(Create)
@@ -252,7 +252,7 @@ func (c *Create) ValidationLevel(validationLevel string) *Create {
 	return c
 }
 
-// Validator specifies validation rules for the collection.
+
 func (c *Create) Validator(validator bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -262,7 +262,7 @@ func (c *Create) Validator(validator bsoncore.Document) *Create {
 	return c
 }
 
-// ViewOn specifies the name of the source collection or view on which the view will be created.
+
 func (c *Create) ViewOn(viewOn string) *Create {
 	if c == nil {
 		c = new(Create)
@@ -272,7 +272,7 @@ func (c *Create) ViewOn(viewOn string) *Create {
 	return c
 }
 
-// Session sets the session for this operation.
+
 func (c *Create) Session(session *session.Client) *Create {
 	if c == nil {
 		c = new(Create)
@@ -282,7 +282,7 @@ func (c *Create) Session(session *session.Client) *Create {
 	return c
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (c *Create) ClusterClock(clock *session.ClusterClock) *Create {
 	if c == nil {
 		c = new(Create)
@@ -292,7 +292,7 @@ func (c *Create) ClusterClock(clock *session.ClusterClock) *Create {
 	return c
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (c *Create) CommandMonitor(monitor *event.CommandMonitor) *Create {
 	if c == nil {
 		c = new(Create)
@@ -302,7 +302,7 @@ func (c *Create) CommandMonitor(monitor *event.CommandMonitor) *Create {
 	return c
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (c *Create) Crypt(crypt driver.Crypt) *Create {
 	if c == nil {
 		c = new(Create)
@@ -312,7 +312,7 @@ func (c *Create) Crypt(crypt driver.Crypt) *Create {
 	return c
 }
 
-// Database sets the database to run this operation against.
+
 func (c *Create) Database(database string) *Create {
 	if c == nil {
 		c = new(Create)
@@ -322,7 +322,7 @@ func (c *Create) Database(database string) *Create {
 	return c
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (c *Create) Deployment(deployment driver.Deployment) *Create {
 	if c == nil {
 		c = new(Create)
@@ -332,7 +332,7 @@ func (c *Create) Deployment(deployment driver.Deployment) *Create {
 	return c
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (c *Create) ServerSelector(selector description.ServerSelector) *Create {
 	if c == nil {
 		c = new(Create)
@@ -342,7 +342,7 @@ func (c *Create) ServerSelector(selector description.ServerSelector) *Create {
 	return c
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (c *Create) WriteConcern(writeConcern *writeconcern.WriteConcern) *Create {
 	if c == nil {
 		c = new(Create)
@@ -352,7 +352,7 @@ func (c *Create) WriteConcern(writeConcern *writeconcern.WriteConcern) *Create {
 	return c
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (c *Create) ServerAPI(serverAPI *driver.ServerAPIOptions) *Create {
 	if c == nil {
 		c = new(Create)
@@ -362,7 +362,7 @@ func (c *Create) ServerAPI(serverAPI *driver.ServerAPIOptions) *Create {
 	return c
 }
 
-// ExpireAfterSeconds sets the seconds to wait before deleting old time-series data.
+
 func (c *Create) ExpireAfterSeconds(eas int64) *Create {
 	if c == nil {
 		c = new(Create)
@@ -372,7 +372,7 @@ func (c *Create) ExpireAfterSeconds(eas int64) *Create {
 	return c
 }
 
-// TimeSeries sets the time series options for this operation.
+
 func (c *Create) TimeSeries(timeSeries bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -382,7 +382,7 @@ func (c *Create) TimeSeries(timeSeries bsoncore.Document) *Create {
 	return c
 }
 
-// EncryptedFields sets the EncryptedFields for this operation.
+
 func (c *Create) EncryptedFields(ef bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -392,7 +392,7 @@ func (c *Create) EncryptedFields(ef bsoncore.Document) *Create {
 	return c
 }
 
-// ClusteredIndex sets the ClusteredIndex option for this operation.
+
 func (c *Create) ClusteredIndex(ci bsoncore.Document) *Create {
 	if c == nil {
 		c = new(Create)
@@ -402,7 +402,7 @@ func (c *Create) ClusteredIndex(ci bsoncore.Document) *Create {
 	return c
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (c *Create) Authenticator(authenticator driver.Authenticator) *Create {
 	if c == nil {
 		c = new(Create)

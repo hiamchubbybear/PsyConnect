@@ -36,7 +36,6 @@ public class LoggingInterceptor implements HandlerInterceptor {
             fields.put("ip", request.getRemoteAddr());
             fields.put("userAgent", request.getHeader("User-Agent"));
 
-            // Get userId from request attribute (set by auth filter)
             String userId = (String) request.getAttribute("userId");
             if (userId != null) {
                 fields.put("userId", userId);

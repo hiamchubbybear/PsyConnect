@@ -32,7 +32,7 @@ export const SKIP_AUTH = new HttpContextToken(() => false);
 
 export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
-  next: HttpHandlerFn
+  next: HttpHandlerFn,
 ): Observable<HttpEvent<any>> => {
   const authService = inject(Auth);
   const secureStorage = inject(SecureStorageService);
@@ -48,11 +48,11 @@ export const authInterceptor: HttpInterceptorFn = (
   const token = secureStorage.getItem<string>(ACCESSTOKEN_KEY);
   let authReq = req;
   if (token) {
-    // Add both Authorization and roles headers
+    
     authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
-        roles: 'client', // Default role, can be dynamic based on user
+        roles: 'client', 
       },
     });
   }
@@ -61,7 +61,7 @@ export const authInterceptor: HttpInterceptorFn = (
 
   function handleRequest(
     req: HttpRequest<any>,
-    next: HttpHandlerFn
+    next: HttpHandlerFn,
   ): Observable<HttpEvent<any>> {
     return next(req).pipe(
       retryWhen((errors) =>
@@ -72,8 +72,8 @@ export const authInterceptor: HttpInterceptorFn = (
             if (count >= maxRetry) throw err;
             return count + 1;
           }, 0),
-          delayWhen(() => timer(1000))
-        )
+          delayWhen(() => timer(1000)),
+        ),
       ),
       catchError((err) => {
         if (!(err instanceof HttpErrorResponse)) {
@@ -82,30 +82,36 @@ export const authInterceptor: HttpInterceptorFn = (
         const message = (err.error?.message || '').toLowerCase();
         const username = secureStorage.getItem<string>(usernameKey);
         if (!username) {
-          authService.logout();
+          if (err.status === 401 || err.status === 403) {
+            toastService.show(
+              'Truy cập bị từ chối',
+              'Bạn không có quyền hoặc phiên đăng nhập đã hết hạn.',
+              ToastType.Error,
+            );
+          }
           return throwError(() => new Error('No username in storage'));
         }
         if (err.status === 401) {
           return refreshTokenAndRetry(req, next, username);
         }
+
         
-        // if (err.status === 500 && message.includes('server error')) {
-        //   return refreshTokenAndRetry(req, next, username);
-        // }
         
+        
+
         if (err.status === 500) {
           console.error('[AuthInterceptor] 500 error (non-server):', message);
           return throwError(() => err);
         }
         return throwError(() => err);
-      })
+      }),
     );
   }
 
   function refreshTokenAndRetry(
     req: HttpRequest<any>,
     next: HttpHandlerFn,
-    username: string
+    username: string,
   ): Observable<HttpEvent<any>> {
     if (!isRefreshing.value) {
       console.log('[AuthInterceptor] Starting token refresh...');
@@ -122,21 +128,31 @@ export const authInterceptor: HttpInterceptorFn = (
           toastService.show(
             'TOAST.key_token_refreshed',
             'TOAST.key_success',
-            ToastType.Success
+            ToastType.Success,
           );
 
           return next(
-            req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })
+            req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } }),
           ).pipe(
             catchError((err) => {
-              toastService.show(
-                'TOAST.key_session_expired',
-                'TOAST.key_failed',
-                ToastType.Error
-              );
-              authService.logout();
+              
+              
+              if (err instanceof HttpErrorResponse && err.status === 401) {
+                toastService.show(
+                  'Truy cập bị hạn chế',
+                  'Bạn không có quyền thực hiện hành động này.',
+                  ToastType.Warning,
+                );
+              } else {
+                toastService.show(
+                  'Lỗi không xác định',
+                  'Đã có lỗi xảy ra, vui lòng thử lại sau.',
+                  ToastType.Error,
+                );
+              }
+              
               return throwError(() => err);
-            })
+            }),
           );
         }),
         catchError((err) => {
@@ -144,7 +160,7 @@ export const authInterceptor: HttpInterceptorFn = (
           toastService.show(
             'TOAST.key_session_expired',
             'TOAST.key_failed',
-            ToastType.Error
+            ToastType.Error,
           );
           authService.logout();
           router.navigate(['/auth/login']);
@@ -152,15 +168,15 @@ export const authInterceptor: HttpInterceptorFn = (
         }),
         finalize(() => {
           loaderService.hide();
-        })
+        }),
       );
     } else {
       return tokenSubject.pipe(
         filter((t) => t != null),
         take(1),
         switchMap((t) =>
-          next(req.clone({ setHeaders: { Authorization: `Bearer ${t!}` } }))
-        )
+          next(req.clone({ setHeaders: { Authorization: `Bearer ${t!}` } })),
+        ),
       );
     }
   }

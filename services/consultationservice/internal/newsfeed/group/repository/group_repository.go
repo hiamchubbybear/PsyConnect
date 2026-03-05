@@ -36,7 +36,7 @@ func NewGroupRepo() GroupRepository {
 func (r *groupRepo) CreateGroup(ctx context.Context, group *domain.Group) error {
 	group.CreatedAt = time.Now()
 	group.UpdatedAt = time.Now()
-	group.MemberCount = 1 // Creator is the first member
+	group.MemberCount = 1 
 
 	result, err := r.groupCollection.InsertOne(ctx, group)
 	if err != nil {
@@ -44,7 +44,7 @@ func (r *groupRepo) CreateGroup(ctx context.Context, group *domain.Group) error 
 	}
 	group.ID = result.InsertedID.(primitive.ObjectID)
 
-	// Add creator as admin member
+	
 	member := domain.GroupMember{
 		GroupID:  group.ID,
 		UserID:   group.CreatorID,
@@ -105,13 +105,13 @@ func (r *groupRepo) AddMember(ctx context.Context, groupID string, userID string
 		return err
 	}
 
-	// Check if already a member
+	
 	isMember, err := r.IsMember(ctx, groupID, userID)
 	if err != nil {
 		return err
 	}
 	if isMember {
-		return nil // Already a member
+		return nil 
 	}
 
 	member := domain.GroupMember{
@@ -126,7 +126,7 @@ func (r *groupRepo) AddMember(ctx context.Context, groupID string, userID string
 		return err
 	}
 
-	// Update member count
+	
 	_, err = r.groupCollection.UpdateOne(
 		ctx,
 		bson.M{"_id": gID},

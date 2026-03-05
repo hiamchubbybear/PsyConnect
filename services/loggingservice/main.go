@@ -15,13 +15,13 @@ import (
 )
 
 func main() {
-	// Initialize console logger for the service itself
+	
 	consoleLogger := initConsoleLogger()
 	defer consoleLogger.Sync()
 
 	consoleLogger.Info("🚀 Starting PsyConnect Logging Service")
 
-	// Load configuration
+	
 	config := settings.LoadConfig()
 	if err := config.Validate(); err != nil {
 		consoleLogger.Fatal("Invalid configuration", zap.Error(err))
@@ -35,7 +35,7 @@ func main() {
 		zap.Bool("file_logger_enabled", config.FileLogger.Enabled),
 	)
 
-	// Initialize components
+	
 	var lokiClient *loki.Client
 	if config.Loki.Enabled {
 		lokiClient = loki.NewClient(config.Loki)
@@ -57,7 +57,7 @@ func main() {
 		consoleLogger.Warn("File logger disabled")
 	}
 
-	// Initialize HTTP server for health checks
+	
 	httpServer := server.NewServer(config.Server, consoleLogger)
 	if err := httpServer.Start(); err != nil {
 		consoleLogger.Fatal("Failed to start HTTP server", zap.Error(err))
@@ -65,32 +65,32 @@ func main() {
 	defer httpServer.Stop()
 	consoleLogger.Info("HTTP server started", zap.Int("port", config.Server.Port))
 
-	// Initialize Kafka consumer
+	
 	kafkaConsumer, err := kafka.NewConsumer(config.Kafka, consoleLogger)
 	if err != nil {
 		consoleLogger.Fatal("Failed to create Kafka consumer", zap.Error(err))
 	}
 	defer kafkaConsumer.Close()
 
-	// Add log handlers
+	
 	kafkaConsumer.AddHandler(func(event *models.LogEvent) error {
 		httpServer.IncrementMessages()
 
-		// Log to console for debugging
+		
 		consoleLogger.Debug("Processing log event",
 			zap.String("service", event.Service),
 			zap.String("level", event.Level),
 			zap.String("message", event.Message),
 		)
 
-		// Write to file
+		
 		if err := fileLogger.Write(event); err != nil {
 			consoleLogger.Error("Failed to write to file", zap.Error(err))
 			httpServer.IncrementErrors()
 			return err
 		}
 
-		// Push to Loki
+		
 		if lokiClient != nil {
 			if err := lokiClient.Push(event); err != nil {
 				consoleLogger.Error("Failed to push to Loki", zap.Error(err))
@@ -106,7 +106,7 @@ func main() {
 	consoleLogger.Info(" Logging service is ready to process events")
 	consoleLogger.Info(" Health check available at http://localhost:" + fmt.Sprintf("%d", config.Server.Port) + "/health")
 
-	// Start consuming (blocking)
+	
 	if err := kafkaConsumer.Start(); err != nil {
 		consoleLogger.Fatal("Kafka consumer error", zap.Error(err))
 	}
@@ -114,7 +114,7 @@ func main() {
 	consoleLogger.Info("👋 Logging service shutting down gracefully")
 }
 
-// initConsoleLogger initializes a console logger for the service itself
+
 func initConsoleLogger() *zap.Logger {
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "time",

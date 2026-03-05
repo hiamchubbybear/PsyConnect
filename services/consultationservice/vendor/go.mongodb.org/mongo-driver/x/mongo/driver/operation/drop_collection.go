@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -21,7 +21,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// DropCollection performs a drop operation.
+
 type DropCollection struct {
 	authenticator driver.Authenticator
 	session       *session.Client
@@ -38,11 +38,11 @@ type DropCollection struct {
 	timeout       *time.Duration
 }
 
-// DropCollectionResult represents a dropCollection result returned by the server.
+
 type DropCollectionResult struct {
-	// The number of indexes in the dropped collection.
+	
 	NIndexesWas int32
-	// The namespace of the dropped collection.
+	
 	Ns string
 }
 
@@ -71,12 +71,12 @@ func buildDropCollectionResult(response bsoncore.Document) (DropCollectionResult
 	return dcr, nil
 }
 
-// NewDropCollection constructs and returns a new DropCollection.
+
 func NewDropCollection() *DropCollection {
 	return &DropCollection{}
 }
 
-// Result returns the result of executing this operation.
+
 func (dc *DropCollection) Result() DropCollectionResult { return dc.result }
 
 func (dc *DropCollection) processResponse(info driver.ResponseInfo) error {
@@ -85,7 +85,7 @@ func (dc *DropCollection) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (dc *DropCollection) Execute(ctx context.Context) error {
 	if dc.deployment == nil {
 		return errors.New("the DropCollection operation must have a Deployment set before Execute can be called")
@@ -115,7 +115,7 @@ func (dc *DropCollection) command(dst []byte, _ description.SelectedServer) ([]b
 	return dst, nil
 }
 
-// Session sets the session for this operation.
+
 func (dc *DropCollection) Session(session *session.Client) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -125,7 +125,7 @@ func (dc *DropCollection) Session(session *session.Client) *DropCollection {
 	return dc
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (dc *DropCollection) ClusterClock(clock *session.ClusterClock) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -135,7 +135,7 @@ func (dc *DropCollection) ClusterClock(clock *session.ClusterClock) *DropCollect
 	return dc
 }
 
-// Collection sets the collection that this command will run against.
+
 func (dc *DropCollection) Collection(collection string) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -145,7 +145,7 @@ func (dc *DropCollection) Collection(collection string) *DropCollection {
 	return dc
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (dc *DropCollection) CommandMonitor(monitor *event.CommandMonitor) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -155,7 +155,7 @@ func (dc *DropCollection) CommandMonitor(monitor *event.CommandMonitor) *DropCol
 	return dc
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (dc *DropCollection) Crypt(crypt driver.Crypt) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -165,7 +165,7 @@ func (dc *DropCollection) Crypt(crypt driver.Crypt) *DropCollection {
 	return dc
 }
 
-// Database sets the database to run this operation against.
+
 func (dc *DropCollection) Database(database string) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -175,7 +175,7 @@ func (dc *DropCollection) Database(database string) *DropCollection {
 	return dc
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (dc *DropCollection) Deployment(deployment driver.Deployment) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -185,7 +185,7 @@ func (dc *DropCollection) Deployment(deployment driver.Deployment) *DropCollecti
 	return dc
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (dc *DropCollection) ServerSelector(selector description.ServerSelector) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -195,7 +195,7 @@ func (dc *DropCollection) ServerSelector(selector description.ServerSelector) *D
 	return dc
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (dc *DropCollection) WriteConcern(writeConcern *writeconcern.WriteConcern) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -205,7 +205,7 @@ func (dc *DropCollection) WriteConcern(writeConcern *writeconcern.WriteConcern) 
 	return dc
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (dc *DropCollection) ServerAPI(serverAPI *driver.ServerAPIOptions) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -215,7 +215,7 @@ func (dc *DropCollection) ServerAPI(serverAPI *driver.ServerAPIOptions) *DropCol
 	return dc
 }
 
-// Timeout sets the timeout for this operation.
+
 func (dc *DropCollection) Timeout(timeout *time.Duration) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)
@@ -225,7 +225,7 @@ func (dc *DropCollection) Timeout(timeout *time.Duration) *DropCollection {
 	return dc
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (dc *DropCollection) Authenticator(authenticator driver.Authenticator) *DropCollection {
 	if dc == nil {
 		dc = new(DropCollection)

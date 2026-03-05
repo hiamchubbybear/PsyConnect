@@ -1,20 +1,4 @@
-/*
- *
- * Copyright 2024 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
+
 
 package channelz
 
@@ -23,7 +7,7 @@ import (
 	"sync/atomic"
 )
 
-// Server is the channelz representation of a server.
+
 type Server struct {
 	Entity
 	ID      int64
@@ -37,19 +21,19 @@ type Server struct {
 	cm            *channelMap
 }
 
-// ServerMetrics defines a struct containing metrics for servers.
+
 type ServerMetrics struct {
-	// The number of incoming calls started on the server.
+	
 	CallsStarted atomic.Int64
-	// The number of incoming calls that have completed with an OK status.
+	
 	CallsSucceeded atomic.Int64
-	// The number of incoming calls that have a completed with a non-OK status.
+	
 	CallsFailed atomic.Int64
-	// The last time a call was started on the server.
+	
 	LastCallStartedTimestamp atomic.Int64
 }
 
-// NewServerMetricsForTesting returns an initialized ServerMetrics.
+
 func NewServerMetricsForTesting(started, succeeded, failed, timestamp int64) *ServerMetrics {
 	sm := &ServerMetrics{}
 	sm.CallsStarted.Store(started)
@@ -59,8 +43,8 @@ func NewServerMetricsForTesting(started, succeeded, failed, timestamp int64) *Se
 	return sm
 }
 
-// CopyFrom copies the metrics data from the provided ServerMetrics
-// instance into the current instance.
+
+
 func (sm *ServerMetrics) CopyFrom(o *ServerMetrics) {
 	sm.CallsStarted.Store(o.CallsStarted.Load())
 	sm.CallsSucceeded.Store(o.CallsSucceeded.Load())
@@ -68,14 +52,14 @@ func (sm *ServerMetrics) CopyFrom(o *ServerMetrics) {
 	sm.LastCallStartedTimestamp.Store(o.LastCallStartedTimestamp.Load())
 }
 
-// ListenSockets returns the listening sockets for s.
+
 func (s *Server) ListenSockets() map[int64]string {
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 	return copyMap(s.listenSockets)
 }
 
-// String returns a printable description of s.
+
 func (s *Server) String() string {
 	return fmt.Sprintf("Server #%d", s.ID)
 }

@@ -19,18 +19,18 @@ func RouterInit(env *bootstrap.Env, repoManager *repository.RepositoryManager) {
 	router := gin.New()
 	router.Use(gin.Recovery())
 
-	// Healthcheck endpoint
+	
 	router.GET("/actuator/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "UP"})
 	})
 
-	// Initialize Kafka Producer
+	
 	producer, err := kafka.NewProducer(env)
 	if err != nil {
 		log.Fatalf("Failed to initialize Kafka producer: %v", err)
 	}
-	// Defer close? Usually RouterInit runs forever, but resource management is tricky here.
-	// Ideally producer lifecycle follows app. For now we initialize it here.
+	
+	
 
 	chatService := service.NewChatService(repoManager.MessageRepo, producer)
 	chatHandler := handler.NewChatHandler(env, repoManager, chatService)

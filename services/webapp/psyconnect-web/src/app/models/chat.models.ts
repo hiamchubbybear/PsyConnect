@@ -21,7 +21,7 @@ export interface Friend {
   firstName: string;
   lastName: string;
   avatarUri: string;
-  role?: string; // 'therapist' | 'client' | 'user'
+  role?: string; 
   isOnline?: boolean;
   hasNewMessage?: boolean;
   lastMessage?: string;
@@ -38,10 +38,10 @@ export interface Message {
   sessionData?: ConsultationSession;
   timestamp: Date;
   isMine: boolean;
-  isSystem?: boolean; // system messages (e.g. welcome message)
-  // Message status
+  isSystem?: boolean; 
+  
   status?: 'sending' | 'sent' | 'delivered' | 'failed';
-  // Message grouping fields
+  
   isFirstInGroup?: boolean;
   isLastInGroup?: boolean;
   showTimestamp?: boolean;

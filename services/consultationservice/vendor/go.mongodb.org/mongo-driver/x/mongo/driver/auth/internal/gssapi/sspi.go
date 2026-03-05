@@ -1,15 +1,15 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 //go:build gssapi && windows
 // +build gssapi,windows
 
 package gssapi
 
-// #include "sspi_wrapper.h"
+
 import "C"
 import (
 	"context"
@@ -21,7 +21,7 @@ import (
 	"unsafe"
 )
 
-// New creates a new SaslClient. The target parameter should be a hostname with no port.
+
 func New(target, username, password string, passwordSet bool, props map[string]string) (*SaslClient, error) {
 	initOnce.Do(initSSPI)
 	if initError != nil {
@@ -53,7 +53,7 @@ func New(target, username, password string, passwordSet bool, props map[string]s
 	}
 
 	if canonicalizeHostName {
-		// Should not canonicalize the SERVICE_HOST
+		
 		if serviceHostSet {
 			return nil, fmt.Errorf("CANONICALIZE_HOST_NAME and SERVICE_HOST canonot both be specified")
 		}
@@ -87,7 +87,7 @@ type SaslClient struct {
 	password             string
 	passwordSet          bool
 
-	// state
+	
 	state           C.sspi_client_state
 	contextComplete bool
 	done            bool

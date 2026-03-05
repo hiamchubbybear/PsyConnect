@@ -43,19 +43,19 @@ func Decode(s *string, i *int, f uint64, val interface{}) error {
 	vv := rt.UnpackEface(val)
 	vp := vv.Value
 
-	/* check for nil type */
+	
 	if vv.Type == nil {
 		return &json.InvalidUnmarshalError{}
 	}
 
-	/* must be a non-nil pointer */
+	
 	if vp == nil || vv.Type.Kind() != reflect.Ptr {
 		return &json.InvalidUnmarshalError{Type: vv.Type.Pack()}
 	}
 
 	etp := rt.PtrElem(vv.Type)
 
-	/* check the defined pointer type for issue 379 */
+	
 	if vv.Type.IsNamed() {
 		newp := vp
 		etp = vv.Type
@@ -67,7 +67,7 @@ func Decode(s *string, i *int, f uint64, val interface{}) error {
 		return err
 	}
 
-	/* parse into document */
+	
 	ctx, err := NewContext(*s, *i, uint64(f), etp)
 	defer ctx.Delete()
 	if ctx.Parser.Utf8Inv {
@@ -81,7 +81,7 @@ func Decode(s *string, i *int, f uint64, val interface{}) error {
 fix_error:
 	err = fix_error(*s, *i, err)
 
-	// update position at last
+	
 	*i += ctx.Parser.Pos()
 	return err
 }
@@ -106,11 +106,11 @@ func fix_error(json string, pos int, err error) error {
 	return err
 }
 
-// Pretouch compiles vt ahead-of-time to avoid JIT compilation on-the-fly, in
-// order to reduce the first-hit latency.
-//
-// Opts are the compile options, for example, "option.WithCompileRecursiveDepth" is
-// a compile option to set the depth of recursive compile for the nested struct type.
+
+
+
+
+
 func Pretouch(vt reflect.Type, opts ...option.CompileOption) error {
     cfg := option.DefaultCompileOptions()
     for _, opt := range opts {
@@ -120,7 +120,7 @@ func Pretouch(vt reflect.Type, opts ...option.CompileOption) error {
 }
 
 func pretouchType(_vt reflect.Type, opts option.CompileOptions) (map[reflect.Type]bool, error) {
-    /* compile function */
+    
     compiler := newCompiler().apply(opts)
     decoder := func(vt *rt.GoType, _ ...interface{}) (interface{}, error) {
         if f, err := compiler.compileType(_vt); err != nil {
@@ -130,7 +130,7 @@ func pretouchType(_vt reflect.Type, opts option.CompileOptions) (map[reflect.Typ
         }
     }
 
-    /* find or compile */
+    
     vt := rt.UnpackType(_vt)
     if val := programCache.Get(vt); val != nil {
         return nil, nil

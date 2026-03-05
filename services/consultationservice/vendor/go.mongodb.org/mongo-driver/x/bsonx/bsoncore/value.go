@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsoncore
 
@@ -21,24 +21,24 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// ElementTypeError specifies that a method to obtain a BSON value an incorrect type was called on a bson.Value.
+
 type ElementTypeError struct {
 	Method string
 	Type   bsontype.Type
 }
 
-// Error implements the error interface.
+
 func (ete ElementTypeError) Error() string {
 	return "Call of " + ete.Method + " on " + ete.Type.String() + " type"
 }
 
-// Value represents a BSON value with a type and raw bytes.
+
 type Value struct {
 	Type bsontype.Type
 	Data []byte
 }
 
-// Validate ensures the value is a valid BSON value.
+
 func (v Value) Validate() error {
 	_, _, valid := readValue(v.Data, v.Type)
 	if !valid {
@@ -47,7 +47,7 @@ func (v Value) Validate() error {
 	return nil
 }
 
-// IsNumber returns true if the type of v is a numeric BSON type.
+
 func (v Value) IsNumber() bool {
 	switch v.Type {
 	case bsontype.Double, bsontype.Int32, bsontype.Int64, bsontype.Decimal128:
@@ -57,8 +57,8 @@ func (v Value) IsNumber() bool {
 	}
 }
 
-// AsInt32 returns a BSON number as an int32. If the BSON type is not a numeric one, this method
-// will panic.
+
+
 func (v Value) AsInt32() int32 {
 	if !v.IsNumber() {
 		panic(ElementTypeError{"bsoncore.Value.AsInt32", v.Type})
@@ -89,8 +89,8 @@ func (v Value) AsInt32() int32 {
 	return i32
 }
 
-// AsInt32OK functions the same as AsInt32 but returns a boolean instead of panicking. False
-// indicates an error.
+
+
 func (v Value) AsInt32OK() (int32, bool) {
 	if !v.IsNumber() {
 		return 0, false
@@ -121,8 +121,8 @@ func (v Value) AsInt32OK() (int32, bool) {
 	return i32, true
 }
 
-// AsInt64 returns a BSON number as an int64. If the BSON type is not a numeric one, this method
-// will panic.
+
+
 func (v Value) AsInt64() int64 {
 	if !v.IsNumber() {
 		panic(ElementTypeError{"bsoncore.Value.AsInt64", v.Type})
@@ -154,8 +154,8 @@ func (v Value) AsInt64() int64 {
 	return i64
 }
 
-// AsInt64OK functions the same as AsInt64 but returns a boolean instead of panicking. False
-// indicates an error.
+
+
 func (v Value) AsInt64OK() (int64, bool) {
 	if !v.IsNumber() {
 		return 0, false
@@ -187,19 +187,19 @@ func (v Value) AsInt64OK() (int64, bool) {
 	return i64, true
 }
 
-// AsFloat64 returns a BSON number as an float64. If the BSON type is not a numeric one, this method
-// will panic.
-//
-// TODO(GODRIVER-2751): Implement AsFloat64.
-// func (v Value) AsFloat64() float64
 
-// AsFloat64OK functions the same as AsFloat64 but returns a boolean instead of panicking. False
-// indicates an error.
-//
-// TODO(GODRIVER-2751): Implement AsFloat64OK.
-// func (v Value) AsFloat64OK() (float64, bool)
 
-// Equal compaes v to v2 and returns true if they are equal.
+
+
+
+
+
+
+
+
+
+
+
 func (v Value) Equal(v2 Value) bool {
 	if v.Type != v2.Type {
 		return false
@@ -208,8 +208,8 @@ func (v Value) Equal(v2 Value) bool {
 	return bytes.Equal(v.Data, v2.Data)
 }
 
-// String implements the fmt.String interface. This method will return values in extended JSON
-// format. If the value is not valid, this returns an empty string
+
+
 func (v Value) String() string {
 	switch v.Type {
 	case bsontype.Double:
@@ -330,8 +330,8 @@ func (v Value) String() string {
 	}
 }
 
-// DebugString outputs a human readable version of Document. It will attempt to stringify the
-// valid components of the document even if the entire document is not valid.
+
+
 func (v Value) DebugString() string {
 	switch v.Type {
 	case bsontype.String:
@@ -367,8 +367,8 @@ func (v Value) DebugString() string {
 	}
 }
 
-// Double returns the float64 value for this element.
-// It panics if e's BSON type is not bsontype.Double.
+
+
 func (v Value) Double() float64 {
 	if v.Type != bsontype.Double {
 		panic(ElementTypeError{"bsoncore.Value.Double", v.Type})
@@ -380,7 +380,7 @@ func (v Value) Double() float64 {
 	return f64
 }
 
-// DoubleOK is the same as Double, but returns a boolean instead of panicking.
+
 func (v Value) DoubleOK() (float64, bool) {
 	if v.Type != bsontype.Double {
 		return 0, false
@@ -392,11 +392,11 @@ func (v Value) DoubleOK() (float64, bool) {
 	return f64, true
 }
 
-// StringValue returns the string balue for this element.
-// It panics if e's BSON type is not bsontype.String.
-//
-// NOTE: This method is called StringValue to avoid a collision with the String method which
-// implements the fmt.Stringer interface.
+
+
+
+
+
 func (v Value) StringValue() string {
 	if v.Type != bsontype.String {
 		panic(ElementTypeError{"bsoncore.Value.StringValue", v.Type})
@@ -408,8 +408,8 @@ func (v Value) StringValue() string {
 	return str
 }
 
-// StringValueOK is the same as StringValue, but returns a boolean instead of
-// panicking.
+
+
 func (v Value) StringValueOK() (string, bool) {
 	if v.Type != bsontype.String {
 		return "", false
@@ -421,8 +421,8 @@ func (v Value) StringValueOK() (string, bool) {
 	return str, true
 }
 
-// Document returns the BSON document the Value represents as a Document. It panics if the
-// value is a BSON type other than document.
+
+
 func (v Value) Document() Document {
 	if v.Type != bsontype.EmbeddedDocument {
 		panic(ElementTypeError{"bsoncore.Value.Document", v.Type})
@@ -434,8 +434,8 @@ func (v Value) Document() Document {
 	return doc
 }
 
-// DocumentOK is the same as Document, except it returns a boolean
-// instead of panicking.
+
+
 func (v Value) DocumentOK() (Document, bool) {
 	if v.Type != bsontype.EmbeddedDocument {
 		return nil, false
@@ -447,8 +447,8 @@ func (v Value) DocumentOK() (Document, bool) {
 	return doc, true
 }
 
-// Array returns the BSON array the Value represents as an Array. It panics if the
-// value is a BSON type other than array.
+
+
 func (v Value) Array() Array {
 	if v.Type != bsontype.Array {
 		panic(ElementTypeError{"bsoncore.Value.Array", v.Type})
@@ -460,8 +460,8 @@ func (v Value) Array() Array {
 	return arr
 }
 
-// ArrayOK is the same as Array, except it returns a boolean instead
-// of panicking.
+
+
 func (v Value) ArrayOK() (Array, bool) {
 	if v.Type != bsontype.Array {
 		return nil, false
@@ -473,8 +473,8 @@ func (v Value) ArrayOK() (Array, bool) {
 	return arr, true
 }
 
-// Binary returns the BSON binary value the Value represents. It panics if the value is a BSON type
-// other than binary.
+
+
 func (v Value) Binary() (subtype byte, data []byte) {
 	if v.Type != bsontype.Binary {
 		panic(ElementTypeError{"bsoncore.Value.Binary", v.Type})
@@ -486,8 +486,8 @@ func (v Value) Binary() (subtype byte, data []byte) {
 	return subtype, data
 }
 
-// BinaryOK is the same as Binary, except it returns a boolean instead of
-// panicking.
+
+
 func (v Value) BinaryOK() (subtype byte, data []byte, ok bool) {
 	if v.Type != bsontype.Binary {
 		return 0x00, nil, false
@@ -499,8 +499,8 @@ func (v Value) BinaryOK() (subtype byte, data []byte, ok bool) {
 	return subtype, data, true
 }
 
-// ObjectID returns the BSON objectid value the Value represents. It panics if the value is a BSON
-// type other than objectid.
+
+
 func (v Value) ObjectID() primitive.ObjectID {
 	if v.Type != bsontype.ObjectID {
 		panic(ElementTypeError{"bsoncore.Value.ObjectID", v.Type})
@@ -512,8 +512,8 @@ func (v Value) ObjectID() primitive.ObjectID {
 	return oid
 }
 
-// ObjectIDOK is the same as ObjectID, except it returns a boolean instead of
-// panicking.
+
+
 func (v Value) ObjectIDOK() (primitive.ObjectID, bool) {
 	if v.Type != bsontype.ObjectID {
 		return primitive.ObjectID{}, false
@@ -525,8 +525,8 @@ func (v Value) ObjectIDOK() (primitive.ObjectID, bool) {
 	return oid, true
 }
 
-// Boolean returns the boolean value the Value represents. It panics if the
-// value is a BSON type other than boolean.
+
+
 func (v Value) Boolean() bool {
 	if v.Type != bsontype.Boolean {
 		panic(ElementTypeError{"bsoncore.Value.Boolean", v.Type})
@@ -538,8 +538,8 @@ func (v Value) Boolean() bool {
 	return b
 }
 
-// BooleanOK is the same as Boolean, except it returns a boolean instead of
-// panicking.
+
+
 func (v Value) BooleanOK() (bool, bool) {
 	if v.Type != bsontype.Boolean {
 		return false, false
@@ -551,8 +551,8 @@ func (v Value) BooleanOK() (bool, bool) {
 	return b, true
 }
 
-// DateTime returns the BSON datetime value the Value represents as a
-// unix timestamp. It panics if the value is a BSON type other than datetime.
+
+
 func (v Value) DateTime() int64 {
 	if v.Type != bsontype.DateTime {
 		panic(ElementTypeError{"bsoncore.Value.DateTime", v.Type})
@@ -564,8 +564,8 @@ func (v Value) DateTime() int64 {
 	return dt
 }
 
-// DateTimeOK is the same as DateTime, except it returns a boolean instead of
-// panicking.
+
+
 func (v Value) DateTimeOK() (int64, bool) {
 	if v.Type != bsontype.DateTime {
 		return 0, false
@@ -577,8 +577,8 @@ func (v Value) DateTimeOK() (int64, bool) {
 	return dt, true
 }
 
-// Time returns the BSON datetime value the Value represents. It panics if the value is a BSON
-// type other than datetime.
+
+
 func (v Value) Time() time.Time {
 	if v.Type != bsontype.DateTime {
 		panic(ElementTypeError{"bsoncore.Value.Time", v.Type})
@@ -590,8 +590,8 @@ func (v Value) Time() time.Time {
 	return time.Unix(dt/1000, dt%1000*1000000)
 }
 
-// TimeOK is the same as Time, except it returns a boolean instead of
-// panicking.
+
+
 func (v Value) TimeOK() (time.Time, bool) {
 	if v.Type != bsontype.DateTime {
 		return time.Time{}, false
@@ -603,8 +603,8 @@ func (v Value) TimeOK() (time.Time, bool) {
 	return time.Unix(dt/1000, dt%1000*1000000), true
 }
 
-// Regex returns the BSON regex value the Value represents. It panics if the value is a BSON
-// type other than regex.
+
+
 func (v Value) Regex() (pattern, options string) {
 	if v.Type != bsontype.Regex {
 		panic(ElementTypeError{"bsoncore.Value.Regex", v.Type})
@@ -616,8 +616,8 @@ func (v Value) Regex() (pattern, options string) {
 	return pattern, options
 }
 
-// RegexOK is the same as Regex, except it returns a boolean instead of
-// panicking.
+
+
 func (v Value) RegexOK() (pattern, options string, ok bool) {
 	if v.Type != bsontype.Regex {
 		return "", "", false
@@ -629,8 +629,8 @@ func (v Value) RegexOK() (pattern, options string, ok bool) {
 	return pattern, options, true
 }
 
-// DBPointer returns the BSON dbpointer value the Value represents. It panics if the value is a BSON
-// type other than DBPointer.
+
+
 func (v Value) DBPointer() (string, primitive.ObjectID) {
 	if v.Type != bsontype.DBPointer {
 		panic(ElementTypeError{"bsoncore.Value.DBPointer", v.Type})
@@ -642,8 +642,8 @@ func (v Value) DBPointer() (string, primitive.ObjectID) {
 	return ns, pointer
 }
 
-// DBPointerOK is the same as DBPoitner, except that it returns a boolean
-// instead of panicking.
+
+
 func (v Value) DBPointerOK() (string, primitive.ObjectID, bool) {
 	if v.Type != bsontype.DBPointer {
 		return "", primitive.ObjectID{}, false
@@ -655,8 +655,8 @@ func (v Value) DBPointerOK() (string, primitive.ObjectID, bool) {
 	return ns, pointer, true
 }
 
-// JavaScript returns the BSON JavaScript code value the Value represents. It panics if the value is
-// a BSON type other than JavaScript code.
+
+
 func (v Value) JavaScript() string {
 	if v.Type != bsontype.JavaScript {
 		panic(ElementTypeError{"bsoncore.Value.JavaScript", v.Type})
@@ -668,8 +668,8 @@ func (v Value) JavaScript() string {
 	return js
 }
 
-// JavaScriptOK is the same as Javascript, excepti that it returns a boolean
-// instead of panicking.
+
+
 func (v Value) JavaScriptOK() (string, bool) {
 	if v.Type != bsontype.JavaScript {
 		return "", false
@@ -681,8 +681,8 @@ func (v Value) JavaScriptOK() (string, bool) {
 	return js, true
 }
 
-// Symbol returns the BSON symbol value the Value represents. It panics if the value is a BSON
-// type other than symbol.
+
+
 func (v Value) Symbol() string {
 	if v.Type != bsontype.Symbol {
 		panic(ElementTypeError{"bsoncore.Value.Symbol", v.Type})
@@ -694,8 +694,8 @@ func (v Value) Symbol() string {
 	return symbol
 }
 
-// SymbolOK is the same as Symbol, excepti that it returns a boolean
-// instead of panicking.
+
+
 func (v Value) SymbolOK() (string, bool) {
 	if v.Type != bsontype.Symbol {
 		return "", false
@@ -707,8 +707,8 @@ func (v Value) SymbolOK() (string, bool) {
 	return symbol, true
 }
 
-// CodeWithScope returns the BSON JavaScript code with scope the Value represents.
-// It panics if the value is a BSON type other than JavaScript code with scope.
+
+
 func (v Value) CodeWithScope() (string, Document) {
 	if v.Type != bsontype.CodeWithScope {
 		panic(ElementTypeError{"bsoncore.Value.CodeWithScope", v.Type})
@@ -720,8 +720,8 @@ func (v Value) CodeWithScope() (string, Document) {
 	return code, scope
 }
 
-// CodeWithScopeOK is the same as CodeWithScope, except that it returns a boolean instead of
-// panicking.
+
+
 func (v Value) CodeWithScopeOK() (string, Document, bool) {
 	if v.Type != bsontype.CodeWithScope {
 		return "", nil, false
@@ -733,8 +733,8 @@ func (v Value) CodeWithScopeOK() (string, Document, bool) {
 	return code, scope, true
 }
 
-// Int32 returns the int32 the Value represents. It panics if the value is a BSON type other than
-// int32.
+
+
 func (v Value) Int32() int32 {
 	if v.Type != bsontype.Int32 {
 		panic(ElementTypeError{"bsoncore.Value.Int32", v.Type})
@@ -746,8 +746,8 @@ func (v Value) Int32() int32 {
 	return i32
 }
 
-// Int32OK is the same as Int32, except that it returns a boolean instead of
-// panicking.
+
+
 func (v Value) Int32OK() (int32, bool) {
 	if v.Type != bsontype.Int32 {
 		return 0, false
@@ -759,8 +759,8 @@ func (v Value) Int32OK() (int32, bool) {
 	return i32, true
 }
 
-// Timestamp returns the BSON timestamp value the Value represents. It panics if the value is a
-// BSON type other than timestamp.
+
+
 func (v Value) Timestamp() (t, i uint32) {
 	if v.Type != bsontype.Timestamp {
 		panic(ElementTypeError{"bsoncore.Value.Timestamp", v.Type})
@@ -772,8 +772,8 @@ func (v Value) Timestamp() (t, i uint32) {
 	return t, i
 }
 
-// TimestampOK is the same as Timestamp, except that it returns a boolean
-// instead of panicking.
+
+
 func (v Value) TimestampOK() (t, i uint32, ok bool) {
 	if v.Type != bsontype.Timestamp {
 		return 0, 0, false
@@ -785,8 +785,8 @@ func (v Value) TimestampOK() (t, i uint32, ok bool) {
 	return t, i, true
 }
 
-// Int64 returns the int64 the Value represents. It panics if the value is a BSON type other than
-// int64.
+
+
 func (v Value) Int64() int64 {
 	if v.Type != bsontype.Int64 {
 		panic(ElementTypeError{"bsoncore.Value.Int64", v.Type})
@@ -798,8 +798,8 @@ func (v Value) Int64() int64 {
 	return i64
 }
 
-// Int64OK is the same as Int64, except that it returns a boolean instead of
-// panicking.
+
+
 func (v Value) Int64OK() (int64, bool) {
 	if v.Type != bsontype.Int64 {
 		return 0, false
@@ -811,8 +811,8 @@ func (v Value) Int64OK() (int64, bool) {
 	return i64, true
 }
 
-// Decimal128 returns the decimal the Value represents. It panics if the value is a BSON type other than
-// decimal.
+
+
 func (v Value) Decimal128() primitive.Decimal128 {
 	if v.Type != bsontype.Decimal128 {
 		panic(ElementTypeError{"bsoncore.Value.Decimal128", v.Type})
@@ -824,8 +824,8 @@ func (v Value) Decimal128() primitive.Decimal128 {
 	return d128
 }
 
-// Decimal128OK is the same as Decimal128, except that it returns a boolean
-// instead of panicking.
+
+
 func (v Value) Decimal128OK() (primitive.Decimal128, bool) {
 	if v.Type != bsontype.Decimal128 {
 		return primitive.Decimal128{}, false
@@ -873,11 +873,11 @@ func escapeString(s string) string {
 				buf.WriteByte('\\')
 				buf.WriteByte('f')
 			default:
-				// This encodes bytes < 0x20 except for \t, \n and \r.
-				// If escapeHTML is set, it also escapes <, >, and &
-				// because they can lead to security holes when
-				// user-controlled strings are rendered into JSON
-				// and served to some browsers.
+				
+				
+				
+				
+				
 				buf.WriteString(`\u00`)
 				buf.WriteByte(hexChars[b>>4])
 				buf.WriteByte(hexChars[b&0xF])
@@ -896,13 +896,13 @@ func escapeString(s string) string {
 			start = i
 			continue
 		}
-		// U+2028 is LINE SEPARATOR.
-		// U+2029 is PARAGRAPH SEPARATOR.
-		// They are both technically valid characters in JSON strings,
-		// but don't work in JSONP, which has to be evaluated as JavaScript,
-		// and can lead to security holes there. It is valid JSON to
-		// escape them, so we do so unconditionally.
-		// See http://timelessrepo.com/json-isnt-a-javascript-subset for discussion.
+		
+		
+		
+		
+		
+		
+		
 		if c == '\u2028' || c == '\u2029' {
 			if start < i {
 				buf.WriteString(s[start:i])
@@ -932,8 +932,8 @@ func formatDouble(f float64) string {
 	case math.IsNaN(f):
 		s = "NaN"
 	default:
-		// Print exactly one decimalType place for integers; otherwise, print as many are necessary to
-		// perfectly represent it.
+		
+		
 		s = strconv.FormatFloat(f, 'G', -1, 64)
 		if !strings.ContainsRune(s, '.') {
 			s += ".0"

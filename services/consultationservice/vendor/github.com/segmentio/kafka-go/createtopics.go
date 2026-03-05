@@ -10,42 +10,42 @@ import (
 	"github.com/segmentio/kafka-go/protocol/createtopics"
 )
 
-// CreateTopicRequests represents a request sent to a kafka broker to create
-// new topics.
+
+
 type CreateTopicsRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// List of topics to create and their configuration.
+	
 	Topics []TopicConfig
 
-	// When set to true, topics are not created but the configuration is
-	// validated as if they were.
-	//
-	// This field will be ignored if the kafka broker did not support the
-	// CreateTopics API in version 1 or above.
+	
+	
+	
+	
+	
 	ValidateOnly bool
 }
 
-// CreateTopicResponse represents a response from a kafka broker to a topic
-// creation request.
+
+
 type CreateTopicsResponse struct {
-	// The amount of time that the broker throttled the request.
-	//
-	// This field will be zero if the kafka broker did not support the
-	// CreateTopics API in version 2 or above.
+	
+	
+	
+	
 	Throttle time.Duration
 
-	// Mapping of topic names to errors that occurred while attempting to create
-	// the topics.
-	//
-	// The errors contain the kafka error code. Programs may use the standard
-	// errors.Is function to test the error against kafka error codes.
+	
+	
+	
+	
+	
 	Errors map[string]error
 }
 
-// CreateTopics sends a topic creation request to a kafka broker and returns the
-// response.
+
+
 func (c *Client) CreateTopics(ctx context.Context, req *CreateTopicsRequest) (*CreateTopicsResponse, error) {
 	topics := make([]createtopics.RequestTopic, len(req.Topics))
 
@@ -107,14 +107,14 @@ func (t createTopicsRequestV0ConfigEntry) writeTo(wb *writeBuffer) {
 
 type ReplicaAssignment struct {
 	Partition int
-	// The list of brokers where the partition should be allocated. There must
-	// be as many entries in thie list as there are replicas of the partition.
-	// The first entry represents the broker that will be the preferred leader
-	// for the partition.
-	//
-	// This field changed in 0.4 from `int` to `[]int`. It was invalid to pass
-	// a single integer as this is supposed to be a list. While this introduces
-	// a breaking change, it probably never worked before.
+	
+	
+	
+	
+	
+	
+	
+	
 	Replicas []int
 }
 
@@ -147,7 +147,7 @@ type createTopicsRequestV0ReplicaAssignment struct {
 
 func (t createTopicsRequestV0ReplicaAssignment) size() int32 {
 	return sizeofInt32(t.Partition) +
-		(int32(len(t.Replicas)+1) * sizeofInt32(0)) // N+1 because the array length is a int32
+		(int32(len(t.Replicas)+1) * sizeofInt32(0)) 
 }
 
 func (t createTopicsRequestV0ReplicaAssignment) writeTo(wb *writeBuffer) {
@@ -159,20 +159,20 @@ func (t createTopicsRequestV0ReplicaAssignment) writeTo(wb *writeBuffer) {
 }
 
 type TopicConfig struct {
-	// Topic name
+	
 	Topic string
 
-	// NumPartitions created. -1 indicates unset.
+	
 	NumPartitions int
 
-	// ReplicationFactor for the topic. -1 indicates unset.
+	
 	ReplicationFactor int
 
-	// ReplicaAssignments among kafka brokers for this topic partitions. If this
-	// is set num_partitions and replication_factor must be unset.
+	
+	
 	ReplicaAssignments []ReplicaAssignment
 
-	// ConfigEntries holds topic level configuration for topic to be set.
+	
 	ConfigEntries []ConfigEntry
 }
 
@@ -228,20 +228,20 @@ func (t TopicConfig) toCreateTopicsRequestV0Topic() createTopicsRequestV0Topic {
 }
 
 type createTopicsRequestV0Topic struct {
-	// Topic name
+	
 	Topic string
 
-	// NumPartitions created. -1 indicates unset.
+	
 	NumPartitions int32
 
-	// ReplicationFactor for the topic. -1 indicates unset.
+	
 	ReplicationFactor int16
 
-	// ReplicaAssignments among kafka brokers for this topic partitions. If this
-	// is set num_partitions and replication_factor must be unset.
+	
+	
 	ReplicaAssignments []createTopicsRequestV0ReplicaAssignment
 
-	// ConfigEntries holds topic level configuration for topic to be set.
+	
 	ConfigEntries []createTopicsRequestV0ConfigEntry
 }
 
@@ -261,14 +261,14 @@ func (t createTopicsRequestV0Topic) writeTo(wb *writeBuffer) {
 	wb.writeArray(len(t.ConfigEntries), func(i int) { t.ConfigEntries[i].writeTo(wb) })
 }
 
-// See http://kafka.apache.org/protocol.html#The_Messages_CreateTopics
+
 type createTopicsRequestV0 struct {
-	// Topics contains n array of single topic creation requests. Can not
-	// have multiple entries for the same topic.
+	
+	
 	Topics []createTopicsRequestV0Topic
 
-	// Timeout ms to wait for a topic to be completely created on the
-	// controller node. Values <= 0 will trigger topic creation and return immediately
+	
+	
 	Timeout int32
 }
 
@@ -283,10 +283,10 @@ func (t createTopicsRequestV0) writeTo(wb *writeBuffer) {
 }
 
 type createTopicsResponseV0TopicError struct {
-	// Topic name
+	
 	Topic string
 
-	// ErrorCode holds response error code
+	
 	ErrorCode int16
 }
 
@@ -310,7 +310,7 @@ func (t *createTopicsResponseV0TopicError) readFrom(r *bufio.Reader, size int) (
 	return
 }
 
-// See http://kafka.apache.org/protocol.html#The_Messages_CreateTopics
+
 type createTopicsResponseV0 struct {
 	TopicErrors []createTopicsResponseV0TopicError
 }
@@ -372,9 +372,9 @@ func (c *Conn) createTopics(request createTopicsRequestV0) (createTopicsResponse
 	return response, nil
 }
 
-// CreateTopics creates one topic per provided configuration with idempotent
-// operational semantics. In other words, if CreateTopics is invoked with a
-// configuration for an existing topic, it will have no effect.
+
+
+
 func (c *Conn) CreateTopics(topics ...TopicConfig) error {
 	requestV0Topics := make([]createTopicsRequestV0Topic, 0, len(topics))
 	for _, t := range topics {

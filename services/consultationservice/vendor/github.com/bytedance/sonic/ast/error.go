@@ -21,7 +21,7 @@ func newErrorPair(err SyntaxError) *Pair {
    return &Pair{0, "", *newSyntaxError(err)}
 }
 
-// Error returns error message if the node is invalid
+
 func (self Node) Error() string {
     if self.t != V_ERROR {
         return ""
@@ -81,33 +81,33 @@ func (self SyntaxError) description() string {
     p := self.Pos - i
     q := self.Pos + i
 
-    /* check for empty source */
+    
     if self.Src == "" {
         return fmt.Sprintf("no sources available, the input json is empty: %#v", self)
     }
 
-    /* prevent slicing before the beginning */
+    
     if p < 0 {
         p, q, i = 0, q - p, i + p
     }
 
-    /* prevent slicing beyond the end */
+    
     if n := len(self.Src); q > n {
         n = q - n
         q = len(self.Src)
 
-        /* move the left bound if possible */
+        
         if p > n {
             i += n
             p -= n
         }
     }
 
-    /* left and right length */
+    
     x := clamp_zero(i)
     y := clamp_zero(q - p - i - 1)
 
-    /* compose the error description */
+    
     return fmt.Sprintf(
         "at index %d: %s\n\n\t%s\n\t%s^%s\n",
         self.Pos,

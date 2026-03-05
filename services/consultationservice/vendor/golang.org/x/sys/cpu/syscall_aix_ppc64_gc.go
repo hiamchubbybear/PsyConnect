@@ -1,10 +1,10 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// Minimal copy of x/sys/unix so the cpu package can make a
-// system call on AIX without depending on x/sys/unix.
-// (See golang.org/issue/32102)
+
+
+
+
+
+
 
 //go:build aix && ppc64 && gc
 
@@ -25,7 +25,7 @@ var libc_getsystemcfg syscallFunc
 
 type errno = syscall.Errno
 
-// Implemented in runtime/syscall_aix.go.
+
 func rawSyscall6(trap, nargs, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2 uintptr, err errno)
 func syscall6(trap, nargs, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2 uintptr, err errno)
 

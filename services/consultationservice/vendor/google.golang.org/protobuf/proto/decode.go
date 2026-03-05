@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package proto
 
@@ -15,56 +15,56 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 )
 
-// UnmarshalOptions configures the unmarshaler.
-//
-// Example usage:
-//
-//	err := UnmarshalOptions{DiscardUnknown: true}.Unmarshal(b, m)
+
+
+
+
+
 type UnmarshalOptions struct {
 	pragma.NoUnkeyedLiterals
 
-	// Merge merges the input into the destination message.
-	// The default behavior is to always reset the message before unmarshaling,
-	// unless Merge is specified.
+	
+	
+	
 	Merge bool
 
-	// AllowPartial accepts input for messages that will result in missing
-	// required fields. If AllowPartial is false (the default), Unmarshal will
-	// return an error if there are any missing required fields.
+	
+	
+	
 	AllowPartial bool
 
-	// If DiscardUnknown is set, unknown fields are ignored.
+	
 	DiscardUnknown bool
 
-	// Resolver is used for looking up types when unmarshaling extension fields.
-	// If nil, this defaults to using protoregistry.GlobalTypes.
+	
+	
 	Resolver interface {
 		FindExtensionByName(field protoreflect.FullName) (protoreflect.ExtensionType, error)
 		FindExtensionByNumber(message protoreflect.FullName, field protoreflect.FieldNumber) (protoreflect.ExtensionType, error)
 	}
 
-	// RecursionLimit limits how deeply messages may be nested.
-	// If zero, a default limit is applied.
+	
+	
 	RecursionLimit int
 
-	//
-	// NoLazyDecoding turns off lazy decoding, which otherwise is enabled by
-	// default. Lazy decoding only affects submessages (annotated with [lazy =
-	// true] in the .proto file) within messages that use the Opaque API.
+	
+	
+	
+	
 	NoLazyDecoding bool
 }
 
-// Unmarshal parses the wire-format message in b and places the result in m.
-// The provided message must be mutable (e.g., a non-nil pointer to a message).
-//
-// See the [UnmarshalOptions] type if you need more control.
+
+
+
+
 func Unmarshal(b []byte, m Message) error {
 	_, err := UnmarshalOptions{RecursionLimit: protowire.DefaultRecursionLimit}.unmarshal(b, m.ProtoReflect())
 	return err
 }
 
-// Unmarshal parses the wire-format message in b and places the result in m.
-// The provided message must be mutable (e.g., a non-nil pointer to a message).
+
+
 func (o UnmarshalOptions) Unmarshal(b []byte, m Message) error {
 	if o.RecursionLimit == 0 {
 		o.RecursionLimit = protowire.DefaultRecursionLimit
@@ -73,10 +73,10 @@ func (o UnmarshalOptions) Unmarshal(b []byte, m Message) error {
 	return err
 }
 
-// UnmarshalState parses a wire-format message and places the result in m.
-//
-// This method permits fine-grained control over the unmarshaler.
-// Most users should use [Unmarshal] instead.
+
+
+
+
 func (o UnmarshalOptions) UnmarshalState(in protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
 	if o.RecursionLimit == 0 {
 		o.RecursionLimit = protowire.DefaultRecursionLimit
@@ -84,9 +84,9 @@ func (o UnmarshalOptions) UnmarshalState(in protoiface.UnmarshalInput) (protoifa
 	return o.unmarshal(in.Buf, in.Message)
 }
 
-// unmarshal is a centralized function that all unmarshal operations go through.
-// For profiling purposes, avoid changing the name of this function or
-// introducing other code paths for unmarshal that do not go through this.
+
+
+
 func (o UnmarshalOptions) unmarshal(b []byte, m protoreflect.Message) (out protoiface.UnmarshalOutput, err error) {
 	if o.Resolver == nil {
 		o.Resolver = protoregistry.GlobalTypes
@@ -111,8 +111,8 @@ func (o UnmarshalOptions) unmarshal(b []byte, m protoreflect.Message) (out proto
 		}
 
 		if !allowPartial {
-			// This does not affect how current unmarshal functions work, it just allows them
-			// to record this for lazy the decoding case.
+			
+			
 			in.Flags |= protoiface.UnmarshalCheckRequired
 		}
 		if o.NoLazyDecoding {
@@ -148,7 +148,7 @@ func (o UnmarshalOptions) unmarshalMessageSlow(b []byte, m protoreflect.Message)
 	}
 	fields := md.Fields()
 	for len(b) > 0 {
-		// Parse the tag (field number and wire type).
+		
 		num, wtyp, tagLen := protowire.ConsumeTag(b)
 		if tagLen < 0 {
 			return errDecode
@@ -157,7 +157,7 @@ func (o UnmarshalOptions) unmarshalMessageSlow(b []byte, m protoreflect.Message)
 			return errDecode
 		}
 
-		// Find the field descriptor for this field number.
+		
 		fd := fields.ByNumber(num)
 		if fd == nil && md.ExtensionRanges().Has(num) {
 			extType, err := o.Resolver.FindExtensionByNumber(md.FullName(), num)
@@ -173,7 +173,7 @@ func (o UnmarshalOptions) unmarshalMessageSlow(b []byte, m protoreflect.Message)
 			err = errUnknown
 		}
 
-		// Parse the field value.
+		
 		var valLen int
 		switch {
 		case err != nil:
@@ -213,7 +213,7 @@ func (o UnmarshalOptions) unmarshalSingular(b []byte, wtyp protowire.Type, m pro
 			return n, err
 		}
 	default:
-		// Non-message scalars replace the previous value.
+		
 		m.Set(fd, v)
 	}
 	return n, nil
@@ -239,8 +239,8 @@ func (o UnmarshalOptions) unmarshalMap(b []byte, wtyp protowire.Type, mapv proto
 	case protoreflect.GroupKind, protoreflect.MessageKind:
 		val = mapv.NewValue()
 	}
-	// Map entries are represented as a two-element message with fields
-	// containing the key and value.
+	
+	
 	for len(b) > 0 {
 		num, wtyp, n := protowire.ConsumeTag(b)
 		if n < 0 {
@@ -284,7 +284,7 @@ func (o UnmarshalOptions) unmarshalMap(b []byte, wtyp protowire.Type, mapv proto
 		}
 		b = b[n:]
 	}
-	// Every map entry should have entries for key and value, but this is not strictly required.
+	
 	if !haveKey {
 		key = keyField.Default()
 	}
@@ -299,9 +299,9 @@ func (o UnmarshalOptions) unmarshalMap(b []byte, wtyp protowire.Type, mapv proto
 	return n, nil
 }
 
-// errUnknown is used internally to indicate fields which should be added
-// to the unknown field set of a message. It is never returned from an exported
-// function.
+
+
+
 var errUnknown = errors.New("BUG: internal error (unknown)")
 
 var errDecode = errors.New("cannot parse invalid wire-format data")

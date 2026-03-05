@@ -12,7 +12,7 @@
   padding: 0.75rem 1rem;
 
   background: white;
-  border-radius: 50px; // Pill shape
+  border-radius: 50px; 
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(0, 0, 0, 0.05);
 
@@ -47,7 +47,7 @@
     right: 0;
     width: 10px;
     height: 10px;
-    background: #22c55e; // Green
+    background: #22c55e; 
     border: 2px solid white;
     border-radius: 50%;
     animation: pulse 1.5s infinite;
@@ -109,7 +109,7 @@
   }
 
   &.accept {
-    background: var(--color-gray-900); // Black
+    background: var(--color-gray-900); 
     color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     &:hover {
@@ -120,7 +120,7 @@
 
   &.reject {
     background: white;
-    color: var(--color-gray-900); // Black text
+    color: var(--color-gray-900); 
     border: 1px solid var(--color-gray-200);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     &:hover {

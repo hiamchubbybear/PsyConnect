@@ -1,6 +1,6 @@
-// Copyright 2019+ Klaus Post. All rights reserved.
-// License information can be found in the LICENSE file.
-// Based on work by Yann Collet, released under BSD License.
+
+
+
 
 package zstd
 
@@ -15,12 +15,12 @@ import (
 	"github.com/klauspost/compress/zstd/internal/xxhash"
 )
 
-// Encoder provides encoding to Zstandard.
-// An Encoder can be used for either compressing a stream via the
-// io.WriteCloser interface supported by the Encoder or as multiple independent
-// tasks via the EncodeAll function.
-// Smaller encodes are encouraged to use the EncodeAll function.
-// Use NewWriter to create a new instance.
+
+
+
+
+
+
 type Encoder struct {
 	o        encoderOptions
 	encoders chan encoder
@@ -55,14 +55,14 @@ type encoderState struct {
 	eofWritten       bool
 	fullFrameWritten bool
 
-	// This waitgroup indicates an encode is running.
+	
 	wg sync.WaitGroup
-	// This waitgroup indicates we have a block encoding/writing.
+	
 	wWg sync.WaitGroup
 }
 
-// NewWriter will create a new Zstandard encoder.
-// If the encoder will be used for encoding blocks a nil writer can be used.
+
+
 func NewWriter(w io.Writer, opts ...EOption) (*Encoder, error) {
 	initPredefined()
 	var e Encoder
@@ -90,8 +90,8 @@ func (e *Encoder) initialize() {
 	}
 }
 
-// Reset will re-initialize the writer and new writes will encode to the supplied writer
-// as a new, independent stream.
+
+
 func (e *Encoder) Reset(w io.Writer) {
 	s := &e.state
 	s.wg.Wait()
@@ -130,11 +130,11 @@ func (e *Encoder) Reset(w io.Writer) {
 	s.frameContentSize = 0
 }
 
-// ResetContentSize will reset and set a content size for the next stream.
-// If the bytes written does not match the size given an error will be returned
-// when calling Close().
-// This is removed when Reset is called.
-// Sizes <= 0 results in no content size set.
+
+
+
+
+
 func (e *Encoder) ResetContentSize(w io.Writer, size int64) {
 	e.Reset(w)
 	if size >= 0 {
@@ -142,11 +142,11 @@ func (e *Encoder) ResetContentSize(w io.Writer, size int64) {
 	}
 }
 
-// Write data to the encoder.
-// Input data will be buffered and as the buffer fills up
-// content will be compressed and written to the output.
-// When done writing, use Close to flush the remaining output
-// and write CRC if requested.
+
+
+
+
+
 func (e *Encoder) Write(p []byte) (n int, err error) {
 	s := &e.state
 	for len(p) > 0 {
@@ -181,11 +181,11 @@ func (e *Encoder) Write(p []byte) (n int, err error) {
 	return n, nil
 }
 
-// nextBlock will synchronize and start compressing input in e.state.filling.
-// If an error has occurred during encoding it will be returned.
+
+
 func (e *Encoder) nextBlock(final bool) error {
 	s := &e.state
-	// Wait for current block.
+	
 	s.wg.Wait()
 	if s.err != nil {
 		return s.err
@@ -194,7 +194,7 @@ func (e *Encoder) nextBlock(final bool) error {
 		return fmt.Errorf("block > maxStoreBlockSize")
 	}
 	if !s.headerWritten {
-		// If we have a single block encode, do a sync compression.
+		
 		if final && len(s.filling) == 0 && !e.o.fullZero {
 			s.headerWritten = true
 			s.fullFrameWritten = true
@@ -241,12 +241,12 @@ func (e *Encoder) nextBlock(final bool) error {
 		s.nWritten += int64(n2)
 	}
 	if s.eofWritten {
-		// Ensure we only write it once.
+		
 		final = false
 	}
 
 	if len(s.filling) == 0 {
-		// Final block, but no data.
+		
 		if final {
 			enc := s.encoder
 			blk := enc.Block()
@@ -261,7 +261,7 @@ func (e *Encoder) nextBlock(final bool) error {
 		return s.err
 	}
 
-	// SYNC:
+	
 	if e.o.concurrent == 1 {
 		src := s.filling
 		s.nInput += int64(len(s.filling))
@@ -287,7 +287,7 @@ func (e *Encoder) nextBlock(final bool) error {
 		return s.err
 	}
 
-	// Move blocks forward.
+	
 	s.filling, s.current, s.previous = s.previous[:0], s.filling, s.current
 	s.nInput += int64(len(s.current))
 	s.wg.Add(1)
@@ -309,15 +309,15 @@ func (e *Encoder) nextBlock(final bool) error {
 		if final {
 			s.eofWritten = true
 		}
-		// Wait for pending writes.
+		
 		s.wWg.Wait()
 		if s.writeErr != nil {
 			s.err = s.writeErr
 			return
 		}
-		// Transfer encoders from previous write block.
+		
 		blk.swapEncoders(s.writing)
-		// Transfer recent offsets to next.
+		
 		enc.UseBlock(s.writing)
 		s.writing = blk
 		s.wWg.Add(1)
@@ -340,17 +340,17 @@ func (e *Encoder) nextBlock(final bool) error {
 	return nil
 }
 
-// ReadFrom reads data from r until EOF or error.
-// The return value n is the number of bytes read.
-// Any error except io.EOF encountered during the read is also returned.
-//
-// The Copy function uses ReaderFrom if available.
+
+
+
+
+
 func (e *Encoder) ReadFrom(r io.Reader) (n int64, err error) {
 	if debugEncoder {
 		println("Using ReadFrom")
 	}
 
-	// Flush any current writes.
+	
 	if len(e.state.filling) > 0 {
 		if err := e.nextBlock(false); err != nil {
 			return 0, err
@@ -363,7 +363,7 @@ func (e *Encoder) ReadFrom(r io.Reader) (n int64, err error) {
 		if e.o.crc {
 			_, _ = e.state.encoder.CRC().Write(src[:n2])
 		}
-		// src is now the unfilled part...
+		
 		src = src[n2:]
 		n += int64(n2)
 		switch err {
@@ -396,9 +396,9 @@ func (e *Encoder) ReadFrom(r io.Reader) (n int64, err error) {
 	}
 }
 
-// Flush will send the currently written data to output
-// and block until everything has been written.
-// This should only be used on rare occasions where pushing the currently queued data is critical.
+
+
+
 func (e *Encoder) Flush() error {
 	s := &e.state
 	if len(s.filling) > 0 {
@@ -415,9 +415,9 @@ func (e *Encoder) Flush() error {
 	return s.writeErr
 }
 
-// Close will flush the final output and close the stream.
-// The function will block until everything has been written.
-// The Encoder can still be re-used after calling this.
+
+
+
 func (e *Encoder) Close() error {
 	s := &e.state
 	if s.encoder == nil {
@@ -445,15 +445,15 @@ func (e *Encoder) Close() error {
 		return s.writeErr
 	}
 
-	// Write CRC
+	
 	if e.o.crc && s.err == nil {
-		// heap alloc.
+		
 		var tmp [4]byte
 		_, s.err = s.w.Write(s.encoder.AppendCRC(tmp[:0]))
 		s.nWritten += 4
 	}
 
-	// Add padding with content from crypto/rand.Reader
+	
 	if s.err == nil && e.o.pad > 0 {
 		add := calcSkippableFrame(s.nWritten, int64(e.o.pad))
 		frame, err := skippableFrame(s.filling[:0], add, rand.Reader)
@@ -465,27 +465,27 @@ func (e *Encoder) Close() error {
 	return s.err
 }
 
-// EncodeAll will encode all input in src and append it to dst.
-// This function can be called concurrently, but each call will only run on a single goroutine.
-// If empty input is given, nothing is returned, unless WithZeroFrames is specified.
-// Encoded blocks can be concatenated and the result will be the combined input stream.
-// Data compressed with EncodeAll can be decoded with the Decoder,
-// using either a stream or DecodeAll.
+
+
+
+
+
+
 func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 	if len(src) == 0 {
 		if e.o.fullZero {
-			// Add frame header.
+			
 			fh := frameHeader{
 				ContentSize:   0,
 				WindowSize:    MinWindowSize,
 				SingleSegment: true,
-				// Adding a checksum would be a waste of space.
+				
 				Checksum: false,
 				DictID:   0,
 			}
 			dst, _ = fh.appendTo(dst)
 
-			// Write raw block as last one only.
+			
 			var blk blockHeader
 			blk.setSize(0)
 			blk.setType(blockTypeRaw)
@@ -497,11 +497,11 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 	e.init.Do(e.initialize)
 	enc := <-e.encoders
 	defer func() {
-		// Release encoder reference to last block.
-		// If a non-single block is needed the encoder will reset again.
+		
+		
 		e.encoders <- enc
 	}()
-	// Use single segments when above minimum window and below window size.
+	
 	single := len(src) <= e.o.windowSize && len(src) > MinWindowSize
 	if e.o.single != nil {
 		single = *e.o.single
@@ -514,7 +514,7 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 		DictID:        e.o.dict.ID(),
 	}
 
-	// If less than 1MB, allocate a buffer up front.
+	
 	if len(dst) == 0 && cap(dst) == 0 && len(src) < 1<<20 && !e.o.lowMem {
 		dst = make([]byte, 0, len(src))
 	}
@@ -523,10 +523,10 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 		panic(err)
 	}
 
-	// If we can do everything in one block, prefer that.
+	
 	if len(src) <= e.o.blockSize {
 		enc.Reset(e.o.dict, true)
-		// Slightly faster with no history and everything in one block.
+		
 		if e.o.crc {
 			_, _ = enc.CRC().Write(src)
 		}
@@ -538,10 +538,10 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 			enc.Encode(blk, src)
 		}
 
-		// If we got the exact same number of literals as input,
-		// assume the literals cannot be compressed.
+		
+		
 		oldout := blk.output
-		// Output directly to dst
+		
 		blk.output = dst
 
 		err := blk.encode(src, e.o.noEntropy, !e.o.allLitEntropy)
@@ -578,7 +578,7 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 	if e.o.crc {
 		dst = enc.AppendCRC(dst)
 	}
-	// Add padding with content from crypto/rand.Reader
+	
 	if e.o.pad > 0 {
 		add := calcSkippableFrame(int64(len(dst)), int64(e.o.pad))
 		dst, err = skippableFrame(dst, add, rand.Reader)
@@ -589,14 +589,14 @@ func (e *Encoder) EncodeAll(src, dst []byte) []byte {
 	return dst
 }
 
-// MaxEncodedSize returns the expected maximum
-// size of an encoded block or stream.
+
+
 func (e *Encoder) MaxEncodedSize(size int) int {
-	frameHeader := 4 + 2 // magic + frame header & window descriptor
+	frameHeader := 4 + 2 
 	if e.o.dict != nil {
 		frameHeader += 4
 	}
-	// Frame content size:
+	
 	if size < 256 {
 		frameHeader++
 	} else if size < 65536+256 {
@@ -606,16 +606,16 @@ func (e *Encoder) MaxEncodedSize(size int) int {
 	} else {
 		frameHeader += 8
 	}
-	// Final crc
+	
 	if e.o.crc {
 		frameHeader += 4
 	}
 
-	// Max overhead is 3 bytes/block.
-	// There cannot be 0 blocks.
+	
+	
 	blocks := (size + e.o.blockSize) / e.o.blockSize
 
-	// Combine, add padding.
+	
 	maxSz := frameHeader + 3*blocks + size
 	if e.o.pad > 1 {
 		maxSz += calcSkippableFrame(int64(maxSz), int64(e.o.pad))

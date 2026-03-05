@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package cpu
 
@@ -17,14 +17,14 @@ const (
 	uintSize = int(32 << (^uint(0) >> 63))
 )
 
-// For those platforms don't have a 'cpuid' equivalent we use HWCAP/HWCAP2
-// These are initialized in cpu_$GOARCH.go
-// and should not be changed after they are initialized.
+
+
+
 var hwCap uint
 var hwCap2 uint
 
 func readHWCAP() error {
-	// For Go 1.21+, get auxv from the Go runtime.
+	
 	if a := getAuxv(); len(a) > 0 {
 		for len(a) >= 2 {
 			tag, val := a[0], uint(a[1])
@@ -41,10 +41,10 @@ func readHWCAP() error {
 
 	buf, err := os.ReadFile(procAuxv)
 	if err != nil {
-		// e.g. on android /proc/self/auxv is not accessible, so silently
-		// ignore the error and leave Initialized = false. On some
-		// architectures (e.g. arm64) doinit() implements a fallback
-		// readout and will set Initialized = true again.
+		
+		
+		
+		
 		return err
 	}
 	bo := hostByteOrder()

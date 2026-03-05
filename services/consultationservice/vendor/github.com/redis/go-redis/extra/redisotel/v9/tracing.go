@@ -208,8 +208,8 @@ func funcFileLine(pkg string) (string, string, int) {
 	return fn, file, line
 }
 
-// Database span attributes semantic conventions recommended server address and port
-// https://opentelemetry.io/docs/specs/semconv/database/database-spans/#connection-level-attributes
+
+
 func addServerAttributes(opts []TracingOption, addr string) []TracingOption {
 	host, portString, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -220,7 +220,7 @@ func addServerAttributes(opts []TracingOption, addr string) []TracingOption {
 		semconv.ServerAddress(host),
 	))
 
-	// Parse the port string to an integer
+	
 	port, err := strconv.Atoi(portString)
 	if err != nil {
 		return opts

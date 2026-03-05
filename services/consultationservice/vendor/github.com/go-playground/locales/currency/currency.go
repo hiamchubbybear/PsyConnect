@@ -1,9 +1,9 @@
 package currency
 
-// Type is the currency type associated with the locales currency enum
+
 type Type int
 
-// locale currencies
+
 const (
 	ADP Type = iota
 	AED

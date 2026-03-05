@@ -12,7 +12,7 @@ export class NewsfeedService {
 
   constructor(private http: HttpClient) {}
 
-  // Get personalized feed
+  
   getFeed(limit: number = 20, skip: number = 0): Observable<Post[]> {
     const params = new HttpParams()
       .set('limit', limit.toString())
@@ -20,27 +20,27 @@ export class NewsfeedService {
     return this.http.get<Post[]>(this.apiUrl, { params });
   }
 
-  // Get single post
+  
   getPost(id: string): Observable<Post> {
     return this.http.get<Post>(`${this.apiUrl}/${id}`);
   }
 
-  // Create new post
+  
   createPost(post: CreatePostRequest): Observable<Post> {
     return this.http.post<Post>(this.apiUrl, post);
   }
 
-  // Update post
+  
   updatePost(id: string, post: Partial<CreatePostRequest>): Observable<Post> {
     return this.http.put<Post>(`${this.apiUrl}/${id}`, post);
   }
 
-  // Delete post
+  
   deletePost(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // Get user's posts
+  
   getUserPosts(
     userId: string,
     limit: number = 20,
@@ -52,13 +52,13 @@ export class NewsfeedService {
     return this.http.get<Post[]>(`${this.apiUrl}/user/${userId}`, { params });
   }
 
-  // Get trending posts
+  
   getTrendingPosts(limit: number = 20): Observable<Post[]> {
     const params = new HttpParams().set('limit', limit.toString());
     return this.http.get<Post[]>(`${this.apiUrl}/trending`, { params });
   }
 
-  // Search posts
+  
   searchPosts(
     query: string,
     limit: number = 20,
@@ -71,12 +71,12 @@ export class NewsfeedService {
     return this.http.get<Post[]>(`${this.apiUrl}/search`, { params });
   }
 
-  // Record post view
+  
   recordView(id: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/view`, {});
   }
 
-  // Get popular tags
+  
   getPopularTags(limit: number = 10): Observable<string[]> {
     const params = new HttpParams().set('limit', limit.toString());
     return this.http.get<string[]>(

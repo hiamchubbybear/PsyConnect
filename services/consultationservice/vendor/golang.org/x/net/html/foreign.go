@@ -1,6 +1,6 @@
-// Copyright 2011 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package html
 
@@ -66,7 +66,7 @@ func mathMLTextIntegrationPoint(n *Node) bool {
 	return false
 }
 
-// Section 12.2.6.5.
+
 var breakout = map[string]bool{
 	"b":          true,
 	"big":        true,
@@ -114,7 +114,7 @@ var breakout = map[string]bool{
 	"var":        true,
 }
 
-// Section 12.2.6.5.
+
 var svgTagNameAdjustments = map[string]string{
 	"altglyph":            "altGlyph",
 	"altglyphdef":         "altGlyphDef",
@@ -154,7 +154,7 @@ var svgTagNameAdjustments = map[string]string{
 	"textpath":            "textPath",
 }
 
-// Section 12.2.6.1
+
 var mathMLAttributeAdjustments = map[string]string{
 	"definitionurl": "definitionURL",
 }

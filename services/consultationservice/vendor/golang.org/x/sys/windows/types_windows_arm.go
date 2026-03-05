@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package windows
 
@@ -31,5 +31,5 @@ type JOBOBJECT_BASIC_LIMIT_INFORMATION struct {
 	Affinity                uintptr
 	PriorityClass           uint32
 	SchedulingClass         uint32
-	_                       uint32 // pad to 8 byte boundary
+	_                       uint32 
 }

@@ -13,17 +13,10 @@ type efaceDecoder struct {
 }
 
 func (d *efaceDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error {
-	/* check the defined pointer type for issue 379 */
+	
 	eface := (*rt.GoEface)(vp)
 
-	/*
-	 not pointer type, or nil pointer, or self-pointed interface{}, such as 
-		```go
-		var v interface{}
-		v = &v
-		return v
-		``` see `issue758_test.go`.
-	*/
+	
 	if eface.Value == nil || eface.Type.Kind() != reflect.Ptr || eface.Value == vp {
 		ret, err := node.AsEface(ctx)
 		if err != nil {
@@ -44,12 +37,12 @@ func (d *efaceDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error
 	vp = eface.Value
 
 	if eface.Type.IsNamed() {
-		// check named pointer type, avoid call its `Unmarshaler`
+		
 		newp := vp
 		etp = eface.Type
 		vp = unsafe.Pointer(&newp)
 	} else if !eface.Type.Indirect() {
-		// check direct value
+		
 		etp = rt.UnpackType(eface.Type.Pack().Elem())
 	}
 
@@ -84,7 +77,7 @@ func (d *ifaceDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error
 	etp := rt.PtrElem(vt)
 	vp = iface.Value
 
-	/* check the defined pointer type for issue 379 */
+	
 	if vt.IsNamed() {
 		newp := vp
 		etp = vt
@@ -119,12 +112,12 @@ func (d *unmarshalTextDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *contex
 		Value: vp,
 	}))
 
-	// fast path
+	
 	if u, ok :=  v.(encoding.TextUnmarshaler); ok {
 		return u.UnmarshalText(txt)
 	}
 
-	// slow path
+	
 	rv := reflect.ValueOf(v)
 	if u, ok := rv.Interface().(encoding.TextUnmarshaler); ok {
 		return u.UnmarshalText(txt)
@@ -157,12 +150,12 @@ func (d *unmarshalJSONDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *contex
 		input = []byte(node.AsRaw(ctx))
 	}
 
-	// fast path
+	
 	if u, ok :=  v.(json.Unmarshaler); ok {
 		return u.UnmarshalJSON((input))
 	}
 
-	// slow path
+	
 	rv := reflect.ValueOf(v)
 	if u, ok := rv.Interface().(json.Unmarshaler); ok {
 		return u.UnmarshalJSON(input)

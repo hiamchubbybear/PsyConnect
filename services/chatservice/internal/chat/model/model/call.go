@@ -5,5 +5,5 @@ type StartCallPayload struct {
 	ConversationID string `json:"conversationId"`
 	CallerID       string `json:"callerId"`
 	CallerName     string `json:"callerName"`
-	ReceiverID     string `json:"receiverId"` // The other participant in the conversation
+	ReceiverID     string `json:"receiverId"` 
 }

@@ -2,7 +2,7 @@ package stats
 
 import "math"
 
-// Entropy provides calculation of the entropy
+
 func Entropy(input Float64Data) (float64, error) {
 	input, err := normalize(input)
 	if err != nil {

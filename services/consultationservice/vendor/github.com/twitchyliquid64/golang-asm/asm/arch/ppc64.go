@@ -1,10 +1,10 @@
-// Copyright 2015 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// This file encapsulates some of the odd characteristics of the
-// 64-bit PowerPC (PPC64) instruction set, to minimize its interaction
-// with the core of the assembler.
+
+
+
+
+
+
 
 package arch
 
@@ -21,9 +21,9 @@ func jumpPPC64(word string) bool {
 	return false
 }
 
-// IsPPC64RLD reports whether the op (as defined by an ppc64.A* constant) is
-// one of the RLD-like instructions that require special handling.
-// The FMADD-like instructions behave similarly.
+
+
+
 func IsPPC64RLD(op obj.As) bool {
 	switch op {
 	case ppc64.ARLDC, ppc64.ARLDCCC, ppc64.ARLDCL, ppc64.ARLDCLCC,
@@ -43,8 +43,8 @@ func IsPPC64ISEL(op obj.As) bool {
 	return op == ppc64.AISEL
 }
 
-// IsPPC64CMP reports whether the op (as defined by an ppc64.A* constant) is
-// one of the CMP instructions that require special handling.
+
+
 func IsPPC64CMP(op obj.As) bool {
 	switch op {
 	case ppc64.ACMP, ppc64.ACMPU, ppc64.ACMPW, ppc64.ACMPWU, ppc64.AFCMPU:
@@ -53,8 +53,8 @@ func IsPPC64CMP(op obj.As) bool {
 	return false
 }
 
-// IsPPC64NEG reports whether the op (as defined by an ppc64.A* constant) is
-// one of the NEG-like instructions that require special handling.
+
+
 func IsPPC64NEG(op obj.As) bool {
 	switch op {
 	case ppc64.AADDMECC, ppc64.AADDMEVCC, ppc64.AADDMEV, ppc64.AADDME,

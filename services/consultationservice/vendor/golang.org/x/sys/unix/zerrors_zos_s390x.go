@@ -1,11 +1,11 @@
-// Copyright 2020 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 //go:build zos && s390x
 
-// Hand edited based on zerrors_linux_s390x.go
-// TODO: auto-generate.
+
+
 
 package unix
 
@@ -65,14 +65,14 @@ const (
 	F_SETTAG                 = 12
 	F_UNLCK                  = 3
 	F_WRLCK                  = 2
-	FSTYPE_ZFS               = 0xe9 //"Z"
-	FSTYPE_HFS               = 0xc8 //"H"
-	FSTYPE_NFS               = 0xd5 //"N"
-	FSTYPE_TFS               = 0xe3 //"T"
-	FSTYPE_AUTOMOUNT         = 0xc1 //"A"
+	FSTYPE_ZFS               = 0xe9 
+	FSTYPE_HFS               = 0xc8 
+	FSTYPE_NFS               = 0xd5 
+	FSTYPE_TFS               = 0xe3 
+	FSTYPE_AUTOMOUNT         = 0xc1 
 	GRND_NONBLOCK            = 1
 	GRND_RANDOM              = 2
-	HUPCL                    = 0x0100 // Hang up on last close
+	HUPCL                    = 0x0100 
 	IN_CLOEXEC               = 0x00001000
 	IN_NONBLOCK              = 0x00000004
 	IN_ACCESS                = 0x00000001
@@ -241,20 +241,20 @@ const (
 	POLLERR                         = 0x0020
 	POLLHUP                         = 0x0040
 	POLLNVAL                        = 0x0080
-	PROT_READ                       = 0x1 // mmap - page can be read
-	PROT_WRITE                      = 0x2 // page can be written
-	PROT_NONE                       = 0x4 // can't be accessed
-	PROT_EXEC                       = 0x8 // can be executed
-	MAP_PRIVATE                     = 0x1 // changes are private
-	MAP_SHARED                      = 0x2 // changes are shared
-	MAP_FIXED                       = 0x4 // place exactly
+	PROT_READ                       = 0x1 
+	PROT_WRITE                      = 0x2 
+	PROT_NONE                       = 0x4 
+	PROT_EXEC                       = 0x8 
+	MAP_PRIVATE                     = 0x1 
+	MAP_SHARED                      = 0x2 
+	MAP_FIXED                       = 0x4 
 	__MAP_MEGA                      = 0x8
 	__MAP_64                        = 0x10
 	MAP_ANON                        = 0x20
 	MAP_ANONYMOUS                   = 0x20
-	MS_SYNC                         = 0x1 // msync - synchronous writes
-	MS_ASYNC                        = 0x2 // asynchronous writes
-	MS_INVALIDATE                   = 0x4 // invalidate mappings
+	MS_SYNC                         = 0x1 
+	MS_ASYNC                        = 0x2 
+	MS_INVALIDATE                   = 0x4 
 	MS_BIND                         = 0x00001000
 	MS_MOVE                         = 0x00002000
 	MS_NOSUID                       = 0x00000002
@@ -264,13 +264,13 @@ const (
 	MS_RDONLY                       = 0x00000001
 	MS_UNBINDABLE                   = 0x00020000
 	MNT_DETACH                      = 0x00000004
-	ZOSDSFS_SUPER_MAGIC             = 0x44534653 // zOS DSFS
-	NFS_SUPER_MAGIC                 = 0x6969     // NFS
-	NSFS_MAGIC                      = 0x6e736673 // PROCNS
-	PROC_SUPER_MAGIC                = 0x9fa0     // proc FS
-	ZOSTFS_SUPER_MAGIC              = 0x544653   // zOS TFS
-	ZOSUFS_SUPER_MAGIC              = 0x554653   // zOS UFS
-	ZOSZFS_SUPER_MAGIC              = 0x5A4653   // zOS ZFS
+	ZOSDSFS_SUPER_MAGIC             = 0x44534653 
+	NFS_SUPER_MAGIC                 = 0x6969     
+	NSFS_MAGIC                      = 0x6e736673 
+	PROC_SUPER_MAGIC                = 0x9fa0     
+	ZOSTFS_SUPER_MAGIC              = 0x544653   
+	ZOSUFS_SUPER_MAGIC              = 0x554653   
+	ZOSZFS_SUPER_MAGIC              = 0x5A4653   
 	MTM_RDONLY                      = 0x80000000
 	MTM_RDWR                        = 0x40000000
 	MTM_UMOUNT                      = 0x10000000
@@ -285,7 +285,7 @@ const (
 	MTM_REMOUNT                     = 0x00000100
 	MTM_NOSECURITY                  = 0x00000080
 	NFDBITS                         = 0x20
-	ONLRET                          = 0x0020 // NL performs CR function
+	ONLRET                          = 0x0020 
 	O_ACCMODE                       = 0x03
 	O_APPEND                        = 0x08
 	O_ASYNCSIG                      = 0x0200
@@ -312,7 +312,7 @@ const (
 	PARMRK                          = 0x0400
 	QUERYCVT                        = 3
 	RUSAGE_CHILDREN                 = -0x1
-	RUSAGE_SELF                     = 0x0 // RUSAGE_THREAD unsupported on z/OS
+	RUSAGE_SELF                     = 0x0 
 	SEEK_CUR                        = 1
 	SEEK_END                        = 2
 	SEEK_SET                        = 0
@@ -335,7 +335,7 @@ const (
 	AF_IUCV                         = 17
 	AF_LAT                          = 14
 	AF_LINK                         = 18
-	AF_LOCAL                        = AF_UNIX // AF_LOCAL is an alias for AF_UNIX
+	AF_LOCAL                        = AF_UNIX 
 	AF_MAX                          = 30
 	AF_NBS                          = 7
 	AF_NDD                          = 23
@@ -489,14 +489,14 @@ const (
 	TIOCSBRK                        = 0x2000a77b
 	TIOCCBRK                        = 0x2000a77a
 	TIOCSTI                         = 0x8001a772
-	TIOCGPGRP                       = 0x4004a777 // _IOR(167, 119, int)
+	TIOCGPGRP                       = 0x4004a777 
 	TCSANOW                         = 0
-	TCSETS                          = 0 // equivalent to TCSANOW for tcsetattr
+	TCSETS                          = 0 
 	TCSADRAIN                       = 1
-	TCSETSW                         = 1 // equivalent to TCSADRAIN for tcsetattr
+	TCSETSW                         = 1 
 	TCSAFLUSH                       = 2
-	TCSETSF                         = 2 // equivalent to TCSAFLUSH for tcsetattr
-	TCGETS                          = 3 // not defined in ioctl.h -- zos golang only
+	TCSETSF                         = 2 
+	TCGETS                          = 3 
 	TCIFLUSH                        = 0
 	TCOFLUSH                        = 1
 	TCIOFLUSH                       = 2
@@ -538,27 +538,27 @@ const (
 	WUNTRACED                       = 0x2
 	_BPX_SWAP                       = 1
 	_BPX_NONSWAP                    = 2
-	MCL_CURRENT                     = 1  // for Linux compatibility -- no zos semantics
-	MCL_FUTURE                      = 2  // for Linux compatibility -- no zos semantics
-	MCL_ONFAULT                     = 3  // for Linux compatibility -- no zos semantics
-	MADV_NORMAL                     = 0  // for Linux compatibility -- no zos semantics
-	MADV_RANDOM                     = 1  // for Linux compatibility -- no zos semantics
-	MADV_SEQUENTIAL                 = 2  // for Linux compatibility -- no zos semantics
-	MADV_WILLNEED                   = 3  // for Linux compatibility -- no zos semantics
-	MADV_REMOVE                     = 4  // for Linux compatibility -- no zos semantics
-	MADV_DONTFORK                   = 5  // for Linux compatibility -- no zos semantics
-	MADV_DOFORK                     = 6  // for Linux compatibility -- no zos semantics
-	MADV_HWPOISON                   = 7  // for Linux compatibility -- no zos semantics
-	MADV_MERGEABLE                  = 8  // for Linux compatibility -- no zos semantics
-	MADV_UNMERGEABLE                = 9  // for Linux compatibility -- no zos semantics
-	MADV_SOFT_OFFLINE               = 10 // for Linux compatibility -- no zos semantics
-	MADV_HUGEPAGE                   = 11 // for Linux compatibility -- no zos semantics
-	MADV_NOHUGEPAGE                 = 12 // for Linux compatibility -- no zos semantics
-	MADV_DONTDUMP                   = 13 // for Linux compatibility -- no zos semantics
-	MADV_DODUMP                     = 14 // for Linux compatibility -- no zos semantics
-	MADV_FREE                       = 15 // for Linux compatibility -- no zos semantics
-	MADV_WIPEONFORK                 = 16 // for Linux compatibility -- no zos semantics
-	MADV_KEEPONFORK                 = 17 // for Linux compatibility -- no zos semantics
+	MCL_CURRENT                     = 1  
+	MCL_FUTURE                      = 2  
+	MCL_ONFAULT                     = 3  
+	MADV_NORMAL                     = 0  
+	MADV_RANDOM                     = 1  
+	MADV_SEQUENTIAL                 = 2  
+	MADV_WILLNEED                   = 3  
+	MADV_REMOVE                     = 4  
+	MADV_DONTFORK                   = 5  
+	MADV_DOFORK                     = 6  
+	MADV_HWPOISON                   = 7  
+	MADV_MERGEABLE                  = 8  
+	MADV_UNMERGEABLE                = 9  
+	MADV_SOFT_OFFLINE               = 10 
+	MADV_HUGEPAGE                   = 11 
+	MADV_NOHUGEPAGE                 = 12 
+	MADV_DONTDUMP                   = 13 
+	MADV_DODUMP                     = 14 
+	MADV_FREE                       = 15 
+	MADV_WIPEONFORK                 = 16 
+	MADV_KEEPONFORK                 = 17 
 	AT_SYMLINK_FOLLOW               = 0x400
 	AT_SYMLINK_NOFOLLOW             = 0x100
 	XATTR_CREATE                    = 0x1
@@ -743,7 +743,7 @@ const (
 	ENOMOVE            = Errno(1161)
 )
 
-// Signals
+
 const (
 	SIGHUP    = Signal(1)
 	SIGINT    = Signal(2)
@@ -785,7 +785,7 @@ const (
 	SIGDUMP   = Signal(39)
 )
 
-// Error table
+
 var errorList = [...]struct {
 	num  Errno
 	name string
@@ -943,7 +943,7 @@ var errorList = [...]struct {
 	{1161, "EDC8161I", "The file system cannot currently be moved."},
 }
 
-// Signal table
+
 var signalList = [...]struct {
 	num  Signal
 	name string

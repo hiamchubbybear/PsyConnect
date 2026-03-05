@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 //go:build gssapi && (linux || darwin)
 // +build gssapi
@@ -10,13 +10,7 @@
 
 package gssapi
 
-/*
-#cgo linux CFLAGS: -DGOOS_linux
-#cgo linux LDFLAGS: -lgssapi_krb5 -lkrb5
-#cgo darwin CFLAGS: -DGOOS_darwin
-#cgo darwin LDFLAGS: -framework GSS
-#include "gss_wrapper.h"
-*/
+
 import "C"
 import (
 	"context"
@@ -26,7 +20,7 @@ import (
 	"unsafe"
 )
 
-// New creates a new SaslClient. The target parameter should be a hostname with no port.
+
 func New(target, username, password string, passwordSet bool, props map[string]string) (*SaslClient, error) {
 	serviceName := "mongodb"
 
@@ -61,7 +55,7 @@ type SaslClient struct {
 	password             string
 	passwordSet          bool
 
-	// state
+	
 	state           C.gssapi_client_state
 	contextComplete bool
 	done            bool

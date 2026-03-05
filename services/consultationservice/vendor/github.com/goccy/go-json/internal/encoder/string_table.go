@@ -38,7 +38,7 @@ var needEscapeHTMLNormalizeUTF8 = [256]bool{
 	0x1d: true,
 	0x1e: true,
 	0x1f: true,
-	/* 0x20 - 0x7f */
+	
 	0x80: true,
 	0x81: true,
 	0x82: true,
@@ -204,7 +204,7 @@ var needEscapeNormalizeUTF8 = [256]bool{
 	0x1d: true,
 	0x1e: true,
 	0x1f: true,
-	/* 0x20 - 0x7f */
+	
 	0x80: true,
 	0x81: true,
 	0x82: true,
@@ -373,7 +373,7 @@ var needEscapeHTML = [256]bool{
 	0x1d: true,
 	0x1e: true,
 	0x1f: true,
-	/* 0x20 - 0xff */
+	
 }
 
 var needEscape = [256]bool{
@@ -411,5 +411,5 @@ var needEscape = [256]bool{
 	0x1d: true,
 	0x1e: true,
 	0x1f: true,
-	/* 0x20 - 0xff */
+	
 }

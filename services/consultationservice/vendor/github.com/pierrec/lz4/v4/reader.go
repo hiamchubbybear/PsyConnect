@@ -17,7 +17,7 @@ var readerStates = []aState{
 	closedState: newState,
 }
 
-// NewReader returns a new LZ4 frame decoder.
+
 func NewReader(r io.Reader) *Reader {
 	return newReader(r, false)
 }
@@ -30,15 +30,15 @@ func newReader(r io.Reader, legacy bool) *Reader {
 	return zr
 }
 
-// Reader allows reading an LZ4 stream.
+
 type Reader struct {
 	state   _State
-	src     io.Reader        // source reader
-	num     int              // concurrency level
-	frame   *lz4stream.Frame // frame being read
-	data    []byte           // block buffer allocated in non concurrent mode
-	reads   chan []byte      // pending data
-	idx     int              // size of pending data
+	src     io.Reader        
+	num     int              
+	frame   *lz4stream.Frame 
+	data    []byte           
+	reads   chan []byte      
+	idx     int              
 	handler func(int)
 	cum     uint32
 	dict    []byte
@@ -63,7 +63,7 @@ func (r *Reader) Apply(options ...Option) (err error) {
 	return
 }
 
-// Size returns the size of the underlying uncompressed data, if set in the stream.
+
 func (r *Reader) Size() int {
 	switch r.state.state {
 	case readState, closedState:
@@ -84,8 +84,8 @@ func (r *Reader) init() error {
 		return err
 	}
 	if !r.frame.Descriptor.Flags.BlockIndependence() {
-		// We can't decompress dependent blocks concurrently.
-		// Instead of throwing an error to the user, silently drop concurrency
+		
+		
 		r.num = 1
 	}
 	data, err := r.frame.InitR(r.src, r.num)
@@ -107,7 +107,7 @@ func (r *Reader) Read(buf []byte) (n int, err error) {
 	case closedState, errorState:
 		return 0, r.state.err
 	case newState:
-		// First initialization.
+		
 		if err = r.init(); r.state.next(err) {
 			return
 		}
@@ -123,7 +123,7 @@ func (r *Reader) Read(buf []byte) (n int, err error) {
 				lz4block.Put(r.data)
 				r.data = <-r.reads
 				if len(r.data) == 0 {
-					// No uncompressed data: something went wrong or we are done.
+					
 					err = r.frame.Blocks.ErrorR()
 				}
 			}
@@ -141,11 +141,11 @@ func (r *Reader) Read(buf []byte) (n int, err error) {
 			}
 		}
 		if bn == 0 {
-			// Fill buf with buffered data.
+			
 			bn = copy(buf, r.data[r.idx:])
 			r.idx += bn
 			if r.idx == len(r.data) {
-				// All data read, get ready for the next Read.
+				
 				r.idx = 0
 			}
 		}
@@ -156,10 +156,10 @@ func (r *Reader) Read(buf []byte) (n int, err error) {
 	return
 }
 
-// read uncompresses the next block as follow:
-// - if buf has enough room, the block is uncompressed into it directly
-//   and the lenght of used space is returned
-// - else, the uncompress data is stored in r.data and 0 is returned
+
+
+
+
 func (r *Reader) read(buf []byte) (int, error) {
 	block := r.frame.Blocks.Block
 	_, err := block.Read(r.frame, r.src, r.cum)
@@ -169,7 +169,7 @@ func (r *Reader) read(buf []byte) (int, error) {
 	var direct bool
 	dst := r.data[:cap(r.data)]
 	if len(buf) >= len(dst) {
-		// Uncompress directly into buf.
+		
 		direct = true
 		dst = buf
 	}
@@ -195,9 +195,9 @@ func (r *Reader) read(buf []byte) (int, error) {
 	return 0, nil
 }
 
-// Reset clears the state of the Reader r such that it is equivalent to its
-// initial state from NewReader, but instead reading from reader.
-// No access to reader is performed.
+
+
+
 func (r *Reader) Reset(reader io.Reader) {
 	if r.data != nil {
 		lz4block.Put(r.data)
@@ -209,7 +209,7 @@ func (r *Reader) Reset(reader io.Reader) {
 	r.reads = nil
 }
 
-// WriteTo efficiently uncompresses the data from the Reader underlying source to w.
+
 func (r *Reader) WriteTo(w io.Writer) (n int64, err error) {
 	switch r.state.state {
 	case closedState, errorState:
@@ -240,7 +240,7 @@ func (r *Reader) WriteTo(w io.Writer) (n int64, err error) {
 			dst = <-r.reads
 			bn = len(dst)
 			if bn == 0 {
-				// No uncompressed data: something went wrong or we are done.
+				
 				err = r.frame.Blocks.ErrorR()
 			}
 		}
@@ -261,7 +261,7 @@ func (r *Reader) WriteTo(w io.Writer) (n int64, err error) {
 	}
 }
 
-// ValidFrameHeader returns a bool indicating if the given bytes slice matches a LZ4 header.
+
 func ValidFrameHeader(in []byte) (bool, error) {
 	f := lz4stream.NewFrame()
 	err := f.ParseHeaders(bytes.NewReader(in))

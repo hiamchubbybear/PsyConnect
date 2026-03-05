@@ -23,6 +23,6 @@ type GoMapIterator struct {
 	I           uint8
 	Bucket      uintptr
 	CheckBucket uintptr
-	// different from go1.23
+	
 	ClearSeq    uint64
 }

@@ -21,7 +21,7 @@ func init() {
 	}
 }
 
-// ReadUint read uint
+
 func (iter *Iterator) ReadUint() uint {
 	if strconv.IntSize == 32 {
 		return uint(iter.ReadUint32())
@@ -29,7 +29,7 @@ func (iter *Iterator) ReadUint() uint {
 	return uint(iter.ReadUint64())
 }
 
-// ReadInt read int
+
 func (iter *Iterator) ReadInt() int {
 	if strconv.IntSize == 32 {
 		return int(iter.ReadInt32())
@@ -37,7 +37,7 @@ func (iter *Iterator) ReadInt() int {
 	return int(iter.ReadInt64())
 }
 
-// ReadInt8 read int8
+
 func (iter *Iterator) ReadInt8() (ret int8) {
 	c := iter.nextToken()
 	if c == '-' {
@@ -56,7 +56,7 @@ func (iter *Iterator) ReadInt8() (ret int8) {
 	return int8(val)
 }
 
-// ReadUint8 read uint8
+
 func (iter *Iterator) ReadUint8() (ret uint8) {
 	val := iter.readUint32(iter.nextToken())
 	if val > math.MaxUint8 {
@@ -66,7 +66,7 @@ func (iter *Iterator) ReadUint8() (ret uint8) {
 	return uint8(val)
 }
 
-// ReadInt16 read int16
+
 func (iter *Iterator) ReadInt16() (ret int16) {
 	c := iter.nextToken()
 	if c == '-' {
@@ -85,7 +85,7 @@ func (iter *Iterator) ReadInt16() (ret int16) {
 	return int16(val)
 }
 
-// ReadUint16 read uint16
+
 func (iter *Iterator) ReadUint16() (ret uint16) {
 	val := iter.readUint32(iter.nextToken())
 	if val > math.MaxUint16 {
@@ -95,7 +95,7 @@ func (iter *Iterator) ReadUint16() (ret uint16) {
 	return uint16(val)
 }
 
-// ReadInt32 read int32
+
 func (iter *Iterator) ReadInt32() (ret int32) {
 	c := iter.nextToken()
 	if c == '-' {
@@ -114,7 +114,7 @@ func (iter *Iterator) ReadInt32() (ret int32) {
 	return int32(val)
 }
 
-// ReadUint32 read uint32
+
 func (iter *Iterator) ReadUint32() (ret uint32) {
 	return iter.readUint32(iter.nextToken())
 }
@@ -123,7 +123,7 @@ func (iter *Iterator) readUint32(c byte) (ret uint32) {
 	ind := intDigits[c]
 	if ind == 0 {
 		iter.assertInteger()
-		return 0 // single zero
+		return 0 
 	}
 	if ind == invalidCharForNumber {
 		iter.ReportError("readUint32", "unexpected character: "+string([]byte{byte(ind)}))
@@ -145,8 +145,8 @@ func (iter *Iterator) readUint32(c byte) (ret uint32) {
 			iter.assertInteger()
 			return value*10 + uint32(ind2)
 		}
-		//iter.head = i + 1
-		//value = value * 100 + uint32(ind2) * 10 + uint32(ind3)
+		
+		
 		i++
 		ind4 := intDigits[iter.buf[i]]
 		if ind4 == invalidCharForNumber {
@@ -217,7 +217,7 @@ func (iter *Iterator) readUint32(c byte) (ret uint32) {
 	}
 }
 
-// ReadInt64 read int64
+
 func (iter *Iterator) ReadInt64() (ret int64) {
 	c := iter.nextToken()
 	if c == '-' {
@@ -236,7 +236,7 @@ func (iter *Iterator) ReadInt64() (ret int64) {
 	return int64(val)
 }
 
-// ReadUint64 read uint64
+
 func (iter *Iterator) ReadUint64() uint64 {
 	return iter.readUint64(iter.nextToken())
 }
@@ -245,7 +245,7 @@ func (iter *Iterator) readUint64(c byte) (ret uint64) {
 	ind := intDigits[c]
 	if ind == 0 {
 		iter.assertInteger()
-		return 0 // single zero
+		return 0 
 	}
 	if ind == invalidCharForNumber {
 		iter.ReportError("readUint64", "unexpected character: "+string([]byte{byte(ind)}))
@@ -267,8 +267,8 @@ func (iter *Iterator) readUint64(c byte) (ret uint64) {
 			iter.assertInteger()
 			return value*10 + uint64(ind2)
 		}
-		//iter.head = i + 1
-		//value = value * 100 + uint32(ind2) * 10 + uint32(ind3)
+		
+		
 		i++
 		ind4 := intDigits[iter.buf[i]]
 		if ind4 == invalidCharForNumber {

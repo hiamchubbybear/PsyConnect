@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -24,7 +24,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Update performs an update operation.
+
 type Update struct {
 	authenticator            driver.Authenticator
 	bypassDocumentValidation *bool
@@ -51,19 +51,19 @@ type Update struct {
 	logger                   *logger.Logger
 }
 
-// Upsert contains the information for an upsert in an Update operation.
+
 type Upsert struct {
 	Index int64
 	ID    interface{} `bson:"_id"`
 }
 
-// UpdateResult contains information for the result of an Update operation.
+
 type UpdateResult struct {
-	// Number of documents matched.
+	
 	N int64
-	// Number of documents modified.
+	
 	NModified int64
-	// Information about upserted documents.
+	
 	Upserted []Upsert
 }
 
@@ -115,14 +115,14 @@ func buildUpdateResult(response bsoncore.Document) (UpdateResult, error) {
 	return ur, nil
 }
 
-// NewUpdate constructs and returns a new Update.
+
 func NewUpdate(updates ...bsoncore.Document) *Update {
 	return &Update{
 		updates: updates,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (u *Update) Result() UpdateResult { return u.result }
 
 func (u *Update) processResponse(info driver.ResponseInfo) error {
@@ -140,7 +140,7 @@ func (u *Update) processResponse(info driver.ResponseInfo) error {
 
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (u *Update) Execute(ctx context.Context) error {
 	if u.deployment == nil {
 		return errors.New("the Update operation must have a Deployment set before Execute can be called")
@@ -212,8 +212,8 @@ func (u *Update) command(dst []byte, desc description.SelectedServer) ([]byte, e
 	return dst, nil
 }
 
-// BypassDocumentValidation allows the operation to opt-out of document level validation. Valid
-// for server versions >= 3.2. For servers < 3.2, this setting is ignored.
+
+
 func (u *Update) BypassDocumentValidation(bypassDocumentValidation bool) *Update {
 	if u == nil {
 		u = new(Update)
@@ -223,9 +223,9 @@ func (u *Update) BypassDocumentValidation(bypassDocumentValidation bool) *Update
 	return u
 }
 
-// Hint is a flag to indicate that the update document contains a hint. Hint is only supported by
-// servers >= 4.2. Older servers >= 3.4 will report an error for using the hint option. For servers <
-// 3.4, the driver will return an error if the hint option is used.
+
+
+
 func (u *Update) Hint(hint bool) *Update {
 	if u == nil {
 		u = new(Update)
@@ -235,8 +235,8 @@ func (u *Update) Hint(hint bool) *Update {
 	return u
 }
 
-// ArrayFilters is a flag to indicate that the update document contains an arrayFilters field. This option is only
-// supported on server versions 3.6 and higher. For servers < 3.6, the driver will return an error.
+
+
 func (u *Update) ArrayFilters(arrayFilters bool) *Update {
 	if u == nil {
 		u = new(Update)
@@ -246,8 +246,8 @@ func (u *Update) ArrayFilters(arrayFilters bool) *Update {
 	return u
 }
 
-// Ordered sets ordered. If true, when a write fails, the operation will return the error, when
-// false write failures do not stop execution of the operation.
+
+
 func (u *Update) Ordered(ordered bool) *Update {
 	if u == nil {
 		u = new(Update)
@@ -257,9 +257,9 @@ func (u *Update) Ordered(ordered bool) *Update {
 	return u
 }
 
-// Updates specifies an array of update statements to perform when this operation is executed.
-// Each update document must have the following structure:
-// {q: <query>, u: <update>, multi: <boolean>, collation: Optional<Document>, arrayFitlers: Optional<Array>, hint: Optional<string/Document>}.
+
+
+
 func (u *Update) Updates(updates ...bsoncore.Document) *Update {
 	if u == nil {
 		u = new(Update)
@@ -269,7 +269,7 @@ func (u *Update) Updates(updates ...bsoncore.Document) *Update {
 	return u
 }
 
-// Session sets the session for this operation.
+
 func (u *Update) Session(session *session.Client) *Update {
 	if u == nil {
 		u = new(Update)
@@ -279,7 +279,7 @@ func (u *Update) Session(session *session.Client) *Update {
 	return u
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (u *Update) ClusterClock(clock *session.ClusterClock) *Update {
 	if u == nil {
 		u = new(Update)
@@ -289,7 +289,7 @@ func (u *Update) ClusterClock(clock *session.ClusterClock) *Update {
 	return u
 }
 
-// Collection sets the collection that this command will run against.
+
 func (u *Update) Collection(collection string) *Update {
 	if u == nil {
 		u = new(Update)
@@ -299,7 +299,7 @@ func (u *Update) Collection(collection string) *Update {
 	return u
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (u *Update) CommandMonitor(monitor *event.CommandMonitor) *Update {
 	if u == nil {
 		u = new(Update)
@@ -309,7 +309,7 @@ func (u *Update) CommandMonitor(monitor *event.CommandMonitor) *Update {
 	return u
 }
 
-// Comment sets a value to help trace an operation.
+
 func (u *Update) Comment(comment bsoncore.Value) *Update {
 	if u == nil {
 		u = new(Update)
@@ -319,7 +319,7 @@ func (u *Update) Comment(comment bsoncore.Value) *Update {
 	return u
 }
 
-// Database sets the database to run this operation against.
+
 func (u *Update) Database(database string) *Update {
 	if u == nil {
 		u = new(Update)
@@ -329,7 +329,7 @@ func (u *Update) Database(database string) *Update {
 	return u
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (u *Update) Deployment(deployment driver.Deployment) *Update {
 	if u == nil {
 		u = new(Update)
@@ -339,7 +339,7 @@ func (u *Update) Deployment(deployment driver.Deployment) *Update {
 	return u
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (u *Update) ServerSelector(selector description.ServerSelector) *Update {
 	if u == nil {
 		u = new(Update)
@@ -349,7 +349,7 @@ func (u *Update) ServerSelector(selector description.ServerSelector) *Update {
 	return u
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (u *Update) WriteConcern(writeConcern *writeconcern.WriteConcern) *Update {
 	if u == nil {
 		u = new(Update)
@@ -359,9 +359,9 @@ func (u *Update) WriteConcern(writeConcern *writeconcern.WriteConcern) *Update {
 	return u
 }
 
-// Retry enables retryable writes for this operation. Retries are not handled automatically,
-// instead a boolean is returned from Execute and SelectAndExecute that indicates if the
-// operation can be retried. Retrying is handled by calling RetryExecute.
+
+
+
 func (u *Update) Retry(retry driver.RetryMode) *Update {
 	if u == nil {
 		u = new(Update)
@@ -371,7 +371,7 @@ func (u *Update) Retry(retry driver.RetryMode) *Update {
 	return u
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (u *Update) Crypt(crypt driver.Crypt) *Update {
 	if u == nil {
 		u = new(Update)
@@ -381,7 +381,7 @@ func (u *Update) Crypt(crypt driver.Crypt) *Update {
 	return u
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (u *Update) ServerAPI(serverAPI *driver.ServerAPIOptions) *Update {
 	if u == nil {
 		u = new(Update)
@@ -391,7 +391,7 @@ func (u *Update) ServerAPI(serverAPI *driver.ServerAPIOptions) *Update {
 	return u
 }
 
-// Let specifies the let document to use. This option is only valid for server versions 5.0 and above.
+
 func (u *Update) Let(let bsoncore.Document) *Update {
 	if u == nil {
 		u = new(Update)
@@ -401,7 +401,7 @@ func (u *Update) Let(let bsoncore.Document) *Update {
 	return u
 }
 
-// Timeout sets the timeout for this operation.
+
 func (u *Update) Timeout(timeout *time.Duration) *Update {
 	if u == nil {
 		u = new(Update)
@@ -411,7 +411,7 @@ func (u *Update) Timeout(timeout *time.Duration) *Update {
 	return u
 }
 
-// Logger sets the logger for this operation.
+
 func (u *Update) Logger(logger *logger.Logger) *Update {
 	if u == nil {
 		u = new(Update)
@@ -421,7 +421,7 @@ func (u *Update) Logger(logger *logger.Logger) *Update {
 	return u
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (u *Update) Authenticator(authenticator driver.Authenticator) *Update {
 	if u == nil {
 		u = new(Update)
@@ -431,7 +431,7 @@ func (u *Update) Authenticator(authenticator driver.Authenticator) *Update {
 	return u
 }
 
-// BypassEmptyTsReplacement sets the bypassEmptyTsReplacement to use for this operation.
+
 func (u *Update) BypassEmptyTsReplacement(bypassEmptyTsReplacement bool) *Update {
 	if u == nil {
 		u = new(Update)

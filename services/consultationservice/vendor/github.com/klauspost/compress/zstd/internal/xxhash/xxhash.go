@@ -1,6 +1,6 @@
-// Package xxhash implements the 64-bit variant of xxHash (XXH64) as described
-// at http://cyan4973.github.io/xxHash/.
-// THIS IS VENDORED: Go to github.com/cespare/xxhash for original package.
+
+
+
 
 package xxhash
 
@@ -18,13 +18,13 @@ const (
 	prime5 uint64 = 2870177450012600261
 )
 
-// Store the primes in an array as well.
-//
-// The consts are used when possible in Go code to avoid MOVs but we need a
-// contiguous array of the assembly code.
+
+
+
+
 var primes = [...]uint64{prime1, prime2, prime3, prime4, prime5}
 
-// Digest implements hash.Hash64.
+
 type Digest struct {
 	v1    uint64
 	v2    uint64
@@ -32,17 +32,17 @@ type Digest struct {
 	v4    uint64
 	total uint64
 	mem   [32]byte
-	n     int // how much of mem is used
+	n     int 
 }
 
-// New creates a new Digest that computes the 64-bit xxHash algorithm.
+
 func New() *Digest {
 	var d Digest
 	d.Reset()
 	return &d
 }
 
-// Reset clears the Digest's state so that it can be reused.
+
 func (d *Digest) Reset() {
 	d.v1 = primes[0] + prime2
 	d.v2 = prime2
@@ -52,13 +52,13 @@ func (d *Digest) Reset() {
 	d.n = 0
 }
 
-// Size always returns 8 bytes.
+
 func (d *Digest) Size() int { return 8 }
 
-// BlockSize always returns 32 bytes.
+
 func (d *Digest) BlockSize() int { return 32 }
 
-// Write adds more data to d. It always returns len(b), nil.
+
 func (d *Digest) Write(b []byte) (n int, err error) {
 	n = len(b)
 	d.total += uint64(n)
@@ -66,14 +66,14 @@ func (d *Digest) Write(b []byte) (n int, err error) {
 	memleft := d.mem[d.n&(len(d.mem)-1):]
 
 	if d.n+n < 32 {
-		// This new data doesn't even fill the current block.
+		
 		copy(memleft, b)
 		d.n += n
 		return
 	}
 
 	if d.n > 0 {
-		// Finish off the partial block.
+		
 		c := copy(memleft, b)
 		d.v1 = round(d.v1, u64(d.mem[0:8]))
 		d.v2 = round(d.v2, u64(d.mem[8:16]))
@@ -84,19 +84,19 @@ func (d *Digest) Write(b []byte) (n int, err error) {
 	}
 
 	if len(b) >= 32 {
-		// One or more full blocks left.
+		
 		nw := writeBlocks(d, b)
 		b = b[nw:]
 	}
 
-	// Store any remaining partial block.
+	
 	copy(d.mem[:], b)
 	d.n = len(b)
 
 	return
 }
 
-// Sum appends the current hash to b and returns the resulting slice.
+
 func (d *Digest) Sum(b []byte) []byte {
 	s := d.Sum64()
 	return append(
@@ -112,7 +112,7 @@ func (d *Digest) Sum(b []byte) []byte {
 	)
 }
 
-// Sum64 returns the current hash.
+
 func (d *Digest) Sum64() uint64 {
 	var h uint64
 
@@ -159,7 +159,7 @@ const (
 	marshaledSize = len(magic) + 8*5 + 32
 )
 
-// MarshalBinary implements the encoding.BinaryMarshaler interface.
+
 func (d *Digest) MarshalBinary() ([]byte, error) {
 	b := make([]byte, 0, marshaledSize)
 	b = append(b, magic...)
@@ -173,7 +173,7 @@ func (d *Digest) MarshalBinary() ([]byte, error) {
 	return b, nil
 }
 
-// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+
 func (d *Digest) UnmarshalBinary(b []byte) error {
 	if len(b) < len(magic) || string(b[:len(magic)]) != magic {
 		return errors.New("xxhash: invalid hash state identifier")

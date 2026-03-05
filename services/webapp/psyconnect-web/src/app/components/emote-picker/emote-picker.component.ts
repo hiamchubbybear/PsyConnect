@@ -45,12 +45,12 @@ export class EmotePickerComponent implements OnInit {
   get filteredEmotes(): Emote[] {
     let filtered = this.emotes;
 
-    // Filter by category
+    
     if (this.selectedCategory !== 'all') {
       filtered = filtered.filter((e) => e.category === this.selectedCategory);
     }
 
-    // Filter by search
+    
     if (this.searchQuery) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -102,13 +102,13 @@ export class EmotePickerComponent implements OnInit {
     const recent = localStorage.getItem('recentEmotes');
     let ids: string[] = recent ? JSON.parse(recent) : [];
 
-    // Remove if already exists
+    
     ids = ids.filter((id) => id !== emote.id);
 
-    // Add to front
+    
     ids.unshift(emote.id);
 
-    // Keep only last 8
+    
     ids = ids.slice(0, 8);
 
     localStorage.setItem('recentEmotes', JSON.stringify(ids));

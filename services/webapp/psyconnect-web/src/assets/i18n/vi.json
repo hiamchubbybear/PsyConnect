@@ -519,7 +519,19 @@
             "Cancel": "Hủy",
             "Success": "Đặt lịch thành công!",
             "Error": "Đặt lịch thất bại. Vui lòng thử lại.",
-            "RatePerHour": "Phí / giờ"
+            "RatePerHour": "Phí / giờ",
+            "ResponsibilityNote": "Bạn có trách nhiệm với lịch hẹn này. Hủy trễ hơn 24h có thể phát sinh phí.",
+            "SelectDateTime": "Chọn ngày và giờ",
+            "SelectDateTimeDesc": "Chọn ngày và khung giờ phù hợp với lịch của bạn. Vui lòng đặt trước ít nhất 1 ngày.",
+            "DateHint": "Chọn ngày từ hôm nay trở đi",
+            "StartTimeHint": "Giờ bắt đầu buổi tư vấn",
+            "EndTimeHint": "Giờ kết thúc buổi tư vấn",
+            "ModeDesc": "Chọn hình thức phù hợp. Online sẽ cung cấp link video, Trực tiếp sẽ ghi nhận địa chỉ.",
+            "TimezoneDesc": "Được phát hiện tự động từ thiết bị của bạn",
+            "AcceptResponsibility": "Tôi xác nhận đã kiểm tra kỹ thời gian và cam kết tham gia buổi tư vấn đúng giờ. Tôi hiểu rằng việc hủy lịch sát giờ có thể ảnh hưởng đến chuyên gia và các khách hàng khác.",
+            "AcceptResponsibilityError": "Vui lòng xác nhận trách nhiệm trước khi tiếp tục.",
+            "TermsAgreement": "Bằng cách xác nhận, bạn đồng ý với điều khoản đặt lịch",
+            "ConfirmMsg": "Lịch hẹn {{mode}} vào lúc {{date}} đã được xác nhận."
         },
         "Modes": {
             "Online": "Trực tuyến",

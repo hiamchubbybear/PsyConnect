@@ -1,20 +1,20 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// This package defines the Go object file format, and provide "low-level" functions
-// for reading and writing object files.
 
-// The object file is understood by the compiler, assembler, linker, and tools. They
-// have "high level" code that operates on object files, handling application-specific
-// logics, and use this package for the actual reading and writing. Specifically, the
-// code below:
-//
-// - cmd/internal/obj/objfile.go (used by cmd/asm and cmd/compile)
-// - cmd/internal/objfile/goobj.go (used cmd/nm, cmd/objdump)
-// - cmd/link/internal/loader package (used by cmd/link)
-//
-// If the object file format changes, they may (or may not) need to change.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package goobj
 
@@ -30,162 +30,162 @@ import (
 	"unsafe"
 )
 
-// New object file format.
-//
-//    Header struct {
-//       Magic       [...]byte   // "\x00go116ld"
-//       Fingerprint [8]byte
-//       Flags       uint32
-//       Offsets     [...]uint32 // byte offset of each block below
-//    }
-//
-//    Strings [...]struct {
-//       Data [...]byte
-//    }
-//
-//    Autolib  [...]struct { // imported packages (for file loading)
-//       Pkg         string
-//       Fingerprint [8]byte
-//    }
-//
-//    PkgIndex [...]string // referenced packages by index
-//
-//    Files [...]string
-//
-//    SymbolDefs [...]struct {
-//       Name  string
-//       ABI   uint16
-//       Type  uint8
-//       Flag  uint8
-//       Flag2 uint8
-//       Size  uint32
-//    }
-//    Hashed64Defs [...]struct { // short hashed (content-addressable) symbol definitions
-//       ... // same as SymbolDefs
-//    }
-//    HashedDefs [...]struct { // hashed (content-addressable) symbol definitions
-//       ... // same as SymbolDefs
-//    }
-//    NonPkgDefs [...]struct { // non-pkg symbol definitions
-//       ... // same as SymbolDefs
-//    }
-//    NonPkgRefs [...]struct { // non-pkg symbol references
-//       ... // same as SymbolDefs
-//    }
-//
-//    RefFlags [...]struct { // referenced symbol flags
-//       Sym   symRef
-//       Flag  uint8
-//       Flag2 uint8
-//    }
-//
-//    Hash64 [...][8]byte
-//    Hash   [...][N]byte
-//
-//    RelocIndex [...]uint32 // index to Relocs
-//    AuxIndex   [...]uint32 // index to Aux
-//    DataIndex  [...]uint32 // offset to Data
-//
-//    Relocs [...]struct {
-//       Off  int32
-//       Size uint8
-//       Type uint8
-//       Add  int64
-//       Sym  symRef
-//    }
-//
-//    Aux [...]struct {
-//       Type uint8
-//       Sym  symRef
-//    }
-//
-//    Data   [...]byte
-//    Pcdata [...]byte
-//
-//    // blocks only used by tools (objdump, nm)
-//
-//    RefNames [...]struct { // referenced symbol names
-//       Sym  symRef
-//       Name string
-//       // TODO: include ABI version as well?
-//    }
-//
-// string is encoded as is a uint32 length followed by a uint32 offset
-// that points to the corresponding string bytes.
-//
-// symRef is struct { PkgIdx, SymIdx uint32 }.
-//
-// Slice type (e.g. []symRef) is encoded as a length prefix (uint32)
-// followed by that number of elements.
-//
-// The types below correspond to the encoded data structure in the
-// object file.
 
-// Symbol indexing.
-//
-// Each symbol is referenced with a pair of indices, { PkgIdx, SymIdx },
-// as the symRef struct above.
-//
-// PkgIdx is either a predeclared index (see PkgIdxNone below) or
-// an index of an imported package. For the latter case, PkgIdx is the
-// index of the package in the PkgIndex array. 0 is an invalid index.
-//
-// SymIdx is the index of the symbol in the given package.
-// - If PkgIdx is PkgIdxSelf, SymIdx is the index of the symbol in the
-//   SymbolDefs array.
-// - If PkgIdx is PkgIdxHashed64, SymIdx is the index of the symbol in the
-//   Hashed64Defs array.
-// - If PkgIdx is PkgIdxHashed, SymIdx is the index of the symbol in the
-//   HashedDefs array.
-// - If PkgIdx is PkgIdxNone, SymIdx is the index of the symbol in the
-//   NonPkgDefs array (could natually overflow to NonPkgRefs array).
-// - Otherwise, SymIdx is the index of the symbol in some other package's
-//   SymbolDefs array.
-//
-// {0, 0} represents a nil symbol. Otherwise PkgIdx should not be 0.
-//
-// Hash contains the content hashes of content-addressable symbols, of
-// which PkgIdx is PkgIdxHashed, in the same order of HashedDefs array.
-// Hash64 is similar, for PkgIdxHashed64 symbols.
-//
-// RelocIndex, AuxIndex, and DataIndex contains indices/offsets to
-// Relocs/Aux/Data blocks, one element per symbol, first for all the
-// defined symbols, then all the defined hashed and non-package symbols,
-// in the same order of SymbolDefs/Hashed64Defs/HashedDefs/NonPkgDefs
-// arrays. For N total defined symbols, the array is of length N+1. The
-// last element is the total number of relocations (aux symbols, data
-// blocks, etc.).
-//
-// They can be accessed by index. For the i-th symbol, its relocations
-// are the RelocIndex[i]-th (inclusive) to RelocIndex[i+1]-th (exclusive)
-// elements in the Relocs array. Aux/Data are likewise. (The index is
-// 0-based.)
 
-// Auxiliary symbols.
-//
-// Each symbol may (or may not) be associated with a number of auxiliary
-// symbols. They are described in the Aux block. See Aux struct below.
-// Currently a symbol's Gotype, FuncInfo, and associated DWARF symbols
-// are auxiliary symbols.
 
-const stringRefSize = 8 // two uint32s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const stringRefSize = 8 
 
 type FingerprintType [8]byte
 
 func (fp FingerprintType) IsZero() bool { return fp == FingerprintType{} }
 
-// Package Index.
+
 const (
-	PkgIdxNone     = (1<<31 - 1) - iota // Non-package symbols
-	PkgIdxHashed64                      // Short hashed (content-addressable) symbols
-	PkgIdxHashed                        // Hashed (content-addressable) symbols
-	PkgIdxBuiltin                       // Predefined runtime symbols (ex: runtime.newobject)
-	PkgIdxSelf                          // Symbols defined in the current package
+	PkgIdxNone     = (1<<31 - 1) - iota 
+	PkgIdxHashed64                      
+	PkgIdxHashed                        
+	PkgIdxBuiltin                       
+	PkgIdxSelf                          
 	PkgIdxInvalid  = 0
-	// The index of other referenced packages starts from 1.
+	
 )
 
-// Blocks
+
 const (
 	BlkAutolib = iota
 	BlkPkgIdx
@@ -210,8 +210,8 @@ const (
 	NBlk
 )
 
-// File header.
-// TODO: probably no need to export this.
+
+
 type Header struct {
 	Magic       string
 	Fingerprint FingerprintType
@@ -252,7 +252,7 @@ func (h *Header) Size() int {
 	return len(h.Magic) + 4 + 4*len(h.Offsets)
 }
 
-// Autolib
+
 type ImportedPkg struct {
 	Pkg         string
 	Fingerprint FingerprintType
@@ -265,18 +265,18 @@ func (p *ImportedPkg) Write(w *Writer) {
 	w.Bytes(p.Fingerprint[:])
 }
 
-// Symbol definition.
-//
-// Serialized format:
-// Sym struct {
-//    Name  string
-//    ABI   uint16
-//    Type  uint8
-//    Flag  uint8
-//    Flag2 uint8
-//    Siz   uint32
-//    Align uint32
-// }
+
+
+
+
+
+
+
+
+
+
+
+
 type Sym [SymSize]byte
 
 const SymSize = stringRefSize + 2 + 1 + 1 + 1 + 4 + 4
@@ -284,12 +284,12 @@ const SymSize = stringRefSize + 2 + 1 + 1 + 1 + 4 + 4
 const SymABIstatic = ^uint16(0)
 
 const (
-	ObjFlagShared            = 1 << iota // this object is built with -shared
-	ObjFlagNeedNameExpansion             // the linker needs to expand `"".` to package path in symbol names
-	ObjFlagFromAssembly                  // object is from asm src, not go
+	ObjFlagShared            = 1 << iota 
+	ObjFlagNeedNameExpansion             
+	ObjFlagFromAssembly                  
 )
 
-// Sym.Flag
+
 const (
 	SymFlagDupok = 1 << iota
 	SymFlagLocal
@@ -301,13 +301,13 @@ const (
 	SymFlagTopFrame
 )
 
-// Sym.Flag2
+
 const (
 	SymFlagUsedInIface = 1 << iota
 	SymFlagItab
 )
 
-// Returns the length of the name of the symbol.
+
 func (s *Sym) NameLen(r *Reader) int {
 	return int(binary.LittleEndian.Uint32(s[:]))
 }
@@ -350,35 +350,35 @@ func (s *Sym) SetAlign(x uint32) { binary.LittleEndian.PutUint32(s[17:], x) }
 
 func (s *Sym) Write(w *Writer) { w.Bytes(s[:]) }
 
-// for testing
+
 func (s *Sym) fromBytes(b []byte) { copy(s[:], b) }
 
-// Symbol reference.
+
 type SymRef struct {
 	PkgIdx uint32
 	SymIdx uint32
 }
 
-// Hash64
+
 type Hash64Type [Hash64Size]byte
 
 const Hash64Size = 8
 
-// Hash
+
 type HashType [HashSize]byte
 
 const HashSize = sha1.Size
 
-// Relocation.
-//
-// Serialized format:
-// Reloc struct {
-//    Off  int32
-//    Siz  uint8
-//    Type uint8
-//    Add  int64
-//    Sym  SymRef
-// }
+
+
+
+
+
+
+
+
+
+
 type Reloc [RelocSize]byte
 
 const RelocSize = 4 + 1 + 1 + 8 + 8
@@ -410,21 +410,21 @@ func (r *Reloc) Set(off int32, size uint8, typ uint8, add int64, sym SymRef) {
 
 func (r *Reloc) Write(w *Writer) { w.Bytes(r[:]) }
 
-// for testing
+
 func (r *Reloc) fromBytes(b []byte) { copy(r[:], b) }
 
-// Aux symbol info.
-//
-// Serialized format:
-// Aux struct {
-//    Type uint8
-//    Sym  SymRef
-// }
+
+
+
+
+
+
+
 type Aux [AuxSize]byte
 
 const AuxSize = 1 + 8
 
-// Aux Type
+
 const (
 	AuxGotype = iota
 	AuxFuncInfo
@@ -434,7 +434,7 @@ const (
 	AuxDwarfRanges
 	AuxDwarfLines
 
-	// TODO: more. Pcdata?
+	
 )
 
 func (a *Aux) Type() uint8 { return a[0] }
@@ -450,17 +450,17 @@ func (a *Aux) SetSym(x SymRef) {
 
 func (a *Aux) Write(w *Writer) { w.Bytes(a[:]) }
 
-// for testing
+
 func (a *Aux) fromBytes(b []byte) { copy(a[:], b) }
 
-// Referenced symbol flags.
-//
-// Serialized format:
-// RefFlags struct {
-//    Sym   symRef
-//    Flag  uint8
-//    Flag2 uint8
-// }
+
+
+
+
+
+
+
+
 type RefFlags [RefFlagsSize]byte
 
 const RefFlagsSize = 8 + 1 + 1
@@ -480,13 +480,13 @@ func (r *RefFlags) SetFlag2(x uint8) { r[9] = x }
 
 func (r *RefFlags) Write(w *Writer) { w.Bytes(r[:]) }
 
-// Referenced symbol name.
-//
-// Serialized format:
-// RefName struct {
-//    Sym  symRef
-//    Name string
-// }
+
+
+
+
+
+
+
 type RefName [RefNameSize]byte
 
 const RefNameSize = 8 + stringRefSize
@@ -514,7 +514,7 @@ func (n *RefName) Write(w *Writer) { w.Bytes(n[:]) }
 type Writer struct {
 	wr        *bio.Writer
 	stringMap map[string]uint32
-	off       uint32 // running offset
+	off       uint32 
 }
 
 func NewWriter(wr *bio.Writer) *Writer {
@@ -583,12 +583,12 @@ func (w *Writer) Offset() uint32 {
 }
 
 type Reader struct {
-	b        []byte // mmapped bytes, if not nil
-	readonly bool   // whether b is backed with read-only memory
+	b        []byte 
+	readonly bool   
 
 	rd    io.ReaderAt
 	start uint32
-	h     Header // keep block offsets
+	h     Header 
 }
 
 func NewReaderFromBytes(b []byte, readonly bool) *Reader {
@@ -639,7 +639,7 @@ func (r *Reader) uint8At(off uint32) uint8 {
 func (r *Reader) StringAt(off uint32, len uint32) string {
 	b := r.b[off : off+len]
 	if r.readonly {
-		return toString(b) // backed by RO memory, ok to make unsafe string
+		return toString(b) 
 	}
 	return string(b)
 }
@@ -727,110 +727,110 @@ func (r *Reader) NNonpkgref() int {
 	return int(r.h.Offsets[BlkNonpkgref+1]-r.h.Offsets[BlkNonpkgref]) / SymSize
 }
 
-// SymOff returns the offset of the i-th symbol.
+
 func (r *Reader) SymOff(i uint32) uint32 {
 	return r.h.Offsets[BlkSymdef] + uint32(i*SymSize)
 }
 
-// Sym returns a pointer to the i-th symbol.
+
 func (r *Reader) Sym(i uint32) *Sym {
 	off := r.SymOff(i)
 	return (*Sym)(unsafe.Pointer(&r.b[off]))
 }
 
-// NRefFlags returns the number of referenced symbol flags.
+
 func (r *Reader) NRefFlags() int {
 	return int(r.h.Offsets[BlkRefFlags+1]-r.h.Offsets[BlkRefFlags]) / RefFlagsSize
 }
 
-// RefFlags returns a pointer to the i-th referenced symbol flags.
-// Note: here i is not a local symbol index, just a counter.
+
+
 func (r *Reader) RefFlags(i int) *RefFlags {
 	off := r.h.Offsets[BlkRefFlags] + uint32(i*RefFlagsSize)
 	return (*RefFlags)(unsafe.Pointer(&r.b[off]))
 }
 
-// Hash64 returns the i-th short hashed symbol's hash.
-// Note: here i is the index of short hashed symbols, not all symbols
-// (unlike other accessors).
+
+
+
 func (r *Reader) Hash64(i uint32) uint64 {
 	off := r.h.Offsets[BlkHash64] + uint32(i*Hash64Size)
 	return r.uint64At(off)
 }
 
-// Hash returns a pointer to the i-th hashed symbol's hash.
-// Note: here i is the index of hashed symbols, not all symbols
-// (unlike other accessors).
+
+
+
 func (r *Reader) Hash(i uint32) *HashType {
 	off := r.h.Offsets[BlkHash] + uint32(i*HashSize)
 	return (*HashType)(unsafe.Pointer(&r.b[off]))
 }
 
-// NReloc returns the number of relocations of the i-th symbol.
+
 func (r *Reader) NReloc(i uint32) int {
 	relocIdxOff := r.h.Offsets[BlkRelocIdx] + uint32(i*4)
 	return int(r.uint32At(relocIdxOff+4) - r.uint32At(relocIdxOff))
 }
 
-// RelocOff returns the offset of the j-th relocation of the i-th symbol.
+
 func (r *Reader) RelocOff(i uint32, j int) uint32 {
 	relocIdxOff := r.h.Offsets[BlkRelocIdx] + uint32(i*4)
 	relocIdx := r.uint32At(relocIdxOff)
 	return r.h.Offsets[BlkReloc] + (relocIdx+uint32(j))*uint32(RelocSize)
 }
 
-// Reloc returns a pointer to the j-th relocation of the i-th symbol.
+
 func (r *Reader) Reloc(i uint32, j int) *Reloc {
 	off := r.RelocOff(i, j)
 	return (*Reloc)(unsafe.Pointer(&r.b[off]))
 }
 
-// Relocs returns a pointer to the relocations of the i-th symbol.
+
 func (r *Reader) Relocs(i uint32) []Reloc {
 	off := r.RelocOff(i, 0)
 	n := r.NReloc(i)
 	return (*[1 << 20]Reloc)(unsafe.Pointer(&r.b[off]))[:n:n]
 }
 
-// NAux returns the number of aux symbols of the i-th symbol.
+
 func (r *Reader) NAux(i uint32) int {
 	auxIdxOff := r.h.Offsets[BlkAuxIdx] + i*4
 	return int(r.uint32At(auxIdxOff+4) - r.uint32At(auxIdxOff))
 }
 
-// AuxOff returns the offset of the j-th aux symbol of the i-th symbol.
+
 func (r *Reader) AuxOff(i uint32, j int) uint32 {
 	auxIdxOff := r.h.Offsets[BlkAuxIdx] + i*4
 	auxIdx := r.uint32At(auxIdxOff)
 	return r.h.Offsets[BlkAux] + (auxIdx+uint32(j))*uint32(AuxSize)
 }
 
-// Aux returns a pointer to the j-th aux symbol of the i-th symbol.
+
 func (r *Reader) Aux(i uint32, j int) *Aux {
 	off := r.AuxOff(i, j)
 	return (*Aux)(unsafe.Pointer(&r.b[off]))
 }
 
-// Auxs returns the aux symbols of the i-th symbol.
+
 func (r *Reader) Auxs(i uint32) []Aux {
 	off := r.AuxOff(i, 0)
 	n := r.NAux(i)
 	return (*[1 << 20]Aux)(unsafe.Pointer(&r.b[off]))[:n:n]
 }
 
-// DataOff returns the offset of the i-th symbol's data.
+
 func (r *Reader) DataOff(i uint32) uint32 {
 	dataIdxOff := r.h.Offsets[BlkDataIdx] + i*4
 	return r.h.Offsets[BlkData] + r.uint32At(dataIdxOff)
 }
 
-// DataSize returns the size of the i-th symbol's data.
+
 func (r *Reader) DataSize(i uint32) int {
 	dataIdxOff := r.h.Offsets[BlkDataIdx] + i*4
 	return int(r.uint32At(dataIdxOff+4) - r.uint32At(dataIdxOff))
 }
 
-// Data returns the i-th symbol's data.
+
 func (r *Reader) Data(i uint32) []byte {
 	dataIdxOff := r.h.Offsets[BlkDataIdx] + i*4
 	base := r.h.Offsets[BlkData]
@@ -839,29 +839,29 @@ func (r *Reader) Data(i uint32) []byte {
 	return r.BytesAt(base+off, int(end-off))
 }
 
-// AuxDataBase returns the base offset of the aux data block.
+
 func (r *Reader) PcdataBase() uint32 {
 	return r.h.Offsets[BlkPcdata]
 }
 
-// NRefName returns the number of referenced symbol names.
+
 func (r *Reader) NRefName() int {
 	return int(r.h.Offsets[BlkRefName+1]-r.h.Offsets[BlkRefName]) / RefNameSize
 }
 
-// RefName returns a pointer to the i-th referenced symbol name.
-// Note: here i is not a local symbol index, just a counter.
+
+
 func (r *Reader) RefName(i int) *RefName {
 	off := r.h.Offsets[BlkRefName] + uint32(i*RefNameSize)
 	return (*RefName)(unsafe.Pointer(&r.b[off]))
 }
 
-// ReadOnly returns whether r.BytesAt returns read-only bytes.
+
 func (r *Reader) ReadOnly() bool {
 	return r.readonly
 }
 
-// Flags returns the flag bits read from the object file header.
+
 func (r *Reader) Flags() uint32 {
 	return r.h.Flags
 }

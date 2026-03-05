@@ -1,6 +1,6 @@
-// Copyright 2023 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package http2
 
@@ -10,25 +10,25 @@ import (
 )
 
 type roundRobinWriteScheduler struct {
-	// control contains control frames (SETTINGS, PING, etc.).
+	
 	control writeQueue
 
-	// streams maps stream ID to a queue.
+	
 	streams map[uint32]*writeQueue
 
-	// stream queues are stored in a circular linked list.
-	// head is the next stream to write, or nil if there are no streams open.
+	
+	
 	head *writeQueue
 
-	// pool of empty queues for reuse.
+	
 	queuePool writeQueuePool
 }
 
-// newRoundRobinWriteScheduler constructs a new write scheduler.
-// The round robin scheduler priorizes control frames
-// like SETTINGS and PING over DATA frames.
-// When there are no control frames to send, it performs a round-robin
-// selection from the ready streams.
+
+
+
+
+
 func newRoundRobinWriteScheduler() WriteScheduler {
 	ws := &roundRobinWriteScheduler{
 		streams: make(map[uint32]*writeQueue),
@@ -47,8 +47,8 @@ func (ws *roundRobinWriteScheduler) OpenStream(streamID uint32, options OpenStre
 		q.next = q
 		q.prev = q
 	} else {
-		// Queues are stored in a ring.
-		// Insert the new stream before ws.head, putting it at the end of the list.
+		
+		
 		q.prev = ws.head.prev
 		q.next = ws.head
 		q.prev.next = q
@@ -62,7 +62,7 @@ func (ws *roundRobinWriteScheduler) CloseStream(streamID uint32) {
 		return
 	}
 	if q.next == q {
-		// This was the only open stream.
+		
 		ws.head = nil
 	} else {
 		q.prev.next = q.next
@@ -84,9 +84,9 @@ func (ws *roundRobinWriteScheduler) Push(wr FrameWriteRequest) {
 	}
 	q := ws.streams[wr.StreamID()]
 	if q == nil {
-		// This is a closed stream.
-		// wr should not be a HEADERS or DATA frame.
-		// We push the request onto the control queue.
+		
+		
+		
 		if wr.DataSize() > 0 {
 			panic("add DATA on non-open stream")
 		}
@@ -97,7 +97,7 @@ func (ws *roundRobinWriteScheduler) Push(wr FrameWriteRequest) {
 }
 
 func (ws *roundRobinWriteScheduler) Pop() (FrameWriteRequest, bool) {
-	// Control and RST_STREAM frames first.
+	
 	if !ws.control.empty() {
 		return ws.control.shift(), true
 	}

@@ -1,16 +1,16 @@
-// Copyright 2024 CloudWeGo Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package vm
 
@@ -79,7 +79,7 @@ func Execute(b *[]byte, p unsafe.Pointer, s *vars.Stack, flags uint64, prog *ir.
 		case ir.OP_index:
 			p = rt.Add(p, uintptr(ins.I64()))
 		case ir.OP_load:
-			// NOTICE: load CANNOT change f!
+			
 			x, _, p, q = s.Load() 
 		case ir.OP_save:
 			if !s.Save(x, f, p, q) {
@@ -262,7 +262,7 @@ func Execute(b *[]byte, p unsafe.Pointer, s *vars.Stack, flags uint64, prog *ir.
 			v := (*rt.GoSlice)(p)
 			x = v.Len
 			p = v.Ptr
-			//TODO: why?
+			
 			f |= 1<<_S_init 
 		case ir.OP_slice_next:
 			if x == 0 {

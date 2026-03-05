@@ -1,20 +1,6 @@
 // +build !amd64,!arm64 go1.25 !go1.16 arm64,!go1.20
 
-/**
- * Copyright 2024 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package alg
 
@@ -28,11 +14,11 @@ import (
 	"github.com/bytedance/sonic/internal/rt"
 )
 
-// Valid validates json and returns first non-blank character position,
-// if it is only one valid json value.
-// Otherwise returns invalid character position using start.
-//
-// Note: it does not check for the invalid UTF-8 characters.
+
+
+
+
+
 func Valid(data []byte) (ok bool, start int) {
 	ok = json.Valid(data)
 	return ok, 0
@@ -73,11 +59,11 @@ func Quote(e []byte, s string, double bool) []byte {
 			case '\t':
 				e = append(e, 't')
 			default:
-				// This encodes bytes < 0x20 except for \t, \n and \r.
-				// If escapeHTML is set, it also escapes <, >, and &
-				// because they can lead to security holes when
-				// user-controlled strings are rendered into JSON
-				// and served to some browsers.
+				
+				
+				
+				
+				
 				e = append(e, `u00`...)
 				e = append(e, rt.Hex[b>>4])
 				e = append(e, rt.Hex[b&0xF])
@@ -87,15 +73,15 @@ func Quote(e []byte, s string, double bool) []byte {
 			continue
 		}
 		c, size := utf8.DecodeRuneInString(s[i:])
-		// if correct && c == utf8.RuneError && size == 1 {
-		// 	if start < i {
-		// 		e = append(e, s[start:i]...)
-		// 	}
-		// 	e = append(e, `\ufffd`...)
-		// 	i += size
-		// 	start = i
-		// 	continue
-		// }
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		if c == '\u2028' || c == '\u2029' {
 			if start < i {
 				e = append(e, s[start:i]...)

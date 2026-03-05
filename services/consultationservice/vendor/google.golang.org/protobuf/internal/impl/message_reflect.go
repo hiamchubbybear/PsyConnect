@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -17,18 +17,18 @@ type reflectMessageInfo struct {
 	fields map[protoreflect.FieldNumber]*fieldInfo
 	oneofs map[protoreflect.Name]*oneofInfo
 
-	// fieldTypes contains the zero value of an enum or message field.
-	// For lists, it contains the element type.
-	// For maps, it contains the entry value type.
+	
+	
+	
 	fieldTypes map[protoreflect.FieldNumber]any
 
-	// denseFields is a subset of fields where:
-	//	0 < fieldDesc.Number() < len(denseFields)
-	// It provides faster access to the fieldInfo, but may be incomplete.
+	
+	
+	
 	denseFields []*fieldInfo
 
-	// rangeInfos is a list of all fields (not belonging to a oneof) and oneofs.
-	rangeInfos []any // either *fieldInfo or *oneofInfo
+	
+	rangeInfos []any 
 
 	getUnknown   func(pointer) protoreflect.RawFields
 	setUnknown   func(pointer, protoreflect.RawFields)
@@ -37,7 +37,7 @@ type reflectMessageInfo struct {
 	nilMessage atomicNilMessage
 }
 
-// makeReflectFuncs generates the set of functions to support reflection.
+
 func (mi *MessageInfo) makeReflectFuncs(t reflect.Type, si structInfo) {
 	mi.makeKnownFieldsFunc(si)
 	mi.makeUnknownFieldsFunc(t, si)
@@ -45,12 +45,12 @@ func (mi *MessageInfo) makeReflectFuncs(t reflect.Type, si structInfo) {
 	mi.makeFieldTypes(si)
 }
 
-// makeKnownFieldsFunc generates functions for operations that can be performed
-// on each protobuf message field. It takes in a reflect.Type representing the
-// Go struct and matches message fields with struct fields.
-//
-// This code assumes that the struct is well-formed and panics if there are
-// any discrepancies.
+
+
+
+
+
+
 func (mi *MessageInfo) makeKnownFieldsFunc(si structInfo) {
 	mi.fields = map[protoreflect.FieldNumber]*fieldInfo{}
 	md := mi.Desc
@@ -65,7 +65,7 @@ func (mi *MessageInfo) makeKnownFieldsFunc(si structInfo) {
 		var fi fieldInfo
 		switch {
 		case fs.Type == nil:
-			fi = fieldInfoForMissing(fd) // never occurs for officially generated message types
+			fi = fieldInfoForMissing(fd) 
 		case isOneof:
 			fi = fieldInfoForOneof(fd, fs, mi.Exporter, si.oneofWrappersByNumber[fd.Number()])
 		case fd.IsMap():
@@ -104,7 +104,7 @@ func (mi *MessageInfo) makeKnownFieldsFunc(si structInfo) {
 		}
 	}
 
-	// Introduce instability to iteration order, but keep it deterministic.
+	
 	if len(mi.rangeInfos) > 1 && detrand.Bool() {
 		i := detrand.Intn(len(mi.rangeInfos) - 1)
 		mi.rangeInfos[i], mi.rangeInfos[i+1] = mi.rangeInfos[i+1], mi.rangeInfos[i]
@@ -114,7 +114,7 @@ func (mi *MessageInfo) makeKnownFieldsFunc(si structInfo) {
 func (mi *MessageInfo) makeUnknownFieldsFunc(t reflect.Type, si structInfo) {
 	switch {
 	case si.unknownOffset.IsValid() && si.unknownType == unknownFieldsAType:
-		// Handle as []byte.
+		
 		mi.getUnknown = func(p pointer) protoreflect.RawFields {
 			if p.IsNil() {
 				return nil
@@ -128,7 +128,7 @@ func (mi *MessageInfo) makeUnknownFieldsFunc(t reflect.Type, si structInfo) {
 			*p.Apply(mi.unknownOffset).Bytes() = b
 		}
 	case si.unknownOffset.IsValid() && si.unknownType == unknownFieldsBType:
-		// Handle as *[]byte.
+		
 		mi.getUnknown = func(p pointer) protoreflect.RawFields {
 			if p.IsNil() {
 				return nil
@@ -190,7 +190,7 @@ func (mi *MessageInfo) makeFieldTypes(si structInfo) {
 		var isMessage bool
 		switch {
 		case fs.Type == nil:
-			continue // never occurs for officially generated message types
+			continue 
 		case isOneof:
 			if fd.Enum() != nil || fd.Message() != nil {
 				ft = si.oneofWrappersByNumber[fd.Number()].Field(0).Type
@@ -220,7 +220,7 @@ func (mi *MessageInfo) makeFieldTypes(si structInfo) {
 			isMessage = true
 		}
 		if isMessage && ft != nil && ft.Kind() != reflect.Ptr {
-			ft = reflect.PtrTo(ft) // never occurs for officially generated message types
+			ft = reflect.PtrTo(ft) 
 		}
 		if ft != nil {
 			if mi.fieldTypes == nil {
@@ -256,7 +256,7 @@ func (m *extensionMap) Has(xd protoreflect.ExtensionTypeDescriptor) (ok bool) {
 		return false
 	}
 	if x.isUnexpandedLazy() {
-		// Avoid calling x.Value(), which triggers a lazy unmarshal.
+		
 		return true
 	}
 	switch {
@@ -314,46 +314,46 @@ func (m *extensionMap) Mutable(xd protoreflect.ExtensionTypeDescriptor) protoref
 	return v
 }
 
-// MessageState is a data structure that is nested as the first field in a
-// concrete message. It provides a way to implement the ProtoReflect method
-// in an allocation-free way without needing to have a shadow Go type generated
-// for every message type. This technique only works using unsafe.
-//
-// Example generated code:
-//
-//	type M struct {
-//		state protoimpl.MessageState
-//
-//		Field1 int32
-//		Field2 string
-//		Field3 *BarMessage
-//		...
-//	}
-//
-//	func (m *M) ProtoReflect() protoreflect.Message {
-//		mi := &file_fizz_buzz_proto_msgInfos[5]
-//		if protoimpl.UnsafeEnabled && m != nil {
-//			ms := protoimpl.X.MessageStateOf(Pointer(m))
-//			if ms.LoadMessageInfo() == nil {
-//				ms.StoreMessageInfo(mi)
-//			}
-//			return ms
-//		}
-//		return mi.MessageOf(m)
-//	}
-//
-// The MessageState type holds a *MessageInfo, which must be atomically set to
-// the message info associated with a given message instance.
-// By unsafely converting a *M into a *MessageState, the MessageState object
-// has access to all the information needed to implement protobuf reflection.
-// It has access to the message info as its first field, and a pointer to the
-// MessageState is identical to a pointer to the concrete message value.
-//
-// Requirements:
-//   - The type M must implement protoreflect.ProtoMessage.
-//   - The address of m must not be nil.
-//   - The address of m and the address of m.state must be equal,
-//     even though they are different Go types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type MessageState struct {
 	pragma.NoUnkeyedLiterals
 	pragma.DoNotCompare
@@ -369,10 +369,10 @@ var (
 	_ unwrapper            = (*messageState)(nil)
 )
 
-// messageDataType is a tuple of a pointer to the message data and
-// a pointer to the message type. It is a generalized way of providing a
-// reflective view over a message instance. The disadvantage of this approach
-// is the need to allocate this tuple of 16B.
+
+
+
+
 type messageDataType struct {
 	p  pointer
 	mi *MessageInfo
@@ -390,9 +390,9 @@ var (
 	_ unwrapper                 = (*messageIfaceWrapper)(nil)
 )
 
-// MessageOf returns a reflective view over a message. The input must be a
-// pointer to a named Go struct. If the provided type has a ProtoReflect method,
-// it must be implemented by calling this method.
+
+
+
 func (mi *MessageInfo) MessageOf(m any) protoreflect.Message {
 	if reflect.TypeOf(m) != mi.GoReflectType {
 		panic(fmt.Sprintf("type mismatch: got %T, want %v", m, mi.GoReflectType))
@@ -407,7 +407,7 @@ func (mi *MessageInfo) MessageOf(m any) protoreflect.Message {
 func (m *messageReflectWrapper) pointer() pointer          { return m.p }
 func (m *messageReflectWrapper) messageInfo() *MessageInfo { return m.mi }
 
-// Reset implements the v1 proto.Message.Reset method.
+
 func (m *messageIfaceWrapper) Reset() {
 	if mr, ok := m.protoUnwrap().(interface{ Reset() }); ok {
 		mr.Reset()
@@ -425,8 +425,8 @@ func (m *messageIfaceWrapper) protoUnwrap() any {
 	return m.p.AsIfaceOf(m.mi.GoReflectType.Elem())
 }
 
-// checkField verifies that the provided field descriptor is valid.
-// Exactly one of the returned values is populated.
+
+
 func (mi *MessageInfo) checkField(fd protoreflect.FieldDescriptor) (*fieldInfo, protoreflect.ExtensionTypeDescriptor) {
 	var fi *fieldInfo
 	if n := fd.Number(); 0 < n && int(n) < len(mi.denseFields) {
@@ -446,7 +446,7 @@ func (mi *MessageInfo) checkField(fd protoreflect.FieldDescriptor) (*fieldInfo, 
 
 	if fd.IsExtension() {
 		if got, want := fd.ContainingMessage().FullName(), mi.Desc.FullName(); got != want {
-			// TODO: Should this be exact containing message descriptor match?
+			
 			panic(fmt.Sprintf("extension %v has mismatching containing message: got %v, want %v", fd.FullName(), got, want))
 		}
 		if !mi.Desc.ExtensionRanges().Has(fd.Number()) {

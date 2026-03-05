@@ -3,14 +3,14 @@
 
 .login-page {
   position: relative;
-  height: 100vh; // Fixed height to prevent scrolling
+  height: 100vh; 
   width: 100%;
-  padding-top: var(--header-height); // Offset for fixed header
+  padding-top: var(--header-height); 
   background: var(--color-bg);
   display: flex;
   flex-direction: column;
-  overflow: hidden; // Prevent scrollbars
-  box-sizing: border-box; // Ensure padding is included in height
+  overflow: hidden; 
+  box-sizing: border-box; 
 }
 
 .login-container {
@@ -25,23 +25,23 @@
   box-sizing: border-box;
 }
 
-// --- Method Selection View ---
+
 .method-selection {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem; // Compact gap
+  gap: 1.25rem; 
   width: 100%;
   animation: fadeIn 0.4s ease-out;
 
   .logo-area {
-    margin-bottom: 0.5rem; // Minimal margin since logo is gone
+    margin-bottom: 0.5rem; 
     text-align: center;
 
     .app-title {
       font-size: 2.5rem;
       font-weight: 800;
-      color: var(--color-primary); // Use brand color
+      color: var(--color-primary); 
       letter-spacing: -0.03em;
       margin: 0;
     }
@@ -70,7 +70,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: flex-start;
-      max-width: 52px; // use max-width so both directions animate
+      max-width: 52px; 
       height: 52px;
       border-radius: 26px;
       border: none;
@@ -113,7 +113,7 @@
       }
 
       &:hover {
-        max-width: 200px; // large enough to fit any text
+        max-width: 200px; 
         border-radius: 26px;
         box-shadow: var(--shadow-md);
 
@@ -220,7 +220,7 @@
   }
 }
 
-// --- Email Form View (Overlay) ---
+
 .email-form-container {
   width: 100%;
   animation: fadeIn 0.3s ease-out;
@@ -231,7 +231,7 @@
     .form-header {
       display: flex;
       align-items: center;
-      margin-bottom: 1.5rem; // Reduced margin
+      margin-bottom: 1.5rem; 
 
       .back-btn {
         background: none;
@@ -301,7 +301,7 @@
   }
 }
 
-// --- Animations ---
+
 @keyframes fadeIn {
   from {
     opacity: 0;

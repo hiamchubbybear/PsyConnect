@@ -8,7 +8,7 @@ import (
 
 const (
 	maxStatelessBlock = math.MaxInt16
-	// dictionary will be taken from maxStatelessBlock, so limit it.
+	
 	maxStatelessDict = 8 << 10
 
 	slTableBits  = 13
@@ -26,7 +26,7 @@ func (s *statelessWriter) Close() error {
 		return nil
 	}
 	s.closed = true
-	// Emit EOF block
+	
 	return StatelessDeflate(s.dst, nil, true, nil)
 }
 
@@ -43,50 +43,50 @@ func (s *statelessWriter) Reset(w io.Writer) {
 	s.closed = false
 }
 
-// NewStatelessWriter will do compression but without maintaining any state
-// between Write calls.
-// There will be no memory kept between Write calls,
-// but compression and speed will be suboptimal.
-// Because of this, the size of actual Write calls will affect output size.
+
+
+
+
+
 func NewStatelessWriter(dst io.Writer) io.WriteCloser {
 	return &statelessWriter{dst: dst}
 }
 
-// bitWriterPool contains bit writers that can be reused.
+
 var bitWriterPool = sync.Pool{
 	New: func() interface{} {
 		return newHuffmanBitWriter(nil)
 	},
 }
 
-// StatelessDeflate allows compressing directly to a Writer without retaining state.
-// When returning everything will be flushed.
-// Up to 8KB of an optional dictionary can be given which is presumed to precede the block.
-// Longer dictionaries will be truncated and will still produce valid output.
-// Sending nil dictionary is perfectly fine.
+
+
+
+
+
 func StatelessDeflate(out io.Writer, in []byte, eof bool, dict []byte) error {
 	var dst tokens
 	bw := bitWriterPool.Get().(*huffmanBitWriter)
 	bw.reset(out)
 	defer func() {
-		// don't keep a reference to our output
+		
 		bw.reset(nil)
 		bitWriterPool.Put(bw)
 	}()
 	if eof && len(in) == 0 {
-		// Just write an EOF block.
-		// Could be faster...
+		
+		
 		bw.writeStoredHeader(0, true)
 		bw.flush()
 		return bw.err
 	}
 
-	// Truncate dict
+	
 	if len(dict) > maxStatelessDict {
 		dict = dict[len(dict)-maxStatelessDict:]
 	}
 
-	// For subsequent loops, keep shallow dict reference to avoid alloc+copy.
+	
 	var inDict []byte
 
 	for len(in) > 0 {
@@ -102,14 +102,14 @@ func StatelessDeflate(out io.Writer, in []byte, eof bool, dict []byte) error {
 		in = in[len(todo):]
 		uncompressed := todo
 		if len(dict) > 0 {
-			// combine dict and source
+			
 			bufLen := len(todo) + len(dict)
 			combined := make([]byte, bufLen)
 			copy(combined, dict)
 			copy(combined[len(dict):], todo)
 			todo = combined
 		}
-		// Compress
+		
 		if len(inDict) == 0 {
 			statelessEnc(&dst, todo, int16(len(dict)))
 		} else {
@@ -124,13 +124,13 @@ func StatelessDeflate(out io.Writer, in []byte, eof bool, dict []byte) error {
 			}
 			bw.writeBytes(uncompressed)
 		} else if int(dst.n) > len(uncompressed)-len(uncompressed)>>4 {
-			// If we removed less than 1/16th, huffman compress the block.
+			
 			bw.writeBlockHuff(isEof, uncompressed, len(in) == 0)
 		} else {
 			bw.writeBlockDynamic(&dst, isEof, uncompressed, len(in) == 0)
 		}
 		if len(in) > 0 {
-			// Retain a dict if we have more
+			
 			inDict = inOrg[len(uncompressed)-maxStatelessDict:]
 			dict = nil
 			dst.Reset()
@@ -140,7 +140,7 @@ func StatelessDeflate(out io.Writer, in []byte, eof bool, dict []byte) error {
 		}
 	}
 	if !eof {
-		// Align, only a stored block can do that.
+		
 		bw.writeStoredHeader(0, false)
 	}
 	bw.flush()
@@ -152,14 +152,14 @@ func hashSL(u uint32) uint32 {
 }
 
 func load3216(b []byte, i int16) uint32 {
-	// Help the compiler eliminate bounds checks on the read so it can be done in a single read.
+	
 	b = b[i:]
 	b = b[:4]
 	return uint32(b[0]) | uint32(b[1])<<8 | uint32(b[2])<<16 | uint32(b[3])<<24
 }
 
 func load6416(b []byte, i int16) uint64 {
-	// Help the compiler eliminate bounds checks on the read so it can be done in a single read.
+	
 	b = b[i:]
 	b = b[:8]
 	return uint64(b[0]) | uint64(b[1])<<8 | uint64(b[2])<<16 | uint64(b[3])<<24 |
@@ -178,15 +178,15 @@ func statelessEnc(dst *tokens, src []byte, startAt int16) {
 
 	var table [slTableSize]tableEntry
 
-	// This check isn't in the Snappy implementation, but there, the caller
-	// instead of the callee handles this case.
+	
+	
 	if len(src)-int(startAt) < minNonLiteralBlockSize {
-		// We do not fill the token table.
-		// This will be picked up by caller.
+		
+		
 		dst.n = 0
 		return
 	}
-	// Index until startAt
+	
 	if startAt > 0 {
 		cv := load3232(src, 0)
 		for i := int16(0); i < startAt; i++ {
@@ -197,12 +197,12 @@ func statelessEnc(dst *tokens, src []byte, startAt int16) {
 
 	s := startAt + 1
 	nextEmit := startAt
-	// sLimit is when to stop looking for offset/length copies. The inputMargin
-	// lets us use a fast path for emitLiteral in the main loop, while we are
-	// looking for copies.
+	
+	
+	
 	sLimit := int16(len(src) - inputMargin)
 
-	// nextEmit is where in src the next emitLiteral should start from.
+	
 	cv := load3216(src, s)
 
 	for {
@@ -228,7 +228,7 @@ func statelessEnc(dst *tokens, src []byte, startAt int16) {
 				break
 			}
 
-			// Do one right away...
+			
 			cv = uint32(now)
 			s = nextS
 			nextS++
@@ -244,18 +244,18 @@ func statelessEnc(dst *tokens, src []byte, startAt int16) {
 			s = nextS
 		}
 
-		// A 4-byte match has been found. We'll later see if more than 4 bytes
-		// match. But, prior to the match, src[nextEmit:s] are unmatched. Emit
-		// them as literal bytes.
+		
+		
+		
 		for {
-			// Invariant: we have a 4-byte match at s, and no need to emit any
-			// literal bytes prior to s.
+			
+			
 
-			// Extend the 4-byte match as long as possible.
+			
 			t := candidate.offset
 			l := int16(matchLen(src[s+4:], src[t+4:]) + 4)
 
-			// Extend backwards
+			
 			for t > 0 && s > nextEmit && src[t-1] == src[s-1] {
 				s--
 				t--
@@ -273,7 +273,7 @@ func statelessEnc(dst *tokens, src []byte, startAt int16) {
 				}
 			}
 
-			// Save the match found
+			
 			dst.AddMatchLong(int32(l), uint32(s-t-baseMatchOffset))
 			s += l
 			nextEmit = s
@@ -284,12 +284,12 @@ func statelessEnc(dst *tokens, src []byte, startAt int16) {
 				goto emitRemainder
 			}
 
-			// We could immediately start working at s now, but to improve
-			// compression we first update the hash table at s-2 and at s. If
-			// another emitCopy is not our next move, also calculate nextHash
-			// at s+1. At least on GOARCH=amd64, these three hash calculations
-			// are faster as one load64 call (with some shifts) instead of
-			// three load32 calls.
+			
+			
+			
+			
+			
+			
 			x := load6416(src, s-2)
 			o := s - 2
 			prevHash := hashSL(uint32(x))
@@ -309,7 +309,7 @@ func statelessEnc(dst *tokens, src []byte, startAt int16) {
 
 emitRemainder:
 	if int(nextEmit) < len(src) {
-		// If nothing was added, don't encode literals.
+		
 		if dst.n == 0 {
 			return
 		}

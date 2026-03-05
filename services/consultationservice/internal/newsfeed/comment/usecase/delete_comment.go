@@ -21,7 +21,7 @@ func NewDeleteCommentUseCase(
 }
 
 func (uc *DeleteCommentUseCase) Execute(ctx context.Context, commentID, userID string) error {
-	// Get comment to verify ownership
+	
 	comment, err := uc.commentRepo.GetCommentByID(ctx, commentID)
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func (uc *DeleteCommentUseCase) Execute(ctx context.Context, commentID, userID s
 		return err
 	}
 
-	// Update post comment count (only for root comments)
+	
 	if comment.ParentCommentID == "" {
 		go uc.postRepo.UpdateEngagementCount(context.Background(), comment.PostID, "comment_count", -1)
 	}

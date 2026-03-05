@@ -27,7 +27,7 @@ func New(nodes []string, hash Hasher) *Rendezvous {
 }
 
 func (r *Rendezvous) Lookup(k string) string {
-	// short-circuit if we're empty
+	
 	if len(r.nodes) == 0 {
 		return ""
 	}
@@ -54,10 +54,10 @@ func (r *Rendezvous) Add(node string) {
 }
 
 func (r *Rendezvous) Remove(node string) {
-	// find index of node to remove
+	
 	nidx := r.nodes[node]
 
-	// remove from the slices
+	
 	l := len(r.nstr)
 	r.nstr[nidx] = r.nstr[l]
 	r.nstr = r.nstr[:l]
@@ -65,15 +65,15 @@ func (r *Rendezvous) Remove(node string) {
 	r.nhash[nidx] = r.nhash[l]
 	r.nhash = r.nhash[:l]
 
-	// update the map
+	
 	delete(r.nodes, node)
 	moved := r.nstr[nidx]
 	r.nodes[moved] = nidx
 }
 
 func xorshiftMult64(x uint64) uint64 {
-	x ^= x >> 12 // a
-	x ^= x << 25 // b
-	x ^= x >> 27 // c
+	x ^= x >> 12 
+	x ^= x << 25 
+	x ^= x >> 27 
 	return x * 2685821657736338717
 }

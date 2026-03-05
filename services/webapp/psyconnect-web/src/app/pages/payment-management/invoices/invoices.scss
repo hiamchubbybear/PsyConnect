@@ -99,7 +99,7 @@
   }
 }
 
-// Content specific styles inside the table
+
 .invoice-number {
   font-weight: 500;
   color: var(--color-accent);
@@ -134,7 +134,7 @@
 }
 
 .actions {
-  display: flex !important; // override default td if needed
+  display: flex !important; 
   gap: 0.5rem;
 
   .btn-icon {

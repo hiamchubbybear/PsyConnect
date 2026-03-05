@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
+
+
 
 //go:build !go1.9 || safe || codec.safe || appengine
 // +build !go1.9 safe codec.safe appengine
@@ -7,15 +7,15 @@
 package codec
 
 import (
-	// "hash/adler32"
+	
 	"math"
 	"reflect"
 	"sync/atomic"
 	"time"
 )
 
-// This file has safe variants of some helper functions.
-// MARKER: See helper_unsafe.go for the usage documentation.
+
+
 
 const safeMode = true
 
@@ -34,9 +34,9 @@ func byteSliceOf(b []byte, start, end uint) []byte {
 	return b[start:end]
 }
 
-// func byteSliceWithLen(b []byte, length uint) []byte {
-// 	return b[:length]
-// }
+
+
+
 
 func stringView(v []byte) string {
 	return string(v)
@@ -85,8 +85,8 @@ func eq4i(i0, i1 interface{}) bool {
 func rv4iptr(i interface{}) reflect.Value { return reflect.ValueOf(i) }
 func rv4istr(i interface{}) reflect.Value { return reflect.ValueOf(i) }
 
-// func rv4i(i interface{}) reflect.Value { return reflect.ValueOf(i) }
-// func rv4iK(i interface{}, kind byte, isref bool) reflect.Value { return reflect.ValueOf(i) }
+
+
 
 func rv2i(rv reflect.Value) interface{} {
 	return rv.Interface()
@@ -113,8 +113,8 @@ func rvZeroK(t reflect.Type, k reflect.Kind) reflect.Value {
 }
 
 func rvConvert(v reflect.Value, t reflect.Type) (rv reflect.Value) {
-	// Note that reflect.Value.Convert(...) will make a copy if it is addressable.
-	// Since we decode into the passed value, we must try to convert the addressable value..
+	
+	
 	if v.CanAddr() {
 		return v.Addr().Convert(reflect.PtrTo(t)).Elem()
 	}
@@ -129,7 +129,7 @@ func i2rtid(i interface{}) uintptr {
 	return reflect.ValueOf(reflect.TypeOf(i)).Pointer()
 }
 
-// --------------------------
+
 
 func isEmptyValue(v reflect.Value, tinfos *TypeInfos, recursive bool) bool {
 	switch v.Kind() {
@@ -138,10 +138,10 @@ func isEmptyValue(v reflect.Value, tinfos *TypeInfos, recursive bool) bool {
 	case reflect.String:
 		return v.Len() == 0
 	case reflect.Array:
-		// zero := reflect.Zero(v.Type().Elem())
-		// can I just check if the whole value is equal to zeros? seems not.
-		// can I just check if the whole value is equal to its zero value? no.
-		// Well, then we check if each value is empty without recursive.
+		
+		
+		
+		
 		for i, vlen := 0, v.Len(); i < vlen; i++ {
 			if !isEmptyValue(v.Index(i), tinfos, false) {
 				return false
@@ -175,15 +175,15 @@ func isEmptyValue(v reflect.Value, tinfos *TypeInfos, recursive bool) bool {
 	return false
 }
 
-// isEmptyStruct is only called from isEmptyValue, and checks if a struct is empty:
-//   - does it implement IsZero() bool
-//   - is it comparable, and can i compare directly using ==
-//   - if checkStruct, then walk through the encodable fields
-//     and check if they are empty or not.
+
+
+
+
+
 func isEmptyStruct(v reflect.Value, tinfos *TypeInfos, recursive bool) bool {
-	// v is a struct kind - no need to check again.
-	// We only check isZero on a struct kind, to reduce the amount of times
-	// that we lookup the rtid and typeInfo for each type as we walk the tree.
+	
+	
+	
 
 	vt := v.Type()
 	rtid := rt2id(vt)
@@ -212,8 +212,8 @@ func isEmptyStruct(v reflect.Value, tinfos *TypeInfos, recursive bool) bool {
 	if !recursive {
 		return false
 	}
-	// We only care about what we can encode/decode,
-	// so that is what we use to check omitEmpty.
+	
+	
 	for _, si := range ti.sfi.source() {
 		sfv := si.path.field(v)
 		if sfv.IsValid() && !isEmptyValue(sfv, tinfos, recursive) {
@@ -223,7 +223,7 @@ func isEmptyStruct(v reflect.Value, tinfos *TypeInfos, recursive bool) bool {
 	return true
 }
 
-// --------------------------
+
 
 type perTypeElem struct {
 	t    reflect.Type
@@ -261,7 +261,7 @@ func (x *perType) elem(t reflect.Type) *perTypeElem {
 	var j = uint(len(x.v))
 LOOP:
 	if i < j {
-		h = (i + j) >> 1 // avoid overflow when computing h // h = i + (j-i)/2
+		h = (i + j) >> 1 
 		if x.v[h].rtid < rtid {
 			i = h + 1
 		} else {
@@ -295,7 +295,7 @@ func (x *perType) AddressableRO(v reflect.Value) (rv reflect.Value) {
 	return
 }
 
-// --------------------------
+
 type structFieldInfos struct {
 	c []*structFieldInfo
 	s []*structFieldInfo
@@ -324,7 +324,7 @@ func (x *atomicClsErr) store(p clsErr) {
 	x.v.Store(p)
 }
 
-// --------------------------
+
 type atomicTypeInfoSlice struct {
 	v atomic.Value
 }
@@ -340,7 +340,7 @@ func (x *atomicTypeInfoSlice) store(p []rtid2ti) {
 	x.v.Store(p)
 }
 
-// --------------------------
+
 type atomicRtidFnSlice struct {
 	v atomic.Value
 }
@@ -356,7 +356,7 @@ func (x *atomicRtidFnSlice) store(p []codecRtidFn) {
 	x.v.Store(p)
 }
 
-// --------------------------
+
 func (n *fauxUnion) ru() reflect.Value {
 	return reflect.ValueOf(&n.u).Elem()
 }
@@ -379,7 +379,7 @@ func (n *fauxUnion) rb() reflect.Value {
 	return reflect.ValueOf(&n.b).Elem()
 }
 
-// --------------------------
+
 func rvSetBytes(rv reflect.Value, v []byte) {
 	rv.SetBytes(v)
 }
@@ -456,7 +456,7 @@ func rvSetUint64(rv reflect.Value, v uint64) {
 	rv.SetUint(v)
 }
 
-// ----------------
+
 
 func rvSetDirect(rv reflect.Value, v reflect.Value) {
 	rv.Set(v)
@@ -466,9 +466,9 @@ func rvSetDirectZero(rv reflect.Value) {
 	rv.Set(reflect.Zero(rv.Type()))
 }
 
-// func rvSet(rv reflect.Value, v reflect.Value) {
-// 	rv.Set(v)
-// }
+
+
+
 
 func rvSetIntf(rv reflect.Value, v reflect.Value) {
 	rv.Set(v)
@@ -499,7 +499,7 @@ func rvGrowSlice(rv reflect.Value, ti *typeInfo, cap, incr int) (v reflect.Value
 	return
 }
 
-// ----------------
+
 
 func rvSliceIndex(rv reflect.Value, i int, ti *typeInfo) reflect.Value {
 	return rv.Index(i)
@@ -543,11 +543,11 @@ func rvGetArray4Slice(rv reflect.Value) (v reflect.Value) {
 }
 
 func rvGetSlice4Array(rv reflect.Value, v interface{}) {
-	// v is a pointer to a slice to be populated
+	
 
-	// rv.Slice fails if address is not addressable, which can occur during encoding.
-	// Consequently, check if non-addressable, and if so, make new slice and copy into it first.
-	// MARKER: this *may* cause allocation if non-addressable, unfortunately.
+	
+	
+	
 
 	rve := reflect.ValueOf(v).Elem()
 	l := rv.Len()
@@ -558,14 +558,14 @@ func rvGetSlice4Array(rv reflect.Value, v interface{}) {
 		reflect.Copy(rvs, rv)
 		rve.Set(rvs)
 	}
-	// reflect.ValueOf(v).Elem().Set(rv.Slice(0, rv.Len()))
+	
 }
 
 func rvCopySlice(dest, src reflect.Value, _ reflect.Type) {
 	reflect.Copy(dest, src)
 }
 
-// ------------
+
 
 func rvGetBool(rv reflect.Value) bool {
 	return rv.Bool()
@@ -647,17 +647,17 @@ func rvLenMap(rv reflect.Value) int {
 	return rv.Len()
 }
 
-// func copybytes(to, from []byte) int {
-// 	return copy(to, from)
-// }
 
-// func copybytestr(to []byte, from string) int {
-// 	return copy(to, from)
-// }
 
-// func rvLenArray(rv reflect.Value) int {	return rv.Len() }
 
-// ------------ map range and map indexing ----------
+
+
+
+
+
+
+
+
 
 func mapStoresElemIndirect(elemsize uintptr) bool { return false }
 
@@ -669,21 +669,21 @@ func mapGet(m, k, v reflect.Value, keyFastKind mapKeyFastKind, _, _ bool) (vv re
 	return m.MapIndex(k)
 }
 
-// func mapDelete(m, k reflect.Value) {
-// 	m.SetMapIndex(k, reflect.Value{})
-// }
+
+
+
 
 func mapAddrLoopvarRV(t reflect.Type, k reflect.Kind) (r reflect.Value) {
-	return // reflect.New(t).Elem()
+	return 
 }
 
-// ---------- ENCODER optimized ---------------
+
 
 func (e *Encoder) jsondriver() *jsonEncDriver {
 	return e.e.(*jsonEncDriver)
 }
 
-// ---------- DECODER optimized ---------------
+
 
 func (d *Decoder) jsondriver() *jsonDecDriver {
 	return d.d.(*jsonDecDriver)
@@ -697,10 +697,10 @@ func (d *Decoder) mapKeyString(callFnRvk *bool, kstrbs, kstr2bs *[]byte) string 
 	return d.string(*kstr2bs)
 }
 
-// ---------- structFieldInfo optimized ---------------
+
 
 func (n *structFieldInfoPathNode) rvField(v reflect.Value) reflect.Value {
 	return v.Field(int(n.index))
 }
 
-// ---------- others ---------------
+

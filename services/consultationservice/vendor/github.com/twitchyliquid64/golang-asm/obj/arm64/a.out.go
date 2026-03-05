@@ -1,32 +1,32 @@
-// cmd/7c/7.out.h  from Vita Nuova.
-// https://code.google.com/p/ken-cc/source/browse/src/cmd/7c/7.out.h
-//
-// 	Copyright © 1994-1999 Lucent Technologies Inc. All rights reserved.
-// 	Portions Copyright © 1995-1997 C H Forsyth (forsyth@terzarima.net)
-// 	Portions Copyright © 1997-1999 Vita Nuova Limited
-// 	Portions Copyright © 2000-2007 Vita Nuova Holdings Limited (www.vitanuova.com)
-// 	Portions Copyright © 2004,2006 Bruce Ellis
-// 	Portions Copyright © 2005-2007 C H Forsyth (forsyth@terzarima.net)
-// 	Revisions Copyright © 2000-2007 Lucent Technologies Inc. and others
-// 	Portions Copyright © 2009 The Go Authors. All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package arm64
 
@@ -35,13 +35,13 @@ import "github.com/twitchyliquid64/golang-asm/obj"
 const (
 	NSNAME = 8
 	NSYM   = 50
-	NREG   = 32 /* number of general registers */
-	NFREG  = 32 /* number of floating point registers */
+	NREG   = 32 
+	NFREG  = 32 
 )
 
-// General purpose registers, kept in the low bits of Prog.Reg.
+
 const (
-	// integer
+	
 	REG_R0 = obj.RBaseARM64 + iota
 	REG_R1
 	REG_R2
@@ -75,7 +75,7 @@ const (
 	REG_R30
 	REG_R31
 
-	// scalar floating point
+	
 	REG_F0
 	REG_F1
 	REG_F2
@@ -109,7 +109,7 @@ const (
 	REG_F30
 	REG_F31
 
-	// SIMD
+	
 	REG_V0
 	REG_V1
 	REG_V2
@@ -143,9 +143,9 @@ const (
 	REG_V30
 	REG_V31
 
-	// The EQ in
-	// 	CSET	EQ, R0
-	// is encoded as TYPE_REG, even though it's not really a register.
+	
+	
+	
 	COND_EQ
 	COND_NE
 	COND_HS
@@ -163,22 +163,22 @@ const (
 	COND_AL
 	COND_NV
 
-	REG_RSP = REG_V31 + 32 // to differentiate ZR/SP, REG_RSP&0x1f = 31
+	REG_RSP = REG_V31 + 32 
 )
 
-// bits 0-4 indicates register: Vn
-// bits 5-8 indicates arrangement: <T>
+
+
 const (
-	REG_ARNG = obj.RBaseARM64 + 1<<10 + iota<<9 // Vn.<T>
-	REG_ELEM                                    // Vn.<T>[index]
+	REG_ARNG = obj.RBaseARM64 + 1<<10 + iota<<9 
+	REG_ELEM                                    
 	REG_ELEM_END
 )
 
-// Not registers, but flags that can be combined with regular register
-// constants to indicate extended register conversion. When checking,
-// you should subtract obj.RBaseARM64 first. From this difference, bit 11
-// indicates extended register, bits 8-10 select the conversion mode.
-// REG_LSL is the index shift specifier, bit 9 indicates shifted offset register.
+
+
+
+
+
 const REG_LSL = obj.RBaseARM64 + 1<<9
 const REG_EXT = obj.RBaseARM64 + 1<<11
 
@@ -193,10 +193,10 @@ const (
 	REG_SXTX
 )
 
-// Special registers, after subtracting obj.RBaseARM64, bit 12 indicates
-// a special register and the low bits select the register.
-// SYSREG_END is the last item in the automatically generated system register
-// declaration, and it is defined in the sysRegEnc.go file.
+
+
+
+
 const (
 	REG_SPECIAL = obj.RBaseARM64 + 1<<12
 	REG_DAIFSet = SYSREG_END + iota
@@ -221,40 +221,40 @@ const (
 	REG_PSTL3STRM
 )
 
-// Register assignments:
-//
-// compiler allocates R0 up as temps
-// compiler allocates register variables R7-R25
-// compiler allocates external registers R26 down
-//
-// compiler allocates register variables F7-F26
-// compiler allocates external registers F26 down
+
+
+
+
+
+
+
+
 const (
-	REGMIN = REG_R7  // register variables allocated from here to REGMAX
-	REGRT1 = REG_R16 // ARM64 IP0, external linker may use as a scrach register in trampoline
-	REGRT2 = REG_R17 // ARM64 IP1, external linker may use as a scrach register in trampoline
-	REGPR  = REG_R18 // ARM64 platform register, unused in the Go toolchain
+	REGMIN = REG_R7  
+	REGRT1 = REG_R16 
+	REGRT2 = REG_R17 
+	REGPR  = REG_R18 
 	REGMAX = REG_R25
 
-	REGCTXT = REG_R26 // environment for closures
-	REGTMP  = REG_R27 // reserved for liblink
-	REGG    = REG_R28 // G
-	REGFP   = REG_R29 // frame pointer, unused in the Go toolchain
+	REGCTXT = REG_R26 
+	REGTMP  = REG_R27 
+	REGG    = REG_R28 
+	REGFP   = REG_R29 
 	REGLINK = REG_R30
 
-	// ARM64 uses R31 as both stack pointer and zero register,
-	// depending on the instruction. To differentiate RSP from ZR,
-	// we use a different numeric value for REGZERO and REGSP.
+	
+	
+	
 	REGZERO = REG_R31
 	REGSP   = REG_RSP
 
 	FREGRET = REG_F0
-	FREGMIN = REG_F7  // first register variable
-	FREGMAX = REG_F26 // last register variable for 7g only
-	FREGEXT = REG_F26 // first external register
+	FREGMIN = REG_F7  
+	FREGMAX = REG_F26 
+	FREGEXT = REG_F26 
 )
 
-// http://infocenter.arm.com/help/topic/com.arm.doc.ecm0665627/abi_sve_aadwarf_100985_0000_00_en.pdf
+
 var ARM64DWARFRegisters = map[int16]int16{
 	REG_R0:  0,
 	REG_R1:  1,
@@ -288,7 +288,7 @@ var ARM64DWARFRegisters = map[int16]int16{
 	REG_R29: 29,
 	REG_R30: 30,
 
-	// floating point
+	
 	REG_F0:  64,
 	REG_F1:  65,
 	REG_F2:  66,
@@ -322,7 +322,7 @@ var ARM64DWARFRegisters = map[int16]int16{
 	REG_F30: 94,
 	REG_F31: 95,
 
-	// SIMD
+	
 	REG_V0:  64,
 	REG_V1:  65,
 	REG_V2:  66,
@@ -362,7 +362,7 @@ const (
 )
 
 const (
-	/* mark flags */
+	
 	LABEL = 1 << iota
 	LEAF
 	FLOAT
@@ -376,80 +376,80 @@ const (
 )
 
 const (
-	// optab is sorted based on the order of these constants
-	// and the first match is chosen.
-	// The more specific class needs to come earlier.
+	
+	
+	
 	C_NONE   = iota
-	C_REG    // R0..R30
-	C_RSP    // R0..R30, RSP
-	C_FREG   // F0..F31
-	C_VREG   // V0..V31
-	C_PAIR   // (Rn, Rm)
-	C_SHIFT  // Rn<<2
-	C_EXTREG // Rn.UXTB[<<3]
-	C_SPR    // REG_NZCV
-	C_COND   // EQ, NE, etc
-	C_ARNG   // Vn.<T>
-	C_ELEM   // Vn.<T>[index]
-	C_LIST   // [V1, V2, V3]
+	C_REG    
+	C_RSP    
+	C_FREG   
+	C_VREG   
+	C_PAIR   
+	C_SHIFT  
+	C_EXTREG 
+	C_SPR    
+	C_COND   
+	C_ARNG   
+	C_ELEM   
+	C_LIST   
 
-	C_ZCON     // $0 or ZR
-	C_ABCON0   // could be C_ADDCON0 or C_BITCON
-	C_ADDCON0  // 12-bit unsigned, unshifted
-	C_ABCON    // could be C_ADDCON or C_BITCON
-	C_AMCON    // could be C_ADDCON or C_MOVCON
-	C_ADDCON   // 12-bit unsigned, shifted left by 0 or 12
-	C_MBCON    // could be C_MOVCON or C_BITCON
-	C_MOVCON   // generated by a 16-bit constant, optionally inverted and/or shifted by multiple of 16
-	C_BITCON   // bitfield and logical immediate masks
-	C_ADDCON2  // 24-bit constant
-	C_LCON     // 32-bit constant
-	C_MOVCON2  // a constant that can be loaded with one MOVZ/MOVN and one MOVK
-	C_MOVCON3  // a constant that can be loaded with one MOVZ/MOVN and two MOVKs
-	C_VCON     // 64-bit constant
-	C_FCON     // floating-point constant
-	C_VCONADDR // 64-bit memory address
+	C_ZCON     
+	C_ABCON0   
+	C_ADDCON0  
+	C_ABCON    
+	C_AMCON    
+	C_ADDCON   
+	C_MBCON    
+	C_MOVCON   
+	C_BITCON   
+	C_ADDCON2  
+	C_LCON     
+	C_MOVCON2  
+	C_MOVCON3  
+	C_VCON     
+	C_FCON     
+	C_VCONADDR 
 
-	C_AACON  // ADDCON offset in auto constant $a(FP)
-	C_AACON2 // 24-bit offset in auto constant $a(FP)
-	C_LACON  // 32-bit offset in auto constant $a(FP)
-	C_AECON  // ADDCON offset in extern constant $e(SB)
+	C_AACON  
+	C_AACON2 
+	C_LACON  
+	C_AECON  
 
-	// TODO(aram): only one branch class should be enough
-	C_SBRA // for TYPE_BRANCH
+	
+	C_SBRA 
 	C_LBRA
 
-	C_ZAUTO      // 0(RSP)
-	C_NSAUTO_8   // -256 <= x < 0, 0 mod 8
-	C_NSAUTO_4   // -256 <= x < 0, 0 mod 4
-	C_NSAUTO     // -256 <= x < 0
-	C_NPAUTO     // -512 <= x < 0, 0 mod 8
-	C_NAUTO4K    // -4095 <= x < 0
-	C_PSAUTO_8   // 0 to 255, 0 mod 8
-	C_PSAUTO_4   // 0 to 255, 0 mod 4
-	C_PSAUTO     // 0 to 255
-	C_PPAUTO     // 0 to 504, 0 mod 8
-	C_UAUTO4K_8  // 0 to 4095, 0 mod 8
-	C_UAUTO4K_4  // 0 to 4095, 0 mod 4
-	C_UAUTO4K_2  // 0 to 4095, 0 mod 2
-	C_UAUTO4K    // 0 to 4095
-	C_UAUTO8K_8  // 0 to 8190, 0 mod 8
-	C_UAUTO8K_4  // 0 to 8190, 0 mod 4
-	C_UAUTO8K    // 0 to 8190, 0 mod 2
-	C_UAUTO16K_8 // 0 to 16380, 0 mod 8
-	C_UAUTO16K   // 0 to 16380, 0 mod 4
-	C_UAUTO32K   // 0 to 32760, 0 mod 8
-	C_LAUTO      // any other 32-bit constant
+	C_ZAUTO      
+	C_NSAUTO_8   
+	C_NSAUTO_4   
+	C_NSAUTO     
+	C_NPAUTO     
+	C_NAUTO4K    
+	C_PSAUTO_8   
+	C_PSAUTO_4   
+	C_PSAUTO     
+	C_PPAUTO     
+	C_UAUTO4K_8  
+	C_UAUTO4K_4  
+	C_UAUTO4K_2  
+	C_UAUTO4K    
+	C_UAUTO8K_8  
+	C_UAUTO8K_4  
+	C_UAUTO8K    
+	C_UAUTO16K_8 
+	C_UAUTO16K   
+	C_UAUTO32K   
+	C_LAUTO      
 
-	C_SEXT1  // 0 to 4095, direct
-	C_SEXT2  // 0 to 8190
-	C_SEXT4  // 0 to 16380
-	C_SEXT8  // 0 to 32760
-	C_SEXT16 // 0 to 65520
+	C_SEXT1  
+	C_SEXT2  
+	C_SEXT4  
+	C_SEXT8  
+	C_SEXT16 
 	C_LEXT
 
-	C_ZOREG    // 0(R)
-	C_NSOREG_8 // must mirror C_NSAUTO_8, etc
+	C_ZOREG    
+	C_NSOREG_8 
 	C_NSOREG_4
 	C_NSOREG
 	C_NPOREG
@@ -470,30 +470,30 @@ const (
 	C_UOREG32K
 	C_LOREG
 
-	C_ADDR // TODO(aram): explain difference from C_VCONADDR
+	C_ADDR 
 
-	// The GOT slot for a symbol in -dynlink mode.
+	
 	C_GOTADDR
 
-	// TLS "var" in local exec mode: will become a constant offset from
-	// thread local base that is ultimately chosen by the program linker.
+	
+	
 	C_TLS_LE
 
-	// TLS "var" in initial exec mode: will become a memory address (chosen
-	// by the program linker) that the dynamic linker will fill with the
-	// offset from the thread local base.
+	
+	
+	
 	C_TLS_IE
 
-	C_ROFF // register offset (including register extended)
+	C_ROFF 
 
 	C_GOK
 	C_TEXTSIZE
-	C_NCLASS // must be last
+	C_NCLASS 
 )
 
 const (
-	C_XPRE  = 1 << 6 // match arm.C_WBIT, so Prog.String know how to print it
-	C_XPOST = 1 << 5 // match arm.C_PBIT, so Prog.String know how to print it
+	C_XPRE  = 1 << 6 
+	C_XPOST = 1 << 5 
 )
 
 //go:generate go run ../stringer.go -i $GOFILE -o anames.go -p arm64
@@ -1008,15 +1008,15 @@ const (
 )
 
 const (
-	// shift types
+	
 	SHIFT_LL = 0 << 22
 	SHIFT_LR = 1 << 22
 	SHIFT_AR = 2 << 22
 )
 
-// Arrangement for ARM64 SIMD instructions
+
 const (
-	// arrangement types
+	
 	ARNG_8B = iota
 	ARNG_16B
 	ARNG_1D

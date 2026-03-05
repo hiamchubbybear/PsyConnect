@@ -6,22 +6,22 @@ import (
 	"time"
 )
 
-// RecordReader is an interface representing a sequence of records. Record sets
-// are used in both produce and fetch requests to represent the sequence of
-// records that are sent to or receive from kafka brokers.
-//
-// RecordSet values are not safe to use concurrently from multiple goroutines.
+
+
+
+
+
 type RecordReader interface {
-	// Returns the next record in the set, or io.EOF if the end of the sequence
-	// has been reached.
-	//
-	// The returned Record is guaranteed to be valid until the next call to
-	// ReadRecord. If the program needs to retain the Record value it must make
-	// a copy.
+	
+	
+	
+	
+	
+	
 	ReadRecord() (*Record, error)
 }
 
-// NewRecordReader constructs a reader exposing the records passed as arguments.
+
 func NewRecordReader(records ...Record) RecordReader {
 	switch len(records) {
 	case 0:
@@ -33,7 +33,7 @@ func NewRecordReader(records ...Record) RecordReader {
 	}
 }
 
-// MultiRecordReader merges multiple record batches into one.
+
 func MultiRecordReader(batches ...RecordReader) RecordReader {
 	switch len(batches) {
 	case 0:
@@ -108,8 +108,8 @@ func (m *multiRecordReader) ReadRecord() (*Record, error) {
 	}
 }
 
-// optimizedRecordReader is an implementation of a RecordReader which exposes a
-// sequence.
+
+
 type optimizedRecordReader struct {
 	records []optimizedRecord
 	index   int
@@ -165,7 +165,7 @@ type emptyRecordReader struct{}
 
 func (emptyRecordReader) ReadRecord() (*Record, error) { return nil, io.EOF }
 
-// ControlRecord represents a record read from a control batch.
+
 type ControlRecord struct {
 	Offset  int64
 	Time    time.Time
@@ -232,8 +232,8 @@ func (cr *ControlRecord) Record() Record {
 	}
 }
 
-// ControlBatch is an implementation of the RecordReader interface representing
-// control batches returned by kafka brokers.
+
+
 type ControlBatch struct {
 	Attributes           Attributes
 	PartitionLeaderEpoch int32
@@ -244,8 +244,8 @@ type ControlBatch struct {
 	Records              RecordReader
 }
 
-// NewControlBatch constructs a control batch from the list of records passed as
-// arguments.
+
+
 func NewControlBatch(records ...ControlRecord) *ControlBatch {
 	rawRecords := make([]Record, len(records))
 	for i, cr := range records {
@@ -282,8 +282,8 @@ func (c *ControlBatch) Version() int {
 	return 2
 }
 
-// RecordBatch is an implementation of the RecordReader interface representing
-// regular record batches (v2).
+
+
 type RecordBatch struct {
 	Attributes           Attributes
 	PartitionLeaderEpoch int32
@@ -306,8 +306,8 @@ func (r *RecordBatch) Version() int {
 	return 2
 }
 
-// MessageSet is an implementation of the RecordReader interface representing
-// regular message sets (v1).
+
+
 type MessageSet struct {
 	Attributes Attributes
 	BaseOffset int64
@@ -326,9 +326,9 @@ func (m *MessageSet) Version() int {
 	return 1
 }
 
-// RecordStream is an implementation of the RecordReader interface which
-// combines multiple underlying RecordReader and only expose records that
-// are not from control batches.
+
+
+
 type RecordStream struct {
 	Records []RecordReader
 	index   int

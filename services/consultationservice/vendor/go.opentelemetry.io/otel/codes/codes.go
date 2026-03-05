@@ -1,7 +1,7 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
 
-package codes // import "go.opentelemetry.io/otel/codes"
+
+
+package codes 
 
 import (
 	"encoding/json"
@@ -11,28 +11,28 @@ import (
 )
 
 const (
-	// Unset is the default status code.
+	
 	Unset Code = 0
 
-	// Error indicates the operation contains an error.
-	//
-	// NOTE: The error code in OTLP is 2.
-	// The value of this enum is only relevant to the internals
-	// of the Go SDK.
+	
+	
+	
+	
+	
 	Error Code = 1
 
-	// Ok indicates operation has been validated by an Application developers
-	// or Operator to have completed successfully, or contain no error.
-	//
-	// NOTE: The Ok code in OTLP is 1.
-	// The value of this enum is only relevant to the internals
-	// of the Go SDK.
+	
+	
+	
+	
+	
+	
 	Ok Code = 2
 
 	maxCode = 3
 )
 
-// Code is an 32-bit representation of a status state.
+
 type Code uint32
 
 var codeToStr = map[Code]string{
@@ -47,19 +47,19 @@ var strToCode = map[string]Code{
 	`"Ok"`:    Ok,
 }
 
-// String returns the Code as a string.
+
 func (c Code) String() string {
 	return codeToStr[c]
 }
 
-// UnmarshalJSON unmarshals b into the Code.
-//
-// This is based on the functionality in the gRPC codes package:
-// https://github.com/grpc/grpc-go/blob/bb64fee312b46ebee26be43364a7a966033521b1/codes/codes.go#L218-L244
+
+
+
+
 func (c *Code) UnmarshalJSON(b []byte) error {
-	// From json.Unmarshaler: By convention, to approximate the behavior of
-	// Unmarshal itself, Unmarshalers implement UnmarshalJSON([]byte("null")) as
-	// a no-op.
+	
+	
+	
 	if string(b) == "null" {
 		return nil
 	}
@@ -84,7 +84,7 @@ func (c *Code) UnmarshalJSON(b []byte) error {
 				return fmt.Errorf("invalid code: %q", ci)
 			}
 
-			*c = Code(ci) // nolint: gosec  // Bit size of 32 check above.
+			*c = Code(ci) 
 			return nil
 		}
 		return fmt.Errorf("invalid code: %q", string(b))
@@ -93,7 +93,7 @@ func (c *Code) UnmarshalJSON(b []byte) error {
 	}
 }
 
-// MarshalJSON returns c as the JSON encoding of c.
+
 func (c *Code) MarshalJSON() ([]byte, error) {
 	if c == nil {
 		return []byte("null"), nil

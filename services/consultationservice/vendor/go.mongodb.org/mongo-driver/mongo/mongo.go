@@ -1,10 +1,10 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
-package mongo // import "go.mongodb.org/mongo-driver/mongo"
+
+
+
+
+
+package mongo 
 
 import (
 	"bytes"
@@ -28,63 +28,63 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Dialer is used to make network connections.
+
 type Dialer interface {
 	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 }
 
-// BSONAppender is an interface implemented by types that can marshal a
-// provided type into BSON bytes and append those bytes to the provided []byte.
-// The AppendBSON can return a non-nil error and non-nil []byte. The AppendBSON
-// method may also write incomplete BSON to the []byte.
-//
-// Deprecated: BSONAppender is unused and will be removed in Go Driver 2.0.
+
+
+
+
+
+
 type BSONAppender interface {
 	AppendBSON([]byte, interface{}) ([]byte, error)
 }
 
-// BSONAppenderFunc is an adapter function that allows any function that
-// satisfies the AppendBSON method signature to be used where a BSONAppender is
-// used.
-//
-// Deprecated: BSONAppenderFunc is unused and will be removed in Go Driver 2.0.
+
+
+
+
+
 type BSONAppenderFunc func([]byte, interface{}) ([]byte, error)
 
-// AppendBSON implements the BSONAppender interface
-//
-// Deprecated: BSONAppenderFunc is unused and will be removed in Go Driver 2.0.
+
+
+
 func (baf BSONAppenderFunc) AppendBSON(dst []byte, val interface{}) ([]byte, error) {
 	return baf(dst, val)
 }
 
-// MarshalError is returned when attempting to marshal a value into a document
-// results in an error.
+
+
 type MarshalError struct {
 	Value interface{}
 	Err   error
 }
 
-// Error implements the error interface.
+
 func (me MarshalError) Error() string {
 	return fmt.Sprintf("cannot marshal type %s to a BSON Document: %v", reflect.TypeOf(me.Value), me.Err)
 }
 
-// Pipeline is a type that makes creating aggregation pipelines easier. It is a
-// helper and is intended for serializing to BSON.
-//
-// Example usage:
-//
-//	mongo.Pipeline{
-//		{{"$group", bson.D{{"_id", "$state"}, {"totalPop", bson.D{{"$sum", "$pop"}}}}}},
-//		{{"$match", bson.D{{"totalPop", bson.D{{"$gte", 10*1000*1000}}}}}},
-//	}
+
+
+
+
+
+
+
+
+
 type Pipeline []bson.D
 
-// bvwPool is a pool of BSON value writers. BSON value writers
+
 var bvwPool = bsonrw.NewBSONValueWriterPool()
 
-// getEncoder takes a writer, BSON options, and a BSON registry and returns a properly configured
-// bson.Encoder that writes to the given writer.
+
+
 func getEncoder(
 	w io.Writer,
 	opts *options.BSONOptions,
@@ -124,7 +124,7 @@ func getEncoder(
 	}
 
 	if reg != nil {
-		// TODO:(GODRIVER-2719): Remove error handling.
+		
 		if err := enc.SetRegistry(reg); err != nil {
 			return nil, err
 		}
@@ -133,19 +133,19 @@ func getEncoder(
 	return enc, nil
 }
 
-// newEncoderFn will return a function for constructing an encoder based on the
-// provided codec options.
+
+
 func newEncoderFn(opts *options.BSONOptions, registry *bsoncodec.Registry) codecutil.EncoderFn {
 	return func(w io.Writer) (*bson.Encoder, error) {
 		return getEncoder(w, opts, registry)
 	}
 }
 
-// marshal marshals the given value as a BSON document. Byte slices are always converted to a
-// bson.Raw before marshaling.
-//
-// If bsonOpts and registry are specified, the encoder is configured with the requested behaviors.
-// If they are nil, the default behaviors are used.
+
+
+
+
+
 func marshal(
 	val interface{},
 	bsonOpts *options.BSONOptions,
@@ -158,7 +158,7 @@ func marshal(
 		return nil, ErrNilDocument
 	}
 	if bs, ok := val.([]byte); ok {
-		// Slight optimization so we'll just use MarshalBSON and not go through the codec machinery.
+		
 		val = bson.Raw(bs)
 	}
 
@@ -176,13 +176,13 @@ func marshal(
 	return buf.Bytes(), nil
 }
 
-// ensureID inserts the given ObjectID as an element named "_id" at the
-// beginning of the given BSON document if there is not an "_id" already.
-// If the given ObjectID is primitive.NilObjectID, a new object ID will be
-// generated with time.Now().
-//
-// If there is already an element named "_id", the document is not modified. It
-// returns the resulting document and the decoded Go value of the "_id" element.
+
+
+
+
+
+
+
 func ensureID(
 	doc bsoncore.Document,
 	oid primitive.ObjectID,
@@ -193,9 +193,9 @@ func ensureID(
 		reg = bson.DefaultRegistry
 	}
 
-	// Try to find the "_id" element. If it exists, try to unmarshal just the
-	// "_id" field as an interface{} and return it along with the unmodified
-	// BSON document.
+	
+	
+	
 	if _, err := doc.LookupErr("_id"); err == nil {
 		var id struct {
 			ID interface{} `bson:"_id"`
@@ -212,13 +212,13 @@ func ensureID(
 		return doc, id.ID, nil
 	}
 
-	// We couldn't find an "_id" element, so add one with the value of the
-	// provided ObjectID.
+	
+	
 
 	olddoc := doc
 
-	// Reserve an extra 17 bytes for the "_id" field we're about to add:
-	// type (1) + "_id" (3) + terminator (1) + object ID (12)
+	
+	
 	const extraSpace = 17
 	doc = make(bsoncore.Document, 0, len(olddoc)+extraSpace)
 	_, doc = bsoncore.ReserveLength(doc)
@@ -227,7 +227,7 @@ func ensureID(
 	}
 	doc = bsoncore.AppendObjectIDElement(doc, "_id", oid)
 
-	// Remove and re-write the BSON document length header.
+	
 	const int32Len = 4
 	doc = append(doc, olddoc[int32Len:]...)
 	doc = bsoncore.UpdateLength(doc, 0, int32(len(doc)))
@@ -292,14 +292,14 @@ func marshalAggregatePipeline(
 		valLen := val.Len()
 
 		switch t := pipeline.(type) {
-		// Explicitly forbid non-empty pipelines that are semantically single documents
-		// and are implemented as slices.
+		
+		
 		case bson.D, bson.Raw, bsoncore.Document:
 			if valLen > 0 {
 				return nil, false,
 					fmt.Errorf("%T is not an allowed pipeline type as it represents a single document. Use bson.A or mongo.Pipeline instead", t)
 			}
-		// bsoncore.Arrays do not need to be marshaled. Only check validity and presence of output stage.
+		
 		case bsoncore.Array:
 			if err := t.Validate(); err != nil {
 				return nil, false, err
@@ -315,7 +315,7 @@ func marshalAggregatePipeline(
 				return bsoncore.Document(t), false, nil
 			}
 
-			// If not empty, check if first value of the last stage is $out or $merge.
+			
 			if lastStage, ok := values[numVals-1].DocumentOK(); ok {
 				if elem, err := lastStage.IndexErr(0); err == nil && (elem.Key() == "$out" || elem.Key() == "$merge") {
 					hasOutputStage = true
@@ -439,7 +439,7 @@ func marshalValue(
 	return codecutil.MarshalValue(val, newEncoderFn(bsonOpts, registry))
 }
 
-// Build the aggregation pipeline for the CountDocument command.
+
 func countDocumentsAggregatePipeline(
 	filter interface{},
 	encOpts *options.BSONOptions,

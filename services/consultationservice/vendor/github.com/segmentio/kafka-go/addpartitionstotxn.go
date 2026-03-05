@@ -9,56 +9,56 @@ import (
 	"github.com/segmentio/kafka-go/protocol/addpartitionstotxn"
 )
 
-// AddPartitionToTxn represents a partition to be added
-// to a transaction.
+
+
 type AddPartitionToTxn struct {
-	// Partition is the ID of a partition to add to the transaction.
+	
 	Partition int
 }
 
-// AddPartitionsToTxnRequest is the request structure fo the AddPartitionsToTxn function.
+
 type AddPartitionsToTxnRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// The transactional id key
+	
 	TransactionalID string
 
-	// The Producer ID (PID) for the current producer session;
-	// received from an InitProducerID request.
+	
+	
 	ProducerID int
 
-	// The epoch associated with the current producer session for the given PID
+	
 	ProducerEpoch int
 
-	// Mappings of topic names to lists of partitions.
+	
 	Topics map[string][]AddPartitionToTxn
 }
 
-// AddPartitionsToTxnResponse is the response structure for the AddPartitionsToTxn function.
+
 type AddPartitionsToTxnResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// Mappings of topic names to partitions being added to a transactions.
+	
 	Topics map[string][]AddPartitionToTxnPartition
 }
 
-// AddPartitionToTxnPartition represents the state of a single partition
-// in response to adding to a transaction.
+
+
 type AddPartitionToTxnPartition struct {
-	// The ID of the partition.
+	
 	Partition int
 
-	// An error that may have occurred when attempting to add the partition
-	// to a transaction.
-	//
-	// The errors contain the kafka error code. Programs may use the standard
-	// errors.Is function to test the error against kafka error codes.
+	
+	
+	
+	
+	
 	Error error
 }
 
-// AddPartitionsToTnx sends an add partitions to txn request to a kafka broker and returns the response.
+
 func (c *Client) AddPartitionsToTxn(
 	ctx context.Context,
 	req *AddPartitionsToTxnRequest,

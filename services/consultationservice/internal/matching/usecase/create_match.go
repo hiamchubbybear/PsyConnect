@@ -29,15 +29,15 @@ func NewCreateMatchUseCase(
 }
 
 func (uc *CreateMatchUseCase) Execute(ctx context.Context, clientID, therapistID, source string, score float64, reasons []string) error {
-	// Validate Client
+	
 	_, err := uc.clientRepo.GetByProfileID(ctx, clientID)
 	if err != nil {
 		return errors.New("client not found or invalid")
 	}
 
-	// Validate Therapist
+	
 	_, err = uc.therapistRepo.GetByProfileID(ctx, therapistID)
-	// Note: using V1 profile check as generic existence check for now
+	
 	if err != nil {
 		return errors.New("therapist not found or invalid")
 	}

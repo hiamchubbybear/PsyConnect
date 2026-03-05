@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/afero/internal/common"
 )
 
-// IOFS adopts afero.Fs to stdlib io/fs.FS
+
 type IOFS struct {
 	Fs
 }
@@ -35,7 +35,7 @@ var (
 func (iofs IOFS) Open(name string) (fs.File, error) {
 	const op = "open"
 
-	// by convention for fs.FS implementations we should perform this check
+	
 	if !fs.ValidPath(name) {
 		return nil, iofs.wrapError(op, name, fs.ErrInvalid)
 	}
@@ -45,7 +45,7 @@ func (iofs IOFS) Open(name string) (fs.File, error) {
 		return nil, iofs.wrapError(op, name, err)
 	}
 
-	// file should implement fs.ReadDirFile
+	
 	if _, ok := file.(fs.ReadDirFile); !ok {
 		file = readDirFile{file}
 	}
@@ -56,7 +56,7 @@ func (iofs IOFS) Open(name string) (fs.File, error) {
 func (iofs IOFS) Glob(pattern string) ([]string, error) {
 	const op = "glob"
 
-	// afero.Glob does not perform this check but it's required for implementations
+	
 	if _, err := path.Match(pattern, ""); err != nil {
 		return nil, iofs.wrapError(op, pattern, err)
 	}
@@ -119,7 +119,7 @@ func (iofs IOFS) Sub(dir string) (fs.FS, error) { return IOFS{NewBasePathFs(iofs
 
 func (IOFS) wrapError(op, path string, err error) error {
 	if _, ok := err.(*fs.PathError); ok {
-		return err // don't need to wrap again
+		return err 
 	}
 
 	return &fs.PathError{
@@ -129,7 +129,7 @@ func (IOFS) wrapError(op, path string, err error) error {
 	}
 }
 
-// readDirFile provides adapter from afero.File to fs.ReadDirFile needed for correct Open
+
 type readDirFile struct {
 	File
 }
@@ -150,9 +150,9 @@ func (r readDirFile) ReadDir(n int) ([]fs.DirEntry, error) {
 	return ret, nil
 }
 
-// FromIOFS adopts io/fs.FS to use it as afero.Fs
-// Note that io/fs.FS is read-only so all mutating methods will return fs.PathError with fs.ErrPermission
-// To store modifications you may use afero.CopyOnWriteFs
+
+
+
 type FromIOFS struct {
 	fs.FS
 }

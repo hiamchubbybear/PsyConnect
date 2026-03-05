@@ -1,15 +1,12 @@
-// Copyright 2022 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 //go:build hurd
 
 package unix
 
-/*
-#include <stdint.h>
-int ioctl(int, unsigned long int, uintptr_t);
-*/
+
 import "C"
 import "unsafe"
 

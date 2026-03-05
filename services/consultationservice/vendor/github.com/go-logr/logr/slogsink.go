@@ -1,21 +1,7 @@
 //go:build go1.21
 // +build go1.21
 
-/*
-Copyright 2023 The logr Authors.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 
 package logr
 
@@ -32,17 +18,17 @@ var (
 	_ Underlier        = &slogSink{}
 )
 
-// Underlier is implemented by the LogSink returned by NewFromLogHandler.
+
 type Underlier interface {
-	// GetUnderlying returns the Handler used by the LogSink.
+	
 	GetUnderlying() slog.Handler
 }
 
 const (
-	// nameKey is used to log the `WithName` values as an additional attribute.
+	
 	nameKey = "logger"
 
-	// errKey is used to log the error parameter of Error as an additional attribute.
+	
 	errKey = "err"
 )
 
@@ -80,7 +66,7 @@ func (l *slogSink) Error(err error, msg string, kvList ...interface{}) {
 
 func (l *slogSink) log(err error, msg string, level slog.Level, kvList ...interface{}) {
 	var pcs [1]uintptr
-	// skip runtime.Callers, this function, Info/Error, and all helper functions above that.
+	
 	runtime.Callers(3+l.callDepth, pcs[:])
 
 	record := slog.NewRecord(time.Now(), level, msg, pcs[0])
@@ -108,7 +94,7 @@ func (l slogSink) WithValues(kvList ...interface{}) LogSink {
 }
 
 func kvListToAttrs(kvList ...interface{}) []slog.Attr {
-	// We don't need the record itself, only its Add method.
+	
 	record := slog.NewRecord(time.Time{}, 0, "", 0)
 	record.Add(kvList...)
 	attrs := make([]slog.Attr, 0, record.NumAttrs())

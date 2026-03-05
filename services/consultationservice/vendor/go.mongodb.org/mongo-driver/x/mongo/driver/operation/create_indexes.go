@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// CreateIndexes performs a createIndexes operation.
+
 type CreateIndexes struct {
 	authenticator driver.Authenticator
 	commitQuorum  bsoncore.Value
@@ -42,13 +42,13 @@ type CreateIndexes struct {
 	timeout       *time.Duration
 }
 
-// CreateIndexesResult represents a createIndexes result returned by the server.
+
 type CreateIndexesResult struct {
-	// If the collection was created automatically.
+	
 	CreatedCollectionAutomatically bool
-	// The number of indexes existing after this command.
+	
 	IndexesAfter int32
-	// The number of indexes existing before this command.
+	
 	IndexesBefore int32
 }
 
@@ -83,14 +83,14 @@ func buildCreateIndexesResult(response bsoncore.Document) (CreateIndexesResult, 
 	return cir, nil
 }
 
-// NewCreateIndexes constructs and returns a new CreateIndexes.
+
 func NewCreateIndexes(indexes bsoncore.Document) *CreateIndexes {
 	return &CreateIndexes{
 		indexes: indexes,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (ci *CreateIndexes) Result() CreateIndexesResult { return ci.result }
 
 func (ci *CreateIndexes) processResponse(info driver.ResponseInfo) error {
@@ -99,7 +99,7 @@ func (ci *CreateIndexes) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (ci *CreateIndexes) Execute(ctx context.Context) error {
 	if ci.deployment == nil {
 		return errors.New("the CreateIndexes operation must have a Deployment set before Execute can be called")
@@ -139,9 +139,9 @@ func (ci *CreateIndexes) command(dst []byte, desc description.SelectedServer) ([
 	return dst, nil
 }
 
-// CommitQuorum specifies the number of data-bearing members of a replica set, including the primary, that must
-// complete the index builds successfully before the primary marks the indexes as ready. This should either be a
-// string or int32 value.
+
+
+
 func (ci *CreateIndexes) CommitQuorum(commitQuorum bsoncore.Value) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -151,7 +151,7 @@ func (ci *CreateIndexes) CommitQuorum(commitQuorum bsoncore.Value) *CreateIndexe
 	return ci
 }
 
-// Indexes specifies an array containing index specification documents for the indexes being created.
+
 func (ci *CreateIndexes) Indexes(indexes bsoncore.Document) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -161,7 +161,7 @@ func (ci *CreateIndexes) Indexes(indexes bsoncore.Document) *CreateIndexes {
 	return ci
 }
 
-// MaxTime specifies the maximum amount of time to allow the query to run on the server.
+
 func (ci *CreateIndexes) MaxTime(maxTime *time.Duration) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -171,7 +171,7 @@ func (ci *CreateIndexes) MaxTime(maxTime *time.Duration) *CreateIndexes {
 	return ci
 }
 
-// Session sets the session for this operation.
+
 func (ci *CreateIndexes) Session(session *session.Client) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -181,7 +181,7 @@ func (ci *CreateIndexes) Session(session *session.Client) *CreateIndexes {
 	return ci
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (ci *CreateIndexes) ClusterClock(clock *session.ClusterClock) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -191,7 +191,7 @@ func (ci *CreateIndexes) ClusterClock(clock *session.ClusterClock) *CreateIndexe
 	return ci
 }
 
-// Collection sets the collection that this command will run against.
+
 func (ci *CreateIndexes) Collection(collection string) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -201,7 +201,7 @@ func (ci *CreateIndexes) Collection(collection string) *CreateIndexes {
 	return ci
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (ci *CreateIndexes) CommandMonitor(monitor *event.CommandMonitor) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -211,7 +211,7 @@ func (ci *CreateIndexes) CommandMonitor(monitor *event.CommandMonitor) *CreateIn
 	return ci
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (ci *CreateIndexes) Crypt(crypt driver.Crypt) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -221,7 +221,7 @@ func (ci *CreateIndexes) Crypt(crypt driver.Crypt) *CreateIndexes {
 	return ci
 }
 
-// Database sets the database to run this operation against.
+
 func (ci *CreateIndexes) Database(database string) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -231,7 +231,7 @@ func (ci *CreateIndexes) Database(database string) *CreateIndexes {
 	return ci
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (ci *CreateIndexes) Deployment(deployment driver.Deployment) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -241,7 +241,7 @@ func (ci *CreateIndexes) Deployment(deployment driver.Deployment) *CreateIndexes
 	return ci
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (ci *CreateIndexes) ServerSelector(selector description.ServerSelector) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -251,7 +251,7 @@ func (ci *CreateIndexes) ServerSelector(selector description.ServerSelector) *Cr
 	return ci
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (ci *CreateIndexes) WriteConcern(writeConcern *writeconcern.WriteConcern) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -261,7 +261,7 @@ func (ci *CreateIndexes) WriteConcern(writeConcern *writeconcern.WriteConcern) *
 	return ci
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (ci *CreateIndexes) ServerAPI(serverAPI *driver.ServerAPIOptions) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -271,7 +271,7 @@ func (ci *CreateIndexes) ServerAPI(serverAPI *driver.ServerAPIOptions) *CreateIn
 	return ci
 }
 
-// Timeout sets the timeout for this operation.
+
 func (ci *CreateIndexes) Timeout(timeout *time.Duration) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)
@@ -281,7 +281,7 @@ func (ci *CreateIndexes) Timeout(timeout *time.Duration) *CreateIndexes {
 	return ci
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (ci *CreateIndexes) Authenticator(authenticator driver.Authenticator) *CreateIndexes {
 	if ci == nil {
 		ci = new(CreateIndexes)

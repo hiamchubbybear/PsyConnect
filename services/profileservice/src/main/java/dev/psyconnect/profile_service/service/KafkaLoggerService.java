@@ -65,7 +65,7 @@ public class KafkaLoggerService {
                     .build();
 
             if (fields != null) {
-                // Extract known fields
+
                 event.setTraceId((String) fields.get("traceId"));
                 event.setUserId((String) fields.get("userId"));
                 event.setAction((String) fields.get("action"));
@@ -78,7 +78,6 @@ public class KafkaLoggerService {
                 event.setIp((String) fields.get("ip"));
                 event.setUserAgent((String) fields.get("userAgent"));
 
-                // Remaining fields go to metadata
                 Map<String, Object> metadata = new HashMap<>(fields);
                 metadata.remove("traceId");
                 metadata.remove("userId");
@@ -99,7 +98,6 @@ public class KafkaLoggerService {
 
             String json = objectMapper.writeValueAsString(event);
 
-            // Send to Kafka asynchronously
             CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, json);
 
             future.whenComplete((result, ex) -> {

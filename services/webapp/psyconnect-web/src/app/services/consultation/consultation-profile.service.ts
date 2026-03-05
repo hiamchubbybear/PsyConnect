@@ -10,7 +10,7 @@ export interface ConsultationProfile {
   id: string;
   userId: string;
   role: 'therapist' | 'client';
-  // Add other profile fields as needed
+  
 }
 
 @Injectable({
@@ -25,9 +25,7 @@ export class ConsultationProfileService {
     private router: Router
   ) {}
 
-  /**
-   * Get client profile - handles 401 if profile doesn't exist
-   */
+  
   getClientProfile(): Observable<ConsultationProfile | null> {
     return this.http.get<ConsultationProfile>(`${this.apiUrl}/clients/me`).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -40,9 +38,7 @@ export class ConsultationProfileService {
     );
   }
 
-  /**
-   * Get therapist profile - handles 401 if profile doesn't exist
-   */
+  
   getTherapistProfile(): Observable<ConsultationProfile | null> {
     return this.http.get<ConsultationProfile>(`${this.apiUrl}/therapists/me`).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -55,9 +51,7 @@ export class ConsultationProfileService {
     );
   }
 
-  /**
-   * Get current user's consultation profile based on role
-   */
+  
   getCurrentProfile(): Observable<ConsultationProfile | null> {
     const role = this.authService.getRole();
 
@@ -73,18 +67,14 @@ export class ConsultationProfileService {
     }
   }
 
-  /**
-   * Check if user has consultation profile
-   */
+  
   hasProfile(): Observable<boolean> {
     return this.getCurrentProfile().pipe(
       map(profile => profile !== null)
     );
   }
 
-  /**
-   * Redirect to create profile page if profile doesn't exist
-   */
+  
   ensureProfileExists(): Observable<boolean> {
     return this.hasProfile().pipe(
       map(hasProfile => {
@@ -101,30 +91,22 @@ export class ConsultationProfileService {
     );
   }
 
-  /**
-   * Create client profile
-   */
+  
   createClientProfile(data: any): Observable<ConsultationProfile> {
     return this.http.post<ConsultationProfile>(`${this.apiUrl}/clients/me`, data);
   }
 
-  /**
-   * Create therapist profile
-   */
+  
   createTherapistProfile(data: any): Observable<ConsultationProfile> {
     return this.http.post<ConsultationProfile>(`${this.apiUrl}/therapists/me`, data);
   }
 
-  /**
-   * Update client profile
-   */
+  
   updateClientProfile(data: any): Observable<ConsultationProfile> {
     return this.http.put<ConsultationProfile>(`${this.apiUrl}/clients/me`, data);
   }
 
-  /**
-   * Update therapist profile
-   */
+  
   updateTherapistProfile(data: any): Observable<ConsultationProfile> {
     return this.http.put<ConsultationProfile>(`${this.apiUrl}/therapists/me`, data);
   }

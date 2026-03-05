@@ -1,6 +1,6 @@
-// Copyright 2014 Manu Martinez-Almeida. All rights reserved.
-// Use of this source code is governed by a MIT style
-// license that can be found in the LICENSE file.
+
+
+
 
 package render
 
@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin/internal/bytesconv"
 )
 
-// String contains the given interface object slice and its format.
+
 type String struct {
 	Format string
 	Data   []any
@@ -19,17 +19,17 @@ type String struct {
 
 var plainContentType = []string{"text/plain; charset=utf-8"}
 
-// Render (String) writes data with custom ContentType.
+
 func (r String) Render(w http.ResponseWriter) error {
 	return WriteString(w, r.Format, r.Data)
 }
 
-// WriteContentType (String) writes Plain ContentType.
+
 func (r String) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, plainContentType)
 }
 
-// WriteString writes data according to its format and write custom ContentType.
+
 func WriteString(w http.ResponseWriter, format string, data []any) (err error) {
 	writeContentType(w, plainContentType)
 	if len(data) > 0 {

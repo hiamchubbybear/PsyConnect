@@ -1,7 +1,7 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
 
-package attribute // import "go.opentelemetry.io/otel/attribute"
+
+
+package attribute 
 
 import (
 	"encoding/json"
@@ -15,10 +15,10 @@ import (
 
 //go:generate stringer -type=Type
 
-// Type describes the type of the data Value holds.
-type Type int // nolint: revive  // redefines builtin Type.
 
-// Value represents the value part in key-value pairs.
+type Type int 
+
+
 type Value struct {
 	vtype    Type
 	numeric  uint64
@@ -27,27 +27,27 @@ type Value struct {
 }
 
 const (
-	// INVALID is used for a Value with no value set.
+	
 	INVALID Type = iota
-	// BOOL is a boolean Type Value.
+	
 	BOOL
-	// INT64 is a 64-bit signed integral Type Value.
+	
 	INT64
-	// FLOAT64 is a 64-bit floating point Type Value.
+	
 	FLOAT64
-	// STRING is a string Type Value.
+	
 	STRING
-	// BOOLSLICE is a slice of booleans Type Value.
+	
 	BOOLSLICE
-	// INT64SLICE is a slice of 64-bit signed integral numbers Type Value.
+	
 	INT64SLICE
-	// FLOAT64SLICE is a slice of 64-bit floating point numbers Type Value.
+	
 	FLOAT64SLICE
-	// STRINGSLICE is a slice of strings Type Value.
+	
 	STRINGSLICE
 )
 
-// BoolValue creates a BOOL Value.
+
 func BoolValue(v bool) Value {
 	return Value{
 		vtype:   BOOL,
@@ -55,17 +55,17 @@ func BoolValue(v bool) Value {
 	}
 }
 
-// BoolSliceValue creates a BOOLSLICE Value.
+
 func BoolSliceValue(v []bool) Value {
 	return Value{vtype: BOOLSLICE, slice: attribute.BoolSliceValue(v)}
 }
 
-// IntValue creates an INT64 Value.
+
 func IntValue(v int) Value {
 	return Int64Value(int64(v))
 }
 
-// IntSliceValue creates an INTSLICE Value.
+
 func IntSliceValue(v []int) Value {
 	var int64Val int64
 	cp := reflect.New(reflect.ArrayOf(len(v), reflect.TypeOf(int64Val)))
@@ -78,7 +78,7 @@ func IntSliceValue(v []int) Value {
 	}
 }
 
-// Int64Value creates an INT64 Value.
+
 func Int64Value(v int64) Value {
 	return Value{
 		vtype:   INT64,
@@ -86,12 +86,12 @@ func Int64Value(v int64) Value {
 	}
 }
 
-// Int64SliceValue creates an INT64SLICE Value.
+
 func Int64SliceValue(v []int64) Value {
 	return Value{vtype: INT64SLICE, slice: attribute.Int64SliceValue(v)}
 }
 
-// Float64Value creates a FLOAT64 Value.
+
 func Float64Value(v float64) Value {
 	return Value{
 		vtype:   FLOAT64,
@@ -99,12 +99,12 @@ func Float64Value(v float64) Value {
 	}
 }
 
-// Float64SliceValue creates a FLOAT64SLICE Value.
+
 func Float64SliceValue(v []float64) Value {
 	return Value{vtype: FLOAT64SLICE, slice: attribute.Float64SliceValue(v)}
 }
 
-// StringValue creates a STRING Value.
+
 func StringValue(v string) Value {
 	return Value{
 		vtype:    STRING,
@@ -112,24 +112,24 @@ func StringValue(v string) Value {
 	}
 }
 
-// StringSliceValue creates a STRINGSLICE Value.
+
 func StringSliceValue(v []string) Value {
 	return Value{vtype: STRINGSLICE, slice: attribute.StringSliceValue(v)}
 }
 
-// Type returns a type of the Value.
+
 func (v Value) Type() Type {
 	return v.vtype
 }
 
-// AsBool returns the bool value. Make sure that the Value's type is
-// BOOL.
+
+
 func (v Value) AsBool() bool {
 	return internal.RawToBool(v.numeric)
 }
 
-// AsBoolSlice returns the []bool value. Make sure that the Value's type is
-// BOOLSLICE.
+
+
 func (v Value) AsBoolSlice() []bool {
 	if v.vtype != BOOLSLICE {
 		return nil
@@ -141,14 +141,14 @@ func (v Value) asBoolSlice() []bool {
 	return attribute.AsBoolSlice(v.slice)
 }
 
-// AsInt64 returns the int64 value. Make sure that the Value's type is
-// INT64.
+
+
 func (v Value) AsInt64() int64 {
 	return internal.RawToInt64(v.numeric)
 }
 
-// AsInt64Slice returns the []int64 value. Make sure that the Value's type is
-// INT64SLICE.
+
+
 func (v Value) AsInt64Slice() []int64 {
 	if v.vtype != INT64SLICE {
 		return nil
@@ -160,14 +160,14 @@ func (v Value) asInt64Slice() []int64 {
 	return attribute.AsInt64Slice(v.slice)
 }
 
-// AsFloat64 returns the float64 value. Make sure that the Value's
-// type is FLOAT64.
+
+
 func (v Value) AsFloat64() float64 {
 	return internal.RawToFloat64(v.numeric)
 }
 
-// AsFloat64Slice returns the []float64 value. Make sure that the Value's type is
-// FLOAT64SLICE.
+
+
 func (v Value) AsFloat64Slice() []float64 {
 	if v.vtype != FLOAT64SLICE {
 		return nil
@@ -179,14 +179,14 @@ func (v Value) asFloat64Slice() []float64 {
 	return attribute.AsFloat64Slice(v.slice)
 }
 
-// AsString returns the string value. Make sure that the Value's type
-// is STRING.
+
+
 func (v Value) AsString() string {
 	return v.stringly
 }
 
-// AsStringSlice returns the []string value. Make sure that the Value's type is
-// STRINGSLICE.
+
+
 func (v Value) AsStringSlice() []string {
 	if v.vtype != STRINGSLICE {
 		return nil
@@ -200,7 +200,7 @@ func (v Value) asStringSlice() []string {
 
 type unknownValueType struct{}
 
-// AsInterface returns Value's data as interface{}.
+
 func (v Value) AsInterface() interface{} {
 	switch v.Type() {
 	case BOOL:
@@ -223,7 +223,7 @@ func (v Value) AsInterface() interface{} {
 	return unknownValueType{}
 }
 
-// Emit returns a string representation of Value's data.
+
 func (v Value) Emit() string {
 	switch v.Type() {
 	case BOOLSLICE:
@@ -259,7 +259,7 @@ func (v Value) Emit() string {
 	}
 }
 
-// MarshalJSON returns the JSON encoding of the Value.
+
 func (v Value) MarshalJSON() ([]byte, error) {
 	var jsonVal struct {
 		Type  string

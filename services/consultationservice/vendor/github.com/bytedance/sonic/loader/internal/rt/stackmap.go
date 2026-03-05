@@ -1,18 +1,4 @@
-/**
- * Copyright 2023 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package rt
 
@@ -83,49 +69,26 @@ func (self BitVec) String() string {
     var i uintptr
     var v []string
 
-    /* add each bit */
+    
     for i = 0; i < self.N; i++ {
         v = append(v, fmt.Sprintf("%d", self.Bit(i)))
     }
 
-    /* join them together */
+    
     return fmt.Sprintf(
         "BitVec { %s }",
         strings.Join(v, ", "),
     )
 }
 
-/*
-reference Golang 1.22.0 code:
 
-```
-args := bitvec.New(int32(maxArgs / int64(types.PtrSize)))
-aoff := objw.Uint32(&argsSymTmp, 0, uint32(len(lv.stackMaps))) // number of bitmaps
-aoff = objw.Uint32(&argsSymTmp, aoff, uint32(args.N))          // number of bits in each bitmap
-
-locals := bitvec.New(int32(maxLocals / int64(types.PtrSize)))
-loff := objw.Uint32(&liveSymTmp, 0, uint32(len(lv.stackMaps))) // number of bitmaps
-loff = objw.Uint32(&liveSymTmp, loff, uint32(locals.N))        // number of bits in each bitmap
-
-for _, live := range lv.stackMaps {
-    args.Clear()
-    locals.Clear()
-
-    lv.pointerMap(live, lv.vars, args, locals)
-
-    aoff = objw.BitVec(&argsSymTmp, aoff, args)
-    loff = objw.BitVec(&liveSymTmp, loff, locals)
-}
-```
-
-*/
 
 type StackMap struct {
-    // number of bitmaps
+    
     N int32
-    // number of bits of each bitmap
+    
     L int32
-    // bitmap1, bitmap2, ... bitmapN
+    
     B [1]byte
 }
 
@@ -140,13 +103,13 @@ func (self *StackMap) String() string {
     sb := strings.Builder{}
     sb.WriteString("StackMap {")
 
-    /* dump every stack map */
+    
     for i := 0; i < int(self.N); i++ {
         sb.WriteRune('\n')
         sb.WriteString("    " + self.Get(i).String())
     }
 
-    /* close the stackmap */
+    
     sb.WriteString("\n}")
     return sb.String()
 }
@@ -185,7 +148,7 @@ const (
 )
 
 //go:linkname mallocgc runtime.mallocgc
-//goland:noinspection GoUnusedParameter
+
 func mallocgc(nb uintptr, vt *GoType, zero bool) unsafe.Pointer
 
 type StackMapBuilder struct {
@@ -199,12 +162,12 @@ func (self *StackMapBuilder) Build() (p *StackMap) {
     allocatedSize := _StackMapSize + uintptr(nb) - 1
     bm := mallocgc(allocatedSize, byteType, false)
 
-    /* initialize as 1 bitmap of N bits */
+    
     p = (*StackMap)(bm)
     p.N, p.L = 1, int32(self.b.N)
     copy(BytesFrom(unsafe.Pointer(&p.B), nb, nb), self.b.B)
 
-    /* assert length */
+    
     if allocatedSize < uintptr(p.BinaryLen()) {
         panic(fmt.Sprintf("stackmap allocation too small: allocated %d, required %d", allocatedSize, p.BinaryLen()))
     }

@@ -27,22 +27,22 @@ var (
 )
 
 func init() {
-	// Check if GetFileInformationByHandleEx is available.
+	
 	if procGetFileInformationByHandleEx.Find() != nil {
 		procGetFileInformationByHandleEx = nil
 	}
 }
 
-// IsTerminal return true if the file descriptor is terminal.
+
 func IsTerminal(fd uintptr) bool {
 	var st uint32
 	r, _, e := syscall.Syscall(procGetConsoleMode.Addr(), 2, fd, uintptr(unsafe.Pointer(&st)), 0)
 	return r != 0 && e == 0
 }
 
-// Check pipe name is used for cygwin/msys2 pty.
-// Cygwin/MSYS2 PTY has a name like:
-//   \{cygwin,msys}-XXXXXXXXXXXXXXXX-ptyN-{from,to}-master
+
+
+
 func isCygwinPipeName(name string) bool {
 	token := strings.Split(name, "-")
 	if len(token) < 5 {
@@ -75,11 +75,11 @@ func isCygwinPipeName(name string) bool {
 	return true
 }
 
-// getFileNameByHandle use the undocomented ntdll NtQueryObject to get file full name from file handler
-// since GetFileInformationByHandleEx is not available under windows Vista and still some old fashion
-// guys are using Windows XP, this is a workaround for those guys, it will also work on system from
-// Windows vista to 10
-// see https://stackoverflow.com/a/18792477 for details
+
+
+
+
+
 func getFileNameByHandle(fd uintptr) (string, error) {
 	if procNtQueryObject == nil {
 		return "", errors.New("ntdll.dll: NtQueryObject not supported")
@@ -95,8 +95,8 @@ func getFileNameByHandle(fd uintptr) (string, error) {
 	return string(utf16.Decode(buf[4 : 4+buf[0]/2])), nil
 }
 
-// IsCygwinTerminal() return true if the file descriptor is a cygwin or msys2
-// terminal.
+
+
 func IsCygwinTerminal(fd uintptr) bool {
 	if procGetFileInformationByHandleEx == nil {
 		name, err := getFileNameByHandle(fd)
@@ -106,7 +106,7 @@ func IsCygwinTerminal(fd uintptr) bool {
 		return isCygwinPipeName(name)
 	}
 
-	// Cygwin/msys's pty is a pipe.
+	
 	ft, _, e := syscall.Syscall(procGetFileType.Addr(), 1, fd, 0, 0)
 	if ft != fileTypePipe || e != 0 {
 		return false

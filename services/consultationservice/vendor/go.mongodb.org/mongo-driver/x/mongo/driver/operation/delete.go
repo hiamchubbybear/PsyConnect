@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Delete performs a delete operation
+
 type Delete struct {
 	authenticator driver.Authenticator
 	comment       bsoncore.Value
@@ -47,9 +47,9 @@ type Delete struct {
 	logger        *logger.Logger
 }
 
-// DeleteResult represents a delete result returned by the server.
+
 type DeleteResult struct {
-	// Number of documents successfully deleted.
+	
 	N int64
 }
 
@@ -71,14 +71,14 @@ func buildDeleteResult(response bsoncore.Document) (DeleteResult, error) {
 	return dr, nil
 }
 
-// NewDelete constructs and returns a new Delete.
+
 func NewDelete(deletes ...bsoncore.Document) *Delete {
 	return &Delete{
 		deletes: deletes,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (d *Delete) Result() DeleteResult { return d.result }
 
 func (d *Delete) processResponse(info driver.ResponseInfo) error {
@@ -87,7 +87,7 @@ func (d *Delete) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (d *Delete) Execute(ctx context.Context) error {
 	if d.deployment == nil {
 		return errors.New("the Delete operation must have a Deployment set before Execute can be called")
@@ -143,9 +143,9 @@ func (d *Delete) command(dst []byte, desc description.SelectedServer) ([]byte, e
 	return dst, nil
 }
 
-// Deletes adds documents to this operation that will be used to determine what documents to delete when this operation
-// is executed. These documents should have the form {q: <query>, limit: <integer limit>, collation: <document>}. The
-// collation field is optional. If limit is 0, there will be no limit on the number of documents deleted.
+
+
+
 func (d *Delete) Deletes(deletes ...bsoncore.Document) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -155,8 +155,8 @@ func (d *Delete) Deletes(deletes ...bsoncore.Document) *Delete {
 	return d
 }
 
-// Ordered sets ordered. If true, when a write fails, the operation will return the error, when
-// false write failures do not stop execution of the operation.
+
+
 func (d *Delete) Ordered(ordered bool) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -166,7 +166,7 @@ func (d *Delete) Ordered(ordered bool) *Delete {
 	return d
 }
 
-// Session sets the session for this operation.
+
 func (d *Delete) Session(session *session.Client) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -176,7 +176,7 @@ func (d *Delete) Session(session *session.Client) *Delete {
 	return d
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (d *Delete) ClusterClock(clock *session.ClusterClock) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -186,7 +186,7 @@ func (d *Delete) ClusterClock(clock *session.ClusterClock) *Delete {
 	return d
 }
 
-// Collection sets the collection that this command will run against.
+
 func (d *Delete) Collection(collection string) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -196,7 +196,7 @@ func (d *Delete) Collection(collection string) *Delete {
 	return d
 }
 
-// Comment sets a value to help trace an operation.
+
 func (d *Delete) Comment(comment bsoncore.Value) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -206,7 +206,7 @@ func (d *Delete) Comment(comment bsoncore.Value) *Delete {
 	return d
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (d *Delete) CommandMonitor(monitor *event.CommandMonitor) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -216,7 +216,7 @@ func (d *Delete) CommandMonitor(monitor *event.CommandMonitor) *Delete {
 	return d
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (d *Delete) Crypt(crypt driver.Crypt) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -226,7 +226,7 @@ func (d *Delete) Crypt(crypt driver.Crypt) *Delete {
 	return d
 }
 
-// Database sets the database to run this operation against.
+
 func (d *Delete) Database(database string) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -236,7 +236,7 @@ func (d *Delete) Database(database string) *Delete {
 	return d
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (d *Delete) Deployment(deployment driver.Deployment) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -246,7 +246,7 @@ func (d *Delete) Deployment(deployment driver.Deployment) *Delete {
 	return d
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (d *Delete) ServerSelector(selector description.ServerSelector) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -256,7 +256,7 @@ func (d *Delete) ServerSelector(selector description.ServerSelector) *Delete {
 	return d
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (d *Delete) WriteConcern(writeConcern *writeconcern.WriteConcern) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -266,8 +266,8 @@ func (d *Delete) WriteConcern(writeConcern *writeconcern.WriteConcern) *Delete {
 	return d
 }
 
-// Retry enables retryable mode for this operation. Retries are handled automatically in driver.Operation.Execute based
-// on how the operation is set.
+
+
 func (d *Delete) Retry(retry driver.RetryMode) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -277,9 +277,9 @@ func (d *Delete) Retry(retry driver.RetryMode) *Delete {
 	return d
 }
 
-// Hint is a flag to indicate that the update document contains a hint. Hint is only supported by
-// servers >= 4.4. Older servers >= 3.4 will report an error for using the hint option. For servers <
-// 3.4, the driver will return an error if the hint option is used.
+
+
+
 func (d *Delete) Hint(hint bool) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -289,7 +289,7 @@ func (d *Delete) Hint(hint bool) *Delete {
 	return d
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (d *Delete) ServerAPI(serverAPI *driver.ServerAPIOptions) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -299,7 +299,7 @@ func (d *Delete) ServerAPI(serverAPI *driver.ServerAPIOptions) *Delete {
 	return d
 }
 
-// Let specifies the let document to use. This option is only valid for server versions 5.0 and above.
+
 func (d *Delete) Let(let bsoncore.Document) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -309,7 +309,7 @@ func (d *Delete) Let(let bsoncore.Document) *Delete {
 	return d
 }
 
-// Timeout sets the timeout for this operation.
+
 func (d *Delete) Timeout(timeout *time.Duration) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -319,7 +319,7 @@ func (d *Delete) Timeout(timeout *time.Duration) *Delete {
 	return d
 }
 
-// Logger sets the logger for this operation.
+
 func (d *Delete) Logger(logger *logger.Logger) *Delete {
 	if d == nil {
 		d = new(Delete)
@@ -330,7 +330,7 @@ func (d *Delete) Logger(logger *logger.Logger) *Delete {
 	return d
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (d *Delete) Authenticator(authenticator driver.Authenticator) *Delete {
 	if d == nil {
 		d = new(Delete)

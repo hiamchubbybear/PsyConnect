@@ -38,7 +38,7 @@ var names = []struct {
 	{"NOTE_NONE", unix.NOTE_NONE},
 	{"NOTE_NSECONDS", unix.NOTE_NSECONDS},
 	{"NOTE_OOB", unix.NOTE_OOB},
-	//{"NOTE_PCTRLMASK", unix.NOTE_PCTRLMASK}, -0x100000 (?!)
+	
 	{"NOTE_PDATAMASK", unix.NOTE_PDATAMASK},
 	{"NOTE_REAP", unix.NOTE_REAP},
 	{"NOTE_RENAME", unix.NOTE_RENAME},

@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package ast
 
@@ -37,7 +23,7 @@ func NewPair(key string, val Node) Pair {
     }
 }
 
-// Values returns iterator for array's children traversal
+
 func (self *Node) Values() (ListIterator, error) {
     if err := self.should(types.V_ARRAY); err != nil {
         return ListIterator{}, err
@@ -49,7 +35,7 @@ func (self *Node) values() ListIterator {
     return ListIterator{Iterator{p: self}}
 }
 
-// Properties returns iterator for object's children traversal
+
 func (self *Node) Properties() (ObjectIterator, error) {
     if err := self.should(types.V_OBJECT); err != nil {
         return ObjectIterator{}, err
@@ -74,7 +60,7 @@ func (self *Iterator) Len() int {
     return self.p.len()
 }
 
-// HasNext reports if it is the end of iteration or has error.
+
 func (self *Iterator) HasNext() bool {
     if !self.p.isLazy() {
         return self.p.Valid() && self.i < self.p.len()
@@ -90,12 +76,12 @@ func (self *Iterator) HasNext() bool {
     return false
 }
 
-// ListIterator is specialized iterator for V_ARRAY
+
 type ListIterator struct {
     Iterator
 }
 
-// ObjectIterator is specialized iterator for V_ARRAY
+
 type ObjectIterator struct {
     Iterator
 }
@@ -114,8 +100,8 @@ next_start:
     }
 }
 
-// Next scans through children of underlying V_ARRAY, 
-// copies each child to v, and returns .HasNext().
+
+
 func (self *ListIterator) Next(v *Node) bool {
     n := self.next()
     if n == nil {
@@ -139,8 +125,8 @@ next_start:
     }
 }
 
-// Next scans through children of underlying V_OBJECT, 
-// copies each child to v, and returns .HasNext().
+
+
 func (self *ObjectIterator) Next(p *Pair) bool {
     n := self.next()
     if n == nil {
@@ -150,16 +136,16 @@ func (self *ObjectIterator) Next(p *Pair) bool {
     return true
 }
 
-// Sequence represents scanning path of single-layer nodes.
-// Index indicates the value's order in both V_ARRAY and V_OBJECT json.
-// Key is the value's key (for V_OBJECT json only, otherwise it will be nil).
+
+
+
 type Sequence struct {
     Index int 
     Key *string
-    // Level int
+    
 }
 
-// String is string representation of one Sequence
+
 func (s Sequence) String() string {
     k := ""
     if s.Key != nil {
@@ -170,13 +156,13 @@ func (s Sequence) String() string {
 
 type Scanner func(path Sequence, node *Node) bool
 
-// ForEach scans one V_OBJECT node's children from JSON head to tail, 
-// and pass the Sequence and Node of corresponding JSON value.
-//
-// Especially, if the node is not V_ARRAY or V_OBJECT,
-// the node itself will be returned and Sequence.Index == -1.
-// 
-// NOTICE: A unsetted node WON'T trigger sc, but its index still counts into Path.Index
+
+
+
+
+
+
+
 func (self *Node) ForEach(sc Scanner) error {
     if err := self.checkRaw(); err != nil {
         return err

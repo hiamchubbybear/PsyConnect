@@ -1,6 +1,6 @@
-// Copyright 2019+ Klaus Post. All rights reserved.
-// License information can be found in the LICENSE file.
-// Based on work by Yann Collet, released under BSD License.
+
+
+
 
 package zstd
 
@@ -11,16 +11,16 @@ type seqCoders struct {
 	llPrev, ofPrev, mlPrev *fseEncoder
 }
 
-// swap coders with another (block).
+
 func (s *seqCoders) swap(other *seqCoders) {
 	*s, *other = *other, *s
 }
 
-// setPrev will update the previous encoders to the actually used ones
-// and make sure a fresh one is in the main slot.
+
+
 func (s *seqCoders) setPrev(ll, ml, of *fseEncoder) {
 	compareSwap := func(used *fseEncoder, current, prev **fseEncoder) {
-		// We used the new one, more current to history and reuse the previous history
+		
 		if *current == used {
 			*prev, *current = *current, *prev
 			c := *current
@@ -32,7 +32,7 @@ func (s *seqCoders) setPrev(ll, ml, of *fseEncoder) {
 		if used == *prev {
 			return
 		}
-		// Ensure we cannot reuse by accident
+		
 		prevEnc := *prev
 		prevEnc.symbolLen = 0
 	}
@@ -54,10 +54,10 @@ var llCodeTable = [64]byte{0, 1, 2, 3, 4, 5, 6, 7,
 	24, 24, 24, 24, 24, 24, 24, 24,
 	24, 24, 24, 24, 24, 24, 24, 24}
 
-// Up to 6 bits
+
 const maxLLCode = 35
 
-// llBitsTable translates from ll code to number of bits.
+
 var llBitsTable = [maxLLCode + 1]byte{
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -65,11 +65,11 @@ var llBitsTable = [maxLLCode + 1]byte{
 	4, 6, 7, 8, 9, 10, 11, 12,
 	13, 14, 15, 16}
 
-// llCode returns the code that represents the literal length requested.
+
 func llCode(litLength uint32) uint8 {
 	const llDeltaCode = 19
 	if litLength <= 63 {
-		// Compiler insists on bounds check (Go 1.12)
+		
 		return llCodeTable[litLength&63]
 	}
 	return uint8(highBit(litLength)) + llDeltaCode
@@ -84,10 +84,10 @@ var mlCodeTable = [128]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 	42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42,
 	42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42}
 
-// Up to 6 bits
+
 const maxMLCode = 52
 
-// mlBitsTable translates from ml code to number of bits.
+
 var mlBitsTable = [maxMLCode + 1]byte{
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
@@ -97,18 +97,18 @@ var mlBitsTable = [maxMLCode + 1]byte{
 	4, 4, 5, 7, 8, 9, 10, 11,
 	12, 13, 14, 15, 16}
 
-// note : mlBase = matchLength - MINMATCH;
-// because it's the format it's stored in seqStore->sequences
+
+
 func mlCode(mlBase uint32) uint8 {
 	const mlDeltaCode = 36
 	if mlBase <= 127 {
-		// Compiler insists on bounds check (Go 1.12)
+		
 		return mlCodeTable[mlBase&127]
 	}
 	return uint8(highBit(mlBase)) + mlDeltaCode
 }
 
 func ofCode(offset uint32) uint8 {
-	// A valid offset will always be > 0.
+	
 	return uint8(bits.Len32(offset) - 1)
 }

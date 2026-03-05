@@ -31,27 +31,27 @@ func (k keyKind) String() string {
 	panic("missing keyKind string mapping")
 }
 
-// SeenTracker tracks which keys have been seen with which TOML type to flag
-// duplicates and mismatches according to the spec.
-//
-// Each node in the visited tree is represented by an entry. Each entry has an
-// identifier, which is provided by a counter. Entries are stored in the array
-// entries. As new nodes are discovered (referenced for the first time in the
-// TOML document), entries are created and appended to the array. An entry
-// points to its parent using its id.
-//
-// To find whether a given key (sequence of []byte) has already been visited,
-// the entries are linearly searched, looking for one with the right name and
-// parent id.
-//
-// Given that all keys appear in the document after their parent, it is
-// guaranteed that all descendants of a node are stored after the node, this
-// speeds up the search process.
-//
-// When encountering [[array tables]], the descendants of that node are removed
-// to allow that branch of the tree to be "rediscovered". To maintain the
-// invariant above, the deletion process needs to keep the order of entries.
-// This results in more copies in that case.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type SeenTracker struct {
 	entries    []entry
 	currentIdx int
@@ -64,7 +64,7 @@ var pool = sync.Pool{
 }
 
 func (s *SeenTracker) reset() {
-	// Always contains a root element at index 0.
+	
 	s.currentIdx = 0
 	if len(s.entries) == 0 {
 		s.entries = make([]entry, 1, 2)
@@ -76,7 +76,7 @@ func (s *SeenTracker) reset() {
 }
 
 type entry struct {
-	// Use -1 to indicate no child or no sibling.
+	
 	child int
 	next  int
 
@@ -86,8 +86,8 @@ type entry struct {
 	kv       bool
 }
 
-// Find the index of the child of parentIdx with key k. Returns -1 if
-// it does not exist.
+
+
 func (s *SeenTracker) find(parentIdx int, k []byte) int {
 	for i := s.entries[parentIdx].child; i >= 0; i = s.entries[i].next {
 		if bytes.Equal(s.entries[i].name, k) {
@@ -97,7 +97,7 @@ func (s *SeenTracker) find(parentIdx int, k []byte) int {
 	return -1
 }
 
-// Remove all descendants of node at position idx.
+
 func (s *SeenTracker) clear(idx int) {
 	if idx >= len(s.entries) {
 		return
@@ -151,10 +151,10 @@ func (s *SeenTracker) setExplicitFlag(parentIdx int) {
 	}
 }
 
-// CheckExpression takes a top-level node and checks that it does not contain
-// keys that have been seen in previous calls, and validates that types are
-// consistent. It returns true if it is the first time this node's key is seen.
-// Useful to clear array tables on first use.
+
+
+
+
 func (s *SeenTracker) CheckExpression(node *unstable.Node) (bool, error) {
 	if s.entries == nil {
 		s.reset()
@@ -180,9 +180,9 @@ func (s *SeenTracker) checkTable(node *unstable.Node) (bool, error) {
 
 	parentIdx := 0
 
-	// This code is duplicated in checkArrayTable. This is because factoring
-	// it in a function requires to copy the iterator, or allocate it to the
-	// heap, which is not cheap.
+	
+	
+	
 	for it.Next() {
 		if it.IsLast() {
 			break
@@ -347,12 +347,12 @@ func (s *SeenTracker) checkInlineTable(node *unstable.Node) (first bool, err err
 		}
 	}
 
-	// As inline tables are self-contained, the tracker does not
-	// need to retain the details of what they contain. The
-	// keyValue element that creates the inline table is kept to
-	// mark the presence of the inline table and prevent
-	// redefinition of its keys: check* functions cannot walk into
-	// a value.
+	
+	
+	
+	
+	
+	
 	pool.Put(s)
 	return first, nil
 }

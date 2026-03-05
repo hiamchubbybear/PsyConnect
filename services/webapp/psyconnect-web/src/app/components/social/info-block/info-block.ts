@@ -1,4 +1,4 @@
-// src/app/features/profile/components/info-block/info-block.component.ts
+
 import { CommonModule } from '@angular/common';
 import {
   Component,

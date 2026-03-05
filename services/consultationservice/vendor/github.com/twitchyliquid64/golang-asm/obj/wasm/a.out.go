@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package wasm
 
@@ -9,52 +9,50 @@ import "github.com/twitchyliquid64/golang-asm/obj"
 //go:generate go run ../stringer.go -i $GOFILE -o anames.go -p wasm
 
 const (
-	/* mark flags */
+	
 	DONE          = 1 << iota
-	PRESERVEFLAGS // not allowed to clobber flags
+	PRESERVEFLAGS 
 )
 
-/*
- *	wasm
- */
+
 const (
 	ACallImport = obj.ABaseWasm + obj.A_ARCHSPECIFIC + iota
 	AGet
 	ASet
 	ATee
-	ANot // alias for I32Eqz
+	ANot 
 
-	// The following are low-level WebAssembly instructions.
-	// Their order matters, since it matches the opcode encoding.
-	// Gaps in the encoding are indicated by comments.
+	
+	
+	
 
-	AUnreachable // opcode 0x00
+	AUnreachable 
 	ANop
 	ABlock
 	ALoop
 	AIf
 	AElse
 
-	AEnd // opcode 0x0B
+	AEnd 
 	ABr
 	ABrIf
 	ABrTable
-	// ACall and AReturn are WebAssembly instructions. obj.ACALL and obj.ARET are higher level instructions
-	// with Go semantics, e.g. they manipulate the Go stack on the linear memory.
+	
+	
 	AReturn
 	ACall
 	ACallIndirect
 
-	ADrop // opcode 0x1A
+	ADrop 
 	ASelect
 
-	ALocalGet // opcode 0x20
+	ALocalGet 
 	ALocalSet
 	ALocalTee
 	AGlobalGet
 	AGlobalSet
 
-	AI32Load // opcode 0x28
+	AI32Load 
 	AI64Load
 	AF32Load
 	AF64Load
@@ -222,7 +220,7 @@ const (
 	AI64Extend16S
 	AI64Extend32S
 
-	AI32TruncSatF32S // opcode 0xFC 0x00
+	AI32TruncSatF32S 
 	AI32TruncSatF32U
 	AI32TruncSatF64S
 	AI32TruncSatF64U
@@ -231,12 +229,12 @@ const (
 	AI64TruncSatF64S
 	AI64TruncSatF64U
 
-	ALast // Sentinel: End of low-level WebAssembly instructions.
+	ALast 
 
 	ARESUMEPOINT
-	// ACALLNORESUME is a call which is not followed by a resume point.
-	// It is allowed inside of WebAssembly blocks, whereas obj.ACALL is not.
-	// However, it is not allowed to switch goroutines while inside of an ACALLNORESUME call.
+	
+	
+	
 	ACALLNORESUME
 
 	ARETUNWIND
@@ -255,18 +253,18 @@ const (
 )
 
 const (
-	// globals
-	REG_SP = obj.RBaseWasm + iota // SP is currently 32-bit, until 64-bit memory operations are available
+	
+	REG_SP = obj.RBaseWasm + iota 
 	REG_CTXT
 	REG_g
-	// RET* are used by runtime.return0 and runtime.reflectcall. These functions pass return values in registers.
+	
 	REG_RET0
 	REG_RET1
 	REG_RET2
 	REG_RET3
 	REG_PAUSE
 
-	// i32 locals
+	
 	REG_R0
 	REG_R1
 	REG_R2
@@ -284,7 +282,7 @@ const (
 	REG_R14
 	REG_R15
 
-	// f32 locals
+	
 	REG_F0
 	REG_F1
 	REG_F2
@@ -302,7 +300,7 @@ const (
 	REG_F14
 	REG_F15
 
-	// f64 locals
+	
 	REG_F16
 	REG_F17
 	REG_F18
@@ -320,7 +318,7 @@ const (
 	REG_F30
 	REG_F31
 
-	REG_PC_B // also first parameter, i32
+	REG_PC_B 
 
 	MAXREG
 

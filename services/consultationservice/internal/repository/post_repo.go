@@ -41,7 +41,7 @@ func NewPostRepo() PostRepository {
 }
 
 func (r *postRepo) CreatePost(ctx context.Context, post *model.Post) error {
-	// Initialize default values
+	
 	if post.Tags == nil {
 		post.Tags = []string{}
 	}
@@ -102,7 +102,7 @@ func (r *postRepo) UpdatePost(ctx context.Context, id string, post *model.Post) 
 
 	post.UpdatedAt = time.Now()
 
-	// Re-extract hashtags from content
+	
 	post.Hashtags = extractHashtags(post.Content)
 
 	filter := bson.M{"_id": objID, "is_deleted": false}
@@ -198,7 +198,7 @@ func (r *postRepo) GetFeed(ctx context.Context, userIDs []string, excludeIDs []s
 }
 
 func (r *postRepo) SearchPosts(ctx context.Context, query string, limit, skip int64) ([]model.Post, error) {
-	// Create text search filter
+	
 	filter := bson.M{
 		"is_deleted": false,
 		"visibility": "public",
@@ -229,8 +229,8 @@ func (r *postRepo) SearchPosts(ctx context.Context, query string, limit, skip in
 }
 
 func (r *postRepo) GetTrendingPosts(ctx context.Context, limit int64) ([]model.Post, error) {
-	// Trending algorithm: Score = (likes * 1 + comments * 2 + shares * 3) / (age_in_hours + 2)^1.5
-	// Get posts from last 7 days
+	
+	
 	sevenDaysAgo := time.Now().AddDate(0, 0, -7)
 
 	filter := bson.M{
@@ -239,7 +239,7 @@ func (r *postRepo) GetTrendingPosts(ctx context.Context, limit int64) ([]model.P
 		"created_at": bson.M{"$gte": sevenDaysAgo},
 	}
 
-	// Sort by engagement score (approximation using MongoDB)
+	
 	opts := options.Find().
 		SetSort(bson.D{
 			{Key: "upvote_count", Value: -1},
@@ -259,7 +259,7 @@ func (r *postRepo) GetTrendingPosts(ctx context.Context, limit int64) ([]model.P
 		return nil, err
 	}
 
-	// Calculate trending score and re-sort in application
+	
 	for i := range posts {
 		posts[i] = calculateTrendingScore(posts[i])
 	}
@@ -344,20 +344,20 @@ func (r *postRepo) UpdateEngagementCount(ctx context.Context, id, field string, 
 }
 
 func (r *postRepo) GetPopularTags(ctx context.Context, limit int) ([]string, error) {
-	// Aggregation pipeline to find most frequent hashtags
+	
 	pipeline := mongo.Pipeline{
-		// 1. Only public posts
+		
 		{{Key: "$match", Value: bson.M{"is_deleted": false, "visibility": "public"}}},
-		// 2. Unwind hashtags array
+		
 		{{Key: "$unwind", Value: "$hashtags"}},
-		// 3. Group by tag and count
+		
 		{{Key: "$group", Value: bson.M{
 			"_id":   "$hashtags",
 			"count": bson.M{"$sum": 1},
 		}}},
-		// 4. Sort by count descending
+		
 		{{Key: "$sort", Value: bson.M{"count": -1}}},
-		// 5. Limit results
+		
 		{{Key: "$limit", Value: limit}},
 	}
 
@@ -382,7 +382,7 @@ func (r *postRepo) GetPopularTags(ctx context.Context, limit int) ([]string, err
 	return tags, nil
 }
 
-// Helper functions
+
 
 func extractHashtags(content string) []string {
 	re := regexp.MustCompile(`#(\w+)`)
@@ -405,13 +405,13 @@ func extractHashtags(content string) []string {
 }
 
 func calculateTrendingScore(post model.Post) model.Post {
-	// Score = (upvotes * 1 + comments * 2 + shares * 3) / (age_in_hours + 2)^1.5
+	
 	engagement := float64(post.UpvoteCount + post.CommentCount*2 + post.ShareCount*3)
 	ageHours := time.Since(post.CreatedAt).Hours()
 	score := engagement / math.Pow(ageHours+2, 1.5)
 
-	// Store score in a custom field (not persistent, just for sorting)
-	_ = score // Score calculated, would need custom field to persist
+	
+	_ = score 
 
 	return post
 }

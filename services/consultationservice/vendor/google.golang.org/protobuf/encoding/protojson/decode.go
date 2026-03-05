@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package protojson
 
@@ -24,48 +24,48 @@ import (
 	"google.golang.org/protobuf/reflect/protoregistry"
 )
 
-// Unmarshal reads the given []byte into the given [proto.Message].
-// The provided message must be mutable (e.g., a non-nil pointer to a message).
+
+
 func Unmarshal(b []byte, m proto.Message) error {
 	return UnmarshalOptions{}.Unmarshal(b, m)
 }
 
-// UnmarshalOptions is a configurable JSON format parser.
+
 type UnmarshalOptions struct {
 	pragma.NoUnkeyedLiterals
 
-	// If AllowPartial is set, input for messages that will result in missing
-	// required fields will not return an error.
+	
+	
 	AllowPartial bool
 
-	// If DiscardUnknown is set, unknown fields and enum name values are ignored.
+	
 	DiscardUnknown bool
 
-	// Resolver is used for looking up types when unmarshaling
-	// google.protobuf.Any messages or extension fields.
-	// If nil, this defaults to using protoregistry.GlobalTypes.
+	
+	
+	
 	Resolver interface {
 		protoregistry.MessageTypeResolver
 		protoregistry.ExtensionTypeResolver
 	}
 
-	// RecursionLimit limits how deeply messages may be nested.
-	// If zero, a default limit is applied.
+	
+	
 	RecursionLimit int
 }
 
-// Unmarshal reads the given []byte and populates the given [proto.Message]
-// using options in the UnmarshalOptions object.
-// It will clear the message first before setting the fields.
-// If it returns an error, the given message may be partially set.
-// The provided message must be mutable (e.g., a non-nil pointer to a message).
+
+
+
+
+
 func (o UnmarshalOptions) Unmarshal(b []byte, m proto.Message) error {
 	return o.unmarshal(b, m)
 }
 
-// unmarshal is a centralized function that all unmarshal operations go through.
-// For profiling purposes, avoid changing the name of this function or
-// introducing other code paths for unmarshal that do not go through this.
+
+
+
 func (o UnmarshalOptions) unmarshal(b []byte, m proto.Message) error {
 	proto.Reset(m)
 
@@ -81,7 +81,7 @@ func (o UnmarshalOptions) unmarshal(b []byte, m proto.Message) error {
 		return err
 	}
 
-	// Check for EOF.
+	
 	tok, err := dec.Read()
 	if err != nil {
 		return err
@@ -101,26 +101,26 @@ type decoder struct {
 	opts UnmarshalOptions
 }
 
-// newError returns an error object with position info.
+
 func (d decoder) newError(pos int, f string, x ...any) error {
 	line, column := d.Position(pos)
 	head := fmt.Sprintf("(line %d:%d): ", line, column)
 	return errors.New(head+f, x...)
 }
 
-// unexpectedTokenError returns a syntax error for the given unexpected token.
+
 func (d decoder) unexpectedTokenError(tok json.Token) error {
 	return d.syntaxError(tok.Pos(), "unexpected token %s", tok.RawString())
 }
 
-// syntaxError returns a syntax error for given position.
+
 func (d decoder) syntaxError(pos int, f string, x ...any) error {
 	line, column := d.Position(pos)
 	head := fmt.Sprintf("syntax error (line %d:%d): ", line, column)
 	return errors.New(head+f, x...)
 }
 
-// unmarshalMessage unmarshals a message into the given protoreflect.Message.
+
 func (d decoder) unmarshalMessage(m protoreflect.Message, skipTypeURL bool) error {
 	d.opts.RecursionLimit--
 	if d.opts.RecursionLimit < 0 {
@@ -147,7 +147,7 @@ func (d decoder) unmarshalMessage(m protoreflect.Message, skipTypeURL bool) erro
 	var seenOneofs set.Ints
 	fieldDescs := messageDesc.Fields()
 	for {
-		// Read field name.
+		
 		tok, err := d.Read()
 		if err != nil {
 			return err
@@ -158,22 +158,22 @@ func (d decoder) unmarshalMessage(m protoreflect.Message, skipTypeURL bool) erro
 		case json.ObjectClose:
 			return nil
 		case json.Name:
-			// Continue below.
+			
 		}
 
 		name := tok.Name()
-		// Unmarshaling a non-custom embedded message in Any will contain the
-		// JSON field "@type" which should be skipped because it is not a field
-		// of the embedded message, but simply an artifact of the Any format.
+		
+		
+		
 		if skipTypeURL && name == "@type" {
 			d.Read()
 			continue
 		}
 
-		// Get the FieldDescriptor.
+		
 		var fd protoreflect.FieldDescriptor
 		if strings.HasPrefix(name, "[") && strings.HasSuffix(name, "]") {
-			// Only extension names are in [name] format.
+			
 			extName := protoreflect.FullName(name[1 : len(name)-1])
 			extType, err := d.opts.Resolver.FindExtensionByName(extName)
 			if err != nil && err != protoregistry.NotFound {
@@ -186,7 +186,7 @@ func (d decoder) unmarshalMessage(m protoreflect.Message, skipTypeURL bool) erro
 				}
 			}
 		} else {
-			// The name can either be the JSON name or the proto field name.
+			
 			fd = fieldDescs.ByJSONName(name)
 			if fd == nil {
 				fd = fieldDescs.ByTextName(name)
@@ -194,7 +194,7 @@ func (d decoder) unmarshalMessage(m protoreflect.Message, skipTypeURL bool) erro
 		}
 
 		if fd == nil {
-			// Field is unknown.
+			
 			if d.opts.DiscardUnknown {
 				if err := d.skipJSONValue(); err != nil {
 					return err
@@ -204,15 +204,15 @@ func (d decoder) unmarshalMessage(m protoreflect.Message, skipTypeURL bool) erro
 			return d.newError(tok.Pos(), "unknown field %v", tok.RawString())
 		}
 
-		// Do not allow duplicate fields.
+		
 		num := uint64(fd.Number())
 		if seenNums.Has(num) {
 			return d.newError(tok.Pos(), "duplicate field %v", tok.RawString())
 		}
 		seenNums.Set(num)
 
-		// No need to set values for JSON null unless the field type is
-		// google.protobuf.Value or google.protobuf.NullValue.
+		
+		
 		if tok, _ := d.Peek(); tok.Kind() == json.Null && !isKnownValue(fd) && !isNullValue(fd) {
 			d.Read()
 			continue
@@ -230,7 +230,7 @@ func (d decoder) unmarshalMessage(m protoreflect.Message, skipTypeURL bool) erro
 				return err
 			}
 		default:
-			// If field is a oneof, check if it has already been set.
+			
 			if od := fd.ContainingOneof(); od != nil {
 				idx := uint64(od.Index())
 				if seenOneofs.Has(idx) {
@@ -239,7 +239,7 @@ func (d decoder) unmarshalMessage(m protoreflect.Message, skipTypeURL bool) erro
 				seenOneofs.Set(idx)
 			}
 
-			// Required or optional fields.
+			
 			if err := d.unmarshalSingular(m, fd); err != nil {
 				return err
 			}
@@ -257,8 +257,8 @@ func isNullValue(fd protoreflect.FieldDescriptor) bool {
 	return ed != nil && ed.FullName() == genid.NullValue_enum_fullname
 }
 
-// unmarshalSingular unmarshals to the non-repeated field specified
-// by the given FieldDescriptor.
+
+
 func (d decoder) unmarshalSingular(m protoreflect.Message, fd protoreflect.FieldDescriptor) error {
 	var val protoreflect.Value
 	var err error
@@ -279,8 +279,8 @@ func (d decoder) unmarshalSingular(m protoreflect.Message, fd protoreflect.Field
 	return nil
 }
 
-// unmarshalScalar unmarshals to a scalar/enum protoreflect.Value specified by
-// the given FieldDescriptor.
+
+
 func (d decoder) unmarshalScalar(fd protoreflect.FieldDescriptor) (protoreflect.Value, error) {
 	const b32 int = 32
 	const b64 int = 64
@@ -355,7 +355,7 @@ func unmarshalInt(tok json.Token, bitSize int) (protoreflect.Value, bool) {
 		return getInt(tok, bitSize)
 
 	case json.String:
-		// Decode number from string.
+		
 		s := strings.TrimSpace(tok.ParsedString())
 		if len(s) != len(tok.ParsedString()) {
 			return protoreflect.Value{}, false
@@ -387,7 +387,7 @@ func unmarshalUint(tok json.Token, bitSize int) (protoreflect.Value, bool) {
 		return getUint(tok, bitSize)
 
 	case json.String:
-		// Decode number from string.
+		
 		s := strings.TrimSpace(tok.ParsedString())
 		if len(s) != len(tok.ParsedString()) {
 			return protoreflect.Value{}, false
@@ -438,7 +438,7 @@ func unmarshalFloat(tok json.Token, bitSize int) (protoreflect.Value, bool) {
 			return protoreflect.ValueOfFloat64(math.Inf(-1)), true
 		}
 
-		// Decode number from string.
+		
 		if len(s) != len(strings.TrimSpace(s)) {
 			return protoreflect.Value{}, false
 		}
@@ -486,7 +486,7 @@ func unmarshalBytes(tok json.Token) (protoreflect.Value, bool) {
 func unmarshalEnum(tok json.Token, fd protoreflect.FieldDescriptor, discardUnknown bool) (protoreflect.Value, bool) {
 	switch tok.Kind() {
 	case json.String:
-		// Lookup EnumNumber based on name.
+		
 		s := tok.ParsedString()
 		if enumVal := fd.Enum().Values().ByName(protoreflect.Name(s)); enumVal != nil {
 			return protoreflect.ValueOfEnum(enumVal.Number()), true
@@ -501,7 +501,7 @@ func unmarshalEnum(tok json.Token, fd protoreflect.FieldDescriptor, discardUnkno
 		}
 
 	case json.Null:
-		// This is only valid for google.protobuf.NullValue.
+		
 		if isNullValue(fd) {
 			return protoreflect.ValueOfEnum(0), true
 		}
@@ -572,9 +572,9 @@ func (d decoder) unmarshalMap(mmap protoreflect.Map, fd protoreflect.FieldDescri
 		return d.unexpectedTokenError(tok)
 	}
 
-	// Determine ahead whether map entry is a scalar type or a message type in
-	// order to call the appropriate unmarshalMapValue func inside the for loop
-	// below.
+	
+	
+	
 	var unmarshalMapValue func() (protoreflect.Value, error)
 	switch fd.MapValue().Kind() {
 	case protoreflect.MessageKind, protoreflect.GroupKind:
@@ -593,7 +593,7 @@ func (d decoder) unmarshalMap(mmap protoreflect.Map, fd protoreflect.FieldDescri
 
 Loop:
 	for {
-		// Read field name.
+		
 		tok, err := d.Read()
 		if err != nil {
 			return err
@@ -604,21 +604,21 @@ Loop:
 		case json.ObjectClose:
 			break Loop
 		case json.Name:
-			// Continue.
+			
 		}
 
-		// Unmarshal field name.
+		
 		pkey, err := d.unmarshalMapKey(tok, fd.MapKey())
 		if err != nil {
 			return err
 		}
 
-		// Check for duplicate field name.
+		
 		if mmap.Has(pkey) {
 			return d.newError(tok.Pos(), "duplicate map key %v", tok.RawString())
 		}
 
-		// Read and unmarshal field value.
+		
 		pval, err := unmarshalMapValue()
 		if err != nil {
 			return err
@@ -631,8 +631,8 @@ Loop:
 	return nil
 }
 
-// unmarshalMapKey converts given token of Name kind into a protoreflect.MapKey.
-// A map key type is any integral or string type.
+
+
 func (d decoder) unmarshalMapKey(tok json.Token, fd protoreflect.FieldDescriptor) (protoreflect.MapKey, error) {
 	const b32 = 32
 	const b64 = 64

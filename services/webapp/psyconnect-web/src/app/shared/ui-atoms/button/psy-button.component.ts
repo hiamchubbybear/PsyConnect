@@ -23,7 +23,7 @@ export class PsyButtonComponent {
   @Input() disabled = false;
   @Input() loading = false;
   @Input() block = false;
-  @Input() icon?: boolean | string; // Can pass true to enable icon slot, or a string icon name
+  @Input() icon?: boolean | string; 
 
   @Output() onClick = new EventEmitter<Event>();
 

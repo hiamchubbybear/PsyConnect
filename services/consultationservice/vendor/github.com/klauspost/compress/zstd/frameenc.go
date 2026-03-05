@@ -1,6 +1,6 @@
-// Copyright 2019+ Klaus Post. All rights reserved.
-// License information can be found in the LICENSE file.
-// Based on work by Yann Collet, released under BSD License.
+
+
+
 
 package zstd
 
@@ -76,7 +76,7 @@ func (f frameHeader) appendTo(dst []byte) ([]byte, error) {
 		if f.SingleSegment {
 			dst = append(dst, uint8(f.ContentSize))
 		}
-		// Unless SingleSegment is set, framessizes < 256 are nto stored.
+		
 	case 1:
 		f.ContentSize -= 256
 		dst = append(dst, uint8(f.ContentSize), uint8(f.ContentSize>>8))
@@ -93,10 +93,10 @@ func (f frameHeader) appendTo(dst []byte) ([]byte, error) {
 
 const skippableFrameHeader = 4 + 4
 
-// calcSkippableFrame will return a total size to be added for written
-// to be divisible by multiple.
-// The value will always be > skippableFrameHeader.
-// The function will panic if written < 0 or wantMultiple <= 0.
+
+
+
+
 func calcSkippableFrame(written, wantMultiple int64) int {
 	if wantMultiple <= 0 {
 		panic("wantMultiple <= 0")
@@ -115,8 +115,8 @@ func calcSkippableFrame(written, wantMultiple int64) int {
 	return int(toAdd)
 }
 
-// skippableFrame will add a skippable frame with a total size of bytes.
-// total should be >= skippableFrameHeader and < math.MaxUint32.
+
+
 func skippableFrame(dst []byte, total int, r io.Reader) ([]byte, error) {
 	if total == 0 {
 		return dst, nil

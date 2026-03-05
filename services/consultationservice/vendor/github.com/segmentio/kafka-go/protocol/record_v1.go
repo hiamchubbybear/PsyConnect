@@ -73,7 +73,7 @@ func (rs *RecordSet) readFromVersion1(d *decoder) error {
 			},
 		}
 	} else {
-		// Can we have a non-nil key when reading a compressed message?
+		
 		if key != nil {
 			key.Close()
 		}
@@ -122,13 +122,13 @@ func (rs *RecordSet) readFromVersion1(d *decoder) error {
 			}
 
 			if baseOffset != 0 {
-				// https://kafka.apache.org/documentation/#messageset
-				//
-				// In version 1, to avoid server side re-compression, only the
-				// wrapper message will be assigned an offset. The inner messages
-				// will have relative offsets. The absolute offset can be computed
-				// using the offset from the outer message, which corresponds to the
-				// offset assigned to the last inner message.
+				
+				
+				
+				
+				
+				
+				
 				lastRelativeOffset := int64(len(r.records)) - 1
 
 				for i := range r.records {
@@ -155,11 +155,11 @@ func (rs *RecordSet) writeToVersion1(buffer *pageBuffer, bufferOffset int64) err
 
 	if compression := attributes.Compression(); compression != 0 {
 		if codec := compression.Codec(); codec != nil {
-			// In the message format version 1, compression is achieved by
-			// compressing the value of a message which recursively contains
-			// the representation of the compressed message set.
+			
+			
+			
 			subset := *rs
-			subset.Attributes &= ^7 // erase compression
+			subset.Attributes &= ^7 
 
 			if err := subset.writeToVersion1(buffer, bufferOffset); err != nil {
 				return err
@@ -204,10 +204,10 @@ func (rs *RecordSet) writeToVersion1(buffer *pageBuffer, bufferOffset int64) err
 
 		messageOffset := buffer.Size()
 		e.writeInt64(int64(i))
-		e.writeInt32(0) // message size placeholder
-		e.writeInt32(0) // crc32 placeholder
+		e.writeInt32(0) 
+		e.writeInt32(0) 
 		e.setCRC(crc32.IEEETable)
-		e.writeInt8(1) // magic byte: version 1
+		e.writeInt8(1) 
 		e.writeInt8(int8(attributes))
 		e.writeInt64(t)
 

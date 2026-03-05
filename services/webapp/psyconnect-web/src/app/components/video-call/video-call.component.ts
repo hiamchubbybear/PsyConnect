@@ -50,7 +50,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
   isPipMode = false;
   showSettings = false;
 
-  // Device selection
+  
   availableCameras: MediaDeviceInfo[] = [];
   availableMicrophones: MediaDeviceInfo[] = [];
   selectedCameraId?: string;
@@ -69,7 +69,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     console.log('🎥 VideoCallComponent initialized');
 
-    // Add beforeunload warning to prevent accidental tab close during call
+    
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
   }
 
@@ -77,12 +77,12 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     this.callStateSubscription?.unsubscribe();
     this.endCall();
 
-    // Remove beforeunload warning
+    
     window.removeEventListener('beforeunload', this.beforeUnloadHandler);
   }
 
   private beforeUnloadHandler = (e: BeforeUnloadEvent) => {
-    // Only show warning if call is active
+    
     if (this.callState.isActive) {
       e.preventDefault();
       e.returnValue = '';
@@ -96,16 +96,16 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('🎥 Local video element:', this.localVideo?.nativeElement);
     console.log('🎥 Remote video element:', this.remoteVideo?.nativeElement);
 
-    // Load available devices
+    
     this.loadDevices();
 
-    // Subscribe to call state changes
+    
     this.callStateSubscription = this.webrtcService.callState$.subscribe(
       (state) => {
         console.log('📊 Call state updated:', state);
         this.callState = state;
 
-        // Attach streams to video elements
+        
         if (state.localStream && this.localVideo) {
           console.log('🎥 Attaching local stream to video element');
           this.localVideo.nativeElement.srcObject = state.localStream;
@@ -119,20 +119,20 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  // Start outgoing call
+  
   async startCall() {
     try {
       console.log('📞 Starting call to:', this.remoteUserId);
 
-      // Initialize local stream
+      
       await this.webrtcService.initLocalStream();
 
-      // Create peer connection
+      
       this.webrtcService.createPeerConnection((candidate) => {
         this.iceCandidate.emit(candidate);
       });
 
-      // Create and send offer
+      
       const offer = await this.webrtcService.createOffer();
       console.log('📤 Emitting offer event:', offer);
       this.offer.emit(offer);
@@ -145,18 +145,18 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Accept incoming call
+  
   async acceptCall(offer: RTCSessionDescriptionInit) {
     try {
       console.log('📞 Accepting call from:', this.remoteUserId);
       console.log('📞 Offer received:', offer);
 
-      // Initialize local stream
+      
       console.log('🎥 Initializing local stream...');
       await this.webrtcService.initLocalStream();
       console.log('✅ Local stream initialized');
 
-      // Create peer connection
+      
       console.log('🔗 Creating peer connection...');
       this.webrtcService.createPeerConnection((candidate) => {
         console.log('🧊 ICE candidate generated (receiver)');
@@ -164,12 +164,12 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       console.log('✅ Peer connection created');
 
-      // Handle offer
+      
       console.log('📥 Handling offer...');
       await this.webrtcService.handleOffer(offer);
       console.log('✅ Offer handled');
 
-      // Create and send answer
+      
       console.log('📤 Creating answer...');
       const answer = await this.webrtcService.createAnswer();
       console.log('📤 Answer created:', answer);
@@ -182,45 +182,45 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Handle incoming answer
+  
   async handleAnswer(answer: RTCSessionDescriptionInit) {
     await this.webrtcService.handleAnswer(answer);
   }
 
-  // Handle incoming ICE candidate
+  
   async handleIceCandidate(candidate: RTCIceCandidateInit) {
     await this.webrtcService.addIceCandidate(candidate);
   }
 
-  // Toggle video
+  
   toggleVideo() {
     this.isVideoEnabled = this.webrtcService.toggleVideo();
   }
 
-  // Toggle audio
+  
   toggleAudio() {
     this.isAudioEnabled = this.webrtcService.toggleAudio();
   }
 
-  // Toggle fullscreen
+  
   toggleFullscreen() {
     this.isFullscreen = !this.isFullscreen;
   }
 
-  // End call
+  
   endCall() {
     console.log('🔴 End call button clicked');
 
-    // End call in service (stops streams, closes peer connection)
+    
     this.webrtcService.endCall();
 
-    // Emit event to parent to handle UI cleanup and send leave message
+    
     this.callEnded.emit();
 
     console.log('✅ End call event emitted');
   }
 
-  // Drag functionality for local video
+  
   startDrag(event: MouseEvent) {
     if ((event.target as HTMLElement).closest('.minimize-btn')) {
       return;
@@ -256,14 +256,14 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLocalVideoMinimized = !this.isLocalVideoMinimized;
   }
 
-  // Toggle Picture-in-Picture mode
+  
   togglePipMode() {
     this.isPipMode = !this.isPipMode;
   }
 
-  // Drag functionality for PiP window
+  
   startPipDrag(event: MouseEvent) {
-    // Only drag if in PiP mode and not clicking on buttons
+    
     if (!this.isPipMode || (event.target as HTMLElement).closest('button')) {
       return;
     }
@@ -294,13 +294,13 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     document.removeEventListener('mouseup', this.stopPipDrag);
   };
 
-  // Load available devices
+  
   async loadDevices() {
     const devices = await this.webrtcService.getAvailableDevices();
     this.availableCameras = devices.cameras;
     this.availableMicrophones = devices.microphones;
 
-    // Set current devices
+    
     const current = this.webrtcService.getCurrentDevices();
     this.selectedCameraId = current.cameraId;
     this.selectedMicrophoneId = current.microphoneId;
@@ -309,7 +309,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('🎤 Available microphones:', this.availableMicrophones.length);
   }
 
-  // Camera change handler
+  
   async onCameraChange(deviceId: string) {
     const success = await this.webrtcService.switchCamera(deviceId);
     if (success) {
@@ -317,7 +317,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Microphone change handler
+  
   async onMicrophoneChange(deviceId: string) {
     const success = await this.webrtcService.switchMicrophone(deviceId);
     if (success) {
@@ -325,7 +325,7 @@ export class VideoCallComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // Toggle settings menu
+  
   toggleSettings() {
     this.showSettings = !this.showSettings;
   }

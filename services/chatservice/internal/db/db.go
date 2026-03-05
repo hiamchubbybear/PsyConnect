@@ -54,7 +54,7 @@ func InitDB(env *bootstrap.Env) *mongo.Client {
 			log.Fatal("MongoDB connection error:", err)
 		}
 
-		// Verify connection
+		
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		err = client.Ping(ctx, nil)

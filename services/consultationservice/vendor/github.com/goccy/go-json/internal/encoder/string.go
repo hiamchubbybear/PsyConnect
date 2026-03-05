@@ -1,27 +1,27 @@
-// This files's string processing codes are inspired by https://github.com/segmentio/encoding.
-// The license notation is as follows.
-//
-// # MIT License
-//
-// Copyright (c) 2019 Segment.io, Inc.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package encoder
 
 import (
@@ -37,7 +37,7 @@ const (
 
 var hex = "0123456789abcdef"
 
-//nolint:govet
+
 func stringToUint64Slice(s string) []uint64 {
 	return *(*[]uint64)(unsafe.Pointer(&reflect.SliceHeader{
 		Data: ((*reflect.StringHeader)(unsafe.Pointer(&s))).Data,
@@ -71,9 +71,9 @@ func appendNormalizedHTMLString(buf []byte, s string) []byte {
 	if valLen >= 8 {
 		chunks := stringToUint64Slice(s)
 		for _, n := range chunks {
-			// combine masks before checking for the MSB of each byte. We include
-			// `n` in the mask to check whether any of the *input* byte MSBs were
-			// set (i.e. the byte was outside the ASCII range).
+			
+			
+			
 			mask := n | (n - (lsb * 0x20)) |
 				((n ^ (lsb * '"')) - lsb) |
 				((n ^ (lsb * '\\')) - lsb) |
@@ -91,7 +91,7 @@ func appendNormalizedHTMLString(buf []byte, s string) []byte {
 				goto ESCAPE_END
 			}
 		}
-		// no found any escape characters.
+		
 		return append(append(buf, s...), '"')
 	}
 ESCAPE_END:
@@ -99,7 +99,7 @@ ESCAPE_END:
 		c := s[j]
 
 		if !needEscapeHTMLNormalizeUTF8[c] {
-			// fast path: most of the time, printable ascii characters are used
+			
 			j++
 			continue
 		}
@@ -141,8 +141,8 @@ ESCAPE_END:
 			j = j + 1
 			continue
 
-		case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0E, 0x0F, // 0x00-0x0F
-			0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F: // 0x10-0x1F
+		case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0E, 0x0F, 
+			0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F: 
 			buf = append(buf, s[i:j]...)
 			buf = append(buf, `\u00`...)
 			buf = append(buf, hex[c>>4], hex[c&0xF])
@@ -158,13 +158,13 @@ ESCAPE_END:
 			i = j + 1
 			j = j + 1
 			continue
-			// U+2028 is LINE SEPARATOR.
-			// U+2029 is PARAGRAPH SEPARATOR.
-			// They are both technically valid characters in JSON strings,
-			// but don't work in JSONP, which has to be evaluated as JavaScript,
-			// and can lead to security holes there. It is valid JSON to
-			// escape them, so we do so unconditionally.
-			// See http://timelessrepo.com/json-isnt-a-javascript-subset for discussion.
+			
+			
+			
+			
+			
+			
+			
 		case lineSepState:
 			buf = append(buf, s[i:j]...)
 			buf = append(buf, `\u2028`...)
@@ -196,9 +196,9 @@ func appendHTMLString(buf []byte, s string) []byte {
 	if valLen >= 8 {
 		chunks := stringToUint64Slice(s)
 		for _, n := range chunks {
-			// combine masks before checking for the MSB of each byte. We include
-			// `n` in the mask to check whether any of the *input* byte MSBs were
-			// set (i.e. the byte was outside the ASCII range).
+			
+			
+			
 			mask := n | (n - (lsb * 0x20)) |
 				((n ^ (lsb * '"')) - lsb) |
 				((n ^ (lsb * '\\')) - lsb) |
@@ -216,7 +216,7 @@ func appendHTMLString(buf []byte, s string) []byte {
 				goto ESCAPE_END
 			}
 		}
-		// no found any escape characters.
+		
 		return append(append(buf, s...), '"')
 	}
 ESCAPE_END:
@@ -224,7 +224,7 @@ ESCAPE_END:
 		c := s[j]
 
 		if !needEscapeHTML[c] {
-			// fast path: most of the time, printable ascii characters are used
+			
 			j++
 			continue
 		}
@@ -266,8 +266,8 @@ ESCAPE_END:
 			j = j + 1
 			continue
 
-		case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0E, 0x0F, // 0x00-0x0F
-			0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F: // 0x10-0x1F
+		case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0E, 0x0F, 
+			0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F: 
 			buf = append(buf, s[i:j]...)
 			buf = append(buf, `\u00`...)
 			buf = append(buf, hex[c>>4], hex[c&0xF])
@@ -293,9 +293,9 @@ func appendNormalizedString(buf []byte, s string) []byte {
 	if valLen >= 8 {
 		chunks := stringToUint64Slice(s)
 		for _, n := range chunks {
-			// combine masks before checking for the MSB of each byte. We include
-			// `n` in the mask to check whether any of the *input* byte MSBs were
-			// set (i.e. the byte was outside the ASCII range).
+			
+			
+			
 			mask := n | (n - (lsb * 0x20)) |
 				((n ^ (lsb * '"')) - lsb) |
 				((n ^ (lsb * '\\')) - lsb)
@@ -318,7 +318,7 @@ ESCAPE_END:
 		c := s[j]
 
 		if !needEscapeNormalizeUTF8[c] {
-			// fast path: most of the time, printable ascii characters are used
+			
 			j++
 			continue
 		}
@@ -352,8 +352,8 @@ ESCAPE_END:
 			j = j + 1
 			continue
 
-		case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0E, 0x0F, // 0x00-0x0F
-			0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F: // 0x10-0x1F
+		case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0E, 0x0F, 
+			0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F: 
 			buf = append(buf, s[i:j]...)
 			buf = append(buf, `\u00`...)
 			buf = append(buf, hex[c>>4], hex[c&0xF])
@@ -370,13 +370,13 @@ ESCAPE_END:
 			i = j + 1
 			j = j + 1
 			continue
-			// U+2028 is LINE SEPARATOR.
-			// U+2029 is PARAGRAPH SEPARATOR.
-			// They are both technically valid characters in JSON strings,
-			// but don't work in JSONP, which has to be evaluated as JavaScript,
-			// and can lead to security holes there. It is valid JSON to
-			// escape them, so we do so unconditionally.
-			// See http://timelessrepo.com/json-isnt-a-javascript-subset for discussion.
+			
+			
+			
+			
+			
+			
+			
 		case lineSepState:
 			buf = append(buf, s[i:j]...)
 			buf = append(buf, `\u2028`...)
@@ -408,9 +408,9 @@ func appendString(buf []byte, s string) []byte {
 	if valLen >= 8 {
 		chunks := stringToUint64Slice(s)
 		for _, n := range chunks {
-			// combine masks before checking for the MSB of each byte. We include
-			// `n` in the mask to check whether any of the *input* byte MSBs were
-			// set (i.e. the byte was outside the ASCII range).
+			
+			
+			
 			mask := n | (n - (lsb * 0x20)) |
 				((n ^ (lsb * '"')) - lsb) |
 				((n ^ (lsb * '\\')) - lsb)
@@ -433,7 +433,7 @@ ESCAPE_END:
 		c := s[j]
 
 		if !needEscape[c] {
-			// fast path: most of the time, printable ascii characters are used
+			
 			j++
 			continue
 		}
@@ -467,8 +467,8 @@ ESCAPE_END:
 			j = j + 1
 			continue
 
-		case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0E, 0x0F, // 0x00-0x0F
-			0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F: // 0x10-0x1F
+		case 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0B, 0x0C, 0x0E, 0x0F, 
+			0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F: 
 			buf = append(buf, s[i:j]...)
 			buf = append(buf, `\u00`...)
 			buf = append(buf, hex[c>>4], hex[c&0xF])

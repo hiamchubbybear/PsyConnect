@@ -1,6 +1,6 @@
-// Copyright 2020 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -19,7 +19,7 @@ func (o mergeOptions) Merge(dst, src proto.Message) {
 	proto.Merge(dst, src)
 }
 
-// merge is protoreflect.Methods.Merge.
+
 func (mi *MessageInfo) merge(in protoiface.MergeInput) protoiface.MergeOutput {
 	dp, ok := mi.getPointer(in.Destination)
 	if !ok {

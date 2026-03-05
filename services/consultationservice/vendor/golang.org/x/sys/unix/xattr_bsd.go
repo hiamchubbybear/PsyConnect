@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 //go:build freebsd || netbsd
 
@@ -11,7 +11,7 @@ import (
 	"unsafe"
 )
 
-// Derive extattr namespace and attribute name
+
 
 func xattrnamespace(fullattr string) (ns int, attr string, err error) {
 	s := strings.IndexByte(fullattr, '.')
@@ -37,15 +37,15 @@ func initxattrdest(dest []byte, idx int) (d unsafe.Pointer) {
 		return unsafe.Pointer(&dest[idx])
 	}
 	if dest != nil {
-		// extattr_get_file and extattr_list_file treat NULL differently from
-		// a non-NULL pointer of length zero. Preserve the property of nilness,
-		// even if we can't use dest directly.
+		
+		
+		
 		return unsafe.Pointer(&_zero)
 	}
 	return nil
 }
 
-// FreeBSD and NetBSD implement their own syscalls to handle extended attributes
+
 
 func Getxattr(file string, attr string, dest []byte) (sz int, err error) {
 	d := initxattrdest(dest, 0)
@@ -83,7 +83,7 @@ func Lgetxattr(link string, attr string, dest []byte) (sz int, err error) {
 	return ExtattrGetLink(link, nsid, a, uintptr(d), destsize)
 }
 
-// flags are unused on FreeBSD
+
 
 func Fsetxattr(fd int, attr string, data []byte, flags int) (err error) {
 	var d unsafe.Pointer
@@ -166,18 +166,12 @@ func Lremovexattr(link string, attr string) (err error) {
 func Listxattr(file string, dest []byte) (sz int, err error) {
 	destsiz := len(dest)
 
-	// FreeBSD won't allow you to list xattrs from multiple namespaces
+	
 	s, pos := 0, 0
 	for _, nsid := range [...]int{EXTATTR_NAMESPACE_USER, EXTATTR_NAMESPACE_SYSTEM} {
 		stmp, e := ListxattrNS(file, nsid, dest[pos:])
 
-		/* Errors accessing system attrs are ignored so that
-		 * we can implement the Linux-like behavior of omitting errors that
-		 * we don't have read permissions on
-		 *
-		 * Linux will still error if we ask for user attributes on a file that
-		 * we don't have read permissions on, so don't ignore those errors
-		 */
+		
 		if e != nil {
 			if e == EPERM && nsid != EXTATTR_NAMESPACE_USER {
 				continue

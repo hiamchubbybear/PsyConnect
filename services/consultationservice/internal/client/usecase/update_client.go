@@ -32,13 +32,13 @@ func NewUpdateClientUseCase(repo repository.ClientRepository) *UpdateClientUseCa
 }
 
 func (uc *UpdateClientUseCase) Execute(ctx context.Context, profileID string, req UpdateClientRequest) error {
-	// Get existing client
+	
 	client, err := uc.repo.GetByProfileID(ctx, profileID)
 	if err != nil {
 		return err
 	}
 
-	// Update fields
+	
 	if req.Address != "" {
 		client.Address = req.Address
 	}
@@ -58,7 +58,7 @@ func (uc *UpdateClientUseCase) Execute(ctx context.Context, profileID string, re
 		}
 	}
 
-	// Update optional fields
+	
 	client.IssueDetail = req.IssueDetail
 	client.PreferredTherapistGender = req.PreferredTherapistGender
 	client.ExperienceLevel = req.ExperienceLevel

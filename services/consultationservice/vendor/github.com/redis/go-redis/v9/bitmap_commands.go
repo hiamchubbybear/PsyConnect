@@ -43,7 +43,7 @@ func (c cmdable) SetBit(ctx context.Context, key string, offset int64, value int
 
 type BitCount struct {
 	Start, End int64
-	Unit       string // BYTE(default) | BIT
+	Unit       string 
 }
 
 const BitCountIndexByte string = "BYTE"
@@ -82,52 +82,52 @@ func (c cmdable) bitOp(ctx context.Context, op, destKey string, keys ...string) 
 	return cmd
 }
 
-// BitOpAnd creates a new bitmap in which users are members of all given bitmaps
+
 func (c cmdable) BitOpAnd(ctx context.Context, destKey string, keys ...string) *IntCmd {
 	return c.bitOp(ctx, "and", destKey, keys...)
 }
 
-// BitOpOr creates a new bitmap in which users are member of at least one given bitmap
+
 func (c cmdable) BitOpOr(ctx context.Context, destKey string, keys ...string) *IntCmd {
 	return c.bitOp(ctx, "or", destKey, keys...)
 }
 
-// BitOpXor creates a new bitmap in which users are the result of XORing all given bitmaps
+
 func (c cmdable) BitOpXor(ctx context.Context, destKey string, keys ...string) *IntCmd {
 	return c.bitOp(ctx, "xor", destKey, keys...)
 }
 
-// BitOpNot creates a new bitmap in which users are not members of a given bitmap
+
 func (c cmdable) BitOpNot(ctx context.Context, destKey string, key string) *IntCmd {
 	return c.bitOp(ctx, "not", destKey, key)
 }
 
-// BitOpDiff creates a new bitmap in which users are members of bitmap X but not of any of bitmaps Y1, Y2, …
-// Introduced with Redis 8.2
+
+
 func (c cmdable) BitOpDiff(ctx context.Context, destKey string, keys ...string) *IntCmd {
 	return c.bitOp(ctx, "diff", destKey, keys...)
 }
 
-// BitOpDiff1 creates a new bitmap in which users are members of one or more of bitmaps Y1, Y2, … but not members of bitmap X
-// Introduced with Redis 8.2
+
+
 func (c cmdable) BitOpDiff1(ctx context.Context, destKey string, keys ...string) *IntCmd {
 	return c.bitOp(ctx, "diff1", destKey, keys...)
 }
 
-// BitOpAndOr creates a new bitmap in which users are members of bitmap X and also members of one or more of bitmaps Y1, Y2, …
-// Introduced with Redis 8.2
+
+
 func (c cmdable) BitOpAndOr(ctx context.Context, destKey string, keys ...string) *IntCmd {
 	return c.bitOp(ctx, "andor", destKey, keys...)
 }
 
-// BitOpOne creates a new bitmap in which users are members of exactly one of the given bitmaps
-// Introduced with Redis 8.2
+
+
 func (c cmdable) BitOpOne(ctx context.Context, destKey string, keys ...string) *IntCmd {
 	return c.bitOp(ctx, "one", destKey, keys...)
 }
 
-// BitPos is an API before Redis version 7.0, cmd: bitpos key bit start end
-// if you need the `byte | bit` parameter, please use `BitPosSpan`.
+
+
 func (c cmdable) BitPos(ctx context.Context, key string, bit int64, pos ...int64) *IntCmd {
 	args := make([]interface{}, 3+len(pos))
 	args[0] = "bitpos"
@@ -148,22 +148,22 @@ func (c cmdable) BitPos(ctx context.Context, key string, bit int64, pos ...int64
 	return cmd
 }
 
-// BitPosSpan supports the `byte | bit` parameters in redis version 7.0,
-// the bitpos command defaults to using byte type for the `start-end` range,
-// which means it counts in bytes from start to end. you can set the value
-// of "span" to determine the type of `start-end`.
-// span = "bit", cmd: bitpos key bit start end bit
-// span = "byte", cmd: bitpos key bit start end byte
+
+
+
+
+
+
 func (c cmdable) BitPosSpan(ctx context.Context, key string, bit int8, start, end int64, span string) *IntCmd {
 	cmd := NewIntCmd(ctx, "bitpos", key, bit, start, end, span)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// BitField accepts multiple values:
-//   - BitField("set", "i1", "offset1", "value1","cmd2", "type2", "offset2", "value2")
-//   - BitField([]string{"cmd1", "type1", "offset1", "value1","cmd2", "type2", "offset2", "value2"})
-//   - BitField([]interface{}{"cmd1", "type1", "offset1", "value1","cmd2", "type2", "offset2", "value2"})
+
+
+
+
 func (c cmdable) BitField(ctx context.Context, key string, values ...interface{}) *IntSliceCmd {
 	args := make([]interface{}, 2, 2+len(values))
 	args[0] = "bitfield"
@@ -174,9 +174,9 @@ func (c cmdable) BitField(ctx context.Context, key string, values ...interface{}
 	return cmd
 }
 
-// BitFieldRO - Read-only variant of the BITFIELD command.
-// It is like the original BITFIELD but only accepts GET subcommand and can safely be used in read-only replicas.
-// - BitFieldRO(ctx, key, "<Encoding0>", "<Offset0>", "<Encoding1>","<Offset1>")
+
+
+
 func (c cmdable) BitFieldRO(ctx context.Context, key string, values ...interface{}) *IntSliceCmd {
 	args := make([]interface{}, 2, 2+len(values))
 	args[0] = "BITFIELD_RO"

@@ -7,8 +7,8 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v3,max=v3,tag"`
 
 	TransactionalID string         `kafka:"min=v0,max=v2|min=v3,max=v3,compact"`
@@ -18,8 +18,8 @@ type Request struct {
 }
 
 type RequestTopic struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v3,max=v3,tag"`
 
 	Name       string  `kafka:"min=v0,max=v2|min=v3,max=v3,compact"`
@@ -33,8 +33,8 @@ func (r *Request) Transaction() string { return r.TransactionalID }
 var _ protocol.TransactionalMessage = (*Request)(nil)
 
 type Response struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v3,max=v3,tag"`
 
 	ThrottleTimeMs int32            `kafka:"min=v0,max=v3"`
@@ -42,8 +42,8 @@ type Response struct {
 }
 
 type ResponseResult struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v3,max=v3,tag"`
 
 	Name    string              `kafka:"min=v0,max=v2|min=v3,max=v3,compact"`
@@ -51,8 +51,8 @@ type ResponseResult struct {
 }
 
 type ResponsePartition struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v3,max=v3,tag"`
 
 	PartitionIndex int32 `kafka:"min=v0,max=v3"`

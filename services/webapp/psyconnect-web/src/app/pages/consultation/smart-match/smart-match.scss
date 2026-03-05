@@ -39,7 +39,7 @@
     }
   }
 
-  /* Single Card Layout */
+  
   .single-card-wrapper {
     display: flex;
     justify-content: center;
@@ -192,7 +192,7 @@
         }
       }
 
-      /* Action Buttons */
+      
       .card-actions {
         padding: var(--spacing-md) var(--spacing-lg);
         border-top: 1px solid var(--color-border);
@@ -288,7 +288,7 @@
   }
 }
 
-/* Animations */
+
 .fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
@@ -315,7 +315,7 @@
   }
 }
 
-/* Loading State */
+
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -345,7 +345,7 @@
   }
 }
 
-/* Responsive */
+
 @media (max-width: 640px) {
   .discover-container {
     padding: var(--spacing-md);

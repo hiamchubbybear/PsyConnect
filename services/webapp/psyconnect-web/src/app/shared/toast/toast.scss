@@ -21,12 +21,12 @@
     0 1px 4px rgba(0, 0, 0, 0.04),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset;
 
-  // Smooth transitions
+  
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(0);
   opacity: 1;
 
-  // Hover effect
+  
   &:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow:
@@ -35,7 +35,7 @@
       0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   }
 
-  // Animation states
+  
   &.toast-enter {
     transform: translateX(120%) scale(0.9);
     opacity: 0;
@@ -51,7 +51,7 @@
     margin-bottom: -0.75rem;
   }
 
-  // Icon styles
+  
   .icon {
     font-size: 20px;
     line-height: 1;
@@ -64,7 +64,7 @@
     border-radius: 50%;
     margin-top: 0;
 
-    // Icon background for better contrast
+    
     &.success {
       color: #059669;
       background: rgba(5, 150, 105, 0.1);
@@ -86,28 +86,28 @@
     }
   }
 
-  // Content area
+  
   .toast-content {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center; // Center vertically
+    justify-content: center; 
     gap: 0;
     padding-top: 0;
     height: auto;
     width: auto;
-    //   font-weight: 400;
-    //   font-size: 13px;
-    //   line-height: 1.5;
-    //   color: var(--color-text-muted, #6b7280);
-    //   margin: 0;
-    //   display: -webkit-box;
-    //   -webkit-line-clamp: 3;
-    //   -webkit-box-orient: vertical;
-    //   overflow: hidden;
-    //   word-break: break-word;
-    // }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     .title,
     .message {
       white-space: nowrap;
@@ -116,7 +116,7 @@
     }
   }
 
-  // Close button
+  
   .close {
     position: absolute;
     top: 50%;
@@ -144,7 +144,7 @@
     }
   }
 
-  // Type-specific border accent
+  
   &.success {
     border-left: 4px solid #059669;
   }
@@ -162,7 +162,7 @@
   }
 }
 
-// Dark mode support
+
 [data-theme="dark"] .toast {
   background: var(--color-surface, #1f2937);
   border-color: var(--color-border, rgba(255, 255, 255, 0.1));
@@ -184,7 +184,7 @@
   }
 }
 
-// Mobile responsive
+
 @media (max-width: 640px) {
   .toast {
     width: 100%;
@@ -206,7 +206,7 @@
   }
 }
 
-// Reduced motion support
+
 @media (prefers-reduced-motion: reduce) {
   .toast {
     transition: opacity 0.2s ease;

@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2022-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package creds
 
@@ -17,17 +17,17 @@ import (
 	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
 )
 
-// GCPCredentialProvider provides GCP credentials.
+
 type GCPCredentialProvider struct {
 	httpClient *http.Client
 }
 
-// NewGCPCredentialProvider generates new GCPCredentialProvider
+
 func NewGCPCredentialProvider(httpClient *http.Client) GCPCredentialProvider {
 	return GCPCredentialProvider{httpClient}
 }
 
-// GetCredentialsDoc generates GCP credentials.
+
 func (p GCPCredentialProvider) GetCredentialsDoc(ctx context.Context) (bsoncore.Document, error) {
 	metadataHost := "metadata.google.internal"
 	if envhost := os.Getenv("GCE_METADATA_HOST"); envhost != "" {
@@ -57,7 +57,7 @@ func (p GCPCredentialProvider) GetCredentialsDoc(ctx context.Context) (bsoncore.
 	var tokenResponse struct {
 		AccessToken string `json:"access_token"`
 	}
-	// Attempt to read body as JSON
+	
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
 		return nil, fmt.Errorf(

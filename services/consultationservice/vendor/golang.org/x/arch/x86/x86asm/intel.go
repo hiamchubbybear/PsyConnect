@@ -1,6 +1,6 @@
-// Copyright 2014 The Go Authors.  All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package x86asm
 
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// IntelSyntax returns the Intel assembler syntax for the instruction, as defined by Intel's XED tool.
+
 func IntelSyntax(inst Inst, pc uint64, symname SymLookup) string {
 	if symname == nil {
 		symname = func(uint64) (string, uint64) { return "", 0 }
@@ -139,7 +139,7 @@ func IntelSyntax(inst Inst, pc uint64, symname SymLookup) string {
 		}
 
 	case 0:
-		// ok
+		
 	}
 
 	switch inst.Op {
@@ -543,7 +543,7 @@ var intelReg = [...]string{
 	X14: "xmm14",
 	X15: "xmm15",
 
-	// TODO: Maybe the constants are named wrong.
+	
 	SPB: "spl",
 	BPB: "bpl",
 	SIB: "sil",

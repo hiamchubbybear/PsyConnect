@@ -1,6 +1,6 @@
-/* PsyConnect Mascot Animations */
 
-/* Floating animation - gentle up and down movement */
+
+
 @keyframes float {
   0%,
   100% {
@@ -15,7 +15,7 @@
   animation: float 3s ease-in-out infinite;
 }
 
-/* Bounce animation - playful bounce */
+
 @keyframes bounce {
   0%,
   20%,
@@ -36,7 +36,7 @@
   animation: bounce 2s ease-in-out infinite;
 }
 
-/* Wave animation - side to side */
+
 @keyframes wave {
   0%,
   100% {
@@ -55,7 +55,7 @@
   transform-origin: bottom center;
 }
 
-/* Pulse animation - gentle scale */
+
 @keyframes pulse {
   0%,
   100% {
@@ -70,7 +70,7 @@
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* Sparkle animation - for decorative elements */
+
 @keyframes sparkle {
   0%,
   100% {
@@ -87,7 +87,7 @@
   animation: sparkle 1.5s ease-in-out infinite;
 }
 
-/* Fade in animation */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -103,7 +103,7 @@
   animation: fadeIn 0.6s ease-out forwards;
 }
 
-/* Wiggle animation - playful shake */
+
 @keyframes wiggle {
   0%,
   100% {
@@ -121,7 +121,7 @@
   animation: wiggle 0.5s ease-in-out;
 }
 
-/* Hover effects */
+
 .mascot-hover {
   transition: transform 0.3s ease, filter 0.3s ease;
   cursor: pointer;
@@ -132,12 +132,12 @@
   filter: brightness(1.1);
 }
 
-/* Combined float + pulse for extra cuteness */
+
 .mascot-float-pulse {
   animation: float 3s ease-in-out infinite, pulse 2s ease-in-out infinite;
 }
 
-/* Rotate animation - for loading states */
+
 @keyframes rotate {
   from {
     transform: rotate(0deg);
@@ -151,7 +151,7 @@
   animation: rotate 2s linear infinite;
 }
 
-/* Slide in from bottom */
+
 @keyframes slideInUp {
   from {
     opacity: 0;
@@ -167,7 +167,7 @@
   animation: slideInUp 0.5s ease-out forwards;
 }
 
-/* Heartbeat animation - for love/like reactions */
+
 @keyframes heartbeat {
   0%,
   100% {

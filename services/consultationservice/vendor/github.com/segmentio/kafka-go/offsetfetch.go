@@ -10,67 +10,67 @@ import (
 	"github.com/segmentio/kafka-go/protocol/offsetfetch"
 )
 
-// OffsetFetchRequest represents a request sent to a kafka broker to read the
-// currently committed offsets of topic partitions.
+
+
 type OffsetFetchRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// ID of the consumer group to retrieve the offsets for.
+	
 	GroupID string
 
-	// Set of topic partitions to retrieve the offsets for.
+	
 	Topics map[string][]int
 }
 
-// OffsetFetchResponse represents a response from a kafka broker to an offset
-// fetch request.
+
+
 type OffsetFetchResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// Set of topic partitions that the kafka broker has returned offsets for.
+	
 	Topics map[string][]OffsetFetchPartition
 
-	// An error that may have occurred while attempting to retrieve consumer
-	// group offsets.
-	//
-	// The error contains both the kafka error code, and an error message
-	// returned by the kafka broker. Programs may use the standard errors.Is
-	// function to test the error against kafka error codes.
+	
+	
+	
+	
+	
+	
 	Error error
 }
 
-// OffsetFetchPartition represents the state of a single partition in a consumer
-// group.
+
+
 type OffsetFetchPartition struct {
-	// ID of the partition.
+	
 	Partition int
 
-	// Last committed offsets on the partition when the request was served by
-	// the kafka broker.
+	
+	
 	CommittedOffset int64
 
-	// Consumer group metadata for this partition.
+	
 	Metadata string
 
-	// An error that may have occurred while attempting to retrieve consumer
-	// group offsets for this partition.
-	//
-	// The error contains both the kafka error code, and an error message
-	// returned by the kafka broker. Programs may use the standard errors.Is
-	// function to test the error against kafka error codes.
+	
+	
+	
+	
+	
+	
 	Error error
 }
 
-// OffsetFetch sends an offset fetch request to a kafka broker and returns the
-// response.
+
+
 func (c *Client) OffsetFetch(ctx context.Context, req *OffsetFetchRequest) (*OffsetFetchResponse, error) {
 
-	// Kafka version 0.10.2.x and above allow null Topics map for OffsetFetch API
-	// which will return the result for all topics with the desired consumer group:
-	// https://kafka.apache.org/0102/protocol.html#The_Messages_OffsetFetch
-	// For Kafka version below 0.10.2.x this call will result in an error
+	
+	
+	
+	
 	var topics []offsetfetch.RequestTopic
 
 	if len(req.Topics) > 0 {
@@ -125,10 +125,10 @@ func (c *Client) OffsetFetch(ctx context.Context, req *OffsetFetchRequest) (*Off
 }
 
 type offsetFetchRequestV1Topic struct {
-	// Topic name
+	
 	Topic string
 
-	// Partitions to fetch offsets
+	
 	Partitions []int32
 }
 
@@ -143,10 +143,10 @@ func (t offsetFetchRequestV1Topic) writeTo(wb *writeBuffer) {
 }
 
 type offsetFetchRequestV1 struct {
-	// GroupID holds the unique group identifier
+	
 	GroupID string
 
-	// Topics to fetch offsets.
+	
 	Topics []offsetFetchRequestV1Topic
 }
 
@@ -161,16 +161,16 @@ func (t offsetFetchRequestV1) writeTo(wb *writeBuffer) {
 }
 
 type offsetFetchResponseV1PartitionResponse struct {
-	// Partition ID
+	
 	Partition int32
 
-	// Offset of last committed message
+	
 	Offset int64
 
-	// Metadata client wants to keep
+	
 	Metadata string
 
-	// ErrorCode holds response error code
+	
 	ErrorCode int16
 }
 
@@ -205,10 +205,10 @@ func (t *offsetFetchResponseV1PartitionResponse) readFrom(r *bufio.Reader, size 
 }
 
 type offsetFetchResponseV1Response struct {
-	// Topic name
+	
 	Topic string
 
-	// PartitionResponses holds offsets by partition
+	
 	PartitionResponses []offsetFetchResponseV1PartitionResponse
 }
 
@@ -243,7 +243,7 @@ func (t *offsetFetchResponseV1Response) readFrom(r *bufio.Reader, size int) (rem
 }
 
 type offsetFetchResponseV1 struct {
-	// Responses holds topic partition offsets
+	
 	Responses []offsetFetchResponseV1Response
 }
 

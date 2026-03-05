@@ -1,6 +1,6 @@
-// Copyright 2009 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package flate
 
@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	// bits 0-16  	xoffset = offset - MIN_OFFSET_SIZE, or literal - 16 bits
-	// bits 16-22	offsetcode - 5 bits
-	// bits 22-30   xlength = length - MIN_MATCH_LENGTH - 8 bits
-	// bits 30-32   type   0 = literal  1=EOF  2=Match   3=Unused - 2 bits
+	
+	
+	
+	
 	lengthShift         = 22
 	offsetMask          = 1<<lengthShift - 1
 	typeMask            = 3 << 30
@@ -25,8 +25,8 @@ const (
 	matchOffsetOnlyMask = 0xffff
 )
 
-// The length code for length X (MIN_MATCH_LENGTH <= X <= MAX_MATCH_LENGTH)
-// is lengthCodes[length - MIN_MATCH_LENGTH]
+
+
 var lengthCodes = [256]uint8{
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 8,
 	9, 9, 10, 10, 11, 11, 12, 12, 12, 12,
@@ -56,7 +56,7 @@ var lengthCodes = [256]uint8{
 	27, 27, 27, 27, 27, 28,
 }
 
-// lengthCodes1 is length codes, but starting at 1.
+
 var lengthCodes1 = [256]uint8{
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 9,
 	10, 10, 11, 11, 12, 12, 13, 13, 13, 13,
@@ -105,7 +105,7 @@ var offsetCodes = [256]uint32{
 	15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
 }
 
-// offsetCodes14 are offsetCodes, but with 14 added.
+
 var offsetCodes14 = [256]uint32{
 	14, 15, 16, 17, 18, 18, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21,
 	22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23,
@@ -128,11 +128,11 @@ var offsetCodes14 = [256]uint32{
 type token uint32
 
 type tokens struct {
-	extraHist [32]uint16  // codes 256->maxnumlit
-	offHist   [32]uint16  // offset codes
-	litHist   [256]uint16 // codes 0->255
+	extraHist [32]uint16  
+	offHist   [32]uint16  
+	litHist   [256]uint16 
 	nFilled   int
-	n         uint16 // Must be able to contain maxStoreBlockSize
+	n         uint16 
 	tokens    [maxStoreBlockSize + 1]token
 }
 
@@ -193,7 +193,7 @@ func (t *tokens) indexTokens(in []token) {
 	}
 }
 
-// emitLiteral writes a literal chunk and returns the number of bytes written.
+
 func emitLiteral(dst *tokens, lit []byte) {
 	for _, v := range lit {
 		dst.tokens[dst.n] = token(v)
@@ -208,7 +208,7 @@ func (t *tokens) AddLiteral(lit byte) {
 	t.n++
 }
 
-// from https://stackoverflow.com/a/28730362
+
 func mFastLog2(val float32) float32 {
 	ux := int32(math.Float32bits(val))
 	log2 := (float32)(((ux >> 23) & 255) - 128)
@@ -219,9 +219,9 @@ func mFastLog2(val float32) float32 {
 	return log2
 }
 
-// EstimatedBits will return an minimum size estimated by an *optimal*
-// compression of the block.
-// The size of the block
+
+
+
 func (t *tokens) EstimatedBits() int {
 	shannon := float32(0)
 	bits := int(0)
@@ -235,7 +235,7 @@ func (t *tokens) EstimatedBits() int {
 				shannon += atLeastOne(-mFastLog2(n*invTotal)) * n
 			}
 		}
-		// Just add 15 for EOB
+		
 		shannon += 15
 		for i, v := range t.extraHist[1 : literalCount-256] {
 			if v > 0 {
@@ -259,8 +259,8 @@ func (t *tokens) EstimatedBits() int {
 	return int(shannon) + bits
 }
 
-// AddMatch adds a match to the tokens.
-// This function is very sensitive to inlining and right on the border.
+
+
 func (t *tokens) AddMatch(xlength uint32, xoffset uint32) {
 	if debugDeflate {
 		if xlength >= maxMatchLength+baseMatchLength {
@@ -279,8 +279,8 @@ func (t *tokens) AddMatch(xlength uint32, xoffset uint32) {
 	t.n++
 }
 
-// AddMatchLong adds a match to the tokens, potentially longer than max match length.
-// Length should NOT have the base subtracted, only offset should.
+
+
 func (t *tokens) AddMatchLong(xlength int32, xoffset uint32) {
 	if debugDeflate {
 		if xoffset >= maxMatchOffset+baseMatchOffset {
@@ -292,7 +292,7 @@ func (t *tokens) AddMatchLong(xlength int32, xoffset uint32) {
 	for xlength > 0 {
 		xl := xlength
 		if xl > 258 {
-			// We need to have at least baseMatchLength left over for next loop.
+			
 			if xl > 258+baseMatchLength {
 				xl = 258
 			} else {
@@ -318,7 +318,7 @@ func (t *tokens) Slice() []token {
 	return t.tokens[:t.n]
 }
 
-// VarInt returns the tokens as varint encoded bytes.
+
 func (t *tokens) VarInt() []byte {
 	var b = make([]byte, binary.MaxVarintLen32*int(t.n))
 	var off int
@@ -328,8 +328,8 @@ func (t *tokens) VarInt() []byte {
 	return b[:off]
 }
 
-// FromVarInt restores t to the varint encoded tokens provided.
-// Any data in t is removed.
+
+
 func (t *tokens) FromVarInt(b []byte) error {
 	var buf = bytes.NewReader(b)
 	var toks []token
@@ -347,21 +347,21 @@ func (t *tokens) FromVarInt(b []byte) error {
 	return nil
 }
 
-// Returns the type of a token
+
 func (t token) typ() uint32 { return uint32(t) & typeMask }
 
-// Returns the literal of a literal token
+
 func (t token) literal() uint8 { return uint8(t) }
 
-// Returns the extra offset of a match token
+
 func (t token) offset() uint32 { return uint32(t) & offsetMask }
 
 func (t token) length() uint8 { return uint8(t >> lengthShift) }
 
-// Convert length to code.
+
 func lengthCode(len uint8) uint8 { return lengthCodes[len] }
 
-// Returns the offset code corresponding to a specific offset
+
 func offsetCode(off uint32) uint32 {
 	if false {
 		if off < uint32(len(offsetCodes)) {

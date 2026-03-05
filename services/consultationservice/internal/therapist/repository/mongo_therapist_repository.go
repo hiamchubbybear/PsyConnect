@@ -32,7 +32,7 @@ func (r *MongoTherapistRepository) redisKeyAll() string {
 	return "psyconnect:therapist:all"
 }
 
-// domainToMongo converts domain entity to MongoDB document
+
 func (r *MongoTherapistRepository) domainToMongo(therapist *domain.Therapist) bson.M {
 	doc := bson.M{
 		"profile_id":         therapist.ProfileID,
@@ -57,7 +57,7 @@ func (r *MongoTherapistRepository) domainToMongo(therapist *domain.Therapist) bs
 		"updated_at":      therapist.UpdatedAt,
 	}
 
-	// Professional Info
+	
 	profInfo := bson.M{
 		"title": bson.M{
 			"code":    therapist.ProfessionalInfo.Title.Code,
@@ -92,7 +92,7 @@ func (r *MongoTherapistRepository) domainToMongo(therapist *domain.Therapist) bs
 	return doc
 }
 
-// mongoToDomain converts MongoDB document to domain entity
+
 func (r *MongoTherapistRepository) mongoToDomain(doc bson.M) *domain.Therapist {
 	t := &domain.Therapist{
 		ProfileID:         getString(doc, "profile_id"),
@@ -206,7 +206,7 @@ func (r *MongoTherapistRepository) GetByProfileID(ctx context.Context, profileID
 func (r *MongoTherapistRepository) GetAll(ctx context.Context) ([]*domain.Therapist, error) {
 	key := r.redisKeyAll()
 	var cachedDocs []bson.M
-	// Note: Simple caching strategy for list, might need invalidation logic improvement
+	
 	if err := r.redis.Get(ctx, key, &cachedDocs); err == nil && len(cachedDocs) > 0 {
 		var results []*domain.Therapist
 		for _, doc := range cachedDocs {
@@ -257,7 +257,7 @@ func (r *MongoTherapistRepository) Update(ctx context.Context, profileID string,
 		return errors.New("failed to update therapist")
 	}
 
-	// Invalidate cache
+	
 	_ = r.redis.Delete(ctx, r.redisKey(profileID))
 	_ = r.redis.Delete(ctx, r.redisKeyAll())
 
@@ -300,7 +300,7 @@ func (r *MongoTherapistRepository) Delete(ctx context.Context, profileID string)
 
 func (r *MongoTherapistRepository) Search(ctx context.Context, query string, limit, skip int64) ([]*domain.Therapist, error) {
 	filter := bson.M{
-		"is_available": true, // Only show available therapists in search
+		"is_available": true, 
 		"$or": []bson.M{
 			{"name": bson.M{"$regex": query, "$options": "i"}},
 			{"specialization": bson.M{"$in": []bson.M{{"$regex": query, "$options": "i"}}}},
@@ -331,7 +331,7 @@ func (r *MongoTherapistRepository) Search(ctx context.Context, query string, lim
 	return results, nil
 }
 
-// Helpers
+
 func getString(doc bson.M, key string) string {
 	if val, ok := doc[key].(string); ok {
 		return val

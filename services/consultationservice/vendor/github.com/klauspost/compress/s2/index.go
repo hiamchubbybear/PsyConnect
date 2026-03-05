@@ -1,6 +1,6 @@
-// Copyright (c) 2022+ Klaus Post. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package s2
 
@@ -19,10 +19,10 @@ const (
 	maxIndexEntries = 1 << 16
 )
 
-// Index represents an S2/Snappy index.
+
 type Index struct {
-	TotalUncompressed int64 // Total Uncompressed size if known. Will be -1 if unknown.
-	TotalCompressed   int64 // Total Compressed size if known. Will be -1 if unknown.
+	TotalUncompressed int64 
+	TotalCompressed   int64 
 	info              []struct {
 		compressedOffset   int64
 		uncompressedOffset int64
@@ -39,7 +39,7 @@ func (i *Index) reset(maxBlock int) {
 	}
 }
 
-// allocInfos will allocate an empty slice of infos.
+
 func (i *Index) allocInfos(n int) {
 	if n > maxIndexEntries {
 		panic("n > maxIndexEntries")
@@ -50,8 +50,8 @@ func (i *Index) allocInfos(n int) {
 	}, 0, n)
 }
 
-// add an uncompressed and compressed pair.
-// Entries must be sent in order.
+
+
 func (i *Index) add(compressedOffset, uncompressedOffset int64) error {
 	if i == nil {
 		return nil
@@ -60,8 +60,8 @@ func (i *Index) add(compressedOffset, uncompressedOffset int64) error {
 	if lastIdx >= 0 {
 		latest := i.info[lastIdx]
 		if latest.uncompressedOffset == uncompressedOffset {
-			// Uncompressed didn't change, don't add entry,
-			// but update start index.
+			
+			
 			latest.compressedOffset = compressedOffset
 			i.info[lastIdx] = latest
 			return nil
@@ -80,14 +80,14 @@ func (i *Index) add(compressedOffset, uncompressedOffset int64) error {
 	return nil
 }
 
-// Find the offset at or before the wanted (uncompressed) offset.
-// If offset is 0 or positive it is the offset from the beginning of the file.
-// If the uncompressed size is known, the offset must be within the file.
-// If an offset outside the file is requested io.ErrUnexpectedEOF is returned.
-// If the offset is negative, it is interpreted as the distance from the end of the file,
-// where -1 represents the last byte.
-// If offset from the end of the file is requested, but size is unknown,
-// ErrUnsupported will be returned.
+
+
+
+
+
+
+
+
 func (i *Index) Find(offset int64) (compressedOff, uncompressedOff int64, err error) {
 	if i.TotalUncompressed < 0 {
 		return 0, 0, ErrCorrupt
@@ -120,18 +120,18 @@ func (i *Index) Find(offset int64) (compressedOff, uncompressedOff int64, err er
 	return compressedOff, uncompressedOff, nil
 }
 
-// reduce to stay below maxIndexEntries
+
 func (i *Index) reduce() {
 	if len(i.info) < maxIndexEntries && i.estBlockUncomp >= 1<<20 {
 		return
 	}
 
-	// Algorithm, keep 1, remove removeN entries...
+	
 	removeN := (len(i.info) + 1) / maxIndexEntries
 	src := i.info
 	j := 0
 
-	// Each block should be at least 1MB, but don't reduce below 1000 entries.
+	
 	for i.estBlockUncomp*(int64(removeN)+1) < 1<<20 && len(i.info)/(removeN+1) > 1000 {
 		removeN++
 	}
@@ -141,7 +141,7 @@ func (i *Index) reduce() {
 		idx += removeN
 	}
 	i.info = i.info[:j]
-	// Update maxblock estimate.
+	
 	i.estBlockUncomp += i.estBlockUncomp * int64(removeN)
 }
 
@@ -150,23 +150,23 @@ func (i *Index) appendTo(b []byte, uncompTotal, compTotal int64) []byte {
 	var tmp [binary.MaxVarintLen64]byte
 
 	initSize := len(b)
-	// We make the start a skippable header+size.
+	
 	b = append(b, ChunkTypeIndex, 0, 0, 0)
 	b = append(b, []byte(S2IndexHeader)...)
-	// Total Uncompressed size
+	
 	n := binary.PutVarint(tmp[:], uncompTotal)
 	b = append(b, tmp[:n]...)
-	// Total Compressed size
+	
 	n = binary.PutVarint(tmp[:], compTotal)
 	b = append(b, tmp[:n]...)
-	// Put EstBlockUncomp size
+	
 	n = binary.PutVarint(tmp[:], i.estBlockUncomp)
 	b = append(b, tmp[:n]...)
-	// Put length
+	
 	n = binary.PutVarint(tmp[:], int64(len(i.info)))
 	b = append(b, tmp[:n]...)
 
-	// Check if we should add uncompressed offsets
+	
 	var hasUncompressed byte
 	for idx, info := range i.info {
 		if idx == 0 {
@@ -183,7 +183,7 @@ func (i *Index) appendTo(b []byte, uncompTotal, compTotal int64) []byte {
 	}
 	b = append(b, hasUncompressed)
 
-	// Add each entry
+	
 	if hasUncompressed == 1 {
 		for idx, info := range i.info {
 			uOff := info.uncompressedOffset
@@ -196,7 +196,7 @@ func (i *Index) appendTo(b []byte, uncompTotal, compTotal int64) []byte {
 		}
 	}
 
-	// Initial compressed size estimate.
+	
 	cPredict := i.estBlockUncomp / 2
 
 	for idx, info := range i.info {
@@ -204,31 +204,31 @@ func (i *Index) appendTo(b []byte, uncompTotal, compTotal int64) []byte {
 		if idx > 0 {
 			prev := i.info[idx-1]
 			cOff -= prev.compressedOffset + cPredict
-			// Update compressed size prediction, with half the error.
+			
 			cPredict += cOff / 2
 		}
 		n = binary.PutVarint(tmp[:], cOff)
 		b = append(b, tmp[:n]...)
 	}
 
-	// Add Total Size.
-	// Stored as fixed size for easier reading.
+	
+	
 	binary.LittleEndian.PutUint32(tmp[:], uint32(len(b)-initSize+4+len(S2IndexTrailer)))
 	b = append(b, tmp[:4]...)
-	// Trailer
+	
 	b = append(b, []byte(S2IndexTrailer)...)
 
-	// Update size
+	
 	chunkLen := len(b) - initSize - skippableFrameHeader
 	b[initSize+1] = uint8(chunkLen >> 0)
 	b[initSize+2] = uint8(chunkLen >> 8)
 	b[initSize+3] = uint8(chunkLen >> 16)
-	//fmt.Printf("chunklen: 0x%x Uncomp:%d, Comp:%d\n", chunkLen, uncompTotal, compTotal)
+	
 	return b
 }
 
-// Load a binary index.
-// A zero value Index can be used or a previous one can be reused.
+
+
 func (i *Index) Load(b []byte) ([]byte, error) {
 	if len(b) <= 4+len(S2IndexHeader)+len(S2IndexTrailer) {
 		return b, io.ErrUnexpectedEOF
@@ -239,7 +239,7 @@ func (i *Index) Load(b []byte) ([]byte, error) {
 	chunkLen := int(b[1]) | int(b[2])<<8 | int(b[3])<<16
 	b = b[4:]
 
-	// Validate we have enough...
+	
 	if len(b) < chunkLen {
 		return b, io.ErrUnexpectedEOF
 	}
@@ -248,7 +248,7 @@ func (i *Index) Load(b []byte) ([]byte, error) {
 	}
 	b = b[len(S2IndexHeader):]
 
-	// Total Uncompressed
+	
 	if v, n := binary.Varint(b); n <= 0 || v < 0 {
 		return b, ErrCorrupt
 	} else {
@@ -256,7 +256,7 @@ func (i *Index) Load(b []byte) ([]byte, error) {
 		b = b[n:]
 	}
 
-	// Total Compressed
+	
 	if v, n := binary.Varint(b); n <= 0 {
 		return b, ErrCorrupt
 	} else {
@@ -264,7 +264,7 @@ func (i *Index) Load(b []byte) ([]byte, error) {
 		b = b[n:]
 	}
 
-	// Read EstBlockUncomp
+	
 	if v, n := binary.Varint(b); n <= 0 {
 		return b, ErrCorrupt
 	} else {
@@ -299,11 +299,11 @@ func (i *Index) Load(b []byte) ([]byte, error) {
 		return b, ErrCorrupt
 	}
 
-	// Add each uncompressed entry
+	
 	for idx := range i.info {
 		var uOff int64
 		if hasUncompressed != 0 {
-			// Load delta
+			
 			if v, n := binary.Varint(b); n <= 0 {
 				return b, ErrCorrupt
 			} else {
@@ -325,10 +325,10 @@ func (i *Index) Load(b []byte) ([]byte, error) {
 		i.info[idx].uncompressedOffset = uOff
 	}
 
-	// Initial compressed size estimate.
+	
 	cPredict := i.estBlockUncomp / 2
 
-	// Add each compressed entry
+	
 	for idx := range i.info {
 		var cOff int64
 		if v, n := binary.Varint(b); n <= 0 {
@@ -339,7 +339,7 @@ func (i *Index) Load(b []byte) ([]byte, error) {
 		}
 
 		if idx > 0 {
-			// Update compressed size prediction, with half the error.
+			
 			cPredictNew := cPredict + cOff/2
 
 			prev := i.info[idx-1].compressedOffset
@@ -357,23 +357,23 @@ func (i *Index) Load(b []byte) ([]byte, error) {
 	if len(b) < 4+len(S2IndexTrailer) {
 		return b, io.ErrUnexpectedEOF
 	}
-	// Skip size...
+	
 	b = b[4:]
 
-	// Check trailer...
+	
 	if !bytes.Equal(b[:len(S2IndexTrailer)], []byte(S2IndexTrailer)) {
 		return b, ErrCorrupt
 	}
 	return b[len(S2IndexTrailer):], nil
 }
 
-// LoadStream will load an index from the end of the supplied stream.
-// ErrUnsupported will be returned if the signature cannot be found.
-// ErrCorrupt will be returned if unexpected values are found.
-// io.ErrUnexpectedEOF is returned if there are too few bytes.
-// IO errors are returned as-is.
+
+
+
+
+
 func (i *Index) LoadStream(rs io.ReadSeeker) error {
-	// Go to end.
+	
 	_, err := rs.Seek(-10, io.SeekEnd)
 	if err != nil {
 		return err
@@ -383,7 +383,7 @@ func (i *Index) LoadStream(rs io.ReadSeeker) error {
 	if err != nil {
 		return err
 	}
-	// Check trailer...
+	
 	if !bytes.Equal(tmp[4:4+len(S2IndexTrailer)], []byte(S2IndexTrailer)) {
 		return ErrUnsupported
 	}
@@ -396,7 +396,7 @@ func (i *Index) LoadStream(rs io.ReadSeeker) error {
 		return err
 	}
 
-	// Read index.
+	
 	buf := make([]byte, sz)
 	_, err = io.ReadFull(rs, buf)
 	if err != nil {
@@ -406,11 +406,11 @@ func (i *Index) LoadStream(rs io.ReadSeeker) error {
 	return err
 }
 
-// IndexStream will return an index for a stream.
-// The stream structure will be checked, but
-// data within blocks is not verified.
-// The returned index can either be appended to the end of the stream
-// or stored separately.
+
+
+
+
+
 func IndexStream(r io.Reader) ([]byte, error) {
 	var i Index
 	var buf [maxChunkSize]byte
@@ -423,7 +423,7 @@ func IndexStream(r io.Reader) ([]byte, error) {
 			}
 			return nil, err
 		}
-		// Start of this chunk.
+		
 		startChunk := i.TotalCompressed
 		i.TotalCompressed += 4
 
@@ -444,12 +444,12 @@ func IndexStream(r io.Reader) ([]byte, error) {
 		if err != nil {
 			return nil, io.ErrUnexpectedEOF
 		}
-		// The chunk types are specified at
-		// https://github.com/google/snappy/blob/master/framing_format.txt
+		
+		
 		switch chunkType {
 		case chunkTypeCompressedData:
-			// Section 4.2. Compressed data (chunk type 0x00).
-			// Skip checksum.
+			
+			
 			dLen, err := DecodedLen(buf[checksumSize:])
 			if err != nil {
 				return nil, err
@@ -458,7 +458,7 @@ func IndexStream(r io.Reader) ([]byte, error) {
 				return nil, ErrCorrupt
 			}
 			if i.estBlockUncomp == 0 {
-				// Use first block for estimate...
+				
 				i.estBlockUncomp = int64(dLen)
 			}
 			err = i.add(startChunk, i.TotalUncompressed)
@@ -473,7 +473,7 @@ func IndexStream(r io.Reader) ([]byte, error) {
 				return nil, ErrCorrupt
 			}
 			if i.estBlockUncomp == 0 {
-				// Use first block for estimate...
+				
 				i.estBlockUncomp = int64(n2)
 			}
 			err = i.add(startChunk, i.TotalUncompressed)
@@ -483,7 +483,7 @@ func IndexStream(r io.Reader) ([]byte, error) {
 			i.TotalUncompressed += int64(n2)
 			continue
 		case chunkTypeStreamIdentifier:
-			// Section 4.1. Stream identifier (chunk type 0xff).
+			
 			if chunkLen != len(magicBody) {
 				return nil, ErrCorrupt
 			}
@@ -498,22 +498,22 @@ func IndexStream(r io.Reader) ([]byte, error) {
 		}
 
 		if chunkType <= 0x7f {
-			// Section 4.5. Reserved unskippable chunks (chunk types 0x02-0x7f).
+			
 			return nil, ErrUnsupported
 		}
 		if chunkLen > maxChunkSize {
 			return nil, ErrUnsupported
 		}
-		// Section 4.4 Padding (chunk type 0xfe).
-		// Section 4.6. Reserved skippable chunks (chunk types 0x80-0xfd).
+		
+		
 	}
 }
 
-// JSON returns the index as JSON text.
+
 func (i *Index) JSON() []byte {
 	x := struct {
-		TotalUncompressed int64 `json:"total_uncompressed"` // Total Uncompressed size if known. Will be -1 if unknown.
-		TotalCompressed   int64 `json:"total_compressed"`   // Total Compressed size if known. Will be -1 if unknown.
+		TotalUncompressed int64 `json:"total_uncompressed"` 
+		TotalCompressed   int64 `json:"total_compressed"`   
 		Offsets           []struct {
 			CompressedOffset   int64 `json:"compressed"`
 			UncompressedOffset int64 `json:"uncompressed"`
@@ -534,12 +534,12 @@ func (i *Index) JSON() []byte {
 	return b
 }
 
-// RemoveIndexHeaders will trim all headers and trailers from a given index.
-// This is expected to save 20 bytes.
-// These can be restored using RestoreIndexHeaders.
-// This removes a layer of security, but is the most compact representation.
-// Returns nil if headers contains errors.
-// The returned slice references the provided slice.
+
+
+
+
+
+
 func RemoveIndexHeaders(b []byte) []byte {
 	const save = 4 + len(S2IndexHeader) + len(S2IndexTrailer) + 4
 	if len(b) <= save {
@@ -551,7 +551,7 @@ func RemoveIndexHeaders(b []byte) []byte {
 	chunkLen := int(b[1]) | int(b[2])<<8 | int(b[3])<<16
 	b = b[4:]
 
-	// Validate we have enough...
+	
 	if len(b) < chunkLen {
 		return nil
 	}
@@ -572,9 +572,9 @@ func RemoveIndexHeaders(b []byte) []byte {
 	return b[:len(b)-4]
 }
 
-// RestoreIndexHeaders will index restore headers removed by RemoveIndexHeaders.
-// No error checking is performed on the input.
-// If a 0 length slice is sent, it is returned without modification.
+
+
+
 func RestoreIndexHeaders(in []byte) []byte {
 	if len(in) == 0 {
 		return in
@@ -587,7 +587,7 @@ func RestoreIndexHeaders(in []byte) []byte {
 	var tmp [4]byte
 	binary.LittleEndian.PutUint32(tmp[:], uint32(len(b)+4+len(S2IndexTrailer)))
 	b = append(b, tmp[:4]...)
-	// Trailer
+	
 	b = append(b, []byte(S2IndexTrailer)...)
 
 	chunkLen := len(b) - skippableFrameHeader

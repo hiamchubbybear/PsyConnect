@@ -9,9 +9,9 @@ import (
 	"time"
 )
 
-// extractTypeInternal gets the actual underlying type of field value.
-// It will dive into pointers, customTypes and return you the
-// underlying value and it's kind.
+
+
+
 func (v *validate) extractTypeInternal(current reflect.Value, nullable bool) (reflect.Value, reflect.Kind, bool) {
 
 BEGIN:
@@ -55,11 +55,11 @@ BEGIN:
 	}
 }
 
-// getStructFieldOKInternal traverses a struct to retrieve a specific field denoted by the provided namespace and
-// returns the field, field kind and whether is was successful in retrieving the field at all.
-//
-// NOTE: when not successful ok will be false, this can happen when a nested struct is nil and so the field
-// could not be retrieved because it didn't exist.
+
+
+
+
+
 func (v *validate) getStructFieldOKInternal(val reflect.Value, namespace string) (current reflect.Value, kind reflect.Kind, nullable bool, found bool) {
 
 BEGIN:
@@ -209,7 +209,7 @@ BEGIN:
 			val = current.MapIndex(reflect.ValueOf(b))
 			namespace = namespace[endIdx+1:]
 
-		// reflect.Type = string
+		
 		default:
 			val = current.MapIndex(reflect.ValueOf(key))
 			namespace = namespace[endIdx+1:]
@@ -218,12 +218,12 @@ BEGIN:
 		goto BEGIN
 	}
 
-	// if got here there was more namespace, cannot go any deeper
+	
 	panic("Invalid field namespace")
 }
 
-// asInt returns the parameter as a int64
-// or panics if it can't convert
+
+
 func asInt(param string) int64 {
 	i, err := strconv.ParseInt(param, 0, 64)
 	panicIf(err)
@@ -231,19 +231,19 @@ func asInt(param string) int64 {
 	return i
 }
 
-// asIntFromTimeDuration parses param as time.Duration and returns it as int64
-// or panics on error.
+
+
 func asIntFromTimeDuration(param string) int64 {
 	d, err := time.ParseDuration(param)
 	if err != nil {
-		// attempt parsing as an integer assuming nanosecond precision
+		
 		return asInt(param)
 	}
 	return int64(d)
 }
 
-// asIntFromType calls the proper function to parse param as int64,
-// given a field's Type t.
+
+
 func asIntFromType(t reflect.Type, param string) int64 {
 	switch t {
 	case timeDurationType:
@@ -253,8 +253,8 @@ func asIntFromType(t reflect.Type, param string) int64 {
 	}
 }
 
-// asUint returns the parameter as a uint64
-// or panics if it can't convert
+
+
 func asUint(param string) uint64 {
 
 	i, err := strconv.ParseUint(param, 0, 64)
@@ -263,24 +263,24 @@ func asUint(param string) uint64 {
 	return i
 }
 
-// asFloat64 returns the parameter as a float64
-// or panics if it can't convert
+
+
 func asFloat64(param string) float64 {
 	i, err := strconv.ParseFloat(param, 64)
 	panicIf(err)
 	return i
 }
 
-// asFloat32 returns the parameter as a float32
-// or panics if it can't convert
+
+
 func asFloat32(param string) float64 {
 	i, err := strconv.ParseFloat(param, 32)
 	panicIf(err)
 	return i
 }
 
-// asBool returns the parameter as a bool
-// or panics if it can't convert
+
+
 func asBool(param string) bool {
 
 	i, err := strconv.ParseBool(param)
@@ -295,8 +295,8 @@ func panicIf(err error) {
 	}
 }
 
-// Checks if field value matches regex. If fl.Field can be cast to Stringer, it uses the Stringer interfaces
-// String() return value. Otherwise, it uses fl.Field's String() value.
+
+
 func fieldMatchesRegexByStringerValOrString(regexFn func() *regexp.Regexp, fl FieldLevel) bool {
 	regex := regexFn()
 	switch fl.Field().Kind() {

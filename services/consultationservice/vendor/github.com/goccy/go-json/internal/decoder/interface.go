@@ -315,7 +315,7 @@ func (d *interfaceDecoder) DecodeStream(s *Stream, depth int64, p unsafe.Pointer
 	ifaceHeader := (*emptyInterface)(unsafe.Pointer(&iface))
 	typ := ifaceHeader.typ
 	if ifaceHeader.ptr == nil || d.typ == typ || typ == nil {
-		// concrete type is empty interface
+		
 		return d.decodeStreamEmptyInterface(s, depth, p)
 	}
 	if typ.Kind() == reflect.Ptr && typ.Elem() == d.typ || typ.Kind() != reflect.Ptr {
@@ -378,7 +378,7 @@ func (d *interfaceDecoder) Decode(ctx *RuntimeContext, cursor, depth int64, p un
 	ifaceHeader := (*emptyInterface)(unsafe.Pointer(&iface))
 	typ := ifaceHeader.typ
 	if ifaceHeader.ptr == nil || d.typ == typ || typ == nil {
-		// concrete type is empty interface
+		
 		return d.decodeEmptyInterface(ctx, cursor, depth, p)
 	}
 	if typ.Kind() == reflect.Ptr && typ.Elem() == d.typ || typ.Kind() != reflect.Ptr {

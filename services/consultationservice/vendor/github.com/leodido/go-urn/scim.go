@@ -25,7 +25,7 @@ func (s *SCIM) UnmarshalJSON(bytes []byte) error {
 	if err := json.Unmarshal(bytes, &str); err != nil {
 		return err
 	}
-	// Parse as SCIM
+	
 	value, ok := Parse([]byte(str), WithParsingMode(RFC7643Only))
 	if !ok {
 		return fmt.Errorf(errInvalidSCIMURN, str)

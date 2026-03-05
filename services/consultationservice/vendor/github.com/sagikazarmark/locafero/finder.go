@@ -1,4 +1,4 @@
-// Package finder looks for files and directories in an {fs.Fs} filesystem.
+
 package locafero
 
 import (
@@ -11,40 +11,40 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Finder looks for files and directories in an [afero.Fs] filesystem.
+
 type Finder struct {
-	// Paths represents a list of locations that the [Finder] will search in.
-	//
-	// They are essentially the root directories or starting points for the search.
-	//
-	// Examples:
-	//   - home/user
-	//   - etc
+	
+	
+	
+	
+	
+	
+	
 	Paths []string
 
-	// Names are specific entries that the [Finder] will look for within the given Paths.
-	//
-	// It provides the capability to search for entries with depth,
-	// meaning it can target deeper locations within the directory structure.
-	//
-	// It also supports glob syntax (as defined by [filepath.Match]), offering greater flexibility in search patterns.
-	//
-	// Examples:
-	//   - config.yaml
-	//   - home/*/config.yaml
-	//   - home/*/config.*
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	Names []string
 
-	// Type restricts the kind of entries returned by the [Finder].
-	//
-	// This parameter helps in differentiating and filtering out files from directories or vice versa.
+	
+	
+	
 	Type FileType
 }
 
-// Find looks for files and directories in an [afero.Fs] filesystem.
+
 func (f Finder) Find(fsys afero.Fs) ([]string, error) {
-	// Arbitrary go routine limit (TODO: make this a parameter)
-	// pool := pool.NewWithResults[[]string]().WithMaxGoroutines(5).WithErrors().WithFirstError()
+	
+	
 
 	type searchItem struct {
 		path string
@@ -61,24 +61,24 @@ func (f Finder) Find(fsys afero.Fs) ([]string, error) {
 
 			searchItems = append(searchItems, searchItem{searchPath, searchName})
 
-			// pool.Go(func() ([]string, error) {
-			// 	// If the name contains any glob character, perform a glob match
-			// 	if strings.ContainsAny(searchName, globMatch) {
-			// 		return globWalkSearch(fsys, searchPath, searchName, f.Type)
-			// 	}
-			//
-			// 	return statSearch(fsys, searchPath, searchName, f.Type)
-			// })
+			
+			
+			
+			
+			
+			
+			
+			
 		}
 	}
 
-	// allResults, err := pool.Wait()
-	// if err != nil {
-	// 	return nil, err
-	// }
+	
+	
+	
+	
 
 	allResults, err := iter.MapErr(searchItems, func(item *searchItem) ([]string, error) {
-		// If the name contains any glob character, perform a glob match
+		
 		if strings.ContainsAny(item.name, globMatch) {
 			return globWalkSearch(fsys, item.path, item.name, f.Type)
 		}
@@ -95,8 +95,8 @@ func (f Finder) Find(fsys afero.Fs) ([]string, error) {
 		results = append(results, r...)
 	}
 
-	// Sort results in alphabetical order for now
-	// sort.Strings(results)
+	
+	
 
 	return results, nil
 }
@@ -109,20 +109,20 @@ func globWalkSearch(fsys afero.Fs, searchPath string, searchName string, searchT
 			return err
 		}
 
-		// Skip the root path
+		
 		if p == searchPath {
 			return nil
 		}
 
 		var result error
 
-		// Stop reading subdirectories
-		// TODO: add depth detection here
+		
+		
 		if fileInfo.IsDir() && filepath.Dir(p) == searchPath {
 			result = fs.SkipDir
 		}
 
-		// Skip unmatching type
+		
 		if !searchType.matchFileInfo(fileInfo) {
 			return result
 		}
@@ -156,7 +156,7 @@ func statSearch(fsys afero.Fs, searchPath string, searchName string, searchType 
 		return nil, err
 	}
 
-	// Skip unmatching type
+	
 	if !searchType.matchFileInfo(fileInfo) {
 		return nil, nil
 	}

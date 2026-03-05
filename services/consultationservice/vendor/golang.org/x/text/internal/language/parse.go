@@ -1,6 +1,6 @@
-// Copyright 2013 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package language
 
@@ -13,13 +13,13 @@ import (
 	"golang.org/x/text/internal/tag"
 )
 
-// isAlpha returns true if the byte is not a digit.
-// b must be an ASCII letter or digit.
+
+
 func isAlpha(b byte) bool {
 	return b > '9'
 }
 
-// isAlphaNum returns true if the string contains only ASCII letters or digits.
+
 func isAlphaNum(s []byte) bool {
 	for _, c := range s {
 		if !('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || '0' <= c && c <= '9') {
@@ -29,23 +29,23 @@ func isAlphaNum(s []byte) bool {
 	return true
 }
 
-// ErrSyntax is returned by any of the parsing functions when the
-// input is not well-formed, according to BCP 47.
-// TODO: return the position at which the syntax error occurred?
+
+
+
 var ErrSyntax = errors.New("language: tag is not well-formed")
 
-// ErrDuplicateKey is returned when a tag contains the same key twice with
-// different values in the -u section.
+
+
 var ErrDuplicateKey = errors.New("language: different values for same key in -u extension")
 
-// ValueError is returned by any of the parsing functions when the
-// input is well-formed but the respective subtag is not recognized
-// as a valid value.
+
+
+
 type ValueError struct {
 	v [8]byte
 }
 
-// NewValueError creates a new ValueError.
+
 func NewValueError(tag []byte) ValueError {
 	var e ValueError
 	copy(e.v[:], tag)
@@ -60,24 +60,24 @@ func (e ValueError) tag() []byte {
 	return e.v[:n]
 }
 
-// Error implements the error interface.
+
 func (e ValueError) Error() string {
 	return fmt.Sprintf("language: subtag %q is well-formed but unknown", e.tag())
 }
 
-// Subtag returns the subtag for which the error occurred.
+
 func (e ValueError) Subtag() string {
 	return string(e.tag())
 }
 
-// scanner is used to scan BCP 47 tokens, which are separated by _ or -.
+
 type scanner struct {
 	b     []byte
 	bytes [max99thPercentileSize]byte
 	token []byte
-	start int // start position of the current token
-	end   int // end position of the current token
-	next  int // next point for scan
+	start int 
+	end   int 
+	next  int 
 	err   error
 	done  bool
 }
@@ -93,8 +93,8 @@ func makeScannerString(s string) scanner {
 	return scan
 }
 
-// makeScanner returns a scanner using b as the input buffer.
-// b is not copied and may be modified by the scanner routines.
+
+
 func makeScanner(b []byte) scanner {
 	scan := scanner{b: b}
 	scan.init()
@@ -110,7 +110,7 @@ func (s *scanner) init() {
 	s.scan()
 }
 
-// restToLower converts the string between start and end to lower case.
+
 func (s *scanner) toLower(start, end int) {
 	for i := start; i < end; i++ {
 		c := s.b[i]
@@ -126,9 +126,9 @@ func (s *scanner) setError(e error) {
 	}
 }
 
-// resizeRange shrinks or grows the array at position oldStart such that
-// a new string of size newSize can fit between oldStart and oldEnd.
-// Sets the scan point to after the resized range.
+
+
+
 func (s *scanner) resizeRange(oldStart, oldEnd, newSize int) {
 	s.start = oldStart
 	if end := oldStart + newSize; end != oldEnd {
@@ -147,14 +147,14 @@ func (s *scanner) resizeRange(oldStart, oldEnd, newSize int) {
 	}
 }
 
-// replace replaces the current token with repl.
+
 func (s *scanner) replace(repl string) {
 	s.resizeRange(s.start, s.end, len(repl))
 	copy(s.b[s.start:], repl)
 }
 
-// gobble removes the current token from the input.
-// Caller must call scan after calling gobble.
+
+
 func (s *scanner) gobble(e error) {
 	s.setError(e)
 	if s.start == 0 {
@@ -167,7 +167,7 @@ func (s *scanner) gobble(e error) {
 	s.next = s.start
 }
 
-// deleteRange removes the given range from s.b before the current token.
+
 func (s *scanner) deleteRange(start, end int) {
 	s.b = s.b[:start+copy(s.b[start:], s.b[end:])]
 	diff := end - start
@@ -176,10 +176,10 @@ func (s *scanner) deleteRange(start, end int) {
 	s.end -= diff
 }
 
-// scan parses the next token of a BCP 47 string.  Tokens that are larger
-// than 8 characters or include non-alphanumeric characters result in an error
-// and are gobbled and removed from the output.
-// It returns the end position of the last token consumed.
+
+
+
+
 func (s *scanner) scan() (end int) {
 	end = s.end
 	s.token = nil
@@ -209,8 +209,8 @@ func (s *scanner) scan() (end int) {
 	return end
 }
 
-// acceptMinSize parses multiple tokens of the given size or greater.
-// It returns the end position of the last token consumed.
+
+
 func (s *scanner) acceptMinSize(min int) (end int) {
 	end = s.end
 	s.scan()
@@ -220,15 +220,15 @@ func (s *scanner) acceptMinSize(min int) (end int) {
 	return end
 }
 
-// Parse parses the given BCP 47 string and returns a valid Tag. If parsing
-// failed it returns an error and any part of the tag that could be parsed.
-// If parsing succeeded but an unknown value was found, it returns
-// ValueError. The Tag returned in this case is just stripped of the unknown
-// value. All other values are preserved. It accepts tags in the BCP 47 format
-// and extensions to this standard defined in
-// https://www.unicode.org/reports/tr35/#Unicode_Language_and_Locale_Identifiers.
+
+
+
+
+
+
+
 func Parse(s string) (t Tag, err error) {
-	// TODO: consider supporting old-style locale key-value pairs.
+	
 	if s == "" {
 		return Und, ErrSyntax
 	}
@@ -242,7 +242,7 @@ func Parse(s string) (t Tag, err error) {
 	if len(s) <= maxAltTaglen {
 		b := [maxAltTaglen]byte{}
 		for i, c := range s {
-			// Generating invalid UTF-8 is okay as it won't match.
+			
 			if 'A' <= c && c <= 'Z' {
 				c += 'a' - 'A'
 			} else if c == '_' {
@@ -269,7 +269,7 @@ func parse(scan *scanner, s string) (t Tag, err error) {
 		end = parseExtensions(scan)
 	} else if n >= 4 {
 		return Und, ErrSyntax
-	} else { // the usual case
+	} else { 
 		t, end = parseTag(scan, true)
 		if n := len(scan.token); n == 1 {
 			t.pExt = uint16(end)
@@ -294,20 +294,20 @@ func parse(scan *scanner, s string) (t Tag, err error) {
 	return t, scan.err
 }
 
-// parseTag parses language, script, region and variants.
-// It returns a Tag and the end position in the input that was parsed.
-// If doNorm is true, then <lang>-<extlang> will be normalized to <extlang>.
+
+
+
 func parseTag(scan *scanner, doNorm bool) (t Tag, end int) {
 	var e error
-	// TODO: set an error if an unknown lang, script or region is encountered.
+	
 	t.LangID, e = getLangID(scan.token)
 	scan.setError(e)
 	scan.replace(t.LangID.String())
 	langStart := scan.start
 	end = scan.scan()
 	for len(scan.token) == 3 && isAlpha(scan.token[0]) {
-		// From http://tools.ietf.org/html/bcp47, <lang>-<extlang> tags are equivalent
-		// to a tag of the form <extlang>.
+		
+		
 		if doNorm {
 			lang, e := getLangID(scan.token)
 			if lang != 0 {
@@ -346,8 +346,8 @@ func parseTag(scan *scanner, doNorm bool) (t Tag, end int) {
 
 var separator = []byte{'-'}
 
-// parseVariants scans tokens as long as each token is a valid variant string.
-// Duplicate variants are removed.
+
+
 func parseVariants(scan *scanner, end int, t Tag) int {
 	start := scan.start
 	varIDBuf := [4]uint8{}
@@ -357,12 +357,12 @@ func parseVariants(scan *scanner, end int, t Tag) int {
 	last := -1
 	needSort := false
 	for ; len(scan.token) >= 4; scan.scan() {
-		// TODO: measure the impact of needing this conversion and redesign
-		// the data structure if there is an issue.
+		
+		
 		v, ok := variantIndex[string(scan.token)]
 		if !ok {
-			// unknown variant
-			// TODO: allow user-defined variants?
+			
+			
 			scan.gobble(NewValueError(scan.token))
 			continue
 		}
@@ -373,8 +373,8 @@ func parseVariants(scan *scanner, end int, t Tag) int {
 				last = int(v)
 			} else {
 				needSort = true
-				// There is no legal combinations of more than 7 variants
-				// (and this is by no means a useful sequence).
+				
+				
 				const maxVariants = 8
 				if len(varID) > maxVariants {
 					break
@@ -389,7 +389,7 @@ func parseVariants(scan *scanner, end int, t Tag) int {
 		for i, v := range varID {
 			w := int(v)
 			if l == w {
-				// Remove duplicates.
+				
 				continue
 			}
 			varID[k] = varID[i]
@@ -428,7 +428,7 @@ func (s variantsSort) Less(i, j int) bool {
 
 type bytesSort struct {
 	b [][]byte
-	n int // first n bytes to compare
+	n int 
 }
 
 func (b bytesSort) Len() int {
@@ -449,9 +449,9 @@ func (b bytesSort) Less(i, j int) bool {
 	return false
 }
 
-// parseExtensions parses and normalizes the extensions in the buffer.
-// It returns the last position of scan.b that is part of any extension.
-// It also trims scan.b to remove excess parts accordingly.
+
+
+
 func parseExtensions(scan *scanner) int {
 	start := scan.start
 	exts := [][]byte{}
@@ -483,23 +483,23 @@ func parseExtensions(scan *scanner) int {
 	if len(exts) > 0 {
 		scan.b = append(scan.b, bytes.Join(exts, separator)...)
 	} else if start > 0 {
-		// Strip trailing '-'.
+		
 		scan.b = scan.b[:start-1]
 	}
 	return end
 }
 
-// parseExtension parses a single extension and returns the position of
-// the extension end.
+
+
 func parseExtension(scan *scanner) int {
 	start, end := scan.start, scan.end
 	switch scan.token[0] {
-	case 'u': // https://www.ietf.org/rfc/rfc6067.txt
+	case 'u': 
 		attrStart := end
 		scan.scan()
 		for last := []byte{}; len(scan.token) > 2; scan.scan() {
 			if bytes.Compare(scan.token, last) != -1 {
-				// Attributes are unsorted. Start over from scratch.
+				
 				p := attrStart + 1
 				scan.next = p
 				attrs := [][]byte{}
@@ -514,8 +514,8 @@ func parseExtension(scan *scanner) int {
 			last = scan.token
 			end = scan.end
 		}
-		// Scan key-type sequences. A key is of length 2 and may be followed
-		// by 0 or more "type" subtags from 3 to the maximum of 8 letters.
+		
+		
 		var last, key []byte
 		for attrEnd := end; len(scan.token) == 2; last = key {
 			key = scan.token
@@ -523,10 +523,10 @@ func parseExtension(scan *scanner) int {
 			for scan.scan(); end < scan.end && len(scan.token) > 2; scan.scan() {
 				end = scan.end
 			}
-			// TODO: check key value validity
+			
 			if bytes.Compare(key, last) != 1 || scan.err != nil {
-				// We have an invalid key or the keys are not sorted.
-				// Start scanning keys from scratch and reorder.
+				
+				
 				p := attrEnd + 1
 				scan.next = p
 				keys := [][]byte{}
@@ -560,7 +560,7 @@ func parseExtension(scan *scanner) int {
 				break
 			}
 		}
-	case 't': // https://www.ietf.org/rfc/rfc6497.txt
+	case 't': 
 		scan.scan()
 		if n := len(scan.token); n >= 2 && n <= 3 && isAlpha(scan.token[1]) {
 			_, end = parseTag(scan, false)
@@ -577,7 +577,7 @@ func parseExtension(scan *scanner) int {
 	return end
 }
 
-// getExtension returns the name, body and end position of the extension.
+
 func getExtension(s string, p int) (end int, ext string) {
 	if s[p] == '-' {
 		p++
@@ -589,10 +589,10 @@ func getExtension(s string, p int) (end int, ext string) {
 	return end, s[p:end]
 }
 
-// nextExtension finds the next extension within the string, searching
-// for the -<char>- pattern from position p.
-// In the fast majority of cases, language tags will have at most
-// one extension and extensions tend to be small.
+
+
+
+
 func nextExtension(s string, p int) int {
 	for n := len(s) - 3; p < n; {
 		if s[p] == '-' {

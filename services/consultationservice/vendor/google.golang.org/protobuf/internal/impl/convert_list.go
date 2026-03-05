@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -22,7 +22,7 @@ func newListConverter(t reflect.Type, fd protoreflect.FieldDescriptor) Converter
 }
 
 type listConverter struct {
-	goType reflect.Type // []T
+	goType reflect.Type 
 	c      Converter
 }
 
@@ -64,7 +64,7 @@ func (c *listConverter) Zero() protoreflect.Value {
 }
 
 type listPtrConverter struct {
-	goType reflect.Type // *[]T
+	goType reflect.Type 
 	c      Converter
 }
 
@@ -100,7 +100,7 @@ func (c *listPtrConverter) Zero() protoreflect.Value {
 }
 
 type listReflect struct {
-	v    reflect.Value // *[]T
+	v    reflect.Value 
 	conv Converter
 }
 

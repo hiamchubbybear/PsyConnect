@@ -83,7 +83,7 @@
   }
 }
 
-// Table Cell Styles
+
 .txn-icon {
   width: 36px;
   height: 36px;
@@ -116,10 +116,10 @@
 
 .amount-cell {
   font-weight: 600;
-  color: #10b981; // Success color (Green)
+  color: #10b981; 
 
   &.negative {
-    color: #ef4444; // Error color (Red)
+    color: #ef4444; 
   }
 }
 

@@ -1,7 +1,7 @@
-// Copyright © 2014 Steve Francia <spf@spf13.com>.
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file.
+
+
+
+
 
 package cast
 
@@ -26,14 +26,14 @@ type float64Provider interface {
 	Float64() float64
 }
 
-// ToTimeE casts an interface to a time.Time type.
+
 func ToTimeE(i interface{}) (tim time.Time, err error) {
 	return ToTimeInDefaultLocationE(i, time.UTC)
 }
 
-// ToTimeInDefaultLocationE casts an empty interface to time.Time,
-// interpreting inputs without a timezone to be in the given location,
-// or the local timezone if nil.
+
+
+
 func ToTimeInDefaultLocationE(i interface{}, location *time.Location) (tim time.Time, err error) {
 	i = indirect(i)
 
@@ -65,7 +65,7 @@ func ToTimeInDefaultLocationE(i interface{}, location *time.Location) (tim time.
 	}
 }
 
-// ToDurationE casts an interface to a time.Duration type.
+
 func ToDurationE(i interface{}) (d time.Duration, err error) {
 	i = indirect(i)
 
@@ -99,7 +99,7 @@ func ToDurationE(i interface{}) (d time.Duration, err error) {
 	}
 }
 
-// ToBoolE casts an interface to a bool type.
+
 func ToBoolE(i interface{}) (bool, error) {
 	i = indirect(i)
 
@@ -147,7 +147,7 @@ func ToBoolE(i interface{}) (bool, error) {
 	}
 }
 
-// ToFloat64E casts an interface to a float64 type.
+
 func ToFloat64E(i interface{}) (float64, error) {
 	i = indirect(i)
 
@@ -205,7 +205,7 @@ func ToFloat64E(i interface{}) (float64, error) {
 	}
 }
 
-// ToFloat32E casts an interface to a float32 type.
+
 func ToFloat32E(i interface{}) (float32, error) {
 	i = indirect(i)
 
@@ -263,7 +263,7 @@ func ToFloat32E(i interface{}) (float32, error) {
 	}
 }
 
-// ToInt64E casts an interface to an int64 type.
+
 func ToInt64E(i interface{}) (int64, error) {
 	i = indirect(i)
 
@@ -315,7 +315,7 @@ func ToInt64E(i interface{}) (int64, error) {
 	}
 }
 
-// ToInt32E casts an interface to an int32 type.
+
 func ToInt32E(i interface{}) (int32, error) {
 	i = indirect(i)
 
@@ -367,7 +367,7 @@ func ToInt32E(i interface{}) (int32, error) {
 	}
 }
 
-// ToInt16E casts an interface to an int16 type.
+
 func ToInt16E(i interface{}) (int16, error) {
 	i = indirect(i)
 
@@ -419,7 +419,7 @@ func ToInt16E(i interface{}) (int16, error) {
 	}
 }
 
-// ToInt8E casts an interface to an int8 type.
+
 func ToInt8E(i interface{}) (int8, error) {
 	i = indirect(i)
 
@@ -471,7 +471,7 @@ func ToInt8E(i interface{}) (int8, error) {
 	}
 }
 
-// ToIntE casts an interface to an int type.
+
 func ToIntE(i interface{}) (int, error) {
 	i = indirect(i)
 
@@ -523,7 +523,7 @@ func ToIntE(i interface{}) (int, error) {
 	}
 }
 
-// ToUintE casts an interface to a uint type.
+
 func ToUintE(i interface{}) (uint, error) {
 	i = indirect(i)
 
@@ -599,7 +599,7 @@ func ToUintE(i interface{}) (uint, error) {
 	}
 }
 
-// ToUint64E casts an interface to a uint64 type.
+
 func ToUint64E(i interface{}) (uint64, error) {
 	i = indirect(i)
 
@@ -675,7 +675,7 @@ func ToUint64E(i interface{}) (uint64, error) {
 	}
 }
 
-// ToUint32E casts an interface to a uint32 type.
+
 func ToUint32E(i interface{}) (uint32, error) {
 	i = indirect(i)
 
@@ -751,7 +751,7 @@ func ToUint32E(i interface{}) (uint32, error) {
 	}
 }
 
-// ToUint16E casts an interface to a uint16 type.
+
 func ToUint16E(i interface{}) (uint16, error) {
 	i = indirect(i)
 
@@ -827,7 +827,7 @@ func ToUint16E(i interface{}) (uint16, error) {
 	}
 }
 
-// ToUint8E casts an interface to a uint type.
+
 func ToUint8E(i interface{}) (uint8, error) {
 	i = indirect(i)
 
@@ -903,16 +903,16 @@ func ToUint8E(i interface{}) (uint8, error) {
 	}
 }
 
-// From html/template/content.go
-// Copyright 2011 The Go Authors. All rights reserved.
-// indirect returns the value, after dereferencing as many times
-// as necessary to reach the base type (or nil).
+
+
+
+
 func indirect(a interface{}) interface{} {
 	if a == nil {
 		return nil
 	}
 	if t := reflect.TypeOf(a); t.Kind() != reflect.Ptr {
-		// Avoid creating a reflect.Value if it's not a pointer.
+		
 		return a
 	}
 	v := reflect.ValueOf(a)
@@ -922,11 +922,11 @@ func indirect(a interface{}) interface{} {
 	return v.Interface()
 }
 
-// From html/template/content.go
-// Copyright 2011 The Go Authors. All rights reserved.
-// indirectToStringerOrError returns the value, after dereferencing as many times
-// as necessary to reach the base type (or nil) or an implementation of fmt.Stringer
-// or error,
+
+
+
+
+
 func indirectToStringerOrError(a interface{}) interface{} {
 	if a == nil {
 		return nil
@@ -942,7 +942,7 @@ func indirectToStringerOrError(a interface{}) interface{} {
 	return v.Interface()
 }
 
-// ToStringE casts an interface to a string type.
+
 func ToStringE(i interface{}) (string, error) {
 	i = indirectToStringerOrError(i)
 
@@ -1000,7 +1000,7 @@ func ToStringE(i interface{}) (string, error) {
 	}
 }
 
-// ToStringMapStringE casts an interface to a map[string]string type.
+
 func ToStringMapStringE(i interface{}) (map[string]string, error) {
 	m := map[string]string{}
 
@@ -1030,7 +1030,7 @@ func ToStringMapStringE(i interface{}) (map[string]string, error) {
 	}
 }
 
-// ToStringMapStringSliceE casts an interface to a map[string][]string type.
+
 func ToStringMapStringSliceE(i interface{}) (map[string][]string, error) {
 	m := map[string][]string{}
 
@@ -1094,7 +1094,7 @@ func ToStringMapStringSliceE(i interface{}) (map[string][]string, error) {
 	return m, nil
 }
 
-// ToStringMapBoolE casts an interface to a map[string]bool type.
+
 func ToStringMapBoolE(i interface{}) (map[string]bool, error) {
 	m := map[string]bool{}
 
@@ -1119,7 +1119,7 @@ func ToStringMapBoolE(i interface{}) (map[string]bool, error) {
 	}
 }
 
-// ToStringMapE casts an interface to a map[string]interface{} type.
+
 func ToStringMapE(i interface{}) (map[string]interface{}, error) {
 	m := map[string]interface{}{}
 
@@ -1139,7 +1139,7 @@ func ToStringMapE(i interface{}) (map[string]interface{}, error) {
 	}
 }
 
-// ToStringMapIntE casts an interface to a map[string]int{} type.
+
 func ToStringMapIntE(i interface{}) (map[string]int, error) {
 	m := map[string]int{}
 	if i == nil {
@@ -1180,7 +1180,7 @@ func ToStringMapIntE(i interface{}) (map[string]int, error) {
 	return m, nil
 }
 
-// ToStringMapInt64E casts an interface to a map[string]int64{} type.
+
 func ToStringMapInt64E(i interface{}) (map[string]int64, error) {
 	m := map[string]int64{}
 	if i == nil {
@@ -1220,7 +1220,7 @@ func ToStringMapInt64E(i interface{}) (map[string]int64, error) {
 	return m, nil
 }
 
-// ToSliceE casts an interface to a []interface{} type.
+
 func ToSliceE(i interface{}) ([]interface{}, error) {
 	var s []interface{}
 
@@ -1237,7 +1237,7 @@ func ToSliceE(i interface{}) ([]interface{}, error) {
 	}
 }
 
-// ToBoolSliceE casts an interface to a []bool type.
+
 func ToBoolSliceE(i interface{}) ([]bool, error) {
 	if i == nil {
 		return []bool{}, fmt.Errorf("unable to cast %#v of type %T to []bool", i, i)
@@ -1266,7 +1266,7 @@ func ToBoolSliceE(i interface{}) ([]bool, error) {
 	}
 }
 
-// ToStringSliceE casts an interface to a []string type.
+
 func ToStringSliceE(i interface{}) ([]string, error) {
 	var a []string
 
@@ -1326,7 +1326,7 @@ func ToStringSliceE(i interface{}) ([]string, error) {
 	}
 }
 
-// ToIntSliceE casts an interface to a []int type.
+
 func ToIntSliceE(i interface{}) ([]int, error) {
 	if i == nil {
 		return []int{}, fmt.Errorf("unable to cast %#v of type %T to []int", i, i)
@@ -1355,7 +1355,7 @@ func ToIntSliceE(i interface{}) ([]int, error) {
 	}
 }
 
-// ToDurationSliceE casts an interface to a []time.Duration type.
+
 func ToDurationSliceE(i interface{}) ([]time.Duration, error) {
 	if i == nil {
 		return []time.Duration{}, fmt.Errorf("unable to cast %#v of type %T to []time.Duration", i, i)
@@ -1384,16 +1384,16 @@ func ToDurationSliceE(i interface{}) ([]time.Duration, error) {
 	}
 }
 
-// StringToDate attempts to parse a string into a time.Time type using a
-// predefined list of formats.  If no suitable format is found, an error is
-// returned.
+
+
+
 func StringToDate(s string) (time.Time, error) {
 	return parseDateWith(s, time.UTC, timeFormats)
 }
 
-// StringToDateInDefaultLocation casts an empty interface to a time.Time,
-// interpreting inputs without a timezone to be in the given location,
-// or the local timezone if nil.
+
+
+
 func StringToDateInDefaultLocation(s string, location *time.Location) (time.Time, error) {
 	return parseDateWith(s, location, timeFormats)
 }
@@ -1414,24 +1414,24 @@ type timeFormat struct {
 }
 
 func (f timeFormat) hasTimezone() bool {
-	// We don't include the formats with only named timezones, see
-	// https://github.com/golang/go/issues/19694#issuecomment-289103522
+	
+	
 	return f.typ >= timeFormatNumericTimezone && f.typ <= timeFormatNumericAndNamedTimezone
 }
 
 var timeFormats = []timeFormat{
-	// Keep common formats at the top.
+	
 	{"2006-01-02", timeFormatNoTimezone},
 	{time.RFC3339, timeFormatNumericTimezone},
-	{"2006-01-02T15:04:05", timeFormatNoTimezone}, // iso8601 without timezone
+	{"2006-01-02T15:04:05", timeFormatNoTimezone}, 
 	{time.RFC1123Z, timeFormatNumericTimezone},
 	{time.RFC1123, timeFormatNamedTimezone},
 	{time.RFC822Z, timeFormatNumericTimezone},
 	{time.RFC822, timeFormatNamedTimezone},
 	{time.RFC850, timeFormatNamedTimezone},
-	{"2006-01-02 15:04:05.999999999 -0700 MST", timeFormatNumericAndNamedTimezone}, // Time.String()
-	{"2006-01-02T15:04:05-0700", timeFormatNumericTimezone},                        // RFC3339 without timezone hh:mm colon
-	{"2006-01-02 15:04:05Z0700", timeFormatNumericTimezone},                        // RFC3339 without T or timezone hh:mm colon
+	{"2006-01-02 15:04:05.999999999 -0700 MST", timeFormatNumericAndNamedTimezone}, 
+	{"2006-01-02T15:04:05-0700", timeFormatNumericTimezone},                        
+	{"2006-01-02 15:04:05Z0700", timeFormatNumericTimezone},                        
 	{"2006-01-02 15:04:05", timeFormatNoTimezone},
 	{time.ANSIC, timeFormatNoTimezone},
 	{time.UnixDate, timeFormatNamedTimezone},
@@ -1451,9 +1451,9 @@ func parseDateWith(s string, location *time.Location, formats []timeFormat) (d t
 	for _, format := range formats {
 		if d, e = time.Parse(format.format, s); e == nil {
 
-			// Some time formats have a zone name, but no offset, so it gets
-			// put in that zone name (not the default one passed in to us), but
-			// without that zone's offset. So set the location manually.
+			
+			
+			
 			if format.typ <= timeFormatNamedTimezone {
 				if location == nil {
 					location = time.Local
@@ -1469,16 +1469,16 @@ func parseDateWith(s string, location *time.Location, formats []timeFormat) (d t
 	return d, fmt.Errorf("unable to parse date: %s", s)
 }
 
-// jsonStringToObject attempts to unmarshall a string as JSON into
-// the object passed as pointer.
+
+
 func jsonStringToObject(s string, v interface{}) error {
 	data := []byte(s)
 	return json.Unmarshal(data, v)
 }
 
-// toInt returns the int value of v if v or v's underlying type
-// is an int.
-// Note that this will return false for int64 etc. types.
+
+
+
 func toInt(v interface{}) (int, bool) {
 	switch v := v.(type) {
 	case int:

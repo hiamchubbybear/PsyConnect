@@ -6,10 +6,10 @@ import (
 	"context"
 )
 
-// PostRepository interface for updating engagement counts
+
 type PostRepository interface {
 	UpdateEngagementCount(ctx context.Context, id, field string, delta int) error
-	GetPostByID(ctx context.Context, id string) (interface{}, error) // Returns post for notification
+	GetPostByID(ctx context.Context, id string) (interface{}, error) 
 }
 
 type ToggleReactionUseCase struct {
@@ -27,35 +27,35 @@ func NewToggleReactionUseCase(
 	}
 }
 
-// Execute toggles a reaction (add, update, or remove)
-// Returns: (existingReaction, newReaction, error)
+
+
 func (uc *ToggleReactionUseCase) Execute(ctx context.Context, postID, userID, reactionType string) (*domain.Reaction, *domain.Reaction, error) {
-	// Get existing reaction
+	
 	existing, err := uc.reactionRepo.GetUserReaction(ctx, postID, userID)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	// If same reaction type, remove it (toggle off)
+	
 	if existing != nil && existing.ReactionType == reactionType {
 		err = uc.reactionRepo.RemoveReaction(ctx, postID, userID)
 		if err != nil {
 			return existing, nil, err
 		}
 
-		// Update post engagement count
+		
 		go uc.updateEngagementCount(postID, existing.ReactionType, -1)
 		return existing, nil, nil
 	}
 
-	// Add or update reaction
+	
 	reaction := domain.NewReaction(postID, userID, reactionType)
 	err = uc.reactionRepo.AddReaction(ctx, reaction)
 	if err != nil {
 		return existing, nil, err
 	}
 
-	// Update post engagement counts
+	
 	go uc.updateEngagementCounts(postID, existing, reaction)
 
 	return existing, reaction, nil
@@ -72,10 +72,10 @@ func (uc *ToggleReactionUseCase) updateEngagementCount(postID, reactionType stri
 
 func (uc *ToggleReactionUseCase) updateEngagementCounts(postID string, existing, new *domain.Reaction) {
 	if existing == nil {
-		// New reaction
+		
 		uc.updateEngagementCount(postID, new.ReactionType, 1)
 	} else if existing.ReactionType != new.ReactionType {
-		// Switched reaction
+		
 		uc.updateEngagementCount(postID, existing.ReactionType, -1)
 		uc.updateEngagementCount(postID, new.ReactionType, 1)
 	}

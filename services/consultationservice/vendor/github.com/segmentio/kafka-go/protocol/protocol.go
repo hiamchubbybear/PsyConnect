@@ -10,11 +10,11 @@ import (
 	"strings"
 )
 
-// Message is an interface implemented by all request and response types of the
-// kafka protocol.
-//
-// This interface is used mostly as a safe-guard to provide a compile-time check
-// for values passed to functions dealing kafka message types.
+
+
+
+
+
 type Message interface {
 	ApiKey() ApiKey
 }
@@ -197,8 +197,8 @@ func (t apiType) maxVersion() int16 {
 
 var apiTypes [numApis]apiType
 
-// Register is automatically called by sub-packages are imported to install a
-// new pair of request/response message types.
+
+
 func Register(req, res Message) {
 	k1 := req.ApiKey()
 	k2 := res.ApiKey()
@@ -213,8 +213,8 @@ func Register(req, res Message) {
 	}
 }
 
-// OverrideTypeMessage is an interface implemented by messages that want to override the standard
-// request/response types for a given API.
+
+
 type OverrideTypeMessage interface {
 	TypeKey() OverrideTypeKey
 }
@@ -252,8 +252,8 @@ func makeTypes(t reflect.Type) []messageType {
 	minVersion := int16(-1)
 	maxVersion := int16(-1)
 
-	// All future versions will be flexible (according to spec), so don't need to
-	// worry about maxes here.
+	
+	
 	minFlexibleVersion := int16(-1)
 
 	forEachStructField(t, func(_ reflect.Type, _ index, tag string) {
@@ -298,7 +298,7 @@ type structTag struct {
 
 func forEachStructTag(tag string, do func(structTag) bool) {
 	if tag == "-" {
-		return // special case to ignore the field
+		return 
 	}
 
 	forEach(tag, '|', func(s string) bool {
@@ -306,9 +306,9 @@ func forEachStructTag(tag string, do func(structTag) bool) {
 			MinVersion: -1,
 			MaxVersion: -1,
 
-			// Legitimate tag IDs can start at 0. We use -1 as a placeholder to indicate
-			// that the message type is flexible, so that leaves -2 as the default for
-			// indicating that there is no tag ID and the message is not flexible.
+			
+			
+			
 			TagID: -2,
 		}
 
@@ -459,76 +459,76 @@ type Partition struct {
 	Offline  []int32
 }
 
-// RawExchanger is an extention to the Message interface to allow messages
-// to control the request response cycle for the message. This is currently
-// only used to facilitate v0 SASL Authenticate requests being written in
-// a non-standard fashion when the SASL Handshake was done at v0 but not
-// when done at v1.
+
+
+
+
+
 type RawExchanger interface {
-	// Required should return true when a RawExchange is needed.
-	// The passed in versions are the negotiated versions for the connection
-	// performing the request.
+	
+	
+	
 	Required(versions map[ApiKey]int16) bool
-	// RawExchange is given the raw connection to the broker and the Message
-	// is responsible for writing itself to the connection as well as reading
-	// the response.
+	
+	
+	
 	RawExchange(rw io.ReadWriter) (Message, error)
 }
 
-// BrokerMessage is an extension of the Message interface implemented by some
-// request types to customize the broker assignment logic.
+
+
 type BrokerMessage interface {
-	// Given a representation of the kafka cluster state as argument, returns
-	// the broker that the message should be routed to.
+	
+	
 	Broker(Cluster) (Broker, error)
 }
 
-// GroupMessage is an extension of the Message interface implemented by some
-// request types to inform the program that they should be routed to a group
-// coordinator.
+
+
+
 type GroupMessage interface {
-	// Returns the group configured on the message.
+	
 	Group() string
 }
 
-// TransactionalMessage is an extension of the Message interface implemented by some
-// request types to inform the program that they should be routed to a transaction
-// coordinator.
+
+
+
 type TransactionalMessage interface {
-	// Returns the transactional id configured on the message.
+	
 	Transaction() string
 }
 
-// PreparedMessage is an extension of the Message interface implemented by some
-// request types which may need to run some pre-processing on their state before
-// being sent.
+
+
+
 type PreparedMessage interface {
-	// Prepares the message before being sent to a kafka broker using the API
-	// version passed as argument.
+	
+	
 	Prepare(apiVersion int16)
 }
 
-// Splitter is an interface implemented by messages that can be split into
-// multiple requests and have their results merged back by a Merger.
+
+
 type Splitter interface {
-	// For a given cluster layout, returns the list of messages constructed
-	// from the receiver for each requests that should be sent to the cluster.
-	// The second return value is a Merger which can be used to merge back the
-	// results of each request into a single message (or an error).
+	
+	
+	
+	
 	Split(Cluster) ([]Message, Merger, error)
 }
 
-// Merger is an interface implemented by messages which can merge multiple
-// results into one response.
+
+
 type Merger interface {
-	// Given a list of message and associated results, merge them back into a
-	// response (or an error). The results must be either Message or error
-	// values, other types should trigger a panic.
+	
+	
+	
 	Merge(messages []Message, results []interface{}) (Message, error)
 }
 
-// Result converts r to a Message or an error, or panics if r could not be
-// converted to these types.
+
+
 func Result(r interface{}) (Message, error) {
 	switch v := r.(type) {
 	case Message:

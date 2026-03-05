@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-// Copied from Golang
+
 var staticuint64s = [...]uint64{
 	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
 	0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -41,7 +41,7 @@ var staticuint64s = [...]uint64{
 	0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff,
 }
 
-const maxZero = 1024 // must match value in reflect/value.go:maxZero cmd/compile/internal/gc/walk.go:zeroValSize
+const maxZero = 1024 
 var zeroVal [maxZero]byte
 
 
@@ -102,7 +102,7 @@ func (self *TstringPool) Conv(val string, ep *interface{}) {
 		vp = Mallocgc(unsafe.Sizeof(val), StringType, true)
 	}
 
-	// convert into interface{}
+	
 	*((*GoEface)(unsafe.Pointer(ep))) = GoEface{Type: StringType, Value: vp}
 }
 
@@ -120,7 +120,7 @@ func (self *TstringPool) ConvNum(val json.Number, ep *interface{}) {
 		vp = Mallocgc(unsafe.Sizeof(val), StringType, true)
 	}
 
-	// convert into interface{}
+	
 	*((*GoEface)(unsafe.Pointer(ep))) = GoEface{Type: JsonNumberType, Value: vp}
 }
 
@@ -154,7 +154,7 @@ func (self *T64Pool) Conv(val uint64, typ *GoType, ep *interface{}) {
 		vp = Mallocgc(8, Uint64Type, false)
 	}
 
-	// convert into interface{}
+	
 	*((*GoEface)(unsafe.Pointer(ep))) = GoEface{Type: typ, Value: vp}
 }
 

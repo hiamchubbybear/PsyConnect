@@ -26,7 +26,7 @@ func NewHandler(
 }
 
 type CreateMatchRequest struct {
-	ClientID    string   `json:"client_id"` // Optional in body if header used, but good to have
+	ClientID    string   `json:"client_id"` 
 	TherapistID string   `json:"therapist_id" binding:"required"`
 	Source      string   `json:"source"`
 	SwipeScore  float64  `json:"swipe_score"`
@@ -42,9 +42,9 @@ func (h *Handler) MatchRequest(c *gin.Context) {
 
 	profileID := c.GetHeader("X-Profile-Id")
 	if profileID == "" {
-		// Fallback to body if header missing?
-		// Existing code enforced header.
-		// Let's enforce header for ClientID context.
+		
+		
+		
 		apiresponse.ErrorHandler(c, http.StatusBadRequest, "Missing profile ID")
 		return
 	}

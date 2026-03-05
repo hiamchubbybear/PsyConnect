@@ -1,20 +1,4 @@
-/*
- *
- * Copyright 2014 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
+
 
 package transport
 
@@ -40,9 +24,9 @@ import (
 )
 
 const (
-	// http2MaxFrameLen specifies the max length of a HTTP2 frame.
-	http2MaxFrameLen = 16384 // 16KB frame
-	// https://httpwg.org/specs/rfc7540.html#SettingValues
+	
+	http2MaxFrameLen = 16384 
+	
 	http2InitHeaderTableSize = 4096
 )
 
@@ -64,32 +48,32 @@ var (
 		http2.ErrCodeInadequateSecurity: codes.PermissionDenied,
 		http2.ErrCodeHTTP11Required:     codes.Internal,
 	}
-	// HTTPStatusConvTab is the HTTP status code to gRPC error code conversion table.
+	
 	HTTPStatusConvTab = map[int]codes.Code{
-		// 400 Bad Request - INTERNAL.
+		
 		http.StatusBadRequest: codes.Internal,
-		// 401 Unauthorized  - UNAUTHENTICATED.
+		
 		http.StatusUnauthorized: codes.Unauthenticated,
-		// 403 Forbidden - PERMISSION_DENIED.
+		
 		http.StatusForbidden: codes.PermissionDenied,
-		// 404 Not Found - UNIMPLEMENTED.
+		
 		http.StatusNotFound: codes.Unimplemented,
-		// 429 Too Many Requests - UNAVAILABLE.
+		
 		http.StatusTooManyRequests: codes.Unavailable,
-		// 502 Bad Gateway - UNAVAILABLE.
+		
 		http.StatusBadGateway: codes.Unavailable,
-		// 503 Service Unavailable - UNAVAILABLE.
+		
 		http.StatusServiceUnavailable: codes.Unavailable,
-		// 504 Gateway timeout - UNAVAILABLE.
+		
 		http.StatusGatewayTimeout: codes.Unavailable,
 	}
 )
 
 var grpcStatusDetailsBinHeader = "grpc-status-details-bin"
 
-// isReservedHeader checks whether hdr belongs to HTTP2 headers
-// reserved by gRPC protocol. Any other headers are classified as the
-// user-specified metadata.
+
+
+
 func isReservedHeader(hdr string) bool {
 	if hdr != "" && hdr[0] == ':' {
 		return true
@@ -102,9 +86,9 @@ func isReservedHeader(hdr string) bool {
 		"grpc-message",
 		"grpc-status",
 		"grpc-timeout",
-		// Intentionally exclude grpc-previous-rpc-attempts and
-		// grpc-retry-pushback-ms, which are "reserved", but their API
-		// intentionally works via metadata.
+		
+		
+		
 		"te":
 		return true
 	default:
@@ -112,8 +96,8 @@ func isReservedHeader(hdr string) bool {
 	}
 }
 
-// isWhitelistedHeader checks whether hdr should be propagated into metadata
-// visible to users, even though it is classified as "reserved", above.
+
+
 func isWhitelistedHeader(hdr string) bool {
 	switch hdr {
 	case ":authority", "user-agent":
@@ -131,7 +115,7 @@ func encodeBinHeader(v []byte) string {
 
 func decodeBinHeader(v string) ([]byte, error) {
 	if len(v)%4 == 0 {
-		// Input was padded, or padding was not necessary.
+		
 		return base64.StdEncoding.DecodeString(v)
 	}
 	return base64.RawStdEncoding.DecodeString(v)
@@ -188,7 +172,7 @@ func decodeTimeout(s string) (time.Duration, error) {
 		return 0, fmt.Errorf("transport: timeout string is too short: %q", s)
 	}
 	if size > 9 {
-		// Spec allows for 8 digits plus the unit.
+		
 		return 0, fmt.Errorf("transport: timeout string is too long: %q", s)
 	}
 	unit := timeoutUnit(s[size-1])
@@ -202,7 +186,7 @@ func decodeTimeout(s string) (time.Duration, error) {
 	}
 	const maxHours = math.MaxInt64 / int64(time.Hour)
 	if d == time.Hour && t > maxHours {
-		// This timeout would overflow math.MaxInt64; clamp it.
+		
 		return time.Duration(math.MaxInt64), nil
 	}
 	return d * time.Duration(t), nil
@@ -214,13 +198,13 @@ const (
 	percentByte = '%'
 )
 
-// encodeGrpcMessage is used to encode status code in header field
-// "grpc-message". It does percent encoding and also replaces invalid utf-8
-// characters with Unicode replacement character.
-//
-// It checks to see if each individual byte in msg is an allowable byte, and
-// then either percent encoding or passing it through. When percent encoding,
-// the byte is converted into hexadecimal notation with a '%' prepended.
+
+
+
+
+
+
+
 func encodeGrpcMessage(msg string) string {
 	if msg == "" {
 		return ""
@@ -241,15 +225,15 @@ func encodeGrpcMessageUnchecked(msg string) string {
 		r, size := utf8.DecodeRuneInString(msg)
 		for _, b := range []byte(string(r)) {
 			if size > 1 {
-				// If size > 1, r is not ascii. Always do percent encoding.
+				
 				fmt.Fprintf(&sb, "%%%02X", b)
 				continue
 			}
 
-			// The for loop is necessary even if size == 1. r could be
-			// utf8.RuneError.
-			//
-			// fmt.Sprintf("%%%02X", utf8.RuneError) gives "%FFFD".
+			
+			
+			
+			
 			if b >= spaceByte && b <= tildeByte && b != percentByte {
 				sb.WriteByte(b)
 			} else {
@@ -261,7 +245,7 @@ func encodeGrpcMessageUnchecked(msg string) string {
 	return sb.String()
 }
 
-// decodeGrpcMessage decodes the msg encoded by encodeGrpcMessage.
+
 func decodeGrpcMessage(msg string) string {
 	if msg == "" {
 		return ""
@@ -310,7 +294,7 @@ func newBufWriter(conn net.Conn, batchSize int, pool *sync.Pool) *bufWriter {
 		conn:      conn,
 		pool:      pool,
 	}
-	// this indicates that we should use non shared buf
+	
 	if pool == nil {
 		w.buf = make([]byte, batchSize)
 	}
@@ -321,7 +305,7 @@ func (w *bufWriter) Write(b []byte) (int, error) {
 	if w.err != nil {
 		return 0, w.err
 	}
-	if w.batchSize == 0 { // Buffer has been disabled.
+	if w.batchSize == 0 { 
 		n, err := w.conn.Write(b)
 		return n, toIOError(err)
 	}
@@ -347,7 +331,7 @@ func (w *bufWriter) Write(b []byte) (int, error) {
 
 func (w *bufWriter) Flush() error {
 	err := w.flushKeepBuffer()
-	// Only release the buffer if we are in a "shared" mode
+	
 	if w.buf != nil && w.pool != nil {
 		b := w.buf
 		w.pool.Put(&b)
@@ -414,8 +398,8 @@ func newFramer(conn net.Conn, writeBufferSize, readBufferSize int, sharedWriteBu
 		fr:     http2.NewFramer(w, r),
 	}
 	f.fr.SetMaxReadFrameSize(http2MaxFrameLen)
-	// Opt-in to Frame reuse API on framer to reduce garbage.
-	// Frames aren't safe to read from after a subsequent call to ReadFrame.
+	
+	
 	f.fr.SetReuseFrames()
 	f.fr.MaxHeaderListSize = maxHeaderListSize
 	f.fr.ReadMetaHeaders = hpack.NewDecoder(http2InitHeaderTableSize, nil)
@@ -439,12 +423,12 @@ func getWriteBufferPool(size int) *sync.Pool {
 	return pool
 }
 
-// parseDialTarget returns the network and address to pass to dialer.
+
 func parseDialTarget(target string) (string, string) {
 	net := "tcp"
 	m1 := strings.Index(target, ":")
 	m2 := strings.Index(target, ":/")
-	// handle unix:addr which will fail with url.Parse
+	
 	if m1 >= 0 && m2 < 0 {
 		if n := target[0:m1]; n == "unix" {
 			return n, target[m1+1:]

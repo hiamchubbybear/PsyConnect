@@ -9,12 +9,12 @@ import (
 )
 
 type config struct {
-	// Common options.
+	
 
 	dbSystem string
 	attrs    []attribute.KeyValue
 
-	// Tracing options.
+	
 
 	tp     trace.TracerProvider
 	tracer trace.Tracer
@@ -22,7 +22,7 @@ type config struct {
 	dbStmtEnabled bool
 	callerEnabled bool
 
-	// Metrics options.
+	
 
 	mp    metric.MeterProvider
 	meter metric.Meter
@@ -78,14 +78,14 @@ func WithDBSystem(dbSystem string) Option {
 	})
 }
 
-// WithAttributes specifies additional attributes to be added to the span.
+
 func WithAttributes(attrs ...attribute.KeyValue) Option {
 	return option(func(conf *config) {
 		conf.attrs = append(conf.attrs, attrs...)
 	})
 }
 
-//------------------------------------------------------------------------------
+
 
 type TracingOption interface {
 	baseOption
@@ -102,29 +102,29 @@ func (fn tracingOption) apply(conf *config) {
 
 func (fn tracingOption) tracing() {}
 
-// WithTracerProvider specifies a tracer provider to use for creating a tracer.
-// If none is specified, the global provider is used.
+
+
 func WithTracerProvider(provider trace.TracerProvider) TracingOption {
 	return tracingOption(func(conf *config) {
 		conf.tp = provider
 	})
 }
 
-// WithDBStatement tells the tracing hook to log raw redis commands.
+
 func WithDBStatement(on bool) TracingOption {
 	return tracingOption(func(conf *config) {
 		conf.dbStmtEnabled = on
 	})
 }
 
-// WithCallerEnabled tells the tracing hook to log the calling function, file and line.
+
 func WithCallerEnabled(on bool) TracingOption {
 	return tracingOption(func(conf *config) {
 		conf.callerEnabled = on
 	})
 }
 
-//------------------------------------------------------------------------------
+
 
 type MetricsOption interface {
 	baseOption
@@ -141,7 +141,7 @@ func (fn metricsOption) apply(conf *config) {
 
 func (fn metricsOption) metrics() {}
 
-// WithMeterProvider configures a metric.Meter used to create instruments.
+
 func WithMeterProvider(mp metric.MeterProvider) MetricsOption {
 	return metricsOption(func(conf *config) {
 		conf.mp = mp

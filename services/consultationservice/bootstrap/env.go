@@ -31,7 +31,7 @@ func LoadEnv() *Env {
 	v.AddConfigPath(".")
 	v.AutomaticEnv()
 
-	// Bind all keys explicitly for AutomaticEnv to work with Unmarshal when no config file is present
+	
 	v.BindEnv("SERVICE_PORT")
 	v.BindEnv("SERVICE_HOST")
 	v.BindEnv("KAFKA_ADDRESS")
@@ -54,7 +54,7 @@ func LoadEnv() *Env {
 		log.Printf("Using config file: %s", v.ConfigFileUsed())
 	}
 
-	// Sync viper values back to os environment variables for packages using os.Getenv (like db)
+	
 	keysToSync := []string{"MONGO_URI", "DB_NAME", "ENVIRONMENT", "KAFKA_BROKERS", "PROFILE_GRPC_ADDR"}
 	for _, k := range keysToSync {
 		val := v.GetString(k)

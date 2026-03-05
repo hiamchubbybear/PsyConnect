@@ -15,7 +15,7 @@ import (
 	"github.com/loggingservice/pkg/settings"
 )
 
-// Client represents a Loki client
+
 type Client struct {
 	config     settings.LokiConfig
 	httpClient *http.Client
@@ -25,18 +25,18 @@ type Client struct {
 	wg         sync.WaitGroup
 }
 
-// LokiPushRequest represents the Loki push API request format
+
 type LokiPushRequest struct {
 	Streams []LokiStream `json:"streams"`
 }
 
-// LokiStream represents a single log stream
+
 type LokiStream struct {
 	Stream map[string]string `json:"stream"`
 	Values [][]string        `json:"values"`
 }
 
-// NewClient creates a new Loki client
+
 func NewClient(config settings.LokiConfig) *Client {
 	return &Client{
 		config: config,
@@ -48,20 +48,20 @@ func NewClient(config settings.LokiConfig) *Client {
 	}
 }
 
-// Start starts the background batch flusher
+
 func (c *Client) Start() {
 	c.wg.Add(1)
 	go c.batchFlusher()
 }
 
-// Stop stops the client and flushes remaining logs
+
 func (c *Client) Stop() {
 	close(c.stopCh)
 	c.wg.Wait()
-	c.flush() // Final flush
+	c.flush() 
 }
 
-// Push adds a log event to the batch
+
 func (c *Client) Push(event *models.LogEvent) error {
 	if !c.config.Enabled {
 		return nil
@@ -72,7 +72,7 @@ func (c *Client) Push(event *models.LogEvent) error {
 
 	c.batch = append(c.batch, event)
 
-	// Flush if batch is full
+	
 	if len(c.batch) >= c.config.BatchSize {
 		return c.flush()
 	}
@@ -80,7 +80,7 @@ func (c *Client) Push(event *models.LogEvent) error {
 	return nil
 }
 
-// batchFlusher periodically flushes the batch
+
 func (c *Client) batchFlusher() {
 	defer c.wg.Done()
 	ticker := time.NewTicker(5 * time.Second)
@@ -100,13 +100,13 @@ func (c *Client) batchFlusher() {
 	}
 }
 
-// flush sends the current batch to Loki
+
 func (c *Client) flush() error {
 	if len(c.batch) == 0 {
 		return nil
 	}
 
-	// Group logs by labels (stream)
+	
 	streams := make(map[string]*LokiStream)
 
 	for _, event := range c.batch {
@@ -114,13 +114,13 @@ func (c *Client) flush() error {
 		streamKey := labelsToKey(labels)
 
 		if stream, exists := streams[streamKey]; exists {
-			// Add to existing stream
+			
 			stream.Values = append(stream.Values, []string{
 				strconv.FormatInt(time.Now().UnixNano(), 10),
 				event.GetLogLine(),
 			})
 		} else {
-			// Create new stream
+			
 			streams[streamKey] = &LokiStream{
 				Stream: labels,
 				Values: [][]string{
@@ -133,28 +133,28 @@ func (c *Client) flush() error {
 		}
 	}
 
-	// Convert map to slice
+	
 	streamSlice := make([]LokiStream, 0, len(streams))
 	for _, stream := range streams {
 		streamSlice = append(streamSlice, *stream)
 	}
 
-	// Create push request
+	
 	pushReq := LokiPushRequest{
 		Streams: streamSlice,
 	}
 
-	// Send to Loki
+	
 	if err := c.sendToLoki(pushReq); err != nil {
 		return err
 	}
 
-	// Clear batch
+	
 	c.batch = c.batch[:0]
 	return nil
 }
 
-// sendToLoki sends the push request to Loki
+
 func (c *Client) sendToLoki(pushReq LokiPushRequest) error {
 	jsonData, err := json.Marshal(pushReq)
 	if err != nil {
@@ -169,7 +169,7 @@ func (c *Client) sendToLoki(pushReq LokiPushRequest) error {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	// Add basic auth if configured
+	
 	if c.config.Username != "" && c.config.Password != "" {
 		req.SetBasicAuth(c.config.Username, c.config.Password)
 	}
@@ -188,9 +188,9 @@ func (c *Client) sendToLoki(pushReq LokiPushRequest) error {
 	return nil
 }
 
-// labelsToKey converts labels map to a unique string key
+
 func labelsToKey(labels map[string]string) string {
-	// Simple concatenation for demo, in production use proper hashing
+	
 	key := ""
 	for k, v := range labels {
 		key += k + "=" + v + ","

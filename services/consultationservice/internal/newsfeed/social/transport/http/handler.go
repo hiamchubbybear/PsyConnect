@@ -115,7 +115,7 @@ func (h *Handler) UnbookmarkPost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Unbookmarked successfully"})
 }
 
-// Alias methods for router compatibility
+
 func (h *Handler) AddBookmark(c *gin.Context) {
 	h.BookmarkPost(c)
 }
@@ -125,21 +125,21 @@ func (h *Handler) RemoveBookmark(c *gin.Context) {
 }
 
 func (h *Handler) SharePost(c *gin.Context) {
-	// Placeholder - not implemented yet
+	
 	c.JSON(http.StatusNotImplemented, gin.H{"error": "Share post not implemented"})
 }
 
 func (h *Handler) GetFollowers(c *gin.Context) {
-	// Placeholder - not implemented yet
+	
 	c.JSON(http.StatusNotImplemented, gin.H{"error": "Get followers not implemented"})
 }
 
 func (h *Handler) GetFollowing(c *gin.Context) {
-	// Placeholder - not implemented yet
+	
 	c.JSON(http.StatusNotImplemented, gin.H{"error": "Get following not implemented"})
 }
 
 func (h *Handler) GetBookmarks(c *gin.Context) {
-	// Placeholder - not implemented yet
+	
 	c.JSON(http.StatusNotImplemented, gin.H{"error": "Get bookmarks not implemented"})
 }

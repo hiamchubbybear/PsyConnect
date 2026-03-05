@@ -28,40 +28,40 @@ const (
 
 var errClusterNoNodes = fmt.Errorf("redis: cluster has no nodes")
 
-// ClusterOptions are used to configure a cluster client and should be
-// passed to NewClusterClient.
+
+
 type ClusterOptions struct {
-	// A seed list of host:port addresses of cluster nodes.
+	
 	Addrs []string
 
-	// ClientName will execute the `CLIENT SETNAME ClientName` command for each conn.
+	
 	ClientName string
 
-	// NewClient creates a cluster node client with provided name and options.
+	
 	NewClient func(opt *Options) *Client
 
-	// The maximum number of retries before giving up. Command is retried
-	// on network errors and MOVED/ASK redirects.
-	// Default is 3 retries.
+	
+	
+	
 	MaxRedirects int
 
-	// Enables read-only commands on slave nodes.
+	
 	ReadOnly bool
-	// Allows routing read-only commands to the closest master or slave node.
-	// It automatically enables ReadOnly.
+	
+	
 	RouteByLatency bool
-	// Allows routing read-only commands to the random master or slave node.
-	// It automatically enables ReadOnly.
+	
+	
 	RouteRandomly bool
 
-	// Optional function that returns cluster slots information.
-	// It is useful to manually create cluster of standalone Redis servers
-	// and load-balance read/write operations between master and slaves.
-	// It can use service like ZooKeeper to maintain configuration information
-	// and Cluster.ReloadState to manually trigger state reloading.
+	
+	
+	
+	
+	
 	ClusterSlots func(context.Context) ([]ClusterSlot, error)
 
-	// Following options are copied from Options struct.
+	
 
 	Dialer func(ctx context.Context, network, addr string) (net.Conn, error)
 
@@ -84,45 +84,45 @@ type ClusterOptions struct {
 	ContextTimeoutEnabled bool
 
 	PoolFIFO        bool
-	PoolSize        int // applies per cluster node and not for the whole cluster
+	PoolSize        int 
 	PoolTimeout     time.Duration
 	MinIdleConns    int
 	MaxIdleConns    int
-	MaxActiveConns  int // applies per cluster node and not for the whole cluster
+	MaxActiveConns  int 
 	ConnMaxIdleTime time.Duration
 	ConnMaxLifetime time.Duration
 
-	// ReadBufferSize is the size of the bufio.Reader buffer for each connection.
-	// Larger buffers can improve performance for commands that return large responses.
-	// Smaller buffers can improve memory usage for larger pools.
-	//
-	// default: 256KiB (262144 bytes)
+	
+	
+	
+	
+	
 	ReadBufferSize int
 
-	// WriteBufferSize is the size of the bufio.Writer buffer for each connection.
-	// Larger buffers can improve performance for large pipelines and commands with many arguments.
-	// Smaller buffers can improve memory usage for larger pools.
-	//
-	// default: 256KiB (262144 bytes)
+	
+	
+	
+	
+	
 	WriteBufferSize int
 
 	TLSConfig *tls.Config
 
-	// DisableIndentity - Disable set-lib on connect.
-	//
-	// default: false
-	//
-	// Deprecated: Use DisableIdentity instead.
+	
+	
+	
+	
+	
 	DisableIndentity bool
 
-	// DisableIdentity is used to disable CLIENT SETINFO command on connect.
-	//
-	// default: false
+	
+	
+	
 	DisableIdentity bool
 
-	IdentitySuffix string // Add suffix to client name. Default is empty.
+	IdentitySuffix string 
 
-	// UnstableResp3 enables Unstable mode for Redis Search module with RESP3.
+	
 	UnstableResp3 bool
 }
 
@@ -182,41 +182,41 @@ func (opt *ClusterOptions) init() {
 	}
 }
 
-// ParseClusterURL parses a URL into ClusterOptions that can be used to connect to Redis.
-// The URL must be in the form:
-//
-//	redis://<user>:<password>@<host>:<port>
-//	or
-//	rediss://<user>:<password>@<host>:<port>
-//
-// To add additional addresses, specify the query parameter, "addr" one or more times. e.g:
-//
-//	redis://<user>:<password>@<host>:<port>?addr=<host2>:<port2>&addr=<host3>:<port3>
-//	or
-//	rediss://<user>:<password>@<host>:<port>?addr=<host2>:<port2>&addr=<host3>:<port3>
-//
-// Most Option fields can be set using query parameters, with the following restrictions:
-//   - field names are mapped using snake-case conversion: to set MaxRetries, use max_retries
-//   - only scalar type fields are supported (bool, int, time.Duration)
-//   - for time.Duration fields, values must be a valid input for time.ParseDuration();
-//     additionally a plain integer as value (i.e. without unit) is interpreted as seconds
-//   - to disable a duration field, use value less than or equal to 0; to use the default
-//     value, leave the value blank or remove the parameter
-//   - only the last value is interpreted if a parameter is given multiple times
-//   - fields "network", "addr", "username" and "password" can only be set using other
-//     URL attributes (scheme, host, userinfo, resp.), query parameters using these
-//     names will be treated as unknown parameters
-//   - unknown parameter names will result in an error
-//
-// Example:
-//
-//	redis://user:password@localhost:6789?dial_timeout=3&read_timeout=6s&addr=localhost:6790&addr=localhost:6791
-//	is equivalent to:
-//	&ClusterOptions{
-//		Addr:        ["localhost:6789", "localhost:6790", "localhost:6791"]
-//		DialTimeout: 3 * time.Second, // no time unit = seconds
-//		ReadTimeout: 6 * time.Second,
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func ParseClusterURL(redisURL string) (*ClusterOptions, error) {
 	o := &ClusterOptions{}
 
@@ -225,12 +225,12 @@ func ParseClusterURL(redisURL string) (*ClusterOptions, error) {
 		return nil, err
 	}
 
-	// add base URL to the array of addresses
-	// more addresses may be added through the URL params
+	
+	
 	h, p := getHostPortWithDefaults(u)
 	o.Addrs = append(o.Addrs, net.JoinHostPort(h, p))
 
-	// setup username, password, and other configurations
+	
 	o, err = setupClusterConn(u, h, o)
 	if err != nil {
 		return nil, err
@@ -239,7 +239,7 @@ func ParseClusterURL(redisURL string) (*ClusterOptions, error) {
 	return o, nil
 }
 
-// setupClusterConn gets the username and password from the URL and the query parameters.
+
 func setupClusterConn(u *url.URL, host string, o *ClusterOptions) (*ClusterOptions, error) {
 	switch u.Scheme {
 	case "rediss":
@@ -251,7 +251,7 @@ func setupClusterConn(u *url.URL, host string, o *ClusterOptions) (*ClusterOptio
 		return nil, fmt.Errorf("redis: invalid URL scheme: %s", u.Scheme)
 	}
 
-	// retrieve the configuration from the query parameters
+	
 	o, err := setupClusterQueryParams(u, o)
 	if err != nil {
 		return nil, err
@@ -260,7 +260,7 @@ func setupClusterConn(u *url.URL, host string, o *ClusterOptions) (*ClusterOptio
 	return o, nil
 }
 
-// setupClusterQueryParams converts query parameters in u to option value in o.
+
 func setupClusterQueryParams(u *url.URL, o *ClusterOptions) (*ClusterOptions, error) {
 	q := queryOptions{q: u.Query()}
 
@@ -289,7 +289,7 @@ func setupClusterQueryParams(u *url.URL, o *ClusterOptions) (*ClusterOptions, er
 		return nil, q.err
 	}
 
-	// addr can be specified as many times as needed
+	
 	addrs := q.strings("addr")
 	for _, addr := range addrs {
 		h, p, err := net.SplitHostPort(addr)
@@ -300,7 +300,7 @@ func setupClusterQueryParams(u *url.URL, o *ClusterOptions) (*ClusterOptions, er
 		o.Addrs = append(o.Addrs, net.JoinHostPort(h, p))
 	}
 
-	// any parameters left?
+	
 	if r := q.remaining(); len(r) > 0 {
 		return nil, fmt.Errorf("redis: unexpected option: %s", strings.Join(r, ", "))
 	}
@@ -344,28 +344,28 @@ func (opt *ClusterOptions) clientOptions() *Options {
 		DisableIndentity: opt.DisableIdentity,
 		IdentitySuffix:   opt.IdentitySuffix,
 		TLSConfig:        opt.TLSConfig,
-		// If ClusterSlots is populated, then we probably have an artificial
-		// cluster whose nodes are not in clustering mode (otherwise there isn't
-		// much use for ClusterSlots config).  This means we cannot execute the
-		// READONLY command against that node -- setting readOnly to false in such
-		// situations in the options below will prevent that from happening.
+		
+		
+		
+		
+		
 		readOnly:      opt.ReadOnly && opt.ClusterSlots == nil,
 		UnstableResp3: opt.UnstableResp3,
 	}
 }
 
-//------------------------------------------------------------------------------
+
 
 type clusterNode struct {
 	Client *Client
 
-	latency    uint32 // atomic
-	generation uint32 // atomic
-	failing    uint32 // atomic
-	loaded     uint32 // atomic
+	latency    uint32 
+	generation uint32 
+	failing    uint32 
+	loaded     uint32 
 
-	// last time the latency measurement was performed for the node, stored in nanoseconds from epoch
-	lastLatencyMeasurement int64 // atomic
+	
+	lastLatencyMeasurement int64 
 }
 
 func newClusterNode(clOpt *ClusterOptions, addr string) *clusterNode {
@@ -411,8 +411,8 @@ func (n *clusterNode) updateLatency() {
 
 	var latency float64
 	if successes == 0 {
-		// If none of the pings worked, set latency to some arbitrarily high value so this node gets
-		// least priority.
+		
+		
 		latency = float64((maximumNodeLatency) / time.Microsecond)
 	} else {
 		latency = float64(dur) / float64(successes)
@@ -432,7 +432,7 @@ func (n *clusterNode) MarkAsFailing() {
 }
 
 func (n *clusterNode) Failing() bool {
-	const timeout = 15 // 15 seconds
+	const timeout = 15 
 
 	failing := atomic.LoadUint32(&n.failing)
 	if failing == 0 {
@@ -477,7 +477,7 @@ func (n *clusterNode) Loading() bool {
 		return false
 	}
 
-	// check if the node is loading
+	
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
@@ -489,7 +489,7 @@ func (n *clusterNode) Loading() bool {
 	return loading
 }
 
-//------------------------------------------------------------------------------
+
 
 type clusterNodes struct {
 	opt *ClusterOptions
@@ -501,7 +501,7 @@ type clusterNodes struct {
 	closed      bool
 	onNewNode   []func(rdb *Client)
 
-	generation uint32 // atomic
+	generation uint32 
 }
 
 func newClusterNodes(opt *ClusterOptions) *clusterNodes {
@@ -544,7 +544,7 @@ func (c *clusterNodes) Addrs() ([]string, error) {
 	var addrs []string
 
 	c.mu.RLock()
-	closed := c.closed //nolint:ifshort
+	closed := c.closed 
 	if !closed {
 		if len(c.activeAddrs) > 0 {
 			addrs = make([]string, len(c.activeAddrs))
@@ -569,7 +569,7 @@ func (c *clusterNodes) NextGeneration() uint32 {
 	return atomic.AddUint32(&c.generation, 1)
 }
 
-// GC removes unused nodes.
+
 func (c *clusterNodes) GC(generation uint32) {
 	var collected []*clusterNode
 
@@ -664,7 +664,7 @@ func (c *clusterNodes) Random() (*clusterNode, error) {
 	return c.GetOrCreate(addrs[n])
 }
 
-//------------------------------------------------------------------------------
+
 
 type clusterSlot struct {
 	start int
@@ -766,7 +766,7 @@ func replaceLoopbackHost(nodeAddr, originHost string) string {
 		return nodeAddr
 	}
 
-	// Use origin host which is not loopback and node port.
+	
 	return net.JoinHostPort(originHost, nodePort)
 }
 
@@ -809,7 +809,7 @@ func (c *clusterState) slotSlaveNode(slot int) (*clusterNode, error) {
 			}
 		}
 
-		// All slaves are loading - use master.
+		
 		return nodes[0], nil
 	}
 }
@@ -827,7 +827,7 @@ func (c *clusterState) slotClosestNode(slot int) (*clusterNode, error) {
 		minLatency            time.Duration
 	)
 
-	// setting the max possible duration as zerovalue for minlatency
+	
 	minLatency = time.Duration(math.MaxInt64)
 
 	for _, n := range nodes {
@@ -841,18 +841,18 @@ func (c *clusterState) slotClosestNode(slot int) (*clusterNode, error) {
 		}
 	}
 
-	// pick the healthly node with the lowest latency
+	
 	if !allNodesFailing && closestNonFailingNode != nil {
 		return closestNonFailingNode, nil
 	}
 
-	// if all nodes are failing, we will pick the temporarily failing node with lowest latency
+	
 	if minLatency < maximumNodeLatency && closestNode != nil {
 		internal.Logger.Printf(context.TODO(), "redis: all nodes are marked as failed, picking the temporarily failing node with lowest latency")
 		return closestNode, nil
 	}
 
-	// If all nodes are having the maximum latency(all pings are failing) - return a random node across the cluster
+	
 	internal.Logger.Printf(context.TODO(), "redis: pings to all nodes are failing, picking a random node across the cluster")
 	return c.nodes.Random()
 }
@@ -888,13 +888,13 @@ func (c *clusterState) slotNodes(slot int) []*clusterNode {
 	return nil
 }
 
-//------------------------------------------------------------------------------
+
 
 type clusterStateHolder struct {
 	load func(ctx context.Context) (*clusterState, error)
 
 	state     atomic.Value
-	reloading uint32 // atomic
+	reloading uint32 
 }
 
 func newClusterStateHolder(fn func(ctx context.Context) (*clusterState, error)) *clusterStateHolder {
@@ -948,11 +948,11 @@ func (c *clusterStateHolder) ReloadOrGet(ctx context.Context) (*clusterState, er
 	return c.Get(ctx)
 }
 
-//------------------------------------------------------------------------------
 
-// ClusterClient is a Redis Cluster client representing a pool of zero
-// or more underlying connections. It's safe for concurrent use by
-// multiple goroutines.
+
+
+
+
 type ClusterClient struct {
 	opt           *ClusterOptions
 	nodes         *clusterNodes
@@ -962,8 +962,8 @@ type ClusterClient struct {
 	hooksMixin
 }
 
-// NewClusterClient returns a Redis Cluster client as described in
-// http://redis.io/topics/cluster-spec.
+
+
 func NewClusterClient(opt *ClusterOptions) *ClusterClient {
 	if opt == nil {
 		panic("redis: NewClusterClient nil options")
@@ -989,21 +989,21 @@ func NewClusterClient(opt *ClusterOptions) *ClusterClient {
 	return c
 }
 
-// Options returns read-only Options that were used to create the client.
+
 func (c *ClusterClient) Options() *ClusterOptions {
 	return c.opt
 }
 
-// ReloadState reloads cluster state. If available it calls ClusterSlots func
-// to get cluster slots information.
+
+
 func (c *ClusterClient) ReloadState(ctx context.Context) {
 	c.state.LazyReload()
 }
 
-// Close closes the cluster client, releasing any open resources.
-//
-// It is rare to Close a ClusterClient, as the ClusterClient is meant
-// to be long-lived and shared between many goroutines.
+
+
+
+
 func (c *ClusterClient) Close() error {
 	return c.nodes.Close()
 }
@@ -1021,8 +1021,8 @@ func (c *ClusterClient) process(ctx context.Context, cmd Cmder) error {
 	var ask bool
 	var lastErr error
 	for attempt := 0; attempt <= c.opt.MaxRedirects; attempt++ {
-		// MOVED and ASK responses are not transient errors that require retry delay; they
-		// should be attempted immediately.
+		
+		
 		if attempt > 0 && !moved && !ask {
 			if err := internal.Sleep(ctx, c.retryBackoff(attempt)); err != nil {
 				return err
@@ -1048,7 +1048,7 @@ func (c *ClusterClient) process(ctx context.Context, cmd Cmder) error {
 			lastErr = node.Client.Process(ctx, cmd)
 		}
 
-		// If there is no error - we are done.
+		
 		if lastErr == nil {
 			return nil
 		}
@@ -1060,7 +1060,7 @@ func (c *ClusterClient) process(ctx context.Context, cmd Cmder) error {
 			continue
 		}
 
-		// If slave is loading - pick another node.
+		
 		if c.opt.ReadOnly && isLoadingError(lastErr) {
 			node.MarkAsFailing()
 			node = nil
@@ -1081,12 +1081,12 @@ func (c *ClusterClient) process(ctx context.Context, cmd Cmder) error {
 		}
 
 		if shouldRetry(lastErr, cmd.readTimeout() == nil) {
-			// First retry the same node.
+			
 			if attempt == 0 {
 				continue
 			}
 
-			// Second try another node.
+			
 			node.MarkAsFailing()
 			node = nil
 			continue
@@ -1101,8 +1101,8 @@ func (c *ClusterClient) OnNewNode(fn func(rdb *Client)) {
 	c.nodes.OnNewNode(fn)
 }
 
-// ForEachMaster concurrently calls the fn on each master node in the cluster.
-// It returns the first error if any.
+
+
 func (c *ClusterClient) ForEachMaster(
 	ctx context.Context,
 	fn func(ctx context.Context, client *Client) error,
@@ -1139,8 +1139,8 @@ func (c *ClusterClient) ForEachMaster(
 	}
 }
 
-// ForEachSlave concurrently calls the fn on each slave node in the cluster.
-// It returns the first error if any.
+
+
 func (c *ClusterClient) ForEachSlave(
 	ctx context.Context,
 	fn func(ctx context.Context, client *Client) error,
@@ -1177,8 +1177,8 @@ func (c *ClusterClient) ForEachSlave(
 	}
 }
 
-// ForEachShard concurrently calls the fn on each known node in the cluster.
-// It returns the first error if any.
+
+
 func (c *ClusterClient) ForEachShard(
 	ctx context.Context,
 	fn func(ctx context.Context, client *Client) error,
@@ -1221,7 +1221,7 @@ func (c *ClusterClient) ForEachShard(
 	}
 }
 
-// PoolStats returns accumulated connection pool stats.
+
 func (c *ClusterClient) PoolStats() *PoolStats {
 	var acc PoolStats
 
@@ -1293,12 +1293,7 @@ func (c *ClusterClient) loadState(ctx context.Context) (*clusterState, error) {
 		return newClusterState(c.nodes, slots, addr)
 	}
 
-	/*
-	 * No node is connectable. It's possible that all nodes' IP has changed.
-	 * Clear activeAddrs to let client be able to re-connect using the initial
-	 * setting of the addresses (e.g. [redis-cluster-0:6379, redis-cluster-1:6379]),
-	 * which might have chance to resolve domain name and get updated IP address.
-	 */
+	
 	c.nodes.mu.Lock()
 	c.nodes.activeAddrs = nil
 	c.nodes.mu.Unlock()
@@ -1513,7 +1508,7 @@ func (c *ClusterClient) checkMovedErr(
 	panic("not reached")
 }
 
-// TxPipeline acts like Pipeline, but wraps queued commands with MULTI/EXEC.
+
 func (c *ClusterClient) TxPipeline() Pipeliner {
 	pipe := Pipeline{
 		exec: func(ctx context.Context, cmds []Cmder) error {
@@ -1530,7 +1525,7 @@ func (c *ClusterClient) TxPipelined(ctx context.Context, fn func(Pipeliner) erro
 }
 
 func (c *ClusterClient) processTxPipeline(ctx context.Context, cmds []Cmder) error {
-	// Trim multi .. exec.
+	
 	cmds = cmds[1 : len(cmds)-1]
 
 	if len(cmds) == 0 {
@@ -1554,7 +1549,7 @@ func (c *ClusterClient) processTxPipeline(ctx context.Context, cmds []Cmder) err
 			break
 		}
 	default:
-		// TxPipeline does not support cross slot transaction.
+		
 		setCmdsErr(cmds, ErrCrossSlot)
 		return ErrCrossSlot
 	}
@@ -1595,8 +1590,8 @@ func (c *ClusterClient) processTxPipeline(ctx context.Context, cmds []Cmder) err
 	return cmdsFirstErr(cmds)
 }
 
-// slottedKeyedCommands returns a map of slot to commands taking into account
-// only commands that have keys.
+
+
 func (c *ClusterClient) slottedKeyedCommands(cmds []Cmder) map[int][]Cmder {
 	cmdsSlots := map[int][]Cmder{}
 
@@ -1654,7 +1649,7 @@ func (c *ClusterClient) processTxPipelineNodeConn(
 
 	return cn.WithReader(c.context(ctx), c.opt.ReadTimeout, func(rd *proto.Reader) error {
 		statusCmd := cmds[0].(*StatusCmd)
-		// Trim multi and exec.
+		
 		trimmedCmds := cmds[1 : len(cmds)-1]
 
 		if err := c.txPipelineReadQueued(
@@ -1681,7 +1676,7 @@ func (c *ClusterClient) txPipelineReadQueued(
 	cmds []Cmder,
 	failedCmds *cmdsMap,
 ) error {
-	// Parse queued replies.
+	
 	if err := statusCmd.readReply(rd); err != nil {
 		return err
 	}
@@ -1694,7 +1689,7 @@ func (c *ClusterClient) txPipelineReadQueued(
 		return err
 	}
 
-	// Parse number of replies.
+	
 	line, err := rd.ReadLine()
 	if err != nil {
 		if err == Nil {
@@ -1840,8 +1835,8 @@ func (c *ClusterClient) pubSub() *PubSub {
 	return pubsub
 }
 
-// Subscribe subscribes the client to the specified channels.
-// Channels can be omitted to create empty subscription.
+
+
 func (c *ClusterClient) Subscribe(ctx context.Context, channels ...string) *PubSub {
 	pubsub := c.pubSub()
 	if len(channels) > 0 {
@@ -1850,8 +1845,8 @@ func (c *ClusterClient) Subscribe(ctx context.Context, channels ...string) *PubS
 	return pubsub
 }
 
-// PSubscribe subscribes the client to the given patterns.
-// Patterns can be omitted to create empty subscription.
+
+
 func (c *ClusterClient) PSubscribe(ctx context.Context, channels ...string) *PubSub {
 	pubsub := c.pubSub()
 	if len(channels) > 0 {
@@ -1860,7 +1855,7 @@ func (c *ClusterClient) PSubscribe(ctx context.Context, channels ...string) *Pub
 	return pubsub
 }
 
-// SSubscribe Subscribes the client to the specified shard channels.
+
 func (c *ClusterClient) SSubscribe(ctx context.Context, channels ...string) *PubSub {
 	pubsub := c.pubSub()
 	if len(channels) > 0 {
@@ -1874,7 +1869,7 @@ func (c *ClusterClient) retryBackoff(attempt int) time.Duration {
 }
 
 func (c *ClusterClient) cmdsInfo(ctx context.Context) (map[string]*CommandInfo, error) {
-	// Try 3 random nodes.
+	
 	const nodeLimit = 3
 
 	addrs, err := c.nodes.Addrs()
@@ -1986,12 +1981,12 @@ func (c *ClusterClient) slotMasterNode(ctx context.Context, slot int) (*clusterN
 	return state.slotMasterNode(slot)
 }
 
-// SlaveForKey gets a client for a replica node to run any command on it.
-// This is especially useful if we want to run a particular lua script which has
-// only read only commands on the replica.
-// This is because other redis commands generally have a flag that points that
-// they are read only and automatically run on the replica nodes
-// if ClusterOptions.ReadOnly flag is set to true.
+
+
+
+
+
+
 func (c *ClusterClient) SlaveForKey(ctx context.Context, key string) (*Client, error) {
 	state, err := c.state.Get(ctx)
 	if err != nil {
@@ -2005,7 +2000,7 @@ func (c *ClusterClient) SlaveForKey(ctx context.Context, key string) (*Client, e
 	return node.Client, err
 }
 
-// MasterForKey return a client to the master node for a particular key.
+
 func (c *ClusterClient) MasterForKey(ctx context.Context, key string) (*Client, error) {
 	slot := hashtag.Slot(key)
 	node, err := c.slotMasterNode(ctx, slot)
@@ -2031,7 +2026,7 @@ func appendIfNotExist[T comparable](vals []T, newVal T) []T {
 	return append(vals, newVal)
 }
 
-//------------------------------------------------------------------------------
+
 
 type cmdsMap struct {
 	mu sync.Mutex

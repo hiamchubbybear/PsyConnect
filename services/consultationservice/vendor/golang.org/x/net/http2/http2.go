@@ -1,19 +1,19 @@
-// Copyright 2014 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
-// Package http2 implements the HTTP/2 protocol.
-//
-// This package is low-level and intended to be used directly by very
-// few people. Most users will use it indirectly through the automatic
-// use by the net/http package (from Go 1.6 and later).
-// For use in earlier Go versions see ConfigureServer. (Transport support
-// requires Go 1.6 or later)
-//
-// See https://http2.github.io/ for more information on HTTP/2.
-//
-// See https://http2.golang.org/ for a test server running this code.
-package http2 // import "golang.org/x/net/http2"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package http2 
 
 import (
 	"bufio"
@@ -39,13 +39,13 @@ var (
 	logFrameReads  bool
 	inTests        bool
 
-	// Enabling extended CONNECT by causes browsers to attempt to use
-	// WebSockets-over-HTTP/2. This results in problems when the server's websocket
-	// package doesn't support extended CONNECT.
-	//
-	// Disable extended CONNECT by default for now.
-	//
-	// Issue #71128.
+	
+	
+	
+	
+	
+	
+	
 	disableExtendedConnectProtocol = true
 )
 
@@ -65,22 +65,22 @@ func init() {
 }
 
 const (
-	// ClientPreface is the string that must be sent by new
-	// connections from clients.
+	
+	
 	ClientPreface = "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
 
-	// SETTINGS_MAX_FRAME_SIZE default
-	// https://httpwg.org/specs/rfc7540.html#rfc.section.6.5.2
+	
+	
 	initialMaxFrameSize = 16384
 
-	// NextProtoTLS is the NPN/ALPN protocol negotiated during
-	// HTTP/2's TLS setup.
+	
+	
 	NextProtoTLS = "h2"
 
-	// https://httpwg.org/specs/rfc7540.html#SettingValues
+	
 	initialHeaderTableSize = 4096
 
-	initialWindowSize = 65535 // 6.9.2 Initial Flow Control Window Size
+	initialWindowSize = 65535 
 
 	defaultMaxReadFrameSize = 1 << 20
 )
@@ -91,18 +91,18 @@ var (
 
 type streamState int
 
-// HTTP/2 stream states.
-//
-// See http://tools.ietf.org/html/rfc7540#section-5.1.
-//
-// For simplicity, the server code merges "reserved (local)" into
-// "half-closed (remote)". This is one less state transition to track.
-// The only downside is that we send PUSH_PROMISEs slightly less
-// liberally than allowable. More discussion here:
-// https://lists.w3.org/Archives/Public/ietf-http-wg/2016JulSep/0599.html
-//
-// "reserved (remote)" is omitted since the client code does not
-// support server push.
+
+
+
+
+
+
+
+
+
+
+
+
 const (
 	stateIdle streamState = iota
 	stateOpen
@@ -123,13 +123,13 @@ func (st streamState) String() string {
 	return stateName[st]
 }
 
-// Setting is a setting parameter: which setting it is, and its value.
+
 type Setting struct {
-	// ID is which setting is being set.
-	// See https://httpwg.org/specs/rfc7540.html#SettingFormat
+	
+	
 	ID SettingID
 
-	// Val is the value.
+	
 	Val uint32
 }
 
@@ -137,9 +137,9 @@ func (s Setting) String() string {
 	return fmt.Sprintf("[%v = %d]", s.ID, s.Val)
 }
 
-// Valid reports whether the setting is valid.
+
 func (s Setting) Valid() error {
-	// Limits and error codes from 6.5.2 Defined SETTINGS Parameters
+	
 	switch s.ID {
 	case SettingEnablePush:
 		if s.Val != 1 && s.Val != 0 {
@@ -161,8 +161,8 @@ func (s Setting) Valid() error {
 	return nil
 }
 
-// A SettingID is an HTTP/2 setting as defined in
-// https://httpwg.org/specs/rfc7540.html#iana-settings
+
+
 type SettingID uint16
 
 const (
@@ -192,15 +192,15 @@ func (s SettingID) String() string {
 	return fmt.Sprintf("UNKNOWN_SETTING_%d", uint16(s))
 }
 
-// validWireHeaderFieldName reports whether v is a valid header field
-// name (key). See httpguts.ValidHeaderName for the base rules.
-//
-// Further, http2 says:
-//
-//	"Just as in HTTP/1.x, header field names are strings of ASCII
-//	characters that are compared in a case-insensitive
-//	fashion. However, header field names MUST be converted to
-//	lowercase prior to their encoding in HTTP/2. "
+
+
+
+
+
+
+
+
+
 func validWireHeaderFieldName(v string) bool {
 	if len(v) == 0 {
 		return false
@@ -226,41 +226,41 @@ func httpCodeString(code int) string {
 	return strconv.Itoa(code)
 }
 
-// from pkg io
+
 type stringWriter interface {
 	WriteString(s string) (n int, err error)
 }
 
-// A closeWaiter is like a sync.WaitGroup but only goes 1 to 0 (open to closed).
+
 type closeWaiter chan struct{}
 
-// Init makes a closeWaiter usable.
-// It exists because so a closeWaiter value can be placed inside a
-// larger struct and have the Mutex and Cond's memory in the same
-// allocation.
+
+
+
+
 func (cw *closeWaiter) Init() {
 	*cw = make(chan struct{})
 }
 
-// Close marks the closeWaiter as closed and unblocks any waiters.
+
 func (cw closeWaiter) Close() {
 	close(cw)
 }
 
-// Wait waits for the closeWaiter to become closed.
+
 func (cw closeWaiter) Wait() {
 	<-cw
 }
 
-// bufferedWriter is a buffered writer that writes to w.
-// Its buffered writer is lazily allocated as needed, to minimize
-// idle memory usage with many connections.
+
+
+
 type bufferedWriter struct {
 	_           incomparable
-	group       synctestGroupInterface // immutable
-	conn        net.Conn               // immutable
-	bw          *bufio.Writer          // non-nil when data is buffered
-	byteTimeout time.Duration          // immutable, WriteByteTimeout
+	group       synctestGroupInterface 
+	conn        net.Conn               
+	bw          *bufio.Writer          
+	byteTimeout time.Duration          
 }
 
 func newBufferedWriter(group synctestGroupInterface, conn net.Conn, timeout time.Duration) *bufferedWriter {
@@ -271,12 +271,12 @@ func newBufferedWriter(group synctestGroupInterface, conn net.Conn, timeout time
 	}
 }
 
-// bufWriterPoolBufferSize is the size of bufio.Writer's
-// buffers created using bufWriterPool.
-//
-// TODO: pick a less arbitrary value? this is a bit under
-// (3 x typical 1500 byte MTU) at least. Other than that,
-// not much thought went into it.
+
+
+
+
+
+
 const bufWriterPoolBufferSize = 4 << 10
 
 var bufWriterPool = sync.Pool{
@@ -319,9 +319,9 @@ func (w *bufferedWriterTimeoutWriter) Write(p []byte) (n int, err error) {
 	return writeWithByteTimeout(w.group, w.conn, w.byteTimeout, p)
 }
 
-// writeWithByteTimeout writes to conn.
-// If more than timeout passes without any bytes being written to the connection,
-// the write fails.
+
+
+
 func writeWithByteTimeout(group synctestGroupInterface, conn net.Conn, timeout time.Duration, p []byte) (n int, err error) {
 	if timeout <= 0 {
 		return conn.Write(p)
@@ -337,8 +337,8 @@ func writeWithByteTimeout(group synctestGroupInterface, conn net.Conn, timeout t
 		nn, err := conn.Write(p[n:])
 		n += nn
 		if n == len(p) || nn == 0 || !errors.Is(err, os.ErrDeadlineExceeded) {
-			// Either we finished the write, made no progress, or hit the deadline.
-			// Whichever it is, we're done now.
+			
+			
 			conn.SetWriteDeadline(time.Time{})
 			return n, err
 		}
@@ -352,8 +352,8 @@ func mustUint31(v int32) uint32 {
 	return uint32(v)
 }
 
-// bodyAllowedForStatus reports whether a given response status code
-// permits a body. See RFC 7230, section 3.3.
+
+
 func bodyAllowedForStatus(status int) bool {
 	switch {
 	case status >= 100 && status <= 199:
@@ -385,17 +385,17 @@ type connectionStater interface {
 var sorterPool = sync.Pool{New: func() interface{} { return new(sorter) }}
 
 type sorter struct {
-	v []string // owned by sorter
+	v []string 
 }
 
 func (s *sorter) Len() int           { return len(s.v) }
 func (s *sorter) Swap(i, j int)      { s.v[i], s.v[j] = s.v[j], s.v[i] }
 func (s *sorter) Less(i, j int) bool { return s.v[i] < s.v[j] }
 
-// Keys returns the sorted keys of h.
-//
-// The returned slice is only valid until s used again or returned to
-// its pool.
+
+
+
+
 func (s *sorter) Keys(h http.Header) []string {
 	keys := s.v[:0]
 	for k := range h {
@@ -407,22 +407,22 @@ func (s *sorter) Keys(h http.Header) []string {
 }
 
 func (s *sorter) SortStrings(ss []string) {
-	// Our sorter works on s.v, which sorter owns, so
-	// stash it away while we sort the user's buffer.
+	
+	
 	save := s.v
 	s.v = ss
 	sort.Sort(s)
 	s.v = save
 }
 
-// incomparable is a zero-width, non-comparable type. Adding it to a struct
-// makes that struct also non-comparable, and generally doesn't add
-// any size (as long as it's first).
+
+
+
 type incomparable [0]func()
 
-// synctestGroupInterface is the methods of synctestGroup used by Server and Transport.
-// It's defined as an interface here to let us keep synctestGroup entirely test-only
-// and not a part of non-test builds.
+
+
+
 type synctestGroupInterface interface {
 	Join()
 	Now() time.Time

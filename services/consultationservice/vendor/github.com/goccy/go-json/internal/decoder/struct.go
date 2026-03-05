@@ -103,7 +103,7 @@ func (d *structDecoder) tryOptimize() {
 				d.isTriedOptimize = true
 				return
 			}
-			// already exists same key (e.g. Hello and HELLO has same lower case key
+			
 			if _, exists := conflicted[key]; exists {
 				d.isTriedOptimize = true
 				return
@@ -139,8 +139,8 @@ func (d *structDecoder) tryOptimize() {
 	}
 	sort.Strings(sortedKeys)
 
-	// By allocating one extra capacity than `maxKeyLen`,
-	// it is possible to avoid the process of comparing the index of the key with the length of the bitmap each time.
+	
+	
 	bitmapLen := maxKeyLen + 1
 	if len(sortedKeys) <= 8 {
 		keyBitmap := make([][256]uint8, bitmapLen)
@@ -169,7 +169,7 @@ func (d *structDecoder) tryOptimize() {
 	}
 }
 
-// decode from '\uXXXX'
+
 func decodeKeyCharByUnicodeRune(buf []byte, cursor int64) ([]byte, int64, error) {
 	const defaultOffset = 4
 	const surrogateOffset = 6
@@ -250,7 +250,7 @@ func decodeKeyByBitmapUint8(d *structDecoder, buf []byte, cursor int64) (int64, 
 					keyLen := cursor - start
 					cursor++
 					if keyLen < field.keyLen {
-						// early match
+						
 						return cursor, nil, nil
 					}
 					return cursor, field, nil
@@ -316,7 +316,7 @@ func decodeKeyByBitmapUint16(d *structDecoder, buf []byte, cursor int64) (int64,
 					keyLen := cursor - start
 					cursor++
 					if keyLen < field.keyLen {
-						// early match
+						
 						return cursor, nil, nil
 					}
 					return cursor, field, nil
@@ -428,7 +428,7 @@ func decodeKeyByBitmapUint8Stream(d *structDecoder, s *Stream) (*structFieldSet,
 					cursor++
 					s.cursor = cursor
 					if keyLen < field.keyLen {
-						// early match
+						
 						return nil, field.key, nil
 					}
 					return field, field.key, nil
@@ -440,7 +440,7 @@ func decodeKeyByBitmapUint8Stream(d *structDecoder, s *Stream) (*structFieldSet,
 					}
 					return nil, "", errors.ErrUnexpectedEndOfJSON("string", s.totalOffset())
 				case '\\':
-					s.cursor = cursor + 1 // skip '\' char
+					s.cursor = cursor + 1 
 					chars, err := decodeKeyCharByEscapeCharStream(s)
 					if err != nil {
 						return nil, "", err
@@ -515,7 +515,7 @@ func decodeKeyByBitmapUint16Stream(d *structDecoder, s *Stream) (*structFieldSet
 					cursor++
 					s.cursor = cursor
 					if keyLen < field.keyLen {
-						// early match
+						
 						return nil, field.key, nil
 					}
 					return field, field.key, nil
@@ -527,7 +527,7 @@ func decodeKeyByBitmapUint16Stream(d *structDecoder, s *Stream) (*structFieldSet
 					}
 					return nil, "", errors.ErrUnexpectedEndOfJSON("string", s.totalOffset())
 				case '\\':
-					s.cursor = cursor + 1 // skip '\' char
+					s.cursor = cursor + 1 
 					chars, err := decodeKeyCharByEscapeCharStream(s)
 					if err != nil {
 						return nil, "", err
@@ -557,7 +557,7 @@ func decodeKeyByBitmapUint16Stream(d *structDecoder, s *Stream) (*structFieldSet
 	}
 }
 
-// decode from '\uXXXX'
+
 func decodeKeyCharByUnicodeRuneStream(s *Stream) ([]byte, error) {
 	const defaultOffset = 4
 	const surrogateOffset = 6

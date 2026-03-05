@@ -50,7 +50,7 @@ func (uc *CreateClientUseCase) Execute(ctx context.Context, req CreateClientRequ
 		return nil, err
 	}
 
-	// Set optional fields
+	
 	client.IssueDetail = req.IssueDetail
 	client.PreferredTherapistGender = req.PreferredTherapistGender
 	client.ExperienceLevel = req.ExperienceLevel

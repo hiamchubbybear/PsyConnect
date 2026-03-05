@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2023-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package credproviders
 
@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	// ec2ProviderName provides a name of EC2 provider
+	
 	ec2ProviderName = "EC2Provider"
 
 	awsEC2URI       = "http://169.254.169.254/"
@@ -29,20 +29,20 @@ const (
 	defaultHTTPTimeout = 10 * time.Second
 )
 
-// An EC2Provider retrieves credentials from EC2 metadata.
+
 type EC2Provider struct {
 	httpClient *http.Client
 	expiration time.Time
 
-	// expiryWindow will allow the credentials to trigger refreshing prior to the credentials actually expiring.
-	// This is beneficial so expiring credentials do not cause request to fail unexpectedly due to exceptions.
-	//
-	// So a ExpiryWindow of 10s would cause calls to IsExpired() to return true
-	// 10 seconds before the credentials are actually expired.
+	
+	
+	
+	
+	
 	expiryWindow time.Duration
 }
 
-// NewEC2Provider returns a pointer to an EC2 credential provider.
+
 func NewEC2Provider(httpClient *http.Client, expiryWindow time.Duration) *EC2Provider {
 	return &EC2Provider{
 		httpClient:   httpClient,
@@ -146,7 +146,7 @@ func (e *EC2Provider) getCredentials(ctx context.Context, token string, role str
 	return v, ec2Resp.Expiration, nil
 }
 
-// RetrieveWithContext retrieves the keys from the AWS service.
+
 func (e *EC2Provider) RetrieveWithContext(ctx context.Context) (credentials.Value, error) {
 	v := credentials.Value{ProviderName: ec2ProviderName}
 
@@ -172,12 +172,12 @@ func (e *EC2Provider) RetrieveWithContext(ctx context.Context) (credentials.Valu
 	return v, nil
 }
 
-// Retrieve retrieves the keys from the AWS service.
+
 func (e *EC2Provider) Retrieve() (credentials.Value, error) {
 	return e.RetrieveWithContext(context.Background())
 }
 
-// IsExpired returns true if the credentials are expired.
+
 func (e *EC2Provider) IsExpired() bool {
 	return e.expiration.Before(time.Now())
 }

@@ -29,12 +29,12 @@ func writeBuf(buf []byte, v uint32) []byte {
 	return append(buf, byte(v>>16), byte(v>>8), byte(v))
 }
 
-// WriteUint8 write uint8 to stream
+
 func (stream *Stream) WriteUint8(val uint8) {
 	stream.buf = writeFirstBuf(stream.buf, digits[val])
 }
 
-// WriteInt8 write int8 to stream
+
 func (stream *Stream) WriteInt8(nval int8) {
 	var val uint8
 	if nval < 0 {
@@ -46,7 +46,7 @@ func (stream *Stream) WriteInt8(nval int8) {
 	stream.buf = writeFirstBuf(stream.buf, digits[val])
 }
 
-// WriteUint16 write uint16 to stream
+
 func (stream *Stream) WriteUint16(val uint16) {
 	q1 := val / 1000
 	if q1 == 0 {
@@ -59,7 +59,7 @@ func (stream *Stream) WriteUint16(val uint16) {
 	return
 }
 
-// WriteInt16 write int16 to stream
+
 func (stream *Stream) WriteInt16(nval int16) {
 	var val uint16
 	if nval < 0 {
@@ -71,7 +71,7 @@ func (stream *Stream) WriteInt16(nval int16) {
 	stream.WriteUint16(val)
 }
 
-// WriteUint32 write uint32 to stream
+
 func (stream *Stream) WriteUint32(val uint32) {
 	q1 := val / 1000
 	if q1 == 0 {
@@ -98,7 +98,7 @@ func (stream *Stream) WriteUint32(val uint32) {
 	stream.buf = writeBuf(stream.buf, digits[r1])
 }
 
-// WriteInt32 write int32 to stream
+
 func (stream *Stream) WriteInt32(nval int32) {
 	var val uint32
 	if nval < 0 {
@@ -110,7 +110,7 @@ func (stream *Stream) WriteInt32(nval int32) {
 	stream.WriteUint32(val)
 }
 
-// WriteUint64 write uint64 to stream
+
 func (stream *Stream) WriteUint64(val uint64) {
 	q1 := val / 1000
 	if q1 == 0 {
@@ -167,7 +167,7 @@ func (stream *Stream) WriteUint64(val uint64) {
 	stream.buf = writeBuf(stream.buf, digits[r1])
 }
 
-// WriteInt64 write int64 to stream
+
 func (stream *Stream) WriteInt64(nval int64) {
 	var val uint64
 	if nval < 0 {
@@ -179,12 +179,12 @@ func (stream *Stream) WriteInt64(nval int64) {
 	stream.WriteUint64(val)
 }
 
-// WriteInt write int to stream
+
 func (stream *Stream) WriteInt(val int) {
 	stream.WriteInt64(int64(val))
 }
 
-// WriteUint write uint to stream
+
 func (stream *Stream) WriteUint(val uint) {
 	stream.WriteUint64(uint64(val))
 }

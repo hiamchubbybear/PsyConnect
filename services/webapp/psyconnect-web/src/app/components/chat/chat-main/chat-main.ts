@@ -12,11 +12,13 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { Friend, Message } from '../../../models/chat.models';
-import { BookingDialogComponent } from '../../../pages/consultation/booking-dialog/booking-dialog';
+import { ConsultationSession } from '../../../models/consultation.model';
 import { ChatService } from '../../../services/chat/chat.service';
+import { SessionService } from '../../../services/consultation/session.service';
 import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 import { ChatInputComponent } from '../../../shared/ui-atoms/chat-input/chat-input.component';
@@ -62,12 +64,16 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   showScrollBottomButton = false;
 
   @Input() isTyping = false;
-  isSending = false; // Guard against duplicate sends
+  isSending = false; 
   private autoScrollPending = false;
+
+  upcomingSession: ConsultationSession | null = null;
 
   constructor(
     private chatService: ChatService,
+    private sessionService: SessionService,
     private dialog: MatDialog,
+    private router: Router,
   ) {}
 
   ngAfterViewInit(): void {
@@ -81,6 +87,37 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
         if (this.autoScrollPending) this.scrollToBottom();
       });
     }
+
+    if (changes['selectedFriend'] || changes['conversationId']) {
+      this.fetchUpcomingSession();
+    }
+  }
+
+  private fetchUpcomingSession() {
+    if (!this.selectedFriend) {
+      this.upcomingSession = null;
+      return;
+    }
+
+    this.sessionService.getAllSessions().subscribe((sessions) => {
+      const friendId = this.selectedFriend?.profileId;
+      const myId = this.currentUserId;
+      
+      const now = new Date();
+      this.upcomingSession =
+        sessions.find((s) => {
+          
+          const involveMe = s.client_id === myId || s.therapist_id === myId;
+          const involveFriend =
+            s.client_id === friendId || s.therapist_id === friendId;
+          const isParticipant = involveMe && involveFriend;
+
+          const isPending =
+            s.status === 'PENDING_PAYMENT' || s.status === 'CONFIRMED';
+          const startTime = new Date(s.start_time);
+          return isParticipant && isPending && startTime > now;
+        }) || null;
+    });
   }
   onScroll() {
     if (!this.scrollContainer) return;
@@ -102,7 +139,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       return;
     }
 
-    // Guard against multiple sends
+    
     if (this.isSending) {
       console.warn('⚠️ Already sending, ignoring duplicate');
       return;
@@ -110,7 +147,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
     this.isSending = true;
 
-    // Create optimistic message
+    
     const tempId = `temp-${Date.now()}`;
     const optimisticMsg: Message = {
       id: tempId,
@@ -124,7 +161,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       status: 'sending',
     };
 
-    // Add to messages immediately
+    
     this.messages = this.groupMessages([...this.messages, optimisticMsg]);
     this.messagesChange.emit(this.messages);
 
@@ -135,14 +172,14 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
         senderId: this.currentUserId,
       });
 
-      // Mark as sent after a short delay (WebSocket fire-and-forget)
+      
       setTimeout(() => {
         this.messages = this.messages.map((m) =>
           m.id === tempId ? { ...m, status: 'sent' as const } : m,
         );
         this.messagesChange.emit(this.messages);
 
-        // Simulate delivered after another delay
+        
         setTimeout(() => {
           this.messages = this.messages.map((m) =>
             m.id === tempId ? { ...m, status: 'delivered' as const } : m,
@@ -152,14 +189,14 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       }, 300);
     } catch (err) {
       console.error('❌ Failed to send message:', err);
-      // Mark as failed
+      
       this.messages = this.messages.map((m) =>
         m.id === tempId ? { ...m, status: 'failed' as const } : m,
       );
       this.messagesChange.emit(this.messages);
     }
 
-    // Reset guard after delay
+    
     setTimeout(() => {
       this.isSending = false;
     }, 500);
@@ -168,7 +205,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   retryMessage(failedMsg: Message) {
     if (!this.conversationId || !this.currentUserId) return;
 
-    // Update status to sending
+    
     this.messages = this.messages.map((m) =>
       m.id === failedMsg.id ? { ...m, status: 'sending' as const } : m,
     );
@@ -217,7 +254,7 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
         const enriched = olderMsgs.map((m) => this.enrichMessage(m, friend!));
 
-        // Merge and re-group all messages
+        
         const merged = [...enriched, ...this.messages];
         const grouped = this.groupMessages(merged);
 
@@ -255,13 +292,13 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   }
 
   private groupMessages(messages: Message[]): Message[] {
-    const GROUPING_THRESHOLD = 5 * 60 * 1000; // 5 minutes
+    const GROUPING_THRESHOLD = 5 * 60 * 1000; 
 
     return messages.map((msg, index) => {
       const prev = messages[index - 1];
       const next = messages[index + 1];
 
-      // Date separator logic
+      
       let showDateSeparator = false;
       let dateSeparatorText = '';
       if (!prev) {
@@ -338,17 +375,9 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
 
   bookSession() {
     if (!this.selectedFriend) return;
-    this.dialog.open(BookingDialogComponent, {
-      width: '500px',
-      panelClass: 'booking-dialog-panel',
-      data: {
-        therapist: {
-          profileId: this.selectedFriend.profileId,
-          profile_id: this.selectedFriend.profileId,
-          name: `${this.selectedFriend.firstName} ${this.selectedFriend.lastName}`,
-          avatarUri: this.selectedFriend.avatarUri,
-        },
-      },
-    });
+    this.router.navigate([
+      '/feature/consultation/book',
+      this.selectedFriend.profileId,
+    ]);
   }
 }

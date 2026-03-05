@@ -10,8 +10,8 @@ import (
 	"github.com/redis/go-redis/v9/internal/util"
 )
 
-// structMap contains the map of struct fields for target structs
-// indexed by the struct type.
+
+
 type structMap struct {
 	m sync.Map
 }
@@ -30,9 +30,9 @@ func (s *structMap) get(t reflect.Type) *structSpec {
 	return spec
 }
 
-//------------------------------------------------------------------------------
 
-// structSpec contains the list of all fields in a target struct.
+
+
 type structSpec struct {
 	m map[string]*structField
 }
@@ -60,7 +60,7 @@ func newStructSpec(t reflect.Type, fieldTag string) *structSpec {
 			continue
 		}
 
-		// Use the built-in decoder.
+		
 		kind := f.Type.Kind()
 		if kind == reflect.Pointer {
 			kind = f.Type.Elem().Kind()
@@ -71,15 +71,15 @@ func newStructSpec(t reflect.Type, fieldTag string) *structSpec {
 	return out
 }
 
-//------------------------------------------------------------------------------
 
-// structField represents a single field in a target struct.
+
+
 type structField struct {
 	index int
 	fn    decoderFunc
 }
 
-//------------------------------------------------------------------------------
+
 
 type StructValue struct {
 	spec  *structSpec

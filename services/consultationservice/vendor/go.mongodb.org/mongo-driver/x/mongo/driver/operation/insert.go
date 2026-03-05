@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Insert performs an insert operation.
+
 type Insert struct {
 	authenticator            driver.Authenticator
 	bypassDocumentValidation *bool
@@ -47,9 +47,9 @@ type Insert struct {
 	logger                   *logger.Logger
 }
 
-// InsertResult represents an insert result returned by the server.
+
 type InsertResult struct {
-	// Number of documents successfully inserted.
+	
 	N int64
 }
 
@@ -71,14 +71,14 @@ func buildInsertResult(response bsoncore.Document) (InsertResult, error) {
 	return ir, nil
 }
 
-// NewInsert constructs and returns a new Insert.
+
 func NewInsert(documents ...bsoncore.Document) *Insert {
 	return &Insert{
 		documents: documents,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (i *Insert) Result() InsertResult { return i.result }
 
 func (i *Insert) processResponse(info driver.ResponseInfo) error {
@@ -87,7 +87,7 @@ func (i *Insert) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (i *Insert) Execute(ctx context.Context) error {
 	if i.deployment == nil {
 		return errors.New("the Insert operation must have a Deployment set before Execute can be called")
@@ -138,8 +138,8 @@ func (i *Insert) command(dst []byte, desc description.SelectedServer) ([]byte, e
 	return dst, nil
 }
 
-// BypassDocumentValidation allows the operation to opt-out of document level validation. Valid
-// for server versions >= 3.2. For servers < 3.2, this setting is ignored.
+
+
 func (i *Insert) BypassDocumentValidation(bypassDocumentValidation bool) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -149,7 +149,7 @@ func (i *Insert) BypassDocumentValidation(bypassDocumentValidation bool) *Insert
 	return i
 }
 
-// Comment sets a value to help trace an operation.
+
 func (i *Insert) Comment(comment bsoncore.Value) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -159,8 +159,8 @@ func (i *Insert) Comment(comment bsoncore.Value) *Insert {
 	return i
 }
 
-// Documents adds documents to this operation that will be inserted when this operation is
-// executed.
+
+
 func (i *Insert) Documents(documents ...bsoncore.Document) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -170,8 +170,8 @@ func (i *Insert) Documents(documents ...bsoncore.Document) *Insert {
 	return i
 }
 
-// Ordered sets ordered. If true, when a write fails, the operation will return the error, when
-// false write failures do not stop execution of the operation.
+
+
 func (i *Insert) Ordered(ordered bool) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -181,7 +181,7 @@ func (i *Insert) Ordered(ordered bool) *Insert {
 	return i
 }
 
-// Session sets the session for this operation.
+
 func (i *Insert) Session(session *session.Client) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -191,7 +191,7 @@ func (i *Insert) Session(session *session.Client) *Insert {
 	return i
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (i *Insert) ClusterClock(clock *session.ClusterClock) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -201,7 +201,7 @@ func (i *Insert) ClusterClock(clock *session.ClusterClock) *Insert {
 	return i
 }
 
-// Collection sets the collection that this command will run against.
+
 func (i *Insert) Collection(collection string) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -211,7 +211,7 @@ func (i *Insert) Collection(collection string) *Insert {
 	return i
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (i *Insert) CommandMonitor(monitor *event.CommandMonitor) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -221,7 +221,7 @@ func (i *Insert) CommandMonitor(monitor *event.CommandMonitor) *Insert {
 	return i
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (i *Insert) Crypt(crypt driver.Crypt) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -231,7 +231,7 @@ func (i *Insert) Crypt(crypt driver.Crypt) *Insert {
 	return i
 }
 
-// Database sets the database to run this operation against.
+
 func (i *Insert) Database(database string) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -241,7 +241,7 @@ func (i *Insert) Database(database string) *Insert {
 	return i
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (i *Insert) Deployment(deployment driver.Deployment) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -251,7 +251,7 @@ func (i *Insert) Deployment(deployment driver.Deployment) *Insert {
 	return i
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (i *Insert) ServerSelector(selector description.ServerSelector) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -261,7 +261,7 @@ func (i *Insert) ServerSelector(selector description.ServerSelector) *Insert {
 	return i
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (i *Insert) WriteConcern(writeConcern *writeconcern.WriteConcern) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -271,8 +271,8 @@ func (i *Insert) WriteConcern(writeConcern *writeconcern.WriteConcern) *Insert {
 	return i
 }
 
-// Retry enables retryable mode for this operation. Retries are handled automatically in driver.Operation.Execute based
-// on how the operation is set.
+
+
 func (i *Insert) Retry(retry driver.RetryMode) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -282,7 +282,7 @@ func (i *Insert) Retry(retry driver.RetryMode) *Insert {
 	return i
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (i *Insert) ServerAPI(serverAPI *driver.ServerAPIOptions) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -292,7 +292,7 @@ func (i *Insert) ServerAPI(serverAPI *driver.ServerAPIOptions) *Insert {
 	return i
 }
 
-// Timeout sets the timeout for this operation.
+
 func (i *Insert) Timeout(timeout *time.Duration) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -302,7 +302,7 @@ func (i *Insert) Timeout(timeout *time.Duration) *Insert {
 	return i
 }
 
-// Logger sets the logger for this operation.
+
 func (i *Insert) Logger(logger *logger.Logger) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -312,7 +312,7 @@ func (i *Insert) Logger(logger *logger.Logger) *Insert {
 	return i
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (i *Insert) Authenticator(authenticator driver.Authenticator) *Insert {
 	if i == nil {
 		i = new(Insert)
@@ -322,7 +322,7 @@ func (i *Insert) Authenticator(authenticator driver.Authenticator) *Insert {
 	return i
 }
 
-// BypassEmptyTsReplacement sets the bypassEmptyTsReplacement to use for this operation.
+
 func (i *Insert) BypassEmptyTsReplacement(bypassEmptyTsReplacement bool) *Insert {
 	if i == nil {
 		i = new(Insert)

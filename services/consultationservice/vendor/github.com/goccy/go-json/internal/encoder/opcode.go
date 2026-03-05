@@ -28,26 +28,26 @@ const (
 )
 
 type Opcode struct {
-	Op         OpType  // operation type
-	Idx        uint32  // offset to access ptr
-	Next       *Opcode // next opcode
-	End        *Opcode // array/slice/struct/map end
-	NextField  *Opcode // next struct field
-	Key        string  // struct field key
-	Offset     uint32  // offset size from struct header
-	PtrNum     uint8   // pointer number: e.g. double pointer is 2.
+	Op         OpType  
+	Idx        uint32  
+	Next       *Opcode 
+	End        *Opcode 
+	NextField  *Opcode 
+	Key        string  
+	Offset     uint32  
+	PtrNum     uint8   
 	NumBitSize uint8
 	Flags      OpFlags
 
-	Type       *runtime.Type // go type
-	Jmp        *CompiledCode // for recursive call
-	FieldQuery *FieldQuery   // field query for Interface / MarshalJSON / MarshalText
-	ElemIdx    uint32        // offset to access array/slice elem
-	Length     uint32        // offset to access slice length or array length
-	Indent     uint32        // indent number
-	Size       uint32        // array/slice elem size
-	DisplayIdx uint32        // opcode index
-	DisplayKey string        // key text to display
+	Type       *runtime.Type 
+	Jmp        *CompiledCode 
+	FieldQuery *FieldQuery   
+	ElemIdx    uint32        
+	Length     uint32        
+	Indent     uint32        
+	Size       uint32        
+	DisplayIdx uint32        
+	DisplayKey string        
 }
 
 func (c *Opcode) Validate() error {

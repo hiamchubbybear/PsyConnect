@@ -34,10 +34,10 @@ func NewReactionRepo() ReactionRepository {
 func (r *reactionRepo) AddReaction(ctx context.Context, reaction *model.Reaction) error {
 	reaction.CreatedAt = time.Now()
 
-	// Check if user already reacted
+	
 	existing, err := r.GetUserReaction(ctx, reaction.PostID, reaction.UserID)
 	if err == nil && existing != nil {
-		// Update existing reaction
+		
 		filter := bson.M{"post_id": reaction.PostID, "user_id": reaction.UserID}
 		update := bson.M{"$set": bson.M{"reaction_type": reaction.ReactionType}}
 		_, err = r.collection.UpdateOne(ctx, filter, update)

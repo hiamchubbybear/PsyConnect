@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2023-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package mongo
 
@@ -19,28 +19,28 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// SearchIndexView is a type that can be used to create, drop, list and update search indexes on a collection. A SearchIndexView for
-// a collection can be created by a call to Collection.SearchIndexes().
+
+
 type SearchIndexView struct {
 	coll *Collection
 }
 
-// SearchIndexModel represents a new search index to be created.
+
 type SearchIndexModel struct {
-	// A document describing the definition for the search index. It cannot be nil.
-	// See https://www.mongodb.com/docs/atlas/atlas-search/create-index/ for reference.
+	
+	
 	Definition interface{}
 
-	// The search index options.
+	
 	Options *options.SearchIndexesOptions
 }
 
-// List executes a listSearchIndexes command and returns a cursor over the search indexes in the collection.
-//
-// The name parameter specifies the index name. A nil pointer matches all indexes.
-//
-// The opts parameter can be used to specify options for this operation (see the options.ListSearchIndexesOptions
-// documentation).
+
+
+
+
+
+
 func (siv SearchIndexView) List(
 	ctx context.Context,
 	searchIdxOpts *options.SearchIndexesOptions,
@@ -63,8 +63,8 @@ func (siv SearchIndexView) List(
 	return siv.coll.Aggregate(ctx, Pipeline{{{"$listSearchIndexes", index}}}, aggregateOpts...)
 }
 
-// CreateOne executes a createSearchIndexes command to create a search index on the collection and returns the name of the new
-// search index. See the SearchIndexView.CreateMany documentation for more information and an example.
+
+
 func (siv SearchIndexView) CreateOne(
 	ctx context.Context,
 	model SearchIndexModel,
@@ -78,13 +78,13 @@ func (siv SearchIndexView) CreateOne(
 	return names[0], nil
 }
 
-// CreateMany executes a createSearchIndexes command to create multiple search indexes on the collection and returns
-// the names of the new search indexes.
-//
-// For each SearchIndexModel in the models parameter, the index name can be specified.
-//
-// The opts parameter can be used to specify options for this operation (see the options.CreateSearchIndexesOptions
-// documentation).
+
+
+
+
+
+
+
 func (siv SearchIndexView) CreateMany(
 	ctx context.Context,
 	models []SearchIndexModel,
@@ -160,13 +160,13 @@ func (siv SearchIndexView) CreateMany(
 	return names, nil
 }
 
-// DropOne executes a dropSearchIndexes operation to drop a search index on the collection.
-//
-// The name parameter should be the name of the search index to drop. If the name is "*", ErrMultipleIndexDrop will be returned
-// without running the command because doing so would drop all search indexes.
-//
-// The opts parameter can be used to specify options for this operation (see the options.DropSearchIndexOptions
-// documentation).
+
+
+
+
+
+
+
 func (siv SearchIndexView) DropOne(
 	ctx context.Context,
 	name string,
@@ -207,14 +207,14 @@ func (siv SearchIndexView) DropOne(
 	return err
 }
 
-// UpdateOne executes a updateSearchIndex operation to update a search index on the collection.
-//
-// The name parameter should be the name of the search index to update.
-//
-// The definition parameter is a document describing the definition for the search index. It cannot be nil.
-//
-// The opts parameter can be used to specify options for this operation (see the options.UpdateSearchIndexOptions
-// documentation).
+
+
+
+
+
+
+
+
 func (siv SearchIndexView) UpdateOne(
 	ctx context.Context,
 	name string,

@@ -9,36 +9,36 @@ import (
 	metadataAPI "github.com/segmentio/kafka-go/protocol/metadata"
 )
 
-// MetadataRequest represents a request sent to a kafka broker to retrieve its
-// cluster metadata.
+
+
 type MetadataRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// The list of topics to retrieve metadata for.
+	
 	Topics []string
 }
 
-// MetadatResponse represents a response from a kafka broker to a metadata
-// request.
+
+
 type MetadataResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// Name of the kafka cluster that client retrieved metadata from.
+	
 	ClusterID string
 
-	// The broker which is currently the controller for the cluster.
+	
 	Controller Broker
 
-	// The list of brokers registered to the cluster.
+	
 	Brokers []Broker
 
-	// The list of topics available on the cluster.
+	
 	Topics []Topic
 }
 
-// Metadata sends a metadata request to a kafka broker and returns the response.
+
 func (c *Client) Metadata(ctx context.Context, req *MetadataRequest) (*MetadataResponse, error) {
 	m, err := c.roundTrip(ctx, req.Addr, &metadataAPI.Request{
 		TopicNames: req.Topics,
@@ -114,9 +114,9 @@ func (r topicMetadataRequestV1) size() int32 {
 }
 
 func (r topicMetadataRequestV1) writeTo(wb *writeBuffer) {
-	// communicate nil-ness to the broker by passing -1 as the array length.
-	// for this particular request, the broker interpets a zero length array
-	// as a request for no topics whereas a nil array is for all topics.
+	
+	
+	
 	if r == nil {
 		wb.writeArrayLen(-1)
 	} else {
@@ -210,9 +210,9 @@ func (r topicMetadataRequestV6) size() int32 {
 }
 
 func (r topicMetadataRequestV6) writeTo(wb *writeBuffer) {
-	// communicate nil-ness to the broker by passing -1 as the array length.
-	// for this particular request, the broker interpets a zero length array
-	// as a request for no topics whereas a nil array is for all topics.
+	
+	
+	
 	if r.Topics == nil {
 		wb.writeArrayLen(-1)
 	} else {

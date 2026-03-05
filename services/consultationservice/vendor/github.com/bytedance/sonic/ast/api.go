@@ -1,21 +1,7 @@
 //go:build (amd64 && go1.17 && !go1.25) || (arm64 && go1.20 && !go1.25)
 // +build amd64,go1.17,!go1.25 arm64,go1.20,!go1.25
 
-/*
- * Copyright 2022 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package ast
 
@@ -45,26 +31,26 @@ func quote(buf *[]byte, val string) {
     nb := len(val)
     b := (*rt.GoSlice)(unsafe.Pointer(buf))
 
-    // input buffer
+    
     for nb > 0 {
-        // output buffer
+        
         dp := unsafe.Pointer(uintptr(b.Ptr) + uintptr(b.Len))
         dn := b.Cap - b.Len
-        // call native.Quote, dn is byte count it outputs
+        
         ret := native.Quote(sp, nb, dp, &dn, 0)
-        // update *buf length
+        
         b.Len += dn
 
-        // no need more output
+        
         if ret >= 0 {
             break
         }
 
-        // double buf size
+        
         *b = rt.GrowSlice(typeByte, *b, b.Cap*2)
-        // ret is the complement of consumed input
+        
         ret = ^ret
-        // update input buffer
+        
         nb -= ret
         sp = unsafe.Pointer(uintptr(sp) + uintptr(ret))
     }
@@ -102,7 +88,7 @@ func (self *Parser) skip() (int, types.ParsingError) {
 }
 
 func (self *Node) encodeInterface(buf *[]byte) error {
-    //WARN: NOT compatible with json.Encoder
+    
     return encoder.EncodeInto(buf, self.packAny(), encoder.NoEncoderNewline)
 }
 

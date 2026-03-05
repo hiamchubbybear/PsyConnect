@@ -35,7 +35,7 @@ func init() {
 	})
 }
 
-// AES128CBC is the 128-bit key AES cipher in CBC mode.
+
 var AES128CBC = cipherWithBlock{
 	ivSize:   aes.BlockSize,
 	keySize:  16,
@@ -43,7 +43,7 @@ var AES128CBC = cipherWithBlock{
 	oid:      oidAES128CBC,
 }
 
-// AES128GCM is the 128-bit key AES cipher in GCM mode.
+
 var AES128GCM = cipherWithBlock{
 	ivSize:   aes.BlockSize,
 	keySize:  16,
@@ -51,7 +51,7 @@ var AES128GCM = cipherWithBlock{
 	oid:      oidAES128GCM,
 }
 
-// AES192CBC is the 192-bit key AES cipher in CBC mode.
+
 var AES192CBC = cipherWithBlock{
 	ivSize:   aes.BlockSize,
 	keySize:  24,
@@ -59,7 +59,7 @@ var AES192CBC = cipherWithBlock{
 	oid:      oidAES192CBC,
 }
 
-// AES192GCM is the 912-bit key AES cipher in GCM mode.
+
 var AES192GCM = cipherWithBlock{
 	ivSize:   aes.BlockSize,
 	keySize:  24,
@@ -67,7 +67,7 @@ var AES192GCM = cipherWithBlock{
 	oid:      oidAES192GCM,
 }
 
-// AES256CBC is the 256-bit key AES cipher in CBC mode.
+
 var AES256CBC = cipherWithBlock{
 	ivSize:   aes.BlockSize,
 	keySize:  32,
@@ -75,7 +75,7 @@ var AES256CBC = cipherWithBlock{
 	oid:      oidAES256CBC,
 }
 
-// AES256GCM is the 256-bit key AES cipher in GCM mode.
+
 var AES256GCM = cipherWithBlock{
 	ivSize:   aes.BlockSize,
 	keySize:  32,

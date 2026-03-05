@@ -2,19 +2,19 @@ package jsoniter
 
 import "fmt"
 
-// ReadNil reads a json object as nil and
-// returns whether it's a nil or not
+
+
 func (iter *Iterator) ReadNil() (ret bool) {
 	c := iter.nextToken()
 	if c == 'n' {
-		iter.skipThreeBytes('u', 'l', 'l') // null
+		iter.skipThreeBytes('u', 'l', 'l') 
 		return true
 	}
 	iter.unreadByte()
 	return false
 }
 
-// ReadBool reads a json object as BoolValue
+
 func (iter *Iterator) ReadBool() (ret bool) {
 	c := iter.nextToken()
 	if c == 't' {
@@ -29,16 +29,16 @@ func (iter *Iterator) ReadBool() (ret bool) {
 	return
 }
 
-// SkipAndReturnBytes skip next JSON element, and return its content as []byte.
-// The []byte can be kept, it is a copy of data.
+
+
 func (iter *Iterator) SkipAndReturnBytes() []byte {
 	iter.startCapture(iter.head)
 	iter.Skip()
 	return iter.stopCapture()
 }
 
-// SkipAndAppendBytes skips next JSON element and appends its content to
-// buffer, returning the result.
+
+
 func (iter *Iterator) SkipAndAppendBytes(buf []byte) []byte {
 	iter.startCaptureTo(buf, iter.head)
 	iter.Skip()
@@ -68,18 +68,18 @@ func (iter *Iterator) stopCapture() []byte {
 	return append(captured, remaining...)
 }
 
-// Skip skips a json object and positions to relatively the next json object
+
 func (iter *Iterator) Skip() {
 	c := iter.nextToken()
 	switch c {
 	case '"':
 		iter.skipString()
 	case 'n':
-		iter.skipThreeBytes('u', 'l', 'l') // null
+		iter.skipThreeBytes('u', 'l', 'l') 
 	case 't':
-		iter.skipThreeBytes('r', 'u', 'e') // true
+		iter.skipThreeBytes('r', 'u', 'e') 
 	case 'f':
-		iter.skipFourBytes('a', 'l', 's', 'e') // false
+		iter.skipFourBytes('a', 'l', 's', 'e') 
 	case '0':
 		iter.unreadByte()
 		iter.ReadFloat32()

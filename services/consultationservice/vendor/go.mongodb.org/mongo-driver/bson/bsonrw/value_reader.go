@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsonrw
 
@@ -27,16 +27,16 @@ var vrPool = sync.Pool{
 	},
 }
 
-// BSONValueReaderPool is a pool for ValueReaders that read BSON.
-//
-// Deprecated: BSONValueReaderPool will not be supported in Go Driver 2.0.
+
+
+
 type BSONValueReaderPool struct {
 	pool sync.Pool
 }
 
-// NewBSONValueReaderPool instantiates a new BSONValueReaderPool.
-//
-// Deprecated: BSONValueReaderPool will not be supported in Go Driver 2.0.
+
+
+
 func NewBSONValueReaderPool() *BSONValueReaderPool {
 	return &BSONValueReaderPool{
 		pool: sync.Pool{
@@ -47,19 +47,19 @@ func NewBSONValueReaderPool() *BSONValueReaderPool {
 	}
 }
 
-// Get retrieves a ValueReader from the pool and uses src as the underlying BSON.
-//
-// Deprecated: BSONValueReaderPool will not be supported in Go Driver 2.0.
+
+
+
 func (bvrp *BSONValueReaderPool) Get(src []byte) ValueReader {
 	vr := bvrp.pool.Get().(*valueReader)
 	vr.reset(src)
 	return vr
 }
 
-// Put inserts a ValueReader into the pool. If the ValueReader is not a BSON ValueReader nothing
-// is inserted into the pool and ok will be false.
-//
-// Deprecated: BSONValueReaderPool will not be supported in Go Driver 2.0.
+
+
+
+
 func (bvrp *BSONValueReaderPool) Put(vr ValueReader) (ok bool) {
 	bvr, ok := vr.(*valueReader)
 	if !ok {
@@ -71,10 +71,10 @@ func (bvrp *BSONValueReaderPool) Put(vr ValueReader) (ok bool) {
 	return true
 }
 
-// ErrEOA is the error returned when the end of a BSON array has been reached.
+
 var ErrEOA = errors.New("end of array")
 
-// ErrEOD is the error returned when the end of a BSON document has been reached.
+
 var ErrEOD = errors.New("end of document")
 
 type vrState struct {
@@ -83,7 +83,7 @@ type vrState struct {
 	end   int64
 }
 
-// valueReader is for reading BSON values.
+
 type valueReader struct {
 	offset int64
 	d      []byte
@@ -92,18 +92,18 @@ type valueReader struct {
 	frame int64
 }
 
-// NewBSONDocumentReader returns a ValueReader using b for the underlying BSON
-// representation. Parameter b must be a BSON Document.
+
+
 func NewBSONDocumentReader(b []byte) ValueReader {
-	// TODO(skriptble): There's a lack of symmetry between the reader and writer, since the reader takes a []byte while the
-	// TODO writer takes an io.Writer. We should have two versions of each, one that takes a []byte and one that takes an
-	// TODO io.Reader or io.Writer. The []byte version will need to return a thing that can return the finished []byte since
-	// TODO it might be reallocated when appended to.
+	
+	
+	
+	
 	return newValueReader(b)
 }
 
-// NewBSONValueReader returns a ValueReader that starts in the Value mode instead of in top
-// level document mode. This enables the creation of a ValueReader for a single BSON value.
+
+
 func NewBSONValueReader(t bsontype.Type, val []byte) ValueReader {
 	stack := make([]vrState, 1, 5)
 	stack[0] = vrState{
@@ -139,10 +139,10 @@ func (vr *valueReader) reset(b []byte) {
 }
 
 func (vr *valueReader) advanceFrame() {
-	if vr.frame+1 >= int64(len(vr.stack)) { // We need to grow the stack
+	if vr.frame+1 >= int64(len(vr.stack)) { 
 		length := len(vr.stack)
 		if length+1 >= cap(vr.stack) {
-			// double it
+			
 			buf := make([]vrState, 2*cap(vr.stack)+1)
 			copy(buf, vr.stack)
 			vr.stack = buf
@@ -151,7 +151,7 @@ func (vr *valueReader) advanceFrame() {
 	}
 	vr.frame++
 
-	// Clean the stack
+	
 	vr.stack[vr.frame].mode = 0
 	vr.stack[vr.frame].vType = 0
 	vr.stack[vr.frame].end = 0
@@ -218,7 +218,7 @@ func (vr *valueReader) pop() {
 	case mElement, mValue:
 		vr.frame--
 	case mDocument, mArray, mCodeWithScope:
-		vr.frame -= 2 // we pop twice to jump over the vrElement: vrDocument -> vrElement -> vrDocument/TopLevel/etc...
+		vr.frame -= 2 
 	}
 }
 
@@ -269,12 +269,12 @@ func (vr *valueReader) nextElementLength() (int32, error) {
 		length, err = vr.peekLength()
 	case bsontype.Binary:
 		length, err = vr.peekLength()
-		length += 4 + 1 // binary length + subtype byte
+		length += 4 + 1 
 	case bsontype.Boolean:
 		length = 1
 	case bsontype.DBPointer:
 		length, err = vr.peekLength()
-		length += 4 + 12 // string length + ObjectID length
+		length += 4 + 12 
 	case bsontype.DateTime, bsontype.Double, bsontype.Int64, bsontype.Timestamp:
 		length = 8
 	case bsontype.Decimal128:
@@ -379,7 +379,7 @@ func (vr *valueReader) ReadBinary() (b []byte, btype byte, err error) {
 		return nil, 0, err
 	}
 
-	// Check length in case it is an old binary without a length.
+	
 	if btype == 0x02 && length > 4 {
 		length, err = vr.readLength()
 		if err != nil {
@@ -391,8 +391,8 @@ func (vr *valueReader) ReadBinary() (b []byte, btype byte, err error) {
 	if err != nil {
 		return nil, 0, err
 	}
-	// Make a copy of the returned byte slice because it's just a subslice from the valueReader's
-	// buffer and is not safe to return in the unmarshaled value.
+	
+	
 	cp := make([]byte, len(b))
 	copy(cp, b)
 
@@ -421,7 +421,7 @@ func (vr *valueReader) ReadBoolean() (bool, error) {
 func (vr *valueReader) ReadDocument() (DocumentReader, error) {
 	switch vr.stack[vr.frame].mode {
 	case mTopLevel:
-		// read size
+		
 		size, err := vr.readLength()
 		if err != nil {
 			return nil, err
@@ -474,8 +474,8 @@ func (vr *valueReader) ReadCodeWithScope() (code string, dr DocumentReader, err 
 		return "", nil, err
 	}
 
-	// The total length should equal:
-	// 4 (total length) + strLength + 4 (the length of str itself) + (document length)
+	
+	
 	componentsLength := int64(4+strLength+4) + size
 	if int64(totalLength) != componentsLength {
 		return "", nil, fmt.Errorf(
@@ -747,9 +747,9 @@ func (vr *valueReader) ReadValue() (ValueReader, error) {
 	return vr, nil
 }
 
-// readBytes reads length bytes from the valueReader starting at the current offset. Note that the
-// returned byte slice is a subslice from the valueReader buffer and must be converted or copied
-// before returning in an unmarshaled value.
+
+
+
 func (vr *valueReader) readBytes(length int32) ([]byte, error) {
 	if length < 0 {
 		return nil, fmt.Errorf("invalid length: %d", length)
@@ -808,7 +808,7 @@ func (vr *valueReader) readCString() (string, error) {
 		return "", io.EOF
 	}
 	start := vr.offset
-	// idx does not include the null byte
+	
 	vr.offset += int64(idx) + 1
 	return string(vr.d[start : start+int64(idx)]), nil
 }

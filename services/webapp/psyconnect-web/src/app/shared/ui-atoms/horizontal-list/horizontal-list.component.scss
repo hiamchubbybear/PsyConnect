@@ -58,12 +58,12 @@
     scroll-snap-type: x mandatory;
 
     &::-webkit-scrollbar {
-      display: none; // Hiding scrollbar for cleaner look, user uses nav buttons
+      display: none; 
     }
 
-    // Direct children should align but we can't enforce styles on projected content easily without ViewEncapsulation.None or deep selectors.
-    // Assuming projected content handles its own sizing or flex behavior.
-    // Users should ensure children have `flex: 0 0 auto` if they want them to not shrink.
+    
+    
+    
 
     ::ng-deep > * {
       scroll-snap-align: start;

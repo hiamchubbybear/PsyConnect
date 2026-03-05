@@ -1,29 +1,29 @@
-// Copyright 2019+ Klaus Post. All rights reserved.
-// License information can be found in the LICENSE file.
-// Based on work by Yann Collet, released under BSD License.
+
+
+
 
 package zstd
 
 import "fmt"
 
 const (
-	betterLongTableBits = 19                       // Bits used in the long match table
-	betterLongTableSize = 1 << betterLongTableBits // Size of the table
-	betterLongLen       = 8                        // Bytes used for table hash
+	betterLongTableBits = 19                       
+	betterLongTableSize = 1 << betterLongTableBits 
+	betterLongLen       = 8                        
 
-	// Note: Increasing the short table bits or making the hash shorter
-	// can actually lead to compression degradation since it will 'steal' more from the
-	// long match table and match offsets are quite big.
-	// This greatly depends on the type of input.
-	betterShortTableBits = 13                        // Bits used in the short match table
-	betterShortTableSize = 1 << betterShortTableBits // Size of the table
-	betterShortLen       = 5                         // Bytes used for table hash
+	
+	
+	
+	
+	betterShortTableBits = 13                        
+	betterShortTableSize = 1 << betterShortTableBits 
+	betterShortLen       = 5                         
 
-	betterLongTableShardCnt  = 1 << (betterLongTableBits - dictShardBits)    // Number of shards in the table
-	betterLongTableShardSize = betterLongTableSize / betterLongTableShardCnt // Size of an individual shard
+	betterLongTableShardCnt  = 1 << (betterLongTableBits - dictShardBits)    
+	betterLongTableShardSize = betterLongTableSize / betterLongTableShardCnt 
 
-	betterShortTableShardCnt  = 1 << (betterShortTableBits - dictShardBits)     // Number of shards in the table
-	betterShortTableShardSize = betterShortTableSize / betterShortTableShardCnt // Size of an individual shard
+	betterShortTableShardCnt  = 1 << (betterShortTableBits - dictShardBits)     
+	betterShortTableShardSize = betterShortTableSize / betterShortTableShardCnt 
 )
 
 type prevEntry struct {
@@ -31,12 +31,12 @@ type prevEntry struct {
 	prev   int32
 }
 
-// betterFastEncoder uses 2 tables, one for short matches (5 bytes) and one for long matches.
-// The long match table contains the previous entry with the same hash,
-// effectively making it a "chain" of length 2.
-// When we find a long match we choose between the two values and select the longest.
-// When we find a short match, after checking the long, we check if we can find a long at n+1
-// and that it is longer (lazy matching).
+
+
+
+
+
+
 type betterFastEncoder struct {
 	fastBase
 	table     [betterShortTableSize]tableEntry
@@ -52,16 +52,16 @@ type betterFastEncoderDict struct {
 	allDirty             bool
 }
 
-// Encode improves compression...
+
 func (e *betterFastEncoder) Encode(blk *blockEnc, src []byte) {
 	const (
-		// Input margin is the number of bytes we read (8)
-		// and the maximum we will read ahead (2)
+		
+		
 		inputMargin            = 8 + 2
 		minNonLiteralBlockSize = 16
 	)
 
-	// Protect against e.cur wraparound.
+	
 	for e.cur >= e.bufferReset-int32(len(e.hist)) {
 		if len(e.hist) == 0 {
 			e.table = [betterShortTableSize]tableEntry{}
@@ -69,7 +69,7 @@ func (e *betterFastEncoder) Encode(blk *blockEnc, src []byte) {
 			e.cur = e.maxMatchOff
 			break
 		}
-		// Shift down everything in the table that isn't already too far away.
+		
 		minOff := e.cur + int32(len(e.hist)) - e.maxMatchOff
 		for i := range e.table[:] {
 			v := e.table[i].offset
@@ -112,20 +112,20 @@ func (e *betterFastEncoder) Encode(blk *blockEnc, src []byte) {
 		return
 	}
 
-	// Override src
+	
 	src = e.hist
 	sLimit := int32(len(src)) - inputMargin
-	// stepSize is the number of bytes to skip on every main loop iteration.
-	// It should be >= 1.
+	
+	
 	const stepSize = 1
 
 	const kSearchStrength = 9
 
-	// nextEmit is where in src the next emitLiteral should start from.
+	
 	nextEmit := s
 	cv := load6432(src, s)
 
-	// Relative offsets
+	
 	offset1 := int32(blk.recentOffsets[0])
 	offset2 := int32(blk.recentOffsets[1])
 
@@ -143,7 +143,7 @@ func (e *betterFastEncoder) Encode(blk *blockEnc, src []byte) {
 encodeLoop:
 	for {
 		var t int32
-		// We allow the encoder to optionally turn off repeat offsets across blocks
+		
 		canRepeat := len(blk.sequences) > 2
 		var matched int32
 
@@ -165,17 +165,17 @@ encodeLoop:
 
 			if canRepeat {
 				if repIndex >= 0 && load3232(src, repIndex) == uint32(cv>>(repOff*8)) {
-					// Consider history as well.
+					
 					var seq seq
 					lenght := 4 + e.matchlen(s+4+repOff, repIndex+4, src)
 
 					seq.matchLen = uint32(lenght - zstdMinMatch)
 
-					// We might be able to match backwards.
-					// Extend as long as we can.
+					
+					
 					start := s + repOff
-					// We end the search early, so we don't risk 0 literals
-					// and have to do special offset treatment.
+					
+					
 					startLimit := nextEmit + 1
 
 					tMin := s - e.maxMatchOff
@@ -189,14 +189,14 @@ encodeLoop:
 					}
 					addLiterals(&seq, start)
 
-					// rep 0
+					
 					seq.offset = 1
 					if debugSequences {
 						println("repeat sequence", seq, "next s:", s)
 					}
 					blk.sequences = append(blk.sequences, seq)
 
-					// Index match start+1 (long) -> s - 1
+					
 					index0 := s + repOff
 					s += lenght + repOff
 
@@ -208,7 +208,7 @@ encodeLoop:
 						}
 						break encodeLoop
 					}
-					// Index skipped...
+					
 					for index0 < s-1 {
 						cv0 := load6432(src, index0)
 						cv1 := cv0 >> 8
@@ -223,21 +223,21 @@ encodeLoop:
 				}
 				const repOff2 = 1
 
-				// We deviate from the reference encoder and also check offset 2.
-				// Still slower and not much better, so disabled.
-				// repIndex = s - offset2 + repOff2
+				
+				
+				
 				if false && repIndex >= 0 && load6432(src, repIndex) == load6432(src, s+repOff) {
-					// Consider history as well.
+					
 					var seq seq
 					lenght := 8 + e.matchlen(s+8+repOff2, repIndex+8, src)
 
 					seq.matchLen = uint32(lenght - zstdMinMatch)
 
-					// We might be able to match backwards.
-					// Extend as long as we can.
+					
+					
 					start := s + repOff2
-					// We end the search early, so we don't risk 0 literals
-					// and have to do special offset treatment.
+					
+					
 					startLimit := nextEmit + 1
 
 					tMin := s - e.maxMatchOff
@@ -251,7 +251,7 @@ encodeLoop:
 					}
 					addLiterals(&seq, start)
 
-					// rep 2
+					
 					seq.offset = 2
 					if debugSequences {
 						println("repeat sequence 2", seq, "next s:", s)
@@ -269,7 +269,7 @@ encodeLoop:
 						break encodeLoop
 					}
 
-					// Index skipped...
+					
 					for index0 < s-1 {
 						cv0 := load6432(src, index0)
 						cv1 := cv0 >> 8
@@ -280,18 +280,18 @@ encodeLoop:
 						index0 += 2
 					}
 					cv = load6432(src, s)
-					// Swap offsets
+					
 					offset1, offset2 = offset2, offset1
 					continue
 				}
 			}
-			// Find the offsets of our two matches.
+			
 			coffsetL := candidateL.offset - e.cur
 			coffsetLP := candidateL.prev - e.cur
 
-			// Check if we have a long match.
+			
 			if s-coffsetL < e.maxMatchOff && cv == load6432(src, coffsetL) {
-				// Found a long match, at least 8 bytes.
+				
 				matched = e.matchlen(s+8, coffsetL+8, src) + 8
 				t = coffsetL
 				if debugAsserts && s <= t {
@@ -305,7 +305,7 @@ encodeLoop:
 				}
 
 				if s-coffsetLP < e.maxMatchOff && cv == load6432(src, coffsetLP) {
-					// Found a long match, at least 8 bytes.
+					
 					prevMatch := e.matchlen(s+8, coffsetLP+8, src) + 8
 					if prevMatch > matched {
 						matched = prevMatch
@@ -324,9 +324,9 @@ encodeLoop:
 				break
 			}
 
-			// Check if we have a long match on prev.
+			
 			if s-coffsetLP < e.maxMatchOff && cv == load6432(src, coffsetLP) {
-				// Found a long match, at least 8 bytes.
+				
 				matched = e.matchlen(s+8, coffsetLP+8, src) + 8
 				t = coffsetLP
 				if debugAsserts && s <= t {
@@ -343,22 +343,22 @@ encodeLoop:
 
 			coffsetS := candidateS.offset - e.cur
 
-			// Check if we have a short match.
+			
 			if s-coffsetS < e.maxMatchOff && uint32(cv) == candidateS.val {
-				// found a regular match
+				
 				matched = e.matchlen(s+4, coffsetS+4, src) + 4
 
-				// See if we can find a long match at s+1
+				
 				const checkAt = 1
 				cv := load6432(src, s+checkAt)
 				nextHashL = hashLen(cv, betterLongTableBits, betterLongLen)
 				candidateL = e.longTable[nextHashL]
 				coffsetL = candidateL.offset - e.cur
 
-				// We can store it, since we have at least a 4 byte match.
+				
 				e.longTable[nextHashL] = prevEntry{offset: s + checkAt + e.cur, prev: candidateL.offset}
 				if s-coffsetL < e.maxMatchOff && cv == load6432(src, coffsetL) {
-					// Found a long match, at least 8 bytes.
+					
 					matchedNext := e.matchlen(s+8+checkAt, coffsetL+8, src) + 8
 					if matchedNext > matched {
 						t = coffsetL
@@ -371,10 +371,10 @@ encodeLoop:
 					}
 				}
 
-				// Check prev long...
+				
 				coffsetL = candidateL.prev - e.cur
 				if s-coffsetL < e.maxMatchOff && cv == load6432(src, coffsetL) {
-					// Found a long match, at least 8 bytes.
+					
 					matchedNext := e.matchlen(s+8+checkAt, coffsetL+8, src) + 8
 					if matchedNext > matched {
 						t = coffsetL
@@ -402,7 +402,7 @@ encodeLoop:
 				break
 			}
 
-			// No match found, move forward in input.
+			
 			s += stepSize + ((s - nextEmit) >> (kSearchStrength - 1))
 			if s >= sLimit {
 				break encodeLoop
@@ -410,12 +410,12 @@ encodeLoop:
 			cv = load6432(src, s)
 		}
 
-		// Try to find a better match by searching for a long match at the end of the current best match
+		
 		if s+matched < sLimit {
-			// Allow some bytes at the beginning to mismatch.
-			// Sweet spot is around 3 bytes, but depends on input.
-			// The skipped bytes are tested in Extend backwards,
-			// and still picked up as part of the match if they do.
+			
+			
+			
+			
 			const skipBeginning = 3
 
 			nextHashL := hashLen(load6432(src, s+matched), betterLongTableBits, betterLongLen)
@@ -424,7 +424,7 @@ encodeLoop:
 			candidateL := e.longTable[nextHashL]
 			coffsetL := candidateL.offset - e.cur - matched + skipBeginning
 			if coffsetL >= 0 && coffsetL < s2 && s2-coffsetL < e.maxMatchOff && cv == load3232(src, coffsetL) {
-				// Found a long match, at least 4 bytes.
+				
 				matchedNext := e.matchlen(s2+4, coffsetL+4, src) + 4
 				if matchedNext > matched {
 					t = coffsetL
@@ -436,11 +436,11 @@ encodeLoop:
 				}
 			}
 
-			// Check prev long...
+			
 			if true {
 				coffsetL = candidateL.prev - e.cur - matched + skipBeginning
 				if coffsetL >= 0 && coffsetL < s2 && s2-coffsetL < e.maxMatchOff && cv == load3232(src, coffsetL) {
-					// Found a long match, at least 4 bytes.
+					
 					matchedNext := e.matchlen(s2+4, coffsetL+4, src) + 4
 					if matchedNext > matched {
 						t = coffsetL
@@ -453,7 +453,7 @@ encodeLoop:
 				}
 			}
 		}
-		// A match has been found. Update recent offsets.
+		
 		offset2 = offset1
 		offset1 = s - t
 
@@ -465,10 +465,10 @@ encodeLoop:
 			panic("invalid offset")
 		}
 
-		// Extend the n-byte match as long as possible.
+		
 		l := matched
 
-		// Extend backwards
+		
 		tMin := s - e.maxMatchOff
 		if tMin < 0 {
 			tMin = 0
@@ -479,7 +479,7 @@ encodeLoop:
 			l++
 		}
 
-		// Write our sequence
+		
 		var seq seq
 		seq.litLen = uint32(s - nextEmit)
 		seq.matchLen = uint32(l - zstdMinMatch)
@@ -497,7 +497,7 @@ encodeLoop:
 			break encodeLoop
 		}
 
-		// Index match start+1 (long) -> s - 1
+		
 		index0 := s - l + 1
 		for index0 < s-1 {
 			cv0 := load6432(src, index0)
@@ -514,20 +514,20 @@ encodeLoop:
 			continue
 		}
 
-		// Check offset 2
+		
 		for {
 			o2 := s - offset2
 			if load3232(src, o2) != uint32(cv) {
-				// Do regular search
+				
 				break
 			}
 
-			// Store this, since we have it.
+			
 			nextHashL := hashLen(cv, betterLongTableBits, betterLongLen)
 			nextHashS := hashLen(cv, betterShortTableBits, betterShortLen)
 
-			// We have at least 4 byte match.
-			// No need to check backwards. We come straight from a match
+			
+			
 			l := 4 + e.matchlen(s+4, o2+4, src)
 
 			e.longTable[nextHashL] = prevEntry{offset: s + e.cur, prev: e.longTable[nextHashL].offset}
@@ -535,7 +535,7 @@ encodeLoop:
 			seq.matchLen = uint32(l) - zstdMinMatch
 			seq.litLen = 0
 
-			// Since litlen is always 0, this is offset 1.
+			
 			seq.offset = 1
 			s += l
 			nextEmit = s
@@ -544,10 +544,10 @@ encodeLoop:
 			}
 			blk.sequences = append(blk.sequences, seq)
 
-			// Swap offset 1 and 2.
+			
 			offset1, offset2 = offset2, offset1
 			if s >= sLimit {
-				// Finished
+				
 				break encodeLoop
 			}
 			cv = load6432(src, s)
@@ -565,24 +565,24 @@ encodeLoop:
 	}
 }
 
-// EncodeNoHist will encode a block with no history and no following blocks.
-// Most notable difference is that src will not be copied for history and
-// we do not need to check for max match length.
+
+
+
 func (e *betterFastEncoder) EncodeNoHist(blk *blockEnc, src []byte) {
 	e.ensureHist(len(src))
 	e.Encode(blk, src)
 }
 
-// Encode improves compression...
+
 func (e *betterFastEncoderDict) Encode(blk *blockEnc, src []byte) {
 	const (
-		// Input margin is the number of bytes we read (8)
-		// and the maximum we will read ahead (2)
+		
+		
 		inputMargin            = 8 + 2
 		minNonLiteralBlockSize = 16
 	)
 
-	// Protect against e.cur wraparound.
+	
 	for e.cur >= e.bufferReset-int32(len(e.hist)) {
 		if len(e.hist) == 0 {
 			for i := range e.table[:] {
@@ -595,7 +595,7 @@ func (e *betterFastEncoderDict) Encode(blk *blockEnc, src []byte) {
 			e.allDirty = true
 			break
 		}
-		// Shift down everything in the table that isn't already too far away.
+		
 		minOff := e.cur + int32(len(e.hist)) - e.maxMatchOff
 		for i := range e.table[:] {
 			v := e.table[i].offset
@@ -639,20 +639,20 @@ func (e *betterFastEncoderDict) Encode(blk *blockEnc, src []byte) {
 		return
 	}
 
-	// Override src
+	
 	src = e.hist
 	sLimit := int32(len(src)) - inputMargin
-	// stepSize is the number of bytes to skip on every main loop iteration.
-	// It should be >= 1.
+	
+	
 	const stepSize = 1
 
 	const kSearchStrength = 9
 
-	// nextEmit is where in src the next emitLiteral should start from.
+	
 	nextEmit := s
 	cv := load6432(src, s)
 
-	// Relative offsets
+	
 	offset1 := int32(blk.recentOffsets[0])
 	offset2 := int32(blk.recentOffsets[1])
 
@@ -670,7 +670,7 @@ func (e *betterFastEncoderDict) Encode(blk *blockEnc, src []byte) {
 encodeLoop:
 	for {
 		var t int32
-		// We allow the encoder to optionally turn off repeat offsets across blocks
+		
 		canRepeat := len(blk.sequences) > 2
 		var matched int32
 
@@ -694,17 +694,17 @@ encodeLoop:
 
 			if canRepeat {
 				if repIndex >= 0 && load3232(src, repIndex) == uint32(cv>>(repOff*8)) {
-					// Consider history as well.
+					
 					var seq seq
 					lenght := 4 + e.matchlen(s+4+repOff, repIndex+4, src)
 
 					seq.matchLen = uint32(lenght - zstdMinMatch)
 
-					// We might be able to match backwards.
-					// Extend as long as we can.
+					
+					
 					start := s + repOff
-					// We end the search early, so we don't risk 0 literals
-					// and have to do special offset treatment.
+					
+					
 					startLimit := nextEmit + 1
 
 					tMin := s - e.maxMatchOff
@@ -718,14 +718,14 @@ encodeLoop:
 					}
 					addLiterals(&seq, start)
 
-					// rep 0
+					
 					seq.offset = 1
 					if debugSequences {
 						println("repeat sequence", seq, "next s:", s)
 					}
 					blk.sequences = append(blk.sequences, seq)
 
-					// Index match start+1 (long) -> s - 1
+					
 					index0 := s + repOff
 					s += lenght + repOff
 
@@ -737,7 +737,7 @@ encodeLoop:
 						}
 						break encodeLoop
 					}
-					// Index skipped...
+					
 					for index0 < s-1 {
 						cv0 := load6432(src, index0)
 						cv1 := cv0 >> 8
@@ -755,21 +755,21 @@ encodeLoop:
 				}
 				const repOff2 = 1
 
-				// We deviate from the reference encoder and also check offset 2.
-				// Still slower and not much better, so disabled.
-				// repIndex = s - offset2 + repOff2
+				
+				
+				
 				if false && repIndex >= 0 && load6432(src, repIndex) == load6432(src, s+repOff) {
-					// Consider history as well.
+					
 					var seq seq
 					lenght := 8 + e.matchlen(s+8+repOff2, repIndex+8, src)
 
 					seq.matchLen = uint32(lenght - zstdMinMatch)
 
-					// We might be able to match backwards.
-					// Extend as long as we can.
+					
+					
 					start := s + repOff2
-					// We end the search early, so we don't risk 0 literals
-					// and have to do special offset treatment.
+					
+					
 					startLimit := nextEmit + 1
 
 					tMin := s - e.maxMatchOff
@@ -783,7 +783,7 @@ encodeLoop:
 					}
 					addLiterals(&seq, start)
 
-					// rep 2
+					
 					seq.offset = 2
 					if debugSequences {
 						println("repeat sequence 2", seq, "next s:", s)
@@ -801,7 +801,7 @@ encodeLoop:
 						break encodeLoop
 					}
 
-					// Index skipped...
+					
 					for index0 < s-1 {
 						cv0 := load6432(src, index0)
 						cv1 := cv0 >> 8
@@ -815,18 +815,18 @@ encodeLoop:
 						index0 += 2
 					}
 					cv = load6432(src, s)
-					// Swap offsets
+					
 					offset1, offset2 = offset2, offset1
 					continue
 				}
 			}
-			// Find the offsets of our two matches.
+			
 			coffsetL := candidateL.offset - e.cur
 			coffsetLP := candidateL.prev - e.cur
 
-			// Check if we have a long match.
+			
 			if s-coffsetL < e.maxMatchOff && cv == load6432(src, coffsetL) {
-				// Found a long match, at least 8 bytes.
+				
 				matched = e.matchlen(s+8, coffsetL+8, src) + 8
 				t = coffsetL
 				if debugAsserts && s <= t {
@@ -840,7 +840,7 @@ encodeLoop:
 				}
 
 				if s-coffsetLP < e.maxMatchOff && cv == load6432(src, coffsetLP) {
-					// Found a long match, at least 8 bytes.
+					
 					prevMatch := e.matchlen(s+8, coffsetLP+8, src) + 8
 					if prevMatch > matched {
 						matched = prevMatch
@@ -859,9 +859,9 @@ encodeLoop:
 				break
 			}
 
-			// Check if we have a long match on prev.
+			
 			if s-coffsetLP < e.maxMatchOff && cv == load6432(src, coffsetLP) {
-				// Found a long match, at least 8 bytes.
+				
 				matched = e.matchlen(s+8, coffsetLP+8, src) + 8
 				t = coffsetLP
 				if debugAsserts && s <= t {
@@ -878,23 +878,23 @@ encodeLoop:
 
 			coffsetS := candidateS.offset - e.cur
 
-			// Check if we have a short match.
+			
 			if s-coffsetS < e.maxMatchOff && uint32(cv) == candidateS.val {
-				// found a regular match
+				
 				matched = e.matchlen(s+4, coffsetS+4, src) + 4
 
-				// See if we can find a long match at s+1
+				
 				const checkAt = 1
 				cv := load6432(src, s+checkAt)
 				nextHashL = hashLen(cv, betterLongTableBits, betterLongLen)
 				candidateL = e.longTable[nextHashL]
 				coffsetL = candidateL.offset - e.cur
 
-				// We can store it, since we have at least a 4 byte match.
+				
 				e.longTable[nextHashL] = prevEntry{offset: s + checkAt + e.cur, prev: candidateL.offset}
 				e.markLongShardDirty(nextHashL)
 				if s-coffsetL < e.maxMatchOff && cv == load6432(src, coffsetL) {
-					// Found a long match, at least 8 bytes.
+					
 					matchedNext := e.matchlen(s+8+checkAt, coffsetL+8, src) + 8
 					if matchedNext > matched {
 						t = coffsetL
@@ -907,10 +907,10 @@ encodeLoop:
 					}
 				}
 
-				// Check prev long...
+				
 				coffsetL = candidateL.prev - e.cur
 				if s-coffsetL < e.maxMatchOff && cv == load6432(src, coffsetL) {
-					// Found a long match, at least 8 bytes.
+					
 					matchedNext := e.matchlen(s+8+checkAt, coffsetL+8, src) + 8
 					if matchedNext > matched {
 						t = coffsetL
@@ -938,21 +938,21 @@ encodeLoop:
 				break
 			}
 
-			// No match found, move forward in input.
+			
 			s += stepSize + ((s - nextEmit) >> (kSearchStrength - 1))
 			if s >= sLimit {
 				break encodeLoop
 			}
 			cv = load6432(src, s)
 		}
-		// Try to find a better match by searching for a long match at the end of the current best match
+		
 		if s+matched < sLimit {
 			nextHashL := hashLen(load6432(src, s+matched), betterLongTableBits, betterLongLen)
 			cv := load3232(src, s)
 			candidateL := e.longTable[nextHashL]
 			coffsetL := candidateL.offset - e.cur - matched
 			if coffsetL >= 0 && coffsetL < s && s-coffsetL < e.maxMatchOff && cv == load3232(src, coffsetL) {
-				// Found a long match, at least 4 bytes.
+				
 				matchedNext := e.matchlen(s+4, coffsetL+4, src) + 4
 				if matchedNext > matched {
 					t = coffsetL
@@ -963,11 +963,11 @@ encodeLoop:
 				}
 			}
 
-			// Check prev long...
+			
 			if true {
 				coffsetL = candidateL.prev - e.cur - matched
 				if coffsetL >= 0 && coffsetL < s && s-coffsetL < e.maxMatchOff && cv == load3232(src, coffsetL) {
-					// Found a long match, at least 4 bytes.
+					
 					matchedNext := e.matchlen(s+4, coffsetL+4, src) + 4
 					if matchedNext > matched {
 						t = coffsetL
@@ -979,7 +979,7 @@ encodeLoop:
 				}
 			}
 		}
-		// A match has been found. Update recent offsets.
+		
 		offset2 = offset1
 		offset1 = s - t
 
@@ -991,10 +991,10 @@ encodeLoop:
 			panic("invalid offset")
 		}
 
-		// Extend the n-byte match as long as possible.
+		
 		l := matched
 
-		// Extend backwards
+		
 		tMin := s - e.maxMatchOff
 		if tMin < 0 {
 			tMin = 0
@@ -1005,7 +1005,7 @@ encodeLoop:
 			l++
 		}
 
-		// Write our sequence
+		
 		var seq seq
 		seq.litLen = uint32(s - nextEmit)
 		seq.matchLen = uint32(l - zstdMinMatch)
@@ -1023,7 +1023,7 @@ encodeLoop:
 			break encodeLoop
 		}
 
-		// Index match start+1 (long) -> s - 1
+		
 		index0 := s - l + 1
 		for index0 < s-1 {
 			cv0 := load6432(src, index0)
@@ -1043,20 +1043,20 @@ encodeLoop:
 			continue
 		}
 
-		// Check offset 2
+		
 		for {
 			o2 := s - offset2
 			if load3232(src, o2) != uint32(cv) {
-				// Do regular search
+				
 				break
 			}
 
-			// Store this, since we have it.
+			
 			nextHashL := hashLen(cv, betterLongTableBits, betterLongLen)
 			nextHashS := hashLen(cv, betterShortTableBits, betterShortLen)
 
-			// We have at least 4 byte match.
-			// No need to check backwards. We come straight from a match
+			
+			
 			l := 4 + e.matchlen(s+4, o2+4, src)
 
 			e.longTable[nextHashL] = prevEntry{offset: s + e.cur, prev: e.longTable[nextHashL].offset}
@@ -1066,7 +1066,7 @@ encodeLoop:
 			seq.matchLen = uint32(l) - zstdMinMatch
 			seq.litLen = 0
 
-			// Since litlen is always 0, this is offset 1.
+			
 			seq.offset = 1
 			s += l
 			nextEmit = s
@@ -1075,10 +1075,10 @@ encodeLoop:
 			}
 			blk.sequences = append(blk.sequences, seq)
 
-			// Swap offset 1 and 2.
+			
 			offset1, offset2 = offset2, offset1
 			if s >= sLimit {
-				// Finished
+				
 				break encodeLoop
 			}
 			cv = load6432(src, s)
@@ -1096,7 +1096,7 @@ encodeLoop:
 	}
 }
 
-// ResetDict will reset and set a dictionary if not nil
+
 func (e *betterFastEncoder) Reset(d *dict, singleBlock bool) {
 	e.resetBase(d, singleBlock)
 	if d != nil {
@@ -1104,13 +1104,13 @@ func (e *betterFastEncoder) Reset(d *dict, singleBlock bool) {
 	}
 }
 
-// ResetDict will reset and set a dictionary if not nil
+
 func (e *betterFastEncoderDict) Reset(d *dict, singleBlock bool) {
 	e.resetBase(d, singleBlock)
 	if d == nil {
 		return
 	}
-	// Init or copy dict table
+	
 	if len(e.dictTable) != len(e.table) || d.id != e.lastDictID {
 		if len(e.dictTable) != len(e.table) {
 			e.dictTable = make([]tableEntry, len(e.table))
@@ -1120,10 +1120,10 @@ func (e *betterFastEncoderDict) Reset(d *dict, singleBlock bool) {
 			const hashLog = betterShortTableBits
 
 			cv := load6432(d.content, i-e.maxMatchOff)
-			nextHash := hashLen(cv, hashLog, betterShortLen)      // 0 -> 4
-			nextHash1 := hashLen(cv>>8, hashLog, betterShortLen)  // 1 -> 5
-			nextHash2 := hashLen(cv>>16, hashLog, betterShortLen) // 2 -> 6
-			nextHash3 := hashLen(cv>>24, hashLog, betterShortLen) // 3 -> 7
+			nextHash := hashLen(cv, hashLog, betterShortLen)      
+			nextHash1 := hashLen(cv>>8, hashLog, betterShortLen)  
+			nextHash2 := hashLen(cv>>16, hashLog, betterShortLen) 
+			nextHash3 := hashLen(cv>>24, hashLog, betterShortLen) 
 			e.dictTable[nextHash] = tableEntry{
 				val:    uint32(cv),
 				offset: i,
@@ -1145,7 +1145,7 @@ func (e *betterFastEncoderDict) Reset(d *dict, singleBlock bool) {
 		e.allDirty = true
 	}
 
-	// Init or copy dict table
+	
 	if len(e.dictLongTable) != len(e.longTable) || d.id != e.lastDictID {
 		if len(e.dictLongTable) != len(e.longTable) {
 			e.dictLongTable = make([]prevEntry, len(e.longTable))
@@ -1159,7 +1159,7 @@ func (e *betterFastEncoderDict) Reset(d *dict, singleBlock bool) {
 			}
 
 			end := int32(len(d.content)) - 8 + e.maxMatchOff
-			off := 8 // First to read
+			off := 8 
 			for i := e.maxMatchOff + 1; i < end; i++ {
 				cv = cv>>8 | (uint64(d.content[off]) << 56)
 				h := hashLen(cv, betterLongTableBits, betterLongLen)
@@ -1174,7 +1174,7 @@ func (e *betterFastEncoderDict) Reset(d *dict, singleBlock bool) {
 		e.allDirty = true
 	}
 
-	// Reset table to initial state
+	
 	{
 		dirtyShardCnt := 0
 		if !e.allDirty {

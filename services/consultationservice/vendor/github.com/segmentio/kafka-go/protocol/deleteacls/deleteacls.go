@@ -7,8 +7,8 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	Filters []RequestFilter `kafka:"min=v0,max=v3"`
@@ -21,8 +21,8 @@ func (r *Request) Broker(cluster protocol.Cluster) (protocol.Broker, error) {
 }
 
 type RequestFilter struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	ResourceTypeFilter        int8   `kafka:"min=v0,max=v3"`
@@ -35,8 +35,8 @@ type RequestFilter struct {
 }
 
 type Response struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	ThrottleTimeMs int32          `kafka:"min=v0,max=v3"`
@@ -46,8 +46,8 @@ type Response struct {
 func (r *Response) ApiKey() protocol.ApiKey { return protocol.DeleteAcls }
 
 type FilterResult struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	ErrorCode    int16         `kafka:"min=v0,max=v3"`
@@ -56,8 +56,8 @@ type FilterResult struct {
 }
 
 type MatchingACL struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	ErrorCode           int16  `kafka:"min=v0,max=v3"`

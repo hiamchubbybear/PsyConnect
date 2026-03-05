@@ -39,9 +39,9 @@ func readInt64(r *bufio.Reader, sz int, v *int64) (int, error) {
 }
 
 func readVarInt(r *bufio.Reader, sz int, v *int64) (remain int, err error) {
-	// Optimistically assume that most of the time, there will be data buffered
-	// in the reader. If this is not the case, the buffer will be refilled after
-	// consuming zero bytes from the input.
+	
+	
+	
 	input, _ := r.Peek(r.Buffered())
 	x := uint64(0)
 	s := uint(0)
@@ -63,17 +63,17 @@ func readVarInt(r *bufio.Reader, sz int, v *int64) (remain int, err error) {
 			s += 7
 		}
 
-		// Make room in the input buffer to load more data from the underlying
-		// stream. The x and s variables are left untouched, ensuring that the
-		// varint decoding can continue on the next loop iteration.
+		
+		
+		
 		n, _ := r.Discard(len(input))
 		sz -= n
 		if sz == 0 {
 			return 0, errShortRead
 		}
 
-		// Fill the buffer: ask for one more byte, but in practice the reader
-		// will load way more from the underlying stream.
+		
+		
 		if _, err := r.Peek(1); err != nil {
 			if errors.Is(err, io.EOF) {
 				err = errShortRead
@@ -81,8 +81,8 @@ func readVarInt(r *bufio.Reader, sz int, v *int64) (remain int, err error) {
 			return sz, err
 		}
 
-		// Grab as many bytes as possible from the buffer, then go on to the
-		// next loop iteration which is going to consume it.
+		
+		
 		input, _ = r.Peek(r.Buffered())
 	}
 }
@@ -321,16 +321,16 @@ func readFetchResponseHeaderV2(r *bufio.Reader, size int) (throttle int32, water
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if n != 1 {
 		err = fmt.Errorf("1 kafka topic was expected in the fetch response but the client received %d", n)
 		return
 	}
 
-	// We ignore the topic name because we've requests messages for a single
-	// topic, unless there's a bug in the kafka server we will have received
-	// the name of the topic that we requested.
+	
+	
+	
 	if remain, err = discardString(r, remain); err != nil {
 		return
 	}
@@ -339,8 +339,8 @@ func readFetchResponseHeaderV2(r *bufio.Reader, size int) (throttle int32, water
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if n != 1 {
 		err = fmt.Errorf("1 kafka partition was expected in the fetch response but the client received %d", n)
 		return
@@ -355,8 +355,8 @@ func readFetchResponseHeaderV2(r *bufio.Reader, size int) (throttle int32, water
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if remain != int(p.MessageSetSize) {
 		err = fmt.Errorf("the size of the message set in a fetch response doesn't match the number of remaining bytes (message set size = %d, remaining bytes = %d)", p.MessageSetSize, remain)
 		return
@@ -390,16 +390,16 @@ func readFetchResponseHeaderV5(r *bufio.Reader, size int) (throttle int32, water
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if n != 1 {
 		err = fmt.Errorf("1 kafka topic was expected in the fetch response but the client received %d", n)
 		return
 	}
 
-	// We ignore the topic name because we've requests messages for a single
-	// topic, unless there's a bug in the kafka server we will have received
-	// the name of the topic that we requested.
+	
+	
+	
 	if remain, err = discardString(r, remain); err != nil {
 		return
 	}
@@ -408,8 +408,8 @@ func readFetchResponseHeaderV5(r *bufio.Reader, size int) (throttle int32, water
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if n != 1 {
 		err = fmt.Errorf("1 kafka partition was expected in the fetch response but the client received %d", n)
 		return
@@ -445,8 +445,8 @@ func readFetchResponseHeaderV5(r *bufio.Reader, size int) (throttle int32, water
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if remain != int(messageSetSize) {
 		err = fmt.Errorf("the size of the message set in a fetch response doesn't match the number of remaining bytes (message set size = %d, remaining bytes = %d)", messageSetSize, remain)
 		return
@@ -494,16 +494,16 @@ func readFetchResponseHeaderV10(r *bufio.Reader, size int) (throttle int32, wate
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if n != 1 {
 		err = fmt.Errorf("1 kafka topic was expected in the fetch response but the client received %d", n)
 		return
 	}
 
-	// We ignore the topic name because we've requests messages for a single
-	// topic, unless there's a bug in the kafka server we will have received
-	// the name of the topic that we requested.
+	
+	
+	
 	if remain, err = discardString(r, remain); err != nil {
 		return
 	}
@@ -512,8 +512,8 @@ func readFetchResponseHeaderV10(r *bufio.Reader, size int) (throttle int32, wate
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if n != 1 {
 		err = fmt.Errorf("1 kafka partition was expected in the fetch response but the client received %d", n)
 		return
@@ -549,8 +549,8 @@ func readFetchResponseHeaderV10(r *bufio.Reader, size int) (throttle int32, wate
 		return
 	}
 
-	// This error should never trigger, unless there's a bug in the kafka client
-	// or server.
+	
+	
 	if remain != int(messageSetSize) {
 		err = fmt.Errorf("the size of the message set in a fetch response doesn't match the number of remaining bytes (message set size = %d, remaining bytes = %d)", messageSetSize, remain)
 		return

@@ -6,10 +6,10 @@ func init() {
 	protocol.Register(&Request{}, &Response{})
 }
 
-// Detailed API definition: https://kafka.apache.org/protocol#The_Messages_Heartbeat
+
 type Request struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v4,max=v4,tag"`
 
 	GroupID         string `kafka:"min=v0,max=v4"`
@@ -23,8 +23,8 @@ func (r *Request) ApiKey() protocol.ApiKey {
 }
 
 type Response struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v4,max=v4,tag"`
 
 	ErrorCode      int16 `kafka:"min=v0,max=v4"`

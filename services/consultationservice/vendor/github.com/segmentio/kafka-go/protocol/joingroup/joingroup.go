@@ -7,8 +7,8 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v6,max=v7,tag"`
 
 	GroupID            string            `kafka:"min=v0,max=v5|min=v6,max=v7,compact"`
@@ -21,8 +21,8 @@ type Request struct {
 }
 
 type RequestProtocol struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v6,max=v7,tag"`
 
 	Name     string `kafka:"min=v0,max=v5|min=v6,max=v7,compact"`
@@ -38,8 +38,8 @@ func (r *Request) Group() string { return r.GroupID }
 var _ protocol.GroupMessage = (*Request)(nil)
 
 type Response struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v6,max=v7,tag"`
 
 	ThrottleTimeMS int32            `kafka:"min=v2,max=v7"`
@@ -53,8 +53,8 @@ type Response struct {
 }
 
 type ResponseMember struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v6,max=v7,tag"`
 
 	MemberID        string `kafka:"min=v0,max=v5|min=v6,max=v7,compact"`

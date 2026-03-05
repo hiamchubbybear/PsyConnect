@@ -354,7 +354,7 @@ func (c cmdable) Copy(ctx context.Context, sourceKey, destKey string, db int, re
 	return cmd
 }
 
-//------------------------------------------------------------------------------
+
 
 func (c cmdable) Scan(ctx context.Context, cursor uint64, match string, count int64) *ScanCmd {
 	args := []interface{}{"scan", cursor}

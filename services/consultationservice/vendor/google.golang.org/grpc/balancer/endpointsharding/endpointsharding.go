@@ -1,28 +1,12 @@
-/*
- *
- * Copyright 2024 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 
-// Package endpointsharding implements a load balancing policy that manages
-// homogeneous child policies each owning a single endpoint.
-//
-// # Experimental
-//
-// Notice: This package is EXPERIMENTAL and may be changed or removed in a
-// later release.
+
+
+
+
+
+
+
+
 package endpointsharding
 
 import (
@@ -37,35 +21,35 @@ import (
 	"google.golang.org/grpc/resolver"
 )
 
-// ChildState is the balancer state of a child along with the endpoint which
-// identifies the child balancer.
+
+
 type ChildState struct {
 	Endpoint resolver.Endpoint
 	State    balancer.State
 
-	// Balancer exposes only the ExitIdler interface of the child LB policy.
-	// Other methods of the child policy are called only by endpointsharding.
+	
+	
 	Balancer balancer.ExitIdler
 }
 
-// Options are the options to configure the behaviour of the
-// endpointsharding balancer.
+
+
 type Options struct {
-	// DisableAutoReconnect allows the balancer to keep child balancer in the
-	// IDLE state until they are explicitly triggered to exit using the
-	// ChildState obtained from the endpointsharding picker. When set to false,
-	// the endpointsharding balancer will automatically call ExitIdle on child
-	// connections that report IDLE.
+	
+	
+	
+	
+	
 	DisableAutoReconnect bool
 }
 
-// ChildBuilderFunc creates a new balancer with the ClientConn. It has the same
-// type as the balancer.Builder.Build method.
+
+
 type ChildBuilderFunc func(cc balancer.ClientConn, opts balancer.BuildOptions) balancer.Balancer
 
-// NewBalancer returns a load balancing policy that manages homogeneous child
-// policies each owning a single endpoint. The endpointsharding balancer
-// forwards the LoadBalancingConfig in ClientConn state updates to its children.
+
+
+
 func NewBalancer(cc balancer.ClientConn, opts balancer.BuildOptions, childBuilder ChildBuilderFunc, esOpts Options) balancer.Balancer {
 	es := &endpointSharding{
 		cc:           cc,
@@ -77,39 +61,39 @@ func NewBalancer(cc balancer.ClientConn, opts balancer.BuildOptions, childBuilde
 	return es
 }
 
-// endpointSharding is a balancer that wraps child balancers. It creates a child
-// balancer with child config for every unique Endpoint received. It updates the
-// child states on any update from parent or child.
+
+
+
 type endpointSharding struct {
 	cc           balancer.ClientConn
 	bOpts        balancer.BuildOptions
 	esOpts       Options
 	childBuilder ChildBuilderFunc
 
-	// childMu synchronizes calls to any single child. It must be held for all
-	// calls into a child. To avoid deadlocks, do not acquire childMu while
-	// holding mu.
+	
+	
+	
 	childMu  sync.Mutex
-	children atomic.Pointer[resolver.EndpointMap] // endpoint -> *balancerWrapper
+	children atomic.Pointer[resolver.EndpointMap] 
 
-	// inhibitChildUpdates is set during UpdateClientConnState/ResolverError
-	// calls (calls to children will each produce an update, only want one
-	// update).
+	
+	
+	
 	inhibitChildUpdates atomic.Bool
 
-	// mu synchronizes access to the state stored in balancerWrappers in the
-	// children field. mu must not be held during calls into a child since
-	// synchronous calls back from the child may require taking mu, causing a
-	// deadlock. To avoid deadlocks, do not acquire childMu while holding mu.
+	
+	
+	
+	
 	mu sync.Mutex
 }
 
-// UpdateClientConnState creates a child for new endpoints and deletes children
-// for endpoints that are no longer present. It also updates all the children,
-// and sends a single synchronous update of the childrens' aggregated state at
-// the end of the UpdateClientConnState operation. If any endpoint has no
-// addresses it will ignore that endpoint. Otherwise, returns first error found
-// from a child, but fully processes the new update.
+
+
+
+
+
+
 func (es *endpointSharding) UpdateClientConnState(state balancer.ClientConnState) error {
 	es.childMu.Lock()
 	defer es.childMu.Unlock()
@@ -124,17 +108,17 @@ func (es *endpointSharding) UpdateClientConnState(state balancer.ClientConnState
 	children := es.children.Load()
 	newChildren := resolver.NewEndpointMap()
 
-	// Update/Create new children.
+	
 	for _, endpoint := range state.ResolverState.Endpoints {
 		if _, ok := newChildren.Get(endpoint); ok {
-			// Endpoint child was already created, continue to avoid duplicate
-			// update.
+			
+			
 			continue
 		}
 		var childBalancer *balancerWrapper
 		if val, ok := children.Get(endpoint); ok {
 			childBalancer = val.(*balancerWrapper)
-			// Endpoint attributes may have changed, update the stored endpoint.
+			
 			es.mu.Lock()
 			childBalancer.childState.Endpoint = endpoint
 			es.mu.Unlock()
@@ -155,14 +139,14 @@ func (es *endpointSharding) UpdateClientConnState(state balancer.ClientConnState
 				Attributes: state.ResolverState.Attributes,
 			},
 		}); err != nil && ret == nil {
-			// Return first error found, and always commit full processing of
-			// updating children. If desired to process more specific errors
-			// across all endpoints, caller should make these specific
-			// validations, this is a current limitation for simplicity sake.
+			
+			
+			
+			
 			ret = err
 		}
 	}
-	// Delete old children that are no longer present.
+	
 	for _, e := range children.Keys() {
 		child, _ := children.Get(e)
 		if _, ok := newChildren.Get(e); !ok {
@@ -176,9 +160,9 @@ func (es *endpointSharding) UpdateClientConnState(state balancer.ClientConnState
 	return ret
 }
 
-// ResolverError forwards the resolver error to all of the endpointSharding's
-// children and sends a single synchronous update of the childStates at the end
-// of the ResolverError operation.
+
+
+
 func (es *endpointSharding) ResolverError(err error) {
 	es.childMu.Lock()
 	defer es.childMu.Unlock()
@@ -194,7 +178,7 @@ func (es *endpointSharding) ResolverError(err error) {
 }
 
 func (es *endpointSharding) UpdateSubConnState(balancer.SubConn, balancer.SubConnState) {
-	// UpdateSubConnState is deprecated.
+	
 }
 
 func (es *endpointSharding) Close() {
@@ -206,9 +190,9 @@ func (es *endpointSharding) Close() {
 	}
 }
 
-// updateState updates this component's state. It sends the aggregated state,
-// and a picker with round robin behavior with all the child states present if
-// needed.
+
+
+
 func (es *endpointSharding) updateState() {
 	if es.inhibitChildUpdates.Load() {
 		return
@@ -235,13 +219,13 @@ func (es *endpointSharding) updateState() {
 			idlePickers = append(idlePickers, childPicker)
 		case connectivity.TransientFailure:
 			transientFailurePickers = append(transientFailurePickers, childPicker)
-			// connectivity.Shutdown shouldn't appear.
+			
 		}
 	}
 
-	// Construct the round robin picker based off the aggregated state. Whatever
-	// the aggregated state, use the pickers present that are currently in that
-	// state only.
+	
+	
+	
 	var aggState connectivity.State
 	var pickers []balancer.Picker
 	if len(readyPickers) >= 1 {
@@ -259,7 +243,7 @@ func (es *endpointSharding) updateState() {
 	} else {
 		aggState = connectivity.TransientFailure
 		pickers = []balancer.Picker{base.NewErrPicker(errors.New("no children to pick from"))}
-	} // No children (resolver error before valid update).
+	} 
 	p := &pickerWithChildStates{
 		pickers:     pickers,
 		childStates: childStates,
@@ -271,9 +255,9 @@ func (es *endpointSharding) updateState() {
 	})
 }
 
-// pickerWithChildStates delegates to the pickers it holds in a round robin
-// fashion. It also contains the childStates of all the endpointSharding's
-// children.
+
+
+
 type pickerWithChildStates struct {
 	pickers     []balancer.Picker
 	childStates []ChildState
@@ -286,8 +270,8 @@ func (p *pickerWithChildStates) Pick(info balancer.PickInfo) (balancer.PickResul
 	return picker.Pick(info)
 }
 
-// ChildStatesFromPicker returns the state of all the children managed by the
-// endpoint sharding balancer that created this picker.
+
+
 func ChildStatesFromPicker(picker balancer.Picker) []ChildState {
 	p, ok := picker.(*pickerWithChildStates)
 	if !ok {
@@ -296,20 +280,20 @@ func ChildStatesFromPicker(picker balancer.Picker) []ChildState {
 	return p.childStates
 }
 
-// balancerWrapper is a wrapper of a balancer. It ID's a child balancer by
-// endpoint, and persists recent child balancer state.
-type balancerWrapper struct {
-	// The following fields are initialized at build time and read-only after
-	// that and therefore do not need to be guarded by a mutex.
 
-	// child contains the wrapped balancer. Access its methods only through
-	// methods on balancerWrapper to ensure proper synchronization
+
+type balancerWrapper struct {
+	
+	
+
+	
+	
 	child               balancer.Balancer
-	balancer.ClientConn // embed to intercept UpdateState, doesn't deal with SubConns
+	balancer.ClientConn 
 
 	es *endpointSharding
 
-	// Access to the following fields is guarded by es.mu.
+	
 
 	childState ChildState
 	isClosed   bool
@@ -325,8 +309,8 @@ func (bw *balancerWrapper) UpdateState(state balancer.State) {
 	bw.es.updateState()
 }
 
-// ExitIdle pings an IDLE child balancer to exit idle in a new goroutine to
-// avoid deadlocks due to synchronous balancer state updates.
+
+
 func (bw *balancerWrapper) ExitIdle() {
 	if ei, ok := bw.child.(balancer.ExitIdler); ok {
 		go func() {
@@ -339,15 +323,15 @@ func (bw *balancerWrapper) ExitIdle() {
 	}
 }
 
-// updateClientConnStateLocked delivers the ClientConnState to the child
-// balancer. Callers must hold the child mutex of the parent endpointsharding
-// balancer.
+
+
+
 func (bw *balancerWrapper) updateClientConnStateLocked(ccs balancer.ClientConnState) error {
 	return bw.child.UpdateClientConnState(ccs)
 }
 
-// closeLocked closes the child balancer. Callers must hold the child mutext of
-// the parent endpointsharding balancer.
+
+
 func (bw *balancerWrapper) closeLocked() {
 	bw.child.Close()
 	bw.isClosed = true

@@ -1,20 +1,4 @@
-/*
- *
- * Copyright 2017 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
+
 
 package grpc
 
@@ -31,27 +15,27 @@ import (
 	"google.golang.org/grpc/serviceconfig"
 )
 
-// ccResolverWrapper is a wrapper on top of cc for resolvers.
-// It implements resolver.ClientConn interface.
+
+
 type ccResolverWrapper struct {
-	// The following fields are initialized when the wrapper is created and are
-	// read-only afterwards, and therefore can be accessed without a mutex.
+	
+	
 	cc                  *ClientConn
 	ignoreServiceConfig bool
 	serializer          *grpcsync.CallbackSerializer
 	serializerCancel    context.CancelFunc
 
-	resolver resolver.Resolver // only accessed within the serializer
+	resolver resolver.Resolver 
 
-	// The following fields are protected by mu.  Caller must take cc.mu before
-	// taking mu.
+	
+	
 	mu       sync.Mutex
 	curState resolver.State
 	closed   bool
 }
 
-// newCCResolverWrapper initializes the ccResolverWrapper.  It can only be used
-// after calling start, which builds the resolver.
+
+
 func newCCResolverWrapper(cc *ClientConn) *ccResolverWrapper {
 	ctx, cancel := context.WithCancel(cc.ctx)
 	return &ccResolverWrapper{
@@ -62,9 +46,9 @@ func newCCResolverWrapper(cc *ClientConn) *ccResolverWrapper {
 	}
 }
 
-// start builds the name resolver using the resolver.Builder in cc and returns
-// any error encountered.  It must always be the first operation performed on
-// any newly created ccResolverWrapper, except that close may be called instead.
+
+
+
 func (ccr *ccResolverWrapper) start() error {
 	errCh := make(chan error)
 	ccr.serializer.TrySchedule(func(ctx context.Context) {
@@ -80,11 +64,11 @@ func (ccr *ccResolverWrapper) start() error {
 			MetricsRecorder:      ccr.cc.metricsRecorderList,
 		}
 		var err error
-		// The delegating resolver is used unless:
-		//   - A custom dialer is provided via WithContextDialer dialoption or
-		//   - Proxy usage is disabled through WithNoProxy dialoption.
-		// In these cases, the resolver is built based on the scheme of target,
-		// using the appropriate resolver builder.
+		
+		
+		
+		
+		
 		if ccr.cc.dopts.copts.Dialer != nil || !ccr.cc.dopts.useProxy {
 			ccr.resolver, err = ccr.cc.resolverBuilder.Build(ccr.cc.parsedTarget, ccr, opts)
 		} else {
@@ -104,9 +88,9 @@ func (ccr *ccResolverWrapper) resolveNow(o resolver.ResolveNowOptions) {
 	})
 }
 
-// close initiates async shutdown of the wrapper.  To determine the wrapper has
-// finished shutting down, the channel should block on ccr.serializer.Done()
-// without cc.mu held.
+
+
+
 func (ccr *ccResolverWrapper) close() {
 	channelz.Info(logger, ccr.cc.channelz, "Closing the name resolver")
 	ccr.mu.Lock()
@@ -123,8 +107,8 @@ func (ccr *ccResolverWrapper) close() {
 	ccr.serializerCancel()
 }
 
-// UpdateState is called by resolver implementations to report new state to gRPC
-// which includes addresses and service config.
+
+
 func (ccr *ccResolverWrapper) UpdateState(s resolver.State) error {
 	ccr.cc.mu.Lock()
 	ccr.mu.Lock()
@@ -147,8 +131,8 @@ func (ccr *ccResolverWrapper) UpdateState(s resolver.State) error {
 	return ccr.cc.updateResolverStateAndUnlock(s, nil)
 }
 
-// ReportError is called by resolver implementations to report errors
-// encountered during name resolution to gRPC.
+
+
 func (ccr *ccResolverWrapper) ReportError(err error) {
 	ccr.cc.mu.Lock()
 	ccr.mu.Lock()
@@ -162,8 +146,8 @@ func (ccr *ccResolverWrapper) ReportError(err error) {
 	ccr.cc.updateResolverStateAndUnlock(resolver.State{}, err)
 }
 
-// NewAddress is called by the resolver implementation to send addresses to
-// gRPC.
+
+
 func (ccr *ccResolverWrapper) NewAddress(addrs []resolver.Address) {
 	ccr.cc.mu.Lock()
 	ccr.mu.Lock()
@@ -179,14 +163,14 @@ func (ccr *ccResolverWrapper) NewAddress(addrs []resolver.Address) {
 	ccr.cc.updateResolverStateAndUnlock(s, nil)
 }
 
-// ParseServiceConfig is called by resolver implementations to parse a JSON
-// representation of the service config.
+
+
 func (ccr *ccResolverWrapper) ParseServiceConfig(scJSON string) *serviceconfig.ParseResult {
 	return parseServiceConfig(scJSON, ccr.cc.dopts.maxCallAttempts)
 }
 
-// addChannelzTraceEvent adds a channelz trace event containing the new
-// state received from resolver implementations.
+
+
 func (ccr *ccResolverWrapper) addChannelzTraceEvent(s resolver.State) {
 	if !logger.V(0) && !channelz.IsOn() {
 		return

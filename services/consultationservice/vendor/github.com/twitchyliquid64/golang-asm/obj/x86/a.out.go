@@ -1,32 +1,32 @@
-// Inferno utils/6c/6.out.h
-// https://bitbucket.org/inferno-os/inferno-os/src/master/utils/6c/6.out.h
-//
-//	Copyright © 1994-1999 Lucent Technologies Inc.  All rights reserved.
-//	Portions Copyright © 1995-1997 C H Forsyth (forsyth@terzarima.net)
-//	Portions Copyright © 1997-1999 Vita Nuova Limited
-//	Portions Copyright © 2000-2007 Vita Nuova Holdings Limited (www.vitanuova.com)
-//	Portions Copyright © 2004,2006 Bruce Ellis
-//	Portions Copyright © 2005-2007 C H Forsyth (forsyth@terzarima.net)
-//	Revisions Copyright © 2000-2007 Lucent Technologies Inc. and others
-//	Portions Copyright © 2009 The Go Authors. All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package x86
 
@@ -209,11 +209,11 @@ const (
 	REG_FS
 	REG_GS
 
-	REG_GDTR // global descriptor table register
-	REG_IDTR // interrupt descriptor table register
-	REG_LDTR // local descriptor table register
-	REG_MSW  // machine status word
-	REG_TASK // task register
+	REG_GDTR 
+	REG_IDTR 
+	REG_LDTR 
+	REG_MSW  
+	REG_TASK 
 
 	REG_CR0
 	REG_CR1
@@ -263,9 +263,9 @@ const (
 	FREGRET  = REG_X0
 	REGSP    = REG_SP
 	REGCTXT  = REG_DX
-	REGEXT   = REG_R15     // compiler allocates external registers R15 down
-	FREGMIN  = REG_X0 + 5  // first register variable
-	FREGEXT  = REG_X0 + 15 // first external register
+	REGEXT   = REG_R15     
+	FREGMIN  = REG_X0 + 5  
+	FREGEXT  = REG_X0 + 15 
 	T_TYPE   = 1 << 0
 	T_INDEX  = 1 << 1
 	T_OFFSET = 1 << 2
@@ -276,7 +276,7 @@ const (
 	T_GOTYPE = 1 << 7
 )
 
-// https://www.uclibc.org/docs/psABI-x86_64.pdf, figure 3.36
+
 var AMD64DWARFRegisters = map[int16]int16{
 	REG_AX:  0,
 	REG_DX:  1,
@@ -294,8 +294,8 @@ var AMD64DWARFRegisters = map[int16]int16{
 	REG_R13: 13,
 	REG_R14: 14,
 	REG_R15: 15,
-	// 16 is "Return Address RA", whatever that is.
-	// 17-24 vector registers (X/Y/Z).
+	
+	
 	REG_X0: 17,
 	REG_X1: 18,
 	REG_X2: 19,
@@ -304,7 +304,7 @@ var AMD64DWARFRegisters = map[int16]int16{
 	REG_X5: 22,
 	REG_X6: 23,
 	REG_X7: 24,
-	// 25-32 extended vector registers (X/Y/Z).
+	
 	REG_X8:  25,
 	REG_X9:  26,
 	REG_X10: 27,
@@ -313,7 +313,7 @@ var AMD64DWARFRegisters = map[int16]int16{
 	REG_X13: 30,
 	REG_X14: 31,
 	REG_X15: 32,
-	// ST registers. %stN => FN.
+	
 	REG_F0: 33,
 	REG_F1: 34,
 	REG_F2: 35,
@@ -322,7 +322,7 @@ var AMD64DWARFRegisters = map[int16]int16{
 	REG_F5: 38,
 	REG_F6: 39,
 	REG_F7: 40,
-	// MMX registers. %mmN => MN.
+	
 	REG_M0: 41,
 	REG_M1: 42,
 	REG_M2: 43,
@@ -331,19 +331,19 @@ var AMD64DWARFRegisters = map[int16]int16{
 	REG_M5: 46,
 	REG_M6: 47,
 	REG_M7: 48,
-	// 48 is flags, which doesn't have a name.
+	
 	REG_ES: 50,
 	REG_CS: 51,
 	REG_SS: 52,
 	REG_DS: 53,
 	REG_FS: 54,
 	REG_GS: 55,
-	// 58 and 59 are {fs,gs}base, which don't have names.
+	
 	REG_TR:   62,
 	REG_LDTR: 63,
-	// 64-66 are mxcsr, fcw, fsw, which don't have names.
+	
 
-	// 67-82 upper vector registers (X/Y/Z).
+	
 	REG_X16: 67,
 	REG_X17: 68,
 	REG_X18: 69,
@@ -361,7 +361,7 @@ var AMD64DWARFRegisters = map[int16]int16{
 	REG_X30: 81,
 	REG_X31: 82,
 
-	// 118-125 vector mask registers. %kN => KN.
+	
 	REG_K0: 118,
 	REG_K1: 119,
 	REG_K2: 120,
@@ -372,7 +372,7 @@ var AMD64DWARFRegisters = map[int16]int16{
 	REG_K7: 125,
 }
 
-// https://www.uclibc.org/docs/psABI-i386.pdf, table 2.14
+
 var X86DWARFRegisters = map[int16]int16{
 	REG_AX: 0,
 	REG_CX: 1,
@@ -382,9 +382,9 @@ var X86DWARFRegisters = map[int16]int16{
 	REG_BP: 5,
 	REG_SI: 6,
 	REG_DI: 7,
-	// 8 is "Return Address RA", whatever that is.
-	// 9 is flags, which doesn't have a name.
-	// ST registers. %stN => FN.
+	
+	
+	
 	REG_F0: 11,
 	REG_F1: 12,
 	REG_F2: 13,
@@ -393,7 +393,7 @@ var X86DWARFRegisters = map[int16]int16{
 	REG_F5: 16,
 	REG_F6: 17,
 	REG_F7: 18,
-	// XMM registers. %xmmN => XN.
+	
 	REG_X0: 21,
 	REG_X1: 22,
 	REG_X2: 23,
@@ -402,7 +402,7 @@ var X86DWARFRegisters = map[int16]int16{
 	REG_X5: 26,
 	REG_X6: 27,
 	REG_X7: 28,
-	// MMX registers. %mmN => MN.
+	
 	REG_M0: 29,
 	REG_M1: 30,
 	REG_M2: 31,
@@ -411,7 +411,7 @@ var X86DWARFRegisters = map[int16]int16{
 	REG_M5: 34,
 	REG_M6: 35,
 	REG_M7: 36,
-	// 39 is mxcsr, which doesn't have a name.
+	
 	REG_ES:   40,
 	REG_CS:   41,
 	REG_SS:   42,

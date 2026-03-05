@@ -30,27 +30,27 @@ type CancelData struct {
 	CancellationReason *string
 }
 type Session struct {
-	// Info
+	
 	SessionID       string `json:"session_id" bson:"_id"`
 	TherapistID     string `json:"therapist_id" bson:"therapist_id"`
 	ClientID        string `json:"client_id" bson:"client_id"`
 	SessionUserCode string `json:"session-user-code" bson:"session-user-code"`
-	// Consultation detail
+	
 	Mode      ConsultationMode `json:"mode" bson:"mode"`
 	StartTime time.Time        `json:"start_time" bson:"start_time"`
 	EndTime   time.Time        `json:"end_time" bson:"end_time"`
 	Status    SessionStatus    `json:"status" bson:"status"`
-	// Time & Location
+	
 	Timezone      string        `bson:"timezone" json:"timezone"`
 	ScheduledDate string        `bson:"scheduled_date" json:"scheduled_date"`
 	LocationInfo  *LocationInfo `bson:"location_info,omitempty" json:"location_info,omitempty"`
-	// Payment
+	
 	Price         float64              `json:"price" bson:"price"`
 	PaymentStatus domain.PaymentStatus `json:"payment_status" bson:"payment_status"`
 	PaymentID     *string              `json:"payment_id,omitempty" bson:"payment_id,omitempty"`
 	RefundTraceID *string              `json:"refund_trace_id,omitempty" bson:"refund_trace_id,omitempty"`
 	CallSessionID *string              `json:"call_session_id,omitempty"`
-	// Trace , log , notification
+	
 	CancelMetaData CancelData   `json:"cancel_meta_data,omitempty"`
 	ReminderSentAt time.Time    `json:"reminder_sent_at,omitempty"`
 	ConversationID string       `json:"conversation_id" bson:"conversation_id"`
@@ -100,9 +100,9 @@ func NewSession(
 		EndTime:       endUTC,
 		Status:        SessionStatusPending,
 		PaymentStatus: domain.PaymentPending,
-		PaymentID:     nil, // Nil for testing
+		PaymentID:     nil, 
 		RefundTraceID: nil,
-		CallSessionID: nil, // Nil for testing
+		CallSessionID: nil, 
 		Price:         price,
 		Timezone:      timezone,
 		ScheduledDate: scheduledDate,

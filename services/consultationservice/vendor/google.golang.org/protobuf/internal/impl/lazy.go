@@ -1,6 +1,6 @@
-// Copyright 2024 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -27,7 +27,7 @@ var enableLazy int32 = func() int32 {
 	return 1
 }()
 
-// EnableLazyUnmarshal enables lazy unmarshaling.
+
 func EnableLazyUnmarshal(enable bool) {
 	if enable {
 		atomic.StoreInt32(&enableLazy, 1)
@@ -36,12 +36,12 @@ func EnableLazyUnmarshal(enable bool) {
 	atomic.StoreInt32(&enableLazy, 0)
 }
 
-// LazyEnabled reports whether lazy unmarshalling is currently enabled.
+
 func LazyEnabled() bool {
 	return atomic.LoadInt32(&enableLazy) != 0
 }
 
-// UnmarshalField unmarshals a field in a message.
+
 func UnmarshalField(m interface{}, num protowire.Number) {
 	switch m := m.(type) {
 	case *messageState:
@@ -68,8 +68,8 @@ func (mi *MessageInfo) lazyUnmarshal(p pointer, num protoreflect.FieldNumber) {
 	if !found && multipleEntries == nil {
 		panic(fmt.Sprintf("lazyUnmarshal: can't find field data for %v.%v", mi.Desc.FullName(), num))
 	}
-	// The actual pointer in the message can not be set until the whole struct is filled in, otherwise we will have races.
-	// Create another pointer and set it atomically, if we won the race and the pointer in the original message is still nil.
+	
+	
 	fp := pointerOfValue(reflect.New(f.ft))
 	if multipleEntries != nil {
 		for _, entry := range multipleEntries {
@@ -85,7 +85,7 @@ func (mi *MessageInfo) unmarshalField(b []byte, p pointer, f *coderFieldInfo, la
 	opts := lazyUnmarshalOptions
 	opts.flags |= flags
 	for len(b) > 0 {
-		// Parse the tag (field number and wire type).
+		
 		var tag uint64
 		if b[0] < 0x80 {
 			tag = uint64(b[0])
@@ -169,9 +169,9 @@ func (mi *MessageInfo) skipField(b []byte, f *coderFieldInfo, wtyp protowire.Typ
 	}
 }
 
-// unmarshalPointerLazy is similar to unmarshalPointerEager, but it
-// specifically handles lazy unmarshalling.  it expects lazyOffset and
-// presenceOffset to both be valid.
+
+
+
 func (mi *MessageInfo) unmarshalPointerLazy(b []byte, p pointer, groupTag protowire.Number, opts unmarshalOptions) (out unmarshalOutput, err error) {
 	initialized := true
 	var requiredMask uint64
@@ -185,40 +185,40 @@ func (mi *MessageInfo) unmarshalPointerLazy(b []byte, p pointer, groupTag protow
 	lazy = p.Apply(mi.lazyOffset).LazyInfoPtr()
 	if !presence.AnyPresent(mi.presenceSize) {
 		if opts.CanBeLazy() {
-			// If the message contains existing data, we need to merge into it.
-			// Lazy unmarshaling doesn't merge, so only enable it when the
-			// message is empty (has no presence bitmap).
+			
+			
+			
 			lazyDecode = true
 			if *lazy == nil {
 				*lazy = &protolazy.XXX_lazyUnmarshalInfo{}
 			}
 			(*lazy).SetUnmarshalFlags(opts.flags)
 			if !opts.AliasBuffer() {
-				// Make a copy of the buffer for lazy unmarshaling.
-				// Set the AliasBuffer flag so recursive unmarshal
-				// operations reuse the copy.
+				
+				
+				
 				b = append([]byte{}, b...)
 				opts.flags |= piface.UnmarshalAliasBuffer
 			}
 			(*lazy).SetBuffer(b)
 		}
 	}
-	// Track special handling of lazy fields.
-	//
-	// In the common case, all fields are lazyValidateOnly (and lazyFields remains nil).
-	// In the event that validation for a field fails, this map tracks handling of the field.
+	
+	
+	
+	
 	type lazyAction uint8
 	const (
-		lazyValidateOnly   lazyAction = iota // validate the field only
-		lazyUnmarshalNow                     // eagerly unmarshal the field
-		lazyUnmarshalLater                   // unmarshal the field after the message is fully processed
+		lazyValidateOnly   lazyAction = iota 
+		lazyUnmarshalNow                     
+		lazyUnmarshalLater                   
 	)
 	var lazyFields map[*coderFieldInfo]lazyAction
 	var exts *map[int32]ExtensionField
 	start := len(b)
 	pos := 0
 	for len(b) > 0 {
-		// Parse the tag (field number and wire type).
+		
 		var tag uint64
 		if b[0] < 0x80 {
 			tag = uint64(b[0])
@@ -268,11 +268,11 @@ func (mi *MessageInfo) unmarshalPointerLazy(b []byte, p pointer, groupTag protow
 			if f.isLazy && lazyDecode {
 				switch {
 				case lazyFields == nil || lazyFields[f] == lazyValidateOnly:
-					// Attempt to validate this field and leave it for later lazy unmarshaling.
+					
 					o, valid := mi.skipField(b, f, wtyp, opts)
 					switch valid {
 					case ValidationValid:
-						// Skip over the valid field and continue.
+						
 						err = nil
 						presence.SetPresentUnatomic(f.presenceIndex, mi.presenceSize)
 						requiredMask |= f.validation.requiredBit
@@ -290,29 +290,29 @@ func (mi *MessageInfo) unmarshalPointerLazy(b []byte, p pointer, groupTag protow
 							lazyFields = make(map[*coderFieldInfo]lazyAction)
 						}
 						if presence.Present(f.presenceIndex) {
-							// We were unable to determine if the field is valid or not,
-							// and we've already skipped over at least one instance of this
-							// field. Clear the presence bit (so if we stop decoding early,
-							// we don't leave a partially-initialized field around) and flag
-							// the field for unmarshaling before we return.
+							
+							
+							
+							
+							
 							presence.ClearPresent(f.presenceIndex)
 							lazyFields[f] = lazyUnmarshalLater
 							discardUnknown = true
 							break Field
 						} else {
-							// We were unable to determine if the field is valid or not,
-							// but this is the first time we've seen it. Flag it as needing
-							// eager unmarshaling and fall through to the eager unmarshal case below.
+							
+							
+							
 							lazyFields[f] = lazyUnmarshalNow
 						}
 					}
 				case lazyFields[f] == lazyUnmarshalLater:
-					// This field will be unmarshaled in a separate pass below.
-					// Skip over it here.
+					
+					
 					discardUnknown = true
 					break Field
 				default:
-					// Eagerly unmarshal the field.
+					
 				}
 			}
 			if f.isLazy && !lazyDecode && presence.Present(f.presenceIndex) {
@@ -334,7 +334,7 @@ func (mi *MessageInfo) unmarshalPointerLazy(b []byte, p pointer, groupTag protow
 				presence.SetPresentUnatomic(f.presenceIndex, mi.presenceSize)
 			}
 		default:
-			// Possible extension.
+			
 			if exts == nil && mi.extensionOffset.IsValid() {
 				exts = p.Apply(mi.extensionOffset).Extensions()
 				if *exts == nil {
@@ -393,7 +393,7 @@ func (mi *MessageInfo) unmarshalPointerLazy(b []byte, p pointer, groupTag protow
 		return out, errors.New("missing end group marker")
 	}
 	if lazyFields != nil {
-		// Some fields failed validation, and now need to be unmarshaled.
+		
 		for f, action := range lazyFields {
 			if action != lazyUnmarshalLater {
 				continue

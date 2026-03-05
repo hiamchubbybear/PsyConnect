@@ -12,7 +12,7 @@ type PubSubCmdable interface {
 	PubSubShardNumSub(ctx context.Context, channels ...string) *MapStringIntCmd
 }
 
-// Publish posts the message to the channel.
+
 func (c cmdable) Publish(ctx context.Context, channel string, message interface{}) *IntCmd {
 	cmd := NewIntCmd(ctx, "publish", channel, message)
 	_ = c(ctx, cmd)

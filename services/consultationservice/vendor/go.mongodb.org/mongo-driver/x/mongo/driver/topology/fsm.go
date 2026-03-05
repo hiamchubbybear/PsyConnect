@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package topology
 
@@ -18,10 +18,10 @@ import (
 )
 
 var (
-	// MinSupportedMongoDBVersion is the version string for the lowest MongoDB version supported by the driver.
+	
 	MinSupportedMongoDBVersion = "3.6"
 
-	// SupportedWireVersions is the range of wire versions supported by the driver.
+	
 	SupportedWireVersions = description.NewVersionRange(6, 25)
 )
 
@@ -39,46 +39,46 @@ func newFSM() *fsm {
 	return &f
 }
 
-// selectFSMSessionTimeout selects the timeout to return for the topology's
-// finite state machine. If the logicalSessionTimeoutMinutes on the FSM exists
-// and the server is data-bearing, then we determine this value by returning
-//
-//	min{server timeout, FSM timeout}
-//
-// where a "nil" value is considered less than 0.
-//
-// Otherwise, if the FSM's logicalSessionTimeoutMinutes exist, then this
-// function returns the FSM timeout.
-//
-// In the case where the FSM timeout DNE, we check all servers to see if any
-// still do not have a timeout. This function chooses the lowest of the existing
-// timeouts.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func selectFSMSessionTimeout(f *fsm, s description.Server) *int64 {
 	oldMinutes := f.SessionTimeoutMinutesPtr
 	comp := ptrutil.CompareInt64(oldMinutes, s.SessionTimeoutMinutesPtr)
 
-	// If the server is data-bearing and the current timeout exists and is
-	// either:
-	//
-	// 1. larger than the server timeout, or
-	// 2. non-nil while the server timeout is nil
-	//
-	// then return the server timeout.
+	
+	
+	
+	
+	
+	
+	
 	if s.DataBearing() && (comp == 1 || comp == 2) {
 		return s.SessionTimeoutMinutesPtr
 	}
 
-	// If the current timeout exists and the server is not data-bearing OR
-	// min{server timeout, current timeout} = current timeout, then return
-	// the current timeout.
+	
+	
+	
 	if oldMinutes != nil {
 		return oldMinutes
 	}
 
 	timeout := s.SessionTimeoutMinutesPtr
 	for _, server := range f.Servers {
-		// If the server is not data-bearing, then we do not consider
-		// it's timeout whether set or not.
+		
+		
 		if !server.DataBearing() {
 			continue
 		}
@@ -86,7 +86,7 @@ func selectFSMSessionTimeout(f *fsm, s description.Server) *int64 {
 		srvTimeout := server.SessionTimeoutMinutesPtr
 		comp := ptrutil.CompareInt64(timeout, srvTimeout)
 
-		if comp <= 0 { // timeout <= srvTimout
+		if comp <= 0 { 
 			continue
 		}
 
@@ -96,18 +96,18 @@ func selectFSMSessionTimeout(f *fsm, s description.Server) *int64 {
 	return timeout
 }
 
-// apply takes a new server description and modifies the FSM's topology description based on it. It returns the
-// updated topology description as well as a server description. The returned server description is either the same
-// one that was passed in, or a new one in the case that it had to be changed.
-//
-// apply should operation on immutable descriptions so we don't have to lock for the entire time we're applying the
-// server description.
+
+
+
+
+
+
 func (f *fsm) apply(s description.Server) (description.Topology, description.Server) {
 	newServers := make([]description.Server, len(f.Servers))
 	copy(newServers, f.Servers)
 
-	// Reset the logicalSessionTimeoutMinutes to the minimum of the FSM
-	// and the description.server/f.servers.
+	
+	
 	serverTimeoutMinutes := selectFSMSessionTimeout(f, s)
 
 	f.Topology = description.Topology{
@@ -231,12 +231,12 @@ func (f *fsm) applyToSingle(s description.Server) description.Server {
 
 		f.replaceServer(s)
 	case description.RSPrimary, description.RSSecondary, description.RSArbiter, description.RSMember, description.RSGhost:
-		// A replica set name can be provided when creating a direct connection. In this case, if the set name returned
-		// by the hello response doesn't match up with the one provided during configuration, the server description
-		// is replaced with a default Unknown description.
-		//
-		// We create a new server description rather than doing s.Kind = description.Unknown because the other fields,
-		// such as RTT, need to be cleared for Unknown descriptions as well.
+		
+		
+		
+		
+		
+		
 		if f.SetName != "" && f.SetName != s.SetName {
 			s = description.Server{
 				Addr: s.Addr,
@@ -277,28 +277,28 @@ func (f *fsm) checkIfHasPrimary() {
 	}
 }
 
-// hasStalePrimary returns true if the topology has a primary that is "stale".
+
 func hasStalePrimary(fsm fsm, srv description.Server) bool {
-	// Compare the election ID values of the server and the topology lexicographically.
+	
 	compRes := bytes.Compare(srv.ElectionID[:], fsm.maxElectionID[:])
 
 	if wireVersion := srv.WireVersion; wireVersion != nil && wireVersion.Max >= 17 {
-		// In the Post-6.0 case, a primary is considered "stale" if the server's election ID is greater than the
-		// topology's max election ID. In these versions, the primary is also considered "stale" if the server's
-		// election ID is LTE to the topologies election ID and the server's "setVersion" is less than the topology's
-		// max "setVersion".
+		
+		
+		
+		
 		return compRes == -1 || (compRes != 1 && srv.SetVersion < fsm.maxSetVersion)
 	}
 
-	// If the server's election ID is less than the topology's max election ID, the primary is considered
-	// "stale". Similarly, if the server's "setVersion" is less than the topology's max "setVersion", the
-	// primary is considered stale.
+	
+	
+	
 	return compRes == -1 || fsm.maxSetVersion > srv.SetVersion
 }
 
-// transferEVTuple will transfer the ("ElectionID", "SetVersion") tuple from the description server to the topology.
-// If the primary is stale, the tuple will not be transferred, the topology will update it's "Kind" value, and this
-// routine will return "false".
+
+
+
 func transferEVTuple(srv description.Server, fsm *fsm) bool {
 	stalePrimary := hasStalePrimary(*fsm, srv)
 

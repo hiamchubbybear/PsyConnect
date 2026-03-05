@@ -89,7 +89,7 @@ const enRfc8141Only int = 83
 const enFail int = 193
 const enMain int = 1
 
-// Machine is the interface representing the FSM
+
 type Machine interface {
 	Error() error
 	Parse(input []byte) (*URN, error)
@@ -106,7 +106,7 @@ type machine struct {
 	parsingModeSet bool
 }
 
-// NewMachine creates a new FSM able to parse RFC 2141 strings.
+
 func NewMachine(options ...Option) Machine {
 	m := &machine{
 		parsingModeSet: false,
@@ -115,7 +115,7 @@ func NewMachine(options ...Option) Machine {
 	for _, o := range options {
 		o(m)
 	}
-	// Set default parsing mode
+	
 	if !m.parsingModeSet {
 		m.WithParsingMode(DefaultParsingMode)
 	}
@@ -123,9 +123,9 @@ func NewMachine(options ...Option) Machine {
 	return m
 }
 
-// Err returns the error that occurred on the last call to Parse.
-//
-// If the result is nil, then the line was parsed successfully.
+
+
+
 func (m *machine) Error() error {
 	return m.err
 }
@@ -134,7 +134,7 @@ func (m *machine) text() []byte {
 	return m.data[m.pb:m.p]
 }
 
-// Parse parses the input byte array as a RFC 2141 or RFC7643 string.
+
 func (m *machine) Parse(input []byte) (*URN, error) {
 	m.data = input
 	m.p = 0
@@ -4153,7 +4153,7 @@ func (m *machine) Parse(input []byte) (*URN, error) {
 		goto _again
 	f9:
 
-		// List of positions in the buffer to later lowercase
+		
 		output.tolower = append(output.tolower, m.p-m.pb)
 
 		goto _again
@@ -4170,12 +4170,12 @@ func (m *machine) Parse(input []byte) (*URN, error) {
 	f38:
 
 		output.SS = string(m.text())
-		// Iterate upper letters lowering them
+		
 		for _, i := range output.tolower {
 			m.data[m.pb+i] = m.data[m.pb+i] + 32
 		}
 		output.norm = string(m.text())
-		// Revert the buffer to the original
+		
 		for _, i := range output.tolower {
 			m.data[m.pb+i] = m.data[m.pb+i] - 32
 		}
@@ -4357,9 +4357,9 @@ func (m *machine) Parse(input []byte) (*URN, error) {
 		m.pb = m.p
 
 		if m.parsingMode != RFC8141Only {
-			// Throw an error when:
-			// - we are entering here matching the the prefix in the namespace identifier part
-			// - looking ahead (3 chars) we find a colon
+			
+			
+			
 			if pos := m.p + 3; pos < m.pe && m.data[pos] == 58 && output.prefix != "" {
 				m.err = fmt.Errorf(errNoUrnWithinID, pos)
 				(m.p)--
@@ -4745,12 +4745,12 @@ func (m *machine) Parse(input []byte) (*URN, error) {
 			case 34:
 
 				output.SS = string(m.text())
-				// Iterate upper letters lowering them
+				
 				for _, i := range output.tolower {
 					m.data[m.pb+i] = m.data[m.pb+i] + 32
 				}
 				output.norm = string(m.text())
-				// Revert the buffer to the original
+				
 				for _, i := range output.tolower {
 					m.data[m.pb+i] = m.data[m.pb+i] - 32
 				}
@@ -4760,12 +4760,12 @@ func (m *machine) Parse(input []byte) (*URN, error) {
 			case 38:
 
 				output.SS = string(m.text())
-				// Iterate upper letters lowering them
+				
 				for _, i := range output.tolower {
 					m.data[m.pb+i] = m.data[m.pb+i] + 32
 				}
 				output.norm = string(m.text())
-				// Revert the buffer to the original
+				
 				for _, i := range output.tolower {
 					m.data[m.pb+i] = m.data[m.pb+i] - 32
 				}
@@ -4957,12 +4957,12 @@ func (m *machine) Parse(input []byte) (*URN, error) {
 				output.scim.Name = string(m.data[output.scim.pos:m.p])
 
 				output.SS = string(m.text())
-				// Iterate upper letters lowering them
+				
 				for _, i := range output.tolower {
 					m.data[m.pb+i] = m.data[m.pb+i] + 32
 				}
 				output.norm = string(m.text())
-				// Revert the buffer to the original
+				
 				for _, i := range output.tolower {
 					m.data[m.pb+i] = m.data[m.pb+i] - 32
 				}
@@ -4974,12 +4974,12 @@ func (m *machine) Parse(input []byte) (*URN, error) {
 				output.scim.Other = string(m.data[output.scim.pos:m.p])
 
 				output.SS = string(m.text())
-				// Iterate upper letters lowering them
+				
 				for _, i := range output.tolower {
 					m.data[m.pb+i] = m.data[m.pb+i] + 32
 				}
 				output.norm = string(m.text())
-				// Revert the buffer to the original
+				
 				for _, i := range output.tolower {
 					m.data[m.pb+i] = m.data[m.pb+i] - 32
 				}

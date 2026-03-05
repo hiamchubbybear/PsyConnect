@@ -8,14 +8,14 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// FileLogger handles writing logs to files
+
 type FileLogger struct {
 	config    settings.FileLoggerConfig
 	appLogger *zap.Logger
 	errLogger *zap.Logger
 }
 
-// NewFileLogger creates a new file logger
+
 func NewFileLogger(config settings.FileLoggerConfig) *FileLogger {
 	if !config.Enabled {
 		return &FileLogger{
@@ -25,7 +25,7 @@ func NewFileLogger(config settings.FileLoggerConfig) *FileLogger {
 		}
 	}
 
-	// Encoder configuration
+	
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "timestamp",
 		LevelKey:       "level",
@@ -36,7 +36,7 @@ func NewFileLogger(config settings.FileLoggerConfig) *FileLogger {
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
 
-	// App log writer (all logs)
+	
 	appLogWriter := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   config.AppLogPath,
 		MaxSize:    config.MaxSize,
@@ -46,7 +46,7 @@ func NewFileLogger(config settings.FileLoggerConfig) *FileLogger {
 		LocalTime:  true,
 	})
 
-	// Error log writer (errors only)
+	
 	errLogWriter := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   config.ErrLogPath,
 		MaxSize:    config.MaxSize,
@@ -56,7 +56,7 @@ func NewFileLogger(config settings.FileLoggerConfig) *FileLogger {
 		LocalTime:  true,
 	})
 
-	// Create app logger (all levels)
+	
 	appCore := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),
 		appLogWriter,
@@ -64,7 +64,7 @@ func NewFileLogger(config settings.FileLoggerConfig) *FileLogger {
 	)
 	appLogger := zap.New(appCore)
 
-	// Create error logger (errors only)
+	
 	errCore := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),
 		errLogWriter,
@@ -79,13 +79,13 @@ func NewFileLogger(config settings.FileLoggerConfig) *FileLogger {
 	}
 }
 
-// Write writes a log event to file
+
 func (f *FileLogger) Write(event *models.LogEvent) error {
 	if !f.config.Enabled {
 		return nil
 	}
 
-	// Build zap fields from event
+	
 	fields := []zap.Field{
 		zap.String("service", event.Service),
 		zap.String("timestamp", event.Timestamp),
@@ -122,7 +122,7 @@ func (f *FileLogger) Write(event *models.LogEvent) error {
 		fields = append(fields, zap.Int64("duration", event.Duration))
 	}
 
-	// Write to appropriate logger based on level
+	
 	switch models.LogLevel(event.Level) {
 	case models.LevelDebug:
 		f.appLogger.Debug(event.Message, fields...)
@@ -141,7 +141,7 @@ func (f *FileLogger) Write(event *models.LogEvent) error {
 	return nil
 }
 
-// Sync flushes any buffered log entries
+
 func (f *FileLogger) Sync() error {
 	if !f.config.Enabled {
 		return nil
@@ -151,7 +151,7 @@ func (f *FileLogger) Sync() error {
 	return nil
 }
 
-// Close closes the file logger
+
 func (f *FileLogger) Close() error {
 	return f.Sync()
 }

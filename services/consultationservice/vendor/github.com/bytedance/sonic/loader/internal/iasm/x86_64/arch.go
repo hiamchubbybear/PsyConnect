@@ -1,18 +1,18 @@
-//
-// Copyright 2024 CloudWeGo Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package x86_64
 
@@ -20,7 +20,7 @@ import (
 	"fmt"
 )
 
-// ISA represents an extension to x86-64 instruction set.
+
 type ISA uint64
 
 const (
@@ -206,7 +206,7 @@ func (self ISA) String() string {
 	}
 }
 
-// ParseISA parses name into ISA, it will panic if the name is invalid.
+
 func ParseISA(name string) ISA {
 	if v, ok := _ISA_MAPPING[name]; ok {
 		return v
@@ -215,37 +215,37 @@ func ParseISA(name string) ISA {
 	}
 }
 
-// Arch represents the x86_64 architecture.
+
 type Arch struct {
 	isa ISA
 }
 
-// DefaultArch is the default architecture with all ISA enabled.
+
 var DefaultArch = CreateArch()
 
-// CreateArch creates a new Arch with all ISA enabled.
+
 func CreateArch() *Arch {
 	return new(Arch).EnableISA(ISA_ALL)
 }
 
-// HasISA checks if a particular ISA was enabled.
+
 func (self *Arch) HasISA(isa ISA) bool {
 	return (self.isa & isa) != 0
 }
 
-// EnableISA enables a particular ISA.
+
 func (self *Arch) EnableISA(isa ISA) *Arch {
 	self.isa |= isa
 	return self
 }
 
-// DisableISA disables a particular ISA.
+
 func (self *Arch) DisableISA(isa ISA) *Arch {
 	self.isa &^= isa
 	return self
 }
 
-// CreateProgram creates a new empty program.
+
 func (self *Arch) CreateProgram() *Program {
 	return newProgram(self)
 }

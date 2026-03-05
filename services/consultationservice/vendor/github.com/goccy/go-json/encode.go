@@ -13,7 +13,7 @@ import (
 	"github.com/goccy/go-json/internal/encoder/vm_indent"
 )
 
-// An Encoder writes JSON values to an output stream.
+
 type Encoder struct {
 	w                 io.Writer
 	enabledIndent     bool
@@ -22,19 +22,19 @@ type Encoder struct {
 	indentStr         string
 }
 
-// NewEncoder returns a new encoder that writes to w.
+
 func NewEncoder(w io.Writer) *Encoder {
 	return &Encoder{w: w, enabledHTMLEscape: true}
 }
 
-// Encode writes the JSON encoding of v to the stream, followed by a newline character.
-//
-// See the documentation for Marshal for details about the conversion of Go values to JSON.
+
+
+
 func (e *Encoder) Encode(v interface{}) error {
 	return e.EncodeWithOption(v)
 }
 
-// EncodeWithOption call Encode with EncodeOption.
+
 func (e *Encoder) EncodeWithOption(v interface{}, optFuncs ...EncodeOptionFunc) error {
 	ctx := encoder.TakeRuntimeContext()
 	ctx.Option.Flag = 0
@@ -45,14 +45,14 @@ func (e *Encoder) EncodeWithOption(v interface{}, optFuncs ...EncodeOptionFunc) 
 	return err
 }
 
-// EncodeContext call Encode with context.Context and EncodeOption.
+
 func (e *Encoder) EncodeContext(ctx context.Context, v interface{}, optFuncs ...EncodeOptionFunc) error {
 	rctx := encoder.TakeRuntimeContext()
 	rctx.Option.Flag = 0
 	rctx.Option.Flag |= encoder.ContextOption
 	rctx.Option.Context = ctx
 
-	err := e.encodeWithOption(rctx, v, optFuncs...) //nolint: contextcheck
+	err := e.encodeWithOption(rctx, v, optFuncs...) 
 
 	encoder.ReleaseRuntimeContext(rctx)
 	return err
@@ -91,16 +91,16 @@ func (e *Encoder) encodeWithOption(ctx *encoder.RuntimeContext, v interface{}, o
 	return nil
 }
 
-// SetEscapeHTML specifies whether problematic HTML characters should be escaped inside JSON quoted strings.
-// The default behavior is to escape &, <, and > to \u0026, \u003c, and \u003e to avoid certain safety problems that can arise when embedding JSON in HTML.
-//
-// In non-HTML settings where the escaping interferes with the readability of the output, SetEscapeHTML(false) disables this behavior.
+
+
+
+
 func (e *Encoder) SetEscapeHTML(on bool) {
 	e.enabledHTMLEscape = on
 }
 
-// SetIndent instructs the encoder to format each subsequent encoded value as if indented by the package-level function Indent(dst, src, prefix, indent).
-// Calling SetIndent("", "") disables indentation.
+
+
 func (e *Encoder) SetIndent(prefix, indent string) {
 	if prefix == "" && indent == "" {
 		e.enabledIndent = false
@@ -120,16 +120,16 @@ func marshalContext(ctx context.Context, v interface{}, optFuncs ...EncodeOption
 		optFunc(rctx.Option)
 	}
 
-	buf, err := encode(rctx, v) //nolint: contextcheck
+	buf, err := encode(rctx, v) 
 	if err != nil {
 		encoder.ReleaseRuntimeContext(rctx)
 		return nil, err
 	}
 
-	// this line exists to escape call of `runtime.makeslicecopy` .
-	// if use `make([]byte, len(buf)-1)` and `copy(copied, buf)`,
-	// dst buffer size and src buffer size are differrent.
-	// in this case, compiler uses `runtime.makeslicecopy`, but it is slow.
+	
+	
+	
+	
 	buf = buf[:len(buf)-1]
 	copied := make([]byte, len(buf))
 	copy(copied, buf)
@@ -153,10 +153,10 @@ func marshal(v interface{}, optFuncs ...EncodeOptionFunc) ([]byte, error) {
 		return nil, err
 	}
 
-	// this line exists to escape call of `runtime.makeslicecopy` .
-	// if use `make([]byte, len(buf)-1)` and `copy(copied, buf)`,
-	// dst buffer size and src buffer size are differrent.
-	// in this case, compiler uses `runtime.makeslicecopy`, but it is slow.
+	
+	
+	
+	
 	buf = buf[:len(buf)-1]
 	copied := make([]byte, len(buf))
 	copy(copied, buf)
@@ -177,10 +177,10 @@ func marshalNoEscape(v interface{}) ([]byte, error) {
 		return nil, err
 	}
 
-	// this line exists to escape call of `runtime.makeslicecopy` .
-	// if use `make([]byte, len(buf)-1)` and `copy(copied, buf)`,
-	// dst buffer size and src buffer size are differrent.
-	// in this case, compiler uses `runtime.makeslicecopy`, but it is slow.
+	
+	
+	
+	
 	buf = buf[:len(buf)-1]
 	copied := make([]byte, len(buf))
 	copy(copied, buf)

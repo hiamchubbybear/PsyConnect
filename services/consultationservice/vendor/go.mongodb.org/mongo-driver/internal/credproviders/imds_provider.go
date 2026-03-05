@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2023-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package credproviders
 
@@ -19,20 +19,20 @@ import (
 )
 
 const (
-	// AzureProviderName provides a name of Azure provider
+	
 	AzureProviderName = "AzureProvider"
 
 	azureURI = "http://169.254.169.254/metadata/identity/oauth2/token"
 )
 
-// An AzureProvider retrieves credentials from Azure IMDS.
+
 type AzureProvider struct {
 	httpClient   *http.Client
 	expiration   time.Time
 	expiryWindow time.Duration
 }
 
-// NewAzureProvider returns a pointer to an Azure credential provider.
+
 func NewAzureProvider(httpClient *http.Client, expiryWindow time.Duration) *AzureProvider {
 	return &AzureProvider{
 		httpClient:   httpClient,
@@ -41,7 +41,7 @@ func NewAzureProvider(httpClient *http.Client, expiryWindow time.Duration) *Azur
 	}
 }
 
-// RetrieveWithContext retrieves the keys from the Azure service.
+
 func (a *AzureProvider) RetrieveWithContext(ctx context.Context) (credentials.Value, error) {
 	v := credentials.Value{ProviderName: AzureProviderName}
 	req, err := http.NewRequest(http.MethodGet, azureURI, nil)
@@ -71,7 +71,7 @@ func (a *AzureProvider) RetrieveWithContext(ctx context.Context) (credentials.Va
 		AccessToken string `json:"access_token"`
 		ExpiresIn   string `json:"expires_in"`
 	}
-	// Attempt to read body as JSON
+	
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
 		return v, fmt.Errorf("unable to retrieve Azure credentials: error reading body JSON: %w (response body: %s)", err, body)
@@ -92,12 +92,12 @@ func (a *AzureProvider) RetrieveWithContext(ctx context.Context) (credentials.Va
 	return v, err
 }
 
-// Retrieve retrieves the keys from the Azure service.
+
 func (a *AzureProvider) Retrieve() (credentials.Value, error) {
 	return a.RetrieveWithContext(context.Background())
 }
 
-// IsExpired returns if the credentials have been retrieved.
+
 func (a *AzureProvider) IsExpired() bool {
 	return a.expiration.Before(time.Now())
 }

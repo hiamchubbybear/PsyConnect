@@ -18,7 +18,7 @@ type UpdateTherapistRequest struct {
 	Experience            int
 	AvatarOverride        string
 	Name                  string
-	ProfessionalInfo      *ProfessionalInfo // Optional update
+	ProfessionalInfo      *ProfessionalInfo 
 }
 
 type UpdateTherapistUseCase struct {

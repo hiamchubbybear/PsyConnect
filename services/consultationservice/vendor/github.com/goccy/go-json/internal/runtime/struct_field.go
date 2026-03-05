@@ -21,7 +21,7 @@ func IsIgnoredStructField(field reflect.StructField) bool {
 				return true
 			}
 		} else {
-			// private field
+			
 			return true
 		}
 	}
@@ -55,9 +55,9 @@ func isValidTag(s string) bool {
 	for _, c := range s {
 		switch {
 		case strings.ContainsRune("!#$%&()*+-./:<=>?@[]^_{|}~ ", c):
-			// Backslash and quote chars are reserved, but
-			// otherwise any punctuation chars are allowed
-			// in a tag name.
+			
+			
+			
 		case !unicode.IsLetter(c) && !unicode.IsDigit(c):
 			return false
 		}

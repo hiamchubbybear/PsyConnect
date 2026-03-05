@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { HeaderStateService } from '../../components/header/header-state';
 import { Post } from '../../models/post.model';
 import {
   REACTION_IMAGES,
@@ -59,18 +60,37 @@ export class FeedComponent implements OnInit {
   error: string | null = null;
   feedType: 'all' | 'trending' = 'all';
 
-  // Reaction picker state
+  
+  isScrollingDown = false;
+  private lastScrollTop = 0;
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const st = window.pageYOffset || document.documentElement.scrollTop;
+    if (st > this.lastScrollTop && st > 50) {
+      this.isScrollingDown = true;
+    } else if (st < this.lastScrollTop) {
+      this.isScrollingDown = false;
+    }
+    this.lastScrollTop = st <= 0 ? 0 : st;
+  }
+
+  closeSearch() {
+    this.headerState.setSearchOpen(false);
+  }
+
+  
   showReactionPicker: { [postId: string]: boolean } = {};
   reactionTypes = REACTION_TYPES;
   reactionImages = REACTION_IMAGES;
 
-  // Profile hover state
+  
   profileCache: Map<string, any> = new Map();
   showAuthorCard: { [postId: string]: boolean } = {};
   hoveredUserId: string | null = null;
   authorCardTimeout: any = null;
 
-  // Post modal state
+  
   showPostModal = false;
   selectedPostId: string | null = null;
 
@@ -96,7 +116,7 @@ export class FeedComponent implements OnInit {
   supportGroups: Group[] = [];
   viewedPosts: Set<string> = new Set();
   private currentPage = 0;
-  private readonly PAGE_SIZE = 20;
+  private readonly PAGE_SIZE = 5;
   private observer: IntersectionObserver | null = null;
 
   constructor(
@@ -107,6 +127,7 @@ export class FeedComponent implements OnInit {
     private socialService: SocialService,
     private swipeService: SwipeService,
     private groupService: GroupService,
+    public headerState: HeaderStateService,
   ) {}
 
   ngOnInit() {
@@ -131,7 +152,7 @@ export class FeedComponent implements OnInit {
     feedObservable.subscribe({
       next: (posts) => {
         const newPosts = posts || [];
-        // Append instead of replace if not page 0
+        
         if (this.currentPage === 0) {
           this.posts = newPosts;
         } else {
@@ -139,7 +160,7 @@ export class FeedComponent implements OnInit {
         }
 
         this.loading = false;
-        // Load profiles for all post authors
+        
         newPosts.forEach((post) => {
           if (post.author_id) {
             this.loadProfile(post.author_id).then((profile) => {
@@ -167,6 +188,18 @@ export class FeedComponent implements OnInit {
     this.loadFeed();
   }
 
+  refreshTherapists() {
+    this.swipeService.triggerUpdate().subscribe({
+      next: () => {
+        setTimeout(() => this.loadTherapists(), 500);
+      },
+      error: (err) => {
+        console.error('Failed to refresh therapists:', err);
+        this.loadTherapists();
+      },
+    });
+  }
+
   loadTherapists() {
     this.swipeService.getSwipeData().subscribe({
       next: (res) => {
@@ -174,16 +207,18 @@ export class FeedComponent implements OnInit {
         const slice = therapists.slice(0, 3);
         if (slice.length === 0) return;
 
-        // Seed list with initial data from swipe API
+        
         this.therapists = slice.map((t: ApiTherapist) => ({
           name: t.name || 'Therapist',
-          avatar: t.avatarOverride || 'assets/images/default-avatar.png',
+          avatar:
+            t.avatarOverride ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'Therapist')}&background=random`,
           specialtyKey: t.specialization?.[0] || 'Counseling',
           rating: t.rating || 5.0,
           profileId: t.profileId,
         })) as any[];
 
-        // Enrich each entry with real profile data
+        
         slice.forEach((t: ApiTherapist, i: number) => {
           if (!t.profileId) return;
           this.profileService.getProfileById(t.profileId).subscribe({
@@ -196,7 +231,7 @@ export class FeedComponent implements OnInit {
                 name: fullName || this.therapists[i].name,
                 avatar: profile.avatarUri || this.therapists[i].avatar,
               };
-              this.therapists = [...this.therapists]; // trigger change detection
+              this.therapists = [...this.therapists]; 
             },
             error: () => {},
           });
@@ -232,7 +267,7 @@ export class FeedComponent implements OnInit {
           }
         });
       },
-      { threshold: 0.5 }, // 50% of the post must be visible
+      { threshold: 0.5 }, 
     );
   }
 
@@ -248,10 +283,10 @@ export class FeedComponent implements OnInit {
       error: (err: any) => console.error('Failed to record view:', err),
     });
 
-    // When all posts have been seen, load MORE (next page)
+    
     if (this.posts.length > 0 && this.viewedPosts.size >= this.posts.length) {
       if (this.feedType === 'all') {
-        // Only paginate "all" feed
+        
         this.currentPage++;
         setTimeout(() => {
           this.loadFeed();
@@ -264,14 +299,14 @@ export class FeedComponent implements OnInit {
     this.groupService.joinGroup(group.id).subscribe({
       next: () => {
         group.member_count++;
-        // Show success toast or feedback
+        
       },
       error: (err) => console.error('Failed to join group:', err),
     });
   }
 
   toggleMoodLog() {
-    // Removed
+    
   }
 
   bookTherapist(therapist: any) {
@@ -294,11 +329,11 @@ export class FeedComponent implements OnInit {
     this.router.navigate(['/feature/article/create']);
   }
 
-  // Social Engagement methods
+  
   upvotePost(post: Post, event: Event) {
     event.stopPropagation();
 
-    // If already upvoted, remove the vote
+    
     if (post.user_vote === 'up') {
       post.upvote_count--;
       post.user_vote = null;
@@ -306,13 +341,13 @@ export class FeedComponent implements OnInit {
       this.reactionService.removeReaction(post.id).subscribe({
         error: (err: any) => {
           console.error('Failed to remove upvote:', err);
-          this.loadFeed(); // Revert on error
+          this.loadFeed(); 
         },
       });
       return;
     }
 
-    // Otherwise, add/switch to upvote
+    
     if (post.user_vote === 'down') post.downvote_count--;
     post.upvote_count++;
     post.user_vote = 'up';
@@ -320,7 +355,7 @@ export class FeedComponent implements OnInit {
     this.reactionService.addReaction(post.id, 'up').subscribe({
       error: (err: any) => {
         console.error('Failed to upvote:', err);
-        this.loadFeed(); // Revert on error
+        this.loadFeed(); 
       },
     });
   }
@@ -328,7 +363,7 @@ export class FeedComponent implements OnInit {
   downvotePost(post: Post, event: Event) {
     event.stopPropagation();
 
-    // If already downvoted, remove the vote
+    
     if (post.user_vote === 'down') {
       post.downvote_count--;
       post.user_vote = null;
@@ -336,13 +371,13 @@ export class FeedComponent implements OnInit {
       this.reactionService.removeReaction(post.id).subscribe({
         error: (err: any) => {
           console.error('Failed to remove downvote:', err);
-          this.loadFeed(); // Revert on error
+          this.loadFeed(); 
         },
       });
       return;
     }
 
-    // Otherwise, add/switch to downvote
+    
     if (post.user_vote === 'up') post.upvote_count--;
     post.downvote_count++;
     post.user_vote = 'down';
@@ -350,7 +385,7 @@ export class FeedComponent implements OnInit {
     this.reactionService.addReaction(post.id, 'down').subscribe({
       error: (err: any) => {
         console.error('Failed to downvote:', err);
-        this.loadFeed(); // Revert on error
+        this.loadFeed(); 
       },
     });
   }
@@ -367,7 +402,7 @@ export class FeedComponent implements OnInit {
 
   toggleBookmark(post: Post, event: Event) {
     event.stopPropagation();
-    const isBookmarked = post.user_bookmark; // Assuming we add this to model or track it
+    const isBookmarked = post.user_bookmark; 
 
     const action = isBookmarked
       ? this.socialService.removeBookmark(post.id)
@@ -396,21 +431,21 @@ export class FeedComponent implements OnInit {
     });
   }
 
-  // Post modal methods
+  
   openPostModal(postId: string, event?: Event) {
     if (event) {
       event.stopPropagation();
     }
     this.selectedPostId = postId;
     this.showPostModal = true;
-    // Prevent body scroll when modal is open
+    
     document.body.style.overflow = 'hidden';
   }
 
   closePostModal() {
     this.showPostModal = false;
     this.selectedPostId = null;
-    // Restore body scroll
+    
     document.body.style.overflow = '';
   }
 
@@ -445,7 +480,7 @@ export class FeedComponent implements OnInit {
     return date.toLocaleDateString();
   }
 
-  // Profile methods
+  
   loadProfile(userId: string): Promise<any> {
     return new Promise((resolve) => {
       if (this.profileCache.has(userId)) {

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 )
 
-// WithLogger sets a custom logger.
+
 func WithLogger(l *slog.Logger) Option {
 	return optionFunc(func(v *Viper) {
 		v.logger = l

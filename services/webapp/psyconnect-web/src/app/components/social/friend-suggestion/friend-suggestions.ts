@@ -1,4 +1,4 @@
-// friend-suggestions/friend-suggestions.component.ts
+
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';

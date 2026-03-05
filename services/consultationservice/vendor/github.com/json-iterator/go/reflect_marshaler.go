@@ -70,7 +70,7 @@ func createEncoderOfMarshaler(ctx *ctx, typ reflect2.Type) ValEncoder {
 		}
 		return encoder
 	}
-	// if prefix is empty, the type is the root type
+	
 	if ctx.prefix != "" && ptrType.Implements(textMarshalerType) {
 		checkIsEmpty := createCheckIsEmpty(ctx, ptrType)
 		var encoder ValEncoder = &textMarshalerEncoder{
@@ -99,8 +99,8 @@ func (encoder *marshalerEncoder) Encode(ptr unsafe.Pointer, stream *Stream) {
 	if err != nil {
 		stream.Error = err
 	} else {
-		// html escape was already done by jsoniter
-		// but the extra '\n' should be trimed
+		
+		
 		l := len(bytes)
 		if l > 0 && bytes[l-1] == '\n' {
 			bytes = bytes[:l-1]
@@ -194,7 +194,7 @@ func (decoder *unmarshalerDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	obj := valType.UnsafeIndirect(ptr)
 	unmarshaler := obj.(json.Unmarshaler)
 	iter.nextToken()
-	iter.unreadByte() // skip spaces
+	iter.unreadByte() 
 	bytes := iter.SkipAndReturnBytes()
 	err := unmarshaler.UnmarshalJSON(bytes)
 	if err != nil {

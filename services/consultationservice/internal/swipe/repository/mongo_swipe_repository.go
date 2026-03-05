@@ -69,7 +69,7 @@ func (r *MongoSwipeRepository) InsertSwipes(ctx context.Context, clientID string
 }
 
 func (r *MongoSwipeRepository) SwipeAndMatch(ctx context.Context, clientID, therapistID string, points float32, reasons []string) error {
-	// Delete existing swipe
+	
 	_, err := r.collection.DeleteOne(ctx, bson.M{
 		"client_id":    clientID,
 		"therapist_id": therapistID,
@@ -79,7 +79,7 @@ func (r *MongoSwipeRepository) SwipeAndMatch(ctx context.Context, clientID, ther
 		return errors.New("failed to delete old swipe")
 	}
 
-	// Create match using DDD MatchRepository
+	
 	match := matchDomain.NewMatch(clientID, therapistID, "swipe", float64(points), reasons)
 	err = r.matchRepo.Create(ctx, match)
 	if err != nil {

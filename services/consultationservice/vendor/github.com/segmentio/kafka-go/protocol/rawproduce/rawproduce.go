@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	// Register a type override so that raw produce requests will be encoded with the correct type.
+	
 	req := &Request{}
 	protocol.RegisterOverride(req, &produce.Response{}, req.TypeKey())
 }

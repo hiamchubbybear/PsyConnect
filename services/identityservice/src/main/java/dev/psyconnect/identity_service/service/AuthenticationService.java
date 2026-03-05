@@ -50,7 +50,7 @@ public class AuthenticationService {
 
     @Value("${SIGNER_KEY}")
     private String SIGNER_KEY;
-    // 30 Minutes
+
     static long TIME_EXPIRED = 30 * 60 * 60 * 100;
 
     final RoleRepository roleRepository;
@@ -265,24 +265,20 @@ public class AuthenticationService {
         return extractClaim(token, JWTClaimsSet::getExpirationTime);
     }
 
-    // Extract a specific claim from the token
     public <T> T extractClaim(String token, Function<JWTClaimsSet, T> claimsResolver)
             throws ParseException, JOSEException {
         final JWTClaimsSet claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    // Extract all claims from the token
     public JWTClaimsSet extractAllClaims(String token) throws ParseException, JOSEException {
         return verifyToken(token).getJWTClaimsSet();
     }
 
-    // Check if the token is expired
     private Boolean isTokenExpired(String token) throws ParseException, JOSEException {
         return extractExpiration(token).before(new Date());
     }
 
-    // Validate the token against user details and expiration
     public Boolean validateToken(String token, AuthenticationFilterRequest authenticationRequest)
             throws ParseException, JOSEException {
         final String username = extractUsername(token);

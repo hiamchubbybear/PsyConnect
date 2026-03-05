@@ -14,14 +14,14 @@ var (
 	_ fs.ReadDirFile = (*BasePathFile)(nil)
 )
 
-// The BasePathFs restricts all operations to a given path within an Fs.
-// The given file name to the operations on this Fs will be prepended with
-// the base path before calling the base Fs.
-// Any file name (after filepath.Clean()) outside this base path will be
-// treated as non existing file.
-//
-// Note that it does not clean the error messages on return, so you may
-// reveal the real path on errors.
+
+
+
+
+
+
+
+
 type BasePathFs struct {
 	source Fs
 	path   string
@@ -48,8 +48,8 @@ func NewBasePathFs(source Fs, path string) Fs {
 	return &BasePathFs{source: source, path: path}
 }
 
-// on a file outside the base path it returns the given file name and an error,
-// else the given file with the base path prepended
+
+
 func (b *BasePathFs) RealPath(name string) (path string, err error) {
 	if err := validateBasePathName(name); err != nil {
 		return name, err
@@ -66,13 +66,13 @@ func (b *BasePathFs) RealPath(name string) (path string, err error) {
 
 func validateBasePathName(name string) error {
 	if runtime.GOOS != "windows" {
-		// Not much to do here;
-		// the virtual file paths all look absolute on *nix.
+		
+		
 		return nil
 	}
 
-	// On Windows a common mistake would be to provide an absolute OS path
-	// We could strip out the base part, but that would not be very portable.
+	
+	
 	if filepath.IsAbs(name) {
 		return os.ErrNotExist
 	}

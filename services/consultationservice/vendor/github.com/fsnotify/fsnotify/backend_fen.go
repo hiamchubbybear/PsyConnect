@@ -1,8 +1,8 @@
 //go:build solaris
 
-// FEN backend for illumos (supported) and Solaris (untested, but should work).
-//
-// See port_create(3c) etc. for docs. https://www.illumos.org/man/3C/port_create
+
+
+
 
 package fsnotify
 
@@ -24,9 +24,9 @@ type fen struct {
 
 	mu      sync.Mutex
 	port    *unix.EventPort
-	done    chan struct{} // Channel for sending a "quit message" to the reader goroutine
-	dirs    map[string]Op // Explicitly watched directories
-	watches map[string]Op // Explicitly watched non-directories
+	done    chan struct{} 
+	dirs    map[string]Op 
+	watches map[string]Op 
 }
 
 func newBackend(ev chan Event, errs chan error) (backend, error) {
@@ -52,8 +52,8 @@ func newBufferedBackend(sz uint, ev chan Event, errs chan error) (backend, error
 	return w, nil
 }
 
-// sendEvent attempts to send an event to the user, returning true if the event
-// was put in the channel successfully and false if the watcher has been closed.
+
+
 func (w *fen) sendEvent(name string, op Op) (sent bool) {
 	select {
 	case <-w.done:
@@ -63,8 +63,8 @@ func (w *fen) sendEvent(name string, op Op) (sent bool) {
 	}
 }
 
-// sendError attempts to send an error to the user, returning true if the error
-// was put in the channel successfully and false if the watcher has been closed.
+
+
 func (w *fen) sendError(err error) (sent bool) {
 	if err == nil {
 		return true
@@ -87,8 +87,8 @@ func (w *fen) isClosed() bool {
 }
 
 func (w *fen) Close() error {
-	// Take the lock used by associateFile to prevent lingering events from
-	// being processed after the close
+	
+	
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.isClosed() {
@@ -114,14 +114,14 @@ func (w *fen) AddWith(name string, opts ...addOpt) error {
 		return fmt.Errorf("%w: %s", xErrUnsupported, with.op)
 	}
 
-	// Currently we resolve symlinks that were explicitly requested to be
-	// watched. Otherwise we would use LStat here.
+	
+	
 	stat, err := os.Stat(name)
 	if err != nil {
 		return err
 	}
 
-	// Associate all files in the directory.
+	
 	if stat.IsDir() {
 		err := w.handleDirectory(name, stat, true, w.associateFile)
 		if err != nil {
@@ -157,9 +157,9 @@ func (w *fen) Remove(name string) error {
 			time.Now().Format("15:04:05.000000000"), name)
 	}
 
-	// The user has expressed an intent. Immediately remove this name from
-	// whichever watch list it might be in. If it's not in there the delete
-	// doesn't cause harm.
+	
+	
+	
 	w.mu.Lock()
 	delete(w.watches, name)
 	delete(w.dirs, name)
@@ -170,7 +170,7 @@ func (w *fen) Remove(name string) error {
 		return err
 	}
 
-	// Remove associations for every file in the directory.
+	
 	if stat.IsDir() {
 		err := w.handleDirectory(name, stat, false, w.dissociateFile)
 		if err != nil {
@@ -187,10 +187,10 @@ func (w *fen) Remove(name string) error {
 	return nil
 }
 
-// readEvents contains the main loop that runs in a goroutine watching for events.
+
 func (w *fen) readEvents() {
-	// If this function returns, the watcher has been closed and we can close
-	// these channels
+	
+	
 	defer func() {
 		close(w.Errors)
 		close(w.Events)
@@ -200,15 +200,15 @@ func (w *fen) readEvents() {
 	for {
 		count, err := w.port.Get(pevents, 1, nil)
 		if err != nil && err != unix.ETIME {
-			// Interrupted system call (count should be 0) ignore and continue
+			
 			if errors.Is(err, unix.EINTR) && count == 0 {
 				continue
 			}
-			// Get failed because we called w.Close()
+			
 			if errors.Is(err, unix.EBADF) && w.isClosed() {
 				return
 			}
-			// There was an error not caused by calling w.Close()
+			
 			if !w.sendError(err) {
 				return
 			}
@@ -217,7 +217,7 @@ func (w *fen) readEvents() {
 		p := pevents[:count]
 		for _, pevent := range p {
 			if pevent.Source != unix.PORT_SOURCE_FILE {
-				// Event from unexpected source received; should never happen.
+				
 				if !w.sendError(errors.New("Event from unexpected source received")) {
 					return
 				}
@@ -242,7 +242,7 @@ func (w *fen) handleDirectory(path string, stat os.FileInfo, follow bool, handle
 		return err
 	}
 
-	// Handle all children of the directory.
+	
 	for _, entry := range files {
 		finfo, err := entry.Info()
 		if err != nil {
@@ -254,14 +254,14 @@ func (w *fen) handleDirectory(path string, stat os.FileInfo, follow bool, handle
 		}
 	}
 
-	// And finally handle the directory itself.
+	
 	return handler(path, stat, follow)
 }
 
-// handleEvent might need to emit more than one fsnotify event if the events
-// bitmap matches more than one event type (e.g. the file was both modified and
-// had the attributes changed between when the association was created and the
-// when event was returned)
+
+
+
+
 func (w *fen) handleEvent(event *unix.PortEvent) error {
 	var (
 		events     = event.Events
@@ -286,25 +286,25 @@ func (w *fen) handleEvent(event *unix.PortEvent) error {
 		if !w.sendEvent(path, Rename) {
 			return nil
 		}
-		// Don't keep watching the new file name
+		
 		reRegister = false
 	}
 	if events&unix.FILE_RENAME_TO != 0 {
-		// We don't report a Rename event for this case, because Rename events
-		// are interpreted as referring to the _old_ name of the file, and in
-		// this case the event would refer to the new name of the file. This
-		// type of rename event is not supported by fsnotify.
+		
+		
+		
+		
 
-		// inotify reports a Remove event in this case, so we simulate this
-		// here.
+		
+		
 		if !w.sendEvent(path, Remove) {
 			return nil
 		}
-		// Don't keep watching the file that was removed
+		
 		reRegister = false
 	}
 
-	// The file is gone, nothing left to do.
+	
 	if !reRegister {
 		if watchedDir {
 			w.mu.Lock()
@@ -319,37 +319,37 @@ func (w *fen) handleEvent(event *unix.PortEvent) error {
 		return nil
 	}
 
-	// If we didn't get a deletion the file still exists and we're going to have
-	// to watch it again. Let's Stat it now so that we can compare permissions
-	// and have what we need to continue watching the file
+	
+	
+	
 
 	stat, err := os.Lstat(path)
 	if err != nil {
-		// This is unexpected, but we should still emit an event. This happens
-		// most often on "rm -r" of a subdirectory inside a watched directory We
-		// get a modify event of something happening inside, but by the time we
-		// get here, the sudirectory is already gone. Clearly we were watching
-		// this path but now it is gone. Let's tell the user that it was
-		// removed.
+		
+		
+		
+		
+		
+		
 		if !w.sendEvent(path, Remove) {
 			return nil
 		}
-		// Suppress extra write events on removed directories; they are not
-		// informative and can be confusing.
+		
+		
 		return nil
 	}
 
-	// resolve symlinks that were explicitly watched as we would have at Add()
-	// time. this helps suppress spurious Chmod events on watched symlinks
+	
+	
 	if isWatched {
 		stat, err = os.Stat(path)
 		if err != nil {
-			// The symlink still exists, but the target is gone. Report the
-			// Remove similar to above.
+			
+			
 			if !w.sendEvent(path, Remove) {
 				return nil
 			}
-			// Don't return the error
+			
 		}
 	}
 
@@ -365,7 +365,7 @@ func (w *fen) handleEvent(event *unix.PortEvent) error {
 		}
 	}
 	if events&unix.FILE_ATTRIB != 0 && stat != nil {
-		// Only send Chmod if perms changed
+		
 		if stat.Mode().Perm() != fmode.Perm() {
 			if !w.sendEvent(path, Chmod) {
 				return nil
@@ -374,17 +374,17 @@ func (w *fen) handleEvent(event *unix.PortEvent) error {
 	}
 
 	if stat != nil {
-		// If we get here, it means we've hit an event above that requires us to
-		// continue watching the file or directory
+		
+		
 		return w.associateFile(path, stat, isWatched)
 	}
 	return nil
 }
 
 func (w *fen) updateDirectory(path string) error {
-	// The directory was modified, so we must find unwatched entities and watch
-	// them. If something was removed from the directory, nothing will happen,
-	// as everything else should still be watched.
+	
+	
+	
 	files, err := os.ReadDir(path)
 	if err != nil {
 		return err
@@ -415,19 +415,19 @@ func (w *fen) associateFile(path string, stat os.FileInfo, follow bool) error {
 	if w.isClosed() {
 		return ErrClosed
 	}
-	// This is primarily protecting the call to AssociatePath but it is
-	// important and intentional that the call to PathIsWatched is also
-	// protected by this mutex. Without this mutex, AssociatePath has been seen
-	// to error out that the path is already associated.
+	
+	
+	
+	
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
 	if w.port.PathIsWatched(path) {
-		// Remove the old association in favor of this one If we get ENOENT,
-		// then while the x/sys/unix wrapper still thought that this path was
-		// associated, the underlying event port did not. This call will have
-		// cleared up that discrepancy. The most likely cause is that the event
-		// has fired but we haven't processed it yet.
+		
+		
+		
+		
+		
 		err := w.port.DissociatePath(path)
 		if err != nil && !errors.Is(err, unix.ENOENT) {
 			return err
@@ -436,11 +436,11 @@ func (w *fen) associateFile(path string, stat os.FileInfo, follow bool) error {
 
 	var events int
 	if !follow {
-		// Watch symlinks themselves rather than their targets unless this entry
-		// is explicitly watched.
+		
+		
 		events |= unix.FILE_NOFOLLOW
 	}
-	if true { // TODO: implement withOps()
+	if true { 
 		events |= unix.FILE_MODIFIED
 	}
 	if true {

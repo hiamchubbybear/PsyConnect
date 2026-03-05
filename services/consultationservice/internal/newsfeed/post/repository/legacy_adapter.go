@@ -7,8 +7,8 @@ import (
 	"context"
 )
 
-// LegacyPostRepositoryAdapter adapts legacy PostRepository to DDD interface
-// Since domain.Post and model.Post have identical structure, we use type conversion
+
+
 type LegacyPostRepositoryAdapter struct {
 	legacyRepo legacyRepo.PostRepository
 }
@@ -104,7 +104,7 @@ func (a *LegacyPostRepositoryAdapter) GetPopularTags(ctx context.Context, limit 
 	return a.legacyRepo.GetPopularTags(ctx, limit)
 }
 
-// Conversion helpers
+
 func convertDomainToModel(d *domain.Post) *model.Post {
 	return &model.Post{
 		ID:            d.ID,
@@ -189,5 +189,5 @@ func convertMediaModelToDomain(media []model.MediaAttachment) []domain.MediaAtta
 	return result
 }
 
-// Ensure adapter implements the interface
+
 var _ PostRepository = (*LegacyPostRepositoryAdapter)(nil)

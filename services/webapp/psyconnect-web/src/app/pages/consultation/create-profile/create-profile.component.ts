@@ -996,12 +996,12 @@ export class CreateConsultationProfileComponent implements OnInit {
   profileForm: FormGroup;
   currentStep = 1;
 
-  // --- Search Subscriptions ---
+  
   private institutionSearch$ = new Subject<{ term: string; index: number }>();
   universityResults: any[] = [];
   activeDegreeIndex: number | null = null;
 
-  // Data for cards
+  
   availableModes = [
     { id: 'online', label: 'CONSULTATION.Modes.Online', icon: '🌐' },
     { id: 'in-person', label: 'CONSULTATION.Modes.InPerson', icon: '📍' },
@@ -1054,15 +1054,15 @@ export class CreateConsultationProfileComponent implements OnInit {
       rage_price: [null, [Validators.required, Validators.min(0)]],
       languages: [[]],
       consultation_modes: [[]],
-      issue_detail: [[]], // Client
-      specialization: [[]], // Therapist
-      experience: [null], // Therapist
-      name: [''], // Therapist
-      currency: ['USD'], // Therapist
-      professional_title_code: [''], // Therapist
-      professional_title_display: [''], // Therapist
-      degrees: this.fb.array([]), // Therapist
-      certifications: this.fb.array([]), // Therapist
+      issue_detail: [[]], 
+      specialization: [[]], 
+      experience: [null], 
+      name: [''], 
+      currency: ['USD'], 
+      professional_title_code: [''], 
+      professional_title_display: [''], 
+      degrees: this.fb.array([]), 
+      certifications: this.fb.array([]), 
     });
   }
 
@@ -1076,15 +1076,15 @@ export class CreateConsultationProfileComponent implements OnInit {
         this.router.navigate(['/login']);
       } else {
         this.role = (rawRole as string).toLowerCase() as 'therapist' | 'client';
-        // Add one initial empty degree/cert if therapist
+        
         if (this.role === 'therapist') {
-          // Initialize empty state is fine, user can click Add
+          
         }
         this.loadExistingProfile();
       }
     });
 
-    // Subscribe to institution searching
+    
     this.institutionSearch$
       .pipe(
         debounceTime(300),
@@ -1221,7 +1221,7 @@ export class CreateConsultationProfileComponent implements OnInit {
     });
   }
 
-  // --- Step Navigation ---
+  
   getStepTitle(): string {
     switch (this.currentStep) {
       case 1:
@@ -1238,7 +1238,7 @@ export class CreateConsultationProfileComponent implements OnInit {
   }
 
   nextStep() {
-    // Optional: add step validation here
+    
     const maxSteps = this.role === 'therapist' ? 4 : 3;
     if (this.currentStep < maxSteps) {
       this.currentStep++;
@@ -1246,7 +1246,7 @@ export class CreateConsultationProfileComponent implements OnInit {
   }
 
   goToStep(step: number) {
-    // Optional: only allow jumping if previous steps are valid
+    
     this.currentStep = step;
   }
 
@@ -1254,7 +1254,7 @@ export class CreateConsultationProfileComponent implements OnInit {
     this.router.navigate(['/']);
   }
 
-  // --- Array Control Helpers (for Cards) ---
+  
   toggleArrayValue(controlName: string, value: string) {
     const control = this.profileForm.get(controlName);
     if (!control) return;
@@ -1302,9 +1302,9 @@ export class CreateConsultationProfileComponent implements OnInit {
       : this.isArraySelected('issue_detail', id);
   }
 
-  // --- Submit ---
+  
   createProfile() {
-    // Ensure lists aren't empty
+    
     if (!this.profileForm.value.languages?.length) {
       this.toastService.error(
         'Validation',
@@ -1350,7 +1350,7 @@ export class CreateConsultationProfileComponent implements OnInit {
           code: formVal.professional_title_code,
           display:
             formVal.professional_title_display ||
-            formVal.professional_title_code, // Fallback name
+            formVal.professional_title_code, 
         },
         experience_years: Number(formVal.experience) || 0,
         degrees: formVal.degrees || [],
@@ -1394,7 +1394,7 @@ export class CreateConsultationProfileComponent implements OnInit {
     });
   }
 
-  // --- University Autocomplete Methods ---
+  
   onInstitutionSearch(event: any, index: number) {
     this.activeDegreeIndex = index;
     this.institutionSearch$.next({ term: event.target.value, index });
@@ -1409,7 +1409,7 @@ export class CreateConsultationProfileComponent implements OnInit {
   }
 
   onInstitutionBlur() {
-    // Delay hiding to allow mousedown to fire on the list item first
+    
     setTimeout(() => {
       this.activeDegreeIndex = null;
       this.universityResults = [];

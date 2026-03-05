@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package description
 
@@ -20,23 +20,23 @@ import (
 	"go.mongodb.org/mongo-driver/tag"
 )
 
-// SelectedServer augments the Server type by also including the TopologyKind of the topology that includes the server.
-// This type should be used to track the state of a server that was selected to perform an operation.
+
+
 type SelectedServer struct {
 	Server
 	Kind TopologyKind
 }
 
-// Server contains information about a node in a cluster. This is created from hello command responses. If the value
-// of the Kind field is LoadBalancer, only the Addr and Kind fields will be set. All other fields will be set to the
-// zero value of the field's type.
+
+
+
 type Server struct {
 	Addr address.Address
 
 	Arbiters          []string
 	AverageRTT        time.Duration
 	AverageRTTSet     bool
-	Compression       []string // compression methods returned by server
+	Compression       []string 
 	CanonicalAddr     address.Address
 	ElectionID        primitive.ObjectID
 	HeartbeatInterval time.Duration
@@ -54,8 +54,8 @@ type Server struct {
 	Passive           bool
 	Primary           address.Address
 	ReadOnly          bool
-	ServiceID         *primitive.ObjectID // Only set for servers that are deployed behind a load balancer.
-	// Deprecated: Use SessionTimeoutMinutesPtr instead.
+	ServiceID         *primitive.ObjectID 
+	
 	SessionTimeoutMinutes    uint32
 	SessionTimeoutMinutesPtr *int64
 	SetName                  string
@@ -66,7 +66,7 @@ type Server struct {
 	WireVersion              *VersionRange
 }
 
-// NewServer creates a new server description from the given hello command response.
+
 func NewServer(addr address.Address, response bson.Raw) Server {
 	desc := Server{Addr: addr, CanonicalAddr: addr, LastUpdateTime: time.Now().UTC()}
 	elements, err := response.Elements()
@@ -341,12 +341,12 @@ func NewServer(addr address.Address, response bson.Raw) Server {
 	return desc
 }
 
-// NewDefaultServer creates a new unknown server description with the given address.
+
 func NewDefaultServer(addr address.Address) Server {
 	return NewServerFromError(addr, nil, nil)
 }
 
-// NewServerFromError creates a new unknown server description with the given parameters.
+
 func NewServerFromError(addr address.Address, err error, tv *TopologyVersion) Server {
 	return Server{
 		Addr:            addr,
@@ -356,14 +356,14 @@ func NewServerFromError(addr address.Address, err error, tv *TopologyVersion) Se
 	}
 }
 
-// SetAverageRTT sets the average round trip time for this server description.
+
 func (s Server) SetAverageRTT(rtt time.Duration) Server {
 	s.AverageRTT = rtt
 	s.AverageRTTSet = true
 	return s
 }
 
-// DataBearing returns true if the server is a data bearing server.
+
 func (s Server) DataBearing() bool {
 	return s.Kind == RSPrimary ||
 		s.Kind == RSSecondary ||
@@ -371,12 +371,12 @@ func (s Server) DataBearing() bool {
 		s.Kind == Standalone
 }
 
-// LoadBalanced returns true if the server is a load balancer or is behind a load balancer.
+
 func (s Server) LoadBalanced() bool {
 	return s.Kind == LoadBalancer || s.ServiceID != nil
 }
 
-// String implements the Stringer interface
+
 func (s Server) String() string {
 	str := fmt.Sprintf("Addr: %s, Type: %s",
 		s.Addr, s.Kind)
@@ -415,7 +415,7 @@ func decodeStringMap(element bson.RawElement, name string) (map[string]string, e
 	return m, nil
 }
 
-// Equal compares two server descriptions and returns true if they are equal
+
 func (s Server) Equal(other Server) bool {
 	if s.CanonicalAddr.String() != other.CanonicalAddr.String() {
 		return false
@@ -474,9 +474,9 @@ func (s Server) Equal(other Server) bool {
 		return false
 	}
 
-	// If TopologyVersion is nil for both servers, CompareToIncoming will return -1 because it assumes that the
-	// incoming response is newer. We want the descriptions to be considered equal in this case, though, so an
-	// explicit check is required.
+	
+	
+	
 	if s.TopologyVersion == nil && other.TopologyVersion == nil {
 		return true
 	}
@@ -495,10 +495,10 @@ func sliceStringEqual(a []string, b []string) bool {
 	return true
 }
 
-// stringSliceFromRawElement decodes the provided BSON element into a []string.
-// This internally calls StringSliceFromRawValue on the element's value. The
-// error conditions outlined in that function's documentation apply for this
-// function as well.
+
+
+
+
 func stringSliceFromRawElement(element bson.RawElement) ([]string, error) {
 	return bsonutil.StringSliceFromRawValue(element.Key(), element.Value())
 }

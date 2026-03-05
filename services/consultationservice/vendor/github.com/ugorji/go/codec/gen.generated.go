@@ -1,11 +1,11 @@
 // +build codecgen.exec
 
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
+
+
 
 package codec
 
-// DO NOT EDIT. THIS FILE IS AUTO-GENERATED FROM gen-dec-(map|array).go.tmpl
+
 
 const genDecMapTmpl = `
 {{var "v"}} := *{{ .Varname }}

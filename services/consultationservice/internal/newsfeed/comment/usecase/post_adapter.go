@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-// PostRepositoryAdapter adapts legacy PostRepository to usecase interface
+
 type PostRepositoryAdapter struct {
 	postRepo repository.PostRepository
 }
@@ -24,5 +24,5 @@ func (a *PostRepositoryAdapter) GetPostByID(ctx context.Context, id string) (int
 	return a.postRepo.GetPostByID(ctx, id)
 }
 
-// Ensure adapter implements the interface
+
 var _ PostRepository = (*PostRepositoryAdapter)(nil)

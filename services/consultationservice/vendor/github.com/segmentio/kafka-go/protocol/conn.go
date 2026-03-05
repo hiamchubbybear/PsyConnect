@@ -13,7 +13,7 @@ type Conn struct {
 	conn     net.Conn
 	clientID string
 	idgen    int32
-	versions atomic.Value // map[ApiKey]int16
+	versions atomic.Value 
 }
 
 func NewConn(conn net.Conn, clientID string) *Conn {

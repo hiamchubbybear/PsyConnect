@@ -97,7 +97,7 @@ func (s *Stream) bufptr() unsafe.Pointer {
 }
 
 func (s *Stream) statForRetry() ([]byte, int64, unsafe.Pointer) {
-	s.cursor-- // for retry ( because caller progress cursor position in each loop )
+	s.cursor-- 
 	return s.buf, s.cursor, (*sliceHeader)(unsafe.Pointer(&s.buf)).data
 }
 
@@ -457,7 +457,7 @@ func (s *Stream) skipValue(depth int64) error {
 }
 
 func nullBytes(s *Stream) error {
-	// current cursor's character is 'n'
+	
 	s.cursor++
 	if s.char() != 'u' {
 		if err := retryReadNull(s); err != nil {
@@ -488,7 +488,7 @@ func retryReadNull(s *Stream) error {
 }
 
 func trueBytes(s *Stream) error {
-	// current cursor's character is 't'
+	
 	s.cursor++
 	if s.char() != 'r' {
 		if err := retryReadTrue(s); err != nil {
@@ -519,7 +519,7 @@ func retryReadTrue(s *Stream) error {
 }
 
 func falseBytes(s *Stream) error {
-	// current cursor's character is 'f'
+	
 	s.cursor++
 	if s.char() != 'a' {
 		if err := retryReadFalse(s); err != nil {

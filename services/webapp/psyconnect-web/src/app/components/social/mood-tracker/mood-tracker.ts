@@ -39,37 +39,37 @@ interface MoodStat {
   styleUrls: ['./mood-tracker.scss'],
 })
 export class MoodTrackerComponent implements OnInit {
-  // Mood options with solid colors (5 levels matching UI reference)
+  
   moodOptions: MoodOption[] = [
     {
       value: 'awful',
       emoji: '/assets/mood/awful.svg',
       label: 'MOOD.Awful',
-      gradient: '#5B8DEE', // Blue - solid color
+      gradient: '#5B8DEE', 
     },
     {
       value: 'bad',
       emoji: '/assets/mood/bad.svg',
       label: 'MOOD.Bad',
-      gradient: '#6DBEDB', // Cyan - solid color
+      gradient: '#6DBEDB', 
     },
     {
       value: 'okay',
       emoji: '/assets/mood/okay.svg',
       label: 'MOOD.Okay',
-      gradient: '#F4C430', // Yellow - solid color
+      gradient: '#F4C430', 
     },
     {
       value: 'good',
       emoji: '/assets/mood/good.svg',
       label: 'MOOD.Good',
-      gradient: '#A8D08D', // Light Green - solid color
+      gradient: '#A8D08D', 
     },
     {
       value: 'great',
       emoji: '/assets/mood/great.svg',
       label: 'MOOD.Great',
-      gradient: '#6EBF8B', // Green - solid color
+      gradient: '#6EBF8B', 
     },
   ];
 
@@ -100,7 +100,7 @@ export class MoodTrackerComponent implements OnInit {
     },
   ];
 
-  // Mood influences
+  
   influenceFactors = [
     {
       id: 'exercise',
@@ -149,8 +149,8 @@ export class MoodTrackerComponent implements OnInit {
   }
 
   loadMoodData() {
-    // TODO: Load from API
-    // For now, use mock data
+    
+    
     const today = new Date();
     this.moodEntries = [
       {
@@ -288,21 +288,21 @@ export class MoodTrackerComponent implements OnInit {
       note: this.moodNote || undefined,
     };
 
-    // TODO: Save to API
-    // this.moodService.saveMood(newEntry).subscribe(...)
+    
+    
 
-    // Update local state
+    
     this.moodEntries.push(newEntry);
     this.todayMoodLogged = true;
     this.selectedMood = null;
     this.moodNote = '';
 
-    // Recalculate
+    
     this.generateWeekDays();
     this.calculateStats();
     this.calculateStreak();
 
-    // Show success message
+    
     console.log('Mood saved! 🎉');
   }
 
@@ -349,11 +349,11 @@ export class MoodTrackerComponent implements OnInit {
   }
 
   viewFullHistory() {
-    // TODO: Navigate to full mood history page
+    
     console.log('View full history');
   }
 
-  // Line chart helpers
+  
   getMoodValue(mood: string): number {
     const values: { [key: string]: number } = {
       awful: 1,
@@ -396,7 +396,7 @@ export class MoodTrackerComponent implements OnInit {
     return path;
   }
 
-  // Week navigation
+  
   previousWeek() {
     this.currentWeekOffset--;
     this.generateWeekDays();
@@ -411,10 +411,10 @@ export class MoodTrackerComponent implements OnInit {
     }
   }
 
-  // Mood influences
+  
   toggleInfluence(factor: any) {
     factor.active = !factor.active;
-    // TODO: Save to current mood entry
+    
   }
 
   getMoodColor(mood: string): string {

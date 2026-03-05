@@ -12,12 +12,12 @@ import (
 	"github.com/redis/go-redis/v9/internal/proto"
 )
 
-// PubSub implements Pub/Sub commands as described in
-// http://redis.io/topics/pubsub. Message receiving is NOT safe
-// for concurrent use by multiple goroutines.
-//
-// PubSub automatically reconnects to Redis Server and resubscribes
-// to the channels in case of network errors.
+
+
+
+
+
+
 type PubSub struct {
 	opt *Options
 
@@ -188,8 +188,8 @@ func (c *PubSub) Close() error {
 	return c.closeTheCn(pool.ErrClosed)
 }
 
-// Subscribe the client to the specified channels. It returns
-// empty subscription if there are no channels.
+
+
 func (c *PubSub) Subscribe(ctx context.Context, channels ...string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -204,8 +204,8 @@ func (c *PubSub) Subscribe(ctx context.Context, channels ...string) error {
 	return err
 }
 
-// PSubscribe the client to the given patterns. It returns
-// empty subscription if there are no patterns.
+
+
 func (c *PubSub) PSubscribe(ctx context.Context, patterns ...string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -220,7 +220,7 @@ func (c *PubSub) PSubscribe(ctx context.Context, patterns ...string) error {
 	return err
 }
 
-// SSubscribe Subscribes the client to the specified shard channels.
+
 func (c *PubSub) SSubscribe(ctx context.Context, channels ...string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -235,8 +235,8 @@ func (c *PubSub) SSubscribe(ctx context.Context, channels ...string) error {
 	return err
 }
 
-// Unsubscribe the client from the given channels, or from all of
-// them if none is given.
+
+
 func (c *PubSub) Unsubscribe(ctx context.Context, channels ...string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -246,7 +246,7 @@ func (c *PubSub) Unsubscribe(ctx context.Context, channels ...string) error {
 			delete(c.channels, channel)
 		}
 	} else {
-		// Unsubscribe from all channels.
+		
 		for channel := range c.channels {
 			delete(c.channels, channel)
 		}
@@ -256,8 +256,8 @@ func (c *PubSub) Unsubscribe(ctx context.Context, channels ...string) error {
 	return err
 }
 
-// PUnsubscribe the client from the given patterns, or from all of
-// them if none is given.
+
+
 func (c *PubSub) PUnsubscribe(ctx context.Context, patterns ...string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -267,7 +267,7 @@ func (c *PubSub) PUnsubscribe(ctx context.Context, patterns ...string) error {
 			delete(c.patterns, pattern)
 		}
 	} else {
-		// Unsubscribe from all patterns.
+		
 		for pattern := range c.patterns {
 			delete(c.patterns, pattern)
 		}
@@ -277,8 +277,8 @@ func (c *PubSub) PUnsubscribe(ctx context.Context, patterns ...string) error {
 	return err
 }
 
-// SUnsubscribe unsubscribes the client from the given shard channels,
-// or from all of them if none is given.
+
+
 func (c *PubSub) SUnsubscribe(ctx context.Context, channels ...string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -288,7 +288,7 @@ func (c *PubSub) SUnsubscribe(ctx context.Context, channels ...string) error {
 			delete(c.schannels, channel)
 		}
 	} else {
-		// Unsubscribe from all channels.
+		
 		for channel := range c.schannels {
 			delete(c.schannels, channel)
 		}
@@ -329,13 +329,13 @@ func (c *PubSub) Ping(ctx context.Context, payload ...string) error {
 	return err
 }
 
-// Subscription received after a successful subscription to channel.
+
 type Subscription struct {
-	// Can be "subscribe", "unsubscribe", "psubscribe" or "punsubscribe".
+	
 	Kind string
-	// Channel name we have subscribed to.
+	
 	Channel string
-	// Number of channels we are currently subscribed to.
+	
 	Count int
 }
 
@@ -343,7 +343,7 @@ func (m *Subscription) String() string {
 	return fmt.Sprintf("%s: %s", m.Kind, m.Channel)
 }
 
-// Message received as result of a PUBLISH command issued by another client.
+
 type Message struct {
 	Channel      string
 	Pattern      string
@@ -355,7 +355,7 @@ func (m *Message) String() string {
 	return fmt.Sprintf("Message<%s: %s>", m.Channel, m.Payload)
 }
 
-// Pong received as result of a PING command issued by another client.
+
 type Pong struct {
 	Payload string
 }
@@ -376,7 +376,7 @@ func (c *PubSub) newMessage(reply interface{}) (interface{}, error) {
 	case []interface{}:
 		switch kind := reply[0].(string); kind {
 		case "subscribe", "unsubscribe", "psubscribe", "punsubscribe", "ssubscribe", "sunsubscribe":
-			// Can be nil in case of "unsubscribe".
+			
 			channel, _ := reply[1].(string)
 			return &Subscription{
 				Kind:    kind,
@@ -420,15 +420,15 @@ func (c *PubSub) newMessage(reply interface{}) (interface{}, error) {
 	}
 }
 
-// ReceiveTimeout acts like Receive but returns an error if message
-// is not received in time. This is low-level API and in most cases
-// Channel should be used instead.
+
+
+
 func (c *PubSub) ReceiveTimeout(ctx context.Context, timeout time.Duration) (interface{}, error) {
 	if c.cmd == nil {
 		c.cmd = NewCmd(ctx)
 	}
 
-	// Don't hold the lock to allow subscriptions and pings.
+	
 
 	cn, err := c.connWithLock(ctx)
 	if err != nil {
@@ -448,16 +448,16 @@ func (c *PubSub) ReceiveTimeout(ctx context.Context, timeout time.Duration) (int
 	return c.newMessage(c.cmd.Val())
 }
 
-// Receive returns a message as a Subscription, Message, Pong or error.
-// See PubSub example for details. This is low-level API and in most cases
-// Channel should be used instead.
+
+
+
 func (c *PubSub) Receive(ctx context.Context) (interface{}, error) {
 	return c.ReceiveTimeout(ctx, 0)
 }
 
-// ReceiveMessage returns a Message or error ignoring Subscription and Pong
-// messages. This is low-level API and in most cases Channel should be used
-// instead.
+
+
+
 func (c *PubSub) ReceiveMessage(ctx context.Context) (*Message, error) {
 	for {
 		msg, err := c.Receive(ctx)
@@ -467,9 +467,9 @@ func (c *PubSub) ReceiveMessage(ctx context.Context) (*Message, error) {
 
 		switch msg := msg.(type) {
 		case *Subscription:
-			// Ignore.
+			
 		case *Pong:
-			// Ignore.
+			
 		case *Message:
 			return msg, nil
 		default:
@@ -486,15 +486,15 @@ func (c *PubSub) getContext() context.Context {
 	return context.Background()
 }
 
-//------------------------------------------------------------------------------
 
-// Channel returns a Go channel for concurrently receiving messages.
-// The channel is closed together with the PubSub. If the Go channel
-// is blocked full for 1 minute the message is dropped.
-// Receive* APIs can not be used after channel is created.
-//
-// go-redis periodically sends ping messages to test connection health
-// and re-subscribes if ping can not received for 1 minute.
+
+
+
+
+
+
+
+
 func (c *PubSub) Channel(opts ...ChannelOption) <-chan *Message {
 	c.chOnce.Do(func() {
 		c.msgCh = newChannel(c, opts...)
@@ -507,19 +507,19 @@ func (c *PubSub) Channel(opts ...ChannelOption) <-chan *Message {
 	return c.msgCh.msgCh
 }
 
-// ChannelSize is like Channel, but creates a Go channel
-// with specified buffer size.
-//
-// Deprecated: use Channel(WithChannelSize(size)), remove in v9.
+
+
+
+
 func (c *PubSub) ChannelSize(size int) <-chan *Message {
 	return c.Channel(WithChannelSize(size))
 }
 
-// ChannelWithSubscriptions is like Channel, but message type can be either
-// *Subscription or *Message. Subscription messages can be used to detect
-// reconnections.
-//
-// ChannelWithSubscriptions can not be used together with Channel or ChannelSize.
+
+
+
+
+
 func (c *PubSub) ChannelWithSubscriptions(opts ...ChannelOption) <-chan interface{} {
 	c.chOnce.Do(func() {
 		c.allCh = newChannel(c, opts...)
@@ -534,30 +534,30 @@ func (c *PubSub) ChannelWithSubscriptions(opts ...ChannelOption) <-chan interfac
 
 type ChannelOption func(c *channel)
 
-// WithChannelSize specifies the Go chan size that is used to buffer incoming messages.
-//
-// The default is 100 messages.
+
+
+
 func WithChannelSize(size int) ChannelOption {
 	return func(c *channel) {
 		c.chanSize = size
 	}
 }
 
-// WithChannelHealthCheckInterval specifies the health check interval.
-// PubSub will ping Redis Server if it does not receive any messages within the interval.
-// To disable health check, use zero interval.
-//
-// The default is 3 seconds.
+
+
+
+
+
 func WithChannelHealthCheckInterval(d time.Duration) ChannelOption {
 	return func(c *channel) {
 		c.checkInterval = d
 	}
 }
 
-// WithChannelSendTimeout specifies the channel send timeout after which
-// the message is dropped.
-//
-// The default is 60 seconds.
+
+
+
+
 func WithChannelSendTimeout(d time.Duration) ChannelOption {
 	return func(c *channel) {
 		c.chanSendTimeout = d
@@ -621,7 +621,7 @@ func (c *channel) initHealthCheck() {
 	}()
 }
 
-// initMsgChan must be in sync with initAllChan.
+
 func (c *channel) initMsgChan() {
 	ctx := context.TODO()
 	c.msgCh = make(chan *Message, c.chanSize)
@@ -647,7 +647,7 @@ func (c *channel) initMsgChan() {
 
 			errCount = 0
 
-			// Any message is as good as a ping.
+			
 			select {
 			case c.ping <- struct{}{}:
 			default:
@@ -655,9 +655,9 @@ func (c *channel) initMsgChan() {
 
 			switch msg := msg.(type) {
 			case *Subscription:
-				// Ignore.
+				
 			case *Pong:
-				// Ignore.
+				
 			case *Message:
 				timer.Reset(c.chanSendTimeout)
 				select {
@@ -677,7 +677,7 @@ func (c *channel) initMsgChan() {
 	}()
 }
 
-// initAllChan must be in sync with initMsgChan.
+
 func (c *channel) initAllChan() {
 	ctx := context.TODO()
 	c.allCh = make(chan interface{}, c.chanSize)
@@ -703,7 +703,7 @@ func (c *channel) initAllChan() {
 
 			errCount = 0
 
-			// Any message is as good as a ping.
+			
 			select {
 			case c.ping <- struct{}{}:
 			default:
@@ -711,7 +711,7 @@ func (c *channel) initAllChan() {
 
 			switch msg := msg.(type) {
 			case *Pong:
-				// Ignore.
+				
 			case *Subscription, *Message:
 				timer.Reset(c.chanSendTimeout)
 				select {

@@ -1,6 +1,6 @@
-// Copyright 2015 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package objabi
 
@@ -34,20 +34,20 @@ func Flagparse(usage func()) {
 	flag.Parse()
 }
 
-// expandArgs expands "response files" arguments in the provided slice.
-//
-// A "response file" argument starts with '@' and the rest of that
-// argument is a filename with CR-or-CRLF-separated arguments. Each
-// argument in the named files can also contain response file
-// arguments. See Issue 18468.
-//
-// The returned slice 'out' aliases 'in' iff the input did not contain
-// any response file arguments.
-//
-// TODO: handle relative paths of recursive expansions in different directories?
-// Is there a spec for this? Are relative paths allowed?
+
+
+
+
+
+
+
+
+
+
+
+
 func expandArgs(in []string) (out []string) {
-	// out is nil until we see a "@" argument.
+	
 	for i, s := range in {
 		if strings.HasPrefix(s, "@") {
 			if out == nil {
@@ -74,7 +74,7 @@ func AddVersionFlag() {
 	flag.Var(versionFlag{}, "V", "print version and exit")
 }
 
-var buildID string // filled in by linker
+var buildID string 
 
 type versionFlag struct{}
 

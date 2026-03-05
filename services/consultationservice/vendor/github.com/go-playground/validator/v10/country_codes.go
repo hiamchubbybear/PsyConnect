@@ -1,7 +1,7 @@
 package validator
 
 var iso3166_1_alpha2 = map[string]struct{}{
-	// see: https://www.iso.org/iso-3166-country-codes.html
+	
 	"AF": {}, "AX": {}, "AL": {}, "DZ": {}, "AS": {},
 	"AD": {}, "AO": {}, "AI": {}, "AQ": {}, "AG": {},
 	"AR": {}, "AM": {}, "AW": {}, "AU": {}, "AT": {},
@@ -64,7 +64,7 @@ var iso3166_1_alpha2_eu = map[string]struct{}{
 }
 
 var iso3166_1_alpha3 = map[string]struct{}{
-	// see: https://www.iso.org/iso-3166-country-codes.html
+	
 	"AFG": {}, "ALB": {}, "DZA": {}, "ASM": {}, "AND": {},
 	"AGO": {}, "AIA": {}, "ATA": {}, "ATG": {}, "ARG": {},
 	"ARM": {}, "ABW": {}, "AUS": {}, "AUT": {}, "AZE": {},
@@ -126,7 +126,7 @@ var iso3166_1_alpha3_eu = map[string]struct{}{
 	"ESP": {}, "SWE": {},
 }
 var iso3166_1_alpha_numeric = map[int]struct{}{
-	// see: https://www.iso.org/iso-3166-country-codes.html
+	
 	4: {}, 8: {}, 12: {}, 16: {}, 20: {},
 	24: {}, 660: {}, 10: {}, 28: {}, 32: {},
 	51: {}, 533: {}, 36: {}, 40: {}, 31: {},

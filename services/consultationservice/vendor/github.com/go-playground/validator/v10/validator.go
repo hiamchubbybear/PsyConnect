@@ -8,29 +8,29 @@ import (
 	"unsafe"
 )
 
-// per validate construct
+
 type validate struct {
 	v              *Validate
 	top            reflect.Value
 	ns             []byte
 	actualNs       []byte
 	errs           ValidationErrors
-	includeExclude map[string]struct{} // reset only if StructPartial or StructExcept are called, no need otherwise
+	includeExclude map[string]struct{} 
 	ffn            FilterFunc
-	slflParent     reflect.Value // StructLevel & FieldLevel
-	slCurrent      reflect.Value // StructLevel & FieldLevel
-	flField        reflect.Value // StructLevel & FieldLevel
-	cf             *cField       // StructLevel & FieldLevel
-	ct             *cTag         // StructLevel & FieldLevel
-	misc           []byte        // misc reusable
-	str1           string        // misc reusable
-	str2           string        // misc reusable
-	fldIsPointer   bool          // StructLevel & FieldLevel
+	slflParent     reflect.Value 
+	slCurrent      reflect.Value 
+	flField        reflect.Value 
+	cf             *cField       
+	ct             *cTag         
+	misc           []byte        
+	str1           string        
+	str2           string        
+	fldIsPointer   bool          
 	isPartial      bool
 	hasExcludes    bool
 }
 
-// parent and current will be the same the first run of validateStruct
+
 func (v *validate) validateStruct(ctx context.Context, parent reflect.Value, current reflect.Value, typ reflect.Type, ns []byte, structNs []byte, ct *cTag) {
 
 	cs, ok := v.v.structCache.Get(typ)
@@ -47,8 +47,8 @@ func (v *validate) validateStruct(ctx context.Context, parent reflect.Value, cur
 		structNs = append(structNs, '.')
 	}
 
-	// ct is nil on top level struct, and structs as fields that have no tag info
-	// so if nil or if not nil and the structonly tag isn't present
+	
+	
 	if ct == nil || ct.typeof != typeStructOnly {
 
 		var f *cField
@@ -60,13 +60,13 @@ func (v *validate) validateStruct(ctx context.Context, parent reflect.Value, cur
 			if v.isPartial {
 
 				if v.ffn != nil {
-					// used with StructFiltered
+					
 					if v.ffn(append(structNs, f.name...)) {
 						continue
 					}
 
 				} else {
-					// used with StructPartial & StructExcept
+					
 					_, ok = v.includeExclude[string(append(structNs, f.name...))]
 
 					if (ok && v.hasExcludes) || (!ok && !v.hasExcludes) {
@@ -79,9 +79,9 @@ func (v *validate) validateStruct(ctx context.Context, parent reflect.Value, cur
 		}
 	}
 
-	// check if any struct level validations, after all field validations already checked.
-	// first iteration will have no info about nostructlevel tag, and is checked prior to
-	// calling the next iteration of validateStruct called from traverseField.
+	
+	
+	
 	if cs.fn != nil {
 
 		v.slflParent = parent
@@ -93,7 +93,7 @@ func (v *validate) validateStruct(ctx context.Context, parent reflect.Value, cur
 	}
 }
 
-// traverseField validates any field, be it a struct or single field, ensures it's validity and passes it along to be validated via it's tag options
+
 func (v *validate) traverseField(ctx context.Context, parent reflect.Value, current reflect.Value, ns []byte, structNs []byte, cf *cField, ct *cTag) {
 	var typ reflect.Type
 	var kind reflect.Kind
@@ -177,11 +177,11 @@ func (v *validate) traverseField(ctx context.Context, parent reflect.Value, curr
 
 	case reflect.Struct:
 		isNestedStruct = !current.Type().ConvertibleTo(timeType)
-		// For backward compatibility before struct level validation tags were supported
-		// as there were a number of projects relying on `required` not failing on non-pointer
-		// structs. Since it's basically nonsensical to use `required` with a non-pointer struct
-		// are explicitly skipping the required validation for it. This WILL be removed in the
-		// next major version.
+		
+		
+		
+		
+		
 		if isNestedStruct && !v.v.requiredStructEnabled && ct != nil && ct.tag == requiredTag {
 			ct = ct.next
 		}
@@ -192,12 +192,12 @@ func (v *validate) traverseField(ctx context.Context, parent reflect.Value, curr
 OUTER:
 	for {
 		if ct == nil || !ct.hasTag || (isNestedStruct && len(cf.name) == 0) {
-			// isNestedStruct check here
+			
 			if isNestedStruct {
-				// if len == 0 then validating using 'Var' or 'VarWithValue'
-				// Var - doesn't make much sense to do it that way, should call 'Struct', but no harm...
-				// VarWithField - this allows for validating against each field within the struct against a specific value
-				//                pretty handy in certain situations
+				
+				
+				
+				
 				if len(cf.name) > 0 {
 					ns = append(append(ns, cf.altName...), '.')
 					structNs = append(append(structNs, cf.name...), '.')
@@ -214,10 +214,10 @@ OUTER:
 
 		case typeStructOnly:
 			if isNestedStruct {
-				// if len == 0 then validating using 'Var' or 'VarWithValue'
-				// Var - doesn't make much sense to do it that way, should call 'Struct', but no harm...
-				// VarWithField - this allows for validating against each field within the struct against a specific value
-				//                pretty handy in certain situations
+				
+				
+				
+				
 				if len(cf.name) > 0 {
 					ns = append(append(ns, cf.altName...), '.')
 					structNs = append(append(structNs, cf.name...), '.')
@@ -229,7 +229,7 @@ OUTER:
 
 		case typeOmitEmpty:
 
-			// set Field Level fields
+			
 			v.slflParent = parent
 			v.flField = current
 			v.cf = cf
@@ -282,8 +282,8 @@ OUTER:
 
 			ct = ct.next
 
-			// traverse slice or map here
-			// or panic ;)
+			
+			
 			switch kind {
 			case reflect.Slice, reflect.Array:
 
@@ -344,7 +344,7 @@ OUTER:
 
 					if ct != nil && ct.typeof == typeKeys && ct.keys != nil {
 						v.traverseField(ctx, parent, key, ns, structNs, reusableCF, ct.keys)
-						// can be nil when just keys being validated
+						
 						if ct.next != nil {
 							v.traverseField(ctx, parent, current.MapIndex(key), ns, structNs, reusableCF, ct.next)
 						}
@@ -354,8 +354,8 @@ OUTER:
 				}
 
 			default:
-				// throw error, if not a slice or map then should not have gotten here
-				// bad dive tag
+				
+				
 				panic("dive error! can't dive on a non slice or map")
 			}
 
@@ -367,7 +367,7 @@ OUTER:
 
 			for {
 
-				// set Field Level fields
+				
 				v.slflParent = parent
 				v.flField = current
 				v.cf = cf
@@ -379,7 +379,7 @@ OUTER:
 						continue OUTER
 					}
 
-					// drain rest of the 'or' values, then continue or leave
+					
 					for {
 
 						ct = ct.next
@@ -408,7 +408,7 @@ OUTER:
 				}
 
 				if ct.isBlockEnd || ct.next == nil {
-					// if we get here, no valid 'or' value and no more tags
+					
 					v.str1 = string(append(ns, cf.altName...))
 
 					if v.v.hasTagNameFunc {
@@ -464,7 +464,7 @@ OUTER:
 
 		default:
 
-			// set Field Level fields
+			
 			v.slflParent = parent
 			v.flField = current
 			v.cf = cf

@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
+
+
 
 package codec
 
@@ -17,23 +17,23 @@ var (
 	rpcSpaceArr = [1]byte{' '}
 )
 
-// Rpc provides a rpc Server or Client Codec for rpc communication.
+
 type Rpc interface {
 	ServerCodec(conn io.ReadWriteCloser, h Handle) rpc.ServerCodec
 	ClientCodec(conn io.ReadWriteCloser, h Handle) rpc.ClientCodec
 }
 
-// RPCOptions holds options specific to rpc functionality
+
 type RPCOptions struct {
-	// RPCNoBuffer configures whether we attempt to buffer reads and writes during RPC calls.
-	//
-	// Set RPCNoBuffer=true to turn buffering off.
-	// Buffering can still be done if buffered connections are passed in, or
-	// buffering is configured on the handle.
+	
+	
+	
+	
+	
 	RPCNoBuffer bool
 }
 
-// rpcCodec defines the struct members and common methods.
+
 type rpcCodec struct {
 	c io.Closer
 	r io.Reader
@@ -53,13 +53,13 @@ func newRPCCodec(conn io.ReadWriteCloser, h Handle) rpcCodec {
 
 func newRPCCodec2(r io.Reader, w io.Writer, c io.Closer, h Handle) rpcCodec {
 	bh := h.getBasicHandle()
-	// if the writer can flush, ensure we leverage it, else
-	// we may hang waiting on read if write isn't flushed.
-	// var f ioFlusher
+	
+	
+	
 	f, ok := w.(ioFlusher)
 	if !bh.RPCNoBuffer {
 		if bh.WriterBufferSize <= 0 {
-			if !ok { // a flusher means there's already a buffer
+			if !ok { 
 				bw := bufio.NewWriter(w)
 				f, w = bw, bw
 			}
@@ -100,9 +100,9 @@ func (c *rpcCodec) write(obj ...interface{}) (err error) {
 		if err != nil {
 			return
 		}
-		// defensive: ensure a space is always written after each encoding,
-		// in case the value was a number, and encoding a value right after
-		// without a space will lead to invalid output.
+		
+		
+		
 		if c.h.isJson() {
 			_, err = c.w.Write(rpcSpaceArr[:])
 			if err != nil {
@@ -116,9 +116,9 @@ func (c *rpcCodec) write(obj ...interface{}) (err error) {
 func (c *rpcCodec) read(obj interface{}) (err error) {
 	err = c.ready()
 	if err == nil {
-		//If nil is passed in, we should read and discard
+		
 		if obj == nil {
-			// return c.dec.Decode(&obj)
+			
 			err = c.dec.swallowErr()
 		} else {
 			err = c.dec.Decode(obj)
@@ -158,7 +158,7 @@ func (c *rpcCodec) ReadResponseBody(body interface{}) error {
 	return c.read(body)
 }
 
-// -------------------------------------
+
 
 type goRpcCodec struct {
 	rpcCodec
@@ -184,45 +184,45 @@ func (c *goRpcCodec) ReadRequestBody(body interface{}) error {
 	return c.read(body)
 }
 
-// -------------------------------------
 
-// goRpc is the implementation of Rpc that uses the communication protocol
-// as defined in net/rpc package.
+
+
+
 type goRpc struct{}
 
-// GoRpc implements Rpc using the communication protocol defined in net/rpc package.
-//
-// Note: network connection (from net.Dial, of type io.ReadWriteCloser) is not buffered.
-//
-// For performance, you should configure WriterBufferSize and ReaderBufferSize on the handle.
-// This ensures we use an adequate buffer during reading and writing.
-// If not configured, we will internally initialize and use a buffer during reads and writes.
-// This can be turned off via the RPCNoBuffer option on the Handle.
-//
-//	var handle codec.JsonHandle
-//	handle.RPCNoBuffer = true // turns off attempt by rpc module to initialize a buffer
-//
-// Example 1: one way of configuring buffering explicitly:
-//
-//	var handle codec.JsonHandle // codec handle
-//	handle.ReaderBufferSize = 1024
-//	handle.WriterBufferSize = 1024
-//	var conn io.ReadWriteCloser // connection got from a socket
-//	var serverCodec = GoRpc.ServerCodec(conn, handle)
-//	var clientCodec = GoRpc.ClientCodec(conn, handle)
-//
-// Example 2: you can also explicitly create a buffered connection yourself,
-// and not worry about configuring the buffer sizes in the Handle.
-//
-//	var handle codec.Handle     // codec handle
-//	var conn io.ReadWriteCloser // connection got from a socket
-//	var bufconn = struct {      // bufconn here is a buffered io.ReadWriteCloser
-//	    io.Closer
-//	    *bufio.Reader
-//	    *bufio.Writer
-//	}{conn, bufio.NewReader(conn), bufio.NewWriter(conn)}
-//	var serverCodec = GoRpc.ServerCodec(bufconn, handle)
-//	var clientCodec = GoRpc.ClientCodec(bufconn, handle)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var GoRpc goRpc
 
 func (x goRpc) ServerCodec(conn io.ReadWriteCloser, h Handle) rpc.ServerCodec {

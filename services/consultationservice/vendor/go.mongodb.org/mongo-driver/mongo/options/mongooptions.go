@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package options
 
@@ -16,23 +16,23 @@ import (
 	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
 )
 
-// Collation allows users to specify language-specific rules for string comparison, such as
-// rules for lettercase and accent marks.
+
+
 type Collation struct {
-	Locale          string `bson:",omitempty"` // The locale
-	CaseLevel       bool   `bson:",omitempty"` // The case level
-	CaseFirst       string `bson:",omitempty"` // The case ordering
-	Strength        int    `bson:",omitempty"` // The number of comparison levels to use
-	NumericOrdering bool   `bson:",omitempty"` // Whether to order numbers based on numerical order and not collation order
-	Alternate       string `bson:",omitempty"` // Whether spaces and punctuation are considered base characters
-	MaxVariable     string `bson:",omitempty"` // Which characters are affected by alternate: "shifted"
-	Normalization   bool   `bson:",omitempty"` // Causes text to be normalized into Unicode NFD
-	Backwards       bool   `bson:",omitempty"` // Causes secondary differences to be considered in reverse order, as it is done in the French language
+	Locale          string `bson:",omitempty"` 
+	CaseLevel       bool   `bson:",omitempty"` 
+	CaseFirst       string `bson:",omitempty"` 
+	Strength        int    `bson:",omitempty"` 
+	NumericOrdering bool   `bson:",omitempty"` 
+	Alternate       string `bson:",omitempty"` 
+	MaxVariable     string `bson:",omitempty"` 
+	Normalization   bool   `bson:",omitempty"` 
+	Backwards       bool   `bson:",omitempty"` 
 }
 
-// ToDocument converts the Collation to a bson.Raw.
-//
-// Deprecated: Marshaling a Collation to BSON will not be supported in Go Driver 2.0.
+
+
+
 func (co *Collation) ToDocument() bson.Raw {
 	idx, doc := bsoncore.AppendDocumentStart(nil)
 	if co.Locale != "" {
@@ -66,67 +66,67 @@ func (co *Collation) ToDocument() bson.Raw {
 	return doc
 }
 
-// CursorType specifies whether a cursor should close when the last data is retrieved. See
-// NonTailable, Tailable, and TailableAwait.
+
+
 type CursorType int8
 
 const (
-	// NonTailable specifies that a cursor should close after retrieving the last data.
+	
 	NonTailable CursorType = iota
-	// Tailable specifies that a cursor should not close when the last data is retrieved and can be resumed later.
+	
 	Tailable
-	// TailableAwait specifies that a cursor should not close when the last data is retrieved and
-	// that it should block for a certain amount of time for new data before returning no data.
+	
+	
 	TailableAwait
 )
 
-// ReturnDocument specifies whether a findAndUpdate operation should return the document as it was
-// before the update or as it is after the update.
+
+
 type ReturnDocument int8
 
 const (
-	// Before specifies that findAndUpdate should return the document as it was before the update.
+	
 	Before ReturnDocument = iota
-	// After specifies that findAndUpdate should return the document as it is after the update.
+	
 	After
 )
 
-// FullDocument specifies how a change stream should return the modified document.
+
 type FullDocument string
 
 const (
-	// Default does not include a document copy.
+	
 	Default FullDocument = "default"
-	// Off is the same as sending no value for fullDocumentBeforeChange.
+	
 	Off FullDocument = "off"
-	// Required is the same as WhenAvailable but raises a server-side error if the post-image is not available.
+	
 	Required FullDocument = "required"
-	// UpdateLookup includes a delta describing the changes to the document and a copy of the entire document that
-	// was changed.
+	
+	
 	UpdateLookup FullDocument = "updateLookup"
-	// WhenAvailable includes a post-image of the modified document for replace and update change events
-	// if the post-image for this event is available.
+	
+	
 	WhenAvailable FullDocument = "whenAvailable"
 )
 
-// TODO(GODRIVER-2617): Once Registry is removed, ArrayFilters doesn't need to
-// TODO be a separate type. Remove the type and update all ArrayFilters fields
-// TODO to be type []interface{}.
 
-// ArrayFilters is used to hold filters for the array filters CRUD option. If a registry is nil, bson.DefaultRegistry
-// will be used when converting the filter interfaces to BSON.
+
+
+
+
+
 type ArrayFilters struct {
-	// Registry is the registry to use for converting filters. Defaults to bson.DefaultRegistry.
-	//
-	// Deprecated: Marshaling ArrayFilters to BSON will not be supported in Go Driver 2.0.
+	
+	
+	
 	Registry *bsoncodec.Registry
 
-	Filters []interface{} // The filters to apply
+	Filters []interface{} 
 }
 
-// ToArray builds a []bson.Raw from the provided ArrayFilters.
-//
-// Deprecated: Marshaling ArrayFilters to BSON will not be supported in Go Driver 2.0.
+
+
+
 func (af *ArrayFilters) ToArray() ([]bson.Raw, error) {
 	registry := af.Registry
 	if registry == nil {
@@ -143,10 +143,10 @@ func (af *ArrayFilters) ToArray() ([]bson.Raw, error) {
 	return filters, nil
 }
 
-// ToArrayDocument builds a BSON array for the array filters CRUD option. If the registry for af is nil,
-// bson.DefaultRegistry will be used when converting the filter interfaces to BSON.
-//
-// Deprecated: Marshaling ArrayFilters to BSON will not be supported in Go Driver 2.0.
+
+
+
+
 func (af *ArrayFilters) ToArrayDocument() (bson.Raw, error) {
 	registry := af.Registry
 	if registry == nil {
@@ -166,18 +166,18 @@ func (af *ArrayFilters) ToArrayDocument() (bson.Raw, error) {
 	return arr, nil
 }
 
-// MarshalError is returned when attempting to transform a value into a document
-// results in an error.
-//
-// Deprecated: MarshalError is unused and will be removed in Go Driver 2.0.
+
+
+
+
 type MarshalError struct {
 	Value interface{}
 	Err   error
 }
 
-// Error implements the error interface.
-//
-// Deprecated: MarshalError is unused and will be removed in Go Driver 2.0.
+
+
+
 func (me MarshalError) Error() string {
 	return fmt.Sprintf("cannot transform type %s to a bson.Raw", reflect.TypeOf(me.Value))
 }

@@ -121,7 +121,7 @@ func (s *OpcodeSet) setQueryCache(hash string, codeSet *OpcodeSet) {
 
 type CompiledCode struct {
 	Code    *Opcode
-	Linked  bool // whether recursive code already have linked
+	Linked  bool 
 	CurLen  uintptr
 	NextLen uintptr
 }
@@ -145,15 +145,7 @@ func LoadNPtr(base uintptr, idx uintptr, ptrNum int) uintptr {
 		return 0
 	}
 	return PtrToPtr(p)
-	/*
-		for i := 0; i < ptrNum; i++ {
-			if p == 0 {
-				return p
-			}
-			p = PtrToPtr(p)
-		}
-		return p
-	*/
+	
 }
 
 func PtrToUint64(p uintptr) uint64              { return **(**uint64)(unsafe.Pointer(&p)) }
@@ -238,7 +230,7 @@ func (m *Mapslice) Swap(i, j int) {
 	m.Items[i], m.Items[j] = m.Items[j], m.Items[i]
 }
 
-//nolint:structcheck,unused
+
 type mapIter struct {
 	key         unsafe.Pointer
 	elem        unsafe.Pointer
@@ -333,7 +325,7 @@ func AppendFloat32(_ *RuntimeContext, b []byte, v float32) []byte {
 	f64 := float64(v)
 	abs := math.Abs(f64)
 	fmt := byte('f')
-	// Note: Must use float32 comparisons for underlying float32 value to get precise cutoffs right.
+	
 	if abs != 0 {
 		f32 := float32(abs)
 		if f32 < 1e-6 || f32 >= 1e21 {
@@ -346,7 +338,7 @@ func AppendFloat32(_ *RuntimeContext, b []byte, v float32) []byte {
 func AppendFloat64(_ *RuntimeContext, b []byte, v float64) []byte {
 	abs := math.Abs(v)
 	fmt := byte('f')
-	// Note: Must use float32 comparisons for underlying float32 value to get precise cutoffs right.
+	
 	if abs != 0 {
 		if abs < 1e-6 || abs >= 1e21 {
 			fmt = 'e'
@@ -396,7 +388,7 @@ func AppendNumber(_ *RuntimeContext, b []byte, n json.Number) ([]byte, error) {
 }
 
 func AppendMarshalJSON(ctx *RuntimeContext, code *Opcode, b []byte, v interface{}) ([]byte, error) {
-	rv := reflect.ValueOf(v) // convert by dynamic interface type
+	rv := reflect.ValueOf(v) 
 	if (code.Flags & AddrForMarshalerFlags) != 0 {
 		if rv.CanAddr() {
 			rv = rv.Addr()
@@ -449,7 +441,7 @@ func AppendMarshalJSON(ctx *RuntimeContext, code *Opcode, b []byte, v interface{
 }
 
 func AppendMarshalJSONIndent(ctx *RuntimeContext, code *Opcode, b []byte, v interface{}) ([]byte, error) {
-	rv := reflect.ValueOf(v) // convert by dynamic interface type
+	rv := reflect.ValueOf(v) 
 	if (code.Flags & AddrForMarshalerFlags) != 0 {
 		if rv.CanAddr() {
 			rv = rv.Addr()
@@ -499,7 +491,7 @@ func AppendMarshalJSONIndent(ctx *RuntimeContext, code *Opcode, b []byte, v inte
 }
 
 func AppendMarshalText(ctx *RuntimeContext, code *Opcode, b []byte, v interface{}) ([]byte, error) {
-	rv := reflect.ValueOf(v) // convert by dynamic interface type
+	rv := reflect.ValueOf(v) 
 	if (code.Flags & AddrForMarshalerFlags) != 0 {
 		if rv.CanAddr() {
 			rv = rv.Addr()
@@ -522,7 +514,7 @@ func AppendMarshalText(ctx *RuntimeContext, code *Opcode, b []byte, v interface{
 }
 
 func AppendMarshalTextIndent(ctx *RuntimeContext, code *Opcode, b []byte, v interface{}) ([]byte, error) {
-	rv := reflect.ValueOf(v) // convert by dynamic interface type
+	rv := reflect.ValueOf(v) 
 	if (code.Flags & AddrForMarshalerFlags) != 0 {
 		if rv.CanAddr() {
 			rv = rv.Addr()

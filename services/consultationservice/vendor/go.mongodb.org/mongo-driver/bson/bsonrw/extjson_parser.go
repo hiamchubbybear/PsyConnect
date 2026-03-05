@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsonrw
 
@@ -19,7 +19,7 @@ import (
 
 const maxNestingDepth = 200
 
-// ErrInvalidJSON indicates the JSON input is invalid
+
 var ErrInvalidJSON = errors.New("invalid JSON input")
 
 type jsonParseState byte
@@ -72,10 +72,10 @@ type extJSONParser struct {
 	relaxedUUID bool
 }
 
-// newExtJSONParser returns a new extended JSON parser, ready to to begin
-// parsing from the first character of the argued json input. It will not
-// perform any read-ahead and will therefore not report any errors about
-// malformed JSON at this point.
+
+
+
+
 func newExtJSONParser(r io.Reader, canonical bool) *extJSONParser {
 	return &extJSONParser{
 		js:        &jsonScanner{r: r},
@@ -86,7 +86,7 @@ func newExtJSONParser(r io.Reader, canonical bool) *extJSONParser {
 	}
 }
 
-// peekType examines the next value and returns its BSON Type
+
 func (ejp *extJSONParser) peekType() (bsontype.Type, error) {
 	var t bsontype.Type
 	var err error
@@ -101,18 +101,18 @@ func (ejp *extJSONParser) peekType() (bsontype.Type, error) {
 	case jpsInvalidState:
 		err = ejp.err
 	case jpsSawComma:
-		// in array mode, seeing a comma means we need to progress again to actually observe a type
+		
 		if ejp.peekMode() == jpmArrayMode {
 			return ejp.peekType()
 		}
 	case jpsSawEndArray:
-		// this would only be a valid state if we were in array mode, so return end-of-array error
+		
 		err = ErrEOA
 	case jpsSawBeginObject:
-		// peek key to determine type
+		
 		ejp.advanceState()
 		switch ejp.s {
-		case jpsSawEndObject: // empty embedded document
+		case jpsSawEndObject: 
 			t = bsontype.EmbeddedDocument
 			ejp.emptyObject = true
 		case jpsInvalidState:
@@ -123,7 +123,7 @@ func (ejp *extJSONParser) peekType() (bsontype.Type, error) {
 			}
 			t = wrapperKeyBSONType(ejp.k)
 
-			// if $uuid is encountered, parse as binary subtype 4
+			
 			if ejp.k == "$uuid" {
 				ejp.relaxedUUID = true
 				t = bsontype.Binary
@@ -131,14 +131,14 @@ func (ejp *extJSONParser) peekType() (bsontype.Type, error) {
 
 			switch t {
 			case bsontype.JavaScript:
-				// just saw $code, need to check for $scope at same level
+				
 				_, err = ejp.readValue(bsontype.JavaScript)
 				if err != nil {
 					break
 				}
 
 				switch ejp.s {
-				case jpsSawEndObject: // type is TypeJavaScript
+				case jpsSawEndObject: 
 				case jpsSawComma:
 					ejp.advanceState()
 
@@ -161,14 +161,14 @@ func (ejp *extJSONParser) peekType() (bsontype.Type, error) {
 	return t, err
 }
 
-// readKey parses the next key and its type and returns them
+
 func (ejp *extJSONParser) readKey() (string, bsontype.Type, error) {
 	if ejp.emptyObject {
 		ejp.emptyObject = false
 		return "", 0, ErrEOD
 	}
 
-	// advance to key (or return with error)
+	
 	switch ejp.s {
 	case jpsStartState:
 		ejp.advanceState()
@@ -191,12 +191,12 @@ func (ejp *extJSONParser) readKey() (string, bsontype.Type, error) {
 		default:
 			return "", 0, ErrInvalidJSON
 		}
-	case jpsSawKey: // do nothing (key was peeked before)
+	case jpsSawKey: 
 	default:
 		return "", 0, invalidRequestError("key")
 	}
 
-	// read key
+	
 	var key string
 
 	switch ejp.s {
@@ -210,13 +210,13 @@ func (ejp *extJSONParser) readKey() (string, bsontype.Type, error) {
 		return "", 0, invalidRequestError("key")
 	}
 
-	// check for colon
+	
 	ejp.advanceState()
 	if err := ensureColon(ejp.s, key); err != nil {
 		return "", 0, err
 	}
 
-	// peek at the value to determine type
+	
 	t, err := ejp.peekType()
 	if err != nil {
 		return "", 0, err
@@ -225,7 +225,7 @@ func (ejp *extJSONParser) readKey() (string, bsontype.Type, error) {
 	return key, t, nil
 }
 
-// readValue returns the value corresponding to the Type returned by peekType
+
 func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 	if ejp.s == jpsInvalidState {
 		return nil, ejp.err
@@ -240,7 +240,7 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 		}
 		v = ejp.v
 	case bsontype.Int32, bsontype.Int64, bsontype.Double:
-		// relaxed version allows these to be literal number values
+		
 		if ejp.s == jpsSawValue {
 			v = ejp.v
 			break
@@ -249,13 +249,13 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 	case bsontype.Decimal128, bsontype.Symbol, bsontype.ObjectID, bsontype.MinKey, bsontype.MaxKey, bsontype.Undefined:
 		switch ejp.s {
 		case jpsSawKey:
-			// read colon
+			
 			ejp.advanceState()
 			if err := ensureColon(ejp.s, ejp.k); err != nil {
 				return nil, err
 			}
 
-			// read value
+			
 			ejp.advanceState()
 			if ejp.s != jpsSawValue || !ejp.ensureExtValueType(t) {
 				return nil, invalidJSONErrorForType("value", t)
@@ -263,7 +263,7 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 
 			v = ejp.v
 
-			// read end object
+			
 			ejp.advanceState()
 			if ejp.s != jpsSawEndObject {
 				return nil, invalidJSONErrorForType("} after value", t)
@@ -275,7 +275,7 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 		if ejp.s != jpsSawKey {
 			return nil, invalidRequestError(t.String())
 		}
-		// read colon
+		
 		ejp.advanceState()
 		if err := ensureColon(ejp.s, ejp.k); err != nil {
 			return nil, err
@@ -283,7 +283,7 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 
 		ejp.advanceState()
 		if t == bsontype.Binary && ejp.s == jpsSawValue {
-			// convert relaxed $uuid format
+			
 			if ejp.relaxedUUID {
 				defer func() { ejp.relaxedUUID = false }()
 				uuid, err := ejp.v.parseSymbol()
@@ -291,10 +291,10 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 					return nil, err
 				}
 
-				// RFC 4122 defines the length of a UUID as 36 and the hyphens in a UUID as appearing
-				// in the 8th, 13th, 18th, and 23rd characters.
-				//
-				// See https://tools.ietf.org/html/rfc4122#section-3
+				
+				
+				
+				
 				valid := len(uuid) == 36 &&
 					string(uuid[8]) == "-" &&
 					string(uuid[13]) == "-" &&
@@ -304,13 +304,13 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 					return nil, fmt.Errorf("$uuid value does not follow RFC 4122 format regarding length and hyphens")
 				}
 
-				// remove hyphens
+				
 				uuidNoHyphens := strings.ReplaceAll(uuid, "-", "")
 				if len(uuidNoHyphens) != 32 {
 					return nil, fmt.Errorf("$uuid value does not follow RFC 4122 format regarding length and hyphens")
 				}
 
-				// convert hex to bytes
+				
 				bytes, err := hex.DecodeString(uuidNoHyphens)
 				if err != nil {
 					return nil, fmt.Errorf("$uuid value does not follow RFC 4122 format regarding hex bytes: %w", err)
@@ -341,7 +341,7 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 				break
 			}
 
-			// convert legacy $binary format
+			
 			base64 := ejp.v
 
 			ejp.advanceState()
@@ -378,7 +378,7 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 			break
 		}
 
-		// read KV pairs
+		
 		if ejp.s != jpsSawBeginObject {
 			return nil, invalidJSONErrorForType("{", t)
 		}
@@ -400,7 +400,7 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 		case jpsSawValue:
 			v = ejp.v
 		case jpsSawKey:
-			// read colon
+			
 			ejp.advanceState()
 			if err := ensureColon(ejp.s, ejp.k); err != nil {
 				return nil, err
@@ -436,20 +436,20 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 	case bsontype.JavaScript:
 		switch ejp.s {
 		case jpsSawKey:
-			// read colon
+			
 			ejp.advanceState()
 			if err := ensureColon(ejp.s, ejp.k); err != nil {
 				return nil, err
 			}
 
-			// read value
+			
 			ejp.advanceState()
 			if ejp.s != jpsSawValue {
 				return nil, invalidJSONErrorForType("value", t)
 			}
 			v = ejp.v
 
-			// read end object or comma and just return
+			
 			ejp.advanceState()
 		case jpsSawEndObject:
 			v = ejp.v
@@ -458,15 +458,15 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 		}
 	case bsontype.CodeWithScope:
 		if ejp.s == jpsSawKey && ejp.k == "$scope" {
-			v = ejp.v // this is the $code string from earlier
+			v = ejp.v 
 
-			// read colon
+			
 			ejp.advanceState()
 			if err := ensureColon(ejp.s, ejp.k); err != nil {
 				return nil, err
 			}
 
-			// read {
+			
 			ejp.advanceState()
 			if ejp.s != jpsSawBeginObject {
 				return nil, invalidJSONError("$scope to be embedded document")
@@ -481,8 +481,8 @@ func (ejp *extJSONParser) readValue(t bsontype.Type) (*extJSONValue, error) {
 	return v, nil
 }
 
-// readObject is a utility method for reading full objects of known (or expected) size
-// it is useful for extended JSON types such as binary, datetime, regex, and timestamp
+
+
 func (ejp *extJSONParser) readObject(numKeys int, started bool) ([]string, []*extJSONValue, error) {
 	keys := make([]string, numKeys)
 	vals := make([]*extJSONValue, numKeys)
@@ -525,8 +525,8 @@ func (ejp *extJSONParser) readObject(numKeys int, started bool) ([]string, []*ex
 	return keys, vals, nil
 }
 
-// advanceState reads the next JSON token from the scanner and transitions
-// from the current state based on that token's type
+
+
 func (ejp *extJSONParser) advanceState() {
 	if ejp.s == jpsDoneState || ejp.s == jpsInvalidState {
 		return
@@ -681,14 +681,14 @@ var jpsValidTransitionTokens = map[jsonParseState]map[jsonTokenType]bool{
 func (ejp *extJSONParser) validateToken(jtt jsonTokenType) bool {
 	switch ejp.s {
 	case jpsSawEndObject:
-		// if we are at depth zero and the next token is a '{',
-		// we can consider it valid only if we are not in array mode.
+		
+		
 		if jtt == jttBeginObject && ejp.depth == 0 {
 			return ejp.peekMode() != jpmArrayMode
 		}
 	case jpsSawComma:
 		switch ejp.peekMode() {
-		// the only valid next token after a comma inside a document is a string (a key)
+		
 		case jpmObjectMode:
 			return jtt == jttString
 		case jpmInvalidMode:
@@ -700,9 +700,9 @@ func (ejp *extJSONParser) validateToken(jtt jsonTokenType) bool {
 	return ok
 }
 
-// ensureExtValueType returns true if the current value has the expected
-// value type for single-key extended JSON types. For example,
-// {"$numberInt": v} v must be TypeString
+
+
+
 func (ejp *extJSONParser) ensureExtValueType(t bsontype.Type) bool {
 	switch t {
 	case bsontype.MinKey, bsontype.MaxKey:

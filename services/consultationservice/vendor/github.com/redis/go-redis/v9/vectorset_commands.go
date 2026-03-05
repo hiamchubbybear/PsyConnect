@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-// note: the APIs is experimental and may be subject to change.
+
 type VectorSetCmdable interface {
 	VAdd(ctx context.Context, key, element string, val Vector) *BoolCmd
 	VAddWithArgs(ctx context.Context, key, element string, val Vector, addArgs *VAddArgs) *BoolCmd
@@ -64,7 +64,7 @@ func (v *VectorValues) Value() []any {
 var _ Vector = (*VectorValues)(nil)
 
 type VectorRef struct {
-	Name string // the name of the referent vector
+	Name string 
 }
 
 func (v *VectorRef) Value() []any {
@@ -78,18 +78,18 @@ type VectorScore struct {
 	Score float64
 }
 
-// `VADD key (FP32 | VALUES num) vector element`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VAdd(ctx context.Context, key, element string, val Vector) *BoolCmd {
 	return c.VAddWithArgs(ctx, key, element, val, &VAddArgs{})
 }
 
 type VAddArgs struct {
-	// the REDUCE option must be passed immediately after the key
+	
 	Reduce int64
 	Cas    bool
 
-	// The NoQuant, Q8 and Bin options are mutually exclusive.
+	
 	NoQuant bool
 	Q8      bool
 	Bin     bool
@@ -128,8 +128,8 @@ func (v VAddArgs) appendArgs(args []any) []any {
 	return args
 }
 
-// `VADD key [REDUCE dim] (FP32 | VALUES num) vector element [CAS] [NOQUANT | Q8 | BIN] [EF build-exploration-factor] [SETATTR attributes] [M numlinks]`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VAddWithArgs(ctx context.Context, key, element string, val Vector, addArgs *VAddArgs) *BoolCmd {
 	if addArgs == nil {
 		addArgs = &VAddArgs{}
@@ -146,24 +146,24 @@ func (c cmdable) VAddWithArgs(ctx context.Context, key, element string, val Vect
 	return cmd
 }
 
-// `VCARD key`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VCard(ctx context.Context, key string) *IntCmd {
 	cmd := NewIntCmd(ctx, "vcard", key)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VDIM key`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VDim(ctx context.Context, key string) *IntCmd {
 	cmd := NewIntCmd(ctx, "vdim", key)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VEMB key element [RAW]`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VEmb(ctx context.Context, key, element string, raw bool) *SliceCmd {
 	args := []any{"vemb", key, element}
 	if raw {
@@ -174,67 +174,67 @@ func (c cmdable) VEmb(ctx context.Context, key, element string, raw bool) *Slice
 	return cmd
 }
 
-// `VGETATTR key element`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VGetAttr(ctx context.Context, key, element string) *StringCmd {
 	cmd := NewStringCmd(ctx, "vgetattr", key, element)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VINFO key`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VInfo(ctx context.Context, key string) *MapStringInterfaceCmd {
 	cmd := NewMapStringInterfaceCmd(ctx, "vinfo", key)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VLINKS key element`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VLinks(ctx context.Context, key, element string) *StringSliceCmd {
 	cmd := NewStringSliceCmd(ctx, "vlinks", key, element)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VLINKS key element WITHSCORES`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VLinksWithScores(ctx context.Context, key, element string) *VectorScoreSliceCmd {
 	cmd := NewVectorInfoSliceCmd(ctx, "vlinks", key, element, "withscores")
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VRANDMEMBER key`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VRandMember(ctx context.Context, key string) *StringCmd {
 	cmd := NewStringCmd(ctx, "vrandmember", key)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VRANDMEMBER key [count]`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VRandMemberCount(ctx context.Context, key string, count int) *StringSliceCmd {
 	cmd := NewStringSliceCmd(ctx, "vrandmember", key, count)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VREM key element`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VRem(ctx context.Context, key, element string) *BoolCmd {
 	cmd := NewBoolCmd(ctx, "vrem", key, element)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VSETATTR key element "{ JSON obj }"`
-// The `attr` must be something that can be marshaled to JSON (using encoding/JSON) unless
-// the argument is a string or []byte when we assume that it can be passed directly as JSON.
-//
-// note: the API is experimental and may be subject to change.
+
+
+
+
+
 func (c cmdable) VSetAttr(ctx context.Context, key, element string, attr interface{}) *BoolCmd {
 	var attrStr string
 	var err error
@@ -247,7 +247,7 @@ func (c cmdable) VSetAttr(ctx context.Context, key, element string, attr interfa
 		var bytes []byte
 		bytes, err = json.Marshal(v)
 		if err != nil {
-			// If marshalling fails, create the command and set the error; this command won't be executed.
+			
 			cmd := NewBoolCmd(ctx, "vsetattr", key, element, "")
 			cmd.SetErr(err)
 			return cmd
@@ -259,23 +259,23 @@ func (c cmdable) VSetAttr(ctx context.Context, key, element string, attr interfa
 	return cmd
 }
 
-// `VClearAttributes` clear attributes on a vector set element.
-// The implementation of `VClearAttributes` is execute command `VSETATTR key element ""`.
-// note: the API is experimental and may be subject to change.
+
+
+
 func (c cmdable) VClearAttributes(ctx context.Context, key, element string) *BoolCmd {
 	cmd := NewBoolCmd(ctx, "vsetattr", key, element, "")
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// `VSIM key (ELE | FP32 | VALUES num) (vector | element)`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VSim(ctx context.Context, key string, val Vector) *StringSliceCmd {
 	return c.VSimWithArgs(ctx, key, val, &VSimArgs{})
 }
 
-// `VSIM key (ELE | FP32 | VALUES num) (vector | element) WITHSCORES`
-// note: the API is experimental and may be subject to change.
+
+
 func (c cmdable) VSimWithScores(ctx context.Context, key string, val Vector) *VectorScoreSliceCmd {
 	return c.VSimWithArgsWithScores(ctx, key, val, &VSimArgs{})
 }
@@ -315,9 +315,9 @@ func (v VSimArgs) appendArgs(args []any) []any {
 	return args
 }
 
-// `VSIM key (ELE | FP32 | VALUES num) (vector | element) [COUNT num] [EPSILON delta]
-// [EF search-exploration-factor] [FILTER expression] [FILTER-EF max-filtering-effort] [TRUTH] [NOTHREAD]`
-// note: the API is experimental and may be subject to change.
+
+
+
 func (c cmdable) VSimWithArgs(ctx context.Context, key string, val Vector, simArgs *VSimArgs) *StringSliceCmd {
 	if simArgs == nil {
 		simArgs = &VSimArgs{}
@@ -330,9 +330,9 @@ func (c cmdable) VSimWithArgs(ctx context.Context, key string, val Vector, simAr
 	return cmd
 }
 
-// `VSIM key (ELE | FP32 | VALUES num) (vector | element) [WITHSCORES] [COUNT num] [EPSILON delta]
-// [EF search-exploration-factor] [FILTER expression] [FILTER-EF max-filtering-effort] [TRUTH] [NOTHREAD]`
-// note: the API is experimental and may be subject to change.
+
+
+
 func (c cmdable) VSimWithArgsWithScores(ctx context.Context, key string, val Vector, simArgs *VSimArgs) *VectorScoreSliceCmd {
 	if simArgs == nil {
 		simArgs = &VSimArgs{}

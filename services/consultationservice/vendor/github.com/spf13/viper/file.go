@@ -9,14 +9,14 @@ import (
 	"github.com/spf13/afero"
 )
 
-// ExperimentalFinder tells Viper to use the new Finder interface for finding configuration files.
+
 func ExperimentalFinder() Option {
 	return optionFunc(func(v *Viper) {
 		v.experimentalFinder = true
 	})
 }
 
-// Search for a config file.
+
 func (v *Viper) findConfigFile() (string, error) {
 	finder := v.finder
 
@@ -53,13 +53,13 @@ func (v *Viper) findConfigFileWithFinder(finder Finder) (string, error) {
 		return "", ConfigFileNotFoundError{v.configName, fmt.Sprintf("%s", v.configPaths)}
 	}
 
-	// We call clean on the final result to ensure that the path is in its canonical form.
-	// This is mostly for consistent path handling and to make sure tests pass.
+	
+	
 	return results[0], nil
 }
 
-// Search all configPaths for any config file.
-// Returns the first path that exists (and is a config file).
+
+
 func (v *Viper) findConfigFileOld() (string, error) {
 	v.logger.Info("searching for config in paths", "paths", v.configPaths)
 
@@ -91,7 +91,7 @@ func (v *Viper) searchInPath(in string) (filename string) {
 	return ""
 }
 
-// exists checks if file exists.
+
 func exists(fs afero.Fs, path string) (bool, error) {
 	stat, err := fs.Stat(path)
 	if err == nil {

@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 //go:build 386 || amd64 || amd64p32
 
@@ -57,7 +57,7 @@ func initOptions() {
 		{Name: "avxvnni", Feature: &X86.HasAVXVNNI},
 		{Name: "avxvnniint8", Feature: &X86.HasAVXVNNIInt8},
 
-		// These capabilities should always be enabled on amd64:
+		
 		{Name: "sse2", Feature: &X86.HasSSE2, Required: runtime.GOARCH == "amd64"},
 	}
 }
@@ -88,17 +88,17 @@ func archInit() {
 	X86.HasRDRAND = isSet(30, ecx1)
 
 	var osSupportsAVX, osSupportsAVX512 bool
-	// For XGETBV, OSXSAVE bit is required and sufficient.
+	
 	if X86.HasOSXSAVE {
 		eax, _ := xgetbv()
-		// Check if XMM and YMM registers have OS support.
+		
 		osSupportsAVX = isSet(1, eax) && isSet(2, eax)
 
 		if runtime.GOOS == "darwin" {
-			// Darwin requires special AVX512 checks, see cpu_darwin_x86.go
+			
 			osSupportsAVX512 = osSupportsAVX && darwinSupportsAVX512()
 		} else {
-			// Check if OPMASK and ZMM registers have OS support.
+			
 			osSupportsAVX512 = osSupportsAVX && isSet(5, eax) && isSet(6, eax) && isSet(7, eax)
 		}
 	}
@@ -117,7 +117,7 @@ func archInit() {
 	X86.HasRDSEED = isSet(18, ebx7)
 	X86.HasADX = isSet(19, ebx7)
 
-	X86.HasAVX512 = isSet(16, ebx7) && osSupportsAVX512 // Because avx-512 foundation is the core required extension
+	X86.HasAVX512 = isSet(16, ebx7) && osSupportsAVX512 
 	if X86.HasAVX512 {
 		X86.HasAVX512F = true
 		X86.HasAVX512CD = isSet(28, ebx7)
@@ -143,7 +143,7 @@ func archInit() {
 	X86.HasAMXInt8 = isSet(25, edx7)
 	X86.HasAMXBF16 = isSet(22, edx7)
 
-	// These features depend on the second level of extended features.
+	
 	if eax7 >= 1 {
 		eax71, _, _, edx71 := cpuid(7, 1)
 		if X86.HasAVX512 {

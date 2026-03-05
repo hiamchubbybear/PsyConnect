@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsoncodec
 
@@ -19,36 +19,36 @@ import (
 
 var defaultSliceCodec = NewSliceCodec()
 
-// SliceCodec is the Codec used for slice values.
-//
-// Deprecated: SliceCodec will not be directly configurable in Go Driver 2.0. To
-// configure the slice encode and decode behavior, use the configuration methods
-// on a [go.mongodb.org/mongo-driver/bson.Encoder] or
-// [go.mongodb.org/mongo-driver/bson.Decoder]. To configure the slice encode and
-// decode behavior for a mongo.Client, use
-// [go.mongodb.org/mongo-driver/mongo/options.ClientOptions.SetBSONOptions].
-//
-// For example, to configure a mongo.Client to marshal nil Go slices as empty
-// BSON arrays, use:
-//
-//	opt := options.Client().SetBSONOptions(&options.BSONOptions{
-//	    NilSliceAsEmpty: true,
-//	})
-//
-// See the deprecation notice for each field in SliceCodec for the corresponding
-// settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type SliceCodec struct {
-	// EncodeNilAsEmpty causes EncodeValue to marshal nil Go slices as empty BSON arrays instead of
-	// BSON null.
-	//
-	// Deprecated: Use bson.Encoder.NilSliceAsEmpty instead.
+	
+	
+	
+	
 	EncodeNilAsEmpty bool
 }
 
-// NewSliceCodec returns a MapCodec with options opts.
-//
-// Deprecated: NewSliceCodec will not be available in Go Driver 2.0. See
-// [SliceCodec] for more details.
+
+
+
+
 func NewSliceCodec(opts ...*bsonoptions.SliceCodecOptions) *SliceCodec {
 	sliceOpt := bsonoptions.MergeSliceCodecOptions(opts...)
 
@@ -59,7 +59,7 @@ func NewSliceCodec(opts ...*bsonoptions.SliceCodecOptions) *SliceCodec {
 	return &codec
 }
 
-// EncodeValue is the ValueEncoder for slice types.
+
 func (sc SliceCodec) EncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Kind() != reflect.Slice {
 		return ValueEncoderError{Name: "SliceEncodeValue", Kinds: []reflect.Kind{reflect.Slice}, Received: val}
@@ -69,14 +69,14 @@ func (sc SliceCodec) EncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val re
 		return vw.WriteNull()
 	}
 
-	// If we have a []byte we want to treat it as a binary instead of as an array.
+	
 	if val.Type().Elem() == tByte {
 		byteSlice := make([]byte, val.Len())
 		reflect.Copy(reflect.ValueOf(byteSlice), val)
 		return vw.WriteBinary(byteSlice)
 	}
 
-	// If we have a []primitive.E we want to treat it as a document instead of as an array.
+	
 	if val.Type() == tD || val.Type().ConvertibleTo(tD) {
 		d := val.Convert(tD).Interface().(primitive.D)
 
@@ -133,7 +133,7 @@ func (sc SliceCodec) EncodeValue(ec EncodeContext, vw bsonrw.ValueWriter, val re
 	return aw.WriteArrayEnd()
 }
 
-// DecodeValue is the ValueDecoder for slice types.
+
 func (sc *SliceCodec) DecodeValue(dc DecodeContext, vr bsonrw.ValueReader, val reflect.Value) error {
 	if !val.CanSet() || val.Kind() != reflect.Slice {
 		return ValueDecoderError{Name: "SliceDecodeValue", Kinds: []reflect.Kind{reflect.Slice}, Received: val}

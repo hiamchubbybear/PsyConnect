@@ -25,34 +25,34 @@ type decodeSyncAsmContext struct {
 	litPosition int
 	history     []byte
 	windowSize  int
-	ll          int // set on error (not for all errors, please refer to _generate/gen.go)
-	ml          int // set on error (not for all errors, please refer to _generate/gen.go)
-	mo          int // set on error (not for all errors, please refer to _generate/gen.go)
+	ll          int 
+	ml          int 
+	mo          int 
 }
 
-// sequenceDecs_decodeSync_amd64 implements the main loop of sequenceDecs.decodeSync in x86 asm.
-//
-// Please refer to seqdec_generic.go for the reference implementation.
-//
+
+
+
+
 //go:noescape
 func sequenceDecs_decodeSync_amd64(s *sequenceDecs, br *bitReader, ctx *decodeSyncAsmContext) int
 
-// sequenceDecs_decodeSync_bmi2 implements the main loop of sequenceDecs.decodeSync in x86 asm with BMI2 extensions.
-//
+
+
 //go:noescape
 func sequenceDecs_decodeSync_bmi2(s *sequenceDecs, br *bitReader, ctx *decodeSyncAsmContext) int
 
-// sequenceDecs_decodeSync_safe_amd64 does the same as above, but does not write more than output buffer.
-//
+
+
 //go:noescape
 func sequenceDecs_decodeSync_safe_amd64(s *sequenceDecs, br *bitReader, ctx *decodeSyncAsmContext) int
 
-// sequenceDecs_decodeSync_safe_bmi2 does the same as above, but does not write more than output buffer.
-//
+
+
 //go:noescape
 func sequenceDecs_decodeSync_safe_bmi2(s *sequenceDecs, br *bitReader, ctx *decodeSyncAsmContext) int
 
-// decode sequences from the stream with the provided history but without a dictionary.
+
 func (s *sequenceDecs) decodeSyncSimple(hist []byte) (bool, error) {
 	if len(s.dict) > 0 {
 		return false, nil
@@ -61,21 +61,10 @@ func (s *sequenceDecs) decodeSyncSimple(hist []byte) (bool, error) {
 		return false, nil
 	}
 
-	// FIXME: Using unsafe memory copies leads to rare, random crashes
-	// with fuzz testing. It is therefore disabled for now.
+	
+	
 	const useSafe = true
-	/*
-		useSafe := false
-		if s.maxSyncLen == 0 && cap(s.out)-len(s.out) < maxCompressedBlockSizeAlloc {
-			useSafe = true
-		}
-		if s.maxSyncLen > 0 && cap(s.out)-len(s.out)-compressedBlockOverAlloc < int(s.maxSyncLen) {
-			useSafe = true
-		}
-		if cap(s.literals) < len(s.literals)+compressedBlockOverAlloc {
-			useSafe = true
-		}
-	*/
+	
 
 	br := s.br
 
@@ -163,7 +152,7 @@ func (s *sequenceDecs) decodeSyncSimple(hist []byte) (bool, error) {
 	t := ctx.outPosition
 	s.out = s.out[:t]
 
-	// Add final literals
+	
 	s.out = append(s.out, s.literals...)
 	if debugDecoder {
 		t += len(s.literals)
@@ -175,7 +164,7 @@ func (s *sequenceDecs) decodeSyncSimple(hist []byte) (bool, error) {
 	return true, nil
 }
 
-// --------------------------------------------------------------------------------
+
 
 type decodeAsmContext struct {
 	llTable   []decSymbol
@@ -191,49 +180,49 @@ type decodeAsmContext struct {
 
 const noError = 0
 
-// error reported when mo == 0 && ml > 0
+
 const errorMatchLenOfsMismatch = 1
 
-// error reported when ml > maxMatchLen
+
 const errorMatchLenTooBig = 2
 
-// error reported when mo > available history or mo > s.windowSize
+
 const errorMatchOffTooBig = 3
 
-// error reported when the sum of literal lengths exeeceds the literal buffer size
+
 const errorNotEnoughLiterals = 4
 
-// error reported when capacity of `out` is too small
+
 const errorNotEnoughSpace = 5
 
-// error reported when bits are overread.
+
 const errorOverread = 6
 
-// sequenceDecs_decode implements the main loop of sequenceDecs in x86 asm.
-//
-// Please refer to seqdec_generic.go for the reference implementation.
-//
+
+
+
+
 //go:noescape
 func sequenceDecs_decode_amd64(s *sequenceDecs, br *bitReader, ctx *decodeAsmContext) int
 
-// sequenceDecs_decode implements the main loop of sequenceDecs in x86 asm.
-//
-// Please refer to seqdec_generic.go for the reference implementation.
-//
+
+
+
+
 //go:noescape
 func sequenceDecs_decode_56_amd64(s *sequenceDecs, br *bitReader, ctx *decodeAsmContext) int
 
-// sequenceDecs_decode implements the main loop of sequenceDecs in x86 asm with BMI2 extensions.
-//
+
+
 //go:noescape
 func sequenceDecs_decode_bmi2(s *sequenceDecs, br *bitReader, ctx *decodeAsmContext) int
 
-// sequenceDecs_decode implements the main loop of sequenceDecs in x86 asm with BMI2 extensions.
-//
+
+
 //go:noescape
 func sequenceDecs_decode_56_bmi2(s *sequenceDecs, br *bitReader, ctx *decodeAsmContext) int
 
-// decode sequences from the stream without the provided history.
+
 func (s *sequenceDecs) decode(seqs []seqVals) error {
 	br := s.br
 
@@ -314,7 +303,7 @@ func (s *sequenceDecs) decode(seqs []seqVals) error {
 	return err
 }
 
-// --------------------------------------------------------------------------------
+
 
 type executeAsmContext struct {
 	seqs        []seqVals
@@ -327,23 +316,23 @@ type executeAsmContext struct {
 	windowSize  int
 }
 
-// sequenceDecs_executeSimple_amd64 implements the main loop of sequenceDecs.executeSimple in x86 asm.
-//
-// Returns false if a match offset is too big.
-//
-// Please refer to seqdec_generic.go for the reference implementation.
-//
+
+
+
+
+
+
 //go:noescape
 func sequenceDecs_executeSimple_amd64(ctx *executeAsmContext) bool
 
-// Same as above, but with safe memcopies
-//
+
+
 //go:noescape
 func sequenceDecs_executeSimple_safe_amd64(ctx *executeAsmContext) bool
 
-// executeSimple handles cases when dictionary is not used.
+
 func (s *sequenceDecs) executeSimple(seqs []seqVals, hist []byte) error {
-	// Ensure we have enough output size...
+	
 	if len(s.out)+s.seqSize+compressedBlockOverAlloc > cap(s.out) {
 		addBytes := s.seqSize + len(s.out) + compressedBlockOverAlloc
 		s.out = append(s.out, make([]byte, addBytes)...)
@@ -380,7 +369,7 @@ func (s *sequenceDecs) executeSimple(seqs []seqVals, hist []byte) error {
 	s.literals = s.literals[ctx.litPosition:]
 	t = ctx.outPosition
 
-	// Add final literals
+	
 	copy(out[t:], s.literals)
 	if debugDecoder {
 		t += len(s.literals)

@@ -5,13 +5,13 @@ import (
 	"strings"
 )
 
-// TCP constructs an address with the network set to "tcp".
+
 func TCP(address ...string) net.Addr { return makeNetAddr("tcp", address) }
 
 func makeNetAddr(network string, addresses []string) net.Addr {
 	switch len(addresses) {
 	case 0:
-		return nil // maybe panic instead?
+		return nil 
 	case 1:
 		return makeAddr(network, addresses[0])
 	default:

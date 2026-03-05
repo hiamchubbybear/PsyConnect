@@ -1,6 +1,6 @@
 package models
 
-// Email Notification Types
+
 type UserCreateNotification struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
@@ -26,7 +26,7 @@ type AccountChangeNotification struct {
 	Email    string `json:"email"`
 }
 
-// Therapist Notification Types
+
 type TherapistApproveNotification struct {
 	UserID   string `json:"userId"`
 	Email    string `json:"email"`
@@ -38,14 +38,25 @@ type TherapistRejectNotification struct {
 	Email  string `json:"email"`
 }
 
-// Push Notification Types
+
 type NewMessageNotification struct {
 	UserID string `json:"userId"`
 	From   string `json:"from"`
 }
 
 type ConsultationCreatedNotification struct {
-	UserID string `json:"userId"`
+	SessionID      string  `json:"id"`
+	ClientID       string  `json:"clientId"`
+	TherapistID    string  `json:"therapistId"`
+	ClientName     string  `json:"clientName"`
+	ClientEmail    string  `json:"clientEmail"`
+	TherapistName  string  `json:"therapistName"`
+	TherapistEmail string  `json:"therapistEmail"`
+	StartTimeStr   string  `json:"startTimeStr"`
+	EndTimeStr     string  `json:"endTimeStr"`
+	DateStr        string  `json:"dateStr"`
+	Mode           string  `json:"mode"`
+	Price          float64 `json:"price"`
 }
 
 type ConsultationUpdatedNotification struct {
@@ -88,7 +99,7 @@ type SystemNotification struct {
 	Message string `json:"message"`
 }
 
-// Social Notification Types
+
 type PostUpvoteNotification struct {
 	UserID    string `json:"userId"`
 	VoterName string `json:"voterName"`

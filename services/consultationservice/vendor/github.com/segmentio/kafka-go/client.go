@@ -18,50 +18,50 @@ const (
 	defaultMaxWait                 = 500 * time.Millisecond
 )
 
-// Client is a high-level API to interract with kafka brokers.
-//
-// All methods of the Client type accept a context as first argument, which may
-// be used to asynchronously cancel the requests.
-//
-// Clients are safe to use concurrently from multiple goroutines, as long as
-// their configuration is not changed after first use.
+
+
+
+
+
+
+
 type Client struct {
-	// Address of the kafka cluster (or specific broker) that the client will be
-	// sending requests to.
-	//
-	// This field is optional, the address may be provided in each request
-	// instead. The request address takes precedence if both were specified.
+	
+	
+	
+	
+	
 	Addr net.Addr
 
-	// Time limit for requests sent by this client.
-	//
-	// If zero, no timeout is applied.
+	
+	
+	
 	Timeout time.Duration
 
-	// A transport used to communicate with the kafka brokers.
-	//
-	// If nil, DefaultTransport is used.
+	
+	
+	
 	Transport RoundTripper
 }
 
-// A ConsumerGroup and Topic as these are both strings we define a type for
-// clarity when passing to the Client as a function argument
-//
-// N.B TopicAndGroup is currently experimental! Therefore, it is subject to
-// change, including breaking changes between MINOR and PATCH releases.
-//
-// DEPRECATED: this type will be removed in version 1.0, programs should
-// migrate to use kafka.(*Client).OffsetFetch instead.
+
+
+
+
+
+
+
+
 type TopicAndGroup struct {
 	Topic   string
 	GroupId string
 }
 
-// ConsumerOffsets returns a map[int]int64 of partition to committed offset for
-// a consumer group id and topic.
-//
-// DEPRECATED: this method will be removed in version 1.0, programs should
-// migrate to use kafka.(*Client).OffsetFetch instead.
+
+
+
+
+
 func (c *Client) ConsumerOffsets(ctx context.Context, tg TopicAndGroup) (map[int]int64, error) {
 	metadata, err := c.Metadata(ctx, &MetadataRequest{
 		Topics: []string{tg.Topic},
@@ -132,9 +132,9 @@ func (c *Client) timeout(ctx context.Context, defaultTimeout time.Duration) time
 	}
 
 	if timeout > 0 {
-		// Half the timeout because it is communicated to kafka in multiple
-		// requests (e.g. Fetch, Produce, etc...), this adds buffer to account
-		// for network latency when waiting for the response from kafka.
+		
+		
+		
 		return timeout / 2
 	}
 

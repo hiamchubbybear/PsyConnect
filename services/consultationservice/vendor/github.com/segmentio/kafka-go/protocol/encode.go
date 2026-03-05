@@ -72,15 +72,15 @@ func (e *encoder) WriteByte(b byte) error {
 }
 
 func (e *encoder) WriteString(s string) (int, error) {
-	// This implementation is an optimization to avoid the heap allocation that
-	// would occur when converting the string to a []byte to call crc32.Update.
-	//
-	// Strings are rarely long in the kafka protocol, so the use of a 32 byte
-	// buffer is a good comprise between keeping the encoder value small and
-	// limiting the number of calls to Write.
-	//
-	// We introduced this optimization because memory profiles on the benchmarks
-	// showed that most heap allocations were caused by this code path.
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	n := 0
 
 	for len(s) != 0 {
@@ -395,7 +395,7 @@ func encodeFuncOf(typ reflect.Type, version int16, flexible bool, tag structTag)
 	case reflect.Struct:
 		return structEncodeFuncOf(typ, version, flexible)
 	case reflect.Slice:
-		if typ.Elem().Kind() == reflect.Uint8 { // []byte
+		if typ.Elem().Kind() == reflect.Uint8 { 
 			return bytesEncodeFuncOf(flexible, tag)
 		}
 		return arrayEncodeFuncOf(typ, version, flexible, tag)
@@ -407,10 +407,10 @@ func encodeFuncOf(typ reflect.Type, version int16, flexible bool, tag structTag)
 func stringEncodeFuncOf(flexible bool, tag structTag) encodeFunc {
 	switch {
 	case flexible && tag.Nullable:
-		// In flexible messages, all strings are compact
+		
 		return (*encoder).encodeCompactNullString
 	case flexible:
-		// In flexible messages, all strings are compact
+		
 		return (*encoder).encodeCompactString
 	case tag.Nullable:
 		return (*encoder).encodeNullString
@@ -422,10 +422,10 @@ func stringEncodeFuncOf(flexible bool, tag structTag) encodeFunc {
 func bytesEncodeFuncOf(flexible bool, tag structTag) encodeFunc {
 	switch {
 	case flexible && tag.Nullable:
-		// In flexible messages, all arrays are compact
+		
 		return (*encoder).encodeCompactNullBytes
 	case flexible:
-		// In flexible messages, all arrays are compact
+		
 		return (*encoder).encodeCompactBytes
 	case tag.Nullable:
 		return (*encoder).encodeNullBytes
@@ -445,7 +445,7 @@ func structEncodeFuncOf(typ reflect.Type, version int16, flexible bool) encodeFu
 	var taggedFields []field
 
 	forEachStructField(typ, func(typ reflect.Type, index index, tag string) {
-		if typ.Size() != 0 { // skip struct{}
+		if typ.Size() != 0 { 
 			forEachStructTag(tag, func(tag structTag) bool {
 				if tag.MinVersion <= version && version <= tag.MaxVersion {
 					f := field{
@@ -455,10 +455,10 @@ func structEncodeFuncOf(typ reflect.Type, version int16, flexible bool) encodeFu
 					}
 
 					if tag.TagID < -1 {
-						// Normal required field
+						
 						fields = append(fields, f)
 					} else {
-						// Optional tagged field (flexible messages only)
+						
 						taggedFields = append(taggedFields, f)
 					}
 					return false
@@ -475,8 +475,8 @@ func structEncodeFuncOf(typ reflect.Type, version int16, flexible bool) encodeFu
 		}
 
 		if flexible {
-			// See https://cwiki.apache.org/confluence/display/KAFKA/KIP-482%3A+The+Kafka+Protocol+should+Support+Optional+Tagged+Fields
-			// for details of tag buffers in "flexible" messages.
+			
+			
 			e.writeUnsignedVarInt(uint64(len(taggedFields)))
 
 			for i := range taggedFields {
@@ -498,10 +498,10 @@ func arrayEncodeFuncOf(typ reflect.Type, version int16, flexible bool, tag struc
 	elemFunc := encodeFuncOf(elemType, version, flexible, tag)
 	switch {
 	case flexible && tag.Nullable:
-		// In flexible messages, all arrays are compact
+		
 		return func(e *encoder, v value) { e.encodeCompactNullArray(v, elemType, elemFunc) }
 	case flexible:
-		// In flexible messages, all arrays are compact
+		
 		return func(e *encoder, v value) { e.encodeCompactArray(v, elemType, elemFunc) }
 	case tag.Nullable:
 		return func(e *encoder, v value) { e.encodeNullArray(v, elemType, elemFunc) }
@@ -513,8 +513,8 @@ func arrayEncodeFuncOf(typ reflect.Type, version int16, flexible bool, tag struc
 func writerEncodeFuncOf(typ reflect.Type) encodeFunc {
 	typ = reflect.PtrTo(typ)
 	return func(e *encoder, v value) {
-		// Optimization to write directly into the buffer when the encoder
-		// does no need to compute a crc32 checksum.
+		
+		
 		w := io.Writer(e)
 		if e.table == nil {
 			w = e.writer
@@ -601,6 +601,6 @@ type versionedType struct {
 }
 
 var (
-	encoders   sync.Pool    // *encoder
-	marshalers atomic.Value // map[versionedType]encodeFunc
+	encoders   sync.Pool    
+	marshalers atomic.Value 
 )

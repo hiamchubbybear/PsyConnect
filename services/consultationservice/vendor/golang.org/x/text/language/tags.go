@@ -1,15 +1,15 @@
-// Copyright 2013 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package language
 
 import "golang.org/x/text/internal/language/compact"
 
-// TODO: Various sets of commonly use tags and regions.
 
-// MustParse is like Parse, but panics if the given BCP 47 tag cannot be parsed.
-// It simplifies safe initialization of Tag values.
+
+
+
 func MustParse(s string) Tag {
 	t, err := Parse(s)
 	if err != nil {
@@ -18,8 +18,8 @@ func MustParse(s string) Tag {
 	return t
 }
 
-// MustParse is like Parse, but panics if the given BCP 47 tag cannot be parsed.
-// It simplifies safe initialization of Tag values.
+
+
 func (c CanonType) MustParse(s string) Tag {
 	t, err := c.Parse(s)
 	if err != nil {
@@ -28,8 +28,8 @@ func (c CanonType) MustParse(s string) Tag {
 	return t
 }
 
-// MustParseBase is like ParseBase, but panics if the given base cannot be parsed.
-// It simplifies safe initialization of Base values.
+
+
 func MustParseBase(s string) Base {
 	b, err := ParseBase(s)
 	if err != nil {
@@ -38,8 +38,8 @@ func MustParseBase(s string) Base {
 	return b
 }
 
-// MustParseScript is like ParseScript, but panics if the given script cannot be
-// parsed. It simplifies safe initialization of Script values.
+
+
 func MustParseScript(s string) Script {
 	scr, err := ParseScript(s)
 	if err != nil {
@@ -48,8 +48,8 @@ func MustParseScript(s string) Script {
 	return scr
 }
 
-// MustParseRegion is like ParseRegion, but panics if the given region cannot be
-// parsed. It simplifies safe initialization of Region values.
+
+
 func MustParseRegion(s string) Region {
 	r, err := ParseRegion(s)
 	if err != nil {

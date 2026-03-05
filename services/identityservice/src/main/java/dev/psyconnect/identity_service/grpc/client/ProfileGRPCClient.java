@@ -23,7 +23,7 @@ public class ProfileGRPCClient {
     public ProfileGRPCClient(
             UserAccountMapper userAccountMapper,
             @Value("${baseUriProfileService:localhost}") String profileServiceUrl) {
-        // Extract host from URL (e.g. http://profile-service:8081 -> profile-service)
+
         String host = profileServiceUrl.replace("http://", "").replace("https://", "");
         if (host.contains(":")) {
             host = host.split(":")[0];

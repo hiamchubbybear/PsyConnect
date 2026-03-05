@@ -1,6 +1,6 @@
-// Copyright 2014 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package sha3
 
@@ -13,52 +13,52 @@ import (
 	"golang.org/x/sys/cpu"
 )
 
-// spongeDirection indicates the direction bytes are flowing through the sponge.
+
 type spongeDirection int
 
 const (
-	// spongeAbsorbing indicates that the sponge is absorbing input.
+	
 	spongeAbsorbing spongeDirection = iota
-	// spongeSqueezing indicates that the sponge is being squeezed.
+	
 	spongeSqueezing
 )
 
 type state struct {
-	a [1600 / 8]byte // main state of the hash
+	a [1600 / 8]byte 
 
-	// a[n:rate] is the buffer. If absorbing, it's the remaining space to XOR
-	// into before running the permutation. If squeezing, it's the remaining
-	// output to produce before running the permutation.
+	
+	
+	
 	n, rate int
 
-	// dsbyte contains the "domain separation" bits and the first bit of
-	// the padding. Sections 6.1 and 6.2 of [1] separate the outputs of the
-	// SHA-3 and SHAKE functions by appending bitstrings to the message.
-	// Using a little-endian bit-ordering convention, these are "01" for SHA-3
-	// and "1111" for SHAKE, or 00000010b and 00001111b, respectively. Then the
-	// padding rule from section 5.1 is applied to pad the message to a multiple
-	// of the rate, which involves adding a "1" bit, zero or more "0" bits, and
-	// a final "1" bit. We merge the first "1" bit from the padding into dsbyte,
-	// giving 00000110b (0x06) and 00011111b (0x1f).
-	// [1] http://csrc.nist.gov/publications/drafts/fips-202/fips_202_draft.pdf
-	//     "Draft FIPS 202: SHA-3 Standard: Permutation-Based Hash and
-	//      Extendable-Output Functions (May 2014)"
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	dsbyte byte
 
-	outputLen int             // the default output size in bytes
-	state     spongeDirection // whether the sponge is absorbing or squeezing
+	outputLen int             
+	state     spongeDirection 
 }
 
-// BlockSize returns the rate of sponge underlying this hash function.
+
 func (d *state) BlockSize() int { return d.rate }
 
-// Size returns the output size of the hash function in bytes.
+
 func (d *state) Size() int { return d.outputLen }
 
-// Reset clears the internal state by zeroing the sponge state and
-// the buffer indexes, and setting Sponge.state to absorbing.
+
+
 func (d *state) Reset() {
-	// Zero the permutation's state.
+	
 	for i := range d.a {
 		d.a[i] = 0
 	}
@@ -71,7 +71,7 @@ func (d *state) clone() *state {
 	return &ret
 }
 
-// permute applies the KeccakF-1600 permutation.
+
 func (d *state) permute() {
 	var a *[25]uint64
 	if cpu.IsBigEndian {
@@ -93,25 +93,25 @@ func (d *state) permute() {
 	}
 }
 
-// pads appends the domain separation bits in dsbyte, applies
-// the multi-bitrate 10..1 padding rule, and permutes the state.
+
+
 func (d *state) padAndPermute() {
-	// Pad with this instance's domain-separator bits. We know that there's
-	// at least one byte of space in the sponge because, if it were full,
-	// permute would have been called to empty it. dsbyte also contains the
-	// first one bit for the padding. See the comment in the state struct.
+	
+	
+	
+	
 	d.a[d.n] ^= d.dsbyte
-	// This adds the final one bit for the padding. Because of the way that
-	// bits are numbered from the LSB upwards, the final bit is the MSB of
-	// the last byte.
+	
+	
+	
 	d.a[d.rate-1] ^= 0x80
-	// Apply the permutation
+	
 	d.permute()
 	d.state = spongeSqueezing
 }
 
-// Write absorbs more data into the hash's state. It panics if any
-// output has already been read.
+
+
 func (d *state) Write(p []byte) (n int, err error) {
 	if d.state != spongeAbsorbing {
 		panic("sha3: Write after Read")
@@ -124,7 +124,7 @@ func (d *state) Write(p []byte) (n int, err error) {
 		d.n += x
 		p = p[x:]
 
-		// If the sponge is full, apply the permutation.
+		
 		if d.n == d.rate {
 			d.permute()
 		}
@@ -133,18 +133,18 @@ func (d *state) Write(p []byte) (n int, err error) {
 	return
 }
 
-// Read squeezes an arbitrary number of bytes from the sponge.
+
 func (d *state) Read(out []byte) (n int, err error) {
-	// If we're still absorbing, pad and apply the permutation.
+	
 	if d.state == spongeAbsorbing {
 		d.padAndPermute()
 	}
 
 	n = len(out)
 
-	// Now, do the squeezing.
+	
 	for len(out) > 0 {
-		// Apply the permutation if we've squeezed the sponge dry.
+		
 		if d.n == d.rate {
 			d.permute()
 		}
@@ -157,17 +157,17 @@ func (d *state) Read(out []byte) (n int, err error) {
 	return
 }
 
-// Sum applies padding to the hash state and then squeezes out the desired
-// number of output bytes. It panics if any output has already been read.
+
+
 func (d *state) Sum(in []byte) []byte {
 	if d.state != spongeAbsorbing {
 		panic("sha3: Sum after Read")
 	}
 
-	// Make a copy of the original hash so that caller can keep writing
-	// and summing.
+	
+	
 	dup := d.clone()
-	hash := make([]byte, dup.outputLen, 64) // explicit cap to allow stack allocation
+	hash := make([]byte, dup.outputLen, 64) 
 	dup.Read(hash)
 	return append(in, hash...)
 }
@@ -177,7 +177,7 @@ const (
 	magicShake  = "sha\x09"
 	magicCShake = "sha\x0a"
 	magicKeccak = "sha\x0b"
-	// magic || rate || main state || n || sponge direction
+	
 	marshaledSize = len(magicSHA3) + 1 + 200 + 1 + 1
 )
 
@@ -198,7 +198,7 @@ func (d *state) AppendBinary(b []byte) ([]byte, error) {
 	default:
 		panic("unknown dsbyte")
 	}
-	// rate is at most 168, and n is at most rate.
+	
 	b = append(b, byte(d.rate))
 	b = append(b, d.a[:]...)
 	b = append(b, byte(d.n), byte(d.state))

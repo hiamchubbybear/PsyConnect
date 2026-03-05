@@ -9,94 +9,94 @@ import (
 	"github.com/segmentio/kafka-go/protocol/describeconfigs"
 )
 
-// DescribeConfigsRequest represents a request sent to a kafka broker to describe configs.
+
 type DescribeConfigsRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// List of resources to get details for.
+	
 	Resources []DescribeConfigRequestResource
 
-	// Ignored if API version is less than v1
+	
 	IncludeSynonyms bool
 
-	// Ignored if API version is less than v3
+	
 	IncludeDocumentation bool
 }
 
 type DescribeConfigRequestResource struct {
-	// Resource Type
+	
 	ResourceType ResourceType
 
-	// Resource Name
+	
 	ResourceName string
 
-	// ConfigNames is a list of configurations to update.
+	
 	ConfigNames []string
 }
 
-// DescribeConfigsResponse represents a response from a kafka broker to a describe config request.
+
 type DescribeConfigsResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// Resources
+	
 	Resources []DescribeConfigResponseResource
 }
 
-// DescribeConfigResponseResource.
+
 type DescribeConfigResponseResource struct {
-	// Resource Type
+	
 	ResourceType int8
 
-	// Resource Name
+	
 	ResourceName string
 
-	// Error
+	
 	Error error
 
-	// ConfigEntries
+	
 	ConfigEntries []DescribeConfigResponseConfigEntry
 }
 
-// DescribeConfigResponseConfigEntry.
+
 type DescribeConfigResponseConfigEntry struct {
 	ConfigName  string
 	ConfigValue string
 	ReadOnly    bool
 
-	// Ignored if API version is greater than v0
+	
 	IsDefault bool
 
-	// Ignored if API version is less than v1
+	
 	ConfigSource int8
 
 	IsSensitive bool
 
-	// Ignored if API version is less than v1
+	
 	ConfigSynonyms []DescribeConfigResponseConfigSynonym
 
-	// Ignored if API version is less than v3
+	
 	ConfigType int8
 
-	// Ignored if API version is less than v3
+	
 	ConfigDocumentation string
 }
 
-// DescribeConfigResponseConfigSynonym.
+
 type DescribeConfigResponseConfigSynonym struct {
-	// Ignored if API version is less than v1
+	
 	ConfigName string
 
-	// Ignored if API version is less than v1
+	
 	ConfigValue string
 
-	// Ignored if API version is less than v1
+	
 	ConfigSource int8
 }
 
-// DescribeConfigs sends a config altering request to a kafka broker and returns the
-// response.
+
+
 func (c *Client) DescribeConfigs(ctx context.Context, req *DescribeConfigsRequest) (*DescribeConfigsResponse, error) {
 	resources := make([]describeconfigs.RequestResource, len(req.Resources))
 

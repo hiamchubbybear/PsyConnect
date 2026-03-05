@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-// Config holds all configuration for the logging service
+
 type Config struct {
 	Kafka      KafkaConfig
 	Loki       LokiConfig
@@ -27,16 +27,16 @@ type LokiConfig struct {
 	Username  string
 	Password  string
 	BatchSize int
-	Timeout   int // seconds
+	Timeout   int 
 }
 
 type FileLoggerConfig struct {
 	Enabled    bool
 	AppLogPath string
 	ErrLogPath string
-	MaxSize    int // megabytes
+	MaxSize    int 
 	MaxBackups int
-	MaxAge     int // days
+	MaxAge     int 
 	Compress   bool
 }
 
@@ -44,7 +44,7 @@ type ServerConfig struct {
 	Port int
 }
 
-// LoadConfig loads configuration from environment variables with defaults
+
 func LoadConfig() *Config {
 	return &Config{
 		Kafka: KafkaConfig{

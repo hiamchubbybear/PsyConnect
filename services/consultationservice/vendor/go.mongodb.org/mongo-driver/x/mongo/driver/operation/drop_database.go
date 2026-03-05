@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -19,7 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// DropDatabase performs a dropDatabase operation
+
 type DropDatabase struct {
 	authenticator driver.Authenticator
 	session       *session.Client
@@ -33,12 +33,12 @@ type DropDatabase struct {
 	serverAPI     *driver.ServerAPIOptions
 }
 
-// NewDropDatabase constructs and returns a new DropDatabase.
+
 func NewDropDatabase() *DropDatabase {
 	return &DropDatabase{}
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (dd *DropDatabase) Execute(ctx context.Context) error {
 	if dd.deployment == nil {
 		return errors.New("the DropDatabase operation must have a Deployment set before Execute can be called")
@@ -67,7 +67,7 @@ func (dd *DropDatabase) command(dst []byte, _ description.SelectedServer) ([]byt
 	return dst, nil
 }
 
-// Session sets the session for this operation.
+
 func (dd *DropDatabase) Session(session *session.Client) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -77,7 +77,7 @@ func (dd *DropDatabase) Session(session *session.Client) *DropDatabase {
 	return dd
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (dd *DropDatabase) ClusterClock(clock *session.ClusterClock) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -87,7 +87,7 @@ func (dd *DropDatabase) ClusterClock(clock *session.ClusterClock) *DropDatabase 
 	return dd
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (dd *DropDatabase) CommandMonitor(monitor *event.CommandMonitor) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -97,7 +97,7 @@ func (dd *DropDatabase) CommandMonitor(monitor *event.CommandMonitor) *DropDatab
 	return dd
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (dd *DropDatabase) Crypt(crypt driver.Crypt) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -107,7 +107,7 @@ func (dd *DropDatabase) Crypt(crypt driver.Crypt) *DropDatabase {
 	return dd
 }
 
-// Database sets the database to run this operation against.
+
 func (dd *DropDatabase) Database(database string) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -117,7 +117,7 @@ func (dd *DropDatabase) Database(database string) *DropDatabase {
 	return dd
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (dd *DropDatabase) Deployment(deployment driver.Deployment) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -127,7 +127,7 @@ func (dd *DropDatabase) Deployment(deployment driver.Deployment) *DropDatabase {
 	return dd
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (dd *DropDatabase) ServerSelector(selector description.ServerSelector) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -137,7 +137,7 @@ func (dd *DropDatabase) ServerSelector(selector description.ServerSelector) *Dro
 	return dd
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (dd *DropDatabase) WriteConcern(writeConcern *writeconcern.WriteConcern) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -147,7 +147,7 @@ func (dd *DropDatabase) WriteConcern(writeConcern *writeconcern.WriteConcern) *D
 	return dd
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (dd *DropDatabase) ServerAPI(serverAPI *driver.ServerAPIOptions) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)
@@ -157,7 +157,7 @@ func (dd *DropDatabase) ServerAPI(serverAPI *driver.ServerAPIOptions) *DropDatab
 	return dd
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (dd *DropDatabase) Authenticator(authenticator driver.Authenticator) *DropDatabase {
 	if dd == nil {
 		dd = new(DropDatabase)

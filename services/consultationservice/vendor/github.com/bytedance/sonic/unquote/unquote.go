@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package unquote
 
@@ -25,8 +11,8 @@ import (
     `github.com/bytedance/sonic/internal/rt`
 )
 
-// String unescapes an escaped string (not including `"` at beginning and end)
-// It validates invalid UTF8 and replace with `\ufffd`
+
+
 func String(s string) (ret string, err types.ParsingError) {
     mm := make([]byte, 0, len(s))
     err = intoBytesUnsafe(s, &mm, true)
@@ -34,7 +20,7 @@ func String(s string) (ret string, err types.ParsingError) {
     return
 }
 
-// IntoBytes is same with String besides it output result into a buffer m
+
 func IntoBytes(s string, m *[]byte) types.ParsingError {
     if cap(*m) < len(s) {
         return types.ERR_EOF
@@ -43,8 +29,8 @@ func IntoBytes(s string, m *[]byte) types.ParsingError {
     }
 }
 
-// String unescapes an escaped string (not including `"` at beginning and end)
-//   - replace enables replacing invalid utf8 escaped char with `\uffd`
+
+
 func _String(s string, replace bool) (ret string, err error) {
     mm := make([]byte, 0, len(s))
     err = intoBytesUnsafe(s, &mm, replace)
@@ -59,18 +45,18 @@ func intoBytesUnsafe(s string, m *[]byte, replace bool) types.ParsingError {
 
     flags := uint64(0)
     if replace {
-        /* unquote as the default configuration, replace invalid unicode with \ufffd */
+        
         flags |= types.F_UNICODE_REPLACE
     }
 
     ret := native.Unquote(str.Ptr, str.Len, slv.Ptr, &pos, flags)
 
-    /* check for errors */
+    
     if ret < 0 {
         return types.ParsingError(-ret)
     }
 
-    /* update the length */
+    
     slv.Len = ret
     runtime.KeepAlive(s)
     return 0

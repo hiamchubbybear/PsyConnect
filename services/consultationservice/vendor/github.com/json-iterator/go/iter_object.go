@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-// ReadObject read one field from object.
-// If object ended, returns empty string.
-// Otherwise, returns the field name.
+
+
+
 func (iter *Iterator) ReadObject() (ret string) {
 	c := iter.nextToken()
 	switch c {
 	case 'n':
 		iter.skipThreeBytes('u', 'l', 'l')
-		return "" // null
+		return "" 
 	case '{':
 		c = iter.nextToken()
 		if c == '"' {
@@ -26,7 +26,7 @@ func (iter *Iterator) ReadObject() (ret string) {
 			return field
 		}
 		if c == '}' {
-			return "" // end of object
+			return "" 
 		}
 		iter.ReportError("ReadObject", `expect " after {, but found `+string([]byte{c}))
 		return
@@ -38,14 +38,14 @@ func (iter *Iterator) ReadObject() (ret string) {
 		}
 		return field
 	case '}':
-		return "" // end of object
+		return "" 
 	default:
 		iter.ReportError("ReadObject", fmt.Sprintf(`expect { or , or } or n, but found %s`, string([]byte{c})))
 		return
 	}
 }
 
-// CaseInsensitive
+
 func (iter *Iterator) readFieldHash() int64 {
 	hash := int64(0x811c9dc5)
 	c := iter.nextToken()
@@ -55,7 +55,7 @@ func (iter *Iterator) readFieldHash() int64 {
 	}
 	for {
 		for i := iter.head; i < iter.tail; i++ {
-			// require ascii string and no escape
+			
 			b := iter.buf[i]
 			if b == '\\' {
 				iter.head = i
@@ -107,7 +107,7 @@ func calcHash(str string, caseSensitive bool) int64 {
 	return int64(hash)
 }
 
-// ReadObjectCB read object with callback, the key is ascii only and field name not copied
+
 func (iter *Iterator) ReadObjectCB(callback func(*Iterator, string) bool) bool {
 	c := iter.nextToken()
 	var field string
@@ -156,13 +156,13 @@ func (iter *Iterator) ReadObjectCB(callback func(*Iterator, string) bool) bool {
 	}
 	if c == 'n' {
 		iter.skipThreeBytes('u', 'l', 'l')
-		return true // null
+		return true 
 	}
 	iter.ReportError("ReadObjectCB", `expect { or n, but found `+string([]byte{c}))
 	return false
 }
 
-// ReadMapCB read map with callback, the key can be any string
+
 func (iter *Iterator) ReadMapCB(callback func(*Iterator, string) bool) bool {
 	c := iter.nextToken()
 	if c == '{' {
@@ -212,7 +212,7 @@ func (iter *Iterator) ReadMapCB(callback func(*Iterator, string) bool) bool {
 	}
 	if c == 'n' {
 		iter.skipThreeBytes('u', 'l', 'l')
-		return true // null
+		return true 
 	}
 	iter.ReportError("ReadMapCB", `expect { or n, but found `+string([]byte{c}))
 	return false

@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -20,7 +20,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// ListCollections performs a listCollections operation.
+
 type ListCollections struct {
 	authenticator         driver.Authenticator
 	filter                bsoncore.Document
@@ -41,14 +41,14 @@ type ListCollections struct {
 	timeout               *time.Duration
 }
 
-// NewListCollections constructs and returns a new ListCollections.
+
 func NewListCollections(filter bsoncore.Document) *ListCollections {
 	return &ListCollections{
 		filter: filter,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (lc *ListCollections) Result(opts driver.CursorOptions) (*driver.BatchCursor, error) {
 	opts.ServerAPI = lc.serverAPI
 
@@ -61,7 +61,7 @@ func (lc *ListCollections) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (lc *ListCollections) Execute(ctx context.Context) error {
 	if lc.deployment == nil {
 		return errors.New("the ListCollections operation must have a Deployment set before Execute can be called")
@@ -110,7 +110,7 @@ func (lc *ListCollections) command(dst []byte, _ description.SelectedServer) ([]
 	return dst, nil
 }
 
-// Filter determines what results are returned from listCollections.
+
 func (lc *ListCollections) Filter(filter bsoncore.Document) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -120,7 +120,7 @@ func (lc *ListCollections) Filter(filter bsoncore.Document) *ListCollections {
 	return lc
 }
 
-// NameOnly specifies whether to only return collection names.
+
 func (lc *ListCollections) NameOnly(nameOnly bool) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -130,8 +130,8 @@ func (lc *ListCollections) NameOnly(nameOnly bool) *ListCollections {
 	return lc
 }
 
-// AuthorizedCollections specifies whether to only return collections the user
-// is authorized to use.
+
+
 func (lc *ListCollections) AuthorizedCollections(authorizedCollections bool) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -141,7 +141,7 @@ func (lc *ListCollections) AuthorizedCollections(authorizedCollections bool) *Li
 	return lc
 }
 
-// Session sets the session for this operation.
+
 func (lc *ListCollections) Session(session *session.Client) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -151,7 +151,7 @@ func (lc *ListCollections) Session(session *session.Client) *ListCollections {
 	return lc
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (lc *ListCollections) ClusterClock(clock *session.ClusterClock) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -161,7 +161,7 @@ func (lc *ListCollections) ClusterClock(clock *session.ClusterClock) *ListCollec
 	return lc
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (lc *ListCollections) CommandMonitor(monitor *event.CommandMonitor) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -171,7 +171,7 @@ func (lc *ListCollections) CommandMonitor(monitor *event.CommandMonitor) *ListCo
 	return lc
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (lc *ListCollections) Crypt(crypt driver.Crypt) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -181,7 +181,7 @@ func (lc *ListCollections) Crypt(crypt driver.Crypt) *ListCollections {
 	return lc
 }
 
-// Database sets the database to run this operation against.
+
 func (lc *ListCollections) Database(database string) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -191,7 +191,7 @@ func (lc *ListCollections) Database(database string) *ListCollections {
 	return lc
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (lc *ListCollections) Deployment(deployment driver.Deployment) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -201,7 +201,7 @@ func (lc *ListCollections) Deployment(deployment driver.Deployment) *ListCollect
 	return lc
 }
 
-// ReadPreference set the read preference used with this operation.
+
 func (lc *ListCollections) ReadPreference(readPreference *readpref.ReadPref) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -211,7 +211,7 @@ func (lc *ListCollections) ReadPreference(readPreference *readpref.ReadPref) *Li
 	return lc
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (lc *ListCollections) ServerSelector(selector description.ServerSelector) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -221,8 +221,8 @@ func (lc *ListCollections) ServerSelector(selector description.ServerSelector) *
 	return lc
 }
 
-// Retry enables retryable mode for this operation. Retries are handled automatically in driver.Operation.Execute based
-// on how the operation is set.
+
+
 func (lc *ListCollections) Retry(retry driver.RetryMode) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -232,7 +232,7 @@ func (lc *ListCollections) Retry(retry driver.RetryMode) *ListCollections {
 	return lc
 }
 
-// BatchSize specifies the number of documents to return in every batch.
+
 func (lc *ListCollections) BatchSize(batchSize int32) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -242,7 +242,7 @@ func (lc *ListCollections) BatchSize(batchSize int32) *ListCollections {
 	return lc
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (lc *ListCollections) ServerAPI(serverAPI *driver.ServerAPIOptions) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -252,7 +252,7 @@ func (lc *ListCollections) ServerAPI(serverAPI *driver.ServerAPIOptions) *ListCo
 	return lc
 }
 
-// Timeout sets the timeout for this operation.
+
 func (lc *ListCollections) Timeout(timeout *time.Duration) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)
@@ -262,7 +262,7 @@ func (lc *ListCollections) Timeout(timeout *time.Duration) *ListCollections {
 	return lc
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (lc *ListCollections) Authenticator(authenticator driver.Authenticator) *ListCollections {
 	if lc == nil {
 		lc = new(ListCollections)

@@ -30,31 +30,31 @@ func (decoder *OptionalDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 		*((*unsafe.Pointer)(ptr)) = nil
 	} else {
 		if *((*unsafe.Pointer)(ptr)) == nil {
-			//pointer to null, we have to allocate memory to hold the value
+			
 			newPtr := decoder.ValueType.UnsafeNew()
 			decoder.ValueDecoder.Decode(newPtr, iter)
 			*((*unsafe.Pointer)(ptr)) = newPtr
 		} else {
-			//reuse existing instance
+			
 			decoder.ValueDecoder.Decode(*((*unsafe.Pointer)(ptr)), iter)
 		}
 	}
 }
 
 type dereferenceDecoder struct {
-	// only to deference a pointer
+	
 	valueType    reflect2.Type
 	valueDecoder ValDecoder
 }
 
 func (decoder *dereferenceDecoder) Decode(ptr unsafe.Pointer, iter *Iterator) {
 	if *((*unsafe.Pointer)(ptr)) == nil {
-		//pointer to null, we have to allocate memory to hold the value
+		
 		newPtr := decoder.valueType.UnsafeNew()
 		decoder.valueDecoder.Decode(newPtr, iter)
 		*((*unsafe.Pointer)(ptr)) = newPtr
 	} else {
-		//reuse existing instance
+		
 		decoder.valueDecoder.Decode(*((*unsafe.Pointer)(ptr)), iter)
 	}
 }

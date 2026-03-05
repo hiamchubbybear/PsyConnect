@@ -1,4 +1,4 @@
-// Package pkcs8 implements functions to parse and convert private keys in PKCS#8 format, as defined in RFC5208 and RFC5958
+
 package pkcs8
 
 import (
@@ -13,8 +13,8 @@ import (
 	"fmt"
 )
 
-// DefaultOpts are the default options for encrypting a key if none are given.
-// The defaults can be changed by the library user.
+
+
 var DefaultOpts = &Opts{
 	Cipher: AES256CBC,
 	KDFOpts: PBKDF2Opts{
@@ -24,64 +24,64 @@ var DefaultOpts = &Opts{
 	},
 }
 
-// KDFOpts contains options for a key derivation function.
-// An implementation of this interface must be specified when encrypting a PKCS#8 key.
+
+
 type KDFOpts interface {
-	// DeriveKey derives a key of size bytes from the given password and salt.
-	// It returns the key and the ASN.1-encodable parameters used.
+	
+	
 	DeriveKey(password, salt []byte, size int) (key []byte, params KDFParameters, err error)
-	// GetSaltSize returns the salt size specified.
+	
 	GetSaltSize() int
-	// OID returns the OID of the KDF specified.
+	
 	OID() asn1.ObjectIdentifier
 }
 
-// KDFParameters contains parameters (salt, etc.) for a key deriviation function.
-// It must be a ASN.1-decodable structure.
-// An implementation of this interface is created when decoding an encrypted PKCS#8 key.
+
+
+
 type KDFParameters interface {
-	// DeriveKey derives a key of size bytes from the given password.
-	// It uses the salt from the decoded parameters.
+	
+	
 	DeriveKey(password []byte, size int) (key []byte, err error)
 }
 
 var kdfs = make(map[string]func() KDFParameters)
 
-// RegisterKDF registers a function that returns a new instance of the given KDF
-// parameters. This allows the library to support client-provided KDFs.
+
+
 func RegisterKDF(oid asn1.ObjectIdentifier, params func() KDFParameters) {
 	kdfs[oid.String()] = params
 }
 
-// Cipher represents a cipher for encrypting the key material.
+
 type Cipher interface {
-	// IVSize returns the IV size of the cipher, in bytes.
+	
 	IVSize() int
-	// KeySize returns the key size of the cipher, in bytes.
+	
 	KeySize() int
-	// Encrypt encrypts the key material.
+	
 	Encrypt(key, iv, plaintext []byte) ([]byte, error)
-	// Decrypt decrypts the key material.
+	
 	Decrypt(key, iv, ciphertext []byte) ([]byte, error)
-	// OID returns the OID of the cipher specified.
+	
 	OID() asn1.ObjectIdentifier
 }
 
 var ciphers = make(map[string]func() Cipher)
 
-// RegisterCipher registers a function that returns a new instance of the given
-// cipher. This allows the library to support client-provided ciphers.
+
+
 func RegisterCipher(oid asn1.ObjectIdentifier, cipher func() Cipher) {
 	ciphers[oid.String()] = cipher
 }
 
-// Opts contains options for encrypting a PKCS#8 key.
+
 type Opts struct {
 	Cipher  Cipher
 	KDFOpts KDFOpts
 }
 
-// Unecrypted PKCS8
+
 var (
 	oidPBES2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
 )
@@ -130,17 +130,17 @@ func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, [
 	return cipher, iv, nil
 }
 
-// ParsePrivateKey parses a DER-encoded PKCS#8 private key.
-// Password can be nil.
-// This is equivalent to ParsePKCS8PrivateKey.
+
+
+
 func ParsePrivateKey(der []byte, password []byte) (interface{}, KDFParameters, error) {
-	// No password provided, assume the private key is unencrypted
+	
 	if len(password) == 0 {
 		privateKey, err := x509.ParsePKCS8PrivateKey(der)
 		return privateKey, nil, err
 	}
 
-	// Use the password provided to decrypt the private key
+	
 	var privKey encryptedPrivateKeyInfo
 	if _, err := asn1.Unmarshal(der, &privKey); err != nil {
 		return nil, nil, errors.New("pkcs8: only PKCS #5 v2.0 supported")
@@ -184,8 +184,8 @@ func ParsePrivateKey(der []byte, password []byte) (interface{}, KDFParameters, e
 	return key, kdfParams, nil
 }
 
-// MarshalPrivateKey encodes a private key into DER-encoded PKCS#8 with the given options.
-// Password can be nil.
+
+
 func MarshalPrivateKey(priv interface{}, password []byte, opts *Opts) ([]byte, error) {
 	if len(password) == 0 {
 		return x509.MarshalPKCS8PrivateKey(priv)
@@ -195,7 +195,7 @@ func MarshalPrivateKey(priv interface{}, password []byte, opts *Opts) ([]byte, e
 		opts = DefaultOpts
 	}
 
-	// Convert private key into PKCS8 format
+	
 	pkey, err := x509.MarshalPKCS8PrivateKey(priv)
 	if err != nil {
 		return nil, err
@@ -260,7 +260,7 @@ func MarshalPrivateKey(priv interface{}, password []byte, opts *Opts) ([]byte, e
 	return asn1.Marshal(encryptedPkey)
 }
 
-// ParsePKCS8PrivateKey parses encrypted/unencrypted private keys in PKCS#8 format. To parse encrypted private keys, a password of []byte type should be provided to the function as the second parameter.
+
 func ParsePKCS8PrivateKey(der []byte, v ...[]byte) (interface{}, error) {
 	var password []byte
 	if len(v) > 0 {
@@ -270,7 +270,7 @@ func ParsePKCS8PrivateKey(der []byte, v ...[]byte) (interface{}, error) {
 	return privateKey, err
 }
 
-// ParsePKCS8PrivateKeyRSA parses encrypted/unencrypted private keys in PKCS#8 format. To parse encrypted private keys, a password of []byte type should be provided to the function as the second parameter.
+
 func ParsePKCS8PrivateKeyRSA(der []byte, v ...[]byte) (*rsa.PrivateKey, error) {
 	key, err := ParsePKCS8PrivateKey(der, v...)
 	if err != nil {
@@ -283,7 +283,7 @@ func ParsePKCS8PrivateKeyRSA(der []byte, v ...[]byte) (*rsa.PrivateKey, error) {
 	return typedKey, nil
 }
 
-// ParsePKCS8PrivateKeyECDSA parses encrypted/unencrypted private keys in PKCS#8 format. To parse encrypted private keys, a password of []byte type should be provided to the function as the second parameter.
+
 func ParsePKCS8PrivateKeyECDSA(der []byte, v ...[]byte) (*ecdsa.PrivateKey, error) {
 	key, err := ParsePKCS8PrivateKey(der, v...)
 	if err != nil {
@@ -296,10 +296,10 @@ func ParsePKCS8PrivateKeyECDSA(der []byte, v ...[]byte) (*ecdsa.PrivateKey, erro
 	return typedKey, nil
 }
 
-// ConvertPrivateKeyToPKCS8 converts the private key into PKCS#8 format.
-// To encrypt the private key, the password of []byte type should be provided as the second parameter.
-//
-// The only supported key types are RSA and ECDSA (*rsa.PrivateKey or *ecdsa.PrivateKey for priv)
+
+
+
+
 func ConvertPrivateKeyToPKCS8(priv interface{}, v ...[]byte) ([]byte, error) {
 	var password []byte
 	if len(v) > 0 {

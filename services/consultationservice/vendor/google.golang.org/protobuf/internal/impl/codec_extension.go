@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -26,12 +26,12 @@ func getExtensionFieldInfo(xt protoreflect.ExtensionType) *extensionFieldInfo {
 		xi.lazyInit()
 		return xi.info
 	}
-	// Ideally we'd cache the resulting *extensionFieldInfo so we don't have to
-	// recompute this metadata repeatedly. But without support for something like
-	// weak references, such a cache would pin temporary values (like dynamic
-	// extension types, constructed for the duration of a user request) to the
-	// heap forever, causing memory usage of the cache to grow unbounded.
-	// See discussion in https://github.com/golang/protobuf/issues/1521.
+	
+	
+	
+	
+	
+	
 	return makeExtensionFieldInfo(xt.TypeDescriptor())
 }
 
@@ -47,9 +47,9 @@ func makeExtensionFieldInfo(xd protoreflect.ExtensionDescriptor) *extensionField
 		tagsize: protowire.SizeVarint(wiretag),
 		funcs:   encoderFuncsForValue(xd),
 	}
-	// Does the unmarshal function need a value passed to it?
-	// This is true for composite types, where we pass in a message, list, or map to fill in,
-	// and for enums, where we pass in a prototype value to specify the concrete enum type.
+	
+	
+	
 	switch xd.Kind() {
 	case protoreflect.MessageKind, protoreflect.GroupKind, protoreflect.EnumKind:
 		e.unmarshalNeedsValue = true
@@ -62,7 +62,7 @@ func makeExtensionFieldInfo(xd protoreflect.ExtensionDescriptor) *extensionField
 }
 
 type lazyExtensionValue struct {
-	atomicOnce uint32 // atomically set if value is valid
+	atomicOnce uint32 
 	mu         sync.Mutex
 	xi         *extensionFieldInfo
 	value      protoreflect.Value
@@ -72,8 +72,8 @@ type lazyExtensionValue struct {
 type ExtensionField struct {
 	typ protoreflect.ExtensionType
 
-	// value is either the value of GetValue,
-	// or a *lazyExtensionValue that then returns the value of GetValue.
+	
+	
 	value protoreflect.Value
 	lazy  *lazyExtensionValue
 }
@@ -98,20 +98,20 @@ func (f *ExtensionField) canLazy(xt protoreflect.ExtensionType) bool {
 	return false
 }
 
-// isUnexpandedLazy returns true if the ExensionField is lazy and not
-// yet expanded, which means it's present and already checked for
-// initialized required fields.
+
+
+
 func (f *ExtensionField) isUnexpandedLazy() bool {
 	return f.lazy != nil && atomic.LoadUint32(&f.lazy.atomicOnce) == 0
 }
 
-// lazyBuffer retrieves the buffer for a lazy extension if it's not yet expanded.
-//
-// The returned buffer has to be kept over whatever operation we're planning,
-// as re-retrieving it will fail after the message is lazily decoded.
+
+
+
+
 func (f *ExtensionField) lazyBuffer() []byte {
-	// This function might be in the critical path, so check the atomic without
-	// taking a look first, then only take the lock if needed.
+	
+	
 	if !f.isUnexpandedLazy() {
 		return nil
 	}
@@ -164,16 +164,16 @@ func (f *ExtensionField) lazyInit() {
 	atomic.StoreUint32(&f.lazy.atomicOnce, 1)
 }
 
-// Set sets the type and value of the extension field.
-// This must not be called concurrently.
+
+
 func (f *ExtensionField) Set(t protoreflect.ExtensionType, v protoreflect.Value) {
 	f.typ = t
 	f.value = v
 	f.lazy = nil
 }
 
-// Value returns the value of the extension field.
-// This may be called concurrently.
+
+
 func (f *ExtensionField) Value() protoreflect.Value {
 	if f.lazy != nil {
 		if atomic.LoadUint32(&f.lazy.atomicOnce) == 0 {
@@ -184,20 +184,20 @@ func (f *ExtensionField) Value() protoreflect.Value {
 	return f.value
 }
 
-// Type returns the type of the extension field.
-// This may be called concurrently.
+
+
 func (f ExtensionField) Type() protoreflect.ExtensionType {
 	return f.typ
 }
 
-// IsSet returns whether the extension field is set.
-// This may be called concurrently.
+
+
 func (f ExtensionField) IsSet() bool {
 	return f.typ != nil
 }
 
-// IsLazy reports whether a field is lazily encoded.
-// It is exported for testing.
+
+
 func IsLazy(m protoreflect.Message, fd protoreflect.FieldDescriptor) bool {
 	var mi *MessageInfo
 	var p pointer

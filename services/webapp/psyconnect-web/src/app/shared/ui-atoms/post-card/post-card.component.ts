@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { LucideAngularModule } from 'lucide-angular'; // Added this import
+import { LucideAngularModule } from 'lucide-angular'; 
 import { Post } from '../../../models/post.model';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 import { PsyButtonComponent } from '../button/psy-button.component';
@@ -30,7 +30,7 @@ export class PostCardComponent {
   @Output() openPost = new EventEmitter<Event>();
   @Output() openProfile = new EventEmitter<string>();
 
-  // Helper for reaction keys if needed, but logic should be simple
+  
 
   formatTime(dateString: string): string {
     const date = new Date(dateString);

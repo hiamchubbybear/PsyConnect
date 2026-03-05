@@ -245,7 +245,7 @@ export class MockDataService {
     return of(this.invoices).pipe(delay(300));
   }
 
-  // Payment stats
+  
   getPaymentStats() {
     const totalRevenue = this.transactions
       .filter(t => t.status === 'completed' && t.amount > 0)

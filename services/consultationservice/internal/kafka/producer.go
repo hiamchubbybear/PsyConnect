@@ -25,7 +25,7 @@ func NewProducer(env *bootstrap.Env) (*Producer, error) {
 
 	brokers := []string{env.KafkaAddr}
 
-	// Default consultation.test
+	
 	defaultWriter := kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  brokers,
 		Topic:    env.KafkaTopic,

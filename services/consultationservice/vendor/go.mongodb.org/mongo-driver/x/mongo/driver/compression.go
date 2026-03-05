@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package driver
 
@@ -18,7 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/wiremessage"
 )
 
-// CompressionOpts holds settings for how to compress a payload
+
 type CompressionOpts struct {
 	Compressor       wiremessage.CompressorID
 	ZlibLevel        int
@@ -26,13 +26,13 @@ type CompressionOpts struct {
 	UncompressedSize int32
 }
 
-// mustZstdNewWriter creates a zstd.Encoder with the given level and a nil
-// destination writer. It panics on any errors and should only be used at
-// package initialization time.
+
+
+
 func mustZstdNewWriter(lvl zstd.EncoderLevel) *zstd.Encoder {
 	enc, err := zstd.NewWriter(
 		nil,
-		zstd.WithWindowSize(8<<20), // Set window size to 8MB.
+		zstd.WithWindowSize(8<<20), 
 		zstd.WithEncoderLevel(lvl),
 	)
 	if err != nil {
@@ -42,7 +42,7 @@ func mustZstdNewWriter(lvl zstd.EncoderLevel) *zstd.Encoder {
 }
 
 var zstdEncoders = [zstd.SpeedBestCompression + 1]*zstd.Encoder{
-	0:                           nil, // zstd.speedNotSet
+	0:                           nil, 
 	zstd.SpeedFastest:           mustZstdNewWriter(zstd.SpeedFastest),
 	zstd.SpeedDefault:           mustZstdNewWriter(zstd.SpeedDefault),
 	zstd.SpeedBetterCompression: mustZstdNewWriter(zstd.SpeedBetterCompression),
@@ -53,13 +53,13 @@ func getZstdEncoder(level zstd.EncoderLevel) (*zstd.Encoder, error) {
 	if zstd.SpeedFastest <= level && level <= zstd.SpeedBestCompression {
 		return zstdEncoders[level], nil
 	}
-	// The level is outside the expected range, return an error.
+	
 	return nil, fmt.Errorf("invalid zstd compression level: %d", level)
 }
 
-// zlibEncodersOffset is the offset into the zlibEncoders array for a given
-// compression level.
-const zlibEncodersOffset = -zlib.HuffmanOnly // HuffmanOnly == -2
+
+
+const zlibEncodersOffset = -zlib.HuffmanOnly 
 
 var zlibEncoders [zlib.BestCompression + zlibEncodersOffset + 1]sync.Pool
 
@@ -75,7 +75,7 @@ func getZlibEncoder(level int) (*zlibEncoder, error) {
 		enc := &zlibEncoder{writer: writer, level: level}
 		return enc, nil
 	}
-	// The level is outside the expected range, return an error.
+	
 	return nil, fmt.Errorf("invalid zlib compression level: %d", level)
 }
 
@@ -116,7 +116,7 @@ var zstdBufPool = sync.Pool{
 	},
 }
 
-// CompressPayload takes a byte slice and compresses it according to the options passed
+
 func CompressPayload(in []byte, opts CompressionOpts) ([]byte, error) {
 	switch opts.Compressor {
 	case wiremessage.CompressorNoOp:
@@ -153,7 +153,7 @@ var zstdReaderPool = sync.Pool{
 	},
 }
 
-// DecompressPayload takes a byte slice that has been compressed and undoes it according to the options passed
+
 func DecompressPayload(in []byte, opts CompressionOpts) ([]byte, error) {
 	switch opts.Compressor {
 	case wiremessage.CompressorNoOp:
@@ -182,8 +182,8 @@ func DecompressPayload(in []byte, opts CompressionOpts) ([]byte, error) {
 		return out, nil
 	case wiremessage.CompressorZstd:
 		buf := make([]byte, 0, opts.UncompressedSize)
-		// Using a pool here is about ~20% faster
-		// than using a single global zstd.Reader
+		
+		
 		r := zstdReaderPool.Get().(*zstd.Decoder)
 		out, err := r.DecodeAll(in, buf)
 		zstdReaderPool.Put(r)

@@ -154,7 +154,7 @@ export class DropdownComponent
     this.close();
   }
 
-  // ControlValueAccessor implementation
+  
   writeValue(value: any): void {
     this.selectedValue = value;
     this.selectedOption =
@@ -173,7 +173,7 @@ export class DropdownComponent
     this.disabled = isDisabled;
   }
 
-  // Public methods
+  
   toggle(): void {
     if (this.disabled || this.loading) return;
     this.isOpen ? this.close() : this.open();
@@ -246,7 +246,7 @@ export class DropdownComponent
     this.toggle();
   }
 
-  // Close dropdown when clicking outside
+  
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     if (!this.elementRef.nativeElement.contains(event.target)) {

@@ -11,9 +11,9 @@ import (
 
 const defaultBufferSize = 32 * 1024
 
-// An implementation of io.Reader which consumes a stream of xerial-framed
-// snappy-encoeded data. The framing is optional, if no framing is detected
-// the reader will simply forward the bytes from its underlying stream.
+
+
+
 type xerialReader struct {
 	reader io.Reader
 	header [16]byte
@@ -143,9 +143,9 @@ func (x *xerialReader) readChunk(dst []byte) (int, error) {
 	if x.decode == nil {
 		x.output, x.input, err = x.input, x.output, nil
 	} else if n, err = snappy.DecodedLen(x.input); n <= len(dst) && err == nil {
-		// If the output buffer is large enough to hold the decode value,
-		// write it there directly instead of using the intermediary output
-		// buffer.
+		
+		
+		
 		_, err = x.decode(dst, x.input)
 	} else {
 		var b []byte
@@ -171,8 +171,8 @@ func (x *xerialReader) readFull(b []byte) (int, error) {
 	return n, err
 }
 
-// An implementation of a xerial-framed snappy-encoded output stream.
-// Each Write made to the writer is framed with a xerial header.
+
+
 type xerialWriter struct {
 	writer io.Writer
 	header [16]byte

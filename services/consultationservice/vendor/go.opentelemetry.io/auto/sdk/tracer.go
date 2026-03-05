@@ -1,5 +1,5 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
+
+
 
 package sdk
 
@@ -26,7 +26,7 @@ func (t tracer) Start(ctx context.Context, name string, opts ...trace.SpanStartO
 	sampled := true
 	span := new(span)
 
-	// Ask eBPF for sampling decision and span context info.
+	
 	t.start(ctx, span, &psc, &sampled, &span.spanContext)
 
 	span.sampled.Store(sampled)
@@ -34,7 +34,7 @@ func (t tracer) Start(ctx context.Context, name string, opts ...trace.SpanStartO
 	ctx = trace.ContextWithSpan(ctx, span)
 
 	if sampled {
-		// Only build traces if sampled.
+		
 		cfg := trace.NewSpanStartConfig(opts...)
 		span.traces, span.span = t.traces(name, cfg, span.spanContext, psc)
 	}
@@ -42,8 +42,8 @@ func (t tracer) Start(ctx context.Context, name string, opts ...trace.SpanStartO
 	return ctx, span
 }
 
-// Expected to be implemented in eBPF.
-//
+
+
 //go:noinline
 func (t *tracer) start(
 	ctx context.Context,
@@ -55,7 +55,7 @@ func (t *tracer) start(
 	start(ctx, spanPtr, psc, sampled, sc)
 }
 
-// start is used for testing.
+
 var start = func(context.Context, *span, *trace.SpanContext, *bool, *trace.SpanContext) {}
 
 func (t tracer) traces(name string, cfg trace.SpanConfig, sc, psc trace.SpanContext) (*telemetry.Traces, *telemetry.Span) {
@@ -120,5 +120,5 @@ func spanKind(kind trace.SpanKind) telemetry.SpanKind {
 	case trace.SpanKindConsumer:
 		return telemetry.SpanKindConsumer
 	}
-	return telemetry.SpanKind(0) // undefined.
+	return telemetry.SpanKind(0) 
 }

@@ -9,20 +9,20 @@ import (
 	"github.com/segmentio/kafka-go/protocol/describeacls"
 )
 
-// DescribeACLsRequest represents a request sent to a kafka broker to describe
-// existing ACLs.
+
+
 type DescribeACLsRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// Filter to filter ACLs on.
+	
 	Filter ACLFilter
 }
 
 type ACLFilter struct {
 	ResourceTypeFilter ResourceType
 	ResourceNameFilter string
-	// ResourcePatternTypeFilter was added in v1 and is not available prior to that.
+	
 	ResourcePatternTypeFilter PatternType
 	PrincipalFilter           string
 	HostFilter                string
@@ -30,17 +30,17 @@ type ACLFilter struct {
 	PermissionType            ACLPermissionType
 }
 
-// DescribeACLsResponse represents a response from a kafka broker to an ACL
-// describe request.
+
+
 type DescribeACLsResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// Error that occurred while attempting to describe
-	// the ACLs.
+	
+	
 	Error error
 
-	// ACL resources returned from the describe request.
+	
 	Resources []ACLResource
 }
 

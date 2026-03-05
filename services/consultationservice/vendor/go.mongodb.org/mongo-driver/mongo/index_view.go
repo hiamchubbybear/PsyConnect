@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package mongo
 
@@ -25,30 +25,30 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// ErrInvalidIndexValue is returned if an index is created with a keys document that has a value that is not a number
-// or string.
+
+
 var ErrInvalidIndexValue = errors.New("invalid index value")
 
-// ErrNonStringIndexName is returned if an index is created with a name that is not a string.
+
 var ErrNonStringIndexName = errors.New("index name must be a string")
 
-// ErrMultipleIndexDrop is returned if multiple indexes would be dropped from a call to IndexView.DropOne.
+
 var ErrMultipleIndexDrop = errors.New("multiple indexes would be dropped")
 
-// IndexView is a type that can be used to create, drop, and list indexes on a collection. An IndexView for a collection
-// can be created by a call to Collection.Indexes().
+
+
 type IndexView struct {
 	coll *Collection
 }
 
-// IndexModel represents a new index to be created.
+
 type IndexModel struct {
-	// A document describing which keys should be used for the index. It cannot be nil. This must be an order-preserving
-	// type such as bson.D. Map types such as bson.M are not valid. See https://www.mongodb.com/docs/manual/indexes/#indexes
-	// for examples of valid documents.
+	
+	
+	
 	Keys interface{}
 
-	// The options to use to create the index.
+	
 	Options *options.IndexOptions
 }
 
@@ -59,12 +59,12 @@ func isNamespaceNotFoundError(err error) bool {
 	return false
 }
 
-// List executes a listIndexes command and returns a cursor over the indexes in the collection.
-//
-// The opts parameter can be used to specify options for this operation (see the options.ListIndexesOptions
-// documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/listIndexes/.
+
+
+
+
+
+
 func (iv IndexView) List(ctx context.Context, opts ...*options.ListIndexesOptions) (*Cursor, error) {
 	if ctx == nil {
 		ctx = context.Background()
@@ -87,8 +87,8 @@ func (iv IndexView) List(ctx context.Context, opts ...*options.ListIndexesOption
 	})
 	selector = makeReadPrefSelector(sess, selector, iv.coll.client.localThreshold)
 
-	// TODO(GODRIVER-3038): This operation should pass CSE to the ListIndexes
-	// Crypt setter to be applied to the operation.
+	
+	
 	op := operation.NewListIndexes().
 		Session(sess).CommandMonitor(iv.coll.client.monitor).
 		ServerSelector(selector).ClusterClock(iv.coll.client.clock).
@@ -114,7 +114,7 @@ func (iv IndexView) List(ctx context.Context, opts ...*options.ListIndexesOption
 
 	err = op.Execute(ctx)
 	if err != nil {
-		// for namespaceNotFound errors, return an empty cursor and do not throw an error
+		
 		closeImplicitSession(sess)
 		if isNamespaceNotFoundError(err) {
 			return newEmptyCursor(), nil
@@ -132,7 +132,7 @@ func (iv IndexView) List(ctx context.Context, opts ...*options.ListIndexesOption
 	return cursor, replaceErrors(err)
 }
 
-// ListSpecifications executes a List command and returns a slice of returned IndexSpecifications
+
 func (iv IndexView) ListSpecifications(ctx context.Context, opts ...*options.ListIndexesOptions) ([]*IndexSpecification, error) {
 	cursor, err := iv.List(ctx, opts...)
 	if err != nil {
@@ -147,16 +147,16 @@ func (iv IndexView) ListSpecifications(ctx context.Context, opts ...*options.Lis
 
 	ns := iv.coll.db.Name() + "." + iv.coll.Name()
 	for _, res := range results {
-		// Pre-4.4 servers report a namespace in their responses, so we only set Namespace manually if it was not in
-		// the response.
+		
+		
 		res.Namespace = ns
 	}
 
 	return results, nil
 }
 
-// CreateOne executes a createIndexes command to create an index on the collection and returns the name of the new
-// index. See the IndexView.CreateMany documentation for more information and an example.
+
+
 func (iv IndexView) CreateOne(ctx context.Context, model IndexModel, opts ...*options.CreateIndexesOptions) (string, error) {
 	names, err := iv.CreateMany(ctx, []IndexModel{model}, opts...)
 	if err != nil {
@@ -166,16 +166,16 @@ func (iv IndexView) CreateOne(ctx context.Context, model IndexModel, opts ...*op
 	return names[0], nil
 }
 
-// CreateMany executes a createIndexes command to create multiple indexes on the collection and returns the names of
-// the new indexes.
-//
-// For each IndexModel in the models parameter, the index name can be specified via the Options field. If a name is not
-// given, it will be generated from the Keys document.
-//
-// The opts parameter can be used to specify options for this operation (see the options.CreateIndexesOptions
-// documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/createIndexes/.
+
+
+
+
+
+
+
+
+
+
 func (iv IndexView) CreateMany(ctx context.Context, models []IndexModel, opts ...*options.CreateIndexesOptions) ([]string, error) {
 	names := make([]string, 0, len(models))
 
@@ -254,10 +254,10 @@ func (iv IndexView) CreateMany(ctx context.Context, models []IndexModel, opts ..
 
 	option := options.MergeCreateIndexesOptions(opts...)
 
-	// TODO(GODRIVER-3038): This operation should pass CSE to the CreateIndexes
-	// Crypt setter to be applied to the operation.
-	//
-	// This was added in GODRIVER-2413 for the 2.0 major release.
+	
+	
+	
+	
 	op := operation.NewCreateIndexes(indexes).
 		Session(sess).WriteConcern(wc).ClusterClock(iv.coll.client.clock).
 		Database(iv.coll.db.name).Collection(iv.coll.name).CommandMonitor(iv.coll.client.monitor).
@@ -395,8 +395,8 @@ func (iv IndexView) drop(ctx context.Context, index any, opts ...*options.DropIn
 
 	dio := options.MergeDropIndexesOptions(opts...)
 
-	// TODO(GODRIVER-3038): This operation should pass CSE to the DropIndexes
-	// Crypt setter to be applied to the operation.
+	
+	
 	op := operation.NewDropIndexes(index).Session(sess).WriteConcern(wc).CommandMonitor(iv.coll.client.monitor).
 		ServerSelector(selector).ClusterClock(iv.coll.client.clock).
 		Database(iv.coll.db.name).Collection(iv.coll.name).
@@ -409,24 +409,24 @@ func (iv IndexView) drop(ctx context.Context, index any, opts ...*options.DropIn
 		return nil, replaceErrors(err)
 	}
 
-	// TODO: it's weird to return a bson.Raw here because we have to convert the result back to BSON
+	
 	ridx, res := bsoncore.AppendDocumentStart(nil)
 	res = bsoncore.AppendInt32Element(res, "nIndexesWas", op.Result().NIndexesWas)
 	res, _ = bsoncore.AppendDocumentEnd(res, ridx)
 	return res, nil
 }
 
-// DropOne executes a dropIndexes operation to drop an index on the collection. If the operation succeeds, this returns
-// a BSON document in the form {nIndexesWas: <int32>}. The "nIndexesWas" field in the response contains the number of
-// indexes that existed prior to the drop.
-//
-// The name parameter should be the name of the index to drop. If the name is "*", ErrMultipleIndexDrop will be returned
-// without running the command because doing so would drop all indexes.
-//
-// The opts parameter can be used to specify options for this operation (see the options.DropIndexesOptions
-// documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/dropIndexes/.
+
+
+
+
+
+
+
+
+
+
+
 func (iv IndexView) DropOne(ctx context.Context, name string, opts ...*options.DropIndexesOptions) (bson.Raw, error) {
 	if name == "*" {
 		return nil, ErrMultipleIndexDrop
@@ -435,11 +435,11 @@ func (iv IndexView) DropOne(ctx context.Context, name string, opts ...*options.D
 	return iv.drop(ctx, name, opts...)
 }
 
-// DropOneWithKey drops a collection index by key using the dropIndexes operation. If the operation succeeds, this returns
-// a BSON document in the form {nIndexesWas: <int32>}. The "nIndexesWas" field in the response contains the number of
-// indexes that existed prior to the drop.
-//
-// This function is useful to drop an index using its key specification instead of its name.
+
+
+
+
+
 func (iv IndexView) DropOneWithKey(ctx context.Context, keySpecDocument interface{}, opts ...*options.DropIndexesOptions) (bson.Raw, error) {
 	doc, err := marshal(keySpecDocument, iv.coll.bsonOpts, iv.coll.registry)
 	if err != nil {
@@ -449,14 +449,14 @@ func (iv IndexView) DropOneWithKey(ctx context.Context, keySpecDocument interfac
 	return iv.drop(ctx, doc, opts...)
 }
 
-// DropAll executes a dropIndexes operation to drop all indexes on the collection. If the operation succeeds, this
-// returns a BSON document in the form {nIndexesWas: <int32>}. The "nIndexesWas" field in the response contains the
-// number of indexes that existed prior to the drop.
-//
-// The opts parameter can be used to specify options for this operation (see the options.DropIndexesOptions
-// documentation).
-//
-// For more information about the command, see https://www.mongodb.com/docs/manual/reference/command/dropIndexes/.
+
+
+
+
+
+
+
+
 func (iv IndexView) DropAll(ctx context.Context, opts ...*options.DropIndexesOptions) (bson.Raw, error) {
 	return iv.drop(ctx, "*", opts...)
 }

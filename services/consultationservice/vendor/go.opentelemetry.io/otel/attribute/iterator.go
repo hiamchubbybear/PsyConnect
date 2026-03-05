@@ -1,18 +1,18 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
 
-package attribute // import "go.opentelemetry.io/otel/attribute"
 
-// Iterator allows iterating over the set of attributes in order, sorted by
-// key.
+
+package attribute 
+
+
+
 type Iterator struct {
 	storage *Set
 	idx     int
 }
 
-// MergeIterator supports iterating over two sets of attributes while
-// eliminating duplicate values from the combined set. The first iterator
-// value takes precedence.
+
+
+
 type MergeIterator struct {
 	one     oneIterator
 	two     oneIterator
@@ -25,50 +25,50 @@ type oneIterator struct {
 	attr KeyValue
 }
 
-// Next moves the iterator to the next position. Returns false if there are no
-// more attributes.
+
+
 func (i *Iterator) Next() bool {
 	i.idx++
 	return i.idx < i.Len()
 }
 
-// Label returns current KeyValue. Must be called only after Next returns
-// true.
-//
-// Deprecated: Use Attribute instead.
+
+
+
+
 func (i *Iterator) Label() KeyValue {
 	return i.Attribute()
 }
 
-// Attribute returns the current KeyValue of the Iterator. It must be called
-// only after Next returns true.
+
+
 func (i *Iterator) Attribute() KeyValue {
 	kv, _ := i.storage.Get(i.idx)
 	return kv
 }
 
-// IndexedLabel returns current index and attribute. Must be called only
-// after Next returns true.
-//
-// Deprecated: Use IndexedAttribute instead.
+
+
+
+
 func (i *Iterator) IndexedLabel() (int, KeyValue) {
 	return i.idx, i.Attribute()
 }
 
-// IndexedAttribute returns current index and attribute. Must be called only
-// after Next returns true.
+
+
 func (i *Iterator) IndexedAttribute() (int, KeyValue) {
 	return i.idx, i.Attribute()
 }
 
-// Len returns a number of attributes in the iterated set.
+
 func (i *Iterator) Len() int {
 	return i.storage.Len()
 }
 
-// ToSlice is a convenience function that creates a slice of attributes from
-// the passed iterator. The iterator is set up to start from the beginning
-// before creating the slice.
+
+
+
 func (i *Iterator) ToSlice() []KeyValue {
 	l := i.Len()
 	if l == 0 {
@@ -82,8 +82,8 @@ func (i *Iterator) ToSlice() []KeyValue {
 	return slice
 }
 
-// NewMergeIterator returns a MergeIterator for merging two attribute sets.
-// Duplicates are resolved by taking the value from the first set.
+
+
 func NewMergeIterator(s1, s2 *Set) MergeIterator {
 	mi := MergeIterator{
 		one: makeOne(s1.Iter()),
@@ -106,7 +106,7 @@ func (oi *oneIterator) advance() {
 	}
 }
 
-// Next returns true if there is another attribute available.
+
 func (m *MergeIterator) Next() bool {
 	if m.one.done && m.two.done {
 		return false
@@ -122,7 +122,7 @@ func (m *MergeIterator) Next() bool {
 		return true
 	}
 	if m.one.attr.Key == m.two.attr.Key {
-		m.current = m.one.attr // first iterator attribute value wins
+		m.current = m.one.attr 
 		m.one.advance()
 		m.two.advance()
 		return true
@@ -137,14 +137,14 @@ func (m *MergeIterator) Next() bool {
 	return true
 }
 
-// Label returns the current value after Next() returns true.
-//
-// Deprecated: Use Attribute instead.
+
+
+
 func (m *MergeIterator) Label() KeyValue {
 	return m.current
 }
 
-// Attribute returns the current value after Next() returns true.
+
 func (m *MergeIterator) Attribute() KeyValue {
 	return m.current
 }

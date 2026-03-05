@@ -21,7 +21,7 @@ func NewProducer(env *bootstrap.Env) (*Producer, error) {
 		return nil, errors.New("missing Kafka configuration in environment")
 	}
 
-	// Default consultation.test
+	
 	defaultWriter := kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  []string{env.KafkaAddr},
 		Topic:    env.KafkaTopic,

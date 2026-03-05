@@ -28,15 +28,15 @@ func NewMongoReactionRepository(collection *mongo.Collection, redis redis.RedisS
 func (r *MongoReactionRepository) AddReaction(ctx context.Context, reaction *domain.Reaction) error {
 	reaction.CreatedAt = time.Now().UTC()
 
-	// Check if user already reacted
+	
 	existing, err := r.GetUserReaction(ctx, reaction.PostID, reaction.UserID)
 	if err == nil && existing != nil {
-		// Update existing reaction
+		
 		filter := bson.M{"post_id": reaction.PostID, "user_id": reaction.UserID}
 		update := bson.M{"$set": bson.M{"reaction_type": reaction.ReactionType}}
 		_, err = r.collection.UpdateOne(ctx, filter, update)
 
-		// Invalidate cache
+		
 		r.invalidateCache(ctx, reaction.PostID)
 		return err
 	}
@@ -47,7 +47,7 @@ func (r *MongoReactionRepository) AddReaction(ctx context.Context, reaction *dom
 	}
 	reaction.ID = result.InsertedID.(primitive.ObjectID)
 
-	// Invalidate cache
+	
 	r.invalidateCache(ctx, reaction.PostID)
 	return nil
 }
@@ -62,7 +62,7 @@ func (r *MongoReactionRepository) RemoveReaction(ctx context.Context, postID, us
 		return errors.New("reaction not found")
 	}
 
-	// Invalidate cache
+	
 	r.invalidateCache(ctx, postID)
 	return nil
 }
@@ -81,7 +81,7 @@ func (r *MongoReactionRepository) GetUserReaction(ctx context.Context, postID, u
 }
 
 func (r *MongoReactionRepository) GetReactionsByPost(ctx context.Context, postID string) ([]domain.Reaction, error) {
-	// Try cache first
+	
 	cacheKey := fmt.Sprintf("post:%s:reactions", postID)
 	var reactions []domain.Reaction
 	err := r.redis.Get(ctx, cacheKey, &reactions)
@@ -89,7 +89,7 @@ func (r *MongoReactionRepository) GetReactionsByPost(ctx context.Context, postID
 		return reactions, nil
 	}
 
-	// Get from DB
+	
 	filter := bson.M{"post_id": postID}
 	cursor, err := r.collection.Find(ctx, filter)
 	if err != nil {
@@ -101,7 +101,7 @@ func (r *MongoReactionRepository) GetReactionsByPost(ctx context.Context, postID
 		return nil, err
 	}
 
-	// Cache result
+	
 	r.redis.Set(ctx, cacheKey, reactions)
 	return reactions, nil
 }

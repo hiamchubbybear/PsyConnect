@@ -32,7 +32,7 @@ func init() {
 	floatDigits['.'] = dotInNumber
 }
 
-// ReadBigFloat read big.Float
+
 func (iter *Iterator) ReadBigFloat() (ret *big.Float) {
 	str := iter.readNumberAsString()
 	if iter.Error != nil && iter.Error != io.EOF {
@@ -50,7 +50,7 @@ func (iter *Iterator) ReadBigFloat() (ret *big.Float) {
 	return val
 }
 
-// ReadBigInt read big.Int
+
 func (iter *Iterator) ReadBigInt() (ret *big.Int) {
 	str := iter.readNumberAsString()
 	if iter.Error != nil && iter.Error != io.EOF {
@@ -66,7 +66,7 @@ func (iter *Iterator) ReadBigInt() (ret *big.Int) {
 	return ret
 }
 
-//ReadFloat32 read float32
+
 func (iter *Iterator) ReadFloat32() (ret float32) {
 	c := iter.nextToken()
 	if c == '-' {
@@ -78,7 +78,7 @@ func (iter *Iterator) ReadFloat32() (ret float32) {
 
 func (iter *Iterator) readPositiveFloat32() (ret float32) {
 	i := iter.head
-	// first char
+	
 	if i == iter.tail {
 		return iter.readFloat32SlowPath()
 	}
@@ -106,7 +106,7 @@ func (iter *Iterator) readPositiveFloat32() (ret float32) {
 		}
 	}
 	value := uint64(ind)
-	// chars before dot
+	
 non_decimal_loop:
 	for ; i < iter.tail; i++ {
 		c = iter.buf[i]
@@ -123,9 +123,9 @@ non_decimal_loop:
 		if value > uint64SafeToMultiple10 {
 			return iter.readFloat32SlowPath()
 		}
-		value = (value << 3) + (value << 1) + uint64(ind) // value = value * 10 + ind;
+		value = (value << 3) + (value << 1) + uint64(ind) 
 	}
-	// chars after dot
+	
 	if c == '.' {
 		i++
 		decimalPlaces := 0
@@ -141,7 +141,7 @@ non_decimal_loop:
 					iter.head = i
 					return float32(float64(value) / float64(pow10[decimalPlaces]))
 				}
-				// too many decimal places
+				
 				return iter.readFloat32SlowPath()
 			case invalidCharForNumber, dotInNumber:
 				return iter.readFloat32SlowPath()
@@ -203,7 +203,7 @@ func (iter *Iterator) readFloat32SlowPath() (ret float32) {
 	return float32(val)
 }
 
-// ReadFloat64 read float64
+
 func (iter *Iterator) ReadFloat64() (ret float64) {
 	c := iter.nextToken()
 	if c == '-' {
@@ -215,7 +215,7 @@ func (iter *Iterator) ReadFloat64() (ret float64) {
 
 func (iter *Iterator) readPositiveFloat64() (ret float64) {
 	i := iter.head
-	// first char
+	
 	if i == iter.tail {
 		return iter.readFloat64SlowPath()
 	}
@@ -243,7 +243,7 @@ func (iter *Iterator) readPositiveFloat64() (ret float64) {
 		}
 	}
 	value := uint64(ind)
-	// chars before dot
+	
 non_decimal_loop:
 	for ; i < iter.tail; i++ {
 		c = iter.buf[i]
@@ -260,9 +260,9 @@ non_decimal_loop:
 		if value > uint64SafeToMultiple10 {
 			return iter.readFloat64SlowPath()
 		}
-		value = (value << 3) + (value << 1) + uint64(ind) // value = value * 10 + ind;
+		value = (value << 3) + (value << 1) + uint64(ind) 
 	}
-	// chars after dot
+	
 	if c == '.' {
 		i++
 		decimalPlaces := 0
@@ -278,7 +278,7 @@ non_decimal_loop:
 					iter.head = i
 					return float64(value) / float64(pow10[decimalPlaces])
 				}
-				// too many decimal places
+				
 				return iter.readFloat64SlowPath()
 			case invalidCharForNumber, dotInNumber:
 				return iter.readFloat64SlowPath()
@@ -315,7 +315,7 @@ func (iter *Iterator) readFloat64SlowPath() (ret float64) {
 }
 
 func validateFloat(str string) string {
-	// strconv.ParseFloat is not validating `1.` or `1.e1`
+	
 	if len(str) == 0 {
 		return "empty number"
 	}
@@ -336,7 +336,7 @@ func validateFloat(str string) string {
 	return ""
 }
 
-// ReadNumber read json.Number
+
 func (iter *Iterator) ReadNumber() (ret json.Number) {
 	return json.Number(iter.readNumberAsString())
 }

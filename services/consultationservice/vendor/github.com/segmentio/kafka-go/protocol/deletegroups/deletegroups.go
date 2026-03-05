@@ -7,15 +7,15 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v2,tag"`
 
 	GroupIDs []string `kafka:"min=v0,max=v2"`
 }
 
 func (r *Request) Group() string {
-	// use first group to determine group coordinator
+	
 	if len(r.GroupIDs) > 0 {
 		return r.GroupIDs[0]
 	}
@@ -29,8 +29,8 @@ var (
 )
 
 type Response struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v2,tag"`
 
 	ThrottleTimeMs int32           `kafka:"min=v0,max=v2"`

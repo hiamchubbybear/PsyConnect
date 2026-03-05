@@ -10,8 +10,8 @@ type Group struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	Name        string             `bson:"name" json:"name"`
 	Description string             `bson:"description" json:"description"`
-	Category    string             `bson:"category" json:"category"` // e.g., "Depression", "Anxiety", "General"
-	Icon        string             `bson:"icon" json:"icon"`         // URL or icon identifier
+	Category    string             `bson:"category" json:"category"` 
+	Icon        string             `bson:"icon" json:"icon"`         
 	CreatorID   string             `bson:"creator_id" json:"creator_id"`
 	MemberCount int                `bson:"member_count" json:"member_count"`
 	IsPublic    bool               `bson:"is_public" json:"is_public"`
@@ -24,6 +24,6 @@ type GroupMember struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	GroupID  primitive.ObjectID `bson:"group_id" json:"group_id"`
 	UserID   string             `bson:"user_id" json:"user_id"`
-	Role     string             `bson:"role" json:"role"` // "admin", "member"
+	Role     string             `bson:"role" json:"role"` 
 	JoinedAt time.Time          `bson:"joined_at" json:"joined_at"`
 }

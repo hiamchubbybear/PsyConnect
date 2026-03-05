@@ -10,54 +10,54 @@ import (
 	"github.com/segmentio/kafka-go/protocol/leavegroup"
 )
 
-// LeaveGroupRequest is the request structure for the LeaveGroup function.
+
 type LeaveGroupRequest struct {
-	// Address of the kafka broker to sent he request to.
+	
 	Addr net.Addr
 
-	// GroupID of the group to leave.
+	
 	GroupID string
 
-	// List of leaving member identities.
+	
 	Members []LeaveGroupRequestMember
 }
 
-// LeaveGroupRequestMember represents the indentify of a member leaving a group.
+
 type LeaveGroupRequestMember struct {
-	// The member ID to remove from the group.
+	
 	ID string
 
-	// The group instance ID to remove from the group.
+	
 	GroupInstanceID string
 }
 
-// LeaveGroupResponse is the response structure for the LeaveGroup function.
+
 type LeaveGroupResponse struct {
-	// An error that may have occurred when attempting to leave the group.
-	//
-	// The errors contain the kafka error code. Programs may use the standard
-	// errors.Is function to test the error against kafka error codes.
+	
+	
+	
+	
 	Error error
 
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// List of leaving member responses.
+	
 	Members []LeaveGroupResponseMember
 }
 
-// LeaveGroupResponseMember represents a member leaving the group.
+
 type LeaveGroupResponseMember struct {
-	// The member ID of the member leaving the group.
+	
 	ID string
 
-	// The group instance ID to remove from the group.
+	
 	GroupInstanceID string
 
-	// An error that may have occured when attempting to remove the member from the group.
-	//
-	// The errors contain the kafka error code. Programs may use the standard
-	// errors.Is function to test the error against kafka error codes.
+	
+	
+	
+	
 	Error error
 }
 
@@ -87,9 +87,9 @@ func (c *Client) LeaveGroup(ctx context.Context, req *LeaveGroupRequest) (*Leave
 	}
 
 	if len(r.Members) == 0 {
-		// If we're using a version of the api without the
-		// members array in the response, just add a member
-		// so the api is consistent across versions.
+		
+		
+		
 		r.Members = []leavegroup.ResponseMember{
 			{
 				MemberID:        req.Members[0].ID,
@@ -111,11 +111,11 @@ func (c *Client) LeaveGroup(ctx context.Context, req *LeaveGroupRequest) (*Leave
 }
 
 type leaveGroupRequestV0 struct {
-	// GroupID holds the unique group identifier
+	
 	GroupID string
 
-	// MemberID assigned by the group coordinator or the zero string if joining
-	// for the first time.
+	
+	
 	MemberID string
 }
 
@@ -129,7 +129,7 @@ func (t leaveGroupRequestV0) writeTo(wb *writeBuffer) {
 }
 
 type leaveGroupResponseV0 struct {
-	// ErrorCode holds response error code
+	
 	ErrorCode int16
 }
 

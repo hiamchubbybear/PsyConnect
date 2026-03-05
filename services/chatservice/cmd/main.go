@@ -52,11 +52,11 @@ func main() {
 	hub := ws.NewHub()
 	go hub.Run()
 
-	// Initialize WebRTC signaling service
+	
 	signalingService := signaling.NewSignalingService(hub)
 	log.Printf("📞 WebRTC signaling service initialized")
 
-	// Start session cleanup routine
+	
 	go func() {
 		ticker := time.NewTicker(30 * time.Minute)
 		defer ticker.Stop()
@@ -65,7 +65,7 @@ func main() {
 		}
 	}()
 
-	// Initialize Kafka Producer
+	
 	kafkaProducer, err := kafka.NewProducer(env)
 	if err != nil {
 		log.Fatalf("Failed to initialize Kafka producer: %v", err)
@@ -87,6 +87,7 @@ func main() {
 	chatHandler := handler.NewChatHandler(env, repoManager, chatService)
 	conversationHandler := handler.NewConversationHandler(env, repoManager)
 
+	router.POST("/chats/call/start", chatHandler.StartCall)
 	router.POST("/chats", chatHandler.CreateChat)
 	router.GET("/chats/:id", chatHandler.GetChatByID)
 	router.GET("/chats/conversation/:conversationId", chatHandler.GetChatsByConversation)
@@ -95,6 +96,7 @@ func main() {
 
 	router.POST("/conversations", chatHandler.CreateConversation)
 	router.GET("/conversations/by-users", conversationHandler.GetConversationByUsers)
+	router.GET("/conversations/me", conversationHandler.GetRecentConversations)
 
 	router.GET("/ws", gin.WrapF(wsmiddleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		ws.ServeWS(hub, w, r)

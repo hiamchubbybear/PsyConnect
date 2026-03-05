@@ -7,8 +7,8 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v4,max=v4,tag"`
 
 	GroupID  string          `kafka:"min=v0,max=v2|min=v3,max=v4,compact"`
@@ -25,8 +25,8 @@ func (r *Request) Prepare(apiVersion int16) {
 }
 
 type RequestMember struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v4,max=v4,tag"`
 
 	MemberID        string `kafka:"min=v3,max=v3|min=v4,max=v4,compact"`
@@ -43,8 +43,8 @@ var (
 )
 
 type Response struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v4,max=v4,tag"`
 
 	ErrorCode      int16            `kafka:"min=v0,max=v4"`
@@ -53,8 +53,8 @@ type Response struct {
 }
 
 type ResponseMember struct {
-	// We need at least one tagged field to indicate that this is a "flexible" message
-	// type.
+	
+	
 	_ struct{} `kafka:"min=v4,max=v4,tag"`
 
 	MemberID        string `kafka:"min=v3,max=v3|min=v4,max=v4,compact"`

@@ -22,29 +22,29 @@ type inotify struct {
 	Events chan Event
 	Errors chan error
 
-	// Store fd here as os.File.Read() will no longer return on close after
-	// calling Fd(). See: https://github.com/golang/go/issues/26439
+	
+	
 	fd          int
 	inotifyFile *os.File
 	watches     *watches
-	done        chan struct{} // Channel for sending a "quit message" to the reader goroutine
+	done        chan struct{} 
 	doneMu      sync.Mutex
-	doneResp    chan struct{} // Channel to respond to Close
+	doneResp    chan struct{} 
 
-	// Store rename cookies in an array, with the index wrapping to 0. Almost
-	// all of the time what we get is a MOVED_FROM to set the cookie and the
-	// next event inotify sends will be MOVED_TO to read it. However, this is
-	// not guaranteed – as described in inotify(7) – and we may get other events
-	// between the two MOVED_* events (including other MOVED_* ones).
-	//
-	// A second issue is that moving a file outside the watched directory will
-	// trigger a MOVED_FROM to set the cookie, but we never see the MOVED_TO to
-	// read and delete it. So just storing it in a map would slowly leak memory.
-	//
-	// Doing it like this gives us a simple fast LRU-cache that won't allocate.
-	// Ten items should be more than enough for our purpose, and a loop over
-	// such a short array is faster than a map access anyway (not that it hugely
-	// matters since we're talking about hundreds of ns at the most, but still).
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	cookies     [10]koekje
 	cookieIndex uint8
 	cookiesMu   sync.Mutex
@@ -53,14 +53,14 @@ type inotify struct {
 type (
 	watches struct {
 		mu   sync.RWMutex
-		wd   map[uint32]*watch // wd → watch
-		path map[string]uint32 // pathname → wd
+		wd   map[uint32]*watch 
+		path map[string]uint32 
 	}
 	watch struct {
-		wd      uint32 // Watch descriptor (as returned by the inotify_add_watch() syscall)
-		flags   uint32 // inotify flags of this watch (see inotify(7) for the list of valid flags)
-		path    string // Watch path.
-		recurse bool   // Recursion with ./...?
+		wd      uint32 
+		flags   uint32 
+		path    string 
+		recurse bool   
 	}
 	koekje struct {
 		cookie uint32
@@ -91,7 +91,7 @@ func (w *watches) add(ww *watch) {
 func (w *watches) remove(wd uint32) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
-	watch := w.wd[wd] // Could have had Remove() called. See #616.
+	watch := w.wd[wd] 
 	if watch == nil {
 		return
 	}
@@ -175,8 +175,8 @@ func newBackend(ev chan Event, errs chan error) (backend, error) {
 }
 
 func newBufferedBackend(sz uint, ev chan Event, errs chan error) (backend, error) {
-	// Need to set nonblocking mode for SetDeadline to work, otherwise blocking
-	// I/O operations won't terminate on close.
+	
+	
 	fd, errno := unix.InotifyInit1(unix.IN_CLOEXEC | unix.IN_NONBLOCK)
 	if fd == -1 {
 		return nil, errno
@@ -196,7 +196,7 @@ func newBufferedBackend(sz uint, ev chan Event, errs chan error) (backend, error
 	return w, nil
 }
 
-// Returns true if the event was sent, or false if watcher is closed.
+
 func (w *inotify) sendEvent(e Event) bool {
 	select {
 	case <-w.done:
@@ -206,7 +206,7 @@ func (w *inotify) sendEvent(e Event) bool {
 	}
 }
 
-// Returns true if the error was sent, or false if watcher is closed.
+
 func (w *inotify) sendError(err error) bool {
 	if err == nil {
 		return true
@@ -237,14 +237,14 @@ func (w *inotify) Close() error {
 	close(w.done)
 	w.doneMu.Unlock()
 
-	// Causes any blocking reads to return with an error, provided the file
-	// still supports deadline operations.
+	
+	
 	err := w.inotifyFile.Close()
 	if err != nil {
 		return err
 	}
 
-	// Wait for goroutine to close
+	
 	<-w.doneResp
 
 	return nil
@@ -279,12 +279,12 @@ func (w *inotify) AddWith(path string, opts ...addOpt) error {
 				return nil
 			}
 
-			// Send a Create event when adding new directory from a recursive
-			// watch; this is for "mkdir -p one/two/three". Usually all those
-			// directories will be created before we can set up watchers on the
-			// subdirectories, so only "one" would be sent as a Create event and
-			// not "one/two" and "one/two/three" (inotifywait -r has the same
-			// problem).
+			
+			
+			
+			
+			
+			
 			if with.sendCreate && root != path {
 				w.sendEvent(Event{Name: root, Op: Create})
 			}
@@ -377,17 +377,17 @@ func (w *inotify) remove(name string) error {
 	for _, wd := range wds {
 		_, err := unix.InotifyRmWatch(w.fd, wd)
 		if err != nil {
-			// TODO: Perhaps it's not helpful to return an error here in every
-			// case; the only two possible errors are:
-			//
-			// EBADF, which happens when w.fd is not a valid file descriptor of
-			// any kind.
-			//
-			// EINVAL, which is when fd is not an inotify descriptor or wd is
-			// not a valid watch descriptor. Watch descriptors are invalidated
-			// when they are removed explicitly or implicitly; explicitly by
-			// inotify_rm_watch, implicitly when the file they are watching is
-			// deleted.
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			return err
 		}
 	}
@@ -409,8 +409,8 @@ func (w *inotify) WatchList() []string {
 	return entries
 }
 
-// readEvents reads from the inotify file descriptor, converts the
-// received events into Event objects and sends them via the Events channel
+
+
 func (w *inotify) readEvents() {
 	defer func() {
 		close(w.doneResp)
@@ -419,11 +419,11 @@ func (w *inotify) readEvents() {
 	}()
 
 	var (
-		buf   [unix.SizeofInotifyEvent * 4096]byte // Buffer for a maximum of 4096 raw events
-		errno error                                // Syscall errno
+		buf   [unix.SizeofInotifyEvent * 4096]byte 
+		errno error                                
 	)
 	for {
-		// See if we have been closed.
+		
 		if w.isClosed() {
 			return
 		}
@@ -442,11 +442,11 @@ func (w *inotify) readEvents() {
 		if n < unix.SizeofInotifyEvent {
 			var err error
 			if n == 0 {
-				err = io.EOF // If EOF is received. This should really never happen.
+				err = io.EOF 
 			} else if n < 0 {
-				err = errno // If an error occurred while reading.
+				err = errno 
 			} else {
-				err = errors.New("notify: short read in readEvents()") // Read was too short.
+				err = errors.New("notify: short read in readEvents()") 
 			}
 			if !w.sendError(err) {
 				return
@@ -454,16 +454,16 @@ func (w *inotify) readEvents() {
 			continue
 		}
 
-		// We don't know how many events we just read into the buffer
-		// While the offset points to at least one whole event...
+		
+		
 		var offset uint32
 		for offset <= uint32(n-unix.SizeofInotifyEvent) {
 			var (
-				// Point "raw" to the event in the buffer
+				
 				raw     = (*unix.InotifyEvent)(unsafe.Pointer(&buf[offset]))
 				mask    = uint32(raw.Mask)
 				nameLen = uint32(raw.Len)
-				// Move to the next event in the buffer
+				
 				next = func() { offset += unix.SizeofInotifyEvent + nameLen }
 			)
 
@@ -473,16 +473,16 @@ func (w *inotify) readEvents() {
 				}
 			}
 
-			/// If the event happened to the watched directory or the watched
-			/// file, the kernel doesn't append the filename to the event, but
-			/// we would like to always fill the the "Name" field with a valid
-			/// filename. We retrieve the path of the watch from the "paths"
-			/// map.
+			
+			
+			
+			
+			
 			watch := w.watches.byWd(uint32(raw.Wd))
-			/// Can be nil if Remove() was called in another goroutine for this
-			/// path inbetween reading the events from the kernel and reading
-			/// the internal state. Not much we can do about it, so just skip.
-			/// See #616.
+			
+			
+			
+			
 			if watch == nil {
 				next()
 				continue
@@ -490,9 +490,9 @@ func (w *inotify) readEvents() {
 
 			name := watch.path
 			if nameLen > 0 {
-				/// Point "bytes" at the first byte of the filename
+				
 				bytes := (*[unix.PathMax]byte)(unsafe.Pointer(&buf[offset+unix.SizeofInotifyEvent]))[:nameLen:nameLen]
-				/// The filename is padded with NULL bytes. TrimRight() gets rid of those.
+				
 				name += "/" + strings.TrimRight(string(bytes[0:nameLen]), "\000")
 			}
 
@@ -500,23 +500,23 @@ func (w *inotify) readEvents() {
 				internal.Debug(name, raw.Mask, raw.Cookie)
 			}
 
-			if mask&unix.IN_IGNORED != 0 { //&& event.Op != 0
+			if mask&unix.IN_IGNORED != 0 { 
 				next()
 				continue
 			}
 
-			// inotify will automatically remove the watch on deletes; just need
-			// to clean our state here.
+			
+			
 			if mask&unix.IN_DELETE_SELF == unix.IN_DELETE_SELF {
 				w.watches.remove(watch.wd)
 			}
 
-			// We can't really update the state when a watched path is moved;
-			// only IN_MOVE_SELF is sent and not IN_MOVED_{FROM,TO}. So remove
-			// the watch.
+			
+			
+			
 			if mask&unix.IN_MOVE_SELF == unix.IN_MOVE_SELF {
 				if watch.recurse {
-					next() // Do nothing
+					next() 
 					continue
 				}
 
@@ -528,8 +528,8 @@ func (w *inotify) readEvents() {
 				}
 			}
 
-			/// Skip if we're watching both this path and the parent; the parent
-			/// will already send a delete so no need to do it twice.
+			
+			
 			if mask&unix.IN_DELETE_SELF != 0 {
 				if _, ok := w.watches.path[filepath.Dir(watch.path)]; ok {
 					next()
@@ -538,25 +538,25 @@ func (w *inotify) readEvents() {
 			}
 
 			ev := w.newEvent(name, mask, raw.Cookie)
-			// Need to update watch path for recurse.
+			
 			if watch.recurse {
 				isDir := mask&unix.IN_ISDIR == unix.IN_ISDIR
-				/// New directory created: set up watch on it.
+				
 				if isDir && ev.Has(Create) {
 					err := w.register(ev.Name, watch.flags, true)
 					if !w.sendError(err) {
 						return
 					}
 
-					// This was a directory rename, so we need to update all
-					// the children.
-					//
-					// TODO: this is of course pretty slow; we should use a
-					// better data structure for storing all of this, e.g. store
-					// children in the watch. I have some code for this in my
-					// kqueue refactor we can use in the future. For now I'm
-					// okay with this as it's not publicly available.
-					// Correctness first, performance second.
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					if ev.renamedFrom != "" {
 						w.watches.mu.Lock()
 						for k, ww := range w.watches.wd {
@@ -573,7 +573,7 @@ func (w *inotify) readEvents() {
 				}
 			}
 
-			/// Send the events that are not ignored on the events channel
+			
 			if !w.sendEvent(ev) {
 				return
 			}
@@ -584,7 +584,7 @@ func (w *inotify) readEvents() {
 
 func (w *inotify) isRecursive(path string) bool {
 	ww := w.watches.byPath(path)
-	if ww == nil { // path could be a file, so also check the Dir.
+	if ww == nil { 
 		ww = w.watches.byPath(filepath.Dir(path))
 	}
 	return ww != nil && ww.recurse
@@ -646,7 +646,7 @@ func (w *inotify) newEvent(name string, mask, cookie uint32) Event {
 }
 
 func (w *inotify) xSupports(op Op) bool {
-	return true // Supports everything.
+	return true 
 }
 
 func (w *inotify) state() {

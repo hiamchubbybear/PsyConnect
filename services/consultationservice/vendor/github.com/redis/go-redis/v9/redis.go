@@ -16,18 +16,18 @@ import (
 	"github.com/redis/go-redis/v9/internal/proto"
 )
 
-// Scanner internal/hscan.Scanner exposed interface.
+
 type Scanner = hscan.Scanner
 
-// Nil reply returned by Redis when key does not exist.
+
 const Nil = proto.Nil
 
-// SetLogger set custom log
+
 func SetLogger(logger internal.Logging) {
 	internal.Logger = logger
 }
 
-//------------------------------------------------------------------------------
+
 
 type Hook interface {
 	DialHook(next DialHook) DialHook
@@ -77,42 +77,42 @@ func (h *hooks) setDefaults() {
 	}
 }
 
-// AddHook is to add a hook to the queue.
-// Hook is a function executed during network connection, command execution, and pipeline,
-// it is a first-in-first-out stack queue (FIFO).
-// You need to execute the next hook in each hook, unless you want to terminate the execution of the command.
-// For example, you added hook-1, hook-2:
-//
-//	client.AddHook(hook-1, hook-2)
-//
-// hook-1:
-//
-//	func (Hook1) ProcessHook(next redis.ProcessHook) redis.ProcessHook {
-//	 	return func(ctx context.Context, cmd Cmder) error {
-//		 	print("hook-1 start")
-//		 	next(ctx, cmd)
-//		 	print("hook-1 end")
-//		 	return nil
-//	 	}
-//	}
-//
-// hook-2:
-//
-//	func (Hook2) ProcessHook(next redis.ProcessHook) redis.ProcessHook {
-//		return func(ctx context.Context, cmd redis.Cmder) error {
-//			print("hook-2 start")
-//			next(ctx, cmd)
-//			print("hook-2 end")
-//			return nil
-//		}
-//	}
-//
-// The execution sequence is:
-//
-//	hook-1 start -> hook-2 start -> exec redis cmd -> hook-2 end -> hook-1 end
-//
-// Please note: "next(ctx, cmd)" is very important, it will call the next hook,
-// if "next(ctx, cmd)" is not executed, the redis command will not be executed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (hs *hooksMixin) AddHook(hook Hook) {
 	hs.slice = append(hs.slice, hook)
 	hs.chain()
@@ -177,9 +177,9 @@ func (hs *hooksMixin) withProcessPipelineHook(
 }
 
 func (hs *hooksMixin) dialHook(ctx context.Context, network, addr string) (net.Conn, error) {
-	// Access to hs.current is guarded by a read-only lock since it may be mutated by AddHook(...)
-	// while this dialer is concurrently accessed by the background connection pool population
-	// routine when MinIdleConns > 0.
+	
+	
+	
 	hs.hooksMu.RLock()
 	current := hs.current
 	hs.hooksMu.RUnlock()
@@ -199,14 +199,14 @@ func (hs *hooksMixin) processTxPipelineHook(ctx context.Context, cmds []Cmder) e
 	return hs.current.txPipeline(ctx, cmds)
 }
 
-//------------------------------------------------------------------------------
+
 
 type baseClient struct {
 	opt      *Options
 	connPool pool.Pooler
 	hooksMixin
 
-	onClose func() error // hook called when client is closed
+	onClose func() error 
 }
 
 func (c *baseClient) clone() *baseClient {
@@ -297,7 +297,7 @@ func (c *baseClient) reAuthConnection(poolCn *pool.Conn) func(credentials auth.C
 		username, password := credentials.BasicAuth()
 		ctx := context.Background()
 		connPool := pool.NewSingleConnPool(c.connPool, poolCn)
-		// hooksMixin are intentionally empty here
+		
 		cn := newConn(c.opt, connPool, nil)
 
 		if username != "" {
@@ -312,12 +312,12 @@ func (c *baseClient) onAuthenticationErr(poolCn *pool.Conn) func(err error) {
 	return func(err error) {
 		if err != nil {
 			if isBadConn(err, false, c.opt.Addr) {
-				// Close the connection to force a reconnection.
+				
 				err := c.connPool.CloseConn(poolCn)
 				if err != nil {
 					internal.Logger.Printf(context.Background(), "redis: failed to close connection: %v", err)
-					// try to close the network connection directly
-					// so that no resource is leaked
+					
+					
 					err := poolCn.Close()
 					if err != nil {
 						internal.Logger.Printf(context.Background(), "redis: failed to close network connection: %v", err)
@@ -334,9 +334,9 @@ func (c *baseClient) wrappedOnClose(newOnClose func() error) func() error {
 	return func() error {
 		var firstErr error
 		err := newOnClose()
-		// Even if we have an error we would like to execute the onClose hook
-		// if it exists. We will return the first error that occurred.
-		// This is to keep error handling consistent with the rest of the code.
+		
+		
+		
 		if err != nil {
 			firstErr = err
 		}
@@ -381,21 +381,21 @@ func (c *baseClient) initConn(ctx context.Context, cn *pool.Conn) error {
 		username, password = c.opt.Username, c.opt.Password
 	}
 
-	// for redis-server versions that do not support the HELLO command,
-	// RESP2 will continue to be used.
+	
+	
 	if err = conn.Hello(ctx, c.opt.Protocol, username, password, c.opt.ClientName).Err(); err == nil {
-		// Authentication successful with HELLO command
+		
 	} else if !isRedisError(err) {
-		// When the server responds with the RESP protocol and the result is not a normal
-		// execution result of the HELLO command, we consider it to be an indication that
-		// the server does not support the HELLO command.
-		// The server may be a redis-server that does not support the HELLO command,
-		// or it could be DragonflyDB or a third-party redis-proxy. They all respond
-		// with different error string results for unsupported commands, making it
-		// difficult to rely on error strings to determine all results.
+		
+		
+		
+		
+		
+		
+		
 		return err
 	} else if password != "" {
-		// Try legacy AUTH command if HELLO failed
+		
 		if username != "" {
 			err = conn.AuthACL(ctx, username, password).Err()
 		} else {
@@ -434,8 +434,8 @@ func (c *baseClient) initConn(ctx context.Context, cn *pool.Conn) error {
 		p := conn.Pipeline()
 		p.ClientSetInfo(ctx, WithLibraryName(libName))
 		p.ClientSetInfo(ctx, WithLibraryVersion(libVer))
-		// Handle network errors (e.g. timeouts) in CLIENT SETINFO to avoid
-		// out of order responses later on.
+		
+		
 		if _, err = p.Exec(ctx); err != nil && !isRedisError(err) {
 			return err
 		}
@@ -526,7 +526,7 @@ func (c *baseClient) _process(ctx context.Context, cmd Cmder, attempt int) (bool
 			return err
 		}
 		readReplyFunc := cmd.readReply
-		// Apply unstable RESP3 search module.
+		
 		if c.opt.Protocol != 2 && c.assertUnstableCommand(cmd) {
 			readReplyFunc = cmd.readRawReply
 		}
@@ -563,9 +563,9 @@ func (c *baseClient) cmdTimeout(cmd Cmder) time.Duration {
 	return c.opt.ReadTimeout
 }
 
-// context returns the context for the current connection.
-// If the context timeout is enabled, it returns the original context.
-// Otherwise, it returns a new background context.
+
+
+
 func (c *baseClient) context(ctx context.Context) context.Context {
 	if c.opt.ContextTimeoutEnabled {
 		return ctx
@@ -573,10 +573,10 @@ func (c *baseClient) context(ctx context.Context) context.Context {
 	return context.Background()
 }
 
-// Close closes the client, releasing any open resources.
-//
-// It is rare to Close a Client, as the Client is meant to be
-// long-lived and shared between many goroutines.
+
+
+
+
 func (c *baseClient) Close() error {
 	var firstErr error
 	if c.onClose != nil {
@@ -622,7 +622,7 @@ func (c *baseClient) generalProcessPipeline(
 			}
 		}
 
-		// Enable retries by default to retry dial errors returned by withConn.
+		
 		canRetry := true
 		lastErr = c.withConn(ctx, func(ctx context.Context, cn *pool.Conn) error {
 			var err error
@@ -664,7 +664,7 @@ func pipelineReadCmds(rd *proto.Reader, cmds []Cmder) error {
 			return err
 		}
 	}
-	// Retry errors like "LOADING redis is loading the dataset in memory".
+	
 	return cmds[0].Err()
 }
 
@@ -680,7 +680,7 @@ func (c *baseClient) txPipelineProcessCmds(
 
 	if err := cn.WithReader(c.context(ctx), c.opt.ReadTimeout, func(rd *proto.Reader) error {
 		statusCmd := cmds[0].(*StatusCmd)
-		// Trim multi and exec.
+		
 		trimmedCmds := cmds[1 : len(cmds)-1]
 
 		if err := txPipelineReadQueued(rd, statusCmd, trimmedCmds); err != nil {
@@ -697,19 +697,19 @@ func (c *baseClient) txPipelineProcessCmds(
 }
 
 func txPipelineReadQueued(rd *proto.Reader, statusCmd *StatusCmd, cmds []Cmder) error {
-	// Parse +OK.
+	
 	if err := statusCmd.readReply(rd); err != nil {
 		return err
 	}
 
-	// Parse +QUEUED.
+	
 	for range cmds {
 		if err := statusCmd.readReply(rd); err != nil && !isRedisError(err) {
 			return err
 		}
 	}
 
-	// Parse number of replies.
+	
 	line, err := rd.ReadLine()
 	if err != nil {
 		if err == Nil {
@@ -725,19 +725,19 @@ func txPipelineReadQueued(rd *proto.Reader, statusCmd *StatusCmd, cmds []Cmder) 
 	return nil
 }
 
-//------------------------------------------------------------------------------
 
-// Client is a Redis client representing a pool of zero or more underlying connections.
-// It's safe for concurrent use by multiple goroutines.
-//
-// Client creates and frees connections automatically; it also maintains a free pool
-// of idle connections. You can control the pool size with Config.PoolSize option.
+
+
+
+
+
+
 type Client struct {
 	*baseClient
 	cmdable
 }
 
-// NewClient returns a client to the Redis Server specified by Options.
+
 func NewClient(opt *Options) *Client {
 	if opt == nil {
 		panic("redis: NewClient nil options")
@@ -782,14 +782,14 @@ func (c *Client) Process(ctx context.Context, cmd Cmder) error {
 	return err
 }
 
-// Options returns read-only Options that were used to create the client.
+
 func (c *Client) Options() *Options {
 	return c.opt
 }
 
 type PoolStats pool.Stats
 
-// PoolStats returns connection pool stats.
+
 func (c *Client) PoolStats() *PoolStats {
 	stats := c.connPool.Stats()
 	return (*PoolStats)(stats)
@@ -811,7 +811,7 @@ func (c *Client) TxPipelined(ctx context.Context, fn func(Pipeliner) error) ([]C
 	return c.TxPipeline().Pipelined(ctx, fn)
 }
 
-// TxPipeline acts like Pipeline, but wraps queued commands with MULTI/EXEC.
+
 func (c *Client) TxPipeline() Pipeliner {
 	pipe := Pipeline{
 		exec: func(ctx context.Context, cmds []Cmder) error {
@@ -836,32 +836,32 @@ func (c *Client) pubSub() *PubSub {
 	return pubsub
 }
 
-// Subscribe subscribes the client to the specified channels.
-// Channels can be omitted to create empty subscription.
-// Note that this method does not wait on a response from Redis, so the
-// subscription may not be active immediately. To force the connection to wait,
-// you may call the Receive() method on the returned *PubSub like so:
-//
-//	sub := client.Subscribe(queryResp)
-//	iface, err := sub.Receive()
-//	if err != nil {
-//	    // handle error
-//	}
-//
-//	// Should be *Subscription, but others are possible if other actions have been
-//	// taken on sub since it was created.
-//	switch iface.(type) {
-//	case *Subscription:
-//	    // subscribe succeeded
-//	case *Message:
-//	    // received first message
-//	case *Pong:
-//	    // pong received
-//	default:
-//	    // handle error
-//	}
-//
-//	ch := sub.Channel()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (c *Client) Subscribe(ctx context.Context, channels ...string) *PubSub {
 	pubsub := c.pubSub()
 	if len(channels) > 0 {
@@ -870,8 +870,8 @@ func (c *Client) Subscribe(ctx context.Context, channels ...string) *PubSub {
 	return pubsub
 }
 
-// PSubscribe subscribes the client to the given patterns.
-// Patterns can be omitted to create empty subscription.
+
+
 func (c *Client) PSubscribe(ctx context.Context, channels ...string) *PubSub {
 	pubsub := c.pubSub()
 	if len(channels) > 0 {
@@ -880,8 +880,8 @@ func (c *Client) PSubscribe(ctx context.Context, channels ...string) *PubSub {
 	return pubsub
 }
 
-// SSubscribe Subscribes the client to the specified shard channels.
-// Channels can be omitted to create empty subscription.
+
+
 func (c *Client) SSubscribe(ctx context.Context, channels ...string) *PubSub {
 	pubsub := c.pubSub()
 	if len(channels) > 0 {
@@ -890,20 +890,20 @@ func (c *Client) SSubscribe(ctx context.Context, channels ...string) *PubSub {
 	return pubsub
 }
 
-//------------------------------------------------------------------------------
 
-// Conn represents a single Redis connection rather than a pool of connections.
-// Prefer running commands from Client unless there is a specific need
-// for a continuous single Redis connection.
+
+
+
+
 type Conn struct {
 	baseClient
 	cmdable
 	statefulCmdable
 }
 
-// newConn is a helper func to create a new Conn instance.
-// the Conn instance is not thread-safe and should not be shared between goroutines.
-// the parentHooks will be cloned, no need to clone before passing it.
+
+
+
 func newConn(opt *Options, connPool pool.Pooler, parentHooks *hooksMixin) *Conn {
 	c := Conn{
 		baseClient: baseClient{
@@ -950,7 +950,7 @@ func (c *Conn) TxPipelined(ctx context.Context, fn func(Pipeliner) error) ([]Cmd
 	return c.TxPipeline().Pipelined(ctx, fn)
 }
 
-// TxPipeline acts like Pipeline, but wraps queued commands with MULTI/EXEC.
+
 func (c *Conn) TxPipeline() Pipeliner {
 	pipe := Pipeline{
 		exec: func(ctx context.Context, cmds []Cmder) error {

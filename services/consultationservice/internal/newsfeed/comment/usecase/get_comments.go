@@ -22,7 +22,7 @@ func (uc *GetCommentsUseCase) Execute(ctx context.Context, postID string, maxDep
 		return nil, err
 	}
 
-	// Ensure comments is never nil
+	
 	if comments == nil {
 		comments = []domain.Comment{}
 	}

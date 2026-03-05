@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -16,9 +16,9 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 )
 
-// coderMessageInfo contains per-message information used by the fast-path functions.
-// This is a different type from MessageInfo to keep MessageInfo as general-purpose as
-// possible.
+
+
+
 type coderMessageInfo struct {
 	methods protoiface.Methods
 
@@ -39,16 +39,16 @@ type coderMessageInfo struct {
 }
 
 type coderFieldInfo struct {
-	funcs      pointerCoderFuncs // fast-path per-field functions
-	mi         *MessageInfo      // field's message
+	funcs      pointerCoderFuncs 
+	mi         *MessageInfo      
 	ft         reflect.Type
-	validation validationInfo           // information used by message validation
-	num        protoreflect.FieldNumber // field number
-	offset     offset                   // struct field offset
-	wiretag    uint64                   // field tag (number + wire type)
-	tagsize    int                      // size of the varint-encoded tag
-	isPointer  bool                     // true if IsNil may be called on the struct field
-	isRequired bool                     // true if field is required
+	validation validationInfo           
+	num        protoreflect.FieldNumber 
+	offset     offset                   
+	wiretag    uint64                   
+	tagsize    int                      
+	isPointer  bool                     
+	isRequired bool                     
 
 	isLazy        bool
 	presenceIndex uint32
@@ -97,9 +97,9 @@ func (mi *MessageInfo) makeCoderMethods(t reflect.Type, si structInfo) {
 		var childMessage *MessageInfo
 		switch {
 		case ft == nil:
-			// This never occurs for generated message types.
-			// It implies that a hand-crafted type has missing Go fields
-			// for specific protobuf message fields.
+			
+			
+			
 			funcs = pointerCoderFuncs{
 				size: func(p pointer, f *coderFieldInfo, opts marshalOptions) int {
 					return 0
@@ -174,7 +174,7 @@ func (mi *MessageInfo) makeCoderMethods(t reflect.Type, si structInfo) {
 		mi.denseCoderFields[cf.num] = cf
 	}
 
-	// To preserve compatibility with historic wire output, marshal oneofs last.
+	
 	if mi.Desc.Oneofs().Len() > 0 {
 		sort.Slice(mi.orderedCoderFields, func(i, j int) bool {
 			fi := fields.ByNumber(mi.orderedCoderFields[i].num)
@@ -204,9 +204,9 @@ func (mi *MessageInfo) makeCoderMethods(t reflect.Type, si structInfo) {
 	}
 }
 
-// getUnknownBytes returns a *[]byte for the unknown fields.
-// It is the caller's responsibility to check whether the pointer is nil.
-// This function is specially designed to be inlineable.
+
+
+
 func (mi *MessageInfo) getUnknownBytes(p pointer) *[]byte {
 	if mi.unknownPtrKind {
 		return *p.Apply(mi.unknownOffset).BytesPtr()
@@ -215,8 +215,8 @@ func (mi *MessageInfo) getUnknownBytes(p pointer) *[]byte {
 	}
 }
 
-// mutableUnknownBytes returns a *[]byte for the unknown fields.
-// The returned pointer is guaranteed to not be nil.
+
+
 func (mi *MessageInfo) mutableUnknownBytes(p pointer) *[]byte {
 	if mi.unknownPtrKind {
 		bp := p.Apply(mi.unknownOffset).BytesPtr()

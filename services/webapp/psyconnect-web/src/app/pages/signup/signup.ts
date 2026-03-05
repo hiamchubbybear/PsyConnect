@@ -50,7 +50,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   @ViewChild('imageInput') imageInputRef!: ElementRef;
 
   ngAfterViewInit() {
-    // Auto-focus first input
+    
     setTimeout(() => {
       const firstInput = document.querySelector(
         'input:not([type="file"])',
@@ -66,7 +66,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   isLoadingAddress = false;
   shakeErrors = false;
 
-  // Combined form
+  
   registerForm!: FormGroup;
 
   constructor(
@@ -97,27 +97,27 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   initializeForm() {
     this.registerForm = this.fb.group(
       {
-        // Avatar (optional)
+        
         avatar: [''],
 
-        // Name fields
+        
         firstName: ['', [Validators.required, Validators.minLength(2)]],
         lastName: ['', [Validators.required, Validators.minLength(2)]],
 
-        // Personal info
+        
         dateOfBirth: ['', Validators.required],
         gender: ['', Validators.required],
 
-        // Address
+        
         address: ['', Validators.required],
 
-        // Email
+        
         email: ['', [Validators.required, Validators.email]],
 
-        // Role
+        
         role: ['', Validators.required],
 
-        // Credentials
+        
         username: ['', [Validators.required, Validators.minLength(4)]],
         password: [
           '',
@@ -163,7 +163,7 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
   }
 
   setupProgressTracking() {
-    // Track form changes to update progress
+    
     this.registerForm.valueChanges.subscribe(() => {
       this.cdr.detectChanges();
     });

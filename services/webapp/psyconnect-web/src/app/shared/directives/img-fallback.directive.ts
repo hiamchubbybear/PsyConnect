@@ -13,7 +13,7 @@ export class ImgFallbackDirective {
 
   @HostListener('error')
   onError() {
-    if (this.hasFailed) return; // Prevent infinite loop
+    if (this.hasFailed) return; 
     this.hasFailed = true;
     this.el.nativeElement.src = this.appImgFallback;
   }

@@ -20,9 +20,9 @@ type metricsState struct {
 	mutex         sync.Mutex
 }
 
-// InstrumentMetrics starts reporting OpenTelemetry Metrics.
-//
-// Based on https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/metrics/semantic_conventions/database-metrics.md
+
+
+
 func InstrumentMetrics(rdb redis.UniversalClient, opts ...MetricsOption) error {
 	baseOpts := make([]baseOption, len(opts))
 	for i, opt := range opts {

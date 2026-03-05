@@ -45,9 +45,9 @@ func (r *MongoMatchRepository) Create(ctx context.Context, match *domain.Match) 
 		return errors.New("failed to insert match")
 	}
 
-	// Invalidate cache
+	
 	_ = r.redis.Delete(ctx, r.keyMatchesByClient(match.ClientID))
-	_ = r.redis.Delete(ctx, r.keyMatchesByClientPage(match.ClientID, 1)) // Invalidate first page
+	_ = r.redis.Delete(ctx, r.keyMatchesByClientPage(match.ClientID, 1)) 
 
 	return nil
 }

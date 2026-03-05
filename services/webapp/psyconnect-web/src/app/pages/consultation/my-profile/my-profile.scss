@@ -1,6 +1,6 @@
-// ─── My Consultation Profile Page ────────────────────────────────────────────
-// Uses CSS variables for full light/dark theme flexibility.
-// No hardcoded colors.
+
+
+
 
 .myprofile {
   max-width: 900px;
@@ -11,7 +11,7 @@
   gap: 1.5rem;
 }
 
-// ─── Hero ─────────────────────────────────────────────────────────────────────
+
 .profile-hero {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -98,7 +98,7 @@
   }
 }
 
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
+
 .profile-tabs {
   display: flex;
   gap: 0.15rem;
@@ -133,7 +133,7 @@
   }
 }
 
-// ─── Tab content ──────────────────────────────────────────────────────────────
+
 .tab-content {
   display: flex;
   flex-direction: column;
@@ -146,7 +146,7 @@
   }
 }
 
-// ─── Info grid (2 columns on wide, 1 on mobile) ───────────────────────────────
+
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -203,7 +203,7 @@
   gap: 0.35rem;
 }
 
-// ─── Badges & tags ────────────────────────────────────────────────────────────
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -256,7 +256,7 @@
   }
 }
 
-// ─── Empty / no profile ───────────────────────────────────────────────────────
+
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -289,7 +289,7 @@
   }
 }
 
-// ─── Buttons ──────────────────────────────────────────────────────────────────
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -329,7 +329,7 @@
   }
 }
 
-// ─── Loading skeleton ─────────────────────────────────────────────────────────
+
 .myprofile--loading {
   .skeleton-hero {
     display: flex;

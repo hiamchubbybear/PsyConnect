@@ -51,7 +51,7 @@ export class MyConsultationProfileComponent implements OnInit, OnDestroy {
 
   private langSub?: Subscription;
 
-  // Lookup maps for display labels
+  
   readonly MODES_MAP = Object.fromEntries(
     CONSULTATION_MODES.map((m) => [m.value, m.labelVi]),
   );
@@ -78,9 +78,9 @@ export class MyConsultationProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadAll();
-    // Re-check labels on language change
+    
     this.langSub = this.translate.onLangChange.subscribe(() => {
-      // Logic for re-calculating labels if they were pre-calculated
+      
     });
   }
 
@@ -194,9 +194,9 @@ export class MyConsultationProfileComponent implements OnInit, OnDestroy {
     if (!this.profile) return '';
     const level = this.profile.experienceLevel;
 
-    // Handle numeric years
+    
     if (/^\d+$/.test(level)) {
-      return `${level} ${this.translate.instant('SOCIAL.sidebar.items.wall') === 'Bảng tin' ? 'năm' : 'years'}`; // Simple fallback
+      return `${level} ${this.translate.instant('SOCIAL.sidebar.items.wall') === 'Bảng tin' ? 'năm' : 'years'}`; 
     }
 
     const levelKey = level.charAt(0).toUpperCase() + level.slice(1);

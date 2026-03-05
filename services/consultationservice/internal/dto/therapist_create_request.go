@@ -1,6 +1,6 @@
 package dto
 
-// Deprecated : replace TherapistCreateRequestV1
+
 type TherapistCreateRequest struct {
 	ProfileId         string   `json:"profile_id,omitempty" bson:"profile_id"`
 	Address           string   `json:"address,omitempty" bson:"address"`

@@ -21,7 +21,7 @@ func NewMongoFollowRepository(collection *mongo.Collection) *MongoFollowReposito
 }
 
 func (r *MongoFollowRepository) FollowUser(ctx context.Context, followerID, followingID string) error {
-	// Check if already following
+	
 	isFollowing, err := r.IsFollowing(ctx, followerID, followingID)
 	if err != nil {
 		return err
@@ -119,7 +119,7 @@ func NewMongoBookmarkRepository(collection *mongo.Collection) *MongoBookmarkRepo
 }
 
 func (r *MongoBookmarkRepository) CreateBookmark(ctx context.Context, userID, postID string) error {
-	// Check if already bookmarked
+	
 	isBookmarked, err := r.IsBookmarked(ctx, userID, postID)
 	if err != nil {
 		return err

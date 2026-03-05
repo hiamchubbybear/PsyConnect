@@ -19,7 +19,7 @@
     padding: 20px;
   }
 
-  /* Thanh header có tiêu đề và thanh tìm kiếm */
+  
   &__header {
     display: flex;
     justify-content: space-between;
@@ -67,7 +67,7 @@
     }
   }
 
-  /* Khối con (requests, list, suggestions) */
+  
   app-friend-requests,
   app-friend-list,
   app-friend-suggestions {
@@ -83,7 +83,7 @@
     }
   }
 
-  /* Danh sách friend/suggestion */
+  
   app-friend-list .friend-list,
   app-friend-suggestions .friend-suggestions {
     display: grid;
@@ -91,7 +91,7 @@
     gap: 12px;
   }
 
-  /* Card bạn bè */
+  
   .friend-card {
     background: var(--color-bg);
     border-radius: 8px;

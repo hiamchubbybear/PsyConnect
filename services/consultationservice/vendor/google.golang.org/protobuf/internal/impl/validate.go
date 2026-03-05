@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -21,25 +21,25 @@ import (
 	"google.golang.org/protobuf/runtime/protoiface"
 )
 
-// ValidationStatus is the result of validating the wire-format encoding of a message.
+
 type ValidationStatus int
 
 const (
-	// ValidationUnknown indicates that unmarshaling the message might succeed or fail.
-	// The validator was unable to render a judgement.
-	//
-	// The only causes of this status are an aberrant message type appearing somewhere
-	// in the message or a failure in the extension resolver.
+	
+	
+	
+	
+	
 	ValidationUnknown ValidationStatus = iota + 1
 
-	// ValidationInvalid indicates that unmarshaling the message will fail.
+	
 	ValidationInvalid
 
-	// ValidationValid indicates that unmarshaling the message will succeed.
+	
 	ValidationValid
 
-	// ValidationWrongWireType indicates that a validated field does not have
-	// the expected wire type.
+	
+	
 	ValidationWrongWireType
 )
 
@@ -56,10 +56,10 @@ func (v ValidationStatus) String() string {
 	}
 }
 
-// Validate determines whether the contents of the buffer are a valid wire encoding
-// of the message type.
-//
-// This function is exposed for testing.
+
+
+
+
 func Validate(mt protoreflect.MessageType, in protoiface.UnmarshalInput) (out protoiface.UnmarshalOutput, _ ValidationStatus) {
 	mi, ok := mt.(*MessageInfo)
 	if !ok {
@@ -83,12 +83,12 @@ type validationInfo struct {
 	typ              validationType
 	keyType, valType validationType
 
-	// For non-required fields, requiredBit is 0.
-	//
-	// For required fields, requiredBit's nth bit is set, where n is a
-	// unique index in the range [0, MessageInfo.numRequiredFields).
-	//
-	// If there are more than 64 required fields, requiredBit is 0.
+	
+	
+	
+	
+	
+	
 	requiredBit uint64
 }
 
@@ -134,10 +134,10 @@ func newFieldValidationInfo(mi *MessageInfo, si structInfo, fd protoreflect.Fiel
 		vi = newValidationInfo(fd, ft)
 	}
 	if fd.Cardinality() == protoreflect.Required {
-		// Avoid overflow. The required field check is done with a 64-bit mask, with
-		// any message containing more than 64 required fields always reported as
-		// potentially uninitialized, so it is not important to get a precise count
-		// of the required fields past 64.
+		
+		
+		
+		
 		if mi.numRequiredFields < math.MaxUint8 {
 			mi.numRequiredFields++
 			vi.requiredBit = 1 << (mi.numRequiredFields - 1)
@@ -155,7 +155,7 @@ func newValidationInfo(fd protoreflect.FieldDescriptor, ft reflect.Type) validat
 			vi.typ = validationTypeMessage
 
 			if ft.Kind() == reflect.Ptr {
-				// Repeated opaque message fields are *[]*T.
+				
 				ft = ft.Elem()
 			}
 
@@ -166,7 +166,7 @@ func newValidationInfo(fd protoreflect.FieldDescriptor, ft reflect.Type) validat
 			vi.typ = validationTypeGroup
 
 			if ft.Kind() == reflect.Ptr {
-				// Repeated opaque message fields are *[]*T.
+				
 				ft = ft.Elem()
 			}
 
@@ -247,7 +247,7 @@ func (mi *MessageInfo) validate(b []byte, groupTag protowire.Number, opts unmars
 		requiredMask     uint64
 	}
 
-	// Pre-allocate some slots to avoid repeated slice reallocation.
+	
 	states := make([]validationState, 0, 16)
 	states = append(states, validationState{
 		typ: validationTypeMessage,
@@ -263,7 +263,7 @@ State:
 	for len(states) > 0 {
 		st := &states[len(states)-1]
 		for len(b) > 0 {
-			// Parse the tag (field number and wire type).
+			
 			var tag uint64
 			if b[0] < 0x80 {
 				tag = uint64(b[0])
@@ -320,14 +320,14 @@ State:
 					vi = f.validation
 					break
 				}
-				// Possible extension field.
-				//
-				// TODO: We should return ValidationUnknown when:
-				//   1. The resolver is not frozen. (More extensions may be added to it.)
-				//   2. The resolver returns preg.NotFound.
-				// In this case, a type added to the resolver in the future could cause
-				// unmarshaling to begin failing. Supporting this requires some way to
-				// determine if the resolver is frozen.
+				
+				
+				
+				
+				
+				
+				
+				
 				xt, err := opts.resolver.FindExtensionByNumber(st.mi.Desc.FullName(), num)
 				if err != nil && err != protoregistry.NotFound {
 					return out, ValidationUnknown
@@ -337,9 +337,9 @@ State:
 				}
 			}
 			if vi.requiredBit != 0 {
-				// Check that the field has a compatible wire type.
-				// We only need to consider non-repeated field types,
-				// since repeated fields (and maps) can never be required.
+				
+				
+				
 				ok := false
 				switch vi.typ {
 				case validationTypeVarint:
@@ -454,7 +454,7 @@ State:
 					b = v
 					continue State
 				case validationTypeRepeatedVarint:
-					// Packed field.
+					
 					for len(v) > 0 {
 						_, n := protowire.ConsumeVarint(v)
 						if n < 0 {
@@ -463,12 +463,12 @@ State:
 						v = v[n:]
 					}
 				case validationTypeRepeatedFixed32:
-					// Packed field.
+					
 					if len(v)%4 != 0 {
 						return out, ValidationInvalid
 					}
 				case validationTypeRepeatedFixed64:
-					// Packed field.
+					
 					if len(v)%8 != 0 {
 						return out, ValidationInvalid
 					}
@@ -548,15 +548,15 @@ State:
 		case validationTypeMessage, validationTypeGroup:
 			numRequiredFields = int(st.mi.numRequiredFields)
 		case validationTypeMap:
-			// If this is a map field with a message value that contains
-			// required fields, require that the value be present.
+			
+			
 			if st.mi != nil && st.mi.numRequiredFields > 0 {
 				numRequiredFields = 1
 			}
 		}
-		// If there are more than 64 required fields, this check will
-		// always fail and we will report that the message is potentially
-		// uninitialized.
+		
+		
+		
 		if numRequiredFields > 0 && bits.OnesCount64(st.requiredMask) != numRequiredFields {
 			initialized = false
 		}

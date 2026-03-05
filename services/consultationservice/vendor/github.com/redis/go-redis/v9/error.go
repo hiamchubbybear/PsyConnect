@@ -12,40 +12,40 @@ import (
 	"github.com/redis/go-redis/v9/internal/proto"
 )
 
-// ErrClosed performs any operation on the closed client will return this error.
+
 var ErrClosed = pool.ErrClosed
 
-// ErrPoolExhausted is returned from a pool connection method
-// when the maximum number of database connections in the pool has been reached.
+
+
 var ErrPoolExhausted = pool.ErrPoolExhausted
 
-// ErrPoolTimeout timed out waiting to get a connection from the connection pool.
+
 var ErrPoolTimeout = pool.ErrPoolTimeout
 
-// ErrCrossSlot is returned when keys are used in the same Redis command and
-// the keys are not in the same hash slot. This error is returned by Redis
-// Cluster and will be returned by the client when TxPipeline or TxPipelined
-// is used on a ClusterClient with keys in different slots.
+
+
+
+
 var ErrCrossSlot = proto.RedisError("CROSSSLOT Keys in request don't hash to the same slot")
 
-// HasErrorPrefix checks if the err is a Redis error and the message contains a prefix.
+
 func HasErrorPrefix(err error, prefix string) bool {
 	var rErr Error
 	if !errors.As(err, &rErr) {
 		return false
 	}
 	msg := rErr.Error()
-	msg = strings.TrimPrefix(msg, "ERR ") // KVRocks adds such prefix
+	msg = strings.TrimPrefix(msg, "ERR ") 
 	return strings.HasPrefix(msg, prefix)
 }
 
 type Error interface {
 	error
 
-	// RedisError is a no-op function but
-	// serves to distinguish types that are Redis
-	// errors from ordinary errors: a type is a
-	// Redis error if it has a RedisError method.
+	
+	
+	
+	
 	RedisError()
 }
 
@@ -67,7 +67,7 @@ func shouldRetry(err error, retryTimeout bool) bool {
 	case nil, context.Canceled, context.DeadlineExceeded:
 		return false
 	case pool.ErrPoolTimeout:
-		// connection pool timeout, increase retries. #3289
+		
 		return true
 	}
 
@@ -117,13 +117,13 @@ func isBadConn(err error, allowTimeout bool, addr string) bool {
 	if isRedisError(err) {
 		switch {
 		case isReadOnlyError(err):
-			// Close connections in read only state in case domain addr is used
-			// and domain resolves to a different Redis Server. See #790.
+			
+			
 			return true
 		case isMovedSameConnAddr(err, addr):
-			// Close connections when we are asked to move to the same addr
-			// of the connection. Force a DNS resolution when all connections
-			// of the pool are recycled
+			
+			
+			
 			return true
 		default:
 			return false
@@ -180,7 +180,7 @@ func isMovedSameConnAddr(err error, addr string) bool {
 	return strings.HasSuffix(redisError, " "+addr)
 }
 
-//------------------------------------------------------------------------------
+
 
 type timeoutError interface {
 	Timeout() bool

@@ -15,7 +15,7 @@ $transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
   justify-content: space-between;
   padding: 8px 0;
   padding-top: 60px;
-  width: 64px; // Collapsed — icon only
+  width: 64px; 
   overflow-x: hidden;
   transition: width $transition-time $transition-ease;
   z-index: 998;
@@ -67,7 +67,7 @@ $transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0.5;
   }
 
-  // ── Nav Item ────────────────────────────────────
+  
   .sidebar__item {
     display: flex;
     align-items: center;
@@ -99,7 +99,7 @@ $transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
 
-  // ── Icon wrapper ─────────────────────────────────
+  
   .sidebar__icon {
     display: flex;
     align-items: center;
@@ -116,7 +116,7 @@ $transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
 
-  // ── Label ────────────────────────────────────────
+  
   .sidebar__label {
     opacity: 0;
     transform: translateX(-8px);
@@ -129,7 +129,7 @@ $transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
     line-height: 1;
   }
 
-  // ── Bottom section uses same padding as menu ──────
+  
   .sidebar__bottom {
     .sidebar__menu,
     & > a {

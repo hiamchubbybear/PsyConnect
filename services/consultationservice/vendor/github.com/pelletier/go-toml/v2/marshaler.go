@@ -17,9 +17,9 @@ import (
 	"github.com/pelletier/go-toml/v2/internal/characters"
 )
 
-// Marshal serializes a Go value as a TOML document.
-//
-// It is a shortcut for Encoder.Encode() with the default options.
+
+
+
 func Marshal(v interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	enc := NewEncoder(&buf)
@@ -32,12 +32,12 @@ func Marshal(v interface{}) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// Encoder writes a TOML document to an output stream.
+
 type Encoder struct {
-	// output
+	
 	w io.Writer
 
-	// global settings
+	
 	tablesInline       bool
 	arraysMultiline    bool
 	indentSymbol       string
@@ -45,7 +45,7 @@ type Encoder struct {
 	marshalJsonNumbers bool
 }
 
-// NewEncoder returns a new Encoder that writes to w.
+
 func NewEncoder(w io.Writer) *Encoder {
 	return &Encoder{
 		w:            w,
@@ -53,121 +53,121 @@ func NewEncoder(w io.Writer) *Encoder {
 	}
 }
 
-// SetTablesInline forces the encoder to emit all tables inline.
-//
-// This behavior can be controlled on an individual struct field basis with the
-// inline tag:
-//
-//	MyField `toml:",inline"`
+
+
+
+
+
+
 func (enc *Encoder) SetTablesInline(inline bool) *Encoder {
 	enc.tablesInline = inline
 	return enc
 }
 
-// SetArraysMultiline forces the encoder to emit all arrays with one element per
-// line.
-//
-// This behavior can be controlled on an individual struct field basis with the multiline tag:
-//
-//	MyField `multiline:"true"`
+
+
+
+
+
+
 func (enc *Encoder) SetArraysMultiline(multiline bool) *Encoder {
 	enc.arraysMultiline = multiline
 	return enc
 }
 
-// SetIndentSymbol defines the string that should be used for indentation. The
-// provided string is repeated for each indentation level. Defaults to two
-// spaces.
+
+
+
 func (enc *Encoder) SetIndentSymbol(s string) *Encoder {
 	enc.indentSymbol = s
 	return enc
 }
 
-// SetIndentTables forces the encoder to intent tables and array tables.
+
 func (enc *Encoder) SetIndentTables(indent bool) *Encoder {
 	enc.indentTables = indent
 	return enc
 }
 
-// SetMarshalJsonNumbers forces the encoder to serialize `json.Number` as a
-// float or integer instead of relying on TextMarshaler to emit a string.
-//
-// *Unstable:* This method does not follow the compatibility guarantees of
-// semver. It can be changed or removed without a new major version being
-// issued.
+
+
+
+
+
+
 func (enc *Encoder) SetMarshalJsonNumbers(indent bool) *Encoder {
 	enc.marshalJsonNumbers = indent
 	return enc
 }
 
-// Encode writes a TOML representation of v to the stream.
-//
-// If v cannot be represented to TOML it returns an error.
-//
-// # Encoding rules
-//
-// A top level slice containing only maps or structs is encoded as [[table
-// array]].
-//
-// All slices not matching rule 1 are encoded as [array]. As a result, any map
-// or struct they contain is encoded as an {inline table}.
-//
-// Nil interfaces and nil pointers are not supported.
-//
-// Keys in key-values always have one part.
-//
-// Intermediate tables are always printed.
-//
-// By default, strings are encoded as literal string, unless they contain either
-// a newline character or a single quote. In that case they are emitted as
-// quoted strings.
-//
-// Unsigned integers larger than math.MaxInt64 cannot be encoded. Doing so
-// results in an error. This rule exists because the TOML specification only
-// requires parsers to support at least the 64 bits integer range. Allowing
-// larger numbers would create non-standard TOML documents, which may not be
-// readable (at best) by other implementations. To encode such numbers, a
-// solution is a custom type that implements encoding.TextMarshaler.
-//
-// When encoding structs, fields are encoded in order of definition, with their
-// exact name.
-//
-// Tables and array tables are separated by empty lines. However, consecutive
-// subtables definitions are not. For example:
-//
-//	[top1]
-//
-//	[top2]
-//	[top2.child1]
-//
-//	[[array]]
-//
-//	[[array]]
-//	[array.child2]
-//
-// # Struct tags
-//
-// The encoding of each public struct field can be customized by the format
-// string in the "toml" key of the struct field's tag. This follows
-// encoding/json's convention. The format string starts with the name of the
-// field, optionally followed by a comma-separated list of options. The name may
-// be empty in order to provide options without overriding the default name.
-//
-// The "multiline" option emits strings as quoted multi-line TOML strings. It
-// has no effect on fields that would not be encoded as strings.
-//
-// The "inline" option turns fields that would be emitted as tables into inline
-// tables instead. It has no effect on other fields.
-//
-// The "omitempty" option prevents empty values or groups from being emitted.
-//
-// The "commented" option prefixes the value and all its children with a comment
-// symbol.
-//
-// In addition to the "toml" tag struct tag, a "comment" tag can be used to emit
-// a TOML comment before the value being annotated. Comments are ignored inside
-// inline tables. For array tables, the comment is only present before the first
-// element of the array.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (enc *Encoder) Encode(v interface{}) error {
 	var (
 		b   []byte
@@ -201,31 +201,31 @@ type valueOptions struct {
 }
 
 type encoderCtx struct {
-	// Current top-level key.
+	
 	parentKey []string
 
-	// Key that should be used for a KV.
+	
 	key string
-	// Extra flag to account for the empty string
+	
 	hasKey bool
 
-	// Set to true to indicate that the encoder is inside a KV, so that all
-	// tables need to be inlined.
+	
+	
 	insideKv bool
 
-	// Set to true to skip the first table header in an array table.
+	
 	skipTableHeader bool
 
-	// Should the next table be encoded as inline
+	
 	inline bool
 
-	// Indentation level
+	
 	indent int
 
-	// Prefix the current value with a comment.
+	
 	commented bool
 
-	// Options coming from struct tags
+	
 	options valueOptions
 }
 
@@ -267,7 +267,7 @@ func (enc *Encoder) encode(b []byte, ctx encoderCtx, v reflect.Value) ([]byte, e
 		return append(b, x.String()...), nil
 	case json.Number:
 		if enc.marshalJsonNumbers {
-			if x == "" { /// Useful zero value.
+			if x == "" { 
 				return append(b, "0"...), nil
 			} else if v, err := x.Int64(); err == nil {
 				return enc.encode(b, ctx, reflect.ValueOf(v))
@@ -300,7 +300,7 @@ func (enc *Encoder) encode(b []byte, ctx encoderCtx, v reflect.Value) ([]byte, e
 	}
 
 	switch v.Kind() {
-	// containers
+	
 	case reflect.Map:
 		return enc.encodeMap(b, ctx, v)
 	case reflect.Struct:
@@ -320,7 +320,7 @@ func (enc *Encoder) encode(b []byte, ctx encoderCtx, v reflect.Value) ([]byte, e
 
 		return enc.encode(b, ctx, v.Elem())
 
-	// values
+	
 	case reflect.String:
 		b = enc.encodeString(b, v.String(), ctx.options)
 	case reflect.Float32:
@@ -396,8 +396,8 @@ func (enc *Encoder) encodeKv(b []byte, ctx encoderCtx, options valueOptions, v r
 	b = enc.encodeKey(b, ctx.key)
 	b = append(b, " = "...)
 
-	// create a copy of the context because the value of a KV shouldn't
-	// modify the global context.
+	
+	
 	subctx := ctx
 	subctx.insideKv = true
 	subctx.shiftKey()
@@ -439,19 +439,19 @@ func isEmptyValue(v reflect.Value) bool {
 }
 
 func isEmptyStruct(v reflect.Value) bool {
-	// TODO: merge with walkStruct and cache.
+	
 	typ := v.Type()
 	for i := 0; i < typ.NumField(); i++ {
 		fieldType := typ.Field(i)
 
-		// only consider exported fields
+		
 		if fieldType.PkgPath != "" {
 			continue
 		}
 
 		tag := fieldType.Tag.Get("toml")
 
-		// special field name to skip field
+		
 		if tag == "-" {
 			continue
 		}
@@ -477,7 +477,7 @@ func (enc *Encoder) encodeString(b []byte, v string, options valueOptions) []byt
 }
 
 func needsQuoting(v string) bool {
-	// TODO: vectorize
+	
 	for _, b := range []byte(v) {
 		if b == '\'' || b == '\r' || b == '\n' || characters.InvalidAscii(b) {
 			return true
@@ -486,7 +486,7 @@ func needsQuoting(v string) bool {
 	return false
 }
 
-// caller should have checked that the string does not contain new lines or ' .
+
 func (enc *Encoder) encodeLiteralString(b []byte, v string) []byte {
 	b = append(b, literalQuote)
 	b = append(b, v...)
@@ -509,7 +509,7 @@ func (enc *Encoder) encodeQuotedString(multiline bool, b []byte, v string) []byt
 
 	const (
 		hextable = "0123456789ABCDEF"
-		// U+0000 to U+0008, U+000A to U+001F, U+007F
+		
 		nul = 0x0
 		bs  = 0x8
 		lf  = 0xa
@@ -554,7 +554,7 @@ func (enc *Encoder) encodeQuotedString(multiline bool, b []byte, v string) []byt
 	return b
 }
 
-// caller should have checked that the string is in A-Z / a-z / 0-9 / - / _ .
+
 func (enc *Encoder) encodeUnquotedKey(b []byte, v string) []byte {
 	return append(b, v...)
 }
@@ -584,7 +584,7 @@ func (enc *Encoder) encodeTableHeader(ctx encoderCtx, b []byte) ([]byte, error) 
 	return b, nil
 }
 
-//nolint:cyclop
+
 func (enc *Encoder) encodeKey(b []byte, k string) []byte {
 	needsQuotation := false
 	cannotUseLiteral := false
@@ -716,19 +716,19 @@ func (t *table) pushTable(k string, v reflect.Value, options valueOptions) {
 }
 
 func walkStruct(ctx encoderCtx, t *table, v reflect.Value) {
-	// TODO: cache this
+	
 	typ := v.Type()
 	for i := 0; i < typ.NumField(); i++ {
 		fieldType := typ.Field(i)
 
-		// only consider exported fields
+		
 		if fieldType.PkgPath != "" {
 			continue
 		}
 
 		tag := fieldType.Tag.Get("toml")
 
-		// special field name to skip field
+		
 		if tag == "-" {
 			continue
 		}
@@ -806,9 +806,9 @@ func isValidName(s string) bool {
 	for _, c := range s {
 		switch {
 		case strings.ContainsRune("!#$%&()*+-./:;<=>?@[]^_{|}~ ", c):
-			// Backslash and quote chars are reserved, but
-			// otherwise any punctuation chars are allowed
-			// in a tag name.
+			
+			
+			
 		case !unicode.IsLetter(c) && !unicode.IsDigit(c):
 			return false
 		}
@@ -996,7 +996,7 @@ func willConvertToTableOrArrayTable(ctx encoderCtx, v reflect.Value) bool {
 
 	if t.Kind() == reflect.Slice || t.Kind() == reflect.Array {
 		if v.Len() == 0 {
-			// An empty slice should be a kv = [].
+			
 			return false
 		}
 
@@ -1028,8 +1028,8 @@ func (enc *Encoder) encodeSlice(b []byte, ctx encoderCtx, v reflect.Value) ([]by
 	return enc.encodeSliceAsArray(b, ctx, v)
 }
 
-// caller should have checked that v is a slice that only contains values that
-// encode into tables.
+
+
 func (enc *Encoder) encodeSliceAsArrayTable(b []byte, ctx encoderCtx, v reflect.Value) ([]byte, error) {
 	ctx.shiftKey()
 

@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -22,7 +22,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Distinct performs a distinct operation.
+
 type Distinct struct {
 	authenticator  driver.Authenticator
 	collation      bsoncore.Document
@@ -46,9 +46,9 @@ type Distinct struct {
 	timeout        *time.Duration
 }
 
-// DistinctResult represents a distinct result returned by the server.
+
 type DistinctResult struct {
-	// The distinct values for the field.
+	
 	Values bsoncore.Value
 }
 
@@ -66,7 +66,7 @@ func buildDistinctResult(response bsoncore.Document) (DistinctResult, error) {
 	return dr, nil
 }
 
-// NewDistinct constructs and returns a new Distinct.
+
 func NewDistinct(key string, query bsoncore.Document) *Distinct {
 	return &Distinct{
 		key:   &key,
@@ -74,7 +74,7 @@ func NewDistinct(key string, query bsoncore.Document) *Distinct {
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (d *Distinct) Result() DistinctResult { return d.result }
 
 func (d *Distinct) processResponse(info driver.ResponseInfo) error {
@@ -83,7 +83,7 @@ func (d *Distinct) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (d *Distinct) Execute(ctx context.Context) error {
 	if d.deployment == nil {
 		return errors.New("the Distinct operation must have a Deployment set before Execute can be called")
@@ -132,7 +132,7 @@ func (d *Distinct) command(dst []byte, desc description.SelectedServer) ([]byte,
 	return dst, nil
 }
 
-// Collation specifies a collation to be used.
+
 func (d *Distinct) Collation(collation bsoncore.Document) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -142,7 +142,7 @@ func (d *Distinct) Collation(collation bsoncore.Document) *Distinct {
 	return d
 }
 
-// Key specifies which field to return distinct values for.
+
 func (d *Distinct) Key(key string) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -152,7 +152,7 @@ func (d *Distinct) Key(key string) *Distinct {
 	return d
 }
 
-// MaxTime specifies the maximum amount of time to allow the query to run on the server.
+
 func (d *Distinct) MaxTime(maxTime *time.Duration) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -162,7 +162,7 @@ func (d *Distinct) MaxTime(maxTime *time.Duration) *Distinct {
 	return d
 }
 
-// Query specifies which documents to return distinct values from.
+
 func (d *Distinct) Query(query bsoncore.Document) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -172,7 +172,7 @@ func (d *Distinct) Query(query bsoncore.Document) *Distinct {
 	return d
 }
 
-// Session sets the session for this operation.
+
 func (d *Distinct) Session(session *session.Client) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -182,7 +182,7 @@ func (d *Distinct) Session(session *session.Client) *Distinct {
 	return d
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (d *Distinct) ClusterClock(clock *session.ClusterClock) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -192,7 +192,7 @@ func (d *Distinct) ClusterClock(clock *session.ClusterClock) *Distinct {
 	return d
 }
 
-// Collection sets the collection that this command will run against.
+
 func (d *Distinct) Collection(collection string) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -202,7 +202,7 @@ func (d *Distinct) Collection(collection string) *Distinct {
 	return d
 }
 
-// Comment sets a value to help trace an operation.
+
 func (d *Distinct) Comment(comment bsoncore.Value) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -212,7 +212,7 @@ func (d *Distinct) Comment(comment bsoncore.Value) *Distinct {
 	return d
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (d *Distinct) CommandMonitor(monitor *event.CommandMonitor) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -222,7 +222,7 @@ func (d *Distinct) CommandMonitor(monitor *event.CommandMonitor) *Distinct {
 	return d
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (d *Distinct) Crypt(crypt driver.Crypt) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -232,7 +232,7 @@ func (d *Distinct) Crypt(crypt driver.Crypt) *Distinct {
 	return d
 }
 
-// Database sets the database to run this operation against.
+
 func (d *Distinct) Database(database string) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -242,7 +242,7 @@ func (d *Distinct) Database(database string) *Distinct {
 	return d
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (d *Distinct) Deployment(deployment driver.Deployment) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -252,7 +252,7 @@ func (d *Distinct) Deployment(deployment driver.Deployment) *Distinct {
 	return d
 }
 
-// ReadConcern specifies the read concern for this operation.
+
 func (d *Distinct) ReadConcern(readConcern *readconcern.ReadConcern) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -262,7 +262,7 @@ func (d *Distinct) ReadConcern(readConcern *readconcern.ReadConcern) *Distinct {
 	return d
 }
 
-// ReadPreference set the read preference used with this operation.
+
 func (d *Distinct) ReadPreference(readPreference *readpref.ReadPref) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -272,7 +272,7 @@ func (d *Distinct) ReadPreference(readPreference *readpref.ReadPref) *Distinct {
 	return d
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (d *Distinct) ServerSelector(selector description.ServerSelector) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -282,8 +282,8 @@ func (d *Distinct) ServerSelector(selector description.ServerSelector) *Distinct
 	return d
 }
 
-// Retry enables retryable mode for this operation. Retries are handled automatically in driver.Operation.Execute based
-// on how the operation is set.
+
+
 func (d *Distinct) Retry(retry driver.RetryMode) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -293,7 +293,7 @@ func (d *Distinct) Retry(retry driver.RetryMode) *Distinct {
 	return d
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (d *Distinct) ServerAPI(serverAPI *driver.ServerAPIOptions) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -303,7 +303,7 @@ func (d *Distinct) ServerAPI(serverAPI *driver.ServerAPIOptions) *Distinct {
 	return d
 }
 
-// Timeout sets the timeout for this operation.
+
 func (d *Distinct) Timeout(timeout *time.Duration) *Distinct {
 	if d == nil {
 		d = new(Distinct)
@@ -313,7 +313,7 @@ func (d *Distinct) Timeout(timeout *time.Duration) *Distinct {
 	return d
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (d *Distinct) Authenticator(authenticator driver.Authenticator) *Distinct {
 	if d == nil {
 		d = new(Distinct)

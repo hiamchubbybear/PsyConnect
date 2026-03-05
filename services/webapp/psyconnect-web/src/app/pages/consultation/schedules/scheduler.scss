@@ -45,7 +45,7 @@
     border: 1px solid var(--color-border);
 
     ::ng-deep {
-      /* ── COMMON CALENDAR STYLES ────────── */
+      
       .mwl-calendar-month-view,
       .mwl-calendar-week-view {
         background: var(--color-surface);
@@ -65,7 +65,7 @@
         }
       }
 
-      /* ── MONTH VIEW ────────────────────── */
+      
       .cal-month-view {
         background-color: var(--color-surface);
         border: none;
@@ -131,13 +131,13 @@
           border-radius: 50%;
         }
 
-        /* Fix weekend headers if they are too bright */
+        
         .cal-header.cal-weekend span {
-          color: #ef4444 !important; // Soft red for Sundays/Saturdays
+          color: #ef4444 !important; 
         }
       }
 
-      /* ── WEEK VIEW ─────────────────────── */
+      
       .cal-week-view {
         background-color: var(--color-surface);
         border: none;
@@ -204,7 +204,7 @@
         }
       }
 
-      /* ── EVENTS ────────────────────────── */
+      
       .cal-event {
         border-radius: 6px;
         border: none;
@@ -253,7 +253,7 @@
     }
   }
 
-  /* ── EMPTY STATE ───────────────────── */
+  
   .sched-empty {
     display: flex;
     flex-direction: column;

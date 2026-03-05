@@ -7,8 +7,8 @@ func init() {
 }
 
 type Request struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	Filter ACLFilter `kafka:"min=v0,max=v3"`
@@ -21,8 +21,8 @@ func (r *Request) Broker(cluster protocol.Cluster) (protocol.Broker, error) {
 }
 
 type ACLFilter struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	ResourceTypeFilter        int8   `kafka:"min=v0,max=v3"`
@@ -35,8 +35,8 @@ type ACLFilter struct {
 }
 
 type Response struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	ThrottleTimeMs int32      `kafka:"min=v0,max=v3"`
@@ -48,8 +48,8 @@ type Response struct {
 func (r *Response) ApiKey() protocol.ApiKey { return protocol.DescribeAcls }
 
 type Resource struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	ResourceType int8          `kafka:"min=v0,max=v3"`
@@ -59,8 +59,8 @@ type Resource struct {
 }
 
 type ResponseACL struct {
-	// We need at least one tagged field to indicate that v2+ uses "flexible"
-	// messages.
+	
+	
 	_ struct{} `kafka:"min=v2,max=v3,tag"`
 
 	Principal      string `kafka:"min=v0,max=v1|min=v2,max=v3,compact"`

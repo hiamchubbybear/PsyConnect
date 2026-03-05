@@ -195,8 +195,8 @@ type TSMGetOptions struct {
 	SelectedLabels []interface{}
 }
 
-// TSAdd - Adds one or more observations to a t-digest sketch.
-// For more information - https://redis.io/commands/ts.add/
+
+
 func (c cmdable) TSAdd(ctx context.Context, key string, timestamp interface{}, value float64) *IntCmd {
 	args := []interface{}{"TS.ADD", key, timestamp, value}
 	cmd := NewIntCmd(ctx, args...)
@@ -204,10 +204,10 @@ func (c cmdable) TSAdd(ctx context.Context, key string, timestamp interface{}, v
 	return cmd
 }
 
-// TSAddWithArgs - Adds one or more observations to a t-digest sketch.
-// This function also allows for specifying additional options such as:
-// Retention, ChunkSize, Encoding, DuplicatePolicy and Labels.
-// For more information - https://redis.io/commands/ts.add/
+
+
+
+
 func (c cmdable) TSAddWithArgs(ctx context.Context, key string, timestamp interface{}, value float64, options *TSOptions) *IntCmd {
 	args := []interface{}{"TS.ADD", key, timestamp, value}
 	if options != nil {
@@ -239,8 +239,8 @@ func (c cmdable) TSAddWithArgs(ctx context.Context, key string, timestamp interf
 	return cmd
 }
 
-// TSCreate - Creates a new time-series key.
-// For more information - https://redis.io/commands/ts.create/
+
+
 func (c cmdable) TSCreate(ctx context.Context, key string) *StatusCmd {
 	args := []interface{}{"TS.CREATE", key}
 	cmd := NewStatusCmd(ctx, args...)
@@ -248,10 +248,10 @@ func (c cmdable) TSCreate(ctx context.Context, key string) *StatusCmd {
 	return cmd
 }
 
-// TSCreateWithArgs - Creates a new time-series key with additional options.
-// This function allows for specifying additional options such as:
-// Retention, ChunkSize, Encoding, DuplicatePolicy and Labels.
-// For more information - https://redis.io/commands/ts.create/
+
+
+
+
 func (c cmdable) TSCreateWithArgs(ctx context.Context, key string, options *TSOptions) *StatusCmd {
 	args := []interface{}{"TS.CREATE", key}
 	if options != nil {
@@ -283,10 +283,10 @@ func (c cmdable) TSCreateWithArgs(ctx context.Context, key string, options *TSOp
 	return cmd
 }
 
-// TSAlter - Alters an existing time-series key with additional options.
-// This function allows for specifying additional options such as:
-// Retention, ChunkSize and DuplicatePolicy.
-// For more information - https://redis.io/commands/ts.alter/
+
+
+
+
 func (c cmdable) TSAlter(ctx context.Context, key string, options *TSAlterOptions) *StatusCmd {
 	args := []interface{}{"TS.ALTER", key}
 	if options != nil {
@@ -314,8 +314,8 @@ func (c cmdable) TSAlter(ctx context.Context, key string, options *TSAlterOption
 	return cmd
 }
 
-// TSCreateRule - Creates a compaction rule from sourceKey to destKey.
-// For more information - https://redis.io/commands/ts.createrule/
+
+
 func (c cmdable) TSCreateRule(ctx context.Context, sourceKey string, destKey string, aggregator Aggregator, bucketDuration int) *StatusCmd {
 	args := []interface{}{"TS.CREATERULE", sourceKey, destKey, "AGGREGATION", aggregator.String(), bucketDuration}
 	cmd := NewStatusCmd(ctx, args...)
@@ -323,10 +323,10 @@ func (c cmdable) TSCreateRule(ctx context.Context, sourceKey string, destKey str
 	return cmd
 }
 
-// TSCreateRuleWithArgs - Creates a compaction rule from sourceKey to destKey with additional option.
-// This function allows for specifying additional option such as:
-// alignTimestamp.
-// For more information - https://redis.io/commands/ts.createrule/
+
+
+
+
 func (c cmdable) TSCreateRuleWithArgs(ctx context.Context, sourceKey string, destKey string, aggregator Aggregator, bucketDuration int, options *TSCreateRuleOptions) *StatusCmd {
 	args := []interface{}{"TS.CREATERULE", sourceKey, destKey, "AGGREGATION", aggregator.String(), bucketDuration}
 	if options != nil {
@@ -339,8 +339,8 @@ func (c cmdable) TSCreateRuleWithArgs(ctx context.Context, sourceKey string, des
 	return cmd
 }
 
-// TSIncrBy - Increments the value of a time-series key by the specified timestamp.
-// For more information - https://redis.io/commands/ts.incrby/
+
+
 func (c cmdable) TSIncrBy(ctx context.Context, Key string, timestamp float64) *IntCmd {
 	args := []interface{}{"TS.INCRBY", Key, timestamp}
 	cmd := NewIntCmd(ctx, args...)
@@ -348,10 +348,10 @@ func (c cmdable) TSIncrBy(ctx context.Context, Key string, timestamp float64) *I
 	return cmd
 }
 
-// TSIncrByWithArgs - Increments the value of a time-series key by the specified timestamp with additional options.
-// This function allows for specifying additional options such as:
-// Timestamp, Retention, ChunkSize, Uncompressed and Labels.
-// For more information - https://redis.io/commands/ts.incrby/
+
+
+
+
 func (c cmdable) TSIncrByWithArgs(ctx context.Context, key string, timestamp float64, options *TSIncrDecrOptions) *IntCmd {
 	args := []interface{}{"TS.INCRBY", key, timestamp}
 	if options != nil {
@@ -385,8 +385,8 @@ func (c cmdable) TSIncrByWithArgs(ctx context.Context, key string, timestamp flo
 	return cmd
 }
 
-// TSDecrBy - Decrements the value of a time-series key by the specified timestamp.
-// For more information - https://redis.io/commands/ts.decrby/
+
+
 func (c cmdable) TSDecrBy(ctx context.Context, Key string, timestamp float64) *IntCmd {
 	args := []interface{}{"TS.DECRBY", Key, timestamp}
 	cmd := NewIntCmd(ctx, args...)
@@ -394,10 +394,10 @@ func (c cmdable) TSDecrBy(ctx context.Context, Key string, timestamp float64) *I
 	return cmd
 }
 
-// TSDecrByWithArgs - Decrements the value of a time-series key by the specified timestamp with additional options.
-// This function allows for specifying additional options such as:
-// Timestamp, Retention, ChunkSize, Uncompressed and Labels.
-// For more information - https://redis.io/commands/ts.decrby/
+
+
+
+
 func (c cmdable) TSDecrByWithArgs(ctx context.Context, key string, timestamp float64, options *TSIncrDecrOptions) *IntCmd {
 	args := []interface{}{"TS.DECRBY", key, timestamp}
 	if options != nil {
@@ -431,8 +431,8 @@ func (c cmdable) TSDecrByWithArgs(ctx context.Context, key string, timestamp flo
 	return cmd
 }
 
-// TSDel - Deletes a range of samples from a time-series key.
-// For more information - https://redis.io/commands/ts.del/
+
+
 func (c cmdable) TSDel(ctx context.Context, Key string, fromTimestamp int, toTimestamp int) *IntCmd {
 	args := []interface{}{"TS.DEL", Key, fromTimestamp, toTimestamp}
 	cmd := NewIntCmd(ctx, args...)
@@ -440,8 +440,8 @@ func (c cmdable) TSDel(ctx context.Context, Key string, fromTimestamp int, toTim
 	return cmd
 }
 
-// TSDeleteRule - Deletes a compaction rule from sourceKey to destKey.
-// For more information - https://redis.io/commands/ts.deleterule/
+
+
 func (c cmdable) TSDeleteRule(ctx context.Context, sourceKey string, destKey string) *StatusCmd {
 	args := []interface{}{"TS.DELETERULE", sourceKey, destKey}
 	cmd := NewStatusCmd(ctx, args...)
@@ -449,10 +449,10 @@ func (c cmdable) TSDeleteRule(ctx context.Context, sourceKey string, destKey str
 	return cmd
 }
 
-// TSGetWithArgs - Gets the last sample of a time-series key with additional option.
-// This function allows for specifying additional option such as:
-// Latest.
-// For more information - https://redis.io/commands/ts.get/
+
+
+
+
 func (c cmdable) TSGetWithArgs(ctx context.Context, key string, options *TSGetOptions) *TSTimestampValueCmd {
 	args := []interface{}{"TS.GET", key}
 	if options != nil {
@@ -465,8 +465,8 @@ func (c cmdable) TSGetWithArgs(ctx context.Context, key string, options *TSGetOp
 	return cmd
 }
 
-// TSGet - Gets the last sample of a time-series key.
-// For more information - https://redis.io/commands/ts.get/
+
+
 func (c cmdable) TSGet(ctx context.Context, key string) *TSTimestampValueCmd {
 	args := []interface{}{"TS.GET", key}
 	cmd := newTSTimestampValueCmd(ctx, args...)
@@ -533,8 +533,8 @@ func (cmd *TSTimestampValueCmd) readReply(rd *proto.Reader) (err error) {
 	return nil
 }
 
-// TSInfo - Returns information about a time-series key.
-// For more information - https://redis.io/commands/ts.info/
+
+
 func (c cmdable) TSInfo(ctx context.Context, key string) *MapStringInterfaceCmd {
 	args := []interface{}{"TS.INFO", key}
 	cmd := NewMapStringInterfaceCmd(ctx, args...)
@@ -542,10 +542,10 @@ func (c cmdable) TSInfo(ctx context.Context, key string) *MapStringInterfaceCmd 
 	return cmd
 }
 
-// TSInfoWithArgs - Returns information about a time-series key with additional option.
-// This function allows for specifying additional option such as:
-// Debug.
-// For more information - https://redis.io/commands/ts.info/
+
+
+
+
 func (c cmdable) TSInfoWithArgs(ctx context.Context, key string, options *TSInfoOptions) *MapStringInterfaceCmd {
 	args := []interface{}{"TS.INFO", key}
 	if options != nil {
@@ -558,10 +558,10 @@ func (c cmdable) TSInfoWithArgs(ctx context.Context, key string, options *TSInfo
 	return cmd
 }
 
-// TSMAdd - Adds multiple samples to multiple time-series keys.
-// It accepts a slice of 'ktv' slices, each containing exactly three elements: key, timestamp, and value.
-// This struct must be provided for this command to work.
-// For more information - https://redis.io/commands/ts.madd/
+
+
+
+
 func (c cmdable) TSMAdd(ctx context.Context, ktvSlices [][]interface{}) *IntSliceCmd {
 	args := []interface{}{"TS.MADD"}
 	for _, ktv := range ktvSlices {
@@ -572,8 +572,8 @@ func (c cmdable) TSMAdd(ctx context.Context, ktvSlices [][]interface{}) *IntSlic
 	return cmd
 }
 
-// TSQueryIndex - Returns all the keys matching the filter expression.
-// For more information - https://redis.io/commands/ts.queryindex/
+
+
 func (c cmdable) TSQueryIndex(ctx context.Context, filterExpr []string) *StringSliceCmd {
 	args := []interface{}{"TS.QUERYINDEX"}
 	for _, f := range filterExpr {
@@ -584,8 +584,8 @@ func (c cmdable) TSQueryIndex(ctx context.Context, filterExpr []string) *StringS
 	return cmd
 }
 
-// TSRevRange - Returns a range of samples from a time-series key in reverse order.
-// For more information - https://redis.io/commands/ts.revrange/
+
+
 func (c cmdable) TSRevRange(ctx context.Context, key string, fromTimestamp int, toTimestamp int) *TSTimestampValueSliceCmd {
 	args := []interface{}{"TS.REVRANGE", key, fromTimestamp, toTimestamp}
 	cmd := newTSTimestampValueSliceCmd(ctx, args...)
@@ -593,11 +593,11 @@ func (c cmdable) TSRevRange(ctx context.Context, key string, fromTimestamp int, 
 	return cmd
 }
 
-// TSRevRangeWithArgs - Returns a range of samples from a time-series key in reverse order with additional options.
-// This function allows for specifying additional options such as:
-// Latest, FilterByTS, FilterByValue, Count, Align, Aggregator,
-// BucketDuration, BucketTimestamp and Empty.
-// For more information - https://redis.io/commands/ts.revrange/
+
+
+
+
+
 func (c cmdable) TSRevRangeWithArgs(ctx context.Context, key string, fromTimestamp int, toTimestamp int, options *TSRevRangeOptions) *TSTimestampValueSliceCmd {
 	args := []interface{}{"TS.REVRANGE", key, fromTimestamp, toTimestamp}
 	if options != nil {
@@ -640,8 +640,8 @@ func (c cmdable) TSRevRangeWithArgs(ctx context.Context, key string, fromTimesta
 	return cmd
 }
 
-// TSRange - Returns a range of samples from a time-series key.
-// For more information - https://redis.io/commands/ts.range/
+
+
 func (c cmdable) TSRange(ctx context.Context, key string, fromTimestamp int, toTimestamp int) *TSTimestampValueSliceCmd {
 	args := []interface{}{"TS.RANGE", key, fromTimestamp, toTimestamp}
 	cmd := newTSTimestampValueSliceCmd(ctx, args...)
@@ -649,11 +649,11 @@ func (c cmdable) TSRange(ctx context.Context, key string, fromTimestamp int, toT
 	return cmd
 }
 
-// TSRangeWithArgs - Returns a range of samples from a time-series key with additional options.
-// This function allows for specifying additional options such as:
-// Latest, FilterByTS, FilterByValue, Count, Align, Aggregator,
-// BucketDuration, BucketTimestamp and Empty.
-// For more information - https://redis.io/commands/ts.range/
+
+
+
+
+
 func (c cmdable) TSRangeWithArgs(ctx context.Context, key string, fromTimestamp int, toTimestamp int, options *TSRangeOptions) *TSTimestampValueSliceCmd {
 	args := []interface{}{"TS.RANGE", key, fromTimestamp, toTimestamp}
 	if options != nil {
@@ -752,8 +752,8 @@ func (cmd *TSTimestampValueSliceCmd) readReply(rd *proto.Reader) (err error) {
 	return nil
 }
 
-// TSMRange - Returns a range of samples from multiple time-series keys.
-// For more information - https://redis.io/commands/ts.mrange/
+
+
 func (c cmdable) TSMRange(ctx context.Context, fromTimestamp int, toTimestamp int, filterExpr []string) *MapStringSliceInterfaceCmd {
 	args := []interface{}{"TS.MRANGE", fromTimestamp, toTimestamp, "FILTER"}
 	for _, f := range filterExpr {
@@ -764,12 +764,12 @@ func (c cmdable) TSMRange(ctx context.Context, fromTimestamp int, toTimestamp in
 	return cmd
 }
 
-// TSMRangeWithArgs - Returns a range of samples from multiple time-series keys with additional options.
-// This function allows for specifying additional options such as:
-// Latest, FilterByTS, FilterByValue, WithLabels, SelectedLabels,
-// Count, Align, Aggregator, BucketDuration, BucketTimestamp,
-// Empty, GroupByLabel and Reducer.
-// For more information - https://redis.io/commands/ts.mrange/
+
+
+
+
+
+
 func (c cmdable) TSMRangeWithArgs(ctx context.Context, fromTimestamp int, toTimestamp int, filterExpr []string, options *TSMRangeOptions) *MapStringSliceInterfaceCmd {
 	args := []interface{}{"TS.MRANGE", fromTimestamp, toTimestamp}
 	if options != nil {
@@ -831,8 +831,8 @@ func (c cmdable) TSMRangeWithArgs(ctx context.Context, fromTimestamp int, toTime
 	return cmd
 }
 
-// TSMRevRange - Returns a range of samples from multiple time-series keys in reverse order.
-// For more information - https://redis.io/commands/ts.mrevrange/
+
+
 func (c cmdable) TSMRevRange(ctx context.Context, fromTimestamp int, toTimestamp int, filterExpr []string) *MapStringSliceInterfaceCmd {
 	args := []interface{}{"TS.MREVRANGE", fromTimestamp, toTimestamp, "FILTER"}
 	for _, f := range filterExpr {
@@ -843,12 +843,12 @@ func (c cmdable) TSMRevRange(ctx context.Context, fromTimestamp int, toTimestamp
 	return cmd
 }
 
-// TSMRevRangeWithArgs - Returns a range of samples from multiple time-series keys in reverse order with additional options.
-// This function allows for specifying additional options such as:
-// Latest, FilterByTS, FilterByValue, WithLabels, SelectedLabels,
-// Count, Align, Aggregator, BucketDuration, BucketTimestamp,
-// Empty, GroupByLabel and Reducer.
-// For more information - https://redis.io/commands/ts.mrevrange/
+
+
+
+
+
+
 func (c cmdable) TSMRevRangeWithArgs(ctx context.Context, fromTimestamp int, toTimestamp int, filterExpr []string, options *TSMRevRangeOptions) *MapStringSliceInterfaceCmd {
 	args := []interface{}{"TS.MREVRANGE", fromTimestamp, toTimestamp}
 	if options != nil {
@@ -910,8 +910,8 @@ func (c cmdable) TSMRevRangeWithArgs(ctx context.Context, fromTimestamp int, toT
 	return cmd
 }
 
-// TSMGet - Returns the last sample of multiple time-series keys.
-// For more information - https://redis.io/commands/ts.mget/
+
+
 func (c cmdable) TSMGet(ctx context.Context, filters []string) *MapStringSliceInterfaceCmd {
 	args := []interface{}{"TS.MGET", "FILTER"}
 	for _, f := range filters {
@@ -922,10 +922,10 @@ func (c cmdable) TSMGet(ctx context.Context, filters []string) *MapStringSliceIn
 	return cmd
 }
 
-// TSMGetWithArgs - Returns the last sample of multiple time-series keys with additional options.
-// This function allows for specifying additional options such as:
-// Latest, WithLabels and SelectedLabels.
-// For more information - https://redis.io/commands/ts.mget/
+
+
+
+
 func (c cmdable) TSMGetWithArgs(ctx context.Context, filters []string, options *TSMGetOptions) *MapStringSliceInterfaceCmd {
 	args := []interface{}{"TS.MGET"}
 	if options != nil {

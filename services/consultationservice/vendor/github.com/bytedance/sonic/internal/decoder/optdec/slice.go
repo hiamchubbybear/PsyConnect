@@ -79,11 +79,11 @@ func (d *arrayDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error
 		next = val.Next()
 	}
 
-	/* zero rest of array */
+	
 	addr := uintptr(vp) + uintptr(i)*d.elemType.Size
 	n := uintptr(d.len-i) * d.elemType.Size
 
-	/* the boundary pointer may points to another unknown object, so we need to avoid using it */
+	
 	if n != 0 {
 		rt.ClearMemory(d.elemType, unsafe.Pointer(addr), n)
 	}
@@ -99,7 +99,7 @@ func (d *sliceEfaceDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) 
 		return nil
 	}
 
-	/* if slice is empty, just call `AsSliceEface` */
+	
 	if ((*rt.GoSlice)(vp)).Len == 0 {
 		return node.AsSliceEface(ctx, vp)
 	}
@@ -199,7 +199,7 @@ func (d *sliceBytesUnmarshalerDecoder) FromDom(vp unsafe.Pointer, node Node, ctx
 		return nil
 	}
 
-	/* parse JSON string into `[]byte` */
+	
 	if node.IsStr() {
 		slice, err := node.AsSliceBytes(ctx)
 		if err != nil {
@@ -209,7 +209,7 @@ func (d *sliceBytesUnmarshalerDecoder) FromDom(vp unsafe.Pointer, node Node, ctx
 		return nil
 	}
 
-	/* parse JSON array into `[]byte` */
+	
 	arr, ok := node.AsArr()
 	if !ok {
 		return error_mismatch(node, ctx, d.typ)

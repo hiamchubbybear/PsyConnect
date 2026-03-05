@@ -1,7 +1,7 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
 
-package global // import "go.opentelemetry.io/otel/internal/global"
+
+
+package global 
 
 import (
 	"container/list"
@@ -13,10 +13,10 @@ import (
 	"go.opentelemetry.io/otel/metric/embedded"
 )
 
-// meterProvider is a placeholder for a configured SDK MeterProvider.
-//
-// All MeterProvider functionality is forwarded to a delegate once
-// configured.
+
+
+
+
 type meterProvider struct {
 	embedded.MeterProvider
 
@@ -26,14 +26,14 @@ type meterProvider struct {
 	delegate metric.MeterProvider
 }
 
-// setDelegate configures p to delegate all MeterProvider functionality to
-// provider.
-//
-// All Meters provided prior to this function call are switched out to be
-// Meters provided by provider. All instruments and callbacks are recreated and
-// delegated.
-//
-// It is guaranteed by the caller that this happens only once.
+
+
+
+
+
+
+
+
 func (p *meterProvider) setDelegate(provider metric.MeterProvider) {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
@@ -51,7 +51,7 @@ func (p *meterProvider) setDelegate(provider metric.MeterProvider) {
 	p.meters = nil
 }
 
-// Meter implements MeterProvider.
+
 func (p *meterProvider) Meter(name string, opts ...metric.MeterOption) metric.Meter {
 	p.mtx.Lock()
 	defer p.mtx.Unlock()
@@ -60,7 +60,7 @@ func (p *meterProvider) Meter(name string, opts ...metric.MeterOption) metric.Me
 		return p.delegate.Meter(name, opts...)
 	}
 
-	// At this moment it is guaranteed that no sdk is installed, save the meter in the meters map.
+	
 
 	c := metric.NewMeterConfig(opts...)
 	key := il{
@@ -83,10 +83,10 @@ func (p *meterProvider) Meter(name string, opts ...metric.MeterOption) metric.Me
 	return t
 }
 
-// meter is a placeholder for a metric.Meter.
-//
-// All Meter functionality is forwarded to a delegate once configured.
-// Otherwise, all functionality is forwarded to a NoopMeter.
+
+
+
+
 type meter struct {
 	embedded.Meter
 
@@ -105,24 +105,24 @@ type delegatedInstrument interface {
 	setDelegate(metric.Meter)
 }
 
-// instID are the identifying properties of a instrument.
+
 type instID struct {
-	// name is the name of the stream.
+	
 	name string
-	// description is the description of the stream.
+	
 	description string
-	// kind defines the functional group of the instrument.
+	
 	kind reflect.Type
-	// unit is the unit of the stream.
+	
 	unit string
 }
 
-// setDelegate configures m to delegate all Meter functionality to Meters
-// created by provider.
-//
-// All subsequent calls to the Meter methods will be passed to the delegate.
-//
-// It is guaranteed by the caller that this happens only once.
+
+
+
+
+
+
 func (m *meter) setDelegate(provider metric.MeterProvider) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
@@ -468,7 +468,7 @@ func (m *meter) Float64ObservableGauge(name string, options ...metric.Float64Obs
 	return i, nil
 }
 
-// RegisterCallback captures the function that will be called during Collect.
+
 func (m *meter) RegisterCallback(f metric.Callback, insts ...metric.Observable) (metric.Registration, error) {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
@@ -517,35 +517,35 @@ type unwrapObs struct {
 	obs metric.Observer
 }
 
-// unwrapFloat64Observable returns an expected metric.Float64Observable after
-// unwrapping the global object.
+
+
 func unwrapFloat64Observable(inst metric.Float64Observable) metric.Float64Observable {
 	if unwrapped, ok := inst.(unwrapper); ok {
 		if floatObs, ok := unwrapped.unwrap().(metric.Float64Observable); ok {
-			// Note: if the unwrapped object does not
-			// unwrap as an observable for either of the
-			// predicates here, it means an internal bug in
-			// this package.  We avoid logging an error in
-			// this case, because the SDK has to try its
-			// own type conversion on the object.  The SDK
-			// will see this and be forced to respond with
-			// its own error.
-			//
-			// This code uses a double-nested if statement
-			// to avoid creating a branch that is
-			// impossible to cover.
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			inst = floatObs
 		}
 	}
 	return inst
 }
 
-// unwrapInt64Observable returns an expected metric.Int64Observable after
-// unwrapping the global object.
+
+
 func unwrapInt64Observable(inst metric.Int64Observable) metric.Int64Observable {
 	if unwrapped, ok := inst.(unwrapper); ok {
 		if unint, ok := unwrapped.unwrap().(metric.Int64Observable); ok {
-			// See the comment in unwrapFloat64Observable().
+			
 			inst = unint
 		}
 	}
@@ -571,7 +571,7 @@ func (c *registration) setDelegate(m metric.Meter) {
 	defer c.unregMu.Unlock()
 
 	if c.unreg == nil {
-		// Unregister already called.
+		
 		return
 	}
 
@@ -588,7 +588,7 @@ func (c *registration) Unregister() error {
 	c.unregMu.Lock()
 	defer c.unregMu.Unlock()
 	if c.unreg == nil {
-		// Unregister already called.
+		
 		return nil
 	}
 

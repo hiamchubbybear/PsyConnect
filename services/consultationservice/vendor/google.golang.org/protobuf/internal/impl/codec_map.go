@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package impl
 
@@ -26,7 +26,7 @@ type mapInfo struct {
 }
 
 func encoderFuncsForMap(fd protoreflect.FieldDescriptor, ft reflect.Type) (valueMessage *MessageInfo, funcs pointerCoderFuncs) {
-	// TODO: Consider generating specialized map coders.
+	
 	keyField := fd.MapKey()
 	valField := fd.MapValue()
 	keyWiretag := protowire.EncodeTag(1, wireTypes[keyField.Kind()])
@@ -85,8 +85,8 @@ func encoderFuncsForMap(fd protoreflect.FieldDescriptor, ft reflect.Type) (value
 }
 
 const (
-	mapKeyTagSize = 1 // field 1, tag size 1.
-	mapValTagSize = 1 // field 2, tag size 2.
+	mapKeyTagSize = 1 
+	mapValTagSize = 1 
 )
 
 func sizeMap(mapv reflect.Value, mapi *mapInfo, f *coderFieldInfo, opts marshalOptions) int {
@@ -213,8 +213,8 @@ func consumeMapOfMessage(b []byte, mapv reflect.Value, wtyp protowire.Type, mapi
 			var o unmarshalOutput
 			o, err = f.mi.unmarshalPointer(v, pointerOfValue(val), 0, opts)
 			if o.initialized {
-				// Consider this map item initialized so long as we see
-				// an initialized value.
+				
+				
 				out.initialized = true
 			}
 		}

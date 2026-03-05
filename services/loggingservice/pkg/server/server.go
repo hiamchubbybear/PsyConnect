@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// Server represents the HTTP server for health checks and metrics
+
 type Server struct {
 	config        settings.ServerConfig
 	logger        *zap.Logger
@@ -21,7 +21,7 @@ type Server struct {
 	startTime     time.Time
 }
 
-// HealthResponse represents the health check response
+
 type HealthResponse struct {
 	Status        string    `json:"status"`
 	Uptime        string    `json:"uptime"`
@@ -31,7 +31,7 @@ type HealthResponse struct {
 	Version       string    `json:"version"`
 }
 
-// MetricsResponse represents the metrics response
+
 type MetricsResponse struct {
 	MessagesProcessed int64   `json:"messages_processed"`
 	ErrorsCount       int64   `json:"errors_count"`
@@ -39,7 +39,7 @@ type MetricsResponse struct {
 	Uptime            string  `json:"uptime"`
 }
 
-// NewServer creates a new HTTP server
+
 func NewServer(config settings.ServerConfig, logger *zap.Logger) *Server {
 	return &Server{
 		config:    config,
@@ -48,7 +48,7 @@ func NewServer(config settings.ServerConfig, logger *zap.Logger) *Server {
 	}
 }
 
-// Start starts the HTTP server
+
 func (s *Server) Start() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", s.handleHealth)
@@ -73,7 +73,7 @@ func (s *Server) Start() error {
 	return nil
 }
 
-// Stop stops the HTTP server
+
 func (s *Server) Stop() error {
 	if s.httpServer != nil {
 		s.logger.Info("Stopping HTTP server")
@@ -82,17 +82,17 @@ func (s *Server) Stop() error {
 	return nil
 }
 
-// IncrementMessages increments the messages counter
+
 func (s *Server) IncrementMessages() {
 	atomic.AddInt64(&s.messagesCount, 1)
 }
 
-// IncrementErrors increments the errors counter
+
 func (s *Server) IncrementErrors() {
 	atomic.AddInt64(&s.errorsCount, 1)
 }
 
-// handleHealth handles health check requests
+
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	uptime := time.Since(s.startTime)
 
@@ -110,7 +110,7 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// handleMetrics handles metrics requests
+
 func (s *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
 	uptime := time.Since(s.startTime)
 	messages := atomic.LoadInt64(&s.messagesCount)
@@ -133,7 +133,7 @@ func (s *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// handleReady handles readiness probe requests
+
 func (s *Server) handleReady(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

@@ -1,6 +1,6 @@
-// Copyright 2014 Manu Martinez-Almeida. All rights reserved.
-// Use of this source code is governed by a MIT style
-// license that can be found in the LICENSE file.
+
+
+
 
 package gin
 
@@ -35,57 +35,57 @@ const (
 
 var consoleColorMode = autoColor
 
-// LoggerConfig defines the config for Logger middleware.
+
 type LoggerConfig struct {
-	// Optional. Default value is gin.defaultLogFormatter
+	
 	Formatter LogFormatter
 
-	// Output is a writer where logs are written.
-	// Optional. Default value is gin.DefaultWriter.
+	
+	
 	Output io.Writer
 
-	// SkipPaths is an url path array which logs are not written.
-	// Optional.
+	
+	
 	SkipPaths []string
 
-	// Skip is a Skipper that indicates which logs should not be written.
-	// Optional.
+	
+	
 	Skip Skipper
 }
 
-// Skipper is a function to skip logs based on provided Context
+
 type Skipper func(c *Context) bool
 
-// LogFormatter gives the signature of the formatter function passed to LoggerWithFormatter
+
 type LogFormatter func(params LogFormatterParams) string
 
-// LogFormatterParams is the structure any formatter will be handed when time to log comes
+
 type LogFormatterParams struct {
 	Request *http.Request
 
-	// TimeStamp shows the time after the server returns a response.
+	
 	TimeStamp time.Time
-	// StatusCode is HTTP response code.
+	
 	StatusCode int
-	// Latency is how much time the server cost to process a certain request.
+	
 	Latency time.Duration
-	// ClientIP equals Context's ClientIP method.
+	
 	ClientIP string
-	// Method is the HTTP method given to the request.
+	
 	Method string
-	// Path is a path the client requests.
+	
 	Path string
-	// ErrorMessage is set if error has occurred in processing the request.
+	
 	ErrorMessage string
-	// isTerm shows whether gin's output descriptor refers to a terminal.
+	
 	isTerm bool
-	// BodySize is the size of the Response Body
+	
 	BodySize int
-	// Keys are the keys set on the request's context.
+	
 	Keys map[string]any
 }
 
-// StatusCodeColor is the ANSI color for appropriately logging http status code to a terminal.
+
 func (p *LogFormatterParams) StatusCodeColor() string {
 	code := p.StatusCode
 
@@ -103,7 +103,7 @@ func (p *LogFormatterParams) StatusCodeColor() string {
 	}
 }
 
-// MethodColor is the ANSI color for appropriately logging http method to a terminal.
+
 func (p *LogFormatterParams) MethodColor() string {
 	method := p.Method
 
@@ -127,17 +127,17 @@ func (p *LogFormatterParams) MethodColor() string {
 	}
 }
 
-// ResetColor resets all escape attributes.
+
 func (p *LogFormatterParams) ResetColor() string {
 	return reset
 }
 
-// IsOutputColor indicates whether can colors be outputted to the log.
+
 func (p *LogFormatterParams) IsOutputColor() bool {
 	return consoleColorMode == forceColor || (consoleColorMode == autoColor && p.isTerm)
 }
 
-// defaultLogFormatter is the default log format function Logger middleware uses.
+
 var defaultLogFormatter = func(param LogFormatterParams) string {
 	var statusColor, methodColor, resetColor string
 	if param.IsOutputColor() {
@@ -160,22 +160,22 @@ var defaultLogFormatter = func(param LogFormatterParams) string {
 	)
 }
 
-// DisableConsoleColor disables color output in the console.
+
 func DisableConsoleColor() {
 	consoleColorMode = disableColor
 }
 
-// ForceConsoleColor force color output in the console.
+
 func ForceConsoleColor() {
 	consoleColorMode = forceColor
 }
 
-// ErrorLogger returns a HandlerFunc for any error type.
+
 func ErrorLogger() HandlerFunc {
 	return ErrorLoggerT(ErrorTypeAny)
 }
 
-// ErrorLoggerT returns a HandlerFunc for a given error type.
+
 func ErrorLoggerT(typ ErrorType) HandlerFunc {
 	return func(c *Context) {
 		c.Next()
@@ -186,21 +186,21 @@ func ErrorLoggerT(typ ErrorType) HandlerFunc {
 	}
 }
 
-// Logger instances a Logger middleware that will write the logs to gin.DefaultWriter.
-// By default, gin.DefaultWriter = os.Stdout.
+
+
 func Logger() HandlerFunc {
 	return LoggerWithConfig(LoggerConfig{})
 }
 
-// LoggerWithFormatter instance a Logger middleware with the specified log format function.
+
 func LoggerWithFormatter(f LogFormatter) HandlerFunc {
 	return LoggerWithConfig(LoggerConfig{
 		Formatter: f,
 	})
 }
 
-// LoggerWithWriter instance a Logger middleware with the specified writer buffer.
-// Example: os.Stdout, a file opened in write mode, a socket...
+
+
 func LoggerWithWriter(out io.Writer, notlogged ...string) HandlerFunc {
 	return LoggerWithConfig(LoggerConfig{
 		Output:    out,
@@ -208,7 +208,7 @@ func LoggerWithWriter(out io.Writer, notlogged ...string) HandlerFunc {
 	})
 }
 
-// LoggerWithConfig instance a Logger middleware with config.
+
 func LoggerWithConfig(conf LoggerConfig) HandlerFunc {
 	formatter := conf.Formatter
 	if formatter == nil {
@@ -240,15 +240,15 @@ func LoggerWithConfig(conf LoggerConfig) HandlerFunc {
 	}
 
 	return func(c *Context) {
-		// Start timer
+		
 		start := time.Now()
 		path := c.Request.URL.Path
 		raw := c.Request.URL.RawQuery
 
-		// Process request
+		
 		c.Next()
 
-		// Log only when it is not being skipped
+		
 		if _, ok := skip[path]; ok || (conf.Skip != nil && conf.Skip(c)) {
 			return
 		}
@@ -259,7 +259,7 @@ func LoggerWithConfig(conf LoggerConfig) HandlerFunc {
 			Keys:    c.Keys,
 		}
 
-		// Stop timer
+		
 		param.TimeStamp = time.Now()
 		param.Latency = param.TimeStamp.Sub(start)
 

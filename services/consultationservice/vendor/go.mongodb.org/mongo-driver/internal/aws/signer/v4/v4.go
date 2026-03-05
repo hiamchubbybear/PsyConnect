@@ -1,12 +1,12 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-//
-// Based on github.com/aws/aws-sdk-go by Amazon.com, Inc. with code from:
-// - github.com/aws/aws-sdk-go/blob/v1.44.225/aws/signer/v4/v4.go
-// See THIRD-PARTY-NOTICES for original license terms
+
+
+
+
+
+
+
+
+
 
 package v4
 
@@ -36,7 +36,7 @@ const (
 	shortTimeFormat  = "20060102"
 	awsV4Request     = "aws4_request"
 
-	// emptyStringSHA256 is a SHA256 of an empty string
+	
 	emptyStringSHA256 = `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
 )
 
@@ -50,15 +50,15 @@ var ignoredHeaders = rules{
 	},
 }
 
-// Signer applies AWS v4 signing to given request. Use this to sign requests
-// that need to be signed with AWS V4 Signatures.
+
+
 type Signer struct {
-	// The authentication credentials the request will be signed against.
-	// This value must be set to sign requests.
+	
+	
 	Credentials *credentials.Credentials
 }
 
-// NewSigner returns a Signer pointer configured with the credentials provided.
+
 func NewSigner(credentials *credentials.Credentials) *Signer {
 	v4 := &Signer{
 		Credentials: credentials,
@@ -87,31 +87,31 @@ type signingCtx struct {
 	signature        string
 }
 
-// Sign signs AWS v4 requests with the provided body, service name, region the
-// request is made to, and time the request is signed at. The signTime allows
-// you to specify that a request is signed for the future, and cannot be
-// used until then.
-//
-// Returns a list of HTTP headers that were included in the signature or an
-// error if signing the request failed. Generally for signed requests this value
-// is not needed as the full request context will be captured by the http.Request
-// value. It is included for reference though.
-//
-// Sign will set the request's Body to be the `body` parameter passed in. If
-// the body is not already an io.ReadCloser, it will be wrapped within one. If
-// a `nil` body parameter passed to Sign, the request's Body field will be
-// also set to nil. Its important to note that this functionality will not
-// change the request's ContentLength of the request.
-//
-// Sign differs from Presign in that it will sign the request using HTTP
-// header values. This type of signing is intended for http.Request values that
-// will not be shared, or are shared in a way the header values on the request
-// will not be lost.
-//
-// The requests body is an io.ReadSeeker so the SHA256 of the body can be
-// generated. To bypass the signer computing the hash you can set the
-// "X-Amz-Content-Sha256" header with a precomputed value. The signer will
-// only compute the hash if the request header value is empty.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (v4 Signer) Sign(r *http.Request, body io.ReadSeeker, service, region string, signTime time.Time) (http.Header, error) {
 	return v4.signWithBody(r, body, service, region, signTime)
 }
@@ -158,7 +158,7 @@ func (v4 Signer) signWithBody(r *http.Request, body io.ReadSeeker, service, regi
 	return ctx.SignedHeaderVals, nil
 }
 
-// sanitizeHostForHeader removes default port from host and updates request.Host
+
 func (ctx *signingCtx) sanitizeHostForHeader() {
 	r := ctx.Request
 	host := getHost(r)
@@ -175,8 +175,8 @@ func (ctx *signingCtx) assignAmzQueryValues() {
 }
 
 func (ctx *signingCtx) build() error {
-	ctx.buildTime()             // no depends
-	ctx.buildCredentialString() // no depends
+	ctx.buildTime()             
+	ctx.buildCredentialString() 
 
 	if err := ctx.buildBodyDigest(); err != nil {
 		return err
@@ -185,9 +185,9 @@ func (ctx *signingCtx) build() error {
 	unsignedHeaders := ctx.Request.Header
 
 	ctx.buildCanonicalHeaders(ignoredHeaders, unsignedHeaders)
-	ctx.buildCanonicalString() // depends on canon headers / signed headers
-	ctx.buildStringToSign()    // depends on canon string
-	ctx.buildSignature()       // depends on string to sign
+	ctx.buildCanonicalString() 
+	ctx.buildStringToSign()    
+	ctx.buildSignature()       
 
 	parts := []string{
 		authHeaderPrefix + " Credential=" + ctx.credValues.AccessKeyID + "/" + ctx.credentialString,
@@ -212,7 +212,7 @@ func (ctx *signingCtx) buildCanonicalHeaders(r rule, header http.Header) {
 	headers = append(headers, "host")
 	for k, v := range header {
 		if !r.IsValid(k) {
-			continue // ignored header
+			continue 
 		}
 		if ctx.SignedHeaderVals == nil {
 			ctx.SignedHeaderVals = make(http.Header)
@@ -220,7 +220,7 @@ func (ctx *signingCtx) buildCanonicalHeaders(r rule, header http.Header) {
 
 		lowerCaseKey := strings.ToLower(k)
 		if _, ok := ctx.SignedHeaderVals[lowerCaseKey]; ok {
-			// include additional values
+			
 			ctx.SignedHeaderVals[lowerCaseKey] = append(ctx.SignedHeaderVals[lowerCaseKey], v...)
 			continue
 		}
@@ -306,7 +306,7 @@ func (ctx *signingCtx) buildBodyDigest() error {
 	return nil
 }
 
-// isRequestSigned returns if the request is currently signed or presigned
+
 func (ctx *signingCtx) isRequestSigned() bool {
 	return ctx.Request.Header.Get("Authorization") != ""
 }
@@ -330,12 +330,12 @@ func makeSha256Reader(reader io.ReadSeeker) (hashBytes []byte, err error) {
 		return nil, err
 	}
 	defer func() {
-		// ensure error is return if unable to seek back to start of payload.
+		
 		_, err = reader.Seek(start, io.SeekStart)
 	}()
 
-	// Use CopyN to avoid allocating the 32KB buffer in io.Copy for bodies
-	// smaller than 32KB. Fall back to io.Copy if we fail to determine the size.
+	
+	
 	size, err := aws.SeekerLen(reader)
 	if err != nil {
 		_, _ = io.Copy(hash, reader)
@@ -348,26 +348,26 @@ func makeSha256Reader(reader io.ReadSeeker) (hashBytes []byte, err error) {
 
 const doubleSpace = "  "
 
-// stripExcessSpaces will rewrite the passed in slice's string values to not
-// contain multiple side-by-side spaces.
+
+
 func stripExcessSpaces(vals []string) {
 	var j, k, l, m, spaces int
 	for i, str := range vals {
-		// revive:disable:empty-block
+		
 
-		// Trim trailing spaces
+		
 		for j = len(str) - 1; j >= 0 && str[j] == ' '; j-- {
 		}
 
-		// Trim leading spaces
+		
 		for k = 0; k < j && str[k] == ' '; k++ {
 		}
 
-		// revive:enable:empty-block
+		
 
 		str = str[k : j+1]
 
-		// Strip multiple spaces.
+		
 		j = strings.Index(str, doubleSpace)
 		if j < 0 {
 			vals[i] = str
@@ -378,13 +378,13 @@ func stripExcessSpaces(vals []string) {
 		for k, m, l = j, j, len(buf); k < l; k++ {
 			if buf[k] == ' ' {
 				if spaces == 0 {
-					// First space.
+					
 					buf[m] = buf[k]
 					m++
 				}
 				spaces++
 			} else {
-				// End of multiple spaces.
+				
 				spaces = 0
 				buf[m] = buf[k]
 				m++

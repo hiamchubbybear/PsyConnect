@@ -23,7 +23,7 @@ func NewProcessPaymentWebhookUseCase(repo repository.SessionRepository, producer
 type PaymentWebhookPayload struct {
 	SessionID     string `json:"session_id"`
 	TransactionID string `json:"transaction_id"`
-	Status        string `json:"status"` // SUCCESS, FAILED
+	Status        string `json:"status"` 
 }
 
 func (uc *ProcessPaymentWebhookUseCase) Execute(ctx context.Context, payload PaymentWebhookPayload) error {
@@ -46,13 +46,13 @@ func (uc *ProcessPaymentWebhookUseCase) Execute(ctx context.Context, payload Pay
 		return errors.New("invalid payment status received in webhook")
 	}
 
-	// Update Payment Status and ID
+	
 	err = uc.sessionRepo.UpdatePayment(ctx, payload.SessionID, newStatus, &payload.TransactionID)
 	if err != nil {
 		return err
 	}
 
-	// Send Event
+	
 	if uc.producer != nil {
 		_ = uc.producer.SendSessionEvent("notification.push.consultation-updated", session)
 	}

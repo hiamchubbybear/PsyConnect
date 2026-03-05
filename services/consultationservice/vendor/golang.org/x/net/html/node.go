@@ -1,6 +1,6 @@
-// Copyright 2011 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package html
 
@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
-// A NodeType is the type of a Node.
+
 type NodeType uint32
 
 const (
@@ -18,33 +18,33 @@ const (
 	ElementNode
 	CommentNode
 	DoctypeNode
-	// RawNode nodes are not returned by the parser, but can be part of the
-	// Node tree passed to func Render to insert raw HTML (without escaping).
-	// If so, this package makes no guarantee that the rendered HTML is secure
-	// (from e.g. Cross Site Scripting attacks) or well-formed.
+	
+	
+	
+	
 	RawNode
 	scopeMarkerNode
 )
 
-// Section 12.2.4.3 says "The markers are inserted when entering applet,
-// object, marquee, template, td, th, and caption elements, and are used
-// to prevent formatting from "leaking" into applet, object, marquee,
-// template, td, th, and caption elements".
+
+
+
+
 var scopeMarker = Node{Type: scopeMarkerNode}
 
-// A Node consists of a NodeType and some Data (tag name for element nodes,
-// content for text) and are part of a tree of Nodes. Element nodes may also
-// have a Namespace and contain a slice of Attributes. Data is unescaped, so
-// that it looks like "a<b" rather than "a&lt;b". For element nodes, DataAtom
-// is the atom for Data, or zero if Data is not a known tag name.
-//
-// Node trees may be navigated using the link fields (Parent,
-// FirstChild, and so on) or a range loop over iterators such as
-// [Node.Descendants].
-//
-// An empty Namespace implies a "http://www.w3.org/1999/xhtml" namespace.
-// Similarly, "math" is short for "http://www.w3.org/1998/Math/MathML", and
-// "svg" is short for "http://www.w3.org/2000/svg".
+
+
+
+
+
+
+
+
+
+
+
+
+
 type Node struct {
 	Parent, FirstChild, LastChild, PrevSibling, NextSibling *Node
 
@@ -55,11 +55,11 @@ type Node struct {
 	Attr      []Attribute
 }
 
-// InsertBefore inserts newChild as a child of n, immediately before oldChild
-// in the sequence of n's children. oldChild may be nil, in which case newChild
-// is appended to the end of n's children.
-//
-// It will panic if newChild already has a parent or siblings.
+
+
+
+
+
 func (n *Node) InsertBefore(newChild, oldChild *Node) {
 	if newChild.Parent != nil || newChild.PrevSibling != nil || newChild.NextSibling != nil {
 		panic("html: InsertBefore called for an attached child Node")
@@ -85,9 +85,9 @@ func (n *Node) InsertBefore(newChild, oldChild *Node) {
 	newChild.NextSibling = next
 }
 
-// AppendChild adds a node c as a child of n.
-//
-// It will panic if c already has a parent or siblings.
+
+
+
 func (n *Node) AppendChild(c *Node) {
 	if c.Parent != nil || c.PrevSibling != nil || c.NextSibling != nil {
 		panic("html: AppendChild called for an attached child Node")
@@ -103,10 +103,10 @@ func (n *Node) AppendChild(c *Node) {
 	c.PrevSibling = last
 }
 
-// RemoveChild removes a node c that is a child of n. Afterwards, c will have
-// no parent and no siblings.
-//
-// It will panic if c's parent is not n.
+
+
+
+
 func (n *Node) RemoveChild(c *Node) {
 	if c.Parent != n {
 		panic("html: RemoveChild called for a non-child Node")
@@ -128,7 +128,7 @@ func (n *Node) RemoveChild(c *Node) {
 	c.NextSibling = nil
 }
 
-// reparentChildren reparents all of src's child nodes to dst.
+
 func reparentChildren(dst, src *Node) {
 	for {
 		child := src.FirstChild
@@ -140,8 +140,8 @@ func reparentChildren(dst, src *Node) {
 	}
 }
 
-// clone returns a new node with the same type, data and attributes.
-// The clone has no parent, no siblings and no children.
+
+
 func (n *Node) clone() *Node {
 	m := &Node{
 		Type:     n.Type,
@@ -153,10 +153,10 @@ func (n *Node) clone() *Node {
 	return m
 }
 
-// nodeStack is a stack of nodes.
+
 type nodeStack []*Node
 
-// pop pops the stack. It will panic if s is empty.
+
 func (s *nodeStack) pop() *Node {
 	i := len(*s)
 	n := (*s)[i-1]
@@ -164,7 +164,7 @@ func (s *nodeStack) pop() *Node {
 	return n
 }
 
-// top returns the most recently pushed node, or nil if s is empty.
+
 func (s *nodeStack) top() *Node {
 	if i := len(*s); i > 0 {
 		return (*s)[i-1]
@@ -172,8 +172,8 @@ func (s *nodeStack) top() *Node {
 	return nil
 }
 
-// index returns the index of the top-most occurrence of n in the stack, or -1
-// if n is not present.
+
+
 func (s *nodeStack) index(n *Node) int {
 	for i := len(*s) - 1; i >= 0; i-- {
 		if (*s)[i] == n {
@@ -183,7 +183,7 @@ func (s *nodeStack) index(n *Node) int {
 	return -1
 }
 
-// contains returns whether a is within s.
+
 func (s *nodeStack) contains(a atom.Atom) bool {
 	for _, n := range *s {
 		if n.DataAtom == a && n.Namespace == "" {
@@ -193,14 +193,14 @@ func (s *nodeStack) contains(a atom.Atom) bool {
 	return false
 }
 
-// insert inserts a node at the given index.
+
 func (s *nodeStack) insert(i int, n *Node) {
 	(*s) = append(*s, nil)
 	copy((*s)[i+1:], (*s)[i:])
 	(*s)[i] = n
 }
 
-// remove removes a node from the stack. It is a no-op if n is not present.
+
 func (s *nodeStack) remove(n *Node) {
 	i := s.index(n)
 	if i == -1 {

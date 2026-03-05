@@ -100,7 +100,7 @@
       }
     }
 
-    // ── Avatar Picker ────────────────────────────
+    
     .avatar-section {
       display: flex;
       flex-direction: column;
@@ -167,7 +167,7 @@
       }
     }
 
-    // ── Gender Select ────────────────────────────
+    
     .form-group {
       display: flex;
       flex-direction: column;
@@ -223,7 +223,7 @@
       }
     }
 
-    // ── Address Suggestions ──────────────────────
+    
     .suggestions-dropdown {
       position: absolute;
       top: 100%;
@@ -260,7 +260,7 @@
       padding: 0.25rem 0;
     }
 
-    // ── Role Cards ───────────────────────────────
+    
     .role-options {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -339,7 +339,7 @@
       }
     }
 
-    // ── Submit Section ───────────────────────────
+    
     .submit-section {
       grid-column: 1 / -1;
       display: flex;

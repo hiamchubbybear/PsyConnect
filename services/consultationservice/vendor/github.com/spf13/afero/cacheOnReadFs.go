@@ -6,19 +6,19 @@ import (
 	"time"
 )
 
-// If the cache duration is 0, cache time will be unlimited, i.e. once
-// a file is in the layer, the base will never be read again for this file.
-//
-// For cache times greater than 0, the modification time of a file is
-// checked. Note that a lot of file system implementations only allow a
-// resolution of a second for timestamps... or as the godoc for os.Chtimes()
-// states: "The underlying filesystem may truncate or round the values to a
-// less precise time unit."
-//
-// This caching union will forward all write calls also to the base file
-// system first. To prevent writing to the base Fs, wrap it in a read-only
-// filter - Note: this will also make the overlay read-only, for writing files
-// in the overlay, use the overlay Fs directly, not via the union Fs.
+
+
+
+
+
+
+
+
+
+
+
+
+
 type CacheOnReadFs struct {
 	base      Fs
 	layer     Fs
@@ -32,16 +32,16 @@ func NewCacheOnReadFs(base Fs, layer Fs, cacheTime time.Duration) Fs {
 type cacheState int
 
 const (
-	// not present in the overlay, unknown if it exists in the base:
+	
 	cacheMiss cacheState = iota
-	// present in the overlay and in base, base file is newer:
+	
 	cacheStale
-	// present in the overlay - with cache time == 0 it may exist in the base,
-	// with cacheTime > 0 it exists in the base and is same age or newer in the
-	// overlay
+	
+	
+	
 	cacheHit
-	// happens if someone writes directly to the overlay without
-	// going through this union
+	
+	
 	cacheLocal
 )
 
@@ -150,7 +150,7 @@ func (u *CacheOnReadFs) Stat(name string) (os.FileInfo, error) {
 	switch st {
 	case cacheMiss:
 		return u.base.Stat(name)
-	default: // cacheStale has base, cacheHit and cacheLocal the layer os.FileInfo
+	default: 
 		return fi, nil
 	}
 }
@@ -227,7 +227,7 @@ func (u *CacheOnReadFs) OpenFile(name string, flag int, perm os.FileMode) (File,
 		}
 		lfi, err := u.layer.OpenFile(name, flag, perm)
 		if err != nil {
-			bfi.Close() // oops, what if O_TRUNC was set and file opening in the layer failed...?
+			bfi.Close() 
 			return nil, err
 		}
 		return &UnionFile{Base: bfi, Layer: lfi}, nil
@@ -270,7 +270,7 @@ func (u *CacheOnReadFs) Open(name string) (File, error) {
 			return u.layer.Open(name)
 		}
 	}
-	// the dirs from cacheHit, cacheStale fall down here:
+	
 	bfile, _ := u.base.Open(name)
 	lfile, err := u.layer.Open(name)
 	if err != nil && bfile == nil {
@@ -284,7 +284,7 @@ func (u *CacheOnReadFs) Mkdir(name string, perm os.FileMode) error {
 	if err != nil {
 		return err
 	}
-	return u.layer.MkdirAll(name, perm) // yes, MkdirAll... we cannot assume it exists in the cache
+	return u.layer.MkdirAll(name, perm) 
 }
 
 func (u *CacheOnReadFs) Name() string {
@@ -306,8 +306,8 @@ func (u *CacheOnReadFs) Create(name string) (File, error) {
 	}
 	lfh, err := u.layer.Create(name)
 	if err != nil {
-		// oops, see comment about OS_TRUNC above, should we remove? then we have to
-		// remember if the file did not exist before
+		
+		
 		bfh.Close()
 		return nil, err
 	}

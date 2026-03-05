@@ -1,6 +1,6 @@
-// Copyright 2019 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package protojson
 
@@ -23,124 +23,124 @@ import (
 
 const defaultIndent = "  "
 
-// Format formats the message as a multiline string.
-// This function is only intended for human consumption and ignores errors.
-// Do not depend on the output being stable. Its output will change across
-// different builds of your program, even when using the same version of the
-// protobuf module.
+
+
+
+
+
 func Format(m proto.Message) string {
 	return MarshalOptions{Multiline: true}.Format(m)
 }
 
-// Marshal writes the given [proto.Message] in JSON format using default options.
-// Do not depend on the output being stable. Its output will change across
-// different builds of your program, even when using the same version of the
-// protobuf module.
+
+
+
+
 func Marshal(m proto.Message) ([]byte, error) {
 	return MarshalOptions{}.Marshal(m)
 }
 
-// MarshalOptions is a configurable JSON format marshaler.
+
 type MarshalOptions struct {
 	pragma.NoUnkeyedLiterals
 
-	// Multiline specifies whether the marshaler should format the output in
-	// indented-form with every textual element on a new line.
-	// If Indent is an empty string, then an arbitrary indent is chosen.
+	
+	
+	
 	Multiline bool
 
-	// Indent specifies the set of indentation characters to use in a multiline
-	// formatted output such that every entry is preceded by Indent and
-	// terminated by a newline. If non-empty, then Multiline is treated as true.
-	// Indent can only be composed of space or tab characters.
+	
+	
+	
+	
 	Indent string
 
-	// AllowPartial allows messages that have missing required fields to marshal
-	// without returning an error. If AllowPartial is false (the default),
-	// Marshal will return error if there are any missing required fields.
+	
+	
+	
 	AllowPartial bool
 
-	// UseProtoNames uses proto field name instead of lowerCamelCase name in JSON
-	// field names.
+	
+	
 	UseProtoNames bool
 
-	// UseEnumNumbers emits enum values as numbers.
+	
 	UseEnumNumbers bool
 
-	// EmitUnpopulated specifies whether to emit unpopulated fields. It does not
-	// emit unpopulated oneof fields or unpopulated extension fields.
-	// The JSON value emitted for unpopulated fields are as follows:
-	//  ╔═══════╤════════════════════════════╗
-	//  ║ JSON  │ Protobuf field             ║
-	//  ╠═══════╪════════════════════════════╣
-	//  ║ false │ proto3 boolean fields      ║
-	//  ║ 0     │ proto3 numeric fields      ║
-	//  ║ ""    │ proto3 string/bytes fields ║
-	//  ║ null  │ proto2 scalar fields       ║
-	//  ║ null  │ message fields             ║
-	//  ║ []    │ list fields                ║
-	//  ║ {}    │ map fields                 ║
-	//  ╚═══════╧════════════════════════════╝
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	EmitUnpopulated bool
 
-	// EmitDefaultValues specifies whether to emit default-valued primitive fields,
-	// empty lists, and empty maps. The fields affected are as follows:
-	//  ╔═══════╤════════════════════════════════════════╗
-	//  ║ JSON  │ Protobuf field                         ║
-	//  ╠═══════╪════════════════════════════════════════╣
-	//  ║ false │ non-optional scalar boolean fields     ║
-	//  ║ 0     │ non-optional scalar numeric fields     ║
-	//  ║ ""    │ non-optional scalar string/byte fields ║
-	//  ║ []    │ empty repeated fields                  ║
-	//  ║ {}    │ empty map fields                       ║
-	//  ╚═══════╧════════════════════════════════════════╝
-	//
-	// Behaves similarly to EmitUnpopulated, but does not emit "null"-value fields,
-	// i.e. presence-sensing fields that are omitted will remain omitted to preserve
-	// presence-sensing.
-	// EmitUnpopulated takes precedence over EmitDefaultValues since the former generates
-	// a strict superset of the latter.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	EmitDefaultValues bool
 
-	// Resolver is used for looking up types when expanding google.protobuf.Any
-	// messages. If nil, this defaults to using protoregistry.GlobalTypes.
+	
+	
 	Resolver interface {
 		protoregistry.ExtensionTypeResolver
 		protoregistry.MessageTypeResolver
 	}
 }
 
-// Format formats the message as a string.
-// This method is only intended for human consumption and ignores errors.
-// Do not depend on the output being stable. Its output will change across
-// different builds of your program, even when using the same version of the
-// protobuf module.
+
+
+
+
+
 func (o MarshalOptions) Format(m proto.Message) string {
 	if m == nil || !m.ProtoReflect().IsValid() {
-		return "<nil>" // invalid syntax, but okay since this is for debugging
+		return "<nil>" 
 	}
 	o.AllowPartial = true
 	b, _ := o.Marshal(m)
 	return string(b)
 }
 
-// Marshal marshals the given [proto.Message] in the JSON format using options in
-// Do not depend on the output being stable. Its output will change across
-// different builds of your program, even when using the same version of the
-// protobuf module.
+
+
+
+
 func (o MarshalOptions) Marshal(m proto.Message) ([]byte, error) {
 	return o.marshal(nil, m)
 }
 
-// MarshalAppend appends the JSON format encoding of m to b,
-// returning the result.
+
+
 func (o MarshalOptions) MarshalAppend(b []byte, m proto.Message) ([]byte, error) {
 	return o.marshal(b, m)
 }
 
-// marshal is a centralized function that all marshal operations go through.
-// For profiling purposes, avoid changing the name of this function or
-// introducing other code paths for marshal that do not go through this.
+
+
+
 func (o MarshalOptions) marshal(b []byte, m proto.Message) ([]byte, error) {
 	if o.Multiline && o.Indent == "" {
 		o.Indent = defaultIndent
@@ -154,8 +154,8 @@ func (o MarshalOptions) marshal(b []byte, m proto.Message) ([]byte, error) {
 		return nil, err
 	}
 
-	// Treat nil message interface as an empty message,
-	// in which case the output in an empty JSON object.
+	
+	
 	if m == nil {
 		return append(b, '{', '}'), nil
 	}
@@ -175,7 +175,7 @@ type encoder struct {
 	opts MarshalOptions
 }
 
-// typeFieldDesc is a synthetic field descriptor used for the "@type" field.
+
 var typeFieldDesc = func() protoreflect.FieldDescriptor {
 	var fd filedesc.Field
 	fd.L0.FullName = "@type"
@@ -185,8 +185,8 @@ var typeFieldDesc = func() protoreflect.FieldDescriptor {
 	return &fd
 }()
 
-// typeURLFieldRanger wraps a protoreflect.Message and modifies its Range method
-// to additionally iterate over a synthetic field for the type URL.
+
+
 type typeURLFieldRanger struct {
 	order.FieldRanger
 	typeURL string
@@ -199,8 +199,8 @@ func (m typeURLFieldRanger) Range(f func(protoreflect.FieldDescriptor, protorefl
 	m.FieldRanger.Range(f)
 }
 
-// unpopulatedFieldRanger wraps a protoreflect.Message and modifies its Range
-// method to additionally iterate over unpopulated fields.
+
+
 type unpopulatedFieldRanger struct {
 	protoreflect.Message
 
@@ -212,7 +212,7 @@ func (m unpopulatedFieldRanger) Range(f func(protoreflect.FieldDescriptor, proto
 	for i := 0; i < fds.Len(); i++ {
 		fd := fds.Get(i)
 		if m.Has(fd) || fd.ContainingOneof() != nil {
-			continue // ignore populated fields and fields within a oneofs
+			continue 
 		}
 
 		v := m.Get(fd)
@@ -220,7 +220,7 @@ func (m unpopulatedFieldRanger) Range(f func(protoreflect.FieldDescriptor, proto
 			if m.skipNull {
 				continue
 			}
-			v = protoreflect.Value{} // use invalid value to emit null
+			v = protoreflect.Value{} 
 		}
 		if !f(fd, v) {
 			return
@@ -229,9 +229,9 @@ func (m unpopulatedFieldRanger) Range(f func(protoreflect.FieldDescriptor, proto
 	m.Message.Range(f)
 }
 
-// marshalMessage marshals the fields in the given protoreflect.Message.
-// If the typeURL is non-empty, then a synthetic "@type" field is injected
-// containing the URL as the value.
+
+
+
 func (e encoder) marshalMessage(m protoreflect.Message, typeURL string) error {
 	if !flags.ProtoLegacy && messageset.IsMessageSet(m.Descriptor()) {
 		return errors.New("no support for proto1 MessageSets")
@@ -273,7 +273,7 @@ func (e encoder) marshalMessage(m protoreflect.Message, typeURL string) error {
 	return err
 }
 
-// marshalValue marshals the given protoreflect.Value.
+
 func (e encoder) marshalValue(val protoreflect.Value, fd protoreflect.FieldDescriptor) error {
 	switch {
 	case fd.IsList():
@@ -285,8 +285,8 @@ func (e encoder) marshalValue(val protoreflect.Value, fd protoreflect.FieldDescr
 	}
 }
 
-// marshalSingular marshals the given non-repeated field value. This includes
-// all scalar types, enums, messages, and groups.
+
+
 func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDescriptor) error {
 	if !val.IsValid() {
 		e.WriteNull()
@@ -310,15 +310,15 @@ func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDe
 
 	case protoreflect.Int64Kind, protoreflect.Sint64Kind, protoreflect.Uint64Kind,
 		protoreflect.Sfixed64Kind, protoreflect.Fixed64Kind:
-		// 64-bit integers are written out as JSON string.
+		
 		e.WriteString(val.String())
 
 	case protoreflect.FloatKind:
-		// Encoder.WriteFloat handles the special numbers NaN and infinites.
+		
 		e.WriteFloat(val.Float(), 32)
 
 	case protoreflect.DoubleKind:
-		// Encoder.WriteFloat handles the special numbers NaN and infinites.
+		
 		e.WriteFloat(val.Float(), 64)
 
 	case protoreflect.BytesKind:
@@ -347,7 +347,7 @@ func (e encoder) marshalSingular(val protoreflect.Value, fd protoreflect.FieldDe
 	return nil
 }
 
-// marshalList marshals the given protoreflect.List.
+
 func (e encoder) marshalList(list protoreflect.List, fd protoreflect.FieldDescriptor) error {
 	e.StartArray()
 	defer e.EndArray()
@@ -361,7 +361,7 @@ func (e encoder) marshalList(list protoreflect.List, fd protoreflect.FieldDescri
 	return nil
 }
 
-// marshalMap marshals given protoreflect.Map.
+
 func (e encoder) marshalMap(mmap protoreflect.Map, fd protoreflect.FieldDescriptor) error {
 	e.StartObject()
 	defer e.EndObject()

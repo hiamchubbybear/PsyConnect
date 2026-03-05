@@ -13,7 +13,7 @@ type ptrStrDecoder struct {
 	deref decFunc
 }
 
-// Pointer Value is allocated in the Caller
+
 func (d *ptrStrDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error {
 	if node.IsNull() {
 		*(*unsafe.Pointer)(vp) = nil
@@ -302,7 +302,7 @@ func (d *f64StringDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) e
 	return nil
 }
 
-/* parse string field with string options */
+
 type strStringDecoder struct{}
 
 func (d *strStringDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context) error {
@@ -350,7 +350,7 @@ func (d *numberStringDecoder) FromDom(vp unsafe.Pointer, node Node, ctx *context
 	}
 
 	end, ok := SkipNumberFast(s, 0)
-	// has error or trailing chars
+	
 	if !ok || end != len(s) {
 		return error_mismatch(node, ctx, jsonNumberType)
 	}

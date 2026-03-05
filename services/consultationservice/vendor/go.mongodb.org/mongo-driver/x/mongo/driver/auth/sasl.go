@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package auth
 
@@ -16,26 +16,26 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/operation"
 )
 
-// SaslClient is the client piece of a sasl conversation.
+
 type SaslClient interface {
 	Start() (string, []byte, error)
 	Next(ctx context.Context, challenge []byte) ([]byte, error)
 	Completed() bool
 }
 
-// SaslClientCloser is a SaslClient that has resources to clean up.
+
 type SaslClientCloser interface {
 	SaslClient
 	Close()
 }
 
-// ExtraOptionsSaslClient is a SaslClient that appends options to the saslStart command.
+
 type ExtraOptionsSaslClient interface {
 	StartCommandOptions() bsoncore.Document
 }
 
-// saslConversation represents a SASL conversation. This type implements the SpeculativeConversation interface so the
-// conversation can be executed in multi-step speculative fashion.
+
+
 type saslConversation struct {
 	client      SaslClient
 	source      string
@@ -57,8 +57,8 @@ func newSaslConversation(client SaslClient, source string, speculative bool) *sa
 	}
 }
 
-// FirstMessage returns the first message to be sent to the server. This message contains a "db" field so it can be used
-// for speculative authentication.
+
+
 func (sc *saslConversation) FirstMessage() (bsoncore.Document, error) {
 	var payload []byte
 	var err error
@@ -73,9 +73,9 @@ func (sc *saslConversation) FirstMessage() (bsoncore.Document, error) {
 		bsoncore.AppendBinaryElement(nil, "payload", 0x00, payload),
 	}
 	if sc.speculative {
-		// The "db" field is only appended for speculative auth because the hello command is executed against admin
-		// so this is needed to tell the server the user's auth source. For a non-speculative attempt, the SASL commands
-		// will be executed against the auth source.
+		
+		
+		
 		saslCmdElements = append(saslCmdElements, bsoncore.AppendStringElement(nil, "db", sc.source))
 	}
 	if extraOptionsClient, ok := sc.client.(ExtraOptionsSaslClient); ok {
@@ -93,7 +93,7 @@ type saslResponse struct {
 	Payload        []byte `bson:"payload"`
 }
 
-// Finish completes the conversation based on the first server response to authenticate the given connection.
+
 func (sc *saslConversation) Finish(ctx context.Context, cfg *Config, firstResponse bsoncore.Document) error {
 	if closer, ok := sc.client.(SaslClientCloser); ok {
 		defer closer.Close()
@@ -152,9 +152,9 @@ func (sc *saslConversation) Finish(ctx context.Context, cfg *Config, firstRespon
 	}
 }
 
-// ConductSaslConversation runs a full SASL conversation to authenticate the given connection.
+
 func ConductSaslConversation(ctx context.Context, cfg *Config, authSource string, client SaslClient) error {
-	// Create a non-speculative SASL conversation.
+	
 	conversation := newSaslConversation(client, authSource, false)
 	saslStartDoc, err := conversation.FirstMessage()
 	if err != nil {

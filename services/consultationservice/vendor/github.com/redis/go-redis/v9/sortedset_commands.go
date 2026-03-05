@@ -64,7 +64,7 @@ type SortedSetCmdable interface {
 	ZScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd
 }
 
-// BZPopMax Redis `BZPOPMAX key [key ...] timeout` command.
+
 func (c cmdable) BZPopMax(ctx context.Context, timeout time.Duration, keys ...string) *ZWithKeyCmd {
 	args := make([]interface{}, 1+len(keys)+1)
 	args[0] = "bzpopmax"
@@ -78,7 +78,7 @@ func (c cmdable) BZPopMax(ctx context.Context, timeout time.Duration, keys ...st
 	return cmd
 }
 
-// BZPopMin Redis `BZPOPMIN key [key ...] timeout` command.
+
 func (c cmdable) BZPopMin(ctx context.Context, timeout time.Duration, keys ...string) *ZWithKeyCmd {
 	args := make([]interface{}, 1+len(keys)+1)
 	args[0] = "bzpopmin"
@@ -92,11 +92,11 @@ func (c cmdable) BZPopMin(ctx context.Context, timeout time.Duration, keys ...st
 	return cmd
 }
 
-// BZMPop is the blocking variant of ZMPOP.
-// When any of the sorted sets contains elements, this command behaves exactly like ZMPOP.
-// When all sorted sets are empty, Redis will block the connection until another client adds members to one of the keys or until the timeout elapses.
-// A timeout of zero can be used to block indefinitely.
-// example: client.BZMPop(ctx, 0,"max", 1, "set")
+
+
+
+
+
 func (c cmdable) BZMPop(ctx context.Context, timeout time.Duration, order string, count int64, keys ...string) *ZSliceWithKeyCmd {
 	args := make([]interface{}, 3+len(keys), 6+len(keys))
 	args[0] = "bzmpop"
@@ -112,7 +112,7 @@ func (c cmdable) BZMPop(ctx context.Context, timeout time.Duration, order string
 	return cmd
 }
 
-// ZAddArgs WARN: The GT, LT and NX options are mutually exclusive.
+
 type ZAddArgs struct {
 	NX      bool
 	XX      bool
@@ -126,7 +126,7 @@ func (c cmdable) zAddArgs(key string, args ZAddArgs, incr bool) []interface{} {
 	a := make([]interface{}, 0, 6+2*len(args.Members))
 	a = append(a, "zadd", key)
 
-	// The GT, LT and NX options are mutually exclusive.
+	
 	if args.NX {
 		a = append(a, "nx")
 	} else {
@@ -164,14 +164,14 @@ func (c cmdable) ZAddArgsIncr(ctx context.Context, key string, args ZAddArgs) *F
 	return cmd
 }
 
-// ZAdd Redis `ZADD key score member [score member ...]` command.
+
 func (c cmdable) ZAdd(ctx context.Context, key string, members ...Z) *IntCmd {
 	return c.ZAddArgs(ctx, key, ZAddArgs{
 		Members: members,
 	})
 }
 
-// ZAddLT Redis `ZADD key LT score member [score member ...]` command.
+
 func (c cmdable) ZAddLT(ctx context.Context, key string, members ...Z) *IntCmd {
 	return c.ZAddArgs(ctx, key, ZAddArgs{
 		LT:      true,
@@ -179,7 +179,7 @@ func (c cmdable) ZAddLT(ctx context.Context, key string, members ...Z) *IntCmd {
 	})
 }
 
-// ZAddGT Redis `ZADD key GT score member [score member ...]` command.
+
 func (c cmdable) ZAddGT(ctx context.Context, key string, members ...Z) *IntCmd {
 	return c.ZAddArgs(ctx, key, ZAddArgs{
 		GT:      true,
@@ -187,7 +187,7 @@ func (c cmdable) ZAddGT(ctx context.Context, key string, members ...Z) *IntCmd {
 	})
 }
 
-// ZAddNX Redis `ZADD key NX score member [score member ...]` command.
+
 func (c cmdable) ZAddNX(ctx context.Context, key string, members ...Z) *IntCmd {
 	return c.ZAddArgs(ctx, key, ZAddArgs{
 		NX:      true,
@@ -195,7 +195,7 @@ func (c cmdable) ZAddNX(ctx context.Context, key string, members ...Z) *IntCmd {
 	})
 }
 
-// ZAddXX Redis `ZADD key XX score member [score member ...]` command.
+
 func (c cmdable) ZAddXX(ctx context.Context, key string, members ...Z) *IntCmd {
 	return c.ZAddArgs(ctx, key, ZAddArgs{
 		XX:      true,
@@ -273,9 +273,9 @@ func (c cmdable) ZInterCard(ctx context.Context, limit int64, keys ...string) *I
 	return cmd
 }
 
-// ZMPop Pops one or more elements with the highest or lowest score from the first non-empty sorted set key from the list of provided key names.
-// direction: "max" (highest score) or "min" (lowest score), count: > 0
-// example: client.ZMPop(ctx, "max", 5, "set1", "set2")
+
+
+
 func (c cmdable) ZMPop(ctx context.Context, order string, count int64, keys ...string) *ZSliceWithKeyCmd {
 	args := make([]interface{}, 2+len(keys), 5+len(keys))
 	args[0] = "zmpop"
@@ -341,61 +341,61 @@ func (c cmdable) ZPopMin(ctx context.Context, key string, count ...int64) *ZSlic
 	return cmd
 }
 
-// ZRangeArgs is all the options of the ZRange command.
-// In version> 6.2.0, you can replace the(cmd):
-//
-//	ZREVRANGE,
-//	ZRANGEBYSCORE,
-//	ZREVRANGEBYSCORE,
-//	ZRANGEBYLEX,
-//	ZREVRANGEBYLEX.
-//
-// Please pay attention to your redis-server version.
-//
-// Rev, ByScore, ByLex and Offset+Count options require redis-server 6.2.0 and higher.
+
+
+
+
+
+
+
+
+
+
+
+
 type ZRangeArgs struct {
 	Key string
 
-	// When the ByScore option is provided, the open interval(exclusive) can be set.
-	// By default, the score intervals specified by <Start> and <Stop> are closed (inclusive).
-	// It is similar to the deprecated(6.2.0+) ZRangeByScore command.
-	// For example:
-	//		ZRangeArgs{
-	//			Key: 				"example-key",
-	//	 		Start: 				"(3",
-	//	 		Stop: 				8,
-	//			ByScore:			true,
-	//	 	}
-	// 	 	cmd: "ZRange example-key (3 8 ByScore"  (3 < score <= 8).
-	//
-	// For the ByLex option, it is similar to the deprecated(6.2.0+) ZRangeByLex command.
-	// You can set the <Start> and <Stop> options as follows:
-	//		ZRangeArgs{
-	//			Key: 				"example-key",
-	//	 		Start: 				"[abc",
-	//	 		Stop: 				"(def",
-	//			ByLex:				true,
-	//	 	}
-	//		cmd: "ZRange example-key [abc (def ByLex"
-	//
-	// For normal cases (ByScore==false && ByLex==false), <Start> and <Stop> should be set to the index range (int).
-	// You can read the documentation for more information: https://redis.io/commands/zrange
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	Start interface{}
 	Stop  interface{}
 
-	// The ByScore and ByLex options are mutually exclusive.
+	
 	ByScore bool
 	ByLex   bool
 
 	Rev bool
 
-	// limit offset count.
+	
 	Offset int64
 	Count  int64
 }
 
 func (z ZRangeArgs) appendArgs(args []interface{}) []interface{} {
-	// For Rev+ByScore/ByLex, we need to adjust the position of <Start> and <Stop>.
+	
 	if z.Rev && (z.ByScore || z.ByLex) {
 		args = append(args, z.Key, z.Stop, z.Start)
 	} else {
@@ -512,8 +512,8 @@ func (c cmdable) ZRank(ctx context.Context, key, member string) *IntCmd {
 	return cmd
 }
 
-// ZRankWithScore according to the Redis documentation, if member does not exist
-// in the sorted set or key does not exist, it will return a redis.Nil error.
+
+
 func (c cmdable) ZRankWithScore(ctx context.Context, key, member string) *RankWithScoreCmd {
 	cmd := NewRankWithScoreCmd(ctx, "zrank", key, member, "withscore")
 	_ = c(ctx, cmd)
@@ -560,8 +560,8 @@ func (c cmdable) ZRevRange(ctx context.Context, key string, start, stop int64) *
 	return cmd
 }
 
-// ZRevRangeWithScores according to the Redis documentation, if member does not exist
-// in the sorted set or key does not exist, it will return a redis.Nil error.
+
+
 func (c cmdable) ZRevRangeWithScores(ctx context.Context, key string, start, stop int64) *ZSliceCmd {
 	cmd := NewZSliceCmd(ctx, "zrevrange", key, start, stop, "withscores")
 	_ = c(ctx, cmd)
@@ -655,21 +655,21 @@ func (c cmdable) ZUnionStore(ctx context.Context, dest string, store *ZStore) *I
 	return cmd
 }
 
-// ZRandMember redis-server version >= 6.2.0.
+
 func (c cmdable) ZRandMember(ctx context.Context, key string, count int) *StringSliceCmd {
 	cmd := NewStringSliceCmd(ctx, "zrandmember", key, count)
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// ZRandMemberWithScores redis-server version >= 6.2.0.
+
 func (c cmdable) ZRandMemberWithScores(ctx context.Context, key string, count int) *ZSliceCmd {
 	cmd := NewZSliceCmd(ctx, "zrandmember", key, count, "withscores")
 	_ = c(ctx, cmd)
 	return cmd
 }
 
-// ZDiff redis-server version >= 6.2.0.
+
 func (c cmdable) ZDiff(ctx context.Context, keys ...string) *StringSliceCmd {
 	args := make([]interface{}, 2+len(keys))
 	args[0] = "zdiff"
@@ -684,7 +684,7 @@ func (c cmdable) ZDiff(ctx context.Context, keys ...string) *StringSliceCmd {
 	return cmd
 }
 
-// ZDiffWithScores redis-server version >= 6.2.0.
+
 func (c cmdable) ZDiffWithScores(ctx context.Context, keys ...string) *ZSliceCmd {
 	args := make([]interface{}, 3+len(keys))
 	args[0] = "zdiff"
@@ -700,7 +700,7 @@ func (c cmdable) ZDiffWithScores(ctx context.Context, keys ...string) *ZSliceCmd
 	return cmd
 }
 
-// ZDiffStore redis-server version >=6.2.0.
+
 func (c cmdable) ZDiffStore(ctx context.Context, destination string, keys ...string) *IntCmd {
 	args := make([]interface{}, 0, 3+len(keys))
 	args = append(args, "zdiffstore", destination, len(keys))
@@ -728,23 +728,23 @@ func (c cmdable) ZScan(ctx context.Context, key string, cursor uint64, match str
 	return cmd
 }
 
-// Z represents sorted set member.
+
 type Z struct {
 	Score  float64
 	Member interface{}
 }
 
-// ZWithKey represents sorted set member including the name of the key where it was popped.
+
 type ZWithKey struct {
 	Z
 	Key string
 }
 
-// ZStore is used as an arg to ZInter/ZInterStore and ZUnion/ZUnionStore.
+
 type ZStore struct {
 	Keys    []string
 	Weights []float64
-	// Can be SUM, MIN or MAX.
+	
 	Aggregate string
 }
 

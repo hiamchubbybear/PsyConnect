@@ -8,6 +8,27 @@
   </nav>
 
   <div class="header-right">
+    <button
+      class="search-btn"
+      *ngIf="isFeedRoute"
+      (click)="toggleSearch(); $event.stopPropagation()"
+      [attr.aria-label]="'HEADER.Search' | translate"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </button>
+
     <app-dropdown
       [options]="languageOptions"
       [placeholder]="displayLang"
@@ -50,7 +71,7 @@
     <ng-container *ngIf="auth.isLoggedIn(); else guest">
       <app-notification-dropdown></app-notification-dropdown>
       <app-avatar-menu
-        [userAvatarUrl]="userAvatarUrl | avatarFallback:userProfileId"
+        [userAvatarUrl]="userAvatarUrl | avatarFallback: userProfileId"
         [userName]="userName"
         (logoutClicked)="logout()"
       ></app-avatar-menu>
@@ -75,7 +96,7 @@
 
     <ng-container *ngIf="auth.isLoggedIn(); else guestMobile">
       <app-avatar-menu
-        [userAvatarUrl]="userAvatarUrl | avatarFallback:userProfileId"
+        [userAvatarUrl]="userAvatarUrl | avatarFallback: userProfileId"
         [userName]="userName"
         (logoutClicked)="logout()"
       ></app-avatar-menu>

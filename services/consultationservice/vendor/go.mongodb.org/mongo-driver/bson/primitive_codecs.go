@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bson
 
@@ -20,18 +20,18 @@ var tRaw = reflect.TypeOf(Raw(nil))
 
 var primitiveCodecs PrimitiveCodecs
 
-// PrimitiveCodecs is a namespace for all of the default bsoncodec.Codecs for the primitive types
-// defined in this package.
-//
-// Deprecated: Use bson.NewRegistry to get a registry with all primitive encoders and decoders
-// registered.
+
+
+
+
+
 type PrimitiveCodecs struct{}
 
-// RegisterPrimitiveCodecs will register the encode and decode methods attached to PrimitiveCodecs
-// with the provided RegistryBuilder. if rb is nil, a new empty RegistryBuilder will be created.
-//
-// Deprecated: Use bson.NewRegistry to get a registry with all primitive encoders and decoders
-// registered.
+
+
+
+
+
 func (pc PrimitiveCodecs) RegisterPrimitiveCodecs(rb *bsoncodec.RegistryBuilder) {
 	if rb == nil {
 		panic(errors.New("argument to RegisterPrimitiveCodecs must not be nil"))
@@ -44,13 +44,13 @@ func (pc PrimitiveCodecs) RegisterPrimitiveCodecs(rb *bsoncodec.RegistryBuilder)
 		RegisterTypeDecoder(tRaw, bsoncodec.ValueDecoderFunc(pc.RawDecodeValue))
 }
 
-// RawValueEncodeValue is the ValueEncoderFunc for RawValue.
-//
-// If the RawValue's Type is "invalid" and the RawValue's Value is not empty or
-// nil, then this method will return an error.
-//
-// Deprecated: Use bson.NewRegistry to get a registry with all primitive
-// encoders and decoders registered.
+
+
+
+
+
+
+
 func (PrimitiveCodecs) RawValueEncodeValue(_ bsoncodec.EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tRawValue {
 		return bsoncodec.ValueEncoderError{
@@ -69,10 +69,10 @@ func (PrimitiveCodecs) RawValueEncodeValue(_ bsoncodec.EncodeContext, vw bsonrw.
 	return bsonrw.Copier{}.CopyValueFromBytes(vw, rawvalue.Type, rawvalue.Value)
 }
 
-// RawValueDecodeValue is the ValueDecoderFunc for RawValue.
-//
-// Deprecated: Use bson.NewRegistry to get a registry with all primitive encoders and decoders
-// registered.
+
+
+
+
 func (PrimitiveCodecs) RawValueDecodeValue(_ bsoncodec.DecodeContext, vr bsonrw.ValueReader, val reflect.Value) error {
 	if !val.CanSet() || val.Type() != tRawValue {
 		return bsoncodec.ValueDecoderError{Name: "RawValueDecodeValue", Types: []reflect.Type{tRawValue}, Received: val}
@@ -87,10 +87,10 @@ func (PrimitiveCodecs) RawValueDecodeValue(_ bsoncodec.DecodeContext, vr bsonrw.
 	return nil
 }
 
-// RawEncodeValue is the ValueEncoderFunc for Reader.
-//
-// Deprecated: Use bson.NewRegistry to get a registry with all primitive encoders and decoders
-// registered.
+
+
+
+
 func (PrimitiveCodecs) RawEncodeValue(_ bsoncodec.EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
 	if !val.IsValid() || val.Type() != tRaw {
 		return bsoncodec.ValueEncoderError{Name: "RawEncodeValue", Types: []reflect.Type{tRaw}, Received: val}
@@ -101,10 +101,10 @@ func (PrimitiveCodecs) RawEncodeValue(_ bsoncodec.EncodeContext, vw bsonrw.Value
 	return bsonrw.Copier{}.CopyDocumentFromBytes(vw, rdr)
 }
 
-// RawDecodeValue is the ValueDecoderFunc for Reader.
-//
-// Deprecated: Use bson.NewRegistry to get a registry with all primitive encoders and decoders
-// registered.
+
+
+
+
 func (PrimitiveCodecs) RawDecodeValue(_ bsoncodec.DecodeContext, vr bsonrw.ValueReader, val reflect.Value) error {
 	if !val.CanSet() || val.Type() != tRaw {
 		return bsoncodec.ValueDecoderError{Name: "RawDecodeValue", Types: []reflect.Type{tRaw}, Received: val}

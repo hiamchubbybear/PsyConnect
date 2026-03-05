@@ -8,37 +8,37 @@ import (
 	"github.com/segmentio/kafka-go/protocol/electleaders"
 )
 
-// ElectLeadersRequest is a request to the ElectLeaders API.
+
 type ElectLeadersRequest struct {
-	// Addr is the address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// Topic is the name of the topic to do the leader elections in.
+	
 	Topic string
 
-	// Partitions is the list of partitions to run leader elections for.
+	
 	Partitions []int
 
-	// Timeout is the amount of time to wait for the election to run.
+	
 	Timeout time.Duration
 }
 
-// ElectLeadersResponse is a response from the ElectLeaders API.
+
 type ElectLeadersResponse struct {
-	// ErrorCode is set to a non-nil value if a top-level error occurred.
+	
 	Error error
 
-	// PartitionResults contains the results for each partition leader election.
+	
 	PartitionResults []ElectLeadersResponsePartitionResult
 }
 
-// ElectLeadersResponsePartitionResult contains the response details for a single partition.
+
 type ElectLeadersResponsePartitionResult struct {
-	// Partition is the ID of the partition.
+	
 	Partition int
 
-	// Error is set to a non-nil value if an error occurred electing leaders
-	// for this partition.
+	
+	
 	Error error
 }
 

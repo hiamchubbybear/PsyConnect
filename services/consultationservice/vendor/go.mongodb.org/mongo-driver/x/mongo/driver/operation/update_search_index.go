@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2023-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -19,7 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// UpdateSearchIndex performs a updateSearchIndex operation.
+
 type UpdateSearchIndex struct {
 	authenticator driver.Authenticator
 	index         string
@@ -37,7 +37,7 @@ type UpdateSearchIndex struct {
 	timeout       *time.Duration
 }
 
-// UpdateSearchIndexResult represents a single index in the updateSearchIndexResult result.
+
 type UpdateSearchIndexResult struct {
 	Ok int32
 }
@@ -60,7 +60,7 @@ func buildUpdateSearchIndexResult(response bsoncore.Document) (UpdateSearchIndex
 	return usir, nil
 }
 
-// NewUpdateSearchIndex constructs and returns a new UpdateSearchIndex.
+
 func NewUpdateSearchIndex(index string, definition bsoncore.Document) *UpdateSearchIndex {
 	return &UpdateSearchIndex{
 		index:      index,
@@ -68,7 +68,7 @@ func NewUpdateSearchIndex(index string, definition bsoncore.Document) *UpdateSea
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (usi *UpdateSearchIndex) Result() UpdateSearchIndexResult { return usi.result }
 
 func (usi *UpdateSearchIndex) processResponse(info driver.ResponseInfo) error {
@@ -77,7 +77,7 @@ func (usi *UpdateSearchIndex) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (usi *UpdateSearchIndex) Execute(ctx context.Context) error {
 	if usi.deployment == nil {
 		return errors.New("the UpdateSearchIndex operation must have a Deployment set before Execute can be called")
@@ -107,7 +107,7 @@ func (usi *UpdateSearchIndex) command(dst []byte, _ description.SelectedServer) 
 	return dst, nil
 }
 
-// Index specifies the index of the document being updated.
+
 func (usi *UpdateSearchIndex) Index(name string) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -117,7 +117,7 @@ func (usi *UpdateSearchIndex) Index(name string) *UpdateSearchIndex {
 	return usi
 }
 
-// Definition specifies the definition for the document being created.
+
 func (usi *UpdateSearchIndex) Definition(definition bsoncore.Document) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -127,7 +127,7 @@ func (usi *UpdateSearchIndex) Definition(definition bsoncore.Document) *UpdateSe
 	return usi
 }
 
-// Session sets the session for this operation.
+
 func (usi *UpdateSearchIndex) Session(session *session.Client) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -137,7 +137,7 @@ func (usi *UpdateSearchIndex) Session(session *session.Client) *UpdateSearchInde
 	return usi
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (usi *UpdateSearchIndex) ClusterClock(clock *session.ClusterClock) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -147,7 +147,7 @@ func (usi *UpdateSearchIndex) ClusterClock(clock *session.ClusterClock) *UpdateS
 	return usi
 }
 
-// Collection sets the collection that this command will run against.
+
 func (usi *UpdateSearchIndex) Collection(collection string) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -157,7 +157,7 @@ func (usi *UpdateSearchIndex) Collection(collection string) *UpdateSearchIndex {
 	return usi
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (usi *UpdateSearchIndex) CommandMonitor(monitor *event.CommandMonitor) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -167,7 +167,7 @@ func (usi *UpdateSearchIndex) CommandMonitor(monitor *event.CommandMonitor) *Upd
 	return usi
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (usi *UpdateSearchIndex) Crypt(crypt driver.Crypt) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -177,7 +177,7 @@ func (usi *UpdateSearchIndex) Crypt(crypt driver.Crypt) *UpdateSearchIndex {
 	return usi
 }
 
-// Database sets the database to run this operation against.
+
 func (usi *UpdateSearchIndex) Database(database string) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -187,7 +187,7 @@ func (usi *UpdateSearchIndex) Database(database string) *UpdateSearchIndex {
 	return usi
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (usi *UpdateSearchIndex) Deployment(deployment driver.Deployment) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -197,7 +197,7 @@ func (usi *UpdateSearchIndex) Deployment(deployment driver.Deployment) *UpdateSe
 	return usi
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (usi *UpdateSearchIndex) ServerSelector(selector description.ServerSelector) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -207,7 +207,7 @@ func (usi *UpdateSearchIndex) ServerSelector(selector description.ServerSelector
 	return usi
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (usi *UpdateSearchIndex) ServerAPI(serverAPI *driver.ServerAPIOptions) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -217,7 +217,7 @@ func (usi *UpdateSearchIndex) ServerAPI(serverAPI *driver.ServerAPIOptions) *Upd
 	return usi
 }
 
-// Timeout sets the timeout for this operation.
+
 func (usi *UpdateSearchIndex) Timeout(timeout *time.Duration) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)
@@ -227,7 +227,7 @@ func (usi *UpdateSearchIndex) Timeout(timeout *time.Duration) *UpdateSearchIndex
 	return usi
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (usi *UpdateSearchIndex) Authenticator(authenticator driver.Authenticator) *UpdateSearchIndex {
 	if usi == nil {
 		usi = new(UpdateSearchIndex)

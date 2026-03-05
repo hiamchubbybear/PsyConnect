@@ -9,25 +9,25 @@ import (
 	"github.com/segmentio/kafka-go/protocol/alteruserscramcredentials"
 )
 
-// AlterUserScramCredentialsRequest represents a request sent to a kafka broker to
-// alter user scram credentials.
+
+
 type AlterUserScramCredentialsRequest struct {
-	// Address of the kafka broker to send the request to.
+	
 	Addr net.Addr
 
-	// List of credentials to delete.
+	
 	Deletions []UserScramCredentialsDeletion
 
-	// List of credentials to upsert.
+	
 	Upsertions []UserScramCredentialsUpsertion
 }
 
 type ScramMechanism int8
 
 const (
-	ScramMechanismUnknown ScramMechanism = iota // 0
-	ScramMechanismSha256                        // 1
-	ScramMechanismSha512                        // 2
+	ScramMechanismUnknown ScramMechanism = iota 
+	ScramMechanismSha256                        
+	ScramMechanismSha512                        
 )
 
 type UserScramCredentialsDeletion struct {
@@ -43,13 +43,13 @@ type UserScramCredentialsUpsertion struct {
 	SaltedPassword []byte
 }
 
-// AlterUserScramCredentialsResponse represents a response from a kafka broker to an alter user
-// credentials request.
+
+
 type AlterUserScramCredentialsResponse struct {
-	// The amount of time that the broker throttled the request.
+	
 	Throttle time.Duration
 
-	// List of altered user scram credentials.
+	
 	Results []AlterUserScramCredentialsResponseUser
 }
 
@@ -58,8 +58,8 @@ type AlterUserScramCredentialsResponseUser struct {
 	Error error
 }
 
-// AlterUserScramCredentials sends user scram credentials alteration request to a kafka broker and returns
-// the response.
+
+
 func (c *Client) AlterUserScramCredentials(ctx context.Context, req *AlterUserScramCredentialsRequest) (*AlterUserScramCredentialsResponse, error) {
 	deletions := make([]alteruserscramcredentials.RequestUserScramCredentialsDeletion, len(req.Deletions))
 	upsertions := make([]alteruserscramcredentials.RequestUserScramCredentialsUpsertion, len(req.Upsertions))

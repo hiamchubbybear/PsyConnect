@@ -1,32 +1,32 @@
-// Inferno utils/6c/list.c
-// https://bitbucket.org/inferno-os/inferno-os/src/master/utils/6c/list.c
-//
-//	Copyright © 1994-1999 Lucent Technologies Inc.  All rights reserved.
-//	Portions Copyright © 1995-1997 C H Forsyth (forsyth@terzarima.net)
-//	Portions Copyright © 1997-1999 Vita Nuova Limited
-//	Portions Copyright © 2000-2007 Vita Nuova Holdings Limited (www.vitanuova.com)
-//	Portions Copyright © 2004,2006 Bruce Ellis
-//	Portions Copyright © 2005-2007 C H Forsyth (forsyth@terzarima.net)
-//	Revisions Copyright © 2000-2007 Lucent Technologies Inc. and others
-//	Portions Copyright © 2009 The Go Authors. All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package x86
 
@@ -36,7 +36,7 @@ import (
 )
 
 var Register = []string{
-	"AL", // [D_AL]
+	"AL", 
 	"CL",
 	"DL",
 	"BL",
@@ -52,7 +52,7 @@ var Register = []string{
 	"R13B",
 	"R14B",
 	"R15B",
-	"AX", // [D_AX]
+	"AX", 
 	"CX",
 	"DX",
 	"BX",
@@ -72,7 +72,7 @@ var Register = []string{
 	"CH",
 	"DH",
 	"BH",
-	"F0", // [D_F0]
+	"F0", 
 	"F1",
 	"F2",
 	"F3",
@@ -192,18 +192,18 @@ var Register = []string{
 	"Z29",
 	"Z30",
 	"Z31",
-	"CS", // [D_CS]
+	"CS", 
 	"SS",
 	"DS",
 	"ES",
 	"FS",
 	"GS",
-	"GDTR", // [D_GDTR]
-	"IDTR", // [D_IDTR]
-	"LDTR", // [D_LDTR]
-	"MSW",  // [D_MSW]
-	"TASK", // [D_TASK]
-	"CR0",  // [D_CR]
+	"GDTR", 
+	"IDTR", 
+	"LDTR", 
+	"MSW",  
+	"TASK", 
+	"CR0",  
 	"CR1",
 	"CR2",
 	"CR3",
@@ -219,7 +219,7 @@ var Register = []string{
 	"CR13",
 	"CR14",
 	"CR15",
-	"DR0", // [D_DR]
+	"DR0", 
 	"DR1",
 	"DR2",
 	"DR3",
@@ -227,7 +227,7 @@ var Register = []string{
 	"DR5",
 	"DR6",
 	"DR7",
-	"TR0", // [D_TR]
+	"TR0", 
 	"TR1",
 	"TR2",
 	"TR3",
@@ -235,8 +235,8 @@ var Register = []string{
 	"TR5",
 	"TR6",
 	"TR7",
-	"TLS",    // [D_TLS]
-	"MAXREG", // [MAXREG]
+	"TLS",    
+	"MAXREG", 
 }
 
 func init() {

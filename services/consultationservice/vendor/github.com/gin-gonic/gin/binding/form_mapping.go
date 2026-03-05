@@ -1,6 +1,6 @@
-// Copyright 2014 Manu Martinez-Almeida. All rights reserved.
-// Use of this source code is governed by a MIT style
-// license that can be found in the LICENSE file.
+
+
+
 
 package binding
 
@@ -20,10 +20,10 @@ import (
 var (
 	errUnknownType = errors.New("unknown type")
 
-	// ErrConvertMapStringSlice can not convert to map[string][]string
+	
 	ErrConvertMapStringSlice = errors.New("can not convert to map slices of strings")
 
-	// ErrConvertToMapString can not convert to map[string]string
+	
 	ErrConvertToMapString = errors.New("can not convert to map of strings")
 )
 
@@ -42,7 +42,7 @@ func MapFormWithTag(ptr any, form map[string][]string, tag string) error {
 var emptyField = reflect.StructField{}
 
 func mapFormByTag(ptr any, form map[string][]string, tag string) error {
-	// Check if ptr is a map
+	
 	ptrVal := reflect.ValueOf(ptr)
 	var pointed any
 	if ptrVal.Kind() == reflect.Ptr {
@@ -60,7 +60,7 @@ func mapFormByTag(ptr any, form map[string][]string, tag string) error {
 	return mappingByPtr(ptr, formSource(form), tag)
 }
 
-// setter tries to set value on a walking by fields of a struct
+
 type setter interface {
 	TrySet(value reflect.Value, field reflect.StructField, key string, opt setOptions) (isSet bool, err error)
 }
@@ -69,7 +69,7 @@ type formSource map[string][]string
 
 var _ setter = formSource(nil)
 
-// TrySet tries to set a value by request's form source (like map[string][]string)
+
 func (form formSource) TrySet(value reflect.Value, field reflect.StructField, tagValue string, opt setOptions) (isSet bool, err error) {
 	return setByForm(value, field, form, tagValue, opt)
 }
@@ -80,7 +80,7 @@ func mappingByPtr(ptr any, setter setter, tag string) error {
 }
 
 func mapping(value reflect.Value, field reflect.StructField, setter setter, tag string) (bool, error) {
-	if field.Tag.Get(tag) == "-" { // just ignoring this field
+	if field.Tag.Get(tag) == "-" { 
 		return false, nil
 	}
 
@@ -119,7 +119,7 @@ func mapping(value reflect.Value, field reflect.StructField, setter setter, tag 
 		var isSet bool
 		for i := 0; i < value.NumField(); i++ {
 			sf := tValue.Field(i)
-			if sf.PkgPath != "" && !sf.Anonymous { // unexported
+			if sf.PkgPath != "" && !sf.Anonymous { 
 				continue
 			}
 			ok, err := mapping(value.Field(i), sf, setter, tag)
@@ -145,10 +145,10 @@ func tryToSetValue(value reflect.Value, field reflect.StructField, setter setter
 	tagValue = field.Tag.Get(tag)
 	tagValue, opts := head(tagValue, ",")
 
-	if tagValue == "" { // default value is FieldName
+	if tagValue == "" { 
 		tagValue = field.Name
 	}
-	if tagValue == "" { // when field is "emptyField" variable
+	if tagValue == "" { 
 		return false, nil
 	}
 
@@ -165,15 +165,15 @@ func tryToSetValue(value reflect.Value, field reflect.StructField, setter setter
 	return setter.TrySet(value, field, tagValue, setOpt)
 }
 
-// BindUnmarshaler is the interface used to wrap the UnmarshalParam method.
+
 type BindUnmarshaler interface {
-	// UnmarshalParam decodes and assigns a value from an form or query param.
+	
 	UnmarshalParam(param string) error
 }
 
-// trySetCustom tries to set a custom type value
-// If the value implements the BindUnmarshaler interface, it will be used to set the value, we will return `true`
-// to skip the default value setting.
+
+
+
 func trySetCustom(val string, value reflect.Value) (isSet bool, err error) {
 	switch v := value.Addr().Interface().(type) {
 	case BindUnmarshaler:
@@ -424,7 +424,7 @@ func setFormMap(ptr any, form map[string][]string) error {
 		return ErrConvertToMapString
 	}
 	for k, v := range form {
-		ptrMap[k] = v[len(v)-1] // pick last
+		ptrMap[k] = v[len(v)-1] 
 	}
 
 	return nil

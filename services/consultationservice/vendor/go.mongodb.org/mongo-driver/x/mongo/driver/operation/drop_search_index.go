@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2023-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -19,7 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// DropSearchIndex performs an dropSearchIndex operation.
+
 type DropSearchIndex struct {
 	authenticator driver.Authenticator
 	index         string
@@ -36,7 +36,7 @@ type DropSearchIndex struct {
 	timeout       *time.Duration
 }
 
-// DropSearchIndexResult represents a dropSearchIndex result returned by the server.
+
 type DropSearchIndexResult struct {
 	Ok int32
 }
@@ -59,14 +59,14 @@ func buildDropSearchIndexResult(response bsoncore.Document) (DropSearchIndexResu
 	return dsir, nil
 }
 
-// NewDropSearchIndex constructs and returns a new DropSearchIndex.
+
 func NewDropSearchIndex(index string) *DropSearchIndex {
 	return &DropSearchIndex{
 		index: index,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (dsi *DropSearchIndex) Result() DropSearchIndexResult { return dsi.result }
 
 func (dsi *DropSearchIndex) processResponse(info driver.ResponseInfo) error {
@@ -75,7 +75,7 @@ func (dsi *DropSearchIndex) processResponse(info driver.ResponseInfo) error {
 	return err
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (dsi *DropSearchIndex) Execute(ctx context.Context) error {
 	if dsi.deployment == nil {
 		return errors.New("the DropSearchIndex operation must have a Deployment set before Execute can be called")
@@ -104,7 +104,7 @@ func (dsi *DropSearchIndex) command(dst []byte, _ description.SelectedServer) ([
 	return dst, nil
 }
 
-// Index specifies the name of the index to drop. If '*' is specified, all indexes will be dropped.
+
 func (dsi *DropSearchIndex) Index(index string) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -114,7 +114,7 @@ func (dsi *DropSearchIndex) Index(index string) *DropSearchIndex {
 	return dsi
 }
 
-// Session sets the session for this operation.
+
 func (dsi *DropSearchIndex) Session(session *session.Client) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -124,7 +124,7 @@ func (dsi *DropSearchIndex) Session(session *session.Client) *DropSearchIndex {
 	return dsi
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (dsi *DropSearchIndex) ClusterClock(clock *session.ClusterClock) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -134,7 +134,7 @@ func (dsi *DropSearchIndex) ClusterClock(clock *session.ClusterClock) *DropSearc
 	return dsi
 }
 
-// Collection sets the collection that this command will run against.
+
 func (dsi *DropSearchIndex) Collection(collection string) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -144,7 +144,7 @@ func (dsi *DropSearchIndex) Collection(collection string) *DropSearchIndex {
 	return dsi
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (dsi *DropSearchIndex) CommandMonitor(monitor *event.CommandMonitor) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -154,7 +154,7 @@ func (dsi *DropSearchIndex) CommandMonitor(monitor *event.CommandMonitor) *DropS
 	return dsi
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (dsi *DropSearchIndex) Crypt(crypt driver.Crypt) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -164,7 +164,7 @@ func (dsi *DropSearchIndex) Crypt(crypt driver.Crypt) *DropSearchIndex {
 	return dsi
 }
 
-// Database sets the database to run this operation against.
+
 func (dsi *DropSearchIndex) Database(database string) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -174,7 +174,7 @@ func (dsi *DropSearchIndex) Database(database string) *DropSearchIndex {
 	return dsi
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (dsi *DropSearchIndex) Deployment(deployment driver.Deployment) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -184,7 +184,7 @@ func (dsi *DropSearchIndex) Deployment(deployment driver.Deployment) *DropSearch
 	return dsi
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (dsi *DropSearchIndex) ServerSelector(selector description.ServerSelector) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -194,7 +194,7 @@ func (dsi *DropSearchIndex) ServerSelector(selector description.ServerSelector) 
 	return dsi
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (dsi *DropSearchIndex) ServerAPI(serverAPI *driver.ServerAPIOptions) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -204,7 +204,7 @@ func (dsi *DropSearchIndex) ServerAPI(serverAPI *driver.ServerAPIOptions) *DropS
 	return dsi
 }
 
-// Timeout sets the timeout for this operation.
+
 func (dsi *DropSearchIndex) Timeout(timeout *time.Duration) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)
@@ -214,7 +214,7 @@ func (dsi *DropSearchIndex) Timeout(timeout *time.Duration) *DropSearchIndex {
 	return dsi
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (dsi *DropSearchIndex) Authenticator(authenticator driver.Authenticator) *DropSearchIndex {
 	if dsi == nil {
 		dsi = new(DropSearchIndex)

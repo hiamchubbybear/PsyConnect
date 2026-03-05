@@ -1,21 +1,7 @@
 //go:build !go1.17
 // +build !go1.17
 
-/*
- * Copyright 2022 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package abi
 
@@ -92,17 +78,17 @@ func NewFunctionLayout(ft reflect.Type) FunctionLayout {
 	var sp uint32
 	var fn FunctionLayout
 
-	/* assign every arguments */
+	
 	for i := 0; i < ft.NumIn(); i++ {
 		sp, fn.Args = salloc(fn.Args, sp, ft.In(i))
 	}
 
-	/* assign every return value */
+	
 	for i := 0; i < ft.NumOut(); i++ {
 		sp, fn.Rets = salloc(fn.Rets, sp, ft.Out(i))
 	}
 
-	/* update function ID and stack pointer */
+	
 	fn.FP = sp
 	return fn
 }
@@ -141,19 +127,19 @@ func (self *Frame) emitExchangeArgs(p *Program) {
 }
 
 func (self *Frame) emitStackCheck(p *Program, to *Label, maxStack uintptr) {
-	// get the current goroutine
+	
 	switch runtime.GOOS {
 	case "linux":
 		p.MOVQ(Abs(-8), R14).FS()
 	case "darwin":
 		p.MOVQ(Abs(0x30), R14).GS()
 	case "windows":
-		break // windows always stores G pointer at R14
+		break 
 	default:
 		panic("unsupported operating system")
 	}
 
-	// check the stack guard
+	
 	p.LEAQ(Ptr(RSP, -int32(self.Size()+uint32(maxStack))), RAX)
 	p.CMPQ(Ptr(R14, _G_stackguard0), RAX)
 	p.JBE(to)
@@ -162,19 +148,19 @@ func (self *Frame) emitStackCheck(p *Program, to *Label, maxStack uintptr) {
 func (self *Frame) StackCheckTextSize() uint32 {
 	p := DefaultArch.CreateProgram()
 
-	// get the current goroutine
+	
 	switch runtime.GOOS {
 	case "linux":
 		p.MOVQ(Abs(-8), R14).FS()
 	case "darwin":
 		p.MOVQ(Abs(0x30), R14).GS()
 	case "windows":
-		break // windows always stores G pointer at R14
+		break 
 	default:
 		panic("unsupported operating system")
 	}
 
-	// check the stack guard
+	
 	p.LEAQ(Ptr(RSP, -int32(self.Size())), RAX)
 	p.CMPQ(Ptr(R14, _G_stackguard0), RAX)
 	l := CreateLabel("")
@@ -188,7 +174,7 @@ func (self *Frame) emitExchangeRets(p *Program) {
 	if len(self.desc.Rets) > 1 {
 		panic("too many results, only support one result now")
 	}
-	// store result
+	
 	if len(self.desc.Rets) == 1 {
 		if self.desc.Rets[0].IsFloat == floatKind64 {
 			p.MOVSD(xregOrderC[0], self.retv(0))
@@ -201,7 +187,7 @@ func (self *Frame) emitExchangeRets(p *Program) {
 }
 
 func (self *Frame) emitRestoreRegs(p *Program) {
-	// load reserved registers
+	
 	for i, r := range ReservedRegs(self.ccall) {
 		switch r.(type) {
 		case Register64:

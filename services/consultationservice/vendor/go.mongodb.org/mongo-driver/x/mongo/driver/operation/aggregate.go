@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2019-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package operation
 
@@ -23,7 +23,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/mongo/driver/session"
 )
 
-// Aggregate represents an aggregate operation.
+
 type Aggregate struct {
 	authenticator            driver.Authenticator
 	allowDiskUse             *bool
@@ -56,14 +56,14 @@ type Aggregate struct {
 	result driver.CursorResponse
 }
 
-// NewAggregate constructs and returns a new Aggregate.
+
 func NewAggregate(pipeline bsoncore.Document) *Aggregate {
 	return &Aggregate{
 		pipeline: pipeline,
 	}
 }
 
-// Result returns the result of executing this operation.
+
 func (a *Aggregate) Result(opts driver.CursorOptions) (*driver.BatchCursor, error) {
 
 	clientSession := a.session
@@ -73,8 +73,8 @@ func (a *Aggregate) Result(opts driver.CursorOptions) (*driver.BatchCursor, erro
 	return driver.NewBatchCursor(a.result, clientSession, clock, opts)
 }
 
-// ResultCursorResponse returns the underlying CursorResponse result of executing this
-// operation.
+
+
 func (a *Aggregate) ResultCursorResponse() driver.CursorResponse {
 	return a.result
 }
@@ -87,7 +87,7 @@ func (a *Aggregate) processResponse(info driver.ResponseInfo) error {
 
 }
 
-// Execute runs this operations and returns an error if the operation did not execute successfully.
+
 func (a *Aggregate) Execute(ctx context.Context) error {
 	if a.deployment == nil {
 		return errors.New("the Aggregate operation must have a Deployment set before Execute can be called")
@@ -171,7 +171,7 @@ func (a *Aggregate) command(dst []byte, desc description.SelectedServer) ([]byte
 	return dst, nil
 }
 
-// AllowDiskUse enables writing to temporary files. When true, aggregation stages can write to the dbPath/_tmp directory.
+
 func (a *Aggregate) AllowDiskUse(allowDiskUse bool) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -181,7 +181,7 @@ func (a *Aggregate) AllowDiskUse(allowDiskUse bool) *Aggregate {
 	return a
 }
 
-// BatchSize specifies the number of documents to return in every batch.
+
 func (a *Aggregate) BatchSize(batchSize int32) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -191,7 +191,7 @@ func (a *Aggregate) BatchSize(batchSize int32) *Aggregate {
 	return a
 }
 
-// BypassDocumentValidation allows the write to opt-out of document level validation. This only applies when the $out stage is specified.
+
 func (a *Aggregate) BypassDocumentValidation(bypassDocumentValidation bool) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -201,7 +201,7 @@ func (a *Aggregate) BypassDocumentValidation(bypassDocumentValidation bool) *Agg
 	return a
 }
 
-// Collation specifies a collation. This option is only valid for server versions 3.4 and above.
+
 func (a *Aggregate) Collation(collation bsoncore.Document) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -211,7 +211,7 @@ func (a *Aggregate) Collation(collation bsoncore.Document) *Aggregate {
 	return a
 }
 
-// Comment specifies an arbitrary string to help trace the operation through the database profiler, currentOp, and logs.
+
 func (a *Aggregate) Comment(comment string) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -221,7 +221,7 @@ func (a *Aggregate) Comment(comment string) *Aggregate {
 	return a
 }
 
-// Hint specifies the index to use.
+
 func (a *Aggregate) Hint(hint bsoncore.Value) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -231,7 +231,7 @@ func (a *Aggregate) Hint(hint bsoncore.Value) *Aggregate {
 	return a
 }
 
-// MaxTime specifies the maximum amount of time to allow the query to run on the server.
+
 func (a *Aggregate) MaxTime(maxTime *time.Duration) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -241,7 +241,7 @@ func (a *Aggregate) MaxTime(maxTime *time.Duration) *Aggregate {
 	return a
 }
 
-// Pipeline determines how data is transformed for an aggregation.
+
 func (a *Aggregate) Pipeline(pipeline bsoncore.Document) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -251,7 +251,7 @@ func (a *Aggregate) Pipeline(pipeline bsoncore.Document) *Aggregate {
 	return a
 }
 
-// Session sets the session for this operation.
+
 func (a *Aggregate) Session(session *session.Client) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -261,7 +261,7 @@ func (a *Aggregate) Session(session *session.Client) *Aggregate {
 	return a
 }
 
-// ClusterClock sets the cluster clock for this operation.
+
 func (a *Aggregate) ClusterClock(clock *session.ClusterClock) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -271,7 +271,7 @@ func (a *Aggregate) ClusterClock(clock *session.ClusterClock) *Aggregate {
 	return a
 }
 
-// Collection sets the collection that this command will run against.
+
 func (a *Aggregate) Collection(collection string) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -281,7 +281,7 @@ func (a *Aggregate) Collection(collection string) *Aggregate {
 	return a
 }
 
-// CommandMonitor sets the monitor to use for APM events.
+
 func (a *Aggregate) CommandMonitor(monitor *event.CommandMonitor) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -291,7 +291,7 @@ func (a *Aggregate) CommandMonitor(monitor *event.CommandMonitor) *Aggregate {
 	return a
 }
 
-// Database sets the database to run this operation against.
+
 func (a *Aggregate) Database(database string) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -301,7 +301,7 @@ func (a *Aggregate) Database(database string) *Aggregate {
 	return a
 }
 
-// Deployment sets the deployment to use for this operation.
+
 func (a *Aggregate) Deployment(deployment driver.Deployment) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -311,7 +311,7 @@ func (a *Aggregate) Deployment(deployment driver.Deployment) *Aggregate {
 	return a
 }
 
-// ReadConcern specifies the read concern for this operation.
+
 func (a *Aggregate) ReadConcern(readConcern *readconcern.ReadConcern) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -321,7 +321,7 @@ func (a *Aggregate) ReadConcern(readConcern *readconcern.ReadConcern) *Aggregate
 	return a
 }
 
-// ReadPreference set the read preference used with this operation.
+
 func (a *Aggregate) ReadPreference(readPreference *readpref.ReadPref) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -331,7 +331,7 @@ func (a *Aggregate) ReadPreference(readPreference *readpref.ReadPref) *Aggregate
 	return a
 }
 
-// ServerSelector sets the selector used to retrieve a server.
+
 func (a *Aggregate) ServerSelector(selector description.ServerSelector) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -341,7 +341,7 @@ func (a *Aggregate) ServerSelector(selector description.ServerSelector) *Aggrega
 	return a
 }
 
-// WriteConcern sets the write concern for this operation.
+
 func (a *Aggregate) WriteConcern(writeConcern *writeconcern.WriteConcern) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -351,9 +351,9 @@ func (a *Aggregate) WriteConcern(writeConcern *writeconcern.WriteConcern) *Aggre
 	return a
 }
 
-// Retry enables retryable writes for this operation. Retries are not handled automatically,
-// instead a boolean is returned from Execute and SelectAndExecute that indicates if the
-// operation can be retried. Retrying is handled by calling RetryExecute.
+
+
+
 func (a *Aggregate) Retry(retry driver.RetryMode) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -363,7 +363,7 @@ func (a *Aggregate) Retry(retry driver.RetryMode) *Aggregate {
 	return a
 }
 
-// Crypt sets the Crypt object to use for automatic encryption and decryption.
+
 func (a *Aggregate) Crypt(crypt driver.Crypt) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -373,7 +373,7 @@ func (a *Aggregate) Crypt(crypt driver.Crypt) *Aggregate {
 	return a
 }
 
-// ServerAPI sets the server API version for this operation.
+
 func (a *Aggregate) ServerAPI(serverAPI *driver.ServerAPIOptions) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -383,7 +383,7 @@ func (a *Aggregate) ServerAPI(serverAPI *driver.ServerAPIOptions) *Aggregate {
 	return a
 }
 
-// Let specifies the let document to use. This option is only valid for server versions 5.0 and above.
+
 func (a *Aggregate) Let(let bsoncore.Document) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -393,8 +393,8 @@ func (a *Aggregate) Let(let bsoncore.Document) *Aggregate {
 	return a
 }
 
-// HasOutputStage specifies whether the aggregate contains an output stage. Used in determining when to
-// append read preference at the operation level.
+
+
 func (a *Aggregate) HasOutputStage(hos bool) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -404,7 +404,7 @@ func (a *Aggregate) HasOutputStage(hos bool) *Aggregate {
 	return a
 }
 
-// CustomOptions specifies extra options to use in the aggregate command.
+
 func (a *Aggregate) CustomOptions(co map[string]bsoncore.Value) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -414,7 +414,7 @@ func (a *Aggregate) CustomOptions(co map[string]bsoncore.Value) *Aggregate {
 	return a
 }
 
-// Timeout sets the timeout for this operation.
+
 func (a *Aggregate) Timeout(timeout *time.Duration) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -424,9 +424,9 @@ func (a *Aggregate) Timeout(timeout *time.Duration) *Aggregate {
 	return a
 }
 
-// OmitCSOTMaxTimeMS omits the automatically-calculated "maxTimeMS" from the
-// command when CSOT is enabled. It does not effect "maxTimeMS" set by
-// [Aggregate.MaxTime].
+
+
+
 func (a *Aggregate) OmitCSOTMaxTimeMS(omit bool) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)
@@ -436,7 +436,7 @@ func (a *Aggregate) OmitCSOTMaxTimeMS(omit bool) *Aggregate {
 	return a
 }
 
-// Authenticator sets the authenticator to use for this operation.
+
 func (a *Aggregate) Authenticator(authenticator driver.Authenticator) *Aggregate {
 	if a == nil {
 		a = new(Aggregate)

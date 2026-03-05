@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsonrw
 
@@ -30,21 +30,21 @@ var vwPool = sync.Pool{
 
 func putValueWriter(vw *valueWriter) {
 	if vw != nil {
-		vw.w = nil // don't leak the writer
+		vw.w = nil 
 		vwPool.Put(vw)
 	}
 }
 
-// BSONValueWriterPool is a pool for BSON ValueWriters.
-//
-// Deprecated: BSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
 type BSONValueWriterPool struct {
 	pool sync.Pool
 }
 
-// NewBSONValueWriterPool creates a new pool for ValueWriter instances that write to BSON.
-//
-// Deprecated: BSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
 func NewBSONValueWriterPool() *BSONValueWriterPool {
 	return &BSONValueWriterPool{
 		pool: sync.Pool{
@@ -55,32 +55,32 @@ func NewBSONValueWriterPool() *BSONValueWriterPool {
 	}
 }
 
-// Get retrieves a BSON ValueWriter from the pool and resets it to use w as the destination.
-//
-// Deprecated: BSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
 func (bvwp *BSONValueWriterPool) Get(w io.Writer) ValueWriter {
 	vw := bvwp.pool.Get().(*valueWriter)
 
-	// TODO: Having to call reset here with the same buffer doesn't really make sense.
+	
 	vw.reset(vw.buf)
 	vw.buf = vw.buf[:0]
 	vw.w = w
 	return vw
 }
 
-// GetAtModeElement retrieves a ValueWriterFlusher from the pool and resets it to use w as the destination.
-//
-// Deprecated: BSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
 func (bvwp *BSONValueWriterPool) GetAtModeElement(w io.Writer) ValueWriterFlusher {
 	vw := bvwp.Get(w).(*valueWriter)
 	vw.push(mElement)
 	return vw
 }
 
-// Put inserts a ValueWriter into the pool. If the ValueWriter is not a BSON ValueWriter, nothing
-// happens and ok will be false.
-//
-// Deprecated: BSONValueWriterPool will not be supported in Go Driver 2.0.
+
+
+
+
 func (bvwp *BSONValueWriterPool) Put(vw ValueWriter) (ok bool) {
 	bvw, ok := vw.(*valueWriter)
 	if !ok {
@@ -91,8 +91,8 @@ func (bvwp *BSONValueWriterPool) Put(vw ValueWriter) (ok bool) {
 	return true
 }
 
-// This is here so that during testing we can change it and not require
-// allocating a 4GB slice.
+
+
 var maxSize = math.MaxInt32
 
 var errNilWriter = errors.New("cannot create a ValueWriter from a nil io.Writer")
@@ -165,12 +165,12 @@ func (vw *valueWriter) advanceFrame() {
 func (vw *valueWriter) push(m mode) {
 	vw.advanceFrame()
 
-	// Clean the stack
+	
 	vw.stack[vw.frame] = vwState{mode: m}
 
 	switch m {
 	case mDocument, mArray, mCodeWithScope:
-		vw.reserveLength() // WARN: this is not needed
+		vw.reserveLength() 
 	}
 }
 
@@ -184,14 +184,14 @@ func (vw *valueWriter) pop() {
 	case mElement, mValue:
 		vw.frame--
 	case mDocument, mArray, mCodeWithScope:
-		vw.frame -= 2 // we pop twice to jump over the mElement: mDocument -> mElement -> mDocument/mTopLevel/etc...
+		vw.frame -= 2 
 	}
 }
 
-// NewBSONValueWriter creates a ValueWriter that writes BSON to w.
-//
-// This ValueWriter will only write entire documents to the io.Writer and it
-// will buffer the document as it is built.
+
+
+
+
 func NewBSONValueWriter(w io.Writer) (ValueWriter, error) {
 	if w == nil {
 		return nil, errNilWriter
@@ -209,7 +209,7 @@ func newValueWriter(w io.Writer) *valueWriter {
 	return vw
 }
 
-// TODO: only used in tests
+
 func newValueWriterFromSlice(buf []byte) *valueWriter {
 	vw := new(valueWriter)
 	stack := make([]vwState, 1, 5)
@@ -315,10 +315,10 @@ func (vw *valueWriter) WriteCodeWithScope(code string) (DocumentWriter, error) {
 		return nil, err
 	}
 
-	// CodeWithScope is a different than other types because we need an extra
-	// frame on the stack. In the EndDocument code, we write the document
-	// length, pop, write the code with scope length, and pop. To simplify the
-	// pop code, we push a spacer frame that we'll always jump over.
+	
+	
+	
+	
 	vw.push(mCodeWithScope)
 	vw.buf = bsoncore.AppendString(vw.buf, code)
 	vw.push(mSpacer)
@@ -535,8 +535,8 @@ func (vw *valueWriter) WriteDocumentEnd() error {
 	vw.pop()
 
 	if vw.stack[vw.frame].mode == mCodeWithScope {
-		// We ignore the error here because of the guarantee of writeLength.
-		// See the docs for writeLength for more info.
+		
+		
 		_ = vw.writeLength()
 		vw.pop()
 	}
@@ -551,7 +551,7 @@ func (vw *valueWriter) Flush() error {
 	if _, err := vw.w.Write(vw.buf); err != nil {
 		return err
 	}
-	// reset buffer
+	
 	vw.buf = vw.buf[:0]
 	return nil
 }
@@ -586,12 +586,12 @@ func (vw *valueWriter) WriteArrayEnd() error {
 	return nil
 }
 
-// NOTE: We assume that if we call writeLength more than once the same function
-// within the same function without altering the vw.buf that this method will
-// not return an error. If this changes ensure that the following methods are
-// updated:
-//
-// - WriteDocumentEnd
+
+
+
+
+
+
 func (vw *valueWriter) writeLength() error {
 	length := len(vw.buf)
 	if length > maxSize {
@@ -601,7 +601,7 @@ func (vw *valueWriter) writeLength() error {
 	length -= int(frame.start)
 	start := frame.start
 
-	_ = vw.buf[start+3] // BCE
+	_ = vw.buf[start+3] 
 	vw.buf[start+0] = byte(length)
 	vw.buf[start+1] = byte(length >> 8)
 	vw.buf[start+2] = byte(length >> 16)
@@ -610,23 +610,23 @@ func (vw *valueWriter) writeLength() error {
 }
 
 func isValidCString(cs string) bool {
-	// Disallow the zero byte in a cstring because the zero byte is used as the
-	// terminating character.
-	//
-	// It's safe to check bytes instead of runes because all multibyte UTF-8
-	// code points start with (binary) 11xxxxxx or 10xxxxxx, so 00000000 (i.e.
-	// 0) will never be part of a multibyte UTF-8 code point. This logic is the
-	// same as the "r < utf8.RuneSelf" case in strings.IndexRune but can be
-	// inlined.
-	//
-	// https://cs.opensource.google/go/go/+/refs/tags/go1.21.1:src/strings/strings.go;l=127
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	return strings.IndexByte(cs, 0) == -1
 }
 
-// appendHeader is the same as bsoncore.AppendHeader but does not check if the
-// key is a valid C string since the caller has already checked for that.
-//
-// The caller of this function must check if key is a valid C string.
+
+
+
+
 func (vw *valueWriter) appendHeader(t bsontype.Type, key string) {
 	vw.buf = bsoncore.AppendType(vw.buf, t)
 	vw.buf = append(vw.buf, key...)

@@ -1,22 +1,22 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-//
-// Based on github.com/golang/go by The Go Authors
-// See THIRD-PARTY-NOTICES for original license terms.
+
+
+
+
+
+
+
+
 
 package bsonrw
 
 import "unicode/utf8"
 
-// safeSet holds the value true if the ASCII character with the given array
-// position can be represented inside a JSON string without any further
-// escaping.
-//
-// All values are true except for the ASCII control characters (0-31), the
-// double quote ("), and the backslash character ("\").
+
+
+
+
+
+
 var safeSet = [utf8.RuneSelf]bool{
 	' ':      true,
 	'!':      true,
@@ -116,13 +116,13 @@ var safeSet = [utf8.RuneSelf]bool{
 	'\u007f': true,
 }
 
-// htmlSafeSet holds the value true if the ASCII character with the given
-// array position can be safely represented inside a JSON string, embedded
-// inside of HTML <script> tags, without any additional escaping.
-//
-// All values are true except for the ASCII control characters (0-31), the
-// double quote ("), the backslash character ("\"), HTML opening and closing
-// tags ("<" and ">"), and the ampersand ("&").
+
+
+
+
+
+
+
 var htmlSafeSet = [utf8.RuneSelf]bool{
 	' ':      true,
 	'!':      true,

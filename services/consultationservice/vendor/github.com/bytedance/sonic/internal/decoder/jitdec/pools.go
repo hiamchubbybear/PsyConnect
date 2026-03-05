@@ -1,18 +1,4 @@
-/*
- * Copyright 2021 ByteDance Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 package jitdec
 
@@ -27,9 +13,9 @@ import (
 
 const (
     _MinSlice = 2
-    _MaxStack = 4096 // 4k slots
+    _MaxStack = 4096 
     _MaxStackBytes = _MaxStack * _PtrBytes
-    _MaxDigitNums = types.MaxDigitNums  // used in atof fallback algorithm
+    _MaxDigitNums = types.MaxDigitNums  
 )
 
 const (
@@ -63,8 +49,8 @@ type _Decoder func(
     vp unsafe.Pointer,
     sb *_Stack,
     fv uint64,
-    sv string, // DO NOT pass value to this argument, since it is only used for local _VAR_sv
-    vk unsafe.Pointer, // DO NOT pass value to this argument, since it is only used for local _VAR_vk
+    sv string, 
+    vk unsafe.Pointer, 
 ) (int, error)
 
 var _KeepAlive struct {

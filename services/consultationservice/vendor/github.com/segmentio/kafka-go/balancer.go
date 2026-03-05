@@ -9,45 +9,45 @@ import (
 	"sync"
 )
 
-// The Balancer interface provides an abstraction of the message distribution
-// logic used by Writer instances to route messages to the partitions available
-// on a kafka cluster.
-//
-// Balancers must be safe to use concurrently from multiple goroutines.
+
+
+
+
+
 type Balancer interface {
-	// Balance receives a message and a set of available partitions and
-	// returns the partition number that the message should be routed to.
-	//
-	// An application should refrain from using a balancer to manage multiple
-	// sets of partitions (from different topics for examples), use one balancer
-	// instance for each partition set, so the balancer can detect when the
-	// partitions change and assume that the kafka topic has been rebalanced.
+	
+	
+	
+	
+	
+	
+	
 	Balance(msg Message, partitions ...int) (partition int)
 }
 
-// BalancerFunc is an implementation of the Balancer interface that makes it
-// possible to use regular functions to distribute messages across partitions.
+
+
 type BalancerFunc func(Message, ...int) int
 
-// Balance calls f, satisfies the Balancer interface.
+
 func (f BalancerFunc) Balance(msg Message, partitions ...int) int {
 	return f(msg, partitions...)
 }
 
-// RoundRobin is an Balancer implementation that equally distributes messages
-// across all available partitions.  It can take an optional chunk size to send
-// ChunkSize messages to the same partition before moving to the next partition.
-// This can be used to improve batch sizes.
+
+
+
+
 type RoundRobin struct {
 	ChunkSize int
-	// Use a 32 bits integer so RoundRobin values don't need to be aligned to
-	// apply increments.
+	
+	
 	counter uint32
 
 	mutex sync.Mutex
 }
 
-// Balance satisfies the Balancer interface.
+
 func (rr *RoundRobin) Balance(msg Message, partitions ...int) int {
 	return rr.balance(partitions)
 }
@@ -67,12 +67,12 @@ func (rr *RoundRobin) balance(partitions []int) int {
 	return partitions[offset%length]
 }
 
-// LeastBytes is a Balancer implementation that routes messages to the partition
-// that has received the least amount of data.
-//
-// Note that no coordination is done between multiple producers, having good
-// balancing relies on the fact that each producer using a LeastBytes balancer
-// should produce well balanced messages.
+
+
+
+
+
+
 type LeastBytes struct {
 	mutex    sync.Mutex
 	counters []leastBytesCounter
@@ -83,12 +83,12 @@ type leastBytesCounter struct {
 	bytes     uint64
 }
 
-// Balance satisfies the Balancer interface.
+
 func (lb *LeastBytes) Balance(msg Message, partitions ...int) int {
 	lb.mutex.Lock()
 	defer lb.mutex.Unlock()
 
-	// partitions change
+	
 	if len(partitions) != len(lb.counters) {
 		lb.counters = lb.makeCounters(partitions...)
 	}
@@ -129,24 +129,24 @@ var (
 	}
 )
 
-// Hash is a Balancer that uses the provided hash function to determine which
-// partition to route messages to.  This ensures that messages with the same key
-// are routed to the same partition.
-//
-// The logic to calculate the partition is:
-//
-//	hasher.Sum32() % len(partitions) => partition
-//
-// By default, Hash uses the FNV-1a algorithm.  This is the same algorithm used
-// by the Sarama Producer and ensures that messages produced by kafka-go will
-// be delivered to the same topics that the Sarama producer would be delivered to.
+
+
+
+
+
+
+
+
+
+
+
 type Hash struct {
 	rr     RoundRobin
 	Hasher hash.Hash32
 
-	// lock protects Hasher while calculating the hash code.  It is assumed that
-	// the Hasher field is read-only once the Balancer is created, so as a
-	// performance optimization, reads of the field are not protected.
+	
+	
+	
 	lock sync.Mutex
 }
 
@@ -169,9 +169,9 @@ func (h *Hash) Balance(msg Message, partitions ...int) int {
 		panic(err)
 	}
 
-	// uses same algorithm that Sarama's hashPartitioner uses
-	// note the type conversions here.  if the uint32 hash code is not cast to
-	// an int32, we do not get the same result as sarama.
+	
+	
+	
 	partition := int32(hasher.Sum32()) % int32(len(partitions))
 	if partition < 0 {
 		partition = -partition
@@ -180,24 +180,24 @@ func (h *Hash) Balance(msg Message, partitions ...int) int {
 	return int(partition)
 }
 
-// ReferenceHash is a Balancer that uses the provided hash function to determine which
-// partition to route messages to.  This ensures that messages with the same key
-// are routed to the same partition.
-//
-// The logic to calculate the partition is:
-//
-//	(int32(hasher.Sum32()) & 0x7fffffff) % len(partitions) => partition
-//
-// By default, ReferenceHash uses the FNV-1a algorithm. This is the same algorithm as
-// the Sarama NewReferenceHashPartitioner and ensures that messages produced by kafka-go will
-// be delivered to the same topics that the Sarama producer would be delivered to.
+
+
+
+
+
+
+
+
+
+
+
 type ReferenceHash struct {
 	rr     randomBalancer
 	Hasher hash.Hash32
 
-	// lock protects Hasher while calculating the hash code.  It is assumed that
-	// the Hasher field is read-only once the Balancer is created, so as a
-	// performance optimization, reads of the field are not protected.
+	
+	
+	
 	lock sync.Mutex
 }
 
@@ -220,15 +220,15 @@ func (h *ReferenceHash) Balance(msg Message, partitions ...int) int {
 		panic(err)
 	}
 
-	// uses the same algorithm as the Sarama's referenceHashPartitioner.
-	// note the type conversions here. if the uint32 hash code is not cast to
-	// an int32, we do not get the same result as sarama.
+	
+	
+	
 	partition := (int32(hasher.Sum32()) & 0x7fffffff) % int32(len(partitions))
 	return int(partition)
 }
 
 type randomBalancer struct {
-	mock int // mocked return value, used for testing
+	mock int 
 }
 
 func (b randomBalancer) Balance(msg Message, partitions ...int) (partition int) {
@@ -238,29 +238,29 @@ func (b randomBalancer) Balance(msg Message, partitions ...int) (partition int) 
 	return partitions[rand.Int()%len(partitions)]
 }
 
-// CRC32Balancer is a Balancer that uses the CRC32 hash function to determine
-// which partition to route messages to.  This ensures that messages with the
-// same key are routed to the same partition.  This balancer is compatible with
-// the built-in hash partitioners in librdkafka and the language bindings that
-// are built on top of it, including the
-// github.com/confluentinc/confluent-kafka-go Go package.
-//
-// With the Consistent field false (default), this partitioner is equivalent to
-// the "consistent_random" setting in librdkafka.  When Consistent is true, this
-// partitioner is equivalent to the "consistent" setting.  The latter will hash
-// empty or nil keys into the same partition.
-//
-// Unless you are absolutely certain that all your messages will have keys, it's
-// best to leave the Consistent flag off.  Otherwise, you run the risk of
-// creating a very hot partition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type CRC32Balancer struct {
 	Consistent bool
 	random     randomBalancer
 }
 
 func (b CRC32Balancer) Balance(msg Message, partitions ...int) (partition int) {
-	// NOTE: the crc32 balancers in librdkafka don't differentiate between nil
-	//       and empty keys.  both cases are treated as unset.
+	
+	
 	if len(msg.Key) == 0 && !b.Consistent {
 		return b.random.Balance(msg, partitions...)
 	}
@@ -269,35 +269,35 @@ func (b CRC32Balancer) Balance(msg Message, partitions ...int) (partition int) {
 	return partitions[idx]
 }
 
-// Murmur2Balancer is a Balancer that uses the Murmur2 hash function to
-// determine which partition to route messages to.  This ensures that messages
-// with the same key are routed to the same partition.  This balancer is
-// compatible with the partitioner used by the Java library and by librdkafka's
-// "murmur2" and "murmur2_random" partitioners.
-//
-// With the Consistent field false (default), this partitioner is equivalent to
-// the "murmur2_random" setting in librdkafka.  When Consistent is true, this
-// partitioner is equivalent to the "murmur2" setting.  The latter will hash
-// nil keys into the same partition.  Empty, non-nil keys are always hashed to
-// the same partition regardless of configuration.
-//
-// Unless you are absolutely certain that all your messages will have keys, it's
-// best to leave the Consistent flag off.  Otherwise, you run the risk of
-// creating a very hot partition.
-//
-// Note that the librdkafka documentation states that the "murmur2_random" is
-// functionally equivalent to the default Java partitioner.  That's because the
-// Java partitioner will use a round robin balancer instead of random on nil
-// keys.  We choose librdkafka's implementation because it arguably has a larger
-// install base.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 type Murmur2Balancer struct {
 	Consistent bool
 	random     randomBalancer
 }
 
 func (b Murmur2Balancer) Balance(msg Message, partitions ...int) (partition int) {
-	// NOTE: the murmur2 balancers in java and librdkafka treat a nil key as
-	//       non-existent while treating an empty slice as a defined value.
+	
+	
 	if msg.Key == nil && !b.Consistent {
 		return b.random.Balance(msg, partitions...)
 	}
@@ -306,19 +306,19 @@ func (b Murmur2Balancer) Balance(msg Message, partitions ...int) (partition int)
 	return partitions[idx]
 }
 
-// Go port of the Java library's murmur2 function.
-// https://github.com/apache/kafka/blob/1.0/clients/src/main/java/org/apache/kafka/common/utils/Utils.java#L353
+
+
 func murmur2(data []byte) uint32 {
 	length := len(data)
 	const (
 		seed uint32 = 0x9747b28c
-		// 'm' and 'r' are mixing constants generated offline.
-		// They're not really 'magic', they just happen to work well.
+		
+		
 		m = 0x5bd1e995
 		r = 24
 	)
 
-	// Initialize the hash to a random value
+	
 	h := seed ^ uint32(length)
 	length4 := length / 4
 
@@ -332,7 +332,7 @@ func murmur2(data []byte) uint32 {
 		h ^= k
 	}
 
-	// Handle the last few bytes of the input array
+	
 	extra := length % 4
 	if extra >= 3 {
 		h ^= (uint32(data[(length & ^3)+2]) & 0xff) << 16

@@ -22,7 +22,7 @@ export class WebRTCService {
   private peerConnection: RTCPeerConnection | null = null;
   private localStream: MediaStream | null = null;
   private remoteStream: MediaStream | null = null;
-  private pendingIceCandidates: RTCIceCandidateInit[] = []; // Queue for ICE candidates
+  private pendingIceCandidates: RTCIceCandidateInit[] = []; 
 
   private callStateSubject = new BehaviorSubject<CallState>({
     isActive: false,
@@ -34,7 +34,7 @@ export class WebRTCService {
 
   public callState$ = this.callStateSubject.asObservable();
 
-  // Event when call ends (for UI cleanup)
+  
   private callEndedSubject = new Subject<void>();
   public callEnded$ = this.callEndedSubject.asObservable();
 
@@ -49,7 +49,7 @@ export class WebRTCService {
     console.log('📞 WebRTC Service initialized');
   }
 
-  // Initialize local media stream
+  
   async initLocalStream(
     constraints: MediaStreamConstraints = { video: true, audio: true }
   ): Promise<MediaStream> {
@@ -62,7 +62,7 @@ export class WebRTCService {
     } catch (error: any) {
       console.error('❌ Error getting user media:', error);
 
-      // If video device not found, try audio only
+      
       if (error.name === 'NotFoundError' && constraints.video) {
         console.log('⚠️ Video device not found, trying audio only...');
         try {
@@ -83,13 +83,13 @@ export class WebRTCService {
     }
   }
 
-  // Create peer connection
+  
   createPeerConnection(
     onIceCandidate: (candidate: RTCIceCandidate) => void
   ): RTCPeerConnection {
     this.peerConnection = new RTCPeerConnection(this.config);
 
-    // Handle ICE candidates
+    
     this.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
         console.log('🧊 ICE candidate generated:', event.candidate);
@@ -97,7 +97,7 @@ export class WebRTCService {
       }
     };
 
-    // Handle remote stream
+    
     this.peerConnection.ontrack = (event) => {
       console.log('📺 Remote track received!');
       console.log('📺 Track kind:', event.track.kind);
@@ -115,7 +115,7 @@ export class WebRTCService {
       });
     };
 
-    // Handle connection state changes
+    
     this.peerConnection.onconnectionstatechange = () => {
       console.log('🔄 Connection state:', this.peerConnection?.connectionState);
 
@@ -131,7 +131,7 @@ export class WebRTCService {
       }
     };
 
-    // Add local stream tracks
+    
     if (this.localStream) {
       console.log('➕ Adding local tracks to peer connection...');
       const tracks = this.localStream.getTracks();
@@ -154,7 +154,7 @@ export class WebRTCService {
     return this.peerConnection;
   }
 
-  // Create offer (caller)
+  
   async createOffer(): Promise<RTCSessionDescriptionInit> {
     if (!this.peerConnection) {
       throw new Error('Peer connection not initialized');
@@ -169,7 +169,7 @@ export class WebRTCService {
     return offer;
   }
 
-  // Handle incoming offer (receiver)
+  
   async handleOffer(offer: RTCSessionDescriptionInit): Promise<void> {
     if (!this.peerConnection) {
       throw new Error('Peer connection not initialized');
@@ -180,7 +180,7 @@ export class WebRTCService {
     );
     console.log('📥 Offer received and set');
 
-    // Process queued ICE candidates
+    
     console.log(
       `🧊 Processing ${this.pendingIceCandidates.length} queued ICE candidates...`
     );
@@ -194,14 +194,14 @@ export class WebRTCService {
         console.error('❌ Error adding queued ICE candidate:', error);
       }
     }
-    this.pendingIceCandidates = []; // Clear queue
+    this.pendingIceCandidates = []; 
 
     this.updateCallState({
       isReceivingCall: true,
     });
   }
 
-  // Create answer (callee)
+  
   async createAnswer(): Promise<RTCSessionDescriptionInit> {
     if (!this.peerConnection) {
       throw new Error('Peer connection not initialized');
@@ -216,20 +216,20 @@ export class WebRTCService {
     return answer;
   }
 
-  // Handle incoming answer (caller)
+  
   async handleAnswer(answer: RTCSessionDescriptionInit): Promise<void> {
     if (!this.peerConnection) {
       console.error('❌ Peer connection not initialized');
       return;
     }
 
-    // Check if we're in the right state to receive an answer
+    
     const signalingState = this.peerConnection.signalingState;
     console.log('🔍 Current signaling state:', signalingState);
 
     if (signalingState !== 'have-local-offer') {
       console.warn('⚠️  Cannot set remote answer in state:', signalingState);
-      return; // Ignore duplicate or out-of-order answers
+      return; 
     }
 
     try {
@@ -243,14 +243,14 @@ export class WebRTCService {
     }
   }
 
-  // Add ICE candidate
+  
   async addIceCandidate(candidate: RTCIceCandidateInit): Promise<void> {
     if (!this.peerConnection) {
       console.warn('⚠️  Peer connection not ready for ICE candidate');
       return;
     }
 
-    // Check if remote description is set
+    
     if (!this.peerConnection.remoteDescription) {
       console.log('🧊 Queuing ICE candidate (remote description not set yet)');
       this.pendingIceCandidates.push(candidate);
@@ -265,7 +265,7 @@ export class WebRTCService {
     }
   }
 
-  // Toggle video
+  
   toggleVideo(): boolean {
     if (!this.localStream) return false;
 
@@ -278,7 +278,7 @@ export class WebRTCService {
     return false;
   }
 
-  // Toggle audio
+  
   toggleAudio(): boolean {
     if (!this.localStream) return false;
 
@@ -291,11 +291,11 @@ export class WebRTCService {
     return false;
   }
 
-  // End call
+  
   endCall(): void {
     console.log('📞 Ending call...');
 
-    // Stop local stream
+    
     if (this.localStream) {
       this.localStream.getTracks().forEach((track) => {
         track.stop();
@@ -304,19 +304,19 @@ export class WebRTCService {
       this.localStream = null;
     }
 
-    // Close peer connection
+    
     if (this.peerConnection) {
       this.peerConnection.close();
       this.peerConnection = null;
     }
 
-    // Reset remote stream
+    
     this.remoteStream = null;
 
-    // Clear pending ICE candidates
+    
     this.pendingIceCandidates = [];
 
-    // Reset state
+    
     this.callStateSubject.next({
       isActive: false,
       isCalling: false,
@@ -327,39 +327,39 @@ export class WebRTCService {
       remoteStream: undefined,
     });
 
-    // Emit call ended event for UI cleanup
+    
     this.callEndedSubject.next();
 
     console.log('✅ Call ended');
   }
 
-  // Get current call state
+  
   getCallState(): CallState {
     return this.callStateSubject.value;
   }
 
-  // Update call state
+  
   private updateCallState(updates: Partial<CallState>): void {
     const currentState = this.callStateSubject.value;
     this.callStateSubject.next({ ...currentState, ...updates });
   }
 
-  // Set session info
+  
   setSessionInfo(sessionId: string, remoteUserId: string): void {
     this.updateCallState({ sessionId, remoteUserId });
   }
 
-  // Get local stream
+  
   getLocalStream(): MediaStream | null {
     return this.localStream;
   }
 
-  // Get remote stream
+  
   getRemoteStream(): MediaStream | null {
     return this.remoteStream;
   }
 
-  // Get available media devices
+  
   async getAvailableDevices(): Promise<{
     cameras: MediaDeviceInfo[];
     microphones: MediaDeviceInfo[];
@@ -376,7 +376,7 @@ export class WebRTCService {
     }
   }
 
-  // Switch camera
+  
   async switchCamera(deviceId: string): Promise<boolean> {
     if (!this.localStream) return false;
 
@@ -409,7 +409,7 @@ export class WebRTCService {
     }
   }
 
-  // Switch microphone
+  
   async switchMicrophone(deviceId: string): Promise<boolean> {
     if (!this.localStream) return false;
 
@@ -442,7 +442,7 @@ export class WebRTCService {
     }
   }
 
-  // Get current device IDs
+  
   getCurrentDevices(): { cameraId?: string; microphoneId?: string } {
     if (!this.localStream) return {};
 

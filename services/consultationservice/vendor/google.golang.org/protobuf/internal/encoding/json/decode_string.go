@@ -1,6 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package json
 
@@ -23,7 +23,7 @@ func (d *Decoder) parseString(in []byte) (string, int, error) {
 	}
 	in = in[1:]
 	i := indexNeedEscapeInBytes(in)
-	in, out := in[i:], in[:i:i] // set cap to prevent mutations
+	in, out := in[i:], in[:i:i] 
 	for len(in) > 0 {
 		switch r, n := utf8.DecodeRune(in); {
 		case r == utf8.RuneError && n == 1:
@@ -86,6 +86,6 @@ func (d *Decoder) parseString(in []byte) (string, int, error) {
 	return "", 0, ErrUnexpectedEOF
 }
 
-// indexNeedEscapeInBytes returns the index of the character that needs
-// escaping. If no characters need escaping, this returns the input length.
+
+
 func indexNeedEscapeInBytes(b []byte) int { return indexNeedEscapeInString(strs.UnsafeString(b)) }

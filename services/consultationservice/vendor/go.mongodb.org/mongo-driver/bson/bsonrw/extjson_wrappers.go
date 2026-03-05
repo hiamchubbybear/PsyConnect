@@ -1,8 +1,8 @@
-// Copyright (C) MongoDB, Inc. 2017-present.
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+
+
+
+
 
 package bsonrw
 
@@ -200,7 +200,7 @@ func (ejv *extJSONValue) parseDateTime() (int64, error) {
 func parseDatetimeString(data string) (int64, error) {
 	var t time.Time
 	var err error
-	// try acceptable time formats until one matches
+	
 	for _, format := range timeFormats {
 		t, err = time.Parse(format, data)
 		if err == nil {

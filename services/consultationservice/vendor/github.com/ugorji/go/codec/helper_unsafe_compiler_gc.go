@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2020 Ugorji Nwoke. All rights reserved.
-// Use of this source code is governed by a MIT license found in the LICENSE file.
+
+
 
 //go:build !safe && !codec.safe && !appengine && go1.9 && gc
 // +build !safe,!codec.safe,!appengine,go1.9,gc
@@ -8,19 +8,19 @@ package codec
 
 import (
 	"reflect"
-	_ "runtime" // needed for go linkname(s)
+	_ "runtime" 
 	"unsafe"
 )
 
-// keep in sync with
-//
-//	$GOROOT/src/cmd/compile/internal/gc/reflect.go: MAXKEYSIZE, MAXELEMSIZE
-//	$GOROOT/src/runtime/map.go: maxKeySize, maxElemSize
-//	$GOROOT/src/reflect/type.go: maxKeySize, maxElemSize
-//
-// We use these to determine whether the type is stored indirectly in the map or not.
+
+
+
+
+
+
+
 const (
-	// mapMaxKeySize  = 128
+	
 	mapMaxElemSize = 128
 )
 
@@ -28,17 +28,17 @@ func unsafeGrowslice(typ unsafe.Pointer, old unsafeSlice, cap, incr int) (v unsa
 	return growslice(typ, old, cap+incr)
 }
 
-// func rvType(rv reflect.Value) reflect.Type {
-// 	return rvPtrToType(((*unsafeReflectValue)(unsafe.Pointer(&rv))).typ)
-// 	// return rv.Type()
-// }
 
-// mapStoresElemIndirect tells if the element type is stored indirectly in the map.
-//
-// This is used to determine valIsIndirect which is passed into mapSet/mapGet calls.
-//
-// If valIsIndirect doesn't matter, then just return false and ignore the value
-// passed in mapGet/mapSet calls
+
+
+
+
+
+
+
+
+
+
 func mapStoresElemIndirect(elemsize uintptr) bool {
 	return elemsize > mapMaxElemSize
 }
@@ -55,15 +55,15 @@ func mapSet(m, k, v reflect.Value, keyFastKind mapKeyFastKind, valIsIndirect, va
 
 	var vvptr unsafe.Pointer
 
-	// mapassign_fastXXX don't take indirect into account.
-	// It was hard to infer what makes it work all the time.
-	// Sometimes, we got vvptr == nil when we dereferenced vvptr (if valIsIndirect).
-	// Consequently, only use fastXXX functions if !valIsIndirect
+	
+	
+	
+	
 
 	if valIsIndirect {
 		vvptr = mapassign(urv.typ, mptr, kptr)
 		typedmemmove(vtyp, vvptr, vptr)
-		// reflect_mapassign(urv.typ, mptr, kptr, vptr)
+		
 		return
 	}
 
@@ -82,9 +82,9 @@ func mapSet(m, k, v reflect.Value, keyFastKind mapKeyFastKind, valIsIndirect, va
 		vvptr = mapassign(urv.typ, mptr, kptr)
 	}
 
-	// if keyFastKind != 0 && valIsIndirect {
-	// 	vvptr = *(*unsafe.Pointer)(vvptr)
-	// }
+	
+	
+	
 
 	typedmemmove(vtyp, vvptr, vptr)
 }
@@ -98,8 +98,8 @@ func mapGet(m, k, v reflect.Value, keyFastKind mapKeyFastKind, valIsIndirect, va
 	var vvptr unsafe.Pointer
 	var ok bool
 
-	// Note that mapaccess2_fastXXX functions do not check if the value needs to be copied.
-	// if they do, we should dereference the pointer and return that
+	
+	
 
 	switch keyFastKind {
 	case mapKeyFastKind32, mapKeyFastKind32ptr:
@@ -132,9 +132,9 @@ func mapGet(m, k, v reflect.Value, keyFastKind mapKeyFastKind, valIsIndirect, va
 //go:linkname unsafeZeroArr runtime.zeroVal
 var unsafeZeroArr [1024]byte
 
-// //go:linkname rvPtrToType reflect.toType
-// //go:noescape
-// func rvPtrToType(typ unsafe.Pointer) reflect.Type
+
+
+
 
 //go:linkname mapassign_fast32 runtime.mapassign_fast32
 //go:noescape

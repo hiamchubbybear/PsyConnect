@@ -1,8 +1,8 @@
 //go:build amd64 && !appengine && !noasm && gc
 // +build amd64,!appengine,!noasm,gc
 
-// This file contains the specialisation of Decoder.Decompress4X
-// and Decoder.Decompress1X that use an asm implementation of thir main loops.
+
+
 package huff0
 
 import (
@@ -12,20 +12,20 @@ import (
 	"github.com/klauspost/compress/internal/cpuinfo"
 )
 
-// decompress4x_main_loop_x86 is an x86 assembler implementation
-// of Decompress4X when tablelog > 8.
-//
+
+
+
 //go:noescape
 func decompress4x_main_loop_amd64(ctx *decompress4xContext)
 
-// decompress4x_8b_loop_x86 is an x86 assembler implementation
-// of Decompress4X when tablelog <= 8 which decodes 4 entries
-// per loop.
-//
+
+
+
+
 //go:noescape
 func decompress4x_8b_main_loop_amd64(ctx *decompress4xContext)
 
-// fallback8BitSize is the size where using Go version is faster.
+
 const fallback8BitSize = 800
 
 type decompress4xContext struct {
@@ -38,10 +38,10 @@ type decompress4xContext struct {
 	limit    *byte
 }
 
-// Decompress4X will decompress a 4X encoded stream.
-// The length of the supplied input must match the end of a block exactly.
-// The *capacity* of the dst slice must match the destination size of
-// the uncompressed data exactly.
+
+
+
+
 func (d *Decoder) Decompress4X(dst, src []byte) ([]byte, error) {
 	if len(d.dt.single) == 0 {
 		return nil, errors.New("no table loaded")
@@ -56,7 +56,7 @@ func (d *Decoder) Decompress4X(dst, src []byte) ([]byte, error) {
 	}
 
 	var br [4]bitReaderShifted
-	// Decode "jump table"
+	
 	start := 6
 	for i := 0; i < 3; i++ {
 		length := int(src[i*2]) | (int(src[i*2+1]) << 8)
@@ -74,7 +74,7 @@ func (d *Decoder) Decompress4X(dst, src []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	// destination, offset to match first output
+	
 	dstSize := cap(dst)
 	dst = dst[:dstSize]
 	out := dst
@@ -89,11 +89,11 @@ func (d *Decoder) Decompress4X(dst, src []byte) ([]byte, error) {
 	if len(out) > 4*4 && !(br[0].off < 4 || br[1].off < 4 || br[2].off < 4 || br[3].off < 4) {
 		ctx := decompress4xContext{
 			pbr:      &br,
-			peekBits: uint8((64 - d.actualTableLog) & 63), // see: bitReaderShifted.peekBitsFast()
+			peekBits: uint8((64 - d.actualTableLog) & 63), 
 			out:      &out[0],
 			dstEvery: dstEvery,
 			tbl:      &single[0],
-			limit:    &out[dstEvery-4], // Always stop decoding when first buffer gets here to avoid writing OOB on last.
+			limit:    &out[dstEvery-4], 
 		}
 		if use8BitTables {
 			decompress4x_8b_main_loop_amd64(&ctx)
@@ -105,7 +105,7 @@ func (d *Decoder) Decompress4X(dst, src []byte) ([]byte, error) {
 		out = out[decoded/4:]
 	}
 
-	// Decode remaining.
+	
 	remainBytes := dstEvery - (decoded / 4)
 	for i := range br {
 		offset := dstEvery * i
@@ -121,7 +121,7 @@ func (d *Decoder) Decompress4X(dst, src []byte) ([]byte, error) {
 				return nil, errors.New("corruption detected: stream overrun 4")
 			}
 
-			// Read value and increment offset.
+			
 			val := br.peekBitsFast(d.actualTableLog)
 			v := single[val&tlMask].entry
 			nBits := uint8(v)
@@ -145,15 +145,15 @@ func (d *Decoder) Decompress4X(dst, src []byte) ([]byte, error) {
 	return dst, nil
 }
 
-// decompress4x_main_loop_x86 is an x86 assembler implementation
-// of Decompress1X when tablelog > 8.
-//
+
+
+
 //go:noescape
 func decompress1x_main_loop_amd64(ctx *decompress1xContext)
 
-// decompress4x_main_loop_x86 is an x86 with BMI2 assembler implementation
-// of Decompress1X when tablelog > 8.
-//
+
+
+
 //go:noescape
 func decompress1x_main_loop_bmi2(ctx *decompress1xContext)
 
@@ -166,12 +166,12 @@ type decompress1xContext struct {
 	decoded  int
 }
 
-// Error reported by asm implementations
+
 const error_max_decoded_size_exeeded = -1
 
-// Decompress1X will decompress a 1X encoded stream.
-// The cap of the output buffer will be the maximum decompressed size.
-// The length of the supplied input must match the end of a block exactly.
+
+
+
 func (d *Decoder) Decompress1X(dst, src []byte) ([]byte, error) {
 	if len(d.dt.single) == 0 {
 		return nil, errors.New("no table loaded")
@@ -192,7 +192,7 @@ func (d *Decoder) Decompress1X(dst, src []byte) ([]byte, error) {
 			pbr:      &br,
 			out:      &dst[0],
 			outCap:   maxDecodedSize,
-			peekBits: uint8((64 - d.actualTableLog) & 63), // see: bitReaderShifted.peekBitsFast()
+			peekBits: uint8((64 - d.actualTableLog) & 63), 
 			tbl:      &d.dt.single[0],
 		}
 
@@ -208,7 +208,7 @@ func (d *Decoder) Decompress1X(dst, src []byte) ([]byte, error) {
 		dst = dst[:ctx.decoded]
 	}
 
-	// br < 8, so uint8 is fine
+	
 	bitsLeft := uint8(br.off)*8 + 64 - br.bitsRead
 	for bitsLeft > 0 {
 		br.fill()

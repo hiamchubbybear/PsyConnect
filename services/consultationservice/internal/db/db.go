@@ -69,7 +69,7 @@ func InitDB() *mongo.Client {
 			log.Fatalf("❌ FATAL: MongoDB connection error: %v", err)
 		}
 
-		// Verify connection
+		
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		err = client.Ping(ctx, nil)

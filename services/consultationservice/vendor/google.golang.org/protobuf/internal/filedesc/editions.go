@@ -1,6 +1,6 @@
-// Copyright 2024 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 package filedesc
 
@@ -70,8 +70,8 @@ func unmarshalFeatureSet(b []byte, parent EditionFeatures) EditionFeatures {
 			case genid.FeatureSet_JsonFormat_field_number:
 				parent.IsJSONCompliant = v == genid.FeatureSet_ALLOW_enum_value
 			case genid.FeatureSet_EnforceNamingStyle_field_number:
-				// EnforceNamingStyle is enforced in protoc, languages other than C++
-				// are not supposed to do anything with this feature.
+				
+				
 			default:
 				panic(fmt.Sprintf("unkown field number %d while unmarshalling FeatureSet", num))
 			}
@@ -141,9 +141,9 @@ func unmarshalEditionDefaults(b []byte) {
 			unmarshalEditionDefault(def)
 		case genid.FeatureSetDefaults_MinimumEdition_field_number,
 			genid.FeatureSetDefaults_MaximumEdition_field_number:
-			// We don't care about the minimum and maximum editions. If the
-			// edition we are looking for later on is not in the cache we know
-			// it is outside of the range between minimum and maximum edition.
+			
+			
+			
 			_, m := protowire.ConsumeVarint(b)
 			b = b[m:]
 		default:

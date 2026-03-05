@@ -1,6 +1,6 @@
-// Copyright 2019+ Klaus Post. All rights reserved.
-// License information can be found in the LICENSE file.
-// Based on work by Yann Collet, released under BSD License.
+
+
+
 
 package zstd
 
@@ -10,22 +10,22 @@ import (
 )
 
 type byteBuffer interface {
-	// Read up to 8 bytes.
-	// Returns io.ErrUnexpectedEOF if this cannot be satisfied.
+	
+	
 	readSmall(n int) ([]byte, error)
 
-	// Read >8 bytes.
-	// MAY use the destination slice.
+	
+	
 	readBig(n int, dst []byte) ([]byte, error)
 
-	// Read a single byte.
+	
 	readByte() (byte, error)
 
-	// Skip n bytes.
+	
 	skipN(n int64) error
 }
 
-// in-memory buffer
+
 type byteBuf []byte
 
 func (b *byteBuf) readSmall(n int) ([]byte, error) {
@@ -73,7 +73,7 @@ func (b *byteBuf) skipN(n int64) error {
 	return nil
 }
 
-// wrapper around a reader.
+
 type readerWrapper struct {
 	r   io.Reader
 	tmp [8]byte
@@ -84,7 +84,7 @@ func (r *readerWrapper) readSmall(n int) ([]byte, error) {
 		panic(fmt.Errorf("small read > 8 (%d). use readBig", n))
 	}
 	n2, err := io.ReadFull(r.r, r.tmp[:n])
-	// We only really care about the actual bytes read.
+	
 	if err != nil {
 		if err == io.EOF {
 			return nil, io.ErrUnexpectedEOF

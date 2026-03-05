@@ -17,103 +17,103 @@ import (
 	"github.com/pelletier/go-toml/v2/unstable"
 )
 
-// Unmarshal deserializes a TOML document into a Go value.
-//
-// It is a shortcut for Decoder.Decode() with the default options.
+
+
+
 func Unmarshal(data []byte, v interface{}) error {
 	d := decoder{}
 	d.p.Reset(data)
 	return d.FromParser(v)
 }
 
-// Decoder reads and decode a TOML document from an input stream.
+
 type Decoder struct {
-	// input
+	
 	r io.Reader
 
-	// global settings
+	
 	strict bool
 
-	// toggles unmarshaler interface
+	
 	unmarshalerInterface bool
 }
 
-// NewDecoder creates a new Decoder that will read from r.
+
 func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{r: r}
 }
 
-// DisallowUnknownFields causes the Decoder to return an error when the
-// destination is a struct and the input contains a key that does not match a
-// non-ignored field.
-//
-// In that case, the Decoder returns a StrictMissingError that can be used to
-// retrieve the individual errors as well as generate a human readable
-// description of the missing fields.
+
+
+
+
+
+
+
 func (d *Decoder) DisallowUnknownFields() *Decoder {
 	d.strict = true
 	return d
 }
 
-// EnableUnmarshalerInterface allows to enable unmarshaler interface.
-//
-// With this feature enabled, types implementing the unstable/Unmarshaler
-// interface can be decoded from any structure of the document. It allows types
-// that don't have a straightfoward TOML representation to provide their own
-// decoding logic.
-//
-// Currently, types can only decode from a single value. Tables and array tables
-// are not supported.
-//
-// *Unstable:* This method does not follow the compatibility guarantees of
-// semver. It can be changed or removed without a new major version being
-// issued.
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (d *Decoder) EnableUnmarshalerInterface() *Decoder {
 	d.unmarshalerInterface = true
 	return d
 }
 
-// Decode the whole content of r into v.
-//
-// By default, values in the document that don't exist in the target Go value
-// are ignored. See Decoder.DisallowUnknownFields() to change this behavior.
-//
-// When a TOML local date, time, or date-time is decoded into a time.Time, its
-// value is represented in time.Local timezone. Otherwise the appropriate Local*
-// structure is used. For time values, precision up to the nanosecond is
-// supported by truncating extra digits.
-//
-// Empty tables decoded in an interface{} create an empty initialized
-// map[string]interface{}.
-//
-// Types implementing the encoding.TextUnmarshaler interface are decoded from a
-// TOML string.
-//
-// When decoding a number, go-toml will return an error if the number is out of
-// bounds for the target type (which includes negative numbers when decoding
-// into an unsigned int).
-//
-// If an error occurs while decoding the content of the document, this function
-// returns a toml.DecodeError, providing context about the issue. When using
-// strict mode and a field is missing, a `toml.StrictMissingError` is
-// returned. In any other case, this function returns a standard Go error.
-//
-// # Type mapping
-//
-// List of supported TOML types and their associated accepted Go types:
-//
-//	String           -> string
-//	Integer          -> uint*, int*, depending on size
-//	Float            -> float*, depending on size
-//	Boolean          -> bool
-//	Offset Date-Time -> time.Time
-//	Local Date-time  -> LocalDateTime, time.Time
-//	Local Date       -> LocalDate, time.Time
-//	Local Time       -> LocalTime, time.Time
-//	Array            -> slice and array, depending on elements types
-//	Table            -> map and struct
-//	Inline Table     -> same as Table
-//	Array of Tables  -> same as Array and Table
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func (d *Decoder) Decode(v interface{}) error {
 	b, err := io.ReadAll(d.r)
 	if err != nil {
@@ -132,39 +132,39 @@ func (d *Decoder) Decode(v interface{}) error {
 }
 
 type decoder struct {
-	// Which parser instance in use for this decoding session.
+	
 	p unstable.Parser
 
-	// Flag indicating that the current expression is stashed.
-	// If set to true, calling nextExpr will not actually pull a new expression
-	// but turn off the flag instead.
+	
+	
+	
 	stashedExpr bool
 
-	// Skip expressions until a table is found. This is set to true when a
-	// table could not be created (missing field in map), so all KV expressions
-	// need to be skipped.
+	
+	
+	
 	skipUntilTable bool
 
-	// Flag indicating that the current array/slice table should be cleared because
-	// it is the first encounter of an array table.
+	
+	
 	clearArrayTable bool
 
-	// Tracks position in Go arrays.
-	// This is used when decoding [[array tables]] into Go arrays. Given array
-	// tables are separate TOML expression, we need to keep track of where we
-	// are at in the Go array, as we can't just introspect its size.
+	
+	
+	
+	
 	arrayIndexes map[reflect.Value]int
 
-	// Tracks keys that have been seen, with which type.
+	
 	seen tracker.SeenTracker
 
-	// Strict mode
+	
 	strict strict
 
-	// Flag that enables/disables unmarshaler interface.
+	
 	unmarshalerInterface bool
 
-	// Current context for the error.
+	
 	errorContext *errorContext
 }
 
@@ -259,19 +259,12 @@ func (d *decoder) fromParser(root reflect.Value) error {
 	return d.p.Error()
 }
 
-/*
-Rules for the unmarshal code:
 
-- The stack is used to keep track of which values need to be set where.
-- handle* functions <=> switch on a given unstable.Kind.
-- unmarshalX* functions need to unmarshal a node of kind X.
-- An "object" is either a struct or a map.
-*/
 
 func (d *decoder) handleRootExpression(expr *unstable.Node, v reflect.Value) error {
 	var x reflect.Value
 	var err error
-	var first bool // used for to clear array tables on first use
+	var first bool 
 
 	if !(d.skipUntilTable && expr.Kind == unstable.KeyValue) {
 		first, err = d.seen.CheckExpression(expr)
@@ -388,10 +381,10 @@ func (d *decoder) handleArrayTableCollectionLast(key unstable.Iterator, v reflec
 	}
 }
 
-// When parsing an array table expression, each part of the key needs to be
-// evaluated like a normal key, but if it returns a collection, it also needs to
-// point to the last element of the collection. Unless it is the last part of
-// the key, then it needs to create a new element at the end.
+
+
+
+
 func (d *decoder) handleArrayTableCollection(key unstable.Iterator, v reflect.Value) (reflect.Value, error) {
 	if key.IsLast() {
 		return d.handleArrayTableCollectionLast(key, v)
@@ -442,8 +435,8 @@ func (d *decoder) handleArrayTableCollection(key unstable.Iterator, v reflect.Va
 func (d *decoder) handleKeyPart(key unstable.Iterator, v reflect.Value, nextFn handlerFn, makeFn valueMakerFn) (reflect.Value, error) {
 	var rv reflect.Value
 
-	// First, dispatch over v to make sure it is a valid object.
-	// There is no guarantee over what it could be.
+	
+	
 	switch v.Kind() {
 	case reflect.Ptr:
 		elem := v.Elem()
@@ -455,13 +448,13 @@ func (d *decoder) handleKeyPart(key unstable.Iterator, v reflect.Value, nextFn h
 	case reflect.Map:
 		vt := v.Type()
 
-		// Create the key for the map element. Convert to key type.
+		
 		mk, err := d.keyFromData(vt.Key(), key.Node().Data)
 		if err != nil {
 			return reflect.Value{}, err
 		}
 
-		// If the map does not exist, create it.
+		
 		if v.IsNil() {
 			vt := v.Type()
 			v = reflect.MakeMap(vt)
@@ -471,10 +464,10 @@ func (d *decoder) handleKeyPart(key unstable.Iterator, v reflect.Value, nextFn h
 		mv := v.MapIndex(mk)
 		set := false
 		if !mv.IsValid() {
-			// If there is no value in the map, create a new one according to
-			// the map type. If the element type is interface, create either a
-			// map[string]interface{} or a []interface{} depending on whether
-			// this is the last part of the array table key.
+			
+			
+			
+			
 
 			t := vt.Elem()
 			if t.Kind() == reflect.Interface {
@@ -557,9 +550,9 @@ func (d *decoder) handleKeyPart(key unstable.Iterator, v reflect.Value, nextFn h
 	return rv, nil
 }
 
-// HandleArrayTablePart navigates the Go structure v using the key v. It is
-// only used for the prefix (non-last) parts of an array-table. When
-// encountering a collection, it should go to the last element.
+
+
+
 func (d *decoder) handleArrayTablePart(key unstable.Iterator, v reflect.Value) (reflect.Value, error) {
 	var makeFn valueMakerFn
 	if key.IsLast() {
@@ -570,8 +563,8 @@ func (d *decoder) handleArrayTablePart(key unstable.Iterator, v reflect.Value) (
 	return d.handleKeyPart(key, v, d.handleArrayTableCollection, makeFn)
 }
 
-// HandleTable returns a reference when it has checked the next expression but
-// cannot handle it.
+
+
 func (d *decoder) handleTable(key unstable.Iterator, v reflect.Value) (reflect.Value, error) {
 	if v.Kind() == reflect.Slice {
 		if v.Len() == 0 {
@@ -588,25 +581,25 @@ func (d *decoder) handleTable(key unstable.Iterator, v reflect.Value) (reflect.V
 		return reflect.Value{}, nil
 	}
 	if key.Next() {
-		// Still scoping the key
+		
 		return d.handleTablePart(key, v)
 	}
-	// Done scoping the key.
-	// Now handle all the key-value expressions in this table.
+	
+	
 	return d.handleKeyValues(v)
 }
 
-// Handle root expressions until the end of the document or the next
-// non-key-value.
+
+
 func (d *decoder) handleKeyValues(v reflect.Value) (reflect.Value, error) {
 	var rv reflect.Value
 	for d.nextExpr() {
 		expr := d.expr()
 		if expr.Kind != unstable.KeyValue {
-			// Stash the expression so that fromParser can just loop and use
-			// the right handler.
-			// We could just recurse ourselves here, but at least this gives a
-			// chance to pop the stack a bit.
+			
+			
+			
+			
 			d.stashExpr()
 			break
 		}
@@ -646,8 +639,8 @@ func (d *decoder) handleTablePart(key unstable.Iterator, v reflect.Value) (refle
 }
 
 func (d *decoder) tryTextUnmarshaler(node *unstable.Node, v reflect.Value) (bool, error) {
-	// Special case for time, because we allow to unmarshal to it from
-	// different kind of AST nodes.
+	
+	
 	if v.Type() == timeType {
 		return false, nil
 	}
@@ -717,7 +710,7 @@ func (d *decoder) unmarshalArray(array *unstable.Node, v reflect.Value) error {
 			v.SetLen(0)
 		}
 	case reflect.Array:
-		// arrays are always initialized
+		
 	case reflect.Interface:
 		elem := v.Elem()
 		if !elem.IsValid() {
@@ -741,8 +734,8 @@ func (d *decoder) unmarshalArray(array *unstable.Node, v reflect.Value) error {
 		v.Set(elem)
 		return nil
 	default:
-		// TODO: use newDecodeError, but first the parser needs to fill
-		//   array.Data.
+		
+		
 		return d.typeMismatchError("array", v.Type())
 	}
 
@@ -753,7 +746,7 @@ func (d *decoder) unmarshalArray(array *unstable.Node, v reflect.Value) error {
 	for it.Next() {
 		n := it.Node()
 
-		// TODO: optimize
+		
 		if v.Kind() == reflect.Slice {
 			elem := reflect.New(elemType).Elem()
 
@@ -763,7 +756,7 @@ func (d *decoder) unmarshalArray(array *unstable.Node, v reflect.Value) error {
 			}
 
 			v.Set(reflect.Append(v, elem))
-		} else { // array
+		} else { 
 			if idx >= v.Len() {
 				return nil
 			}
@@ -780,14 +773,14 @@ func (d *decoder) unmarshalArray(array *unstable.Node, v reflect.Value) error {
 }
 
 func (d *decoder) unmarshalInlineTable(itable *unstable.Node, v reflect.Value) error {
-	// Make sure v is an initialized object.
+	
 	switch v.Kind() {
 	case reflect.Map:
 		if v.IsNil() {
 			v.Set(reflect.MakeMap(v.Type()))
 		}
 	case reflect.Struct:
-	// structs are always initialized.
+	
 	case reflect.Interface:
 		elem := v.Elem()
 		if !elem.IsValid() {
@@ -921,12 +914,12 @@ const (
 	minInt = -maxInt - 1
 )
 
-// Maximum value of uint for decoding. Currently the decoder parses the integer
-// into an int64. As a result, on architectures where uint is 64 bits, the
-// effective maximum uint we can decode is the maximum of int64. On
-// architectures where uint is 32 bits, the maximum value we can decode is
-// lower: the maximum of uint32. I didn't find a way to figure out this value at
-// compile time, so it is computed during initialization.
+
+
+
+
+
+
 var maxUint int64 = math.MaxInt64
 
 func init() {
@@ -1051,11 +1044,11 @@ func (d *decoder) handleKeyValue(expr *unstable.Node, v reflect.Value) (reflect.
 
 func (d *decoder) handleKeyValueInner(key unstable.Iterator, value *unstable.Node, v reflect.Value) (reflect.Value, error) {
 	if key.Next() {
-		// Still scoping the key
+		
 		return d.handleKeyValuePart(key, value, v)
 	}
-	// Done scoping the key.
-	// v is whatever Go value we need to fill.
+	
+	
 	return reflect.Value{}, d.handleValue(value, v)
 }
 
@@ -1112,11 +1105,11 @@ func (d *decoder) keyFromData(keyType reflect.Type, data []byte) (reflect.Value,
 }
 
 func (d *decoder) handleKeyValuePart(key unstable.Iterator, value *unstable.Node, v reflect.Value) (reflect.Value, error) {
-	// contains the replacement for v
+	
 	var rv reflect.Value
 
-	// First, dispatch over v to make sure it is a valid object.
-	// There is no guarantee over what it could be.
+	
+	
 	switch v.Kind() {
 	case reflect.Map:
 		vt := v.Type()
@@ -1126,7 +1119,7 @@ func (d *decoder) handleKeyValuePart(key unstable.Iterator, value *unstable.Node
 			return reflect.Value{}, err
 		}
 
-		// If the map does not exist, create it.
+		
 		if v.IsNil() {
 			v = reflect.MakeMap(vt)
 			rv = v
@@ -1168,8 +1161,8 @@ func (d *decoder) handleKeyValuePart(key unstable.Iterator, value *unstable.Node
 		f := fieldByIndex(v, path)
 
 		if !f.CanAddr() {
-			// If the field is not addressable, need to take a slower path and
-			// make a copy of the struct itself to a new location.
+			
+			
 			nvp := reflect.New(v.Type())
 			nvp.Elem().Set(v)
 			v = nvp.Elem()
@@ -1192,10 +1185,10 @@ func (d *decoder) handleKeyValuePart(key unstable.Iterator, value *unstable.Node
 	case reflect.Interface:
 		v = v.Elem()
 
-		// Following encoding/json: decoding an object into an
-		// interface{}, it needs to always hold a
-		// map[string]interface{}. This is for the types to be
-		// consistent whether a previous value was set or not.
+		
+		
+		
+		
 		if !v.IsValid() || v.Type() != mapStringInterfaceType {
 			v = makeMapStringInterface()
 		}
@@ -1242,7 +1235,7 @@ func initAndDereferencePointer(v reflect.Value) reflect.Value {
 	return elem
 }
 
-// Same as reflect.Value.FieldByIndex, but creates pointers if needed.
+
 func fieldByIndex(v reflect.Value, path []int) reflect.Value {
 	for _, x := range path {
 		v = v.Field(x)
@@ -1259,7 +1252,7 @@ func fieldByIndex(v reflect.Value, path []int) reflect.Value {
 
 type fieldPathsMap = map[string][]int
 
-var globalFieldPathsCache atomic.Value // map[danger.TypeID]fieldPathsMap
+var globalFieldPathsCache atomic.Value 
 
 func structFieldPath(v reflect.Value, name string) ([]int, bool) {
 	t := v.Type()
@@ -1272,7 +1265,7 @@ func structFieldPath(v reflect.Value, name string) ([]int, bool) {
 
 		forEachField(t, nil, func(name string, path []int) {
 			fieldPaths[name] = path
-			// extra copy for the case-insensitive match
+			
 			fieldPaths[strings.ToLower(name)] = path
 		})
 
@@ -1297,7 +1290,7 @@ func forEachField(t reflect.Type, path []int, do func(name string, path []int)) 
 		f := t.Field(i)
 
 		if !f.Anonymous && f.PkgPath != "" {
-			// only consider exported fields.
+			
 			continue
 		}
 
