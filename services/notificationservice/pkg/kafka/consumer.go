@@ -3,13 +3,16 @@ package kafka
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"notificationservice/pkg/config"
 	"notificationservice/pkg/email"
 	"notificationservice/pkg/handlers"
 	"notificationservice/pkg/models"
+
 	"github.com/segmentio/kafka-go"
 )
 
@@ -255,13 +258,78 @@ func (c *Consumer) handleConsultationCreated(data []byte) error {
 	if err := json.Unmarshal(data, &notif); err != nil {
 		return err
 	}
-	return c.notifSvc.SendToUser(
-		notif.UserID,
-		"New consultation request",
-		"A client has just booked a consultation with you.",
+
+	log.Printf(" Session created: %s between %s and %s", notif.SessionID, notif.ClientName, notif.TherapistName)
+
+	// 1. Send Gmail to Client
+	if notif.ClientEmail != "" {
+		err := c.emailSvc.SendSessionCreatedEmail(
+			notif.ClientEmail,
+			notif.ClientName,
+			"client",
+			notif.TherapistName,
+			notif.DateStr,
+			notif.StartTimeStr,
+			notif.Mode,
+		)
+		if err != nil {
+			log.Printf(" Failed to send Gmail to client: %v", err)
+		}
+	}
+
+	// 2. Send Gmail to Therapist
+	if notif.TherapistEmail != "" {
+		err := c.emailSvc.SendSessionCreatedEmail(
+			notif.TherapistEmail,
+			notif.TherapistName,
+			"therapist",
+			notif.ClientName,
+			notif.DateStr,
+			notif.StartTimeStr,
+			notif.Mode,
+		)
+		if err != nil {
+			log.Printf(" Failed to send Gmail to therapist: %v", err)
+		}
+	}
+
+	// 3. Send System Notification to Client
+	clientMsg := fmt.Sprintf("You have an upcoming %s session with %s on %s at %s.",
+		strings.ToLower(notif.Mode), notif.TherapistName, notif.DateStr, notif.StartTimeStr)
+	_ = c.notifSvc.SendToUser(
+		notif.ClientID,
+		"Session Confirmed",
+		clientMsg,
 		"consultation-created",
-		map[string]interface{}{},
+		map[string]interface{}{
+			"sessionId":     notif.SessionID,
+			"therapistId":   notif.TherapistID,
+			"therapistName": notif.TherapistName,
+			"startTime":     notif.StartTimeStr,
+			"date":          notif.DateStr,
+			"type":          "session_banner",
+		},
 	)
+
+	// 4. Send System Notification to Therapist
+	therapistMsg := fmt.Sprintf("New %s session booked by %s on %s at %s.",
+		strings.ToLower(notif.Mode), notif.ClientName, notif.DateStr, notif.StartTimeStr)
+	_ = c.notifSvc.SendToUser(
+		notif.TherapistID,
+		"New Booking",
+		therapistMsg,
+		"consultation-created",
+		map[string]interface{}{
+			"sessionId":  notif.SessionID,
+			"clientId":   notif.ClientID,
+			"clientName": notif.ClientName,
+			"startTime":  notif.StartTimeStr,
+			"date":       notif.DateStr,
+			"type":       "session_banner",
+		},
+	)
+
+	return nil
 }
 
 func (c *Consumer) handleConsultationUpdated(data []byte) error {

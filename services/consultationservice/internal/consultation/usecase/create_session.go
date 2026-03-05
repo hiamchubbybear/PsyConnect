@@ -3,6 +3,7 @@ package usecase
 import (
 	"consultationservice/internal/consultation/domain"
 	"consultationservice/internal/consultation/repository"
+	"consultationservice/internal/grpc/handler"
 	"consultationservice/internal/kafka"
 	"context"
 	"errors"
@@ -22,14 +23,16 @@ type CreateSessionRequest struct {
 }
 
 type CreateSessionUseCase struct {
-	sessionRepo repository.SessionRepository
-	producer    *kafka.Producer
+	sessionRepo    repository.SessionRepository
+	producer       *kafka.Producer
+	profileHandler *handler.ProfileGrpc
 }
 
-func NewCreateSessionUseCase(sessionRepo repository.SessionRepository, producer *kafka.Producer) *CreateSessionUseCase {
+func NewCreateSessionUseCase(sessionRepo repository.SessionRepository, producer *kafka.Producer, profileHandler *handler.ProfileGrpc) *CreateSessionUseCase {
 	return &CreateSessionUseCase{
-		sessionRepo: sessionRepo,
-		producer:    producer,
+		sessionRepo:    sessionRepo,
+		producer:       producer,
+		profileHandler: profileHandler,
 	}
 }
 
@@ -97,9 +100,37 @@ func (uc *CreateSessionUseCase) Execute(ctx context.Context, req CreateSessionRe
 		return nil, err
 	}
 
-	// 5. Send Event
-	if uc.producer != nil {
-		_ = uc.producer.SendSessionEvent("notification.push.consultation-created", session)
+	// 5. Send Event with enriched data
+	if uc.producer != nil && uc.profileHandler != nil {
+		clientProfile, _ := uc.profileHandler.GetProfile(req.ClientID)
+		therapistProfile, _ := uc.profileHandler.GetProfile(req.TherapistID)
+
+		enrichedPayload := struct {
+			*domain.Session
+			ClientName     string `json:"clientName"`
+			ClientEmail    string `json:"clientEmail"`
+			TherapistName  string `json:"therapistName"`
+			TherapistEmail string `json:"therapistEmail"`
+			StartTimeStr   string `json:"startTimeStr"`
+			EndTimeStr     string `json:"endTimeStr"`
+			DateStr        string `json:"dateStr"`
+		}{
+			Session:      session,
+			StartTimeStr: session.StartTime.Format("15:04"),
+			EndTimeStr:   session.EndTime.Format("15:04"),
+			DateStr:      session.StartTime.Format("2006-01-02"),
+		}
+
+		if clientProfile != nil {
+			enrichedPayload.ClientName = clientProfile.FirstName + " " + clientProfile.LastName
+			enrichedPayload.ClientEmail = clientProfile.Email
+		}
+		if therapistProfile != nil {
+			enrichedPayload.TherapistName = therapistProfile.FirstName + " " + therapistProfile.LastName
+			enrichedPayload.TherapistEmail = therapistProfile.Email
+		}
+
+		_ = uc.producer.SendSessionEvent("notification.push.consultation-created", enrichedPayload)
 	}
 
 	return session, nil

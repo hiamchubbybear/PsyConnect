@@ -100,8 +100,7 @@ public class Configuration {
                             response.sendRedirect("/oauth2/authorization/google");
                         })))
                 .oauth2Login(oauth2 -> oauth2.loginPage("/oauth2/authorization")
-                        .authorizationEndpoint(config -> config
-                                .baseUri("/oauth2/authorization")
+                        .authorizationEndpoint(config -> config.baseUri("/oauth2/authorization")
                                 .authorizationRequestRepository(cookieAuthorizationRequestRepository))
                         .redirectionEndpoint(config -> config.baseUri("/oauth2/callback/*"))
                         .successHandler((request, response, authentication) -> {
@@ -134,7 +133,8 @@ public class Configuration {
                                         "%s/oauth2/callback?provider=%s&email=%s&avatar=%s&platform=%s&code=%s",
                                         oauth2RedirectBase, registrationId, email, avatarUri, platform, code);
 
-                                cookieAuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+                                cookieAuthorizationRequestRepository.removeAuthorizationRequestCookies(
+                                        request, response);
                                 response.sendRedirect(redirectUrl);
                             } catch (Exception e) {
                                 log.error("OAuth2 success handler error", e);

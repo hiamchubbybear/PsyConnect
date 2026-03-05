@@ -54,6 +54,8 @@ import (
 	groupRepo "consultationservice/internal/newsfeed/group/repository"
 	groupHTTP "consultationservice/internal/newsfeed/group/transport/http"
 	groupUseCase "consultationservice/internal/newsfeed/group/usecase"
+
+	"consultationservice/internal/grpc/handler"
 )
 
 func main() {
@@ -99,11 +101,34 @@ func main() {
 	}
 
 	// ===== DDD Session Components =====
+	// Initialize gRPC clients
+	profileGrpcAddr := os.Getenv("PROFILE_SERVICE_URL")
+	if profileGrpcAddr == "" {
+		profileGrpcAddr = "profileservice:50051" // fallback to default internal gRPC port
+	} else {
+		// Convert http://profileservice to profileservice:50051 if needed
+		profileGrpcAddr = strings.TrimPrefix(profileGrpcAddr, "http://")
+		profileGrpcAddr = strings.TrimPrefix(profileGrpcAddr, "https://")
+		if !strings.Contains(profileGrpcAddr, ":") {
+			profileGrpcAddr = profileGrpcAddr + ":50051"
+		}
+	}
+
+	profileHandler, err := handler.NewProfileGrpc(profileGrpcAddr)
+	if err != nil {
+		log.Printf("⚠️ Warning: Failed to initialize Profile gRPC client: %v", err)
+	}
+	defer func() {
+		if profileHandler != nil {
+			profileHandler.Close()
+		}
+	}()
+
 	// Initialize DDD Session Repository
 	sessionRepo := consultationRepo.NewMongoSessionRepository(db.GetSessionCollection())
 
 	// Initialize Session UseCases
-	createSessionUC := usecase.NewCreateSessionUseCase(sessionRepo, kafkaProducer)
+	createSessionUC := usecase.NewCreateSessionUseCase(sessionRepo, kafkaProducer, profileHandler)
 	getSessionUC := usecase.NewGetSessionUseCase(sessionRepo)
 	deleteSessionUC := usecase.NewDeleteSessionUseCase(sessionRepo)
 	startCallUC := usecase.NewStartCallUseCase(sessionRepo, kafkaProducer)

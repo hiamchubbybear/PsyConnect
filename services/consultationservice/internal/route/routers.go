@@ -115,7 +115,6 @@ func RouterInit(
 		therapist.PATCH("/me/availability", therapistHandler.UpdateAvailability)
 
 		therapist.GET("/:id", therapistHandler.GetTherapistByID)
-		therapist.GET("/search", therapistHandler.SearchTherapists)
 	}
 
 	client := api.Group("/clients")
@@ -166,6 +165,7 @@ func RouterInit(
 	{
 		uncategoryGroupV1.GET("/clients", clientHandler.GetAllClients)
 		uncategoryGroupV1.GET("/therapist/:id", therapistHandler.GetTherapistByID)
+		uncategoryGroupV1.GET("/search/therapists", therapistHandler.SearchTherapists)
 		uncategoryGroupV1.GET("/me/recommend/top", swipeHandler.PopTop5V1)
 		uncategoryGroupV1.GET("/client/:id", clientHandler.GetClientByID)
 	}

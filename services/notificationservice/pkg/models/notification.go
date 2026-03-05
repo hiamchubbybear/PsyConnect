@@ -45,7 +45,18 @@ type NewMessageNotification struct {
 }
 
 type ConsultationCreatedNotification struct {
-	UserID string `json:"userId"`
+	SessionID      string  `json:"id"`
+	ClientID       string  `json:"clientId"`
+	TherapistID    string  `json:"therapistId"`
+	ClientName     string  `json:"clientName"`
+	ClientEmail    string  `json:"clientEmail"`
+	TherapistName  string  `json:"therapistName"`
+	TherapistEmail string  `json:"therapistEmail"`
+	StartTimeStr   string  `json:"startTimeStr"`
+	EndTimeStr     string  `json:"endTimeStr"`
+	DateStr        string  `json:"dateStr"`
+	Mode           string  `json:"mode"`
+	Price          float64 `json:"price"`
 }
 
 type ConsultationUpdatedNotification struct {

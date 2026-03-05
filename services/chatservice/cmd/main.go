@@ -87,6 +87,7 @@ func main() {
 	chatHandler := handler.NewChatHandler(env, repoManager, chatService)
 	conversationHandler := handler.NewConversationHandler(env, repoManager)
 
+	router.POST("/chats/call/start", chatHandler.StartCall)
 	router.POST("/chats", chatHandler.CreateChat)
 	router.GET("/chats/:id", chatHandler.GetChatByID)
 	router.GET("/chats/conversation/:conversationId", chatHandler.GetChatsByConversation)
@@ -95,6 +96,7 @@ func main() {
 
 	router.POST("/conversations", chatHandler.CreateConversation)
 	router.GET("/conversations/by-users", conversationHandler.GetConversationByUsers)
+	router.GET("/conversations/me", conversationHandler.GetRecentConversations)
 
 	router.GET("/ws", gin.WrapF(wsmiddleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		ws.ServeWS(hub, w, r)

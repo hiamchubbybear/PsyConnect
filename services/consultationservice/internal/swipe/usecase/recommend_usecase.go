@@ -5,14 +5,14 @@ import (
 
 	clientDomain "consultationservice/internal/client/domain"
 	clientRepository "consultationservice/internal/client/repository"
-	
+
 	"consultationservice/internal/dto"
 	"consultationservice/internal/model"
 	"consultationservice/internal/repository/infrastructure/external"
-	
+
 	swipeDomain "consultationservice/internal/swipe/domain"
 	swipeRepository "consultationservice/internal/swipe/repository"
-	
+
 	therapistDomain "consultationservice/internal/therapist/domain"
 	therapistRepository "consultationservice/internal/therapist/repository"
 )
@@ -79,8 +79,28 @@ func (uc *RecommendUseCase) TriggerUpdateV1(ctx context.Context, profileID strin
 	return uc.swipeRepo.InsertSwipes(ctx, profileID, domainSwipes)
 }
 
-func (uc *RecommendUseCase) PopTop5V1(ctx context.Context, profileID string) ([]*swipeDomain.Swipe, error) {
-	return uc.swipeRepo.GetTopSwipes(ctx, profileID, 5)
+func (uc *RecommendUseCase) PopTop5V1(ctx context.Context, profileID string) ([]EnrichedSwipe, error) {
+	swipes, err := uc.swipeRepo.GetTopSwipes(ctx, profileID, 5)
+	if err != nil {
+		return nil, err
+	}
+
+	var enrichedSwipes []EnrichedSwipe
+	for _, s := range swipes {
+		therapist, err := uc.therapistRepo.GetByProfileID(ctx, s.TherapistID)
+		if err != nil {
+			// Skip or log error if therapist profile not found
+			continue
+		}
+
+		enrichedSwipes = append(enrichedSwipes, EnrichedSwipe{
+			TherapistV1: mapTherapistDomainToModel(therapist),
+			Points:      s.Points,
+			Reasons:     s.Reasons,
+		})
+	}
+
+	return enrichedSwipes, nil
 }
 
 func mapClientDomainToModel(c *clientDomain.Client) model.Client {

@@ -87,7 +87,7 @@ func (h *Handler) PopTop5(c *gin.Context) {
 	apiresponse.ErrorHandler(c, http.StatusServiceUnavailable, "Recommendation feature temporarily disabled during migration")
 }
 
-// PopTop5V1 fetches top 5 swipes from the DB
+// PopTop5V1 fetches top 5 enriched swipes from the DB
 func (h *Handler) PopTop5V1(c *gin.Context) {
 	profileID := c.GetHeader("X-Profile-Id")
 	if profileID == "" {
@@ -95,12 +95,12 @@ func (h *Handler) PopTop5V1(c *gin.Context) {
 		return
 	}
 
-	swipes, err := h.recommendUC.PopTop5V1(c.Request.Context(), profileID)
+	enrichedSwipes, err := h.recommendUC.PopTop5V1(c.Request.Context(), profileID)
 	if err != nil {
 		log.Print("Failed to pop top 5:", err)
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, "Failed to get top recommendations")
 		return
 	}
 
-	apiresponse.NewApiResponse(c, swipes)
+	apiresponse.NewApiResponse(c, enrichedSwipes)
 }

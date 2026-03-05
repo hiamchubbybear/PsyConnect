@@ -2,12 +2,25 @@ syntax = "proto3";
 
 package identity;
 option java_package = "dev.psyconnect.grpc.api_gateway";
-service TokenService {
+service IdentityService {
   rpc TokenCheckValid(TokenRequest) returns (TokenResponse);
+  rpc GetUserInfoByProfileId(UserInfoRequest) returns (UserInfoResponse);
 }
+
 message TokenRequest {
   string token = 1;
 }
+
 message TokenResponse {
   bool valid = 1;
+}
+
+message UserInfoRequest {
+  string profile_id = 1;
+}
+
+message UserInfoResponse {
+  bool success = 1;
+  string email = 2;
+  string username = 3;
 }

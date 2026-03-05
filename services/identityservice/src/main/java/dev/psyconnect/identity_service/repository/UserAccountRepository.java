@@ -45,5 +45,7 @@ public interface UserAccountRepository extends JpaRepository<Account, UUID> {
     int updateSessionIdPostLogin(
             @Param("email") String email, @Param("session") String session, @Param("newsession") String newsession);
 
+    Optional<Account> findByProfileId(UUID profileId);
+
     Page<Account> findAll(Pageable pageable);
 }
