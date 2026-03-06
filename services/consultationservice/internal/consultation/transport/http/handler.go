@@ -54,7 +54,7 @@ type CreateSessionRequest struct {
 	EndTime       time.Time               `json:"end_time" binding:"required"`
 	TimeZone      string                  `json:"time_zone" binding:"required"`
 	ScheduledDate string                  `json:"scheduled_date,omitempty"`
-	Price         float64                 `json:"price" binding:"required,gt=0"`
+	Price         float64                 `json:"price" binding:"gte=0"`
 	LocationInfo  *domain.LocationInfo    `json:"location_info,omitempty"`
 }
 

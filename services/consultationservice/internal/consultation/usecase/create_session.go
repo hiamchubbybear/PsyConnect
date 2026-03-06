@@ -50,8 +50,8 @@ func (uc *CreateSessionUseCase) Execute(ctx context.Context, req CreateSessionRe
 	if req.EndTime.Before(req.StartTime) {
 		return nil, errors.New("end time must be after start time")
 	}
-	if req.Price <= 0 {
-		return nil, errors.New("price must be greater than 0")
+	if req.Price < 0 {
+		return nil, errors.New("price must be greater than or equal to 0")
 	}
 	if req.TimeZone == "" {
 		return nil, errors.New("time zone can not null")

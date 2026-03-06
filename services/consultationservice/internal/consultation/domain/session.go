@@ -118,6 +118,10 @@ func NewSession(
 		UpdatedAt: now,
 	}
 
+	if price <= 0 {
+		s.PaymentStatus = domain.PaymentPaid
+	}
+
 	s.SessionUserCode = s.GenerateConsultationCode()
 	convID, err := s.GenerateConversationID()
 	if err != nil {

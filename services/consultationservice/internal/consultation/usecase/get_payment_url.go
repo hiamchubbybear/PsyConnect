@@ -23,6 +23,9 @@ func (uc *GetPaymentURLUseCase) Execute(ctx context.Context, sessionID string) (
 	if session == nil {
 		return "", errors.New("session not found")
 	}
+	if session.Price <= 0 {
+		return "", errors.New("session is free and does not require payment")
+	}
 
 	
 	return fmt.Sprintf("https://mock-payment-gateway.psyconnect.dev/pay?session_id=%s&amount=%.2f", sessionID, session.Price), nil
