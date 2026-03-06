@@ -47,7 +47,6 @@ export class ProfilePageComponent implements OnInit {
       const userId = params['id'];
       const currentUser = this.userContext.getUser();
 
-      
       if (
         !userId ||
         userId === currentUser?.accountId ||
@@ -106,13 +105,15 @@ export class ProfilePageComponent implements OnInit {
     });
   }
 
-  
   private transformToCardFormat(profile: any): any {
     return {
       avatarUrl: profile.avatarUri || 'assets/images/default-avatar.png',
       name:
         `${profile.firstName || ''} ${profile.lastName || ''}`.trim() ||
         'Chưa cập nhật',
+      role: profile.role || '',
+      accountId: profile.accountId,
+      profileId: profile.profileId,
       username: profile.username || '',
       joinDate: profile.joinDate || new Date().toISOString(),
       followers: profile.followersCount || 0,

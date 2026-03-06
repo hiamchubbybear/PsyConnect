@@ -1,14 +1,14 @@
 :host {
   display: block;
-  margin-bottom: 2px; 
+  margin-bottom: 2px;
 }
 
 :host.first-in-group {
-  margin-top: 6px; 
+  margin-top: 6px;
 }
 
 :host.last-in-group {
-  margin-bottom: 6px; 
+  margin-bottom: 6px;
 }
 
 .message-wrapper {
@@ -41,7 +41,7 @@
 }
 
 .avatar-spacer {
-  width: 32px; 
+  width: 32px;
   flex-shrink: 0;
 }
 
@@ -64,14 +64,14 @@
 }
 
 .message-author {
-  font-size: var(--font-size-xs); 
+  font-size: var(--font-size-xs);
   font-weight: 600;
-  color: var(--color-text); 
+  color: var(--color-text);
 }
 
 .message-time {
   font-size: var(--font-size-2xs);
-  color: var(--color-text-muted); 
+  color: var(--color-text-muted);
 }
 
 .message-bubble {
@@ -91,17 +91,17 @@
   display: inline-block;
 
   &.mine {
-    background: var(--color-bg-contrast); 
-    color: var(--color-bg); 
+    background: var(--color-primary, #667eea);
+    color: white;
     border-radius: 18px;
     border-bottom-right-radius: 4px;
-    border-color: var(--color-bg-contrast);
+    border-color: var(--color-primary, #667eea);
     margin-left: auto;
   }
 
   p {
     margin: 0;
-    font-size: 0.9375rem; 
+    font-size: 0.9375rem;
     line-height: 1.4;
     max-width: 100%;
   }
@@ -113,7 +113,6 @@
   align-self: flex-end;
   padding: 0 4px;
 }
-
 
 .message-wrapper.sending {
   .message-bubble.mine {

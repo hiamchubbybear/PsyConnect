@@ -18,6 +18,7 @@ import dev.psyconnect.profile_service.dto.request.*;
 import dev.psyconnect.profile_service.dto.response.*;
 import dev.psyconnect.profile_service.globalexceptionhandle.CustomExceptionHandler;
 import dev.psyconnect.profile_service.globalexceptionhandle.ErrorCode;
+import dev.psyconnect.profile_service.grpc.client.IdentityGRPCClient;
 import dev.psyconnect.profile_service.kafka.service.KafkaService;
 import dev.psyconnect.profile_service.mapper.UserProfileMapper;
 import dev.psyconnect.profile_service.model.Profile;
@@ -34,6 +35,7 @@ public class UserProfileService {
     UserProfileMapper userProfileMapper;
     KafkaService kafkaService;
     private final UserSettingService userSettingService;
+    private final IdentityGRPCClient identityGRPCClient;
     ApplicationEventPublisher eventPublisher;
 
     @Autowired
@@ -42,12 +44,14 @@ public class UserProfileService {
             UserProfileMapper userProfileMapper,
             KafkaService kafkaService,
             UserSettingService userSettingService,
-            ApplicationEventPublisher eventPublisher) {
+            ApplicationEventPublisher eventPublisher,
+            IdentityGRPCClient identityGRPCClient) {
         this.userProfileRepository = userProfileRepository;
         this.userProfileMapper = userProfileMapper;
         this.kafkaService = kafkaService;
         this.userSettingService = userSettingService;
         this.eventPublisher = eventPublisher;
+        this.identityGRPCClient = identityGRPCClient;
     }
 
     public UserProfileCreationResponse create(UserProfileCreationRequest request) {
@@ -71,6 +75,14 @@ public class UserProfileService {
                     .findById(profileId)
                     .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.USER_NOT_FOUND));
             response = userProfileMapper.toUserProfileRequest(profile);
+            try {
+                var userInfo = identityGRPCClient.getUserInfo(profileId);
+                if (userInfo != null && userInfo.getSuccess()) {
+                    response.setRole(userInfo.getRole());
+                }
+            } catch (Exception grpcException) {
+                log.warn("Failed to fetch role from identity service for profile: {}", profileId, grpcException);
+            }
         } catch (Exception e) {
             kafkaService.sendLog(buildLog(
                     "profile-service",

@@ -4,13 +4,12 @@
   background: var(--color-surface);
   display: flex;
   flex-direction: column;
-  height: 100%; 
-  width: 100%; 
+  height: 100%;
+  width: 100%;
   position: relative;
   overflow: hidden;
   min-width: 0;
 
-  
   .upcoming-session-banner {
     padding: var(--spacing-sm) var(--spacing-md);
     background: white;
@@ -161,7 +160,7 @@
         align-items: center;
         justify-content: center;
         background: var(--color-surface-low);
-        position: relative; 
+        position: relative;
 
         img,
         .avatar-fallback {
@@ -240,7 +239,6 @@
       align-items: center;
       gap: 8px;
 
-      
       .icon-action-btn {
         width: 34px;
         height: 34px;
@@ -296,7 +294,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    min-height: 0; 
+    min-height: 0;
   }
 
   .date-separator {
@@ -372,18 +370,23 @@
 
     .load-more-btn {
       font-family: var(--font-family);
-      background: var(--color-bg);
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-weight: 500;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
-      color: var(--color-bg-contrast);
-      transition: background 0.2s;
+      color: var(--color-text);
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
-      &:hover {
-        background: var(--color-bg-contrast);
-        color: var(--color-bg);
+      &:hover:not(:disabled) {
+        background: var(--color-surface-low);
+        border-color: var(--color-primary, #667eea);
+        color: var(--color-primary, #667eea);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       }
 
       &:disabled {
@@ -393,7 +396,6 @@
     }
   }
 
-  
   .no-friend-selected {
     display: flex;
     flex-direction: column;
@@ -549,7 +551,6 @@
     }
   }
 
-  
   .system-message {
     display: flex;
     justify-content: center;
@@ -573,9 +574,12 @@
 
   .message-input-wrapper {
     padding: var(--spacing-md);
-    border-top: 1px solid var(--gray-200);
-    background: white;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
     position: relative;
+    transition:
+      background 0.3s ease,
+      border-color 0.3s ease;
   }
 }
 
