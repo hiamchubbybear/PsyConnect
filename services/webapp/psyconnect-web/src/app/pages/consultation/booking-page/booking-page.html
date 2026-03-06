@@ -66,14 +66,21 @@
                 }}
               </p>
               <div class="price-pill">
-                <span class="amount"
-                  >{{
-                    therapist.rage_price || therapist.ragePrice || 0 | number
-                  }}đ</span
+                <ng-container
+                  *ngIf="(therapist.rage_price || therapist.ragePrice || 0) > 0; else freePrice"
                 >
-                <span class="unit"
-                  >/ {{ "CONSULTATION.Booking.RatePerHour" | translate }}</span
-                >
+                  <span class="amount"
+                    >{{
+                      therapist.rage_price || therapist.ragePrice || 0 | number
+                    }}đ</span
+                  >
+                  <span class="unit"
+                    >/ {{ "CONSULTATION.Booking.RatePerHour" | translate }}</span
+                  >
+                </ng-container>
+                <ng-template #freePrice>
+                  <span class="amount">Miễn phí</span>
+                </ng-template>
               </div>
             </div>
           </div>

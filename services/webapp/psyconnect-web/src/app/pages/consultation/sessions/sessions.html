@@ -104,9 +104,9 @@
             }}
           </span>
         </div>
-        <div class="detail-row" *ngIf="session.price">
+        <div class="detail-row">
           <span class="detail-label">Phí tư vấn</span>
-          <span class="detail-value">{{ session.price | number }} VND</span>
+          <span class="detail-value">{{ getPriceLabel(session.price) }}</span>
         </div>
         <div class="detail-row" *ngIf="session.time_zone">
           <span class="detail-label">Múi giờ</span>
@@ -164,6 +164,7 @@
         <button
           class="btn btn--pay"
           *ngIf="
+            session.price > 0 &&
             session.payment_status !== 'paid' && session.status !== 'cancelled'
           "
           (click)="getPaymentUrl(session)"

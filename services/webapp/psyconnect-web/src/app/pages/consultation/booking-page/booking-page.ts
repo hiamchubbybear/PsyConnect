@@ -39,6 +39,7 @@ export class BookingPageComponent implements OnInit {
   isFetchingTherapist = true;
   modes = CONSULTATION_MODES;
   therapist: any;
+  therapistIdFromRoute = '';
   timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   constructor(
@@ -59,6 +60,7 @@ export class BookingPageComponent implements OnInit {
       return;
     }
 
+    this.therapistIdFromRoute = therapistId;
     this.fetchTherapist(therapistId);
 
     this.bookingForm = this.fb.group({
@@ -74,7 +76,7 @@ export class BookingPageComponent implements OnInit {
     this.isFetchingTherapist = true;
     this.therapistService.getTherapistById(id).subscribe({
       next: (res) => {
-        this.therapist = res;
+        this.therapist = (res as any)?.data ?? res;
         this.isFetchingTherapist = false;
       },
       error: (err) => {
@@ -111,6 +113,7 @@ export class BookingPageComponent implements OnInit {
         this.therapist.profile_id ||
         this.therapist.profileId ||
         this.therapist.id ||
+        this.therapistIdFromRoute ||
         '',
       start_time: startDateTime.toISOString(),
       end_time: endDateTime.toISOString(),

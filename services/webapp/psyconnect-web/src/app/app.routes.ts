@@ -196,6 +196,20 @@ export const routes: Routes = [
             (m) => m.MyConsultationProfileComponent,
           ),
       },
+      {
+        path: 'therapist/:id',
+        loadComponent: () =>
+          import('./pages/consultation/therapist-profile/therapist-profile').then(
+            (m) => m.TherapistProfileComponent,
+          ),
+      },
+      {
+        path: 'book/:therapistId',
+        loadComponent: () =>
+          import('./pages/consultation/booking-page/booking-page').then(
+            (m) => m.BookingPageComponent,
+          ),
+      },
     ],
   },
   { path: 'feature/chat', component: ChatComponent, canActivate: [authGuard] },

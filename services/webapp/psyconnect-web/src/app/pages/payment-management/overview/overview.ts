@@ -23,7 +23,7 @@ interface PaymentStats {
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon revenue">
-            <i class="fas fa-dollar-sign"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
           </div>
           <div class="stat-content">
             <span class="stat-label">{{ 'PAYMENT.Overview.TotalRevenue' | translate }}</span>
@@ -32,7 +32,7 @@ interface PaymentStats {
         </div>
         <div class="stat-card">
           <div class="stat-icon monthly">
-            <i class="fas fa-calendar-alt"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
           </div>
           <div class="stat-content">
             <span class="stat-label">{{ 'PAYMENT.Overview.MonthlyRevenue' | translate }}</span>
@@ -41,7 +41,7 @@ interface PaymentStats {
         </div>
         <div class="stat-card">
           <div class="stat-icon transactions">
-            <i class="fas fa-exchange-alt"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="14" x2="21" y2="3"></line><polyline points="8 21 3 21 3 16"></polyline><line x1="20" y1="10" x2="3" y2="21"></line></svg>
           </div>
           <div class="stat-content">
             <span class="stat-label">{{ 'PAYMENT.Overview.Transactions' | translate }}</span>
@@ -50,7 +50,7 @@ interface PaymentStats {
         </div>
         <div class="stat-card">
           <div class="stat-icon pending">
-            <i class="fas fa-clock"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           </div>
           <div class="stat-content">
             <span class="stat-label">{{ 'PAYMENT.Overview.Pending' | translate }}</span>
@@ -60,7 +60,7 @@ interface PaymentStats {
       </div>
 
       <div class="chart-placeholder">
-        <i class="fas fa-chart-line"></i>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
         <p>{{ 'PAYMENT.Overview.ChartComingSoon' | translate }}</p>
       </div>
     </div>

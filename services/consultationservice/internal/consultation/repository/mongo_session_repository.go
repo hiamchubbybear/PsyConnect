@@ -170,6 +170,10 @@ func (r *MongoSessionRepository) Cancel(
 }
 
 func (r *MongoSessionRepository) Create(ctx context.Context, session *domain.Session) error {
+	if session == nil {
+		return errors.New("cannot create session: session is nil")
+	}
+
 	doc := bson.M{
 		"_id":               session.SessionID,
 		"therapist_id":      session.TherapistID,

@@ -1,8 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TherapistV1 } from '../../models/consultation.model';
+
+interface ApiResponse<T> {
+  message: string;
+  status: number;
+  data: T;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -13,25 +19,35 @@ export class TherapistService {
   constructor(private http: HttpClient) {}
 
   getTherapistProfile(): Observable<TherapistV1> {
-    return this.http.get<TherapistV1>(`${this.baseUrl}/me`);
+    return this.http
+      .get<ApiResponse<TherapistV1>>(`${this.baseUrl}/me`)
+      .pipe(map((res) => res.data));
   }
 
   getTherapistById(id: string): Observable<TherapistV1> {
-    return this.http.get<TherapistV1>(`${this.baseUrl}/${id}`);
+    return this.http
+      .get<ApiResponse<TherapistV1>>(`${this.baseUrl}/${id}`)
+      .pipe(map((res) => res.data));
   }
 
   createTherapistProfile(data: TherapistV1): Observable<TherapistV1> {
-    return this.http.post<TherapistV1>(`${this.baseUrl}/me`, data);
+    return this.http
+      .post<ApiResponse<TherapistV1>>(`${this.baseUrl}/me`, data)
+      .pipe(map((res) => res.data));
   }
 
   updateTherapistProfile(data: Partial<TherapistV1>): Observable<TherapistV1> {
-    return this.http.put<TherapistV1>(`${this.baseUrl}/me`, data);
+    return this.http
+      .put<ApiResponse<TherapistV1>>(`${this.baseUrl}/me`, data)
+      .pipe(map((res) => res.data));
   }
 
   changeTherapistStatus(status: boolean): Observable<boolean> {
-    return this.http.patch<boolean>(`${this.baseUrl}/me/availability`, {
-      status,
-    });
+    return this.http
+      .patch<ApiResponse<boolean>>(`${this.baseUrl}/me/availability`, {
+        status,
+      })
+      .pipe(map((res) => res.data));
   }
 
   searchTherapists(
@@ -41,6 +57,8 @@ export class TherapistService {
   ): Observable<any> {
     const params = { q: query, limit: limit.toString(), skip: skip.toString() };
     const searchUrl = `${environment.apiUrl}/${environment.apiVersion}/consultation/search/therapists`;
-    return this.http.get<any>(searchUrl, { params });
+    return this.http
+      .get<ApiResponse<any>>(searchUrl, { params })
+      .pipe(map((res) => res.data));
   }
 }

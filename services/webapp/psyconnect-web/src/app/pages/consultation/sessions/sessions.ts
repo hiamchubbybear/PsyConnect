@@ -124,6 +124,11 @@ export class Sessions implements OnInit {
     });
   }
 
+  getPriceLabel(price: number | undefined): string {
+    if (!price || price <= 0) return 'Miễn phí';
+    return `${new Intl.NumberFormat('vi-VN').format(price)} VND`;
+  }
+
   joinSession(session: ConsultationSession): void {
     if (session.location_info?.link) {
       window.open(session.location_info.link, '_blank');

@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { Therapist } from '../../../models/swipe-card';
+import { Therapist, mapTherapistResponse } from '../../../models/swipe-card';
 import { AuthService } from '../../../services/auth/auth.service';
 import { MatchingService } from '../../../services/consultation/matching.service';
 import { SwipeService } from '../../../services/swipe/swipe.service';
@@ -59,7 +59,7 @@ export class SmartMatchComponent implements OnInit {
             next: () => {
               this.swipeService.getSwipeData().subscribe({
                 next: (retryRes) => {
-                  this.recommendedTherapists = retryRes.data || [];
+                  this.recommendedTherapists = mapTherapistResponse(retryRes);
                   this.currentIndex = 0;
                   this.isLoading = false;
                 },
@@ -76,7 +76,7 @@ export class SmartMatchComponent implements OnInit {
             },
           });
         } else {
-          this.recommendedTherapists = therapists;
+          this.recommendedTherapists = mapTherapistResponse(res);
           this.currentIndex = 0;
           this.isLoading = false;
         }
@@ -109,13 +109,14 @@ export class SmartMatchComponent implements OnInit {
 
   onBookSession() {
     if (!this.currentTherapist) return;
-    const therapistId = this.currentTherapist.profileId;
-    this.router.navigate(['/feature/consultation/book', therapistId]);
+    this.router.navigate([
+      '/feature/consultation/book',
+      this.currentTherapist.profileId,
+    ]);
   }
 
   onMessage() {
     if (!this.currentTherapist) return;
-
     this.router.navigate(['/feature/chat'], {
       queryParams: { therapistId: this.currentTherapist.profileId },
     });
@@ -123,7 +124,6 @@ export class SmartMatchComponent implements OnInit {
 
   onViewProfile() {
     if (!this.currentTherapist) return;
-
     this.router.navigate([
       '/feature/consultation/therapist',
       this.currentTherapist.profileId,
