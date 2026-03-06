@@ -113,8 +113,12 @@ func RouterInit(
 		therapist.POST("/me", therapistHandler.CreateTherapist)
 		therapist.PUT("/me", therapistHandler.UpdateTherapist)
 		therapist.PATCH("/me/availability", therapistHandler.UpdateAvailability)
+	}
 
-		therapist.GET("/:id", therapistHandler.GetTherapistByID)
+	therapistPublic := api.Group("/therapists")
+	therapistPublic.Use(middleware.RoleRequire(""))
+	{
+		therapistPublic.GET("/:id", therapistHandler.GetTherapistByID)
 	}
 
 	client := api.Group("/clients")
@@ -128,11 +132,16 @@ func RouterInit(
 		client.GET("/me/recommend/top", swipeHandler.PopTop5V1)
 		client.POST("/me/match", matchingHandler.MatchRequest)
 		client.POST("/me/swipe", swipeHandler.SwipeTherapist)
+	}
 
-		client.GET("/:id", clientHandler.GetClientByID)
+	clientPublic := api.Group("/clients")
+	clientPublic.Use(middleware.RoleRequire(""))
+	{
+		clientPublic.GET("/:id", clientHandler.GetClientByID)
 	}
 
 	session := api.Group("/sessions")
+	session.Use(middleware.RoleRequire(""))
 	{
 		session.GET("/me", sessionHandler.GetSessionsByProfile)
 		session.GET("/me/calendar", sessionHandler.GetCalendar)
@@ -142,10 +151,13 @@ func RouterInit(
 		session.GET("/:id", sessionHandler.GetSession)
 		session.POST("/:id/call/start", sessionHandler.StartCall)
 
-		
-		session.GET("/:id/payment-url", sessionHandler.GetPaymentURL)          
-		session.POST("/webhook/payment", sessionHandler.ProcessPaymentWebhook) 
-		session.POST("/:id/refund", sessionHandler.RefundSession)              
+		session.GET("/:id/payment-url", sessionHandler.GetPaymentURL)
+		session.POST("/:id/refund", sessionHandler.RefundSession)
+	}
+
+	sessionWebhook := api.Group("/sessions")
+	{
+		sessionWebhook.POST("/webhook/payment", sessionHandler.ProcessPaymentWebhook)
 	}
 
 	adminSession := api.Group("/admin/sessions")
@@ -155,6 +167,7 @@ func RouterInit(
 	}
 
 	match := api.Group("/matches")
+	match.Use(middleware.RoleRequire(""))
 	{
 		match.GET("/", matchingHandler.GetAllMatchTherapist)
 		match.POST("/", matchingHandler.MatchRequest)
@@ -231,11 +244,13 @@ func RouterInit(
 	}
 
 	tags := api.Group("/tags")
+	tags.Use(middleware.RoleRequire(""))
 	{
 		tags.GET("/:tag/posts", postHandler.GetPostsByTag)
 	}
 
 	categories := api.Group("/categories")
+	categories.Use(middleware.RoleRequire(""))
 	{
 		categories.GET("/:category/posts", postHandler.GetPostsByCategory)
 	}
