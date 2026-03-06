@@ -35,7 +35,7 @@
     <!-- Loading State for Therapist -->
     <div class="loading-overlay" *ngIf="isFetchingTherapist">
       <div class="spinner-large"></div>
-      <p>Loading therapist information...</p>
+      <p>{{ "CONSULTATION.Booking.LoadingTherapist" | translate }}</p>
     </div>
 
     <form
@@ -62,7 +62,7 @@
                 {{
                   therapist.professional_title ||
                     therapist.professionalTitle ||
-                    "Therapist"
+                    ("CONSULTATION.Booking.TherapistRole" | translate)
                 }}
               </p>
               <div class="price-pill">
@@ -79,7 +79,9 @@
                   >
                 </ng-container>
                 <ng-template #freePrice>
-                  <span class="amount">Miễn phí</span>
+                  <span class="amount">{{
+                    "CONSULTATION.Booking.Free" | translate
+                  }}</span>
                 </ng-template>
               </div>
             </div>
@@ -139,7 +141,7 @@
                 </svg>
               </div>
               <div class="text">
-                <label>Note</label>
+                <label>{{ "COMMON.Warning" | translate }}</label>
                 <p>
                   {{ "CONSULTATION.Booking.ResponsibilityNote" | translate }}
                 </p>
@@ -319,6 +321,42 @@
             </div>
             <p class="field-hint">
               {{ "CONSULTATION.Booking.ModeDesc" | translate }}
+            </p>
+          </div>
+
+          <div class="form-section" *ngIf="requiresMeetingLocation">
+            <h2 class="section-title">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 21C16 17 19 13.97 19 10A7 7 0 1 0 5 10C5 13.97 8 17 12 21Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle
+                  cx="12"
+                  cy="10"
+                  r="2.5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+              </svg>
+              {{ "CONSULTATION.Booking.LocationTitle" | translate }}
+            </h2>
+
+            <app-location-picker
+              (locationSelected)="onLocationSelected($event)"
+            ></app-location-picker>
+
+            <p class="field-error" *ngIf="locationSelectionErrorKey">
+              {{ locationSelectionErrorKey | translate }}
             </p>
           </div>
 

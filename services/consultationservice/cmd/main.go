@@ -13,12 +13,12 @@ import (
 	"consultationservice/internal/route"
 	"consultationservice/pkg/logger"
 
-	
 	consultationRepo "consultationservice/internal/consultation/repository"
 	httpHandler "consultationservice/internal/consultation/transport/http"
 	"consultationservice/internal/consultation/usecase"
+	locationService "consultationservice/internal/location/service"
+	locationHTTP "consultationservice/internal/location/transport/http"
 
-	
 	clientRepo "consultationservice/internal/client/repository"
 	clientHTTP "consultationservice/internal/client/transport/http"
 	clientUseCase "consultationservice/internal/client/usecase"
@@ -88,25 +88,21 @@ func main() {
 		})
 		log.Printf("Warning: Redis initialization failed: %v", err)
 	}
-	
-	
+
 	legacyPostRepo := repository.NewPostRepo()
 	legacyReactionRepo := repository.NewReactionRepo()
 	legacyBookmarkRepo := repository.NewBookmarkRepo()
 
-	
 	kafkaProducer, err := kafka.NewProducer(env)
 	if err != nil {
 		log.Printf("⚠️  Warning: Failed to initialize Kafka producer: %v", err)
 	}
 
-	
-	
 	profileGrpcAddr := os.Getenv("PROFILE_SERVICE_URL")
 	if profileGrpcAddr == "" {
-		profileGrpcAddr = "profileservice:50051" 
+		profileGrpcAddr = "profileservice:50051"
 	} else {
-		
+
 		profileGrpcAddr = strings.TrimPrefix(profileGrpcAddr, "http://")
 		profileGrpcAddr = strings.TrimPrefix(profileGrpcAddr, "https://")
 		if !strings.Contains(profileGrpcAddr, ":") {
@@ -124,10 +120,8 @@ func main() {
 		}
 	}()
 
-	
 	sessionRepo := consultationRepo.NewMongoSessionRepository(db.GetSessionCollection())
 
-	
 	createSessionUC := usecase.NewCreateSessionUseCase(sessionRepo, kafkaProducer, profileHandler)
 	getSessionUC := usecase.NewGetSessionUseCase(sessionRepo)
 	deleteSessionUC := usecase.NewDeleteSessionUseCase(sessionRepo)
@@ -139,7 +133,6 @@ func main() {
 	getOverviewUC := usecase.NewGetOverviewUseCase(sessionRepo)
 	getCalendarUC := usecase.NewGetCalendarUseCase(sessionRepo)
 
-	
 	sessionHandler := httpHandler.NewHandler(
 		createSessionUC,
 		getSessionUC,
@@ -151,76 +144,60 @@ func main() {
 		getCalendarUC,
 		getOverviewUC,
 	)
-	
 
-	
-	
+	geocodingService := locationService.NewGeocodingService()
+	locationHandler := locationHTTP.NewHandler(geocodingService)
+
 	clientRepository := clientRepo.NewMongoClientRepository(db.GetClientCollection(), redisClient)
 
-	
 	createClientUC := clientUseCase.NewCreateClientUseCase(clientRepository)
 	getClientUC := clientUseCase.NewGetClientUseCase(clientRepository)
 	updateClientUC := clientUseCase.NewUpdateClientUseCase(clientRepository)
 	deleteClientUC := clientUseCase.NewDeleteClientUseCase(clientRepository)
 
-	
 	clientHandler := clientHTTP.NewHandler(
 		createClientUC,
 		getClientUC,
 		updateClientUC,
 		deleteClientUC,
 	)
-	
 
-	
-	
 	therapistRepository := therapistRepo.NewMongoTherapistRepository(db.GetTherapistCollection(), redisClient)
 
-	
 	createTherapistUC := therapistUseCase.NewCreateTherapistUseCase(therapistRepository)
 	getTherapistUC := therapistUseCase.NewGetTherapistUseCase(therapistRepository)
 	updateTherapistUC := therapistUseCase.NewUpdateTherapistUseCase(therapistRepository)
 	deleteTherapistUC := therapistUseCase.NewDeleteTherapistUseCase(therapistRepository)
 
-	
 	therapistHandler := therapistHTTP.NewHandler(
 		createTherapistUC,
 		getTherapistUC,
 		updateTherapistUC,
 		deleteTherapistUC,
 	)
-	
 
-	
 	matchRepository := matchRepo.NewMongoMatchRepository(db.GetMatchCollection(), redisClient)
 	createMatchUC := matchUseCase.NewCreateMatchUseCase(matchRepository, clientRepository, therapistRepository)
 	getClientMatchesUC := matchUseCase.NewGetClientMatchesUseCase(matchRepository)
 
 	matchHandler := matchHTTP.NewHandler(createMatchUC, getClientMatchesUC)
-	
 
-	
 	swipeRepository := swipeRepo.NewMongoSwipeRepository(db.GetSwipedCollection(), matchRepository, redisClient)
 	insertSwipeUC := swipeUseCase.NewInsertSwipeUseCase(swipeRepository)
 	swipeAndMatchUC := swipeUseCase.NewSwipeAndMatchUseCase(swipeRepository)
 	recommendUC := swipeUseCase.NewRecommendUseCase(clientRepository, therapistRepository, swipeRepository)
 
 	swipeHandler := swipeHTTP.NewHandler(insertSwipeUC, swipeAndMatchUC, recommendUC)
-	
 
-	
 	reactionRepository := reactionRepo.NewMongoReactionRepository(db.GetReactionCollection(), redisClient)
 
-	
 	postRepoAdapter := reactionUseCase.NewPostRepositoryAdapter(legacyPostRepo)
 
 	toggleReactionUC := reactionUseCase.NewToggleReactionUseCase(reactionRepository, postRepoAdapter)
 	getReactionsUC := reactionUseCase.NewGetReactionsUseCase(reactionRepository)
 
 	reactionHandler := reactionHTTP.NewHandler(toggleReactionUC, getReactionsUC, kafkaProducer)
-	
 
-	
 	commentRepository := commentRepo.NewMongoCommentRepository(db.GetCommentCollection(), redisClient)
 	postRepoAdapterComment := commentUseCase.NewPostRepositoryAdapter(legacyPostRepo)
 
@@ -231,9 +208,7 @@ func main() {
 	getRepliesUC := commentUseCase.NewGetRepliesUseCase(commentRepository)
 
 	commentHandler := commentHTTP.NewHandler(createCommentUC, getCommentsUC, updateCommentUC, deleteCommentUC, getRepliesUC, kafkaProducer)
-	
 
-	
 	followRepository := socialRepo.NewMongoFollowRepository(db.GetFollowCollection())
 	bookmarkRepository := socialRepo.NewMongoBookmarkRepository(db.GetBookmarkCollection())
 
@@ -243,9 +218,7 @@ func main() {
 	unbookmarkPostUC := socialUseCase.NewUnbookmarkPostUseCase(bookmarkRepository)
 
 	socialHandler := socialHTTP.NewHandler(followUserUC, unfollowUserUC, bookmarkPostUC, unbookmarkPostUC)
-	
 
-	
 	legacyPostRepoAdapter := postRepo.NewLegacyPostRepositoryAdapter(legacyPostRepo)
 
 	createPostUC := postUseCase.NewCreatePostUseCase(legacyPostRepoAdapter)
@@ -267,9 +240,7 @@ func main() {
 		getByTagUC, getByCategoryUC, incrementViewUC, getPopularTagsUC,
 		redisClient, legacyReactionRepo, legacyBookmarkRepo,
 	)
-	
 
-	
 	groupRepository := groupRepo.NewGroupRepo()
 
 	createGroupUC := groupUseCase.NewCreateGroupUseCase(groupRepository)
@@ -283,18 +254,6 @@ func main() {
 		getGroupByIDUC,
 		joinGroupUC,
 	)
-	
-
-	
-	
-	
-	
-
-	
-	
-	
-	
-	
 
 	kafka.NewConsumer(env)
 	kafka.NewProducer(env)
@@ -308,6 +267,7 @@ func main() {
 		therapistHandler,
 		matchHandler,
 		sessionHandler,
+		locationHandler,
 		swipeHandler,
 		postHandler,
 		reactionHandler,

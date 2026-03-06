@@ -274,6 +274,13 @@
         font-style: italic;
       }
 
+      .field-error {
+        margin: 12px 0 0;
+        color: var(--color-error-text, #dc2626);
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
       .mode-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);

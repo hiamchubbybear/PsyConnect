@@ -4,6 +4,7 @@ import (
 	"consultationservice/internal/payment/domain"
 	"consultationservice/internal/utils"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -87,6 +88,7 @@ func NewSession(
 
 	startUTC := startTime.UTC()
 	endUTC := endTime.UTC()
+	timezone = normalizeTimezone(timezone)
 	if _, err := time.LoadLocation(timezone); err != nil {
 		return nil, fmt.Errorf("invalid timezone: %s", timezone)
 	}
@@ -178,4 +180,13 @@ func (s *Session) GenerateConversationID() (string, error) {
 	util := utils.New()
 	res, err := util.EncodeConversationId(s.ClientID, s.TherapistID)
 	return res, err
+}
+
+func normalizeTimezone(timezone string) string {
+	switch strings.TrimSpace(timezone) {
+	case "Asia/Saigon":
+		return "Asia/Ho_Chi_Minh"
+	default:
+		return timezone
+	}
 }

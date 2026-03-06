@@ -8,6 +8,7 @@ import (
 	"consultationservice/bootstrap"
 	clientHTTP "consultationservice/internal/client/transport/http"
 	httpHandler "consultationservice/internal/consultation/transport/http"
+	locationHTTP "consultationservice/internal/location/transport/http"
 	matchHTTP "consultationservice/internal/matching/transport/http"
 	"consultationservice/internal/middleware"
 	commentHTTP "consultationservice/internal/newsfeed/comment/transport/http"
@@ -28,6 +29,7 @@ func RouterInit(
 	therapistHandler *therapistHTTP.Handler,
 	matchingHandler *matchHTTP.Handler,
 	sessionHandler *httpHandler.Handler,
+	locationHandler *locationHTTP.Handler,
 	swipeHandler *swipeHTTP.Handler,
 
 	postHandler *postHTTP.Handler,
@@ -171,6 +173,13 @@ func RouterInit(
 	{
 		match.GET("/", matchingHandler.GetAllMatchTherapist)
 		match.POST("/", matchingHandler.MatchRequest)
+	}
+
+	locations := api.Group("/locations")
+	locations.Use(middleware.RoleRequire(""))
+	{
+		locations.GET("/search", locationHandler.Search)
+		locations.GET("/reverse", locationHandler.Reverse)
 	}
 
 	uncategoryGroupV1 := router.Group("/v1/consultation")

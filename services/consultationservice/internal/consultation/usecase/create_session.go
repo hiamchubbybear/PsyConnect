@@ -94,6 +94,9 @@ func (uc *CreateSessionUseCase) Execute(ctx context.Context, req CreateSessionRe
 		req.Price,
 		req.Mode,
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := uc.sessionRepo.Create(ctx, session); err != nil {
 		return nil, err

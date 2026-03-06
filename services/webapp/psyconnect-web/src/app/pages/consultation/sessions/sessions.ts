@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConsultationSession } from '../../../models/consultation.model';
 import { SessionService } from '../../../services/consultation/session.service';
 
@@ -22,6 +22,7 @@ export class Sessions implements OnInit {
   constructor(
     private sessionService: SessionService,
     private router: Router,
+    private translateService: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -125,7 +126,9 @@ export class Sessions implements OnInit {
   }
 
   getPriceLabel(price: number | undefined): string {
-    if (!price || price <= 0) return 'Miễn phí';
+    if (!price || price <= 0) {
+      return this.translateService.instant('CONSULTATION.Booking.Free');
+    }
     return `${new Intl.NumberFormat('vi-VN').format(price)} VND`;
   }
 
@@ -143,7 +146,13 @@ export class Sessions implements OnInit {
   }
 
   cancelSession(session: ConsultationSession): void {
-    if (!confirm('Bạn có chắc muốn hủy buổi tư vấn này không?')) return;
+    if (
+      !confirm(
+        this.translateService.instant('CONSULTATION.Booking.CancelConfirm'),
+      )
+    ) {
+      return;
+    }
     this.sessionService.cancelSession(session.session_id || '').subscribe({
       next: () => this.loadSessions(),
       error: (err) => console.error('Cancel error', err),

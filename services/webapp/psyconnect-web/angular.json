@@ -38,6 +38,7 @@
                             "src/firebase-messaging-sw.js"
                         ],
                         "styles": [
+                            "node_modules/maplibre-gl/dist/maplibre-gl.css",
                             "node_modules/angular-calendar/css/angular-calendar.css",
                             "src/app/styles/styles.scss"
                         ]

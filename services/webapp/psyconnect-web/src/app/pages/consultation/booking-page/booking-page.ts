@@ -18,6 +18,10 @@ import { ChatService } from '../../../services/chat/chat.service';
 import { SessionService } from '../../../services/consultation/session.service';
 import { TherapistService } from '../../../services/consultation/therapist.service';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
+import {
+  LocationPickerComponent,
+  PickedLocation,
+} from '../../../shared/ui-atoms/location-picker/location-picker.component';
 
 @Component({
   selector: 'app-booking-page',
@@ -28,6 +32,7 @@ import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
     RouterModule,
     TranslateModule,
     AvatarFallbackPipe,
+    LocationPickerComponent,
   ],
   templateUrl: './booking-page.html',
   styleUrls: ['./booking-page.scss'],
@@ -40,6 +45,8 @@ export class BookingPageComponent implements OnInit {
   modes = CONSULTATION_MODES;
   therapist: any;
   therapistIdFromRoute = '';
+  selectedMeetingLocation: PickedLocation | null = null;
+  locationSelectionErrorKey = '';
   timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   constructor(
@@ -70,6 +77,12 @@ export class BookingPageComponent implements OnInit {
       mode: ['online', Validators.required],
       acceptResponsibility: [false, Validators.requiredTrue],
     });
+
+    this.bookingForm.get('mode')?.valueChanges.subscribe((mode) => {
+      if (mode !== 'in-person') {
+        this.locationSelectionErrorKey = '';
+      }
+    });
   }
 
   fetchTherapist(id: string) {
@@ -90,6 +103,15 @@ export class BookingPageComponent implements OnInit {
     window.history.back();
   }
 
+  onLocationSelected(location: PickedLocation): void {
+    this.selectedMeetingLocation = location;
+    this.locationSelectionErrorKey = '';
+  }
+
+  get requiresMeetingLocation(): boolean {
+    return this.bookingForm.get('mode')?.value === 'in-person';
+  }
+
   onSubmit() {
     if (this.bookingForm.invalid) return;
 
@@ -103,6 +125,13 @@ export class BookingPageComponent implements OnInit {
 
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) {
+      this.isLoading = false;
+      return;
+    }
+
+    if (formVal.mode === 'in-person' && !this.selectedMeetingLocation) {
+      this.locationSelectionErrorKey =
+        'CONSULTATION.Booking.LocationPicker.Errors.SelectionRequired';
       this.isLoading = false;
       return;
     }
@@ -124,7 +153,15 @@ export class BookingPageComponent implements OnInit {
       location_info:
         formVal.mode === 'online'
           ? { link: 'To be generated' }
-          : { address_line: this.therapist.address || '' },
+          : {
+              address_line: this.selectedMeetingLocation?.address || '',
+              coordinates: this.selectedMeetingLocation
+                ? [
+                    String(this.selectedMeetingLocation.latitude),
+                    String(this.selectedMeetingLocation.longitude),
+                  ]
+                : [],
+            },
     };
 
     this.sessionService.createSession(req).subscribe({
