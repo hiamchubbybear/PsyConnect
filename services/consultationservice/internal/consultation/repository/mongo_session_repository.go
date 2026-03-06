@@ -170,7 +170,52 @@ func (r *MongoSessionRepository) Cancel(
 }
 
 func (r *MongoSessionRepository) Create(ctx context.Context, session *domain.Session) error {
-	_, err := r.collection.InsertOne(ctx, session)
+	doc := bson.M{
+		"_id":               session.SessionID,
+		"therapist_id":      session.TherapistID,
+		"client_id":         session.ClientID,
+		"session-user-code": session.SessionUserCode,
+		"mode":              session.Mode,
+		"start_time":        session.StartTime,
+		"end_time":          session.EndTime,
+		"status":            session.Status,
+		"timezone":          session.Timezone,
+		"scheduled_date":    session.ScheduledDate,
+		"price":             session.Price,
+		"payment_status":    session.PaymentStatus,
+		"conversation_id":   session.ConversationID,
+		"logs":              session.Logs,
+		"created_at":        session.CreatedAt,
+		"updated_at":        session.UpdatedAt,
+	}
+
+	if session.LocationInfo != nil {
+		doc["location_info"] = session.LocationInfo
+	}
+	if session.PaymentID != nil {
+		doc["payment_id"] = *session.PaymentID
+	}
+	if session.RefundTraceID != nil {
+		doc["refund_trace_id"] = *session.RefundTraceID
+	}
+	if session.CallSessionID != nil {
+		doc["call_session_id"] = *session.CallSessionID
+	}
+	if session.CancelMetaData.CancelledBy != nil || session.CancelMetaData.CancellationReason != nil {
+		cancelMeta := bson.M{}
+		if session.CancelMetaData.CancelledBy != nil {
+			cancelMeta["cancelled_by"] = *session.CancelMetaData.CancelledBy
+		}
+		if session.CancelMetaData.CancellationReason != nil {
+			cancelMeta["cancellation_reason"] = *session.CancelMetaData.CancellationReason
+		}
+		doc["cancel_meta_data"] = cancelMeta
+	}
+	if !session.ReminderSentAt.IsZero() {
+		doc["reminder_sent_at"] = session.ReminderSentAt
+	}
+
+	_, err := r.collection.InsertOne(ctx, doc)
 	return err
 }
 
