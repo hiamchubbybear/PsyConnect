@@ -1,0 +1,88 @@
+<div class="location-picker">
+  <div class="location-picker__header">
+    <div>
+      <h3>{{ "CONSULTATION.Booking.LocationPicker.Title" | translate }}</h3>
+      <p>{{ "CONSULTATION.Booking.LocationPicker.Description" | translate }}</p>
+    </div>
+    <button
+      type="button"
+      class="location-picker__action"
+      (click)="useCurrentLocation()"
+    >
+      {{ "CONSULTATION.Booking.LocationPicker.UseCurrentLocation" | translate }}
+    </button>
+  </div>
+
+  <div class="location-picker__search">
+    <label class="location-picker__search-label" for="meeting-location-search">
+      {{ "CONSULTATION.Booking.LocationPicker.SearchLabel" | translate }}
+    </label>
+    <div class="location-picker__search-row">
+      <input
+        id="meeting-location-search"
+        type="text"
+        class="location-picker__search-input"
+        [formControl]="searchControl"
+        [placeholder]="
+          'CONSULTATION.Booking.LocationPicker.SearchPlaceholder' | translate
+        "
+        (input)="onSearchInput()"
+        (keydown.enter)="onSearchEnter($event)"
+      />
+      <button
+        type="button"
+        class="location-picker__search-button"
+        (click)="searchPlaces()"
+        [disabled]="searchControl.value.trim().length < 3 || isSearching"
+      >
+        {{ "COMMON.Search" | translate }}
+      </button>
+    </div>
+
+    <div class="location-picker__search-state" *ngIf="isSearching">
+      {{ "CONSULTATION.Booking.LocationPicker.Searching" | translate }}
+    </div>
+
+    <div
+      class="location-picker__search-state"
+      *ngIf="
+        !isSearching &&
+        hasSubmittedSearch &&
+        searchResults.length === 0
+      "
+    >
+      {{ "CONSULTATION.Booking.LocationPicker.NoResults" | translate }}
+    </div>
+
+    <div class="location-picker__results" *ngIf="searchResults.length > 0">
+      <button
+        *ngFor="let result of searchResults"
+        type="button"
+        class="location-picker__result-option"
+        (click)="selectSearchResult(result)"
+      >
+        {{ result.address }}
+      </button>
+    </div>
+  </div>
+
+  <div class="location-picker__map" #mapContainer></div>
+
+  <div class="location-picker__status" *ngIf="isResolving">
+    {{ "CONSULTATION.Booking.LocationPicker.Resolving" | translate }}
+  </div>
+
+  <div class="location-picker__result" *ngIf="selectedAddress">
+    <div class="location-picker__label">
+      {{ "CONSULTATION.Booking.LocationPicker.SelectedLabel" | translate }}
+    </div>
+    <div class="location-picker__address">{{ selectedAddress }}</div>
+    <div class="location-picker__coords" *ngIf="selectedLatitude !== undefined && selectedLongitude !== undefined">
+      {{ selectedLatitude | number: '1.4-6' }}, {{ selectedLongitude | number: '1.4-6' }}
+    </div>
+  </div>
+
+  <div class="location-picker__error" *ngIf="errorKey">
+    {{ errorKey | translate }}
+  </div>
+</div>
