@@ -1,0 +1,72 @@
+<div class="modal-overlay fade-in" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    
+    <!-- Top actions (like the notification close button) -->
+    <div class="modal-top-actions">
+      <button class="btn-icon" (click)="closeModal()" aria-label="Đóng">
+        <app-icon name="x" [size]="20"></app-icon>
+      </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="modal-content-area">
+      <!-- Header row: Avatar, Title, Status -->
+      <div class="card-header">
+        <div class="avatar-cell">
+          <div class="avatar-circle" [style.background-color]="event.color?.primary">
+            {{ meta.partnerName?.charAt(0) || 'P' }}
+          </div>
+        </div>
+        
+        <div class="title-cell">
+          <h3 class="partner-name">{{ meta.partnerName }}</h3>
+          <div class="status-tag" [class.online]="meta.mode === 'online'">
+            <app-icon [name]="meta.mode === 'online' ? 'video' : 'map-pin'" [size]="12"></app-icon>
+            <span>{{ meta.mode === 'online' ? 'Trực tuyến' : 'Trực tiếp' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description Text -->
+      <div class="card-body">
+        <p class="description-text">
+          Buổi tham vấn tâm lý với <strong>{{ meta.partnerName }}</strong> được lên lịch vào ngày <strong>{{ event.start | date: 'dd/MM/yyyy' }}</strong>, 
+          từ <strong>{{ event.start | date: 'HH:mm' }}</strong> đến <strong>{{ event.end | date: 'HH:mm' }}</strong>.
+          <span *ngIf="meta.mode === 'in_person'">
+            Cuộc hẹn sẽ diễn ra tại địa chỉ: <strong>{{ meta.address || 'Phòng khám ' + meta.partnerName + ', Việt Nam' }}</strong>.
+          </span>
+          <span *ngIf="meta.mode === 'online'">
+            Cuộc hẹn sẽ diễn ra trực tuyến qua hệ thống hội nghị video.
+          </span>
+        </p>
+
+        <!-- Inline actions (like "Register an event" in the inspiration) -->
+        <div class="inline-actions">
+          <!-- In-person Map Links -->
+          <ng-container *ngIf="meta.mode === 'in_person'">
+            <button class="action-link text-primary" (click)="openGoogleMaps()">
+              <app-icon name="search" [size]="16"></app-icon> Mở Google Maps
+            </button>
+            <button class="action-link text-primary" (click)="openAppleMaps()">
+              <app-icon name="map-pin" [size]="16"></app-icon> Mở Apple Maps
+            </button>
+          </ng-container>
+
+          <!-- Online Join Link -->
+          <ng-container *ngIf="meta.mode === 'online'">
+            <button class="action-link text-success">
+              <app-icon name="video" [size]="16"></app-icon> Tham gia phòng họp
+            </button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Actions (Delete all / Delete read messages style) -->
+    <div class="modal-footer">
+      <button class="btn-flat btn-danger">Hủy lịch</button>
+      <button class="btn-flat" (click)="closeModal()">Đóng</button>
+    </div>
+
+  </div>
+</div>
