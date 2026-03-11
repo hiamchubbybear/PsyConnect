@@ -28,9 +28,9 @@ export class SessionDetailModalComponent {
 
   openGoogleMaps() {
     if (this.meta.locationInfo?.coordinates?.length >= 2) {
-      // GeoJSON is [longitude, latitude], maps expect lat,lng
-      const lng = this.meta.locationInfo.coordinates[0];
-      const lat = this.meta.locationInfo.coordinates[1];
+      // Backend provides [latitude, longitude]
+      const lat = this.meta.locationInfo.coordinates[0];
+      const lng = this.meta.locationInfo.coordinates[1];
       window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
       return;
     }
@@ -40,8 +40,8 @@ export class SessionDetailModalComponent {
 
   openAppleMaps() {
     if (this.meta.locationInfo?.coordinates?.length >= 2) {
-      const lng = this.meta.locationInfo.coordinates[0];
-      const lat = this.meta.locationInfo.coordinates[1];
+      const lat = this.meta.locationInfo.coordinates[0];
+      const lng = this.meta.locationInfo.coordinates[1];
       window.open(`http://maps.apple.com/?ll=${lat},${lng}&q=Phòng khám`, '_blank');
       return;
     }

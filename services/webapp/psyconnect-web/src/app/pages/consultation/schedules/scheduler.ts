@@ -153,8 +153,8 @@ export class SchedulerComponent implements OnInit {
     if (!meta) return;
 
     if (meta.locationInfo?.coordinates?.length >= 2) {
-      const lng = meta.locationInfo.coordinates[0];
-      const lat = meta.locationInfo.coordinates[1];
+      const lat = meta.locationInfo.coordinates[0];
+      const lng = meta.locationInfo.coordinates[1];
       window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
       return;
     }
