@@ -33,7 +33,6 @@ export class Sessions implements OnInit {
     this.isLoading = true;
     this.sessionService.getAllSessions().subscribe({
       next: (data: any) => {
-        
         this.sessions = Array.isArray(data)
           ? data
           : data?.data || data?.sessions || [];
@@ -93,19 +92,34 @@ export class Sessions implements OnInit {
     return map[status] || '';
   }
 
-  getModeIcon(mode: string): string {
-    switch (mode) {
-      case 'online':
-        return '💻';
-      case 'in_person':
-        return '🏥';
-      case 'phone':
-        return '📞';
-      case 'chat':
-        return '💬';
-      default:
-        return '📋';
-    }
+  getStatusLabel(status: string | undefined): string {
+    const key = `CONSULTATION.SESSION.Status.${this.capitalize(status || '')}`;
+    const translated = this.translateService.instant(key);
+    return translated !== key ? translated : (status || '');
+  }
+
+  getModeLabel(mode: string | undefined): string {
+    const map: Record<string, string> = {
+      online: 'CONSULTATION.SESSION.Mode.Online',
+      in_person: 'CONSULTATION.SESSION.Mode.InPerson',
+      phone: 'CONSULTATION.SESSION.Mode.Phone',
+      chat: 'CONSULTATION.SESSION.Mode.Chat',
+    };
+    const key = map[mode || ''];
+    if (!key) return mode || '';
+    const translated = this.translateService.instant(key);
+    return translated !== key ? translated : (mode || '');
+  }
+
+  getWeekDay(dateStr: string): string {
+    if (!dateStr) return '';
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return days[new Date(dateStr).getDay()];
+  }
+
+  getDayNum(dateStr: string): string {
+    if (!dateStr) return '—';
+    return String(new Date(dateStr).getDate()).padStart(2, '0');
   }
 
   formatDate(dateStr: string): string {
@@ -148,7 +162,7 @@ export class Sessions implements OnInit {
   cancelSession(session: ConsultationSession): void {
     if (
       !confirm(
-        this.translateService.instant('CONSULTATION.Booking.CancelConfirm'),
+        this.translateService.instant('CONSULTATION.SESSION.Actions.CancelConfirm'),
       )
     ) {
       return;
@@ -157,5 +171,10 @@ export class Sessions implements OnInit {
       next: () => this.loadSessions(),
       error: (err) => console.error('Cancel error', err),
     });
+  }
+
+  private capitalize(s: string): string {
+    if (!s) return '';
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   }
 }

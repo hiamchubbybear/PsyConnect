@@ -131,10 +131,13 @@ export class FeedComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadFeed();
-    this.loadTherapists();
-    this.loadGroups();
-    this.setupIntersectionObserver();
+    // Small delay to ensure auth token is available in headers before first API call
+    setTimeout(() => {
+      this.loadFeed();
+      this.loadTherapists();
+      this.loadGroups();
+      this.setupIntersectionObserver();
+    }, 500);
   }
 
   loadFeed() {

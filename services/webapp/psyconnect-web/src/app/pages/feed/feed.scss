@@ -539,6 +539,32 @@ h4 {
   }
 }
 
+.feed-refresh-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+
+  button {
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: var(--color-surface-low);
+      color: var(--color-text);
+    }
+  }
+}
+
 
 .empty-state {
   display: flex;

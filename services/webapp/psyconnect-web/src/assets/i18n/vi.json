@@ -487,6 +487,26 @@
                 }
             }
         },
+        "Overview": {
+            "Title": "Tổng quan",
+            "Subtitle": "Theo dõi hành trình sức khỏe tâm lý của bạn",
+            "Refresh": "Làm mới",
+            "Stats": {
+                "Upcoming": "Sắp diễn ra",
+                "Completed": "Đã hoàn thành",
+                "PendingPayment": "Chưa thanh toán",
+                "TotalSpent": "Tổng chi phí"
+            },
+            "NextSession": {
+                "Title": "Buổi tư vấn tiếp theo",
+                "EmptyTitle": "Bạn chưa có buổi tư vấn nào sắp tới.",
+                "EmptyAction": "Tìm chuyên gia ngay",
+                "ViewAll": "Xem tất cả"
+            },
+            "RecentSessions": {
+                "Title": "Các buổi gần đây"
+            }
+        },
         "CreateProfile": {
             "Title": "Tạo Hồ sơ Tư vấn",
             "ConsultationModes": "Hình thức Tư vấn",
@@ -628,17 +648,60 @@
         },
         "SESSION": {
             "Title": "Phiên tư vấn",
+            "PageTitle": "Buổi tư vấn của tôi",
+            "PageSubtitle": "Quản lý toàn bộ lịch sử tư vấn của bạn",
             "Create": "Tạo phiên",
             "Delete": "Xóa phiên",
-            "Status": "Trạng thái",
             "StartTime": "Thời gian bắt đầu",
             "EndTime": "Thời gian kết thúc",
             "Price": "Giá",
-            "Mode": "Hình thức",
             "AllSessions": "Tất cả phiên",
             "Upcoming": "Sắp tới",
+            "Completed": "Hoàn thành",
             "Past": "Đã qua",
-            "Cancelled": "Đã hủy"
+            "Cancelled": "Đã hủy",
+            "Tabs": {
+                "Upcoming": "Sắp tới",
+                "Completed": "Hoàn thành",
+                "Cancelled": "Đã hủy"
+            },
+            "Status": {
+                "Pending": "Chờ xác nhận",
+                "Active": "Đang diễn ra",
+                "Completed": "Hoàn thành",
+                "Cancelled": "Đã hủy"
+            },
+            "Mode": {
+                "Online": "Trực tuyến",
+                "InPerson": "Trực tiếp",
+                "Phone": "Điện thoại",
+                "Chat": "Nhắn tin"
+            },
+            "Payment": {
+                "Paid": "Đã thanh toán",
+                "Unpaid": "Chưa thanh toán"
+            },
+            "Empty": {
+                "NoUpcoming": "Bạn chưa có lịch hẹn sắp tới.",
+                "NoUpcomingDesc": "Hãy đặt lịch với chuyên gia tâm lý ngay hôm nay!",
+                "NoCompleted": "Bạn chưa hoàn thành buổi tư vấn nào.",
+                "NoCompletedDesc": "Các buổi tư vấn đã hoàn thành sẽ xuất hiện ở đây.",
+                "NoCancelled": "Bạn không có buổi tư vấn bị hủy.",
+                "NoCancelledDesc": "Các buổi tư vấn bị hủy sẽ xuất hiện ở đây."
+            },
+            "Actions": {
+                "Join": "Tham gia",
+                "Pay": "Thanh toán",
+                "Cancel": "Hủy lịch",
+                "CancelConfirm": "Bạn có chắc muốn hủy buổi tư vấn này không?"
+            },
+            "Labels": {
+                "Mode": "Hình thức",
+                "Fee": "Phí tư vấn",
+                "Timezone": "Múi giờ",
+                "Address": "Địa chỉ",
+                "Payment": "Thanh toán"
+            }
         },
         "MATCHING": {
             "Title": "Kết nối",

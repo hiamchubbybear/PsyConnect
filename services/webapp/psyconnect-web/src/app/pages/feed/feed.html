@@ -63,11 +63,28 @@
         </div>
       </div>
 
-      <div *ngIf="error && !loading" class="error-state">
-        <p>{{ error }}</p>
-        <button class="btn btn-primary" (click)="loadFeed()">
-          {{ "NEWSFEED.RetryLoad" | translate }}
-        </button>
+      <!-- Show skeleton also during error/retry - never show raw error text -->
+      <div *ngIf="error && !loading" class="posts">
+        <div class="post-card-skeleton" *ngFor="let i of [1, 2, 3]">
+          <div class="skeleton-header">
+            <div class="skeleton skeleton-avatar"></div>
+            <div class="skeleton-meta">
+              <div class="skeleton skeleton-name"></div>
+              <div class="skeleton skeleton-time"></div>
+            </div>
+          </div>
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton-excerpt">
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line medium"></div>
+          </div>
+        </div>
+        <div class="feed-refresh-hint">
+          <span>{{ 'NEWSFEED.NoPosts' | translate }}</span>
+          <button class="btn btn-secondary btn-sm" (click)="loadFeed()">
+            {{ 'NEWSFEED.RetryLoad' | translate }}
+          </button>
+        </div>
       </div>
 
       <section class="posts" *ngIf="!loading && !error">

@@ -47,7 +47,8 @@ export class BookingPageComponent implements OnInit {
   therapistIdFromRoute = '';
   selectedMeetingLocation: PickedLocation | null = null;
   locationSelectionErrorKey = '';
-  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  timezone = Intl.DateTimeFormat().resolvedOptions().timeZone?.trim() || 'UTC';
+  requestTimezone = this.resolveRequestTimezone();
 
   constructor(
     private fb: FormBuilder,
@@ -146,7 +147,7 @@ export class BookingPageComponent implements OnInit {
         '',
       start_time: startDateTime.toISOString(),
       end_time: endDateTime.toISOString(),
-      time_zone: this.timezone,
+      time_zone: this.requestTimezone,
       scheduled_date: formVal.scheduledDate,
       mode: formVal.mode,
       price: Number(this.therapist.rage_price || this.therapist.ragePrice || 0),
@@ -209,5 +210,9 @@ export class BookingPageComponent implements OnInit {
           sessionData: session,
         });
       });
+  }
+
+  private resolveRequestTimezone(): string {
+    return 'UTC';
   }
 }

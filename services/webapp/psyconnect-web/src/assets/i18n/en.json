@@ -445,6 +445,26 @@
             "TherapistNotAvailableDesc": "This feature is for clients seeking therapists. As a therapist, you can manage your own sessions.",
             "GoToSessions": "Go to Sessions"
         },
+        "Overview": {
+            "Title": "Overview",
+            "Subtitle": "Track your mental health journey",
+            "Refresh": "Refresh",
+            "Stats": {
+                "Upcoming": "Upcoming",
+                "Completed": "Completed",
+                "PendingPayment": "Pending Payment",
+                "TotalSpent": "Total Spent"
+            },
+            "NextSession": {
+                "Title": "Next Session",
+                "EmptyTitle": "You have no upcoming sessions.",
+                "EmptyAction": "Find a therapist now",
+                "ViewAll": "View All"
+            },
+            "RecentSessions": {
+                "Title": "Recent Sessions"
+            }
+        },
         "General": "General",
         "Tabs": {
             "Overview": "Overview",
@@ -633,17 +653,60 @@
         },
         "SESSION": {
             "Title": "Sessions",
+            "PageTitle": "My Consultations",
+            "PageSubtitle": "Manage your full consultation history",
             "Create": "Create Session",
             "Delete": "Delete Session",
-            "Status": "Status",
             "StartTime": "Start Time",
             "EndTime": "End Time",
             "Price": "Price",
-            "Mode": "Mode",
             "AllSessions": "All Sessions",
             "Upcoming": "Upcoming",
+            "Completed": "Completed",
             "Past": "Past",
-            "Cancelled": "Cancelled"
+            "Cancelled": "Cancelled",
+            "Tabs": {
+                "Upcoming": "Upcoming",
+                "Completed": "Completed",
+                "Cancelled": "Cancelled"
+            },
+            "Status": {
+                "Pending": "Awaiting Confirmation",
+                "Active": "In Progress",
+                "Completed": "Completed",
+                "Cancelled": "Cancelled"
+            },
+            "Mode": {
+                "Online": "Online",
+                "InPerson": "In-Person",
+                "Phone": "Phone",
+                "Chat": "Chat"
+            },
+            "Payment": {
+                "Paid": "Paid",
+                "Unpaid": "Unpaid"
+            },
+            "Empty": {
+                "NoUpcoming": "You have no upcoming appointments.",
+                "NoUpcomingDesc": "Book a session with a therapist today!",
+                "NoCompleted": "You haven't completed any consultations yet.",
+                "NoCompletedDesc": "Completed sessions will appear here.",
+                "NoCancelled": "You have no cancelled consultations.",
+                "NoCancelledDesc": "Cancelled sessions will appear here."
+            },
+            "Actions": {
+                "Join": "Join",
+                "Pay": "Pay",
+                "Cancel": "Cancel Session",
+                "CancelConfirm": "Are you sure you want to cancel this consultation?"
+            },
+            "Labels": {
+                "Mode": "Mode",
+                "Fee": "Consultation Fee",
+                "Timezone": "Timezone",
+                "Address": "Address",
+                "Payment": "Payment"
+            }
         },
         "MATCHING": {
             "Title": "Matching",
