@@ -67,10 +67,12 @@
       [viewDate]="viewDate"
       [events]="events"
       [dayStartHour]="7"
-      [dayEndHour]="20"
+      [dayEndHour]="21"
       [precision]="'minutes'"
       [hourSegments]="2"
-      [hourSegmentHeight]="30"
+      [hourSegmentHeight]="20"
+      (eventClicked)="handleEventClick($event.event)"
+      (hourSegmentClicked)="handleHourClick($event.date)"
     >
     </mwl-calendar-week-view>
 
@@ -78,9 +80,78 @@
       *ngIf="view === CalendarView.Month"
       [viewDate]="viewDate"
       [events]="events"
+      (dayClicked)="handleDayClick($event.day)"
     >
     </mwl-calendar-month-view>
   </div>
+
+  <!-- Day Details Panel (appearing when a day is clicked) -->
+  <div class="day-details-panel card fade-in" *ngIf="selectedDate">
+    <div class="panel-header">
+      <div class="date-info">
+        <h4>{{ selectedDate | date: 'EEEE, dd MMMM' }}</h4>
+        <p>{{ selectedDayEvents.length }} buổi tư vấn</p>
+      </div>
+      <button class="btn-close" (click)="closeDetails()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="event-list">
+      <div *ngFor="let event of selectedDayEvents" class="event-item" [style.border-left-color]="event.color?.primary">
+        <div class="event-time">
+          <div class="time-main">
+            <span class="start">{{ event.start | date: 'HH:mm' }}</span>
+            <span class="dash">-</span>
+            <span class="end">{{ event.end | date: 'HH:mm' }}</span>
+          </div>
+          <div class="duration">
+            {{ event.meta.mode === 'online' ? 'Trực tuyến' : 'Gặp mặt' }}
+          </div>
+        </div>
+        
+        <div class="event-body" (click)="openDetailedModal(event)" style="cursor: pointer;">
+          <div class="partner-info">
+            <div class="partner-name">{{ event.meta.partnerName }}</div>
+            <div class="session-title">Buổi tham vấn tâm lý</div>
+          </div>
+          
+          <div class="location-box" *ngIf="event.meta.mode === 'in_person'">
+            <div class="address-text">{{ event.meta.address || 'Phòng khám ' + event.meta.partnerName + ', Việt Nam' }}</div>
+            <button class="btn-map-action" (click)="openMap(event); $event.stopPropagation()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>Xem vị trí</span>
+            </button>
+          </div>
+
+          <div class="online-box" *ngIf="event.meta.mode === 'online'">
+            <div class="meet-status">
+              <span class="status-dot"></span>
+              Phòng họp đã sẵn sàng
+            </div>
+            <button class="btn-join-action" (click)="$event.stopPropagation()">Tham gia ngay</button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="selectedDayEvents.length === 0" class="no-events-today">
+        <p>Không có lịch hẹn trong ngày này</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Modal -->
+  <app-session-detail-modal
+    *ngIf="selectedDetailedEvent"
+    [event]="selectedDetailedEvent"
+    (close)="closeDetailedModal()"
+  >
+  </app-session-detail-modal>
 
   <!-- Empty state -->
   <div class="sched-empty" *ngIf="!isLoading && events.length === 0">

@@ -10,10 +10,12 @@ interface Release {
   upcomingFeatures: string[];
 }
 
+import { IconComponent } from '../../shared/ui-atoms/icon/icon.component';
+
 @Component({
   selector: 'app-development-section',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IconComponent],
   template: `
     <section class="about-us__development container">
       <div class="release-card">
@@ -58,7 +60,7 @@ interface Release {
                     target="_blank"
                     class="link"
                   >
-                    <i class="icon-github"></i>
+                      <app-icon name="github" [size]="18"></app-icon>
                   </a>
                   <a
                     *ngIf="d.linkedin"
@@ -66,7 +68,7 @@ interface Release {
                     target="_blank"
                     class="link"
                   >
-                    <i class="icon-linkedin"></i>
+                      <app-icon name="linkedin" [size]="18"></app-icon>
                   </a>
                 </div>
               </div>
@@ -76,7 +78,7 @@ interface Release {
 
         <div class="release-cta">
           <button class="btn btn--ghost" (click)="viewRepo.emit()">
-            <i class="icon-github"></i>
+            <app-icon name="github" [size]="18"></app-icon>
             {{ "view_repository" | translate }}
           </button>
         </div>

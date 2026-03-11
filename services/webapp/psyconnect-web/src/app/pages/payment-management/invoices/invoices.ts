@@ -7,11 +7,12 @@ import {
   MockInvoice,
 } from '../../../services/mock-data.service';
 import { TableComponent } from '../../../shared/ui-atoms/table/table.component';
+import { IconComponent } from '../../../shared/ui-atoms/icon/icon.component';
 
 @Component({
   selector: 'app-invoices',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, TableComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, TableComponent, IconComponent],
   templateUrl: './invoices.html',
   styleUrl: './invoices.scss',
 })

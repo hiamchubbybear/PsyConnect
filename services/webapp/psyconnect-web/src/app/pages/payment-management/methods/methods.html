@@ -13,7 +13,7 @@
   <div class="methods-grid">
     <div *ngFor="let method of methods" class="method-card">
       <div class="method-icon">
-        <i class="fas" [ngClass]="getMethodIcon(method.type)"></i>
+        <app-icon [name]="getMethodIcon(method.type)" [size]="24"></app-icon>
       </div>
       <div class="method-details">
         <h3>{{ method.name }}</h3>

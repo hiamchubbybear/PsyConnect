@@ -29,10 +29,12 @@ export interface OnboardingConfig {
 
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IconComponent } from '../../shared/ui-atoms/icon/icon.component';
 
 @Component({
   selector: 'app-onboarding-modal',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, IconComponent],
   templateUrl: './onboarding-widget.html',
   styleUrls: ['./onboarding-widget.scss'],
 })

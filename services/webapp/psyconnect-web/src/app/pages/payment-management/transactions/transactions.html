@@ -69,8 +69,8 @@
       <ng-container body-rows>
         <tr *ngFor="let txn of filteredTransactions">
           <td>
-            <div class="txn-icon" [ngClass]="getTypeIcon(txn.type)">
-              <i class="fas" [ngClass]="getTypeIcon(txn.type)"></i>
+            <div class="txn-icon" [ngClass]="txn.type">
+              <app-icon [name]="getTypeIcon(txn.type)" [size]="20"></app-icon>
             </div>
           </td>
           <td>

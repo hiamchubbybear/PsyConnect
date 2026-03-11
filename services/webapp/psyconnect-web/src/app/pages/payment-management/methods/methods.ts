@@ -11,10 +11,12 @@ interface PaymentMethod {
   isDefault: boolean;
 }
 
+import { IconComponent } from '../../../shared/ui-atoms/icon/icon.component';
+
 @Component({
   selector: 'app-methods',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IconComponent],
   templateUrl: './methods.html',
   styleUrl: './methods.scss'
 })
@@ -61,10 +63,10 @@ export class Methods implements OnInit {
 
   getMethodIcon(type: string): string {
     switch (type) {
-      case 'card': return 'fa-credit-card';
-      case 'bank': return 'fa-university';
-      case 'paypal': return 'fa-paypal';
-      default: return 'fa-wallet';
+      case 'card': return 'credit-card';
+      case 'bank': return 'home';
+      case 'paypal': return 'wallet';
+      default: return 'help-circle';
     }
   }
 

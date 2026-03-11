@@ -2,16 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { IconComponent } from '../../shared/ui-atoms/icon/icon.component';
+
 @Component({
   selector: 'app-audience-section',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IconComponent],
   template: `
     <section class="about-us__audience container">
       <h2 class="section-title">{{ 'who_should_use' | translate }}</h2>
       <div class="audience-grid">
         <div *ngFor="let a of targetAudience" class="audience-card">
-          <i class="icon-users"></i>
+          <app-icon name="users" [size]="24"></app-icon>
           <h4>{{ a | translate }}</h4>
         </div>
       </div>

@@ -3,10 +3,12 @@ import { Component, Input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { TeamMember } from './about-us-data-service';
 
+import { IconComponent } from '../../shared/ui-atoms/icon/icon.component';
+
 @Component({
   selector: 'app-team-section',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IconComponent],
   template: `
     <section class="about-us__team container">
       <h2 class="section-title">{{ "our_team" | translate }}</h2>
@@ -29,13 +31,13 @@ import { TeamMember } from './about-us-data-service';
                 [href]="member.social.linkedin"
                 target="_blank"
               >
-                <i class="icon-linkedin"></i>
+                <app-icon name="linkedin" [size]="18"></app-icon>
               </a>
               <a
                 *ngIf="member.social.email"
                 [href]="'mailto:' + member.social.email"
               >
-                <i class="icon-mail"></i>
+                <app-icon name="mail" [size]="18"></app-icon>
               </a>
             </div>
           </div>

@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Statistic } from './about-us-data-service';
+import { IconComponent } from '../../shared/ui-atoms/icon/icon.component';
 
 @Component({
   selector: 'app-hero-section',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IconComponent],
   template: `
     <section class="about-us__hero">
       <div class="about-us__inner container">
@@ -41,7 +42,7 @@ import { Statistic } from './about-us-data-service';
         <div class="statistics-grid">
           <div class="stat-card" *ngFor="let stat of statistics">
             <div class="stat-card__icon">
-              <i class="icon-{{ stat.icon }}"></i>
+              <app-icon [name]="stat.icon"></app-icon>
             </div>
             <div class="stat-card__value">{{ stat.value }}</div>
             <div class="stat-card__label">{{ stat.label | translate }}</div>

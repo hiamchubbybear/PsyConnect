@@ -39,11 +39,11 @@ export class Settings {
         backgroundGradient: 'linear-gradient(135deg, #1a1a1a 0%, #333333 100%)',
         primaryButton: {
           text: 'Next',
-          icon: 'fas fa-arrow-right',
+          icon: 'arrow-right',
         },
         secondaryButton: {
           text: 'Back',
-          icon: 'fas fa-arrow-left',
+          icon: 'arrow-left',
         },
       },
       {
@@ -58,7 +58,7 @@ export class Settings {
         },
         secondaryButton: {
           text: 'Learn More',
-          icon: 'fas fa-info-circle',
+          icon: 'info-circle',
           action: () => window.open('https://example.com/help', '_blank'),
         },
       },

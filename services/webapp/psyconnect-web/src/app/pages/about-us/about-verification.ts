@@ -2,10 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { IconComponent } from '../../shared/ui-atoms/icon/icon.component';
+
 @Component({
   selector: 'app-verification-section',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IconComponent],
   template: `
     <section class="about-us__verification container">
       <h2 class="section-title">{{ "expert_verification" | translate }}</h2>
@@ -27,7 +29,7 @@ import { TranslateModule } from '@ngx-translate/core';
         <h3 class="subhead">{{ "quality_standards" | translate }}</h3>
         <ul class="quality-list">
           <li *ngFor="let standard of qualityStandards">
-            <i class="icon-check"></i>
+            <app-icon name="check" [size]="18"></app-icon>
             {{ standard | translate }}
           </li>
         </ul>

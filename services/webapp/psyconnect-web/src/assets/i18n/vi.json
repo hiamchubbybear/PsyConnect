@@ -1295,6 +1295,9 @@
             "NoResults": "Không tìm thấy kết quả nào",
             "NoFriends": "Chưa có cuộc trò chuyện nào"
         },
+        "SEARCH_ALL": "Tìm kiếm & Tất cả tin nhắn",
+        "NO_MESSAGES": "Chưa có tin nhắn nào",
+        "TYPE_MESSAGE": "Nhập tin nhắn...",
         "SELECT": "Chọn một cuộc trò chuyện",
         "EXAMPLE": {
             "loadMore": "Tải thêm",
@@ -1666,10 +1669,5 @@
         "USER": "Người dùng",
         "THERAPIST": "Chuyên gia tâm lý",
         "ADMIN": "Quản trị viên"
-    },
-    "CHAT": {
-        "SEARCH_ALL": "Tìm kiếm & Tất cả tin nhắn",
-        "NO_MESSAGES": "Chưa có tin nhắn nào",
-        "TYPE_MESSAGE": "Nhập tin nhắn..."
     }
 }

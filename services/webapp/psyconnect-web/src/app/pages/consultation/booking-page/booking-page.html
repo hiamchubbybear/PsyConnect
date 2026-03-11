@@ -259,6 +259,11 @@
               <p class="field-hint">
                 {{ "CONSULTATION.Booking.SelectDateTimeDesc" | translate }}
               </p>
+
+              <!-- Validation Error -->
+              <p class="field-error fade-in" *ngIf="validationErrorKey">
+                {{ validationErrorKey | translate }}
+              </p>
             </div>
           </div>
 

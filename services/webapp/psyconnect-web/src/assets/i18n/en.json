@@ -1108,6 +1108,9 @@
             "NoResults": "No results found",
             "NoFriends": "No conversations yet"
         },
+        "SEARCH_ALL": "Search & All Chats",
+        "NO_MESSAGES": "No messages yet",
+        "TYPE_MESSAGE": "Type a message...",
         "MAIN": {
             "SELECT": "Select a chat"
         },
@@ -1893,11 +1896,6 @@
                 "dob": "Date of Birth",
                 "bio": "Bio"
             }
-        },
-        "CHAT": {
-            "SEARCH_ALL": "Search & All Chats",
-            "NO_MESSAGES": "No messages yet",
-            "TYPE_MESSAGE": "Type a message..."
         }
     }
 }

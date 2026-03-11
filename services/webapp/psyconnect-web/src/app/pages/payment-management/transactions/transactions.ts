@@ -8,6 +8,7 @@ import {
 } from '../../../services/mock-data.service';
 import { PsyEmptyStateComponent } from '../../../shared/ui-atoms/empty-state/psy-empty-state.component';
 import { TableComponent } from '../../../shared/ui-atoms/table/table.component';
+import { IconComponent } from '../../../shared/ui-atoms/icon/icon.component';
 
 @Component({
   selector: 'app-transactions',
@@ -18,6 +19,7 @@ import { TableComponent } from '../../../shared/ui-atoms/table/table.component';
     FormsModule,
     TableComponent,
     PsyEmptyStateComponent,
+    IconComponent,
   ],
   templateUrl: './transactions.html',
   styleUrl: './transactions.scss',
@@ -81,13 +83,13 @@ export class Transactions implements OnInit {
   getTypeIcon(type: string): string {
     switch (type) {
       case 'payment':
-        return 'fa-arrow-down';
+        return 'arrow-down';
       case 'refund':
-        return 'fa-undo';
+        return 'undo';
       case 'subscription':
-        return 'fa-sync';
+        return 'repeat';
       default:
-        return 'fa-circle';
+        return 'help-circle';
     }
   }
 

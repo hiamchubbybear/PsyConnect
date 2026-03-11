@@ -3,10 +3,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { Certificate, Partner } from './about-us-data-service';
 
+import { IconComponent } from '../../shared/ui-atoms/icon/icon.component';
+
 @Component({
   selector: 'app-partners-section',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IconComponent],
   template: `
     <section class="about-us__partners container">
       <h2 class="section-title">{{ "featured_experts" | translate }}</h2>
@@ -21,7 +23,7 @@ import { Certificate, Partner } from './about-us-data-service';
               [alt]="p.name"
             />
             <div class="partner-card__verified" *ngIf="p.verified">
-              <i class="icon-shield-check"></i>
+              <app-icon name="shield-check" [size]="14"></app-icon>
               {{ "verified" | translate }}
             </div>
           </div>
@@ -32,12 +34,12 @@ import { Certificate, Partner } from './about-us-data-service';
 
             <div class="partner-card__stats">
               <div class="stat">
-                <i class="icon-star"></i>
+                <app-icon name="star" [size]="14"></app-icon>
                 {{ p.rating }} ({{ p.reviewCount }}
                 {{ "reviews" | translate }})
               </div>
               <div class="stat">
-                <i class="icon-clock"></i>
+                <app-icon name="clock" [size]="14"></app-icon>
                 {{ p.experience }} {{ "years_experience" | translate }}
               </div>
             </div>

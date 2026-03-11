@@ -18,10 +18,12 @@ interface ContactInfo {
   };
 }
 
+import { IconComponent } from '../../shared/ui-atoms/icon/icon.component';
+
 @Component({
   selector: 'app-contact-section',
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, IconComponent],
   template: `
     <section class="about-us__contact container">
       <h2 class="section-title">{{ "contact_us" | translate }}</h2>
@@ -29,7 +31,7 @@ interface ContactInfo {
       <div class="contact-grid">
         <div class="contact-info">
           <div class="contact-item">
-            <i class="icon-phone"></i>
+            <app-icon name="phone" [size]="20"></app-icon>
             <div>
               <strong>{{ "hotline" | translate }}</strong>
               <p>{{ contact.hotline }}</p>
@@ -37,7 +39,7 @@ interface ContactInfo {
           </div>
 
           <div class="contact-item">
-            <i class="icon-mail"></i>
+            <app-icon name="mail" [size]="20"></app-icon>
             <div>
               <strong>{{ "email" | translate }}</strong>
               <p>
@@ -47,7 +49,7 @@ interface ContactInfo {
           </div>
 
           <div class="contact-item">
-            <i class="icon-map-pin"></i>
+            <app-icon name="map-pin" [size]="20"></app-icon>
             <div>
               <strong>{{ "address" | translate }}</strong>
               <p>{{ contact.address | translate }}</p>
@@ -55,7 +57,7 @@ interface ContactInfo {
           </div>
 
           <div class="contact-item">
-            <i class="icon-clock"></i>
+            <app-icon name="clock" [size]="20"></app-icon>
             <div>
               <strong>{{ "business_hours" | translate }}</strong>
               <p>
@@ -75,7 +77,7 @@ interface ContactInfo {
             <h3>{{ "crisis_support" | translate }}</h3>
             <p>{{ "crisis_support_desc" | translate }}</p>
             <button class="btn btn--danger" (click)="emergencyHelp.emit()">
-              <i class="icon-phone"></i>
+              <app-icon name="phone" [size]="18"></app-icon>
               {{ "emergency_call" | translate }}: {{ contact.emergency }}
             </button>
           </div>
@@ -88,21 +90,21 @@ interface ContactInfo {
           target="_blank"
           class="social-btn"
         >
-          <i class="icon-facebook"></i>
+          <app-icon name="facebook" [size]="20"></app-icon>
         </a>
         <a
           [href]="contact.socials.instagram"
           target="_blank"
           class="social-btn"
         >
-          <i class="icon-instagram"></i>
+          <app-icon name="instagram" [size]="20"></app-icon>
         </a>
         <a
           [href]="contact.socials.linkedin"
           target="_blank"
           class="social-btn"
         >
-          <i class="icon-linkedin"></i>
+          <app-icon name="linkedin" [size]="20"></app-icon>
         </a>
       </div>
     </section>

@@ -1,7 +1,7 @@
 <div class="empty-state">
   <div class="empty-state__icon" *ngIf="icon">
     <!-- Check if icon is svg or class -->
-    <i [class]="icon" *ngIf="!icon.includes('/')"></i>
+    <app-icon [name]="icon" *ngIf="!icon.includes('/')" [size]="48"></app-icon>
     <img [src]="icon" *ngIf="icon.includes('/')" alt="Empty state icon" />
   </div>
   <h3 class="empty-state__title" *ngIf="title">{{ title }}</h3>

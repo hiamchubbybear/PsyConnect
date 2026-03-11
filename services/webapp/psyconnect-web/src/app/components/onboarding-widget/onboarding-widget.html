@@ -73,10 +73,11 @@
           (click)="onSecondaryAction()"
           type="button"
         >
-          <i
+          <app-icon
             *ngIf="currentStep.secondaryButton?.icon"
-            [class]="currentStep.secondaryButton.icon"
-          ></i>
+            [name]="currentStep.secondaryButton.icon || ''"
+            [size]="18"
+          ></app-icon>
           <span>{{ currentStep.secondaryButton.text }}</span>
           <div
             *ngIf="currentStep.secondaryButton?.loading"
@@ -90,10 +91,11 @@
           (click)="onPrimaryAction()"
           type="button"
         >
-          <i
+          <app-icon
             *ngIf="currentStep.primaryButton?.icon"
-            [class]="currentStep.primaryButton.icon"
-          ></i>
+            [name]="currentStep.primaryButton.icon || ''"
+            [size]="18"
+          ></app-icon>
           <span>{{ currentStep.primaryButton.text }}</span>
           <div
             *ngIf="currentStep.primaryButton?.loading"

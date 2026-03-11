@@ -23,10 +23,7 @@ import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.di
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 import { ChatInputComponent } from '../../../shared/ui-atoms/chat-input/chat-input.component';
 import { MessageBubbleComponent } from '../../../shared/ui-atoms/message-bubble/message-bubble.component';
-import {
-  CallOptionsMenuComponent,
-  CallType,
-} from '../../call-options-menu/call-options-menu.component';
+import { CallType } from '../../call-options-menu/call-options-menu.component';
 
 @Component({
   selector: 'app-chat-main',
@@ -36,7 +33,6 @@ import {
     FormsModule,
     MessageBubbleComponent,
     ChatInputComponent,
-    CallOptionsMenuComponent,
     TranslateModule,
     AvatarFallbackPipe,
     ImgFallbackDirective,

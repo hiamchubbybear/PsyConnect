@@ -8,15 +8,16 @@ import (
 )
 
 type CalendarEvent struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Start       string `json:"start"`
-	End         string `json:"end"`
-	Mode        string `json:"mode"`
-	Status      string `json:"status"`
-	Color       string `json:"color"`
-	TherapistID string `json:"therapist_id,omitempty"`
-	ClientID    string `json:"client_id,omitempty"`
+	ID           string               `json:"id"`
+	Title        string               `json:"title"`
+	Start        string               `json:"start"`
+	End          string               `json:"end"`
+	Mode         string               `json:"mode"`
+	Status       string               `json:"status"`
+	Color        string               `json:"color"`
+	TherapistID  string               `json:"therapist_id,omitempty"`
+	ClientID     string               `json:"client_id,omitempty"`
+	LocationInfo *domain.LocationInfo `json:"location_info,omitempty"`
 }
 
 type GetCalendarUseCase struct {
@@ -68,15 +69,16 @@ func (uc *GetCalendarUseCase) Execute(ctx context.Context, profileID string, rol
 		}
 
 		events = append(events, CalendarEvent{
-			ID:          s.SessionID,
-			Title:       "Consultation Session",
-			Start:       startStr,
-			End:         s.EndTime.Format(time.RFC3339),
-			Mode:        string(s.Mode),
-			Status:      string(s.Status),
-			Color:       color,
-			TherapistID: s.TherapistID,
-			ClientID:    s.ClientID,
+			ID:           s.SessionID,
+			Title:        "Consultation Session",
+			Start:        startStr,
+			End:          s.EndTime.Format(time.RFC3339),
+			Mode:         string(s.Mode),
+			Status:       string(s.Status),
+			Color:        color,
+			TherapistID:  s.TherapistID,
+			ClientID:     s.ClientID,
+			LocationInfo: s.LocationInfo,
 		})
 	}
 

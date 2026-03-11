@@ -13,10 +13,12 @@ interface Category {
   icon: string;
 }
 
+import { IconComponent } from '../../../../shared/ui-atoms/icon/icon.component';
+
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, FormsModule],
+  imports: [CommonModule, RouterModule, TranslateModule, FormsModule, IconComponent],
   templateUrl: './categories.html',
   styleUrl: './categories.scss'
 })
@@ -33,11 +35,11 @@ export class Categories implements OnInit {
   loadCategories() {
     
     this.categories = [
-      { id: '1', name: 'Mental Health', description: 'Posts about mental wellness', postCount: 45, color: '#3b82f6', icon: 'fa-brain' },
-      { id: '2', name: 'Therapy', description: 'Therapy techniques and tips', postCount: 32, color: '#10b981', icon: 'fa-user-md' },
-      { id: '3', name: 'Self Care', description: 'Self care practices', postCount: 28, color: '#f59e0b', icon: 'fa-heart' },
-      { id: '4', name: 'Mindfulness', description: 'Mindfulness and meditation', postCount: 21, color: '#8b5cf6', icon: 'fa-spa' },
-      { id: '5', name: 'Relationships', description: 'Healthy relationships', postCount: 19, color: '#ec4899', icon: 'fa-users' },
+      { id: '1', name: 'Mental Health', description: 'Posts about mental wellness', postCount: 45, color: '#3b82f6', icon: 'brain' },
+      { id: '2', name: 'Therapy', description: 'Therapy techniques and tips', postCount: 32, color: '#10b981', icon: 'user-md' },
+      { id: '3', name: 'Self Care', description: 'Self care practices', postCount: 28, color: '#f59e0b', icon: 'heart' },
+      { id: '4', name: 'Mindfulness', description: 'Mindfulness and meditation', postCount: 21, color: '#8b5cf6', icon: 'spa' },
+      { id: '5', name: 'Relationships', description: 'Healthy relationships', postCount: 19, color: '#ec4899', icon: 'users' },
     ];
   }
 
@@ -52,7 +54,7 @@ export class Categories implements OnInit {
 
   openAddModal() {
     this.showAddModal = true;
-    this.newCategory = { color: '#3b82f6', icon: 'fa-folder' };
+    this.newCategory = { color: '#3b82f6', icon: 'folder' };
   }
 
   closeAddModal() {
@@ -68,7 +70,7 @@ export class Categories implements OnInit {
         description: this.newCategory.description || '',
         postCount: 0,
         color: this.newCategory.color || '#3b82f6',
-        icon: this.newCategory.icon || 'fa-folder'
+        icon: this.newCategory.icon || 'folder'
       });
       this.closeAddModal();
     }

@@ -49,6 +49,8 @@ export class BookingPageComponent implements OnInit {
   locationSelectionErrorKey = '';
   timezone = Intl.DateTimeFormat().resolvedOptions().timeZone?.trim() || 'UTC';
   requestTimezone = this.resolveRequestTimezone();
+  validationErrorKey: string | null = null;
+  existingSessions: ConsultationSession[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -79,6 +81,17 @@ export class BookingPageComponent implements OnInit {
       acceptResponsibility: [false, Validators.requiredTrue],
     });
 
+    this.bookingForm.get('scheduledDate')?.valueChanges.subscribe((date) => {
+      if (date) {
+        this.fetchExistingSessions(date);
+      }
+      this.clearValidationError();
+    });
+
+    this.bookingForm.valueChanges.subscribe(() => {
+      this.clearValidationError();
+    });
+
     this.bookingForm.get('mode')?.valueChanges.subscribe((mode) => {
       if (mode !== 'in-person') {
         this.locationSelectionErrorKey = '';
@@ -98,6 +111,24 @@ export class BookingPageComponent implements OnInit {
         this.router.navigate(['/feature/consultation/discover']);
       },
     });
+  }
+
+  fetchExistingSessions(date: string) {
+    const from = `${date}T00:00:00Z`;
+    const to = `${date}T23:59:59Z`;
+    this.sessionService.getCalendar(from, to).subscribe({
+      next: (res) => {
+        this.existingSessions = (res.events || []).map(e => ({
+          ...e,
+          start_time: e.start,
+          end_time: e.end
+        } as any));
+      }
+    });
+  }
+
+  clearValidationError() {
+    this.validationErrorKey = null;
   }
 
   goBack() {
@@ -123,6 +154,36 @@ export class BookingPageComponent implements OnInit {
       `${formVal.scheduledDate}T${formVal.startTime}`,
     );
     const endDateTime = new Date(`${formVal.scheduledDate}T${formVal.endTime}`);
+
+    // Validate: Not in the past
+    if (startDateTime < new Date()) {
+      this.validationErrorKey = 'CONSULTATION.Booking.Errors.PastDateTime';
+      this.isLoading = false;
+      return;
+    }
+
+    // Validate: End time after start time
+    if (endDateTime <= startDateTime) {
+      this.validationErrorKey = 'CONSULTATION.Booking.Errors.InvalidDuration';
+      this.isLoading = false;
+      return;
+    }
+
+    // Validate: Overlap
+    const hasOverlap = this.existingSessions.some(session => {
+      const existingStart = new Date(session.start_time).getTime();
+      const existingEnd = new Date(session.end_time).getTime();
+      const newStart = startDateTime.getTime();
+      const newEnd = endDateTime.getTime();
+
+      return (newStart < existingEnd) && (newEnd > existingStart);
+    });
+
+    if (hasOverlap) {
+      this.validationErrorKey = 'CONSULTATION.Booking.Errors.OverlapDetected';
+      this.isLoading = false;
+      return;
+    }
 
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser) {

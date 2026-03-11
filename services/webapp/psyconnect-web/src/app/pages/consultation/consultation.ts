@@ -47,6 +47,11 @@ export class ConsultationComponent {
     } else {
       this.navItems = [
         {
+          label: 'Calendar',
+          route: '/feature/consultation/schedules',
+          translateKey: 'CONSULTATION.Tabs.Schedule',
+        },
+        {
           label: 'My Sessions',
           route: '/feature/consultation/sessions',
           translateKey: 'CONSULTATION.Tabs.Sessions',

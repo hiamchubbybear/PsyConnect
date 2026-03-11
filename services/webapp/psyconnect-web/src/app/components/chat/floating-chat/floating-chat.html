@@ -30,36 +30,76 @@
   </div>
 
   <!-- Compact Chat Window -->
-  <div class="compact-chat-box" *ngIf="activeChatFriend">
+  <div class="compact-chat-box" *ngIf="activeChatFriend" [style.bottom.px]="chatBoxBottom">
     <div class="compact-header">
       <div class="compact-user-info">
-        <img [src]="activeChatFriend.avatarUri | avatarFallback: activeChatFriend.profileId" alt="Avatar" class="mini-avatar" />
-        <span class="user-name">{{ activeChatFriend.firstName }}</span>
+        <div class="mini-avatar-wrapper" style="position: relative;">
+          <img [src]="activeChatFriend.avatarUri | avatarFallback: activeChatFriend.profileId" alt="Avatar" class="mini-avatar" />
+          <div class="status-dot"></div>
+        </div>
+        <span class="user-name">{{ activeChatFriend.firstName }} {{ activeChatFriend.lastName }}</span>
       </div>
-      <button class="close-mini-chat btn-base" (click)="closeCompactChat()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
+      <button class="close-mini-chat btn-base" (click)="closeCompactChat()" [attr.aria-label]="'COMMON.CLOSE' | translate">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"></path>
         </svg>
       </button>
     </div>
 
-    <div class="compact-messages">
-      <div *ngFor="let msg of compactMessages" class="mini-msg" [class.is-mine]="msg.isMine">
-        <div class="msg-bubble">{{ msg.content }}</div>
+    <!-- Session Banner -->
+    <div class="compact-session-banner" *ngIf="upcomingSession">
+      <div class="session-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
       </div>
-      <div *ngIf="compactMessages.length === 0" class="no-msgs">
-        {{ 'CHAT.NO_MESSAGES' | translate }}
+      <div class="session-info">
+        <b>{{ upcomingSession.mode === 'online' ? 'Online' : 'Trực tiếp' }} Session</b>: 
+        {{ upcomingSession.start_time | date: 'HH:mm, dd/MM' }}
+      </div>
+    </div>
+
+    <div class="compact-messages" [class.has-nav]="allCompactMessages.length > viewWindowSize">
+      <div class="nav-controls top" *ngIf="allCompactMessages.length > viewWindowSize">
+        <button class="nav-btn up btn-base" (click)="scrollUp()" [disabled]="viewOffset + viewWindowSize >= allCompactMessages.length">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 8L18 14H6L12 8Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="messages-viewport">
+        <div *ngFor="let msg of compactMessages" class="mini-msg" [class.is-mine]="msg.isMine">
+          <div class="msg-bubble">{{ msg.content }}</div>
+          <span class="mini-time">{{ msg.timestamp | date: 'HH:mm' }}</span>
+        </div>
+        
+        <div *ngIf="compactMessages.length === 0" class="no-msgs">
+          <p>{{ 'CHAT.NO_MESSAGES' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="nav-controls bottom" *ngIf="allCompactMessages.length > viewWindowSize">
+        <button class="nav-btn down btn-base" (click)="scrollDown()" [disabled]="viewOffset === 0">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 16L6 10H18L12 16Z" fill="currentColor"/>
+          </svg>
+        </button>
       </div>
     </div>
 
     <div class="compact-input">
-      <input type="text" 
-             [placeholder]="'CHAT.TYPE_MESSAGE' | translate" 
-             [(ngModel)]="newMessage" 
-             (keydown)="onKeydown($event)" />
+      <div class="input-wrapper">
+        <input type="text" 
+               [placeholder]="'CHAT.TYPE_MESSAGE' | translate" 
+               [(ngModel)]="newMessage" 
+               (keydown)="onKeydown($event)" />
+      </div>
       <button class="send-btn btn-base" (click)="sendQuickMessage()" [disabled]="!newMessage.trim()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
         </svg>

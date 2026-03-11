@@ -18,7 +18,7 @@
   <div class="categories-grid">
     <div *ngFor="let category of filteredCategories" class="category-card" [style.border-left-color]="category.color">
       <div class="category-icon" [style.background-color]="category.color + '20'">
-        <i class="fas" [ngClass]="category.icon" [style.color]="category.color"></i>
+        <app-icon [name]="category.icon" [color]="category.color"></app-icon>
       </div>
       <div class="category-content">
         <h3>{{ category.name }}</h3>

@@ -1,20 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { Friend } from '../../../models/chat.models';
+import { Friend, Message } from '../../../models/chat.models';
 import { ChatService } from '../../../services/chat/chat.service';
 import { FriendService } from '../../../services/chat/profile.chat.service';
 import { AvatarFallbackPipe } from '../../../shared/pipes/avatar-fallback.pipe';
 import { ImgFallbackDirective } from '../../../shared/directives/img-fallback.directive';
-import { UserContextService } from '../../../services/profile/profile-service';
+import { UserContextService, UserProfile } from '../../../services/profile/profile-service';
 import { NotificationService } from '../../../services/notification/notification.service';
+import { SessionService } from '../../../services/consultation/session.service';
+import { ConsultationSession } from '../../../models/consultation.model';
+import { SecureStorageService } from '../../../encrypt/secure';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-floating-chat',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, AvatarFallbackPipe, ImgFallbackDirective],
+  imports: [CommonModule, RouterModule, TranslateModule, AvatarFallbackPipe, ImgFallbackDirective, FormsModule],
   templateUrl: './floating-chat.html',
   styleUrls: ['./floating-chat.scss']
 })
@@ -24,11 +29,17 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
   unreadTotal = 0;
   unreadMap: { [profileId: string]: number } = {};
   
-  // Compact Chat State
+  // Compact chat state
   activeChatFriend: Friend | null = null;
-  compactMessages: any[] = [];
+  compactMessages: Message[] = [];
+  allCompactMessages: Message[] = [];
+  viewOffset = 0; // Steps from the end
+  viewWindowSize = 4;
+  
   newMessage = '';
-  conversationId = '';
+  conversationId: string | null = null;
+  upcomingSession: ConsultationSession | null = null;
+  chatBoxBottom = 80;
   
   private sub?: Subscription;
   private notifSub?: Subscription;
@@ -39,6 +50,7 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
     private friendService: FriendService,
     private userContext: UserContextService,
     private notificationService: NotificationService,
+    private sessionService: SessionService,
     private router: Router
   ) {}
 
@@ -103,8 +115,27 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
       this.activeChatFriend = null;
       return;
     }
+
     this.activeChatFriend = friend;
+    this.chatBoxBottom = 80; // Fixed position at bottom
+    this.fetchUpcomingSession(friend.profileId);
     this.loadCompactMessages(friend.profileId);
+  }
+
+  fetchUpcomingSession(friendId: string) {
+    const userId = this.userContext.getUser()?.profileId;
+    if (!userId) return;
+
+    this.sessionService.getAllSessions().subscribe((sessions: ConsultationSession[]) => {
+      const now = new Date();
+      this.upcomingSession = sessions.find((s: ConsultationSession) => {
+        const involvesBoth = (s.client_id === userId && s.therapist_id === friendId) || 
+                            (s.client_id === friendId && s.therapist_id === userId);
+        const isFuture = new Date(s.start_time) > now;
+        const isActive = s.status === 'CONFIRMED' || s.status === 'PENDING_PAYMENT';
+        return involvesBoth && isFuture && isActive;
+      }) || null;
+    });
   }
 
   closeCompactChat() {
@@ -121,25 +152,52 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
       this.conversationId = id;
       if (!id) return;
 
-      // Unsubscribe from previous chat if any
       this.chatSub?.unsubscribe();
       this.chatService.disconnect();
 
-      // Load latest 4 messages
-      this.chatService.getChatsByConversation(id, userId, 4).subscribe(msgs => {
-        this.compactMessages = msgs.reverse();
+      this.chatService.getChatsByConversation(id, userId, 20).subscribe(msgs => {
+        this.allCompactMessages = msgs.reverse();
+        this.viewOffset = 0;
+        this.updateViewWindow();
       });
 
-      // Connect to websocket for real-time updates in compact view
-      this.chatSub = this.chatService.connect(friendId, id).subscribe(msg => {
+      this.chatSub = this.chatService.connect(friendId, id).subscribe((msg: Message) => {
         if (msg.conversationId === this.conversationId) {
-          this.compactMessages.push(msg);
-          if (this.compactMessages.length > 4) {
-            this.compactMessages.shift();
+          const isDuplicate = this.allCompactMessages.some(m => 
+            m.content === msg.content && 
+            m.senderId === msg.senderId &&
+            Math.abs(new Date(m.timestamp).getTime() - new Date(msg.timestamp).getTime()) < 2000
+          );
+
+          if (!isDuplicate) {
+            this.allCompactMessages.push(msg);
+            if (this.viewOffset === 0) {
+              this.updateViewWindow();
+            }
           }
         }
       });
     });
+  }
+
+  updateViewWindow() {
+    const end = this.allCompactMessages.length - this.viewOffset;
+    const start = Math.max(0, end - this.viewWindowSize);
+    this.compactMessages = this.allCompactMessages.slice(start, end);
+  }
+
+  scrollUp() {
+    if (this.viewOffset + 1 <= this.allCompactMessages.length - this.viewWindowSize) {
+      this.viewOffset++;
+      this.updateViewWindow();
+    }
+  }
+
+  scrollDown() {
+    if (this.viewOffset > 0) {
+      this.viewOffset--;
+      this.updateViewWindow();
+    }
   }
 
   sendQuickMessage() {
@@ -148,9 +206,30 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
     const userId = this.userContext.getUser()?.profileId;
     if (!userId) return;
 
+    const userProfile = this.userContext.getUser();
+    if (!userProfile) return;
+
+    const msgContent = this.newMessage.trim();
+    const tempMsg: Message = {
+      id: 'temp-' + Date.now(),
+      conversationId: this.conversationId!,
+      content: msgContent,
+      senderId: userProfile.profileId,
+      userName: userProfile.firstName + ' ' + userProfile.lastName,
+      userAvatar: userProfile.avatarUri || '',
+      timestamp: new Date(),
+      isMine: true
+    };
+
+    // Optimistic update
+    this.allCompactMessages.push(tempMsg);
+    if (this.viewOffset === 0) {
+      this.updateViewWindow();
+    }
+
     this.chatService.sendMessage({
       conversationId: this.conversationId,
-      content: this.newMessage,
+      content: msgContent,
       senderId: userId
     });
 
@@ -184,11 +263,13 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
       }
 
       if (unknownIds.size > 0) {
-        // Fetch profiles for these recent connections
-        this.friendService.getProfilesBatch(Array.from(unknownIds)).subscribe((friends: Friend[]) => {
-          // Sort by conversation time if possible, or just take first 3-4
-          this.recentFriends = friends.slice(0, 4);
-          // Re-calculate unread map in case new friends loaded
+        const sortedIds = Array.from(unknownIds);
+        this.friendService.getProfilesBatch(sortedIds).subscribe((friends: Friend[]) => {
+          // Maintaining the order from conversations/me
+          this.recentFriends = sortedIds
+            .map(id => friends.find(f => f.profileId === id))
+            .filter((f): f is Friend => !!f)
+            .slice(0, 4);
           this.recalculateUnreadMap();
         });
       }
