@@ -249,7 +249,7 @@ func (c *Consumer) handleNewMessage(data []byte) error {
 		"New message",
 		"You've received a new message from "+from+".",
 		"new-message",
-		map[string]interface{}{"from": from},
+		map[string]interface{}{"from": from, "senderId": notif.SenderID},
 	)
 }
 

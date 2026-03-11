@@ -40,8 +40,9 @@ type TherapistRejectNotification struct {
 
 
 type NewMessageNotification struct {
-	UserID string `json:"userId"`
-	From   string `json:"from"`
+	UserID   string `json:"userId"`
+	From     string `json:"from"`
+	SenderID string `json:"senderId"`
 }
 
 type ConsultationCreatedNotification struct {

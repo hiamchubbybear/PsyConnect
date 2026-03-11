@@ -1,0 +1,16 @@
+{
+  "name": "PsyConnect",
+  "short_name": "PsyConnect",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "assets/sig-logo/iconic-logo-light.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ],
+  "gcm_sender_id": "130716148033"
+}

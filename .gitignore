@@ -197,6 +197,9 @@ services/notificationservice/psyconnect-*-firebase-adminsdk-*.json
 services/notificationservice/src/config/firebase.js
 services/notificationservice/src/services/firebase.service.js
 services/webapp/psyconnect-web/src/firebase-messaging-sw.js
+# Firebase Service Account credentials (DO NOT COMMIT!)
+**/firebase-credentials.json
+**/firebase-adminsdk*.json
 # Generic config files to ignore
 *.config.js
 *.config.ts

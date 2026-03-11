@@ -17,12 +17,22 @@ spec:
     spec:
       imagePullSecrets:
         - name: ghcr-secret
+      volumes:
+        - name: firebase-credentials
+          secret:
+            secretName: firebase-credentials
+            optional: true
       containers:
         - name: notification-service
           image: hiamchubbybear/psyconnect-notification-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8082
+          volumeMounts:
+            - name: firebase-credentials
+              mountPath: /app/firebase-credentials.json
+              subPath: firebase-credentials.json
+              readOnly: true
           envFrom:
             - configMapRef:
                 name: psyconnect-config
@@ -33,7 +43,8 @@ spec:
               value: "8082"
             - name: SERVICE_HOST
               value: "0.0.0.0"
-          # Go service might act different for health check, assuming standard /health
+            - name: FIREBASE_CREDENTIALS
+              value: "/app/firebase-credentials.json"
           readinessProbe:
             httpGet:
               path: /health

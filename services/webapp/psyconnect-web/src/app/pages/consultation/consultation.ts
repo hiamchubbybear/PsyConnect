@@ -21,37 +21,36 @@ export class ConsultationComponent {
   private setupNavigation() {
     const role = this.authService.getRole();
 
-    
-    const commonItems = [
-      {
-        label: 'My Sessions',
-        route: '/feature/consultation/sessions',
-        translateKey: 'CONSULTATION.Tabs.Sessions',
-      },
-      {
-        label: 'My Profile',
-        route: '/feature/consultation/my-profile',
-        translateKey: 'CONSULTATION.Tabs.MyProfile',
-      },
-    ];
-
     if (role === 'therapist') {
       this.navItems = [
+        {
+          label: 'Calendar',
+          route: '/feature/consultation/schedules',
+          translateKey: 'CONSULTATION.Tabs.Schedule',
+        },
+        {
+          label: 'My Sessions',
+          route: '/feature/consultation/sessions',
+          translateKey: 'CONSULTATION.Tabs.Sessions',
+        },
         {
           label: 'Overview',
           route: '/feature/consultation/discover',
           translateKey: 'CONSULTATION.Tabs.Overview',
         },
         {
-          label: 'Calendar',
-          route: '/feature/consultation/schedules',
-          translateKey: 'CONSULTATION.Tabs.Schedule',
+          label: 'My Profile',
+          route: '/feature/consultation/my-profile',
+          translateKey: 'CONSULTATION.Tabs.MyProfile',
         },
-        ...commonItems,
       ];
     } else {
-      
       this.navItems = [
+        {
+          label: 'My Sessions',
+          route: '/feature/consultation/sessions',
+          translateKey: 'CONSULTATION.Tabs.Sessions',
+        },
         {
           label: 'Discover',
           route: '/feature/consultation/discover',
@@ -62,7 +61,11 @@ export class ConsultationComponent {
           route: '/feature/consultation/smart-match',
           translateKey: 'CONSULTATION.Tabs.Consultators',
         },
-        ...commonItems,
+        {
+          label: 'My Profile',
+          route: '/feature/consultation/my-profile',
+          translateKey: 'CONSULTATION.Tabs.MyProfile',
+        },
       ];
     }
   }

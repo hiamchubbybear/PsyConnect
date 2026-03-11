@@ -1,0 +1,173 @@
+.floating-chat-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  .btn-base {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .chat-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px; /* Space between menu and FAB */
+    pointer-events: none; /* Initially unclickable */
+
+    .chat-head {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--color-surface, #fff);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-primary, #111827);
+      
+      opacity: 0;
+      transform: translateY(20px) scale(0.8);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      
+      &:hover {
+        transform: translateY(-2px) scale(1.05) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      &.search-head {
+        background-color: var(--color-surface, #fff);
+        color: var(--color-text-secondary, #6b7280);
+        &:hover {
+          color: var(--color-primary, #667eea);
+        }
+      }
+
+      &.friend-head {
+        overflow: visible; /* allow badge to overflow */
+        position: relative;
+        border: 2px solid var(--color-surface, #fff);
+        .avatar-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+
+        .unread-badge {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          min-width: 18px;
+          height: 18px;
+          padding: 0 4px;
+          border-radius: 9999px;
+          background-color: #f56565;
+          color: #fff;
+          font-size: 10px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid var(--color-surface, #fff);
+          animation: badge-pulse 1.5s ease-in-out infinite;
+          z-index: 1;
+        }
+      }
+    }
+  }
+
+  .fab-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--color-primary, #667eea);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    svg {
+      transition: transform 0.3s ease;
+    }
+
+    .fab-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 9999px;
+      background-color: #f56565;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--color-primary, #667eea);
+      animation: badge-pulse 1.5s ease-in-out infinite;
+    }
+  }
+
+  /* OPEN STATE */
+  &.is-open {
+    .chat-menu {
+      pointer-events: auto;
+      
+      .chat-head {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .fab-toggle {
+      background-color: var(--color-surface, #fff);
+      color: var(--color-text-primary, #111827);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      .icon-close {
+        animation: rotateIn 0.3s ease forwards;
+      }
+    }
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    transform: rotate(-90deg) scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 101, 101, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(245, 101, 101, 0);
+  }
+}

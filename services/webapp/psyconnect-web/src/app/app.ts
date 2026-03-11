@@ -31,6 +31,7 @@ import { ThemeService } from './services/theme/theme-service';
 import { ToastContainerComponent } from './shared/toast/toast-container';
 import { ToastType } from './shared/toast/toast-type';
 import { ToastService } from './shared/toast/toast.service';
+import { FloatingChatComponent } from './components/chat/floating-chat/floating-chat';
 
 @Component({
   selector: 'app-root',
@@ -48,6 +49,7 @@ import { ToastService } from './shared/toast/toast.service';
     RouterModule,
     MobileRequiredComponent,
     ToastContainerComponent,
+    FloatingChatComponent,
   ],
   animations: [fadeRouteAnimation],
   templateUrl: './app.html',
@@ -98,7 +100,6 @@ export class App implements OnInit {
     this.fetchUserProfile();
 
     this.loader.loading$.subscribe((v) => (this.isLoading = v));
-    const profileId = this.userContext.getUser()?.profileId;
 
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationStart) {
@@ -110,20 +111,6 @@ export class App implements OnInit {
         this.loader.hide();
       }
     });
-    if (profileId) {
-      this.notification.init(profileId);
-      this.toastService.show(
-        'TOAST.error_generic',
-        'TOAST.error_notification',
-        ToastType.Error,
-      );
-    } else {
-      this.toastService.show(
-        'TOAST.error_generic',
-        'TOAST.error_notification',
-        ToastType.Error,
-      );
-    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -153,6 +140,9 @@ export class App implements OnInit {
       next: (profile) => {
         this.userContext.setUser(profile);
         this.authState.showSidebar();
+        if (profile.profileId) {
+          this.notification.init(profile.profileId);
+        }
       },
       error: (error) => {
         if (error.status === 401 || error.status === 403) {

@@ -78,6 +78,24 @@ func (s *ChatService) HandleChatMessage(hub *ws.Hub, message ws.Message) {
 	}
 
 	hub.BroadcastToRoom(message.ConversationID, broadcastMsg)
+
+	
+	notifEvent := map[string]interface{}{
+		"eventId":   model.NewUUID(),
+		"timestamp": time.Now().UTC(),
+		"service":   "chat-service",
+		"eventType": "notification.push.new-message",
+		"data": map[string]interface{}{
+			"userId":   data["receiverId"],
+			"from":     data["senderName"],
+			"senderId": newChat.SenderID,
+		},
+	}
+
+	notifBytes, err := json.Marshal(notifEvent)
+	if err == nil {
+		s.producer.SendNotification(string(notifBytes))
+	}
 }
 
 func (s *ChatService) GetChatHistory(conversationID string, limit int, before time.Time) ([]*model.Chat, error) {

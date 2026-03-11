@@ -1,0 +1,47 @@
+<div class="floating-chat-container" [class.is-open]="isOpen">
+  <!-- The pop-out menu (chat heads and search) -->
+  <div class="chat-menu">
+
+    <!-- Search Button (Always at top) -->
+    <button class="chat-head search-head btn-base" (click)="openSearch()" title="Search & All Chats">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </button>
+
+    <!-- Recent Friends Avatars -->
+    <button *ngFor="let friend of recentFriends; let i = index"
+            class="chat-head friend-head btn-base"
+            [style.transition-delay.ms]="(recentFriends.length - i) * 50"
+            (click)="openChat(friend.profileId)"
+            [title]="friend.firstName + ' ' + friend.lastName">
+      <img [src]="friend.avatarUri | avatarFallback: friend.profileId" appImgFallback alt="Avatar" class="avatar-img" />
+      <!-- Unread badge for this specific friend -->
+      <span class="unread-badge" *ngIf="unreadMap[friend.profileId] > 0">
+        {{ unreadMap[friend.profileId] > 9 ? '9+' : unreadMap[friend.profileId] }}
+      </span>
+    </button>
+
+  </div>
+
+  <!-- The main FAB toggle -->
+  <button class="fab-toggle btn-base" (click)="toggleMenu()" [attr.aria-label]="isOpen ? 'Close chat menu' : 'Open chat menu'">
+    <!-- Write icon (when closed) -->
+    <svg *ngIf="!isOpen" class="icon-write" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </svg>
+
+    <!-- Close icon (when open) -->
+    <svg *ngIf="isOpen" class="icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+
+    <!-- Global unread badge on FAB -->
+    <span class="fab-badge" *ngIf="!isOpen && unreadTotal > 0">
+      {{ unreadTotal > 9 ? '9+' : unreadTotal }}
+    </span>
+  </button>
+</div>

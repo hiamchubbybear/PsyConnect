@@ -136,7 +136,7 @@ export const routes: Routes = [
     component: ConsultationComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'discover', pathMatch: 'full' },
+      { path: '', redirectTo: 'sessions', pathMatch: 'full' },
       {
         path: 'smart-match',
         loadComponent: () =>
