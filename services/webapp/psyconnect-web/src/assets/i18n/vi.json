@@ -1666,5 +1666,10 @@
         "USER": "Người dùng",
         "THERAPIST": "Chuyên gia tâm lý",
         "ADMIN": "Quản trị viên"
+    },
+    "CHAT": {
+        "SEARCH_ALL": "Tìm kiếm & Tất cả tin nhắn",
+        "NO_MESSAGES": "Chưa có tin nhắn nào",
+        "TYPE_MESSAGE": "Nhập tin nhắn..."
     }
 }

@@ -24,8 +24,15 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
   unreadTotal = 0;
   unreadMap: { [profileId: string]: number } = {};
   
+  // Compact Chat State
+  activeChatFriend: Friend | null = null;
+  compactMessages: any[] = [];
+  newMessage = '';
+  conversationId = '';
+  
   private sub?: Subscription;
   private notifSub?: Subscription;
+  private chatSub?: Subscription;
 
   constructor(
     private chatService: ChatService,
@@ -39,7 +46,6 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
     this.loadRecentChats();
 
     this.notifSub = this.notificationService.notifications$.subscribe((notifs) => {
-      // "New message" is the title sent by the backend for chat notifications
       const chatNotifs = notifs.filter((n) => !n.isRead && n.title === 'New message');
       this.unreadTotal = chatNotifs.length;
 
@@ -67,28 +73,99 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
       });
       
       this.unreadMap = map;
+      
+      // If active compact chat receives a message, reload
+      if (this.activeChatFriend) {
+        this.loadCompactMessages(this.activeChatFriend.profileId);
+      }
     });
   }
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
     this.notifSub?.unsubscribe();
+    this.chatSub?.unsubscribe();
+    this.chatService.disconnect();
   }
 
   toggleMenu() {
     this.isOpen = !this.isOpen;
+    if (!this.isOpen) {
+      this.activeChatFriend = null;
+    }
     if (this.isOpen && this.recentFriends.length === 0) {
       this.loadRecentChats();
     }
   }
 
-  openChat(profileId: string) {
-    this.isOpen = false;
-    this.router.navigate(['/feature/chat', profileId]);
+  openChat(friend: Friend) {
+    if (this.activeChatFriend?.profileId === friend.profileId) {
+      this.activeChatFriend = null;
+      return;
+    }
+    this.activeChatFriend = friend;
+    this.loadCompactMessages(friend.profileId);
+  }
+
+  closeCompactChat() {
+    this.activeChatFriend = null;
+    this.chatSub?.unsubscribe();
+    this.chatService.disconnect();
+  }
+
+  loadCompactMessages(friendId: string) {
+    const userId = this.userContext.getUser()?.profileId;
+    if (!userId) return;
+
+    this.chatService.getOrCreateConversation(userId, friendId).subscribe(({ id }) => {
+      this.conversationId = id;
+      if (!id) return;
+
+      // Unsubscribe from previous chat if any
+      this.chatSub?.unsubscribe();
+      this.chatService.disconnect();
+
+      // Load latest 4 messages
+      this.chatService.getChatsByConversation(id, userId, 4).subscribe(msgs => {
+        this.compactMessages = msgs.reverse();
+      });
+
+      // Connect to websocket for real-time updates in compact view
+      this.chatSub = this.chatService.connect(friendId, id).subscribe(msg => {
+        if (msg.conversationId === this.conversationId) {
+          this.compactMessages.push(msg);
+          if (this.compactMessages.length > 4) {
+            this.compactMessages.shift();
+          }
+        }
+      });
+    });
+  }
+
+  sendQuickMessage() {
+    if (!this.newMessage.trim() || !this.conversationId) return;
+    
+    const userId = this.userContext.getUser()?.profileId;
+    if (!userId) return;
+
+    this.chatService.sendMessage({
+      conversationId: this.conversationId,
+      content: this.newMessage,
+      senderId: userId
+    });
+
+    this.newMessage = '';
+  }
+
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.sendQuickMessage();
+    }
   }
 
   openSearch() {
     this.isOpen = false;
+    this.activeChatFriend = null;
     this.router.navigate(['/feature/chat']);
   }
 

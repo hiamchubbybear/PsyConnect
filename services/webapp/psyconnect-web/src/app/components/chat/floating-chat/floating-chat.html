@@ -3,26 +3,68 @@
   <div class="chat-menu">
 
     <!-- Search Button (Always at top) -->
-    <button class="chat-head search-head btn-base" (click)="openSearch()" title="Search & All Chats">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-    </button>
+    <div class="chat-head-wrapper">
+      <button class="chat-head search-head btn-base" (click)="openSearch()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+      <span class="chat-tooltip">{{ 'CHAT.SEARCH_ALL' | translate }}</span>
+    </div>
 
     <!-- Recent Friends Avatars -->
-    <button *ngFor="let friend of recentFriends; let i = index"
-            class="chat-head friend-head btn-base"
-            [style.transition-delay.ms]="(recentFriends.length - i) * 50"
-            (click)="openChat(friend.profileId)"
-            [title]="friend.firstName + ' ' + friend.lastName">
-      <img [src]="friend.avatarUri | avatarFallback: friend.profileId" appImgFallback alt="Avatar" class="avatar-img" />
-      <!-- Unread badge for this specific friend -->
-      <span class="unread-badge" *ngIf="unreadMap[friend.profileId] > 0">
-        {{ unreadMap[friend.profileId] > 9 ? '9+' : unreadMap[friend.profileId] }}
-      </span>
-    </button>
+    <div *ngFor="let friend of recentFriends; let i = index" class="chat-head-wrapper">
+      <button class="chat-head friend-head btn-base"
+              [style.transition-delay.ms]="(recentFriends.length - i) * 50"
+              (click)="openChat(friend)"
+              [class.active]="activeChatFriend?.profileId === friend.profileId">
+        <img [src]="friend.avatarUri | avatarFallback: friend.profileId" appImgFallback alt="Avatar" class="avatar-img" />
+        <span class="unread-badge" *ngIf="unreadMap[friend.profileId] > 0">
+          {{ unreadMap[friend.profileId] > 9 ? '9+' : unreadMap[friend.profileId] }}
+        </span>
+      </button>
+      <span class="chat-tooltip">{{ friend.firstName }} {{ friend.lastName }}</span>
+    </div>
 
+  </div>
+
+  <!-- Compact Chat Window -->
+  <div class="compact-chat-box" *ngIf="activeChatFriend">
+    <div class="compact-header">
+      <div class="compact-user-info">
+        <img [src]="activeChatFriend.avatarUri | avatarFallback: activeChatFriend.profileId" alt="Avatar" class="mini-avatar" />
+        <span class="user-name">{{ activeChatFriend.firstName }}</span>
+      </div>
+      <button class="close-mini-chat btn-base" (click)="closeCompactChat()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="compact-messages">
+      <div *ngFor="let msg of compactMessages" class="mini-msg" [class.is-mine]="msg.isMine">
+        <div class="msg-bubble">{{ msg.content }}</div>
+      </div>
+      <div *ngIf="compactMessages.length === 0" class="no-msgs">
+        {{ 'CHAT.NO_MESSAGES' | translate }}
+      </div>
+    </div>
+
+    <div class="compact-input">
+      <input type="text" 
+             [placeholder]="'CHAT.TYPE_MESSAGE' | translate" 
+             [(ngModel)]="newMessage" 
+             (keydown)="onKeydown($event)" />
+      <button class="send-btn btn-base" (click)="sendQuickMessage()" [disabled]="!newMessage.trim()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- The main FAB toggle -->
