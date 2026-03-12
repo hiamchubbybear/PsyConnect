@@ -22,6 +22,8 @@ import {
   WebRTCSignalingService,
 } from '../../../services/webrtc/webrtc-signaling.service';
 import { WebRTCService } from '../../../services/webrtc/webrtc.service';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { ToastType } from '../../../shared/toast/toast.model';
 
 @Component({
   selector: 'chat-page',
@@ -84,6 +86,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private webrtcService: WebRTCService,
     private signalingService: WebRTCSignalingService,
     private translate: TranslateService,
+    private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -432,53 +435,49 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.wsSubscription = this.chatService
               .connect(friend.profileId, conv.id)
               .subscribe({
-                next: (wsMsg: any) => {
-                  console.log('📨 Received WebSocket message:', wsMsg);
+                next: (wsMsg: Message) => {
+                  console.log('📨 Received message:', wsMsg);
 
-                  const webrtcTypes = ['offer', 'answer', 'ice', 'leave'];
-                  if (webrtcTypes.includes(wsMsg.type)) {
-                    console.log(
-                      '🔀 Routing WebRTC message to signaling service:',
-                      wsMsg.type,
-                    );
-
-                    if (wsMsg.type === 'answer') {
-                      console.log(
-                        '📞 Answer received - stopping outgoing tone',
-                      );
-                      this.stopOutgoingTone();
-                      this.stopRingtone();
-                      this.playCallConnected();
-                    }
-
-                    if (wsMsg.type === 'leave') {
-                      console.log('👋 LEAVE message received:', wsMsg);
-                    }
-
-                    (this.signalingService as any).handleMessage(wsMsg);
+                  // 1. Skip if it's our own message (we handle it optimistically)
+                  if (wsMsg.isMine) {
                     return;
                   }
 
-                  const msg: Message = {
-                    id: wsMsg.data?.id || '',
-                    conversationId:
-                      wsMsg.conversationId || wsMsg.data?.conversationId,
-                    senderId: wsMsg.senderId || wsMsg.data?.senderId,
-                    content: wsMsg.data?.content || '',
-                    timestamp: new Date(wsMsg.data?.timestamp || Date.now()),
-                    userName: '',
-                    userAvatar: '',
-                    isMine: false,
-                  };
-
-                  const enrichedMsg = this.enrichMessage(msg, friend);
+                  // 2. Routing WebRTC messages is handled inside the ChatService 
+                  // or via specific message types. Here we only care about chat messages.
+                  
+                  // 3. Show a premium toast for incoming messages
+                  this.toastService.show({
+                    title: `${friend.firstName} ${friend.lastName}`,
+                    message: wsMsg.content,
+                    type: ToastType.Info,
+                    duration: 5000,
+                    actions: [
+                      {
+                        label: 'View',
+                        primary: true,
+                        action: () => {
+                          // Scroll to bottom when "View" is clicked
+                          setTimeout(() => {
+                            const mainChat = document.querySelector('app-chat-main');
+                            if (mainChat) {
+                              const container = mainChat.querySelector('.chat-messages');
+                              if (container) {
+                                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                              }
+                            }
+                          }, 100);
+                        }
+                      }
+                    ]
+                  });
 
                   this.messages.update((prev) => {
-                    const updated = [...prev, enrichedMsg];
+                    const updated = [...prev, wsMsg];
                     return this.groupMessages(updated);
                   });
                 },
-                error: (err) => console.error('❌ WebSocket error:', err),
+                error: (err: any) => console.error('❌ WebSocket error:', err),
               });
           });
       });

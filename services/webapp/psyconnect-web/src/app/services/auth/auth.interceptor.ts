@@ -21,8 +21,8 @@ import {
 } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
-import { ToastType } from '../../shared/toast/toast-type';
 import { ToastService } from '../../shared/toast/toast.service';
+import { ToastType } from '../../shared/toast/toast.model';
 import { LoaderService } from '../loader/loader';
 import { Auth } from './auth';
 
@@ -83,11 +83,11 @@ export const authInterceptor: HttpInterceptorFn = (
         const username = secureStorage.getItem<string>(usernameKey);
         if (!username) {
           if (err.status === 401 || err.status === 403) {
-            toastService.show(
-              'Truy cập bị từ chối',
-              'Bạn không có quyền hoặc phiên đăng nhập đã hết hạn.',
-              ToastType.Error,
-            );
+            toastService.show({
+              title: 'Truy cập bị từ chối',
+              message: 'Bạn không có quyền hoặc phiên đăng nhập đã hết hạn.',
+              type: ToastType.Error,
+            });
           }
           return throwError(() => new Error('No username in storage'));
         }
@@ -125,11 +125,11 @@ export const authInterceptor: HttpInterceptorFn = (
           secureStorage.setItem(ACCESSTOKEN_KEY, newToken);
           tokenSubject.next(newToken);
 
-          toastService.show(
-            'TOAST.key_token_refreshed',
-            'TOAST.key_success',
-            ToastType.Success,
-          );
+          toastService.show({
+            title: 'TOAST.key_token_refreshed',
+            message: 'TOAST.key_success',
+            type: ToastType.Success,
+          });
 
           return next(
             req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } }),
@@ -138,17 +138,17 @@ export const authInterceptor: HttpInterceptorFn = (
               
               
               if (err instanceof HttpErrorResponse && err.status === 401) {
-                toastService.show(
-                  'Truy cập bị hạn chế',
-                  'Bạn không có quyền thực hiện hành động này.',
-                  ToastType.Warning,
-                );
+                toastService.show({
+                  title: 'Truy cập bị hạn chế',
+                  message: 'Bạn không có quyền thực hiện hành động này.',
+                  type: ToastType.Warning,
+                });
               } else {
-                toastService.show(
-                  'Lỗi không xác định',
-                  'Đã có lỗi xảy ra, vui lòng thử lại sau.',
-                  ToastType.Error,
-                );
+                toastService.show({
+                  title: 'Lỗi không xác định',
+                  message: 'Đã có lỗi xảy ra, vui lòng thử lại sau.',
+                  type: ToastType.Error,
+                });
               }
               
               return throwError(() => err);
@@ -157,11 +157,11 @@ export const authInterceptor: HttpInterceptorFn = (
         }),
         catchError((err) => {
           isRefreshing.value = false;
-          toastService.show(
-            'TOAST.key_session_expired',
-            'TOAST.key_failed',
-            ToastType.Error,
-          );
+          toastService.show({
+            title: 'TOAST.key_session_expired',
+            message: 'TOAST.key_failed',
+            type: ToastType.Error,
+          });
           authService.logout();
           router.navigate(['/auth/login']);
           return throwError(() => err);

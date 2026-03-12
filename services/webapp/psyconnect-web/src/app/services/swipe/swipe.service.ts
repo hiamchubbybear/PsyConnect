@@ -35,7 +35,7 @@ export class SwipeService {
   THERAPIST_KEY = environment.therapistsKey;
   constructor(
     private http: HttpClient,
-    private secureStorage: SecureStorageService
+    private secureStorage: SecureStorageService,
   ) {}
 
   triggerUpdate(): Observable<{
@@ -53,7 +53,7 @@ export class SwipeService {
     }>(
       `${this.apiUrl}/${this.version}/consultation/clients/me/recommend`,
       {},
-      { headers }
+      { headers },
     );
   }
 
@@ -84,7 +84,23 @@ export class SwipeService {
     return this.http.get<TherapistRecommendResponse>(url, { headers }).pipe(
       map((res) => {
         return Array.isArray(res.data) && res.data.length > 0;
-      })
+      }),
+    );
+  }
+  postSwipe(therapistId: string, status: string = 'swiped'): Observable<any> {
+    const token = this.secureStorage.getItem(this.ACCESSTOKEN_KEY);
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.post(
+      `${this.apiUrl}/${this.version}/consultation/clients/me/swipe`,
+      {
+        therapist_id: therapistId,
+        status: status,
+      },
+      { headers },
     );
   }
 }

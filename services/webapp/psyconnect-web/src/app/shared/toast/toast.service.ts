@@ -1,52 +1,83 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { ToastData, ToastType } from './toast.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ToastService {
-  private toastSubject = new Subject<ToastData>();
-  toasts$ = this.toastSubject.asObservable();
+  private toastsSubject = new BehaviorSubject<ToastData[]>([]);
+  toasts$ = this.toastsSubject.asObservable();
 
-  show(
-    title: string,
-    message: string,
-    type: ToastType = ToastType.Info,
-    duration = 4000
-  ) {
+  show(data: Partial<ToastData>) {
     const toast: ToastData = {
-      id: generateUUID(),
-      title,
-      message,
-      type,
-      duration,
+      id: data.id || generateUUID(),
+      title: data.title,
+      message: data.message || '',
+      description: data.description,
+      type: data.type || ToastType.Info,
+      duration: data.duration ?? 5000,
+      showCountdown: data.showCountdown ?? true,
+      actions: data.actions || [],
     };
-    this.toastSubject.next(toast);
+
+    const currentToasts = [...this.toastsSubject.value];
+    const existingIndex = currentToasts.findIndex((t) => t.id === toast.id);
+
+    if (existingIndex > -1) {
+      currentToasts[existingIndex] = toast;
+    } else {
+      currentToasts.push(toast);
+    }
+
+    this.toastsSubject.next(currentToasts);
+
+    if (toast.duration && toast.duration > 0) {
+      const staggerDelay =
+        (existingIndex > -1 ? existingIndex : currentToasts.length - 1) * 1000;
+      setTimeout(() => {
+        this.remove(toast.id);
+      }, toast.duration + staggerDelay);
+    }
   }
 
-  success(title: string, message: string, duration = 40000) {
-    this.show(title, message, ToastType.Success, duration);
+  remove(id: string) {
+    const remaining = this.toastsSubject.value.filter((t) => t.id !== id);
+    this.toastsSubject.next(remaining);
   }
 
-  info(title: string, message: string, duration = 4000) {
-    this.show(title, message, ToastType.Info, duration);
+  clearAll() {
+    this.toastsSubject.next([]);
+  }
+
+  success(title: string, message: string, duration = 4000) {
+    this.show({ title, message, type: ToastType.Success, duration });
+  }
+
+  error(title: string, message: string, duration = 5000) {
+    this.show({ title, message, type: ToastType.Error, duration });
   }
 
   warning(title: string, message: string, duration = 4000) {
-    this.show(title, message, ToastType.Warning, duration);
+    this.show({ title, message, type: ToastType.Warning, duration });
   }
 
-  error(title: string, message: string, duration = 4000) {
-    this.show(title, message, ToastType.Error, duration);
+  info(title: string, message: string, duration = 4000) {
+    this.show({ title, message, type: ToastType.Info, duration });
+  }
+
+  session(data: Partial<ToastData>) {
+    // Persistent by default (duration=0)
+    this.show({ ...data, type: ToastType.Session, duration: 0 });
   }
 }
+
 function generateUUID(): string {
-  if ('randomUUID' in crypto) {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     return crypto.randomUUID();
   }
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = crypto.getRandomValues(new Uint8Array(1))[0] & 15;
+    const r = (Math.random() * 16) | 0;
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });

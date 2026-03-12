@@ -1,57 +1,101 @@
-import { animate, style, transition, trigger } from '@angular/animations';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { ToastType } from './toast-type';
+import { ToastAction, ToastData } from './toast.model';
 
 @Component({
   selector: 'app-toast',
   standalone: true,
-  imports: [CommonModule,TranslateModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './toast.html',
   styleUrls: ['./toast.scss'],
   animations: [
     trigger('toastAnimation', [
-      transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(10px)' }),
-        animate(
-          '200ms ease-out',
-          style({ opacity: 1, transform: 'translateY(0)' })
-        ),
-      ]),
+      state(
+        'void',
+        style({
+          opacity: 0,
+          transform: 'translateX(30px) scale(0.95)',
+          filter: 'blur(4px)',
+        }),
+      ),
+      transition(':enter', [animate('400ms cubic-bezier(0.16, 1, 0.3, 1)')]),
       transition(':leave', [
         animate(
-          '200ms ease-in',
-          style({ opacity: 0, transform: 'translateY(10px)' })
+          '300ms cubic-bezier(0.7, 0, 0.84, 0)',
+          style({
+            opacity: 0,
+            transform: 'translateX(20px) scale(0.9)',
+            filter: 'blur(4px)',
+          }),
         ),
       ]),
     ]),
   ],
 })
-export class ToastComponent {
-  @Input() title!: string;
-  @Input() id!: string;
-  @Input() message!: string;
-  @Input() type: ToastType = ToastType.Info;
-  @Input() onClose!: () => void;
-  @Output() close: EventEmitter<string> = new EventEmitter<string>();
-  get icon(): string {
-    switch (this.type) {
-      case ToastType.Success:
-        return 'check_circle';
-      case ToastType.Info:
-        return 'info';
-      case ToastType.Warning:
-        return 'warning';
-      case ToastType.Error:
-        return 'error';
-      default:
-        return 'info';
+export class ToastComponent implements OnInit, OnDestroy {
+  @Input() data!: ToastData;
+  @Input() index = 0;
+  @Output() close = new EventEmitter<string>();
+
+  remainingSeconds = 0;
+  private intervalId?: any;
+
+  ngOnInit() {
+    if (this.data.duration && this.data.duration > 0) {
+      this.remainingSeconds = Math.ceil(this.data.duration / 1000);
+      this.startCountdown();
     }
   }
 
+  ngOnDestroy() {
+    this.stopCountdown();
+  }
+
+  private startCountdown() {
+    this.intervalId = setInterval(() => {
+      if (this.remainingSeconds > 0) {
+        this.remainingSeconds--;
+      } else {
+        this.stopCountdown();
+      }
+    }, 1000);
+  }
+
+  private stopCountdown() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  handleAction(action: ToastAction) {
+    action.action();
+    this.close.emit(this.data.id);
+  }
+
   handleClose() {
-    if (this.onClose) this.onClose();
-    this.close.emit(this.id);
+    this.close.emit(this.data.id);
+  }
+
+  get stackingStyle() {
+    return {
+      'z-index': 100 - this.index,
+      'pointer-events': 'auto',
+      position: 'relative',
+    };
   }
 }

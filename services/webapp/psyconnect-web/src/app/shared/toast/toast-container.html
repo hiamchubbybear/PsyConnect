@@ -1,11 +1,8 @@
-<div class="toast-container">
+<div class="toast-container" [class.header-mini]="isHeaderMini">
   <app-toast
-    *ngFor="let toast of toasts"
-    [id]="toast.id"
-    [title]="toast.title"
-    [message]="toast.message"
-    [type]="toast.type"
+    *ngFor="let toast of toasts; let i = index; trackBy: trackByFn"
+    [data]="toast"
+    [index]="i"
     (close)="removeToast($event)"
-  >
-  </app-toast>
+  ></app-toast>
 </div>

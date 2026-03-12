@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -23,7 +23,8 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './floating-chat.html',
   styleUrls: ['./floating-chat.scss']
 })
-export class FloatingChatComponent implements OnInit, OnDestroy {
+export class FloatingChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild('scrollViewport') private scrollViewport?: ElementRef;
   isOpen = false;
   recentFriends: Friend[] = [];
   unreadTotal = 0;
@@ -34,7 +35,8 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
   compactMessages: Message[] = [];
   allCompactMessages: Message[] = [];
   viewOffset = 0; // Steps from the end
-  viewWindowSize = 4;
+  viewWindowSize = 12; // Show more messages for better UX
+  private shouldScrollToBottom = false;
   
   newMessage = '';
   conversationId: string | null = null;
@@ -64,32 +66,27 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
       const map: { [profileId: string]: number } = {};
       
       chatNotifs.forEach((n) => {
-        let fromName = '';
-        if (n.metadata && n.metadata.from) {
-          fromName = n.metadata.from;
+        let fromProfileId = '';
+        if (n.metadata && n.metadata.fromId) {
+          fromProfileId = n.metadata.fromId;
         } else if (typeof n.metadata === 'string') {
           try {
             const parsed = JSON.parse(n.metadata);
-            fromName = parsed.from;
+            fromProfileId = parsed.fromId || parsed.profileId;
           } catch (e) {}
         }
         
-        const friend = this.recentFriends.find(f => {
-          const fullName = `${f.firstName} ${f.lastName}`.trim();
-          return fullName === fromName;
-        });
-        
-        if (friend && friend.profileId) {
-          map[friend.profileId] = (map[friend.profileId] || 0) + 1;
+        if (fromProfileId) {
+          map[fromProfileId] = (map[fromProfileId] || 0) + 1;
+          
+          // Only reload if the message is from someone ELSE or if we don't have an active connection
+          if (this.activeChatFriend && fromProfileId === this.activeChatFriend.profileId && !this.chatSub) {
+             this.loadCompactMessages(this.activeChatFriend.profileId);
+          }
         }
       });
       
       this.unreadMap = map;
-      
-      // If active compact chat receives a message, reload
-      if (this.activeChatFriend) {
-        this.loadCompactMessages(this.activeChatFriend.profileId);
-      }
     });
   }
 
@@ -107,6 +104,9 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
     }
     if (this.isOpen && this.recentFriends.length === 0) {
       this.loadRecentChats();
+    }
+    if (this.isOpen) {
+      this.shouldScrollToBottom = true;
     }
   }
 
@@ -155,24 +155,45 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
       this.chatSub?.unsubscribe();
       this.chatService.disconnect();
 
-      this.chatService.getChatsByConversation(id, userId, 20).subscribe(msgs => {
-        this.allCompactMessages = msgs.reverse();
+      this.chatService.getChatsByConversation(id, userId, 25).subscribe(msgs => {
+        // Correct chronological order: latest messages at the bottom
+        this.allCompactMessages = msgs;
         this.viewOffset = 0;
         this.updateViewWindow();
+        this.shouldScrollToBottom = true;
       });
 
       this.chatSub = this.chatService.connect(friendId, id).subscribe((msg: Message) => {
         if (msg.conversationId === this.conversationId) {
+          // 1. Handle "Echo" of own message (isMine)
+          if (msg.isMine) {
+            const tempIndex = this.allCompactMessages.findIndex(m => 
+              m.senderId === msg.senderId && 
+              m.id.startsWith('temp-') && 
+              m.content === msg.content
+            );
+
+            if (tempIndex !== -1) {
+              // Update optimistic message with real server data
+              this.allCompactMessages[tempIndex].id = msg.id;
+              if (msg.timestamp) this.allCompactMessages[tempIndex].timestamp = msg.timestamp;
+              return; // Done, no need to push
+            }
+          }
+
+          // 2. Standard Duplication Check (for incoming or already echoed messages)
           const isDuplicate = this.allCompactMessages.some(m => 
-            m.content === msg.content && 
-            m.senderId === msg.senderId &&
-            Math.abs(new Date(m.timestamp).getTime() - new Date(msg.timestamp).getTime()) < 2000
+            m.id === msg.id || 
+            (m.senderId === msg.senderId && 
+             m.content === msg.content && 
+             Math.abs(new Date(m.timestamp).getTime() - new Date(msg.timestamp).getTime()) < 2000)
           );
 
           if (!isDuplicate) {
             this.allCompactMessages.push(msg);
             if (this.viewOffset === 0) {
               this.updateViewWindow();
+              this.shouldScrollToBottom = true;
             }
           }
         }
@@ -225,6 +246,7 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
     this.allCompactMessages.push(tempMsg);
     if (this.viewOffset === 0) {
       this.updateViewWindow();
+      this.shouldScrollToBottom = true;
     }
 
     this.chatService.sendMessage({
@@ -279,5 +301,21 @@ export class FloatingChatComponent implements OnInit, OnDestroy {
   private recalculateUnreadMap() {
     // Manually trigger the observable logic if needed by re-evaluating the current notifs
     this.notificationService.fetchNotifications(this.userContext.getUser()?.profileId || '');
+  }
+
+  ngAfterViewChecked() {
+    if (this.shouldScrollToBottom) {
+      this.scrollToBottom();
+      this.shouldScrollToBottom = false;
+    }
+  }
+
+  private scrollToBottom(): void {
+    if (this.scrollViewport) {
+      try {
+        const element = this.scrollViewport.nativeElement;
+        element.scrollTop = element.scrollHeight;
+      } catch (err) {}
+    }
   }
 }

@@ -5,14 +5,14 @@
   ></app-profile-card>
   <div class="profile-page__container">
     <app-info-block
-      [title]="'profile.staffInfo.title' | translate"
+      [title]="'profile.personalInfo.title' | translate"
       [fields]="staffInfoFields"
       [showEdit]="isOwnProfile"
       (edit)="onEditStaffInfo()"
     ></app-info-block>
 
     <app-info-block
-      [title]="'profile.staffWebsite.title' | translate"
+      [title]="'profile.additionalInfo.title' | translate"
       [fields]="websiteFields"
       [showEdit]="isOwnProfile"
       (edit)="onEditWebsite()"

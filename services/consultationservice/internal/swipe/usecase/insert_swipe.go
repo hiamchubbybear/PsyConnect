@@ -16,7 +16,10 @@ func NewInsertSwipeUseCase(swipeRepo repository.SwipeRepository) *InsertSwipeUse
 	}
 }
 
-func (uc *InsertSwipeUseCase) Execute(ctx context.Context, clientID, therapistID string, points float32, reasons []string) error {
+func (uc *InsertSwipeUseCase) Execute(ctx context.Context, clientID, therapistID string, points float32, reasons []string, status string) error {
 	swipe := domain.NewSwipe(clientID, therapistID, points, reasons)
+	if status != "" {
+		swipe.Status = status
+	}
 	return uc.swipeRepo.InsertSwipe(ctx, swipe)
 }

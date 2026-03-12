@@ -60,7 +60,6 @@ export class FeedComponent implements OnInit {
   error: string | null = null;
   feedType: 'all' | 'trending' = 'all';
 
-  
   isScrollingDown = false;
   private lastScrollTop = 0;
 
@@ -79,18 +78,15 @@ export class FeedComponent implements OnInit {
     this.headerState.setSearchOpen(false);
   }
 
-  
   showReactionPicker: { [postId: string]: boolean } = {};
   reactionTypes = REACTION_TYPES;
   reactionImages = REACTION_IMAGES;
 
-  
   profileCache: Map<string, any> = new Map();
   showAuthorCard: { [postId: string]: boolean } = {};
   hoveredUserId: string | null = null;
   authorCardTimeout: any = null;
 
-  
   showPostModal = false;
   selectedPostId: string | null = null;
 
@@ -154,8 +150,13 @@ export class FeedComponent implements OnInit {
 
     feedObservable.subscribe({
       next: (posts) => {
-        const newPosts = posts || [];
-        
+        let newPosts = posts || [];
+
+        // Deduplicate
+        newPosts = newPosts.filter(
+          (np) => !this.posts.some((p) => p.id === np.id),
+        );
+
         if (this.currentPage === 0) {
           this.posts = newPosts;
         } else {
@@ -163,7 +164,7 @@ export class FeedComponent implements OnInit {
         }
 
         this.loading = false;
-        
+
         newPosts.forEach((post) => {
           if (post.author_id) {
             this.loadProfile(post.author_id).then((profile) => {
@@ -210,7 +211,6 @@ export class FeedComponent implements OnInit {
         const slice = therapists.slice(0, 3);
         if (slice.length === 0) return;
 
-        
         this.therapists = slice.map((t: ApiTherapist) => ({
           name: t.name || 'Therapist',
           avatar:
@@ -221,7 +221,6 @@ export class FeedComponent implements OnInit {
           profileId: t.profileId,
         })) as any[];
 
-        
         slice.forEach((t: ApiTherapist, i: number) => {
           if (!t.profileId) return;
           this.profileService.getProfileById(t.profileId).subscribe({
@@ -234,7 +233,7 @@ export class FeedComponent implements OnInit {
                 name: fullName || this.therapists[i].name,
                 avatar: profile.avatarUri || this.therapists[i].avatar,
               };
-              this.therapists = [...this.therapists]; 
+              this.therapists = [...this.therapists];
             },
             error: () => {},
           });
@@ -270,7 +269,7 @@ export class FeedComponent implements OnInit {
           }
         });
       },
-      { threshold: 0.5 }, 
+      { threshold: 0.5 },
     );
   }
 
@@ -286,10 +285,8 @@ export class FeedComponent implements OnInit {
       error: (err: any) => console.error('Failed to record view:', err),
     });
 
-    
     if (this.posts.length > 0 && this.viewedPosts.size >= this.posts.length) {
       if (this.feedType === 'all') {
-        
         this.currentPage++;
         setTimeout(() => {
           this.loadFeed();
@@ -302,15 +299,12 @@ export class FeedComponent implements OnInit {
     this.groupService.joinGroup(group.id).subscribe({
       next: () => {
         group.member_count++;
-        
       },
       error: (err) => console.error('Failed to join group:', err),
     });
   }
 
-  toggleMoodLog() {
-    
-  }
+  toggleMoodLog() {}
 
   bookTherapist(therapist: any) {
     this.router.navigate(['/feature/consultation/smart-match']);
@@ -332,11 +326,9 @@ export class FeedComponent implements OnInit {
     this.router.navigate(['/feature/article/create']);
   }
 
-  
   upvotePost(post: Post, event: Event) {
     event.stopPropagation();
 
-    
     if (post.user_vote === 'up') {
       post.upvote_count--;
       post.user_vote = null;
@@ -344,13 +336,12 @@ export class FeedComponent implements OnInit {
       this.reactionService.removeReaction(post.id).subscribe({
         error: (err: any) => {
           console.error('Failed to remove upvote:', err);
-          this.loadFeed(); 
+          this.loadFeed();
         },
       });
       return;
     }
 
-    
     if (post.user_vote === 'down') post.downvote_count--;
     post.upvote_count++;
     post.user_vote = 'up';
@@ -358,7 +349,7 @@ export class FeedComponent implements OnInit {
     this.reactionService.addReaction(post.id, 'up').subscribe({
       error: (err: any) => {
         console.error('Failed to upvote:', err);
-        this.loadFeed(); 
+        this.loadFeed();
       },
     });
   }
@@ -366,7 +357,6 @@ export class FeedComponent implements OnInit {
   downvotePost(post: Post, event: Event) {
     event.stopPropagation();
 
-    
     if (post.user_vote === 'down') {
       post.downvote_count--;
       post.user_vote = null;
@@ -374,13 +364,12 @@ export class FeedComponent implements OnInit {
       this.reactionService.removeReaction(post.id).subscribe({
         error: (err: any) => {
           console.error('Failed to remove downvote:', err);
-          this.loadFeed(); 
+          this.loadFeed();
         },
       });
       return;
     }
 
-    
     if (post.user_vote === 'up') post.upvote_count--;
     post.downvote_count++;
     post.user_vote = 'down';
@@ -388,7 +377,7 @@ export class FeedComponent implements OnInit {
     this.reactionService.addReaction(post.id, 'down').subscribe({
       error: (err: any) => {
         console.error('Failed to downvote:', err);
-        this.loadFeed(); 
+        this.loadFeed();
       },
     });
   }
@@ -405,7 +394,7 @@ export class FeedComponent implements OnInit {
 
   toggleBookmark(post: Post, event: Event) {
     event.stopPropagation();
-    const isBookmarked = post.user_bookmark; 
+    const isBookmarked = post.user_bookmark;
 
     const action = isBookmarked
       ? this.socialService.removeBookmark(post.id)
@@ -434,21 +423,20 @@ export class FeedComponent implements OnInit {
     });
   }
 
-  
   openPostModal(postId: string, event?: Event) {
     if (event) {
       event.stopPropagation();
     }
     this.selectedPostId = postId;
     this.showPostModal = true;
-    
+
     document.body.style.overflow = 'hidden';
   }
 
   closePostModal() {
     this.showPostModal = false;
     this.selectedPostId = null;
-    
+
     document.body.style.overflow = '';
   }
 
@@ -483,7 +471,6 @@ export class FeedComponent implements OnInit {
     return date.toLocaleDateString();
   }
 
-  
   loadProfile(userId: string): Promise<any> {
     return new Promise((resolve) => {
       if (this.profileCache.has(userId)) {

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, map, Observable, of, Subject, tap } from 'rxjs';
+import { catchError, filter, map, Observable, of, Subject, tap } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { environment } from '../../../environments/environment';
 import { SecureStorageService } from '../../encrypt/secure';
@@ -128,37 +128,97 @@ export class ChatService {
   connect(receiverId: string, conversationId: string): Observable<Message> {
     const token = this.secureStorage.getItem(this.AccessTokenKey);
     const url = `${this.wsUrl}?token=${token}&receiver=${receiverId}&conversationId=${conversationId}`;
+    console.log('[ChatService] Connection Request:', { receiverId, conversationId, url });
 
-    console.log('%connecting to WS:', 'color: cyan', url);
+    const currentUserId = this.userContext.getUser()?.profileId || '';
 
-    this.socket$ = webSocket<Message>({
+    this.socket$ = webSocket<any>({
       url,
       openObserver: {
         next: () => {
           this.isConnected = true;
           this.reconnectAttempts = 0;
           this.connectionState$.next(true);
-          console.log('%c WebSocket connected', 'color: green');
+          console.log('%c [ChatService] WebSocket connected', 'color: green');
 
           this.startHeartbeat();
         },
       },
       closeObserver: {
-        next: () => {
+        next: (closeEvent) => {
           this.isConnected = false;
           this.connectionState$.next(false);
-          console.warn('%c WebSocket closed', 'color: orange');
+          console.warn('%c [ChatService] WebSocket closed', 'color: orange', closeEvent);
           this.stopHeartbeat();
           this.tryReconnect(receiverId, conversationId);
         },
       },
-      deserializer: (e) => JSON.parse(e.data),
+      deserializer: (e) => {
+        try {
+          const parsed = JSON.parse(e.data);
+          console.debug('[ChatService] Incoming WS Data:', parsed);
+          return parsed;
+        } catch (err) {
+          console.error('[ChatService] WS Parse Error:', err, e.data);
+          return null;
+        }
+      },
       serializer: (msg) => JSON.stringify(msg),
     });
 
     return this.socket$.asObservable().pipe(
+      // 1. Filter out control messages (pings, connection confirmations, etc.)
+      filter((data: any) => {
+        if (!data) return false;
+        // Only allow 'chat' type or messages that clearly have text content
+        const messageData = data.data || data;
+        const valid = data.type === 'chat' || !!data.text || !!data.content || !!messageData.text || !!messageData.content;
+        if (!valid) console.debug('[ChatService] Filtering out message:', data);
+        return valid;
+      }),
+      map((data: any) => {
+        // Handle different possible Backend message structures
+        // Some backends put data inside a 'data' property, others are flat
+        const messageData = data.data || data;
+        const senderId = data.senderId || messageData.senderId || data.userId || '';
+        const isMine = senderId === currentUserId;
+
+        // Try to find content in various possible locations
+        let content = '';
+        if (messageData.text) {
+          content = messageData.text;
+        } else if (messageData.content) {
+          content = messageData.content;
+        } else if (data.text) {
+          content = data.text;
+        } else if (data.content) {
+          content = data.content;
+        }
+
+        // Handle JSON parsing of content if needed
+        try {
+          if (content && typeof content === 'string' && (content.startsWith('{') || content.startsWith('['))) {
+            const parsed = JSON.parse(content);
+            if (typeof parsed === 'string') content = parsed;
+          }
+        } catch (e) {}
+
+        const msg: Message = {
+          id: data.id || messageData.id || ('ws-' + Date.now()),
+          conversationId: data.conversationId || messageData.conversationId || conversationId,
+          senderId,
+          userName: data.userName || messageData.userName || '',
+          userAvatar: data.userAvatar || messageData.userAvatar || '',
+          content: String(content),
+          timestamp: data.createdAt ? new Date(data.createdAt) : 
+                    (messageData.createdAt ? new Date(messageData.createdAt) : new Date()),
+          isMine,
+          sessionData: data.sessionData || messageData.sessionData
+        };
+        return msg;
+      }),
       tap({
-        error: (err) => console.error('ebSocket error:', err),
+        error: (err) => console.error('WebSocket error:', err),
       }),
     );
   }
@@ -188,9 +248,21 @@ export class ChatService {
       });
     }, delayMs);
   }
-  private startHeartbeat() {}
+  private startHeartbeat() {
+    this.stopHeartbeat();
+    this.heartbeatInterval = setInterval(() => {
+      if (this.socket$ && this.isConnected) {
+        this.socket$.next({ type: 'ping' });
+      }
+    }, 30000); // 30 seconds
+  }
 
-  private stopHeartbeat() {}
+  private stopHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
+  }
   sendMessage(msg: {
     conversationId: string;
     content: string;

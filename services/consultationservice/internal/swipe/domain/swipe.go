@@ -6,6 +6,7 @@ const (
 	SwipeStatusPending = "pending"
 	SwipeStatusSwiped  = "swiped"
 	SwipeStatusMatched = "matched"
+	SwipeStatusPassed  = "passed"
 )
 
 type Swipe struct {

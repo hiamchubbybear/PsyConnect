@@ -87,7 +87,6 @@ func (h *Handler) CreatePost(c *gin.Context) {
 		return
 	}
 
-	
 	cacheKey := fmt.Sprintf("post:%s", post.ID.Hex())
 	h.redisClient.Set(ctx, cacheKey, post)
 
@@ -102,7 +101,6 @@ func (h *Handler) GetPostByID(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	
 	var post domain.Post
 	err := h.redisClient.Get(ctx, cacheKey, &post)
 	if err == nil {
@@ -112,7 +110,6 @@ func (h *Handler) GetPostByID(c *gin.Context) {
 		return
 	}
 
-	
 	dbPost, err := h.getPostByIDUC.Execute(ctx, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
@@ -149,7 +146,6 @@ func (h *Handler) UpdatePost(c *gin.Context) {
 		return
 	}
 
-	
 	cacheKey := fmt.Sprintf("post:%s", id)
 	h.redisClient.Delete(ctx, cacheKey)
 
@@ -173,7 +169,6 @@ func (h *Handler) DeletePost(c *gin.Context) {
 		return
 	}
 
-	
 	cacheKey := fmt.Sprintf("post:%s", id)
 	h.redisClient.Delete(ctx, cacheKey)
 
@@ -192,11 +187,8 @@ func (h *Handler) GetFeed(c *gin.Context) {
 	if userID != "" {
 		viewedKey := fmt.Sprintf("user:%s:viewed", userID)
 		ids, err := h.redisClient.SMembers(ctx, viewedKey)
-		if err == nil {
-			
-			
-			_ = ids
-			
+		if err == nil && len(ids) > 0 {
+			excludeIDs = ids
 		}
 	}
 
@@ -326,14 +318,12 @@ func (h *Handler) IncrementViewCount(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	
 	err := h.incrementViewUC.Execute(ctx, id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to increment view count"})
 		return
 	}
 
-	
 	if userID != "" {
 		viewedKey := fmt.Sprintf("user:%s:viewed", userID)
 		h.redisClient.SAdd(ctx, viewedKey, id)
@@ -342,19 +332,16 @@ func (h *Handler) IncrementViewCount(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "View recorded"})
 }
 
-
 func (h *Handler) populateUserState(ctx context.Context, post *domain.Post, userID string) {
 	if userID == "" {
 		return
 	}
 
-	
 	reaction, err := h.reactionRepo.GetUserReaction(ctx, post.ID.Hex(), userID)
 	if err == nil && reaction != nil {
 		post.UserVote = &reaction.ReactionType
 	}
 
-	
 	isBookmarked, err := h.bookmarkRepo.IsBookmarked(ctx, userID, post.ID.Hex())
 	if err == nil {
 		post.UserBookmark = isBookmarked

@@ -80,19 +80,19 @@ export class ProfileSectionComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        this.toastService.show(
-          'TOAST.invalid_image',
-          'TOAST.error',
-          ToastType.Error,
-        );
+        this.toastService.show({
+          message: 'TOAST.invalid_image',
+          title: 'TOAST.error',
+          type: ToastType.Error,
+        });
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        this.toastService.show(
-          'TOAST.image_too_large',
-          'TOAST.error',
-          ToastType.Error,
-        );
+        this.toastService.show({
+          message: 'TOAST.image_too_large',
+          title: 'TOAST.error',
+          type: ToastType.Error,
+        });
 
         return;
       }
@@ -129,11 +129,11 @@ export class ProfileSectionComponent implements OnInit {
     } catch (err) {
       console.error('Upload error:', err);
 
-      this.toastService.show(
-        'TOAST.upload_failed',
-        'TOAST.error',
-        ToastType.Error,
-      );
+      this.toastService.show({
+        message: 'TOAST.upload_failed',
+        title: 'TOAST.error',
+        type: ToastType.Error,
+      });
 
       this.resetUploadStates();
     } finally {
@@ -224,11 +224,11 @@ export class ProfileSectionComponent implements OnInit {
 
     this.profileService.updateProfile(profileUpdateData).subscribe({
       next: (response) => {
-        this.toastService.show(
-          'TOAST.profile_update_success',
-          'TOAST.success',
-          ToastType.Success,
-        );
+        this.toastService.show({
+          message: 'TOAST.profile_update_success',
+          title: 'TOAST.success',
+          type: ToastType.Success,
+        });
         this.profile = {
           ...this.profile,
           ...profileUpdateData,
@@ -251,11 +251,11 @@ export class ProfileSectionComponent implements OnInit {
         this.profileUpdate = undefined;
       },
       error: (err) => {
-        this.toastService.show(
-          'TOAST.profile_update_failed',
-          'TOAST.error',
-          ToastType.Error,
-        );
+        this.toastService.show({
+          message: 'TOAST.profile_update_failed',
+          title: 'TOAST.error',
+          type: ToastType.Error,
+        });
       },
     });
   }
@@ -384,11 +384,11 @@ export class ProfileSectionComponent implements OnInit {
     if (!value) return;
     navigator.clipboard.writeText(value).then(() => {
       console.log('Copied Profile ID:', value);
-      this.toastService.show(
-        'TOAST.id_copied',
-        'TOAST.success',
-        ToastType.Success,
-      );
+      this.toastService.show({
+        message: 'TOAST.id_copied',
+        title: 'TOAST.success',
+        type: ToastType.Success,
+      });
     });
   }
 

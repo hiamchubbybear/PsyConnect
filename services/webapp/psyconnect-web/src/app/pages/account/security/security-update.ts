@@ -183,11 +183,11 @@ export class SecuritySectionComponent implements OnInit {
 
   sendPasswordReset() {
     if (!this.passwordResetEmail) {
-      this.toastService.show(
-        'TOAST.no_email_to_reset',
-        'TOAST.error',
-        ToastType.Error,
-      );
+      this.toastService.show({
+        message: 'TOAST.no_email_to_reset',
+        title: 'TOAST.error',
+        type: ToastType.Error,
+      });
       return;
     }
 
@@ -199,65 +199,65 @@ export class SecuritySectionComponent implements OnInit {
         next: (res) => {
           this.submittingReset = false;
           if (res.code === 200) {
-            this.toastService.show(
-              'TOAST.reset_email_sent',
-              'TOAST.success',
-              ToastType.Success,
-            );
+            this.toastService.show({
+              message: 'TOAST.reset_email_sent',
+              title: 'TOAST.success',
+              type: ToastType.Success,
+            });
             this.editing = null;
           } else {
-            this.toastService.show(
-              'TOAST.error_generic',
-              'TOAST.error',
-              ToastType.Error,
-            );
+            this.toastService.show({
+              message: 'TOAST.error_generic',
+              title: 'TOAST.error',
+              type: ToastType.Error,
+            });
           }
         },
         error: (err) => {
           this.submittingReset = false;
 
-          this.toastService.show(
-            'TOAST.error_generic',
-            'TOAST.error',
-            ToastType.Error,
-          );
+          this.toastService.show({
+            message: 'TOAST.error_generic',
+            title: 'TOAST.error',
+            type: ToastType.Error,
+          });
         },
       });
   }
 
   saveSecurityMethods() {
-    this.toastService.show(
-      'TOAST.security_method_updated',
-      'TOAST.success',
-      ToastType.Success,
-    );
+    this.toastService.show({
+      message: 'TOAST.security_method_updated',
+      title: 'TOAST.success',
+      type: ToastType.Success,
+    });
     this.editing = null;
   }
 
   enable2FA(method: 'authApp' | 'sms' | 'securityKey') {
-    this.toastService.show(
-      'TOAST.2fa_enabled',
-      'TOAST.success',
-      ToastType.Success,
-    );
+    this.toastService.show({
+      message: 'TOAST.2fa_enabled',
+      title: 'TOAST.success',
+      type: ToastType.Success,
+    });
     this.editing = null;
   }
 
   logoutDevice(device: { name: string; lastActive: Date }) {
-    this.toastService.show(
-      'TOAST.device_logged_out',
-      'TOAST.success',
-      ToastType.Success,
-    );
+    this.toastService.show({
+      message: 'TOAST.device_logged_out',
+      title: 'TOAST.success',
+      type: ToastType.Success,
+    });
     this.loggedDevices = this.loggedDevices.filter((d) => d !== device);
   }
 
   resolveAlert(alert: { message: string; time: Date }) {
-    this.toastService.show(
-      'TOAST.alert_verified',
-      'TOAST.success',
-      ToastType.Success,
-    );
+    this.toastService.show({
+      message: 'TOAST.alert_verified',
+      title: 'TOAST.success',
+      type: ToastType.Success,
+    });
     this.suspiciousActivities = this.suspiciousActivities.filter(
       (a) => a !== alert,
     );
@@ -268,31 +268,31 @@ export class SecuritySectionComponent implements OnInit {
       this.linkedEmails.push({ address: this.newEmail });
       this.newEmail = '';
 
-      this.toastService.show(
-        'TOAST.email_added',
-        'TOAST.success',
-        ToastType.Success,
-      );
+      this.toastService.show({
+        message: 'TOAST.email_added',
+        title: 'TOAST.success',
+        type: ToastType.Success,
+      });
     }
   }
 
   removeEmail(email: { address: string }) {
     this.linkedEmails = this.linkedEmails.filter((e) => e !== email);
-    this.toastService.show(
-      'TOAST.email_deleted',
-      'TOAST.success',
-      ToastType.Success,
-    );
+    this.toastService.show({
+      message: 'TOAST.email_deleted',
+      title: 'TOAST.success',
+      type: ToastType.Success,
+    });
   }
 
   revokeApp(app: { name: string; permissions: string[] }) {
     this.thirdPartyApps = this.thirdPartyApps.filter((a) => a !== app);
 
-    this.toastService.show(
-      'TOAST.app_permission_revoked',
-      'TOAST.success',
-      ToastType.Success,
-    );
+    this.toastService.show({
+      message: 'TOAST.app_permission_revoked',
+      title: 'TOAST.success',
+      type: ToastType.Success,
+    });
   }
 
   cancel() {
@@ -331,11 +331,11 @@ export class SecuritySectionComponent implements OnInit {
     this.editing = null;
   }
   savePassword() {
-    this.toastService.show(
-      'TOAST.password_updated',
-      'TOAST.success',
-      ToastType.Success,
-    );
+    this.toastService.show({
+      message: 'TOAST.password_updated',
+      title: 'TOAST.success',
+      type: ToastType.Success,
+    });
     this.editing = null;
   }
   saveOverlay() {
@@ -347,18 +347,18 @@ export class SecuritySectionComponent implements OnInit {
         this.saveSecurityMethods();
         break;
       case '2fa':
-        this.toastService.show(
-          'TOAST.2fa_updated',
-          'TOAST.success',
-          ToastType.Success,
-        );
+        this.toastService.show({
+          message: 'TOAST.2fa_updated',
+          title: 'TOAST.success',
+          type: ToastType.Success,
+        });
         break;
       default:
-        this.toastService.show(
-          'TOAST.update_success',
-          'TOAST.success',
-          ToastType.Success,
-        );
+        this.toastService.show({
+          message: 'TOAST.update_success',
+          title: 'TOAST.success',
+          type: ToastType.Success,
+        });
         break;
     }
     this.closeOverlay();

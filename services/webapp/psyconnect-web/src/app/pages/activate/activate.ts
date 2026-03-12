@@ -129,11 +129,11 @@ export class ActivateComponent implements OnInit {
     this.activateService.activate(request).subscribe({
       next: (res) => {
         if (res.code === 200) {
-          this.toastService.show(
-            'activate.success.message',
-            'activate.success.title',
-            ToastType.Success
-          );
+          this.toastService.show({
+            message: 'activate.success.message',
+            title: 'activate.success.title',
+            type: ToastType.Success
+          });
           setTimeout(() => {
             this.loaderService.hide();
             this.router.navigate(['/auth/login']);
@@ -145,24 +145,24 @@ export class ActivateComponent implements OnInit {
 
         if (errorCode === 103) {
           
-          this.toastService.show(
-            'activate.error.tokenExpired',
-            'activate.error.title',
-            ToastType.Error
-          );
+          this.toastService.show({
+            message: 'activate.error.tokenExpired',
+            title: 'activate.error.title',
+            type: ToastType.Error
+          });
         } else if (errorCode === 604) {
           
-          this.toastService.show(
-            'activate.error.alreadyActivated',
-            'activate.error.title',
-            ToastType.Warning
-          );
+          this.toastService.show({
+            message: 'activate.error.alreadyActivated',
+            title: 'activate.error.title',
+            type: ToastType.Warning
+          });
         } else {
-          this.toastService.show(
-            'activate.error.unexpected',
-            'activate.error.title',
-            ToastType.Error
-          );
+          this.toastService.show({
+            message: 'activate.error.unexpected',
+            title: 'activate.error.title',
+            type: ToastType.Error
+          });
         }
         this.loaderService.hide();
         this.isLoading = false;
@@ -176,11 +176,11 @@ export class ActivateComponent implements OnInit {
 
   onResendCode() {
     if (!this.activateForm.value.email) {
-      this.toastService.show(
-        'activate.error.emailRequired',
-        'activate.error.title',
-        ToastType.Error
-      );
+      this.toastService.show({
+        message: 'activate.error.emailRequired',
+        title: 'activate.error.title',
+        type: ToastType.Error
+      });
       return;
     }
 
@@ -191,20 +191,20 @@ export class ActivateComponent implements OnInit {
       .subscribe({
         next: (res) => {
           if (res.code === 200) {
-            this.toastService.show(
-              'activate.resend.success',
-              'activate.success.title',
-              ToastType.Success
-            );
+            this.toastService.show({
+              message: 'activate.resend.success',
+              title: 'activate.success.title',
+              type: ToastType.Success
+            });
           }
           this.loaderService.hide();
         },
         error: () => {
-          this.toastService.show(
-            'activate.resend.error',
-            'activate.error.title',
-            ToastType.Error
-          );
+          this.toastService.show({
+            message: 'activate.resend.error',
+            title: 'activate.error.title',
+            type: ToastType.Error
+          });
           this.loaderService.hide();
         },
       });

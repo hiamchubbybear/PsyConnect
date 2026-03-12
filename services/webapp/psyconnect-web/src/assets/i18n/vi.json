@@ -533,13 +533,13 @@
             "Price": "Phí buổi tư vấn",
             "Timezone": "Múi giờ của bạn",
             "LocationTitle": "Địa điểm buổi hẹn",
-        "OnlineLink": "Link video call",
-        "OfflineAddress": "Địa chỉ gặp mặt",
-        "Confirm": "Xác nhận đặt lịch",
-        "Cancel": "Hủy",
-        "CancelConfirm": "Bạn có chắc muốn hủy buổi tư vấn này không?",
-        "Success": "Đặt lịch thành công!",
-        "Error": "Đặt lịch thất bại. Vui lòng thử lại.",
+            "OnlineLink": "Link video call",
+            "OfflineAddress": "Địa chỉ gặp mặt",
+            "Confirm": "Xác nhận đặt lịch",
+            "Cancel": "Hủy",
+            "CancelConfirm": "Bạn có chắc muốn hủy buổi tư vấn này không?",
+            "Success": "Đặt lịch thành công!",
+            "Error": "Đặt lịch thất bại. Vui lòng thử lại.",
             "RatePerHour": "Phí / giờ",
             "ResponsibilityNote": "Bạn có trách nhiệm với lịch hẹn này. Hủy trễ hơn 24h có thể phát sinh phí.",
             "SelectDateTime": "Chọn ngày và giờ",
@@ -548,33 +548,33 @@
             "StartTimeHint": "Giờ bắt đầu buổi tư vấn",
             "EndTimeHint": "Giờ kết thúc buổi tư vấn",
             "ModeDesc": "Chọn hình thức phù hợp. Online sẽ cung cấp link video, Trực tiếp sẽ ghi nhận địa chỉ.",
-        "TimezoneDesc": "Được phát hiện tự động từ thiết bị của bạn",
-        "LoadingTherapist": "Đang tải thông tin chuyên gia...",
-        "Free": "Miễn phí",
-        "TherapistRole": "Chuyên gia tư vấn",
-        "AcceptResponsibility": "Tôi xác nhận đã kiểm tra kỹ thời gian và cam kết tham gia buổi tư vấn đúng giờ. Tôi hiểu rằng việc hủy lịch sát giờ có thể ảnh hưởng đến chuyên gia và các khách hàng khác.",
-        "AcceptResponsibilityError": "Vui lòng xác nhận trách nhiệm trước khi tiếp tục.",
-        "TermsAgreement": "Bằng cách xác nhận, bạn đồng ý với điều khoản đặt lịch",
-        "ConfirmMsg": "Lịch hẹn {{mode}} vào lúc {{date}} đã được xác nhận.",
-        "LocationPicker": {
-            "Title": "Chọn vị trí gặp mặt",
-            "Description": "Bấm vào bản đồ hoặc dùng vị trí hiện tại để xác định điểm gặp.",
-            "SearchLabel": "Tìm địa chỉ hoặc địa điểm",
-            "SearchPlaceholder": "Ví dụ: Highlands Coffee, 12 Nguyễn Huệ, Đà Nẵng",
-            "Searching": "Đang tìm địa điểm phù hợp...",
-            "NoResults": "Chưa tìm thấy địa điểm phù hợp. Hãy thử từ khóa cụ thể hơn.",
-            "UseCurrentLocation": "Dùng vị trí hiện tại",
-            "Resolving": "Đang lấy địa chỉ từ vị trí đã chọn...",
-            "SelectedLabel": "Vị trí đã chọn",
-            "Errors": {
-                "Unsupported": "Trình duyệt không hỗ trợ định vị.",
-                "CurrentLocationFailed": "Không lấy được vị trí hiện tại. Hãy kiểm tra quyền truy cập vị trí.",
-                "SearchFailed": "Không tìm được địa điểm lúc này. Vui lòng thử lại sau.",
-                "ReverseGeocodeFailed": "Không phân giải được địa chỉ chi tiết. Hệ thống sẽ lưu theo tọa độ.",
-                "SelectionRequired": "Hãy chọn vị trí gặp mặt trên bản đồ."
+            "TimezoneDesc": "Được phát hiện tự động từ thiết bị của bạn",
+            "LoadingTherapist": "Đang tải thông tin chuyên gia...",
+            "Free": "Miễn phí",
+            "TherapistRole": "Chuyên gia tư vấn",
+            "AcceptResponsibility": "Tôi xác nhận đã kiểm tra kỹ thời gian và cam kết tham gia buổi tư vấn đúng giờ. Tôi hiểu rằng việc hủy lịch sát giờ có thể ảnh hưởng đến chuyên gia và các khách hàng khác.",
+            "AcceptResponsibilityError": "Vui lòng xác nhận trách nhiệm trước khi tiếp tục.",
+            "TermsAgreement": "Bằng cách xác nhận, bạn đồng ý với điều khoản đặt lịch",
+            "ConfirmMsg": "Lịch hẹn {{mode}} vào lúc {{date}} đã được xác nhận.",
+            "LocationPicker": {
+                "Title": "Chọn vị trí gặp mặt",
+                "Description": "Bấm vào bản đồ hoặc dùng vị trí hiện tại để xác định điểm gặp.",
+                "SearchLabel": "Tìm địa chỉ hoặc địa điểm",
+                "SearchPlaceholder": "Ví dụ: Highlands Coffee, 12 Nguyễn Huệ, Đà Nẵng",
+                "Searching": "Đang tìm địa điểm phù hợp...",
+                "NoResults": "Chưa tìm thấy địa điểm phù hợp. Hãy thử từ khóa cụ thể hơn.",
+                "UseCurrentLocation": "Dùng vị trí hiện tại",
+                "Resolving": "Đang lấy địa chỉ từ vị trí đã chọn...",
+                "SelectedLabel": "Vị trí đã chọn",
+                "Errors": {
+                    "Unsupported": "Trình duyệt không hỗ trợ định vị.",
+                    "CurrentLocationFailed": "Không lấy được vị trí hiện tại. Hãy kiểm tra quyền truy cập vị trí.",
+                    "SearchFailed": "Không tìm được địa điểm lúc này. Vui lòng thử lại sau.",
+                    "ReverseGeocodeFailed": "Không phân giải được địa chỉ chi tiết. Hệ thống sẽ lưu theo tọa độ.",
+                    "SelectionRequired": "Hãy chọn vị trí gặp mặt trên bản đồ."
+                }
             }
-        }
-    },
+        },
         "Modes": {
             "Online": "Trực tuyến",
             "InPerson": "Trực tiếp",
@@ -1511,7 +1511,12 @@
             "button": "Chỉnh sửa",
             "ariaLabel": "Chỉnh sửa hồ sơ"
         },
-        "personalInfo": "Thông tin cá nhân",
+        "personalInfo": {
+            "title": "Thông tin cá nhân"
+        },
+        "additionalInfo": {
+            "title": "Thông tin bổ sung"
+        },
         "aboutMe": "Về tôi",
         "fields": {
             "fullName": "Họ và tên",
@@ -1528,10 +1533,10 @@
             "notUpdated": "Chưa cập nhật"
         },
         "staffInfo": {
-            "title": "Thông tin nhân viên"
+            "title": "Thông tin cá nhân"
         },
         "staffWebsite": {
-            "title": "Website nhân viên"
+            "title": "Chuyên môn & Giới thiệu"
         },
         "contact": {
             "email": "Gửi email",

@@ -98,7 +98,10 @@ export class Login implements OnInit {
       error: () => {
         this.setError('Invalid email or password.');
         this.setLoading(false);
-        this.toastService.show('', `${this.error}`, ToastType.Error);
+        this.toastService.show({
+          message: this.error || 'Invalid email or password.',
+          type: ToastType.Error
+        });
       },
     });
   }
@@ -125,7 +128,10 @@ export class Login implements OnInit {
         error: (err) => {
           console.error('OAuth2 exchange failed', err);
           this.setLoading(false);
-          this.toastService.show('', `${err}`, ToastType.Error);
+          this.toastService.show({
+            message: `${err}`,
+            type: ToastType.Error
+          });
         },
       });
     }
@@ -146,7 +152,10 @@ export class Login implements OnInit {
         };
 
         this.userContext.setUser(userProfile);
-        this.toastService.show('', 'TOAST.login_success', ToastType.Success);
+        this.toastService.show({
+          message: 'TOAST.login_success',
+          type: ToastType.Success
+        });
         this.setLoading(false);
         this.router.navigate(['/feature/feed']);
         this.authState.setLoggedIn(true);
@@ -154,7 +163,10 @@ export class Login implements OnInit {
       error: (err) => {
         console.error('Get profile error', err);
         this.setLoading(false);
-        this.toastService.show('', 'TOAST.error_generic', ToastType.Error);
+        this.toastService.show({
+          message: 'TOAST.error_generic',
+          type: ToastType.Error
+        });
       },
     });
   }

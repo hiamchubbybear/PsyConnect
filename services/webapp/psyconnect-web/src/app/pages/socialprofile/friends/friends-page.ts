@@ -90,15 +90,19 @@ export class FriendsPage {
         this.friendRequests = this.friendRequests.filter(
           (req) => req.id !== id
         );
-        this.toast.show(
-          'Thành công',
-          'Đã chấp nhận lời mời kết bạn',
-          ToastType.Success
-        );
+        this.toast.show({
+          title: 'Thành công',
+          message: 'Đã chấp nhận lời mời kết bạn',
+          type: ToastType.Success
+        });
       },
       error: (err) => {
         console.error('[API] Accept failed:', err);
-        this.toast.show('Lỗi', 'Không thể chấp nhận lời mời', ToastType.Error);
+        this.toast.show({
+          title: 'Lỗi',
+          message: 'Không thể chấp nhận lời mời',
+          type: ToastType.Error
+        });
       },
     });
   }
@@ -106,21 +110,21 @@ export class FriendsPage {
   onDeclineRequest(id: string): void {
     console.log('[UI] Decline friend request:', id);
     this.friendRequests = this.friendRequests.filter((req) => req.id !== id);
-    this.toast.show(
-      'Đã từ chối',
-      'Đã từ chối lời mời kết bạn',
-      ToastType.Success
-    );
+    this.toast.show({
+      title: 'Đã từ chối',
+      message: 'Đã từ chối lời mời kết bạn',
+      type: ToastType.Success
+    });
   }
 
   onMessageFriend(id: string): void {
     console.log('[UI] Message friend:', id);
 
-    this.toast.show(
-      'Nhắn tin',
-      `Đang mở khung chat với bạn ${id}`,
-      ToastType.Success
-    );
+    this.toast.show({
+      title: 'Nhắn tin',
+      message: `Đang mở khung chat với bạn ${id}`,
+      type: ToastType.Success
+    });
   }
 
   onUnfriend(id: string): void {
@@ -131,15 +135,19 @@ export class FriendsPage {
         console.log('[API] Unfriend response:', res);
         this.friends = this.friends.filter((f) => f.id !== id);
         this.allFriends = this.allFriends.filter((f) => f.id !== id);
-        this.toast.show(
-          'Đã hủy bạn bè',
-          'Bạn đã hủy kết bạn thành công',
-          ToastType.Success
-        );
+        this.toast.show({
+          title: 'Đã hủy bạn bè',
+          message: 'Bạn đã hủy kết bạn thành công',
+          type: ToastType.Success
+        });
       },
       error: (err) => {
         console.error('[API] Unfriend failed:', err);
-        this.toast.show('Lỗi', 'Không thể hủy kết bạn', ToastType.Error);
+        this.toast.show({
+          title: 'Lỗi',
+          message: 'Không thể hủy kết bạn',
+          type: ToastType.Error
+        });
       },
     });
   }
@@ -152,19 +160,19 @@ export class FriendsPage {
         console.log('[API] Send request response:', res);
         this.suggestions = this.suggestions.filter((s) => s.id !== id);
         this.allSuggestions = this.allSuggestions.filter((s) => s.id !== id);
-        this.toast.show(
-          'Đã gửi',
-          'Lời mời kết bạn đã được gửi',
-          ToastType.Success
-        );
+        this.toast.show({
+          title: 'Đã gửi',
+          message: 'Lời mời kết bạn đã được gửi',
+          type: ToastType.Success
+        });
       },
       error: (err) => {
         console.error('[API] Send request failed:', err);
-        this.toast.show(
-          'Lỗi',
-          'Không thể gửi lời mời kết bạn',
-          ToastType.Error
-        );
+        this.toast.show({
+          title: 'Lỗi',
+          message: 'Không thể gửi lời mời kết bạn',
+          type: ToastType.Error
+        });
       },
     });
   }

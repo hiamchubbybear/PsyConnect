@@ -35,8 +35,9 @@ func NewMongoSwipeRepository(
 }
 
 func (r *MongoSwipeRepository) InsertSwipe(ctx context.Context, swipe *domain.Swipe) error {
-	swipe.CreatedAt = time.Now().UTC()
-	swipe.Status = domain.SwipeStatusPending
+	if swipe.Status == "" {
+		swipe.Status = domain.SwipeStatusPending
+	}
 
 	_, err := r.collection.InsertOne(ctx, swipe)
 	if err != nil {
@@ -54,9 +55,25 @@ func (r *MongoSwipeRepository) InsertSwipes(ctx context.Context, clientID string
 
 	var docs []interface{}
 	for _, s := range swipes {
+		filter := bson.M{
+			"client_id":    clientID,
+			"therapist_id": s.TherapistID,
+			"status":       bson.M{"$ne": domain.SwipeStatusPending},
+		}
+		count, err := r.collection.CountDocuments(ctx, filter)
+		if err == nil && count > 0 {
+			continue
+		}
+
 		s.CreatedAt = time.Now().UTC()
-		s.Status = domain.SwipeStatusPending
+		if s.Status == "" {
+			s.Status = domain.SwipeStatusPending
+		}
 		docs = append(docs, s)
+	}
+
+	if len(docs) == 0 {
+		return nil
 	}
 
 	_, err := r.collection.InsertMany(ctx, docs)
@@ -69,7 +86,7 @@ func (r *MongoSwipeRepository) InsertSwipes(ctx context.Context, clientID string
 }
 
 func (r *MongoSwipeRepository) SwipeAndMatch(ctx context.Context, clientID, therapistID string, points float32, reasons []string) error {
-	
+
 	_, err := r.collection.DeleteOne(ctx, bson.M{
 		"client_id":    clientID,
 		"therapist_id": therapistID,
@@ -79,7 +96,6 @@ func (r *MongoSwipeRepository) SwipeAndMatch(ctx context.Context, clientID, ther
 		return errors.New("failed to delete old swipe")
 	}
 
-	
 	match := matchDomain.NewMatch(clientID, therapistID, "swipe", float64(points), reasons)
 	err = r.matchRepo.Create(ctx, match)
 	if err != nil {

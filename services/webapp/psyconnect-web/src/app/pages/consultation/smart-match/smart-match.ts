@@ -101,6 +101,11 @@ export class SmartMatchComponent implements OnInit {
   onPass() {
     if (!this.currentTherapist) return;
 
+    const therapistId = this.currentTherapist.profileId;
+    this.swipeService.postSwipe(therapistId, 'passed').subscribe({
+      error: (err: any) => console.error('Failed to persist pass:', err),
+    });
+
     this.recommendedTherapists.splice(this.currentIndex, 1);
     if (this.currentIndex >= this.recommendedTherapists.length) {
       this.currentIndex = 0;

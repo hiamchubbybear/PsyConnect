@@ -27,7 +27,7 @@
     height: 40px;
     border-radius: 50%;
     background: var(--color-gray-200, #e2e8f0);
-    color: var(--color-text-secondary, #718096);
+    color: var(--color-text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -50,7 +50,7 @@
   &__step-label {
     font-size: 0.75rem;
     font-weight: 500;
-    color: var(--color-text-secondary, #718096);
+    color: var(--color-text-muted);
     text-align: center;
     max-width: 80px;
   }
@@ -75,14 +75,14 @@
   &__section-title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--color-text-primary, #1a202c);
+    color: var(--color-text);
     margin: 0 0 var(--spacing-xs, 8px) 0;
   }
 
   &__section-subtitle {
     font-size: 0.875rem;
     font-weight: 400;
-    color: var(--color-text-secondary, #718096);
+    color: var(--color-text-muted);
     margin: 0 0 var(--spacing-lg, 24px) 0;
   }
 
@@ -105,7 +105,7 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--color-text-primary, #1a202c);
+    color: var(--color-text);
     margin-bottom: var(--spacing-sm, 8px);
   }
 
@@ -121,7 +121,7 @@
     border: 1px solid var(--color-gray-200, #e2e8f0);
     border-radius: 6px;
     font-size: 0.875rem;
-    color: var(--color-text-primary, #1a202c);
+    color: var(--color-text);
     background: white;
     transition: all 0.2s ease;
 
@@ -136,7 +136,7 @@
     }
 
     &::placeholder {
-      color: var(--color-text-secondary, #718096);
+      color: var(--color-text-muted);
     }
   }
 
@@ -175,7 +175,7 @@
     border-radius: 24px;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--color-text-primary, #1a202c);
+    color: var(--color-text);
     background: white;
     transition: all 0.2s ease;
   }
@@ -250,7 +250,7 @@
   &__toggle-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--color-text-primary, #1a202c);
+    color: var(--color-text);
   }
 
   &__error {
@@ -315,7 +315,7 @@
 
     &--secondary {
       background: white;
-      color: var(--color-text-primary, #1a202c);
+      color: var(--color-text);
       border: 1px solid var(--color-gray-200, #e2e8f0);
 
       &:hover:not(:disabled) {
@@ -324,7 +324,7 @@
       }
 
       &:focus {
-        outline: 2px solid var(--color-text-secondary, #718096);
+        outline: 2px solid var(--color-text-muted);
         outline-offset: 2px;
       }
     }

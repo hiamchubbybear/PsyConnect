@@ -2,10 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import {
+import type {
   ConsultationSession,
   SessionRequest,
 } from '../../models/consultation.model';
+
+export type { ConsultationSession, SessionRequest };
 
 interface ApiResponse<T> {
   message: string;
@@ -77,10 +79,9 @@ export class SessionService {
     if (from) params = params.set('from', from);
     if (to) params = params.set('to', to);
     return this.http
-      .get<ApiResponse<{ events: CalendarEvent[] }>>(
-        `${this.baseUrl}/me/calendar`,
-        { params },
-      )
+      .get<
+        ApiResponse<{ events: CalendarEvent[] }>
+      >(`${this.baseUrl}/me/calendar`, { params })
       .pipe(map((res) => res.data));
   }
 
@@ -92,26 +93,25 @@ export class SessionService {
 
   getPaymentUrl(id: string): Observable<{ payment_url: string }> {
     return this.http
-      .get<ApiResponse<{ payment_url: string }>>(
-        `${this.baseUrl}/${id}/payment-url`,
-      )
+      .get<
+        ApiResponse<{ payment_url: string }>
+      >(`${this.baseUrl}/${id}/payment-url`)
       .pipe(map((res) => res.data));
   }
 
   processRefund(id: string): Observable<{ refund_trace_id: string }> {
     return this.http
-      .post<ApiResponse<{ refund_trace_id: string }>>(
-        `${this.baseUrl}/${id}/refund`,
-        {},
-      )
+      .post<
+        ApiResponse<{ refund_trace_id: string }>
+      >(`${this.baseUrl}/${id}/refund`, {})
       .pipe(map((res) => res.data));
   }
 
   getAllSessionsAdmin(): Observable<ConsultationSession[]> {
     return this.http
-      .get<ApiResponse<ConsultationSession[]>>(
-        `${environment.apiUrl}/${environment.apiVersion}/consultation/admin/sessions`,
-      )
+      .get<
+        ApiResponse<ConsultationSession[]>
+      >(`${environment.apiUrl}/${environment.apiVersion}/consultation/admin/sessions`)
       .pipe(map((res) => res.data));
   }
 }

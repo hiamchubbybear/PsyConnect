@@ -93,6 +93,16 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
     }
   }
 
+  get isSessionLive(): boolean {
+    if (!this.upcomingSession) return false;
+    const now = new Date();
+    const start = new Date(this.upcomingSession.start_time);
+    const end = new Date(this.upcomingSession.end_time);
+    // Active if started and not ended (with 15min early join buffer)
+    const earlyJoinLimit = new Date(start.getTime() - 15 * 60 * 1000);
+    return now >= earlyJoinLimit && now <= end;
+  }
+
   private fetchUpcomingSession() {
     if (!this.selectedFriend) {
       this.upcomingSession = null;
@@ -104,19 +114,34 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
       const myId = this.currentUserId;
 
       const now = new Date();
-      this.upcomingSession =
-        sessions.find((s) => {
+      // Find the closest upcoming or current session
+      const relevantSessions = sessions
+        .filter((s) => {
           const involveMe = s.client_id === myId || s.therapist_id === myId;
           const involveFriend =
             s.client_id === friendId || s.therapist_id === friendId;
           const isParticipant = involveMe && involveFriend;
 
-          const isPending =
+          const isValidStatus =
             s.status === 'PENDING_PAYMENT' || s.status === 'CONFIRMED';
-          const startTime = new Date(s.start_time);
-          return isParticipant && isPending && startTime > now;
-        }) || null;
+          const endTime = new Date(s.end_time);
+
+          return isParticipant && isValidStatus && endTime > now;
+        })
+        .sort(
+          (a, b) =>
+            new Date(a.start_time).getTime() - new Date(b.start_time).getTime(),
+        );
+
+      this.upcomingSession = relevantSessions[0] || null;
     });
+  }
+
+  joinSession() {
+    if (!this.upcomingSession || !this.isSessionLive) return;
+    if (this.upcomingSession.mode?.toUpperCase() === 'ONLINE') {
+      this.callRequested.emit('video');
+    }
   }
   onScroll() {
     if (!this.scrollContainer) return;
@@ -131,7 +156,8 @@ export class ChatMainComponent implements AfterViewInit, OnChanges {
   }
   onSendMessage(text: string) {
     const friend = this.selectedFriend;
-    if (!text || !friend) return;
+    if (!text || !text.trim() || !friend) return;
+    text = text.trim();
 
     if (!this.conversationId || !this.currentUserId) {
       console.warn('Missing conversationId or currentUserId');

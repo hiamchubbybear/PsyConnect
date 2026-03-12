@@ -19,6 +19,7 @@ func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	receiver := r.URL.Query().Get("receiver")
 	conversationID := r.URL.Query().Get("conversationId")
 	profileID := r.Context().Value(middleware.ProfileIDKey).(string)
+	log.Printf("[ServeWS] New connection attempt: profileID=%s, receiver=%s, conversationID=%s", profileID, receiver, conversationID)
 	if receiver == "" || conversationID == "" {
 		http.Error(w, "Cannot generate conversation ID", http.StatusBadRequest)
 		return

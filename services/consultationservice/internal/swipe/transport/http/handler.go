@@ -32,6 +32,7 @@ type SwipeTherapistRequest struct {
 	TherapistID string   `json:"therapist_id" binding:"required"`
 	Points      float32  `json:"points"`
 	Reasons     []string `json:"reasons"`
+	Status      string   `json:"status"`
 }
 
 func (h *Handler) SwipeTherapist(c *gin.Context) {
@@ -49,7 +50,11 @@ func (h *Handler) SwipeTherapist(c *gin.Context) {
 	}
 	req.ClientID = profileID
 
-	err := h.insertSwipeUC.Execute(c.Request.Context(), req.ClientID, req.TherapistID, req.Points, req.Reasons)
+	if req.Status == "" {
+		req.Status = "swiped"
+	}
+
+	err := h.insertSwipeUC.Execute(c.Request.Context(), req.ClientID, req.TherapistID, req.Points, req.Reasons, req.Status)
 	if err != nil {
 		log.Print("failed to insert swipe:", err)
 		apiresponse.ErrorHandler(c, http.StatusInternalServerError, "Failed to insert swipe")
@@ -59,11 +64,9 @@ func (h *Handler) SwipeTherapist(c *gin.Context) {
 	apiresponse.NewApiResponse(c, true)
 }
 
-
 func (h *Handler) TriggerUpdate(c *gin.Context) {
 	apiresponse.ErrorHandler(c, http.StatusServiceUnavailable, "Recommendation feature temporarily disabled during migration")
 }
-
 
 func (h *Handler) TriggerUpdateV1(c *gin.Context) {
 	profileID := c.GetHeader("X-Profile-Id")
@@ -82,11 +85,9 @@ func (h *Handler) TriggerUpdateV1(c *gin.Context) {
 	apiresponse.NewApiResponse(c, true)
 }
 
-
 func (h *Handler) PopTop5(c *gin.Context) {
 	apiresponse.ErrorHandler(c, http.StatusServiceUnavailable, "Recommendation feature temporarily disabled during migration")
 }
-
 
 func (h *Handler) PopTop5V1(c *gin.Context) {
 	profileID := c.GetHeader("X-Profile-Id")

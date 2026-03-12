@@ -71,7 +71,7 @@
         </button>
       </div>
 
-      <div class="messages-viewport">
+      <div class="messages-viewport" #scrollViewport>
         <div *ngFor="let msg of compactMessages" class="mini-msg" [class.is-mine]="msg.isMine">
           <div class="msg-bubble">{{ msg.content }}</div>
           <span class="mini-time">{{ msg.timestamp | date: 'HH:mm' }}</span>

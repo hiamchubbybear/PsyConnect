@@ -242,11 +242,11 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
         this.registerForm.value.username,
       );
       if (!uploadedUrl) {
-        this.toastService.show(
-          'toast.image_upload_failed',
-          'toast.error',
-          ToastType.Error,
-        );
+        this.toastService.show({
+          message: 'toast.image_upload_failed',
+          title: 'toast.error',
+          type: ToastType.Error,
+        });
         this.isLoading = false;
         return;
       }
@@ -269,11 +269,11 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
     this.registerService.register(request).subscribe({
       next: (res) => {
         if (res.code === 200) {
-          this.toastService.show(
-            'register.success.message',
-            'register.success.title',
-            ToastType.Success,
-          );
+          this.toastService.show({
+            message: 'register.success.message',
+            title: 'register.success.title',
+            type: ToastType.Success,
+          });
           // Redirect to activate page after 1.5 seconds
           setTimeout(() => {
             this.loaderService.hide();
@@ -337,11 +337,11 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
               exists: true,
             });
             control?.markAsTouched();
-            this.toastService.show(
-              'register.error.usernameExists',
-              'register.error.title',
-              ToastType.Error,
-            );
+            this.toastService.show({
+              message: 'register.error.usernameExists',
+              title: 'register.error.title',
+              type: ToastType.Error,
+            });
           } else if (errorCode === 201) {
             const control = this.registerForm.get('email');
             control?.setErrors({
@@ -349,34 +349,34 @@ export class MultiStepRegisterComponent implements OnInit, AfterViewInit {
               exists: true,
             });
             control?.markAsTouched();
-            this.toastService.show(
-              'register.error.emailExists',
-              'register.error.title',
-              ToastType.Error,
-            );
+            this.toastService.show({
+              message: 'register.error.emailExists',
+              title: 'register.error.title',
+              type: ToastType.Error,
+            });
           } else {
             // Other conflict errors
-            this.toastService.show(
-              'register.error.conflict',
-              'register.error.title',
-              ToastType.Error,
-            );
+            this.toastService.show({
+              message: 'register.error.conflict',
+              title: 'register.error.title',
+              type: ToastType.Error,
+            });
           }
           this.scrollToFirstInvalid();
           this.cdr.detectChanges();
         } else if (status === 400) {
           // Bad request
-          this.toastService.show(
-            'register.error.invalidData',
-            'register.error.title',
-            ToastType.Error,
-          );
+          this.toastService.show({
+            message: 'register.error.invalidData',
+            title: 'register.error.title',
+            type: ToastType.Error,
+          });
         } else {
-          this.toastService.show(
-            'register.error.unexpected',
-            'register.error.title',
-            ToastType.Error,
-          );
+          this.toastService.show({
+            message: 'register.error.unexpected',
+            title: 'register.error.title',
+            type: ToastType.Error,
+          });
         }
         this.loaderService.hide();
         this.isLoading = false;
