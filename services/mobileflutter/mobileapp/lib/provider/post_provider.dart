@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:PsyConnect/models/post.dart';
 import 'package:PsyConnect/models/comment.dart';
 import 'package:PsyConnect/services/profile_service/post_service.dart';
+import 'package:PsyConnect/services/local_database_service.dart';
 
 class PostProvider with ChangeNotifier {
   final PostService _postService = PostService();
+  final LocalDatabaseService _db = LocalDatabaseService();
 
   List<Post> _posts = [];
   List<Post> get posts => _posts;
@@ -29,10 +31,21 @@ class PostProvider with ChangeNotifier {
   Future<void> fetchPosts({bool refresh = true}) async {
     _isLoading = true;
     _errorMessage = null;
-    if (refresh) {
-      _posts = [];
-    }
     notifyListeners();
+
+    // 1. If refreshing, load local SQLite caches first for instant rendering
+    if (refresh) {
+      try {
+        final cachedData = await _db.getCachedData('cached_posts');
+        if (cachedData.isNotEmpty) {
+          _posts = cachedData.map((json) => Post.fromJson(json)).toList();
+          _isLoading = false; // Turn off loader for instant screen render
+          notifyListeners();
+        }
+      } catch (e) {
+        print("Error loading local SQLite newsfeed cache: $e");
+      }
+    }
 
     try {
       final fetched = await _postService.getNewsfeed(
@@ -41,6 +54,16 @@ class PostProvider with ChangeNotifier {
       );
       if (refresh) {
         _posts = fetched;
+        
+        // 2. Overwrite offline cache with fresh network results
+        try {
+          await _db.clearCache('cached_posts');
+          for (var post in fetched) {
+            await _db.cacheData('cached_posts', post.id, post.toJson());
+          }
+        } catch (cacheErr) {
+          print("Failed updating SQLite posts cache: $cacheErr");
+        }
       } else {
         _posts.addAll(fetched);
       }

@@ -5,6 +5,7 @@ import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/setting.dart';
 import 'package:PsyConnect/models/user_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SharedPreferencesProvider {
   static final SharedPreferencesProvider _instance =
@@ -14,6 +15,8 @@ class SharedPreferencesProvider {
     return _instance;
   }
   SharedPreferencesProvider._internal();
+
+  final _secureStorage = const FlutterSecureStorage();
 
   static const String _accessTokenKey = "accessToken";
   static const String _userIdKey = "userId";
@@ -61,7 +64,7 @@ class SharedPreferencesProvider {
   }
 
   Future<void> setJwt(String token) async =>
-      (await SharedPreferences.getInstance()).setString(_accessTokenKey, token);
+      await _secureStorage.write(key: _accessTokenKey, value: token);
   Future<void> setUserProfile(UserProfile userProfile) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userProfile, jsonEncode(userProfile.toJson()));
@@ -85,7 +88,7 @@ class SharedPreferencesProvider {
   }
 
   Future<String?> getJwt() async =>
-      (await SharedPreferences.getInstance()).getString(_accessTokenKey);
+      await _secureStorage.read(key: _accessTokenKey);
 
   Future<String?> getUserId() async =>
       (await SharedPreferences.getInstance()).getString(_userIdKey);
@@ -129,6 +132,8 @@ class SharedPreferencesProvider {
 
   Future<String?> getUserProfile() async =>
       (await SharedPreferences.getInstance()).getString(_userProfile);
-  Future<void> clearAll() async =>
-      (await SharedPreferences.getInstance()).clear();
+  Future<void> clearAll() async {
+    (await SharedPreferences.getInstance()).clear();
+    await _secureStorage.deleteAll();
+  }
 }

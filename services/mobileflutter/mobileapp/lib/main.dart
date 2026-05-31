@@ -10,6 +10,7 @@ import 'package:PsyConnect/provider/post_provider.dart';
 import 'package:PsyConnect/provider/swipe_provider.dart';
 import 'package:PsyConnect/provider/friend_provider.dart';
 import 'package:PsyConnect/provider/group_provider.dart';
+import 'package:PsyConnect/provider/notification_provider.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -32,6 +33,7 @@ void main() async {
       ChangeNotifierProvider(create: (_) => SwipeProvider()),
       ChangeNotifierProvider(create: (_) => FriendProvider()),
       ChangeNotifierProvider(create: (_) => GroupProvider()),
+      ChangeNotifierProvider(create: (_) => NotificationProvider()),
     ],
     child: const MyApp(),
   ));

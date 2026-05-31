@@ -8,10 +8,12 @@ import 'package:PsyConnect/models/user_profile.dart';
 import 'package:PsyConnect/services/api/api_service.dart';
 import 'package:PsyConnect/services/api/websocket_service.dart';
 import 'package:PsyConnect/services/profile_service/profile.dart';
+import 'package:PsyConnect/services/local_database_service.dart';
 
 class ChatProvider with ChangeNotifier {
   final ProfileService _profileService = ProfileService();
   final WebSocketService _wsService = WebSocketService();
+  final LocalDatabaseService _db = LocalDatabaseService();
   StreamSubscription<Map<String, dynamic>>? _wsMessageSubscription;
 
   List<dynamic> _conversations = [];
@@ -70,6 +72,18 @@ class ChatProvider with ChangeNotifier {
     _isLoadingConversations = true;
     notifyListeners();
 
+    // 1. Fetch conversations from local offline SQLite DB first
+    try {
+      final cachedList = await _db.getCachedData('cached_chats');
+      if (cachedList.isNotEmpty) {
+        _conversations = cachedList;
+        _isLoadingConversations = false; // Disable loading spinner for cache view
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error loading offline chats from SQLite: $e");
+    }
+
     try {
       final token = await SharedPreferencesProvider().getJwt();
       if (token == null) throw Exception("No authorization token found");
@@ -87,6 +101,19 @@ class ChatProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         _conversations = decoded['data'] ?? [];
+        
+        // 2. Refresh local SQLite db caches with fresh conversation results
+        try {
+          await _db.clearCache('cached_chats');
+          for (var conv in _conversations) {
+            final convId = conv['id']?.toString() ?? '';
+            if (convId.isNotEmpty) {
+              await _db.cacheData('cached_chats', convId, conv);
+            }
+          }
+        } catch (dbErr) {
+          print("Failed updating SQLite conversations cache: $dbErr");
+        }
         
         // Asynchronously load participant profiles to display details nicely
         for (var conv in _conversations) {
