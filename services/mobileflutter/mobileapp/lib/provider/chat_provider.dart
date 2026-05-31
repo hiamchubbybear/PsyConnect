@@ -178,6 +178,70 @@ class ChatProvider with ChangeNotifier {
     return null;
   }
 
+  Future<String?> getOrCreateConversation(String companionId) async {
+    await initMyProfile();
+    if (_myProfileId == null) return null;
+
+    try {
+      final token = await SharedPreferencesProvider().getJwt();
+      if (token == null) throw Exception("No authorization token found");
+
+      // 1. Check local list first
+      for (var conv in _conversations) {
+        final participants = conv['participants'] as List<dynamic>? ?? [];
+        if (participants.contains(companionId) && participants.contains(_myProfileId)) {
+          return conv['id']?.toString();
+        }
+      }
+
+      // 2. Fetch from backend: GET /conversations/by-users?user1=...&user2=...
+      final url = Uri.parse("$baseUrl/conversations/by-users?user1=$_myProfileId&user2=$companionId");
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        if (decoded['code'] == 200 && decoded['data'] != null) {
+          final convId = decoded['data']['id']?.toString() ?? decoded['data']['_id']?.toString();
+          if (convId != null && convId.isNotEmpty) {
+            return convId;
+          }
+        }
+      }
+
+      // 3. Create if not found: POST /conversations with body { "userIds": [myProfileId, companionId] }
+      final createUrl = Uri.parse("$baseUrl/conversations");
+      final createResponse = await http.post(
+        createUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "userIds": [_myProfileId, companionId],
+        }),
+      );
+
+      if (createResponse.statusCode == 200 || createResponse.statusCode == 201) {
+        final decoded = jsonDecode(createResponse.body);
+        final convData = decoded['data'];
+        if (convData != null) {
+          final newId = convData['id']?.toString() ?? convData['_id']?.toString();
+          await fetchRecentConversations();
+          return newId;
+        }
+      }
+    } catch (e) {
+      print("Exception in getOrCreateConversation: $e");
+    }
+    return null;
+  }
+
   Future<void> openConversation({
     required String conversationId,
     required String companionId,

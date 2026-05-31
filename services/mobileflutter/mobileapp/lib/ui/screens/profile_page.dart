@@ -8,11 +8,11 @@ import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/screens/consultation_profile_page.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:PsyConnect/ui/screens/setting_page.dart';
+import 'package:PsyConnect/ui/screens/friends_page.dart';
+import 'package:PsyConnect/ui/screens/groups_list_screen.dart';
 import 'package:PsyConnect/ui/widgets/common/custom_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:PsyConnect/provider/theme_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:PsyConnect/validate/validate.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -373,6 +373,26 @@ Future<int> checkComplete(UserProfile userProfile) async {
 }
 
 List<CustomListTile> customListTiles = [
+  CustomListTile(
+    icon: CupertinoIcons.person_3,
+    title: "My Friends",
+    onTap: (context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const FriendsPage()),
+      );
+    },
+  ),
+  CustomListTile(
+    icon: CupertinoIcons.chat_bubble_2,
+    title: "Community Groups",
+    onTap: (context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const GroupsListScreen()),
+      );
+    },
+  ),
   CustomListTile(
     icon: Icons.insights,
     title: "Activity",
