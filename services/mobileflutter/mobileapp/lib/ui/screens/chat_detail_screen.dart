@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:PsyConnect/provider/chat_provider.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
+import 'package:PsyConnect/ui/screens/call_screen.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:intl/intl.dart';
 
@@ -147,11 +148,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           IconButton(
             icon: Icon(Icons.phone_rounded, color: primaryColor),
             onPressed: () {
-              ToastService.showToast(
-                context: context,
-                message: "Starting consultation voice room call...",
-                title: "Call Initiated",
-                type: ToastType.info,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CallScreen(
+                    conversationId: widget.conversationId,
+                    receiverId: widget.companionId,
+                    receiverName: widget.companionName,
+                    isCaller: true,
+                  ),
+                ),
               );
             },
           ),
@@ -159,11 +165,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
           IconButton(
             icon: Icon(Icons.videocam_rounded, color: primaryColor, size: 26),
             onPressed: () {
-              ToastService.showToast(
-                context: context,
-                message: "Starting consultation video room call...",
-                title: "Call Initiated",
-                type: ToastType.info,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CallScreen(
+                    conversationId: widget.conversationId,
+                    receiverId: widget.companionId,
+                    receiverName: widget.companionName,
+                    isCaller: true,
+                  ),
+                ),
               );
             },
           ),

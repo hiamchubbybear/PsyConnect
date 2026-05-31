@@ -38,6 +38,9 @@ class ChatProvider with ChangeNotifier {
   UserProfile? _myProfile;
   UserProfile? get myProfile => _myProfile;
 
+  Map<String, dynamic>? _activeIncomingCall;
+  Map<String, dynamic>? get activeIncomingCall => _activeIncomingCall;
+
   ChatProvider() {
     // Listen to incoming WebSocket messages globally
     _wsMessageSubscription = _wsService.messageStream.listen(_handleIncomingWSMessage);
@@ -252,9 +255,52 @@ class ChatProvider with ChangeNotifier {
           notifyListeners();
         }
       }
+    } else if (type == 'offer') {
+      final rawData = message['data'];
+      if (rawData != null) {
+        final sdp = rawData['sdp']?.toString();
+        final sessionId = rawData['sessionId']?.toString();
+        final callerId = message['senderId']?.toString();
+        if (sdp != null && callerId != null) {
+          _handleIncomingCall(
+            callerId: callerId,
+            sdp: sdp,
+            sessionId: sessionId,
+            conversationId: conversationId ?? "",
+          );
+        }
+      }
+    } else if (type == 'leave') {
+      clearIncomingCall();
     }
 
     // Refresh recent conversation list to update last messages & positions
     fetchRecentConversations();
+  }
+
+  void _handleIncomingCall({
+    required String callerId,
+    required String sdp,
+    required String? sessionId,
+    required String conversationId,
+  }) async {
+    final callerProfile = await fetchUserProfileSilently(callerId);
+    final callerName = callerProfile != null 
+        ? "${callerProfile.firstName ?? ''} ${callerProfile.lastName ?? ''}".trim()
+        : "Specialist";
+        
+    _activeIncomingCall = {
+      "callerId": callerId,
+      "callerName": callerName.isEmpty ? "Specialist" : callerName,
+      "sdp": sdp,
+      "sessionId": sessionId,
+      "conversationId": conversationId,
+    };
+    notifyListeners();
+  }
+
+  void clearIncomingCall() {
+    _activeIncomingCall = null;
+    notifyListeners();
   }
 }

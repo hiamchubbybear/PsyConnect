@@ -1,10 +1,12 @@
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
+import 'package:PsyConnect/core/colors/color.dart';
 import 'package:PsyConnect/core/utils/utils.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/mood.dart';
 import 'package:PsyConnect/models/profile_mood.dart';
 import 'package:PsyConnect/models/user_profile.dart';
 import 'package:PsyConnect/provider/theme_provider.dart';
+import 'package:PsyConnect/provider/post_provider.dart';
 import 'package:PsyConnect/services/profile_service/mood.dart';
 import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/widgets/posts/create_mood.dart';
@@ -14,6 +16,7 @@ import 'package:PsyConnect/validate/validate.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomePageScrollView extends StatefulWidget {
   const HomePageScrollView({super.key});
@@ -35,16 +38,13 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
 
   void _onRefresh() async {
     _fetchMoods();
+    await Provider.of<PostProvider>(context, listen: false).fetchPosts(refresh: true);
     if (mounted) setState(() {});
     _refreshController.refreshCompleted();
   }
 
   void _onLoading() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (mounted)
-      setState(() {
-        _onMoodCreated();
-      });
+    await Provider.of<PostProvider>(context, listen: false).fetchPosts(refresh: false);
     _refreshController.loadComplete();
   }
 
@@ -52,6 +52,9 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
   void initState() {
     super.initState();
     _fetchMoods();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PostProvider>(context, listen: false).fetchPosts(refresh: true);
+    });
   }
 
   void _fetchMoods() async {
@@ -90,11 +93,12 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final bool isDark = themeProvider.isDarkMode;
+    final postProvider = Provider.of<PostProvider>(context);
 
     final double topPadding = MediaQuery.of(context).padding.top + 25;
 
     return Scaffold(
-      backgroundColor: isDark ? Colors.black : Colors.white,
+      backgroundColor: isDark ? Colors.black : const Color(0xFFF7F9FC),
       body: SmartRefresher(
         controller: _refreshController,
         enablePullDown: true,
@@ -150,32 +154,49 @@ class _HomePageScrollViewState extends State<HomePageScrollView> {
                 ),
               ),
             ),
+            
+            // Live dynamic posts sliver list
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => PostWidget(
-                  profileId: "1",
-                  avatarUri:
-                      "https://upload.wikimedia.org/wikipedia/commons/9/9b/Photo_of_a_kitten.jpg",
-                  username: "chessy1603",
-                  name: "Phong Khê",
-                  postedTime: 1740478871,
-                  privacy: "PUBLIC",
-                  postImageUri:
-                      "https://i.pinimg.com/236x/7c/89/df/7c89dfc7f3be5c1df083b01864cfb3a3.jpg",
-                  liked: const [
-                    "huytran",
-                    "congdanhhihi",
-                    "thuhaaa",
-                    "hphunggg"
-                  ],
-                  comment: const ["Dễ thương vậy", "Haha"],
-                  nol: 37,
-                  noc: 30,
-                  content: 'Xin chào thế giới',
-                  postId: '',
-                  isDark: isDark,
-                ),
-                childCount: 4,
+                (context, index) {
+                  if (postProvider.posts.isEmpty) {
+                    if (postProvider.isLoading) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 40),
+                          child: CircularProgressIndicator(
+                            color: isDark ? secondaryColor : primaryColor,
+                          ),
+                        ),
+                      );
+                    }
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
+                        child: Column(
+                          children: [
+                            Icon(Icons.article_outlined, size: 48, color: Colors.grey[400]),
+                            const SizedBox(height: 12),
+                            Text(
+                              "No articles written yet.",
+                              style: GoogleFonts.quicksand(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[500],
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  final post = postProvider.posts[index];
+                  return PostWidget(
+                    isDark: isDark,
+                    post: post,
+                  );
+                },
+                childCount: postProvider.posts.isEmpty ? 1 : postProvider.posts.length,
               ),
             ),
           ],
@@ -482,8 +503,7 @@ class StoriesWidget extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                                  borderRadius: BorderRadius.circular(10)),
                             ),
                             child: Text(
                               "Cancel",
@@ -503,8 +523,7 @@ class StoriesWidget extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 24, vertical: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                                  borderRadius: BorderRadius.circular(10)),
                               elevation: 2,
                             ),
                             child: Text(
@@ -534,8 +553,9 @@ class StoriesWidget extends StatelessWidget {
                               );
 
                               if (onMoodCreated != null) {
-                                onMoodCreated();
+                                onMoodCreated!();
                               }
+                              Navigator.pop(context);
                             },
                           ),
                         ],
@@ -620,8 +640,9 @@ void _showDeleteConfirmation(BuildContext context, ProfileMoodModel mood,
                 );
 
                 if (onMoodCreated != null) {
-                  onMoodCreated();
+                  onMoodCreated!();
                 }
+                Navigator.pop(context);
                 ToastService.showToast(
                     context: context,
                     message: "Mood deleted successfully",

@@ -1,12 +1,17 @@
 import 'package:PsyConnect/core/colors/color.dart';
 import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/provider/theme_provider.dart';
+import 'package:PsyConnect/provider/chat_provider.dart';
 import 'package:PsyConnect/ui/screens/home_page_scroll_view.dart';
 import 'package:PsyConnect/ui/screens/profile_page.dart';
 import 'package:PsyConnect/ui/screens/schedule_home_page.dart';
 import 'package:PsyConnect/ui/screens/chat_list_screen.dart';
+import 'package:PsyConnect/ui/screens/call_screen.dart';
+import 'package:PsyConnect/ui/screens/create_post_screen.dart';
+import 'package:PsyConnect/services/api/websocket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -21,6 +26,7 @@ class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _currentIndex = 0;
+  bool _isShowingCallDialog = false;
 
   @override
   void initState() {
@@ -46,6 +52,15 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
+    final chatProvider = Provider.of<ChatProvider>(context);
+    if (chatProvider.activeIncomingCall != null && !_isShowingCallDialog) {
+      _isShowingCallDialog = true;
+      final callInfo = chatProvider.activeIncomingCall!;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showIncomingCallDialog(context, callInfo, chatProvider);
+      });
+    }
+
     final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -164,6 +179,97 @@ class _MyHomePageState extends State<MyHomePage>
               )),
         ],
       ),
+    );
+  }
+
+  void _showIncomingCallDialog(BuildContext context, Map<String, dynamic> callInfo, ChatProvider chatProvider) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        final theme = Theme.of(context);
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: theme.cardColor,
+          title: Center(
+            child: Text(
+              "Incoming Call",
+              style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                  color: theme.primaryColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.person, size: 40, color: theme.primaryColor),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                callInfo["callerName"] ?? "Specialist",
+                style: GoogleFonts.quicksand(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Inbound Consultation Video Call Room",
+                style: GoogleFonts.quicksand(color: Colors.grey, fontSize: 13),
+              ),
+            ],
+          ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
+          actions: [
+            // Decline Button
+            IconButton(
+              icon: const Icon(Icons.call_end_rounded, color: Colors.red, size: 36),
+              onPressed: () {
+                Navigator.pop(dialogCtx);
+                setState(() {
+                  _isShowingCallDialog = false;
+                });
+                WebSocketService().sendMessage({
+                  "type": "leave",
+                  "conversationId": callInfo["conversationId"],
+                  "receiverId": callInfo["callerId"],
+                  "data": {
+                    "sessionId": callInfo["sessionId"] ?? ""
+                  }
+                });
+                chatProvider.clearIncomingCall();
+              },
+            ),
+            // Accept Button
+            IconButton(
+              icon: const Icon(Icons.call_rounded, color: Colors.green, size: 36),
+              onPressed: () {
+                Navigator.pop(dialogCtx);
+                setState(() {
+                  _isShowingCallDialog = false;
+                });
+                chatProvider.clearIncomingCall();
+                
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CallScreen(
+                      conversationId: callInfo["conversationId"],
+                      receiverId: callInfo["callerId"],
+                      receiverName: callInfo["callerName"],
+                      isCaller: false,
+                      initialOfferSdp: callInfo["sdp"],
+                      initialSessionId: callInfo["sessionId"],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
