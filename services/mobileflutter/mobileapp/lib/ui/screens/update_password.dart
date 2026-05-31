@@ -1,5 +1,6 @@
-import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
+import 'package:PsyConnect/ui/widgets/common/custom_text_field.dart';
+import 'package:PsyConnect/ui/widgets/common/custom_button.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -30,80 +31,63 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32.0),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.lock_outline,
                   size: 80,
-                  color: Colors.grey,
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
                 ),
                 const SizedBox(height: 24),
                 Text(
                   'Forgot Password?',
-                  style: kSubHeadingRegisterPage,
+                  style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   "Don't worry, we'll send you reset instructions",
                   textAlign: TextAlign.center,
-                  style: kSecondarirySubHeadingRegisterPage,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  ),
                 ),
                 const SizedBox(height: 32),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Email Address',
-                    style: quickSand15Font,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
+                CustomTextField(
                   controller: _emailController,
-                  focusNode: _focusNode,
+                  labelText: 'Email Address',
+                  hintText: 'Enter your email',
+                  prefixIcon: const Icon(Icons.email_outlined),
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: 'Enter your email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  style: textFieldStyle,
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black87,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {
-                      // TODO: handle reset logic
-                    },
-                    child: Text(
-                      'Send Reset Code',
-                      style: kSubHeadingStyle,
-                    ),
-                  ),
+                CustomButton(
+                  onPressed: () {
+                    // TODO: handle reset logic
+                  },
+                  text: 'Send Reset Code',
+                  color: isDark ? Colors.white : Colors.black,
+                  textColor: isDark ? Colors.black : Colors.white,
                 ),
                 const SizedBox(height: 16),
                 TextButton.icon(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginPage()),
+                    );
                   },
                   icon: const Icon(Icons.arrow_back, size: 16),
-                  label: Text(
-                    'Back to Login',
-                    style: kSubHeadingStyle,
-                  ),
+                  label: const Text('Back to Login'),
                 ),
               ],
             ),

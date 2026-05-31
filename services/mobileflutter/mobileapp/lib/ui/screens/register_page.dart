@@ -10,6 +10,8 @@ import 'package:PsyConnect/services/account_service/image.dart';
 import 'package:PsyConnect/services/account_service/register.dart';
 import 'package:PsyConnect/services/api/address_auto_complete.dart';
 import 'package:PsyConnect/services/logic.dart';
+import 'package:PsyConnect/ui/widgets/common/custom_text_field.dart';
+import 'package:PsyConnect/ui/widgets/common/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -27,23 +29,21 @@ class MultiStepRegisterPage extends StatefulWidget {
 }
 
 class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
-  ThemeProvider themeProvider = ThemeProvider();
   final PageController _pageController = PageController();
   int _currentStep = 0;
   final int _totalSteps = 7;
   bool _isLoading = false;
-  RegisterService registerService = RegisterService();
+  final RegisterService registerService = RegisterService();
   final CloudinaryApiService cloudinaryApiService = CloudinaryApiService();
   final ImageService imageService = ImageService();
-  BusinessLogic businessLogic = BusinessLogic();
+  final BusinessLogic businessLogic = BusinessLogic();
 
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController retypePasswordController =
-      TextEditingController();
+  final TextEditingController retypePasswordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
@@ -54,23 +54,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
   List<String> suggestions = [];
   bool isLoading = false;
 
-  void onAddressChanged(String query) async {
-    if (query.isEmpty) {
-      setState(() => suggestions = []);
-      return;
-    }
-
-    setState(() => isLoading = true);
-
-    final result = await AddressAutoComplete().getAddressSuggestions(query);
-    setState(() {
-      suggestions = result;
-      isLoading = false;
-    });
-  }
-
-  final List<GlobalKey<FormState>> _formKeys =
-      List.generate(7, (index) => GlobalKey<FormState>());
+  final List<GlobalKey<FormState>> _formKeys = List.generate(7, (index) => GlobalKey<FormState>());
 
   void _nextStep() {
     if (_currentStep < _totalSteps - 1) {
@@ -108,8 +92,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
       }
       if (status.isDenied) {
         ToastService.showToast(
-          message:
-              "Permission denied. Please allow access to ${source == ImageSource.camera ? 'camera' : 'photos'}.",
+          message: "Permission denied. Please allow access to ${source == ImageSource.camera ? 'camera' : 'photos'}.",
           context: context,
           title: 'Permission Error',
           type: ToastType.error,
@@ -119,8 +102,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
 
       if (status.isPermanentlyDenied) {
         ToastService.showToast(
-          message:
-              "Permission permanently denied. Please enable it in Settings.",
+          message: "Permission permanently denied. Please enable it in Settings.",
           context: context,
           title: 'Permission Error',
           type: ToastType.error,
@@ -163,37 +145,30 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
       _isLoading = true;
     });
     Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     final userProvider = context.read<UserProvider>();
-    final isDarkMode = themeProvider.isDarkMode;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.grey[50],
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         leading: _currentStep > 0
             ? IconButton(
-                icon: Icon(Icons.arrow_back_ios,
-                    color: isDarkMode ? Colors.white : Colors.black87),
+                icon: const Icon(Icons.arrow_back_ios),
                 onPressed: _previousStep,
               )
             : null,
-        title: Text(
-          'Create Account',
-          style: GoogleFonts.quicksand(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: isDarkMode ? Colors.white : Colors.black87,
-          ),
-        ),
+        title: const Text('Create Account'),
         centerTitle: true,
       ),
       body: Column(
@@ -202,9 +177,8 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: LinearProgressIndicator(
               value: (_currentStep + 1) / _totalSteps,
-              backgroundColor: isDarkMode ? Colors.grey[700] : Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(
-                  isDarkMode ? Colors.blue[300]! : Colors.blue),
+              backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+              valueColor: AlwaysStoppedAnimation<Color>(isDarkMode ? Colors.blue[300]! : Colors.blue),
               minHeight: 4,
             ),
           ),
@@ -237,62 +211,20 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               children: [
                 if (_currentStep > 0)
                   Expanded(
-                    child: OutlinedButton(
+                    child: CustomButton(
                       onPressed: _previousStep,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        side: BorderSide(
-                            color:
-                                isDarkMode ? Colors.grey[600]! : Colors.grey),
-                      ),
-                      child: Text(
-                        'Back',
-                        style: GoogleFonts.quicksand(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: isDarkMode ? Colors.white : Colors.black87,
-                        ),
-                      ),
+                      text: 'Back',
+                      isOutlined: true,
                     ),
                   ),
                 if (_currentStep > 0) const SizedBox(width: 15),
                 Expanded(
-                  flex: _currentStep == 0 ? 1 : 1,
-                  child: ElevatedButton(
+                  child: CustomButton(
                     onPressed: _currentStep == _totalSteps - 1
                         ? () => _handleFinalSubmit(userProvider, context)
                         : _nextStep,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          isDarkMode ? Colors.blue[700] : Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: _isLoading && _currentStep == _totalSteps - 1
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            _currentStep == _totalSteps - 1
-                                ? 'Create Account'
-                                : 'Continue',
-                            style: GoogleFonts.quicksand(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
+                    text: _currentStep == _totalSteps - 1 ? 'Create Account' : 'Continue',
+                    isLoading: _isLoading && _currentStep == _totalSteps - 1,
                   ),
                 ),
               ],
@@ -304,7 +236,8 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
   }
 
   Widget _buildAvatarStep() {
-    final isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Form(
       key: _formKeys[0],
       child: Padding(
@@ -314,7 +247,9 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
           children: [
             Text(
               'Choose Your Profile Picture',
-              style: kSubHeadingRegisterPage.copyWith(
+              style: GoogleFonts.quicksand(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
                 color: isDarkMode ? Colors.white : Colors.black87,
               ),
               textAlign: TextAlign.center,
@@ -322,7 +257,8 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
             const SizedBox(height: 10),
             Text(
               'This helps others recognize you',
-              style: kSecondarirySubHeadingRegisterPage.copyWith(
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
                 color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
               ),
               textAlign: TextAlign.center,
@@ -333,8 +269,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                 showModalBottomSheet(
                   context: context,
                   shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   ),
                   backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
                   builder: (context) => Container(
@@ -352,15 +287,10 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                         ),
                         const SizedBox(height: 20),
                         ListTile(
-                          leading: Icon(Icons.photo_library,
-                              color:
-                                  isDarkMode ? Colors.blue[300] : Colors.blue),
+                          leading: Icon(Icons.photo_library, color: isDarkMode ? Colors.blue[300] : Colors.blue),
                           title: Text(
                             'Choose from gallery',
-                            style: GoogleFonts.quicksand(
-                              fontSize: 16,
-                              color: isDarkMode ? Colors.white : Colors.black87,
-                            ),
+                            style: GoogleFonts.quicksand(fontSize: 16),
                           ),
                           onTap: () {
                             _pickImage(ImageSource.gallery);
@@ -368,15 +298,10 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                           },
                         ),
                         ListTile(
-                          leading: Icon(Icons.camera_alt,
-                              color:
-                                  isDarkMode ? Colors.blue[300] : Colors.blue),
+                          leading: Icon(Icons.camera_alt, color: isDarkMode ? Colors.blue[300] : Colors.blue),
                           title: Text(
                             'Take a photo',
-                            style: GoogleFonts.quicksand(
-                              fontSize: 16,
-                              color: isDarkMode ? Colors.white : Colors.black87,
-                            ),
+                            style: GoogleFonts.quicksand(fontSize: 16),
                           ),
                           onTap: () {
                             _pickImage(ImageSource.camera);
@@ -405,8 +330,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                       : const NetworkImage(
                           'assets/images/avatar.jpg',
                         ) as ImageProvider,
-                  backgroundColor:
-                      isDarkMode ? Colors.grey[800] : Colors.grey[100],
+                  backgroundColor: isDarkMode ? Colors.grey[800] : Colors.grey[100],
                 ),
               ),
             ),
@@ -426,7 +350,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
   }
 
   Widget _buildNameStep() {
-    final isDarkMode = themeProvider.isDarkMode;
     return Form(
       key: _formKeys[1],
       child: Padding(
@@ -439,7 +362,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               style: GoogleFonts.quicksand(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -448,36 +370,15 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               'Let us know how to address you',
               style: GoogleFonts.quicksand(
                 fontSize: 16,
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
-            TextFormField(
+            CustomTextField(
               controller: firstNameController,
+              labelText: 'First Name',
               textCapitalization: TextCapitalization.words,
-              style: GoogleFonts.quicksand(
-                  fontSize: 16,
-                  color: isDarkMode ? Colors.white : Colors.black87),
-              decoration: InputDecoration(
-                labelText: 'First Name',
-                labelStyle: GoogleFonts.quicksand(
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color:
-                          isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color: isDarkMode ? Colors.blue[300]! : Colors.blue,
-                      width: 2),
-                ),
-                fillColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                filled: true,
-              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your first name';
@@ -486,31 +387,10 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               },
             ),
             const SizedBox(height: 20),
-            TextFormField(
+            CustomTextField(
               controller: lastNameController,
+              labelText: 'Last Name',
               textCapitalization: TextCapitalization.words,
-              style: GoogleFonts.quicksand(
-                  fontSize: 16,
-                  color: isDarkMode ? Colors.white : Colors.black87),
-              decoration: InputDecoration(
-                labelText: 'Last Name',
-                labelStyle: GoogleFonts.quicksand(
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color:
-                          isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color: isDarkMode ? Colors.blue[300]! : Colors.blue,
-                      width: 2),
-                ),
-                fillColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                filled: true,
-              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your last name';
@@ -525,7 +405,8 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
   }
 
   Widget _buildBirthGenderStep() {
-    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Form(
       key: _formKeys[2],
       child: Padding(
@@ -538,7 +419,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               style: GoogleFonts.quicksand(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -547,7 +427,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               'Tell us your date of birth and gender',
               style: GoogleFonts.quicksand(
                 fontSize: 16,
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
             ),
@@ -562,8 +442,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                   onConfirm: (date) {
                     setState(() {
                       DateTime currentDate = DateTime.now();
-                      String selectedDate =
-                          DateFormat('yyyy-MM-dd').format(date);
+                      String selectedDate = DateFormat('yyyy-MM-dd').format(date);
                       Duration difference = currentDate.difference(date);
                       if (difference.inDays < 30 * 12 * 18) {
                         ToastService.showToast(
@@ -571,7 +450,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                             message: "You must be 18",
                             title: "Warning",
                             type: ToastType.warning);
-                        Navigator.pop(context);
                       } else {
                         dobController.text = selectedDate;
                       }
@@ -582,68 +460,47 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                 );
               },
               child: Container(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                      color:
-                          isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(10),
-                  color: isDarkMode ? Colors.grey[800] : Colors.white,
+                  border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(12),
+                  color: isDarkMode ? Colors.grey[850] : Colors.white,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      dobController.text.isEmpty
-                          ? 'Select Date of Birth'
-                          : dobController.text,
+                      dobController.text.isEmpty ? 'Select Date of Birth' : dobController.text,
                       style: GoogleFonts.quicksand(
                         fontSize: 16,
                         color: dobController.text.isEmpty
                             ? (isDarkMode ? Colors.grey[400] : Colors.grey[600])
                             : (isDarkMode ? Colors.white : Colors.black87),
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Icon(Icons.calendar_today,
-                        color: isDarkMode ? Colors.blue[300] : Colors.blue),
+                    Icon(Icons.calendar_today, color: isDarkMode ? Colors.blue[300] : Colors.blue),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 20),
             DropdownButtonFormField<String>(
-              value:
-                  genderController.text.isEmpty ? null : genderController.text,
+              value: genderController.text.isEmpty ? null : genderController.text,
               style: GoogleFonts.quicksand(
-                  fontSize: 16,
-                  color: isDarkMode ? Colors.white : Colors.black87),
-              decoration: InputDecoration(
+                fontSize: 16,
+                color: isDarkMode ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.w600,
+              ),
+              decoration: const InputDecoration(
                 labelText: 'Gender',
-                labelStyle: GoogleFonts.quicksand(
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color:
-                          isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color: isDarkMode ? Colors.blue[300]! : Colors.blue,
-                      width: 2),
-                ),
-                fillColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                filled: true,
               ),
               items: const [
                 DropdownMenuItem(value: "Male", child: Text("Male")),
                 DropdownMenuItem(value: "Female", child: Text("Female")),
-                DropdownMenuItem(
-                    value: "None", child: Text("Prefer not to say")),
+                DropdownMenuItem(value: "None", child: Text("Prefer not to say")),
               ],
-              onChanged: (value) =>
-                  setState(() => genderController.text = value!),
+              onChanged: (value) => setState(() => genderController.text = value!),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please select your gender';
@@ -658,7 +515,8 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
   }
 
   Widget _buildAddressStep() {
-    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     return Form(
       key: _formKeys[3],
@@ -671,7 +529,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               style: GoogleFonts.quicksand(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -680,7 +537,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               'This helps us provide better services',
               style: GoogleFonts.quicksand(
                 fontSize: 16,
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
             ),
@@ -688,44 +545,24 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
             TypeAheadField<String>(
               textFieldConfiguration: TextFieldConfiguration(
                 controller: addressController,
-                style: textStyle,
-                decoration: InputDecoration(
+                style: GoogleFonts.quicksand(
+                  fontSize: 16,
+                  color: isDarkMode ? Colors.white : Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: const InputDecoration(
                   labelText: 'Address',
-                  labelStyle: GoogleFonts.quicksand(
-                      color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
                   hintText: 'Enter your full address',
-                  hintStyle: GoogleFonts.quicksand(
-                      color: isDarkMode ? Colors.grey[500] : Colors.grey[500]),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: isDarkMode ? Colors.blue[300]! : Colors.blue,
-                      width: 2,
-                    ),
-                  ),
-                  fillColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                  filled: true,
                 ),
               ),
               suggestionsCallback: (pattern) async {
-                final suggestions =
-                    await AddressAutoComplete().getAddressSuggestions(pattern);
-                return suggestions;
+                return await AddressAutoComplete().getAddressSuggestions(pattern);
               },
               itemBuilder: (context, suggestion) {
                 return ListTile(
                   title: Text(
                     suggestion,
-                    style: GoogleFonts.quicksand(
-                      fontSize: 14,
-                      color: isDarkMode ? Colors.white : Colors.black,
-                    ),
+                    style: GoogleFonts.quicksand(fontSize: 14),
                   ),
                 );
               },
@@ -733,8 +570,8 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                 addressController.text = suggestion;
               },
               suggestionsBoxDecoration: SuggestionsBoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: isDarkMode ? Colors.grey[800] : Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                color: isDarkMode ? Colors.grey[850] : Colors.white,
                 elevation: 4,
               ),
             ),
@@ -745,7 +582,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
   }
 
   Widget _buildEmailStep() {
-    final isDarkMode = themeProvider.isDarkMode;
     return Form(
       key: _formKeys[4],
       child: Padding(
@@ -758,7 +594,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               style: GoogleFonts.quicksand(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -767,47 +602,22 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               'We\'ll use this to send you important updates',
               style: GoogleFonts.quicksand(
                 fontSize: 16,
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
-            TextFormField(
+            CustomTextField(
               controller: emailController,
+              labelText: 'Email',
               keyboardType: TextInputType.emailAddress,
-              style: GoogleFonts.quicksand(
-                  fontSize: 16,
-                  color: isDarkMode ? Colors.white : Colors.black87),
-              decoration: InputDecoration(
-                labelText: 'Email',
-                labelStyle: GoogleFonts.quicksand(
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                hintText: 'your.email@example.com',
-                hintStyle: GoogleFonts.quicksand(
-                    color: isDarkMode ? Colors.grey[500] : Colors.grey[500]),
-                prefixIcon: Icon(Icons.email_outlined,
-                    color: isDarkMode ? Colors.blue[300] : Colors.blue),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color:
-                          isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color: isDarkMode ? Colors.blue[300]! : Colors.blue,
-                      width: 2),
-                ),
-                fillColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                filled: true,
-              ),
+              hintText: 'your.email@example.com',
+              prefixIcon: const Icon(Icons.email_outlined),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your email';
                 }
-                RegExp emailRegex =
-                    RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+                final RegExp emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
                 if (!emailRegex.hasMatch(value)) {
                   return 'Please enter a valid email address';
                 }
@@ -821,7 +631,8 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
   }
 
   Widget _buildRoleStep() {
-    final isDarkMode = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Form(
       key: _formKeys[5],
       child: Padding(
@@ -834,7 +645,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               style: GoogleFonts.quicksand(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -843,17 +653,16 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               'How would you like to use PsyConnect?',
               style: GoogleFonts.quicksand(
                 fontSize: 16,
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
             Container(
               decoration: BoxDecoration(
-                border: Border.all(
-                    color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(10),
-                color: isDarkMode ? Colors.grey[800] : Colors.white,
+                border: Border.all(color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(12),
+                color: isDarkMode ? Colors.grey[850] : Colors.white,
               ),
               child: Column(
                 children: [
@@ -863,63 +672,44 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
                       style: GoogleFonts.quicksand(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: isDarkMode ? Colors.white : Colors.black87,
                       ),
                     ),
                     subtitle: Text(
                       'Looking for mental health support',
-                      style: GoogleFonts.quicksand(
-                        fontSize: 14,
-                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                      ),
+                      style: GoogleFonts.quicksand(fontSize: 14),
                     ),
                     value: 'Client',
-                    groupValue: roleController.text.isEmpty
-                        ? null
-                        : roleController.text,
-                    onChanged: (value) =>
-                        setState(() => roleController.text = value!),
+                    groupValue: roleController.text.isEmpty ? null : roleController.text,
+                    onChanged: (value) => setState(() => roleController.text = value!),
                     activeColor: isDarkMode ? Colors.blue[300] : Colors.blue,
                   ),
-                  Divider(
-                      height: 1,
-                      color: isDarkMode ? Colors.grey[700] : Colors.grey[300]),
+                  Divider(height: 1, color: isDarkMode ? Colors.grey[750] : Colors.grey[300]),
                   RadioListTile<String>(
                     title: Text(
                       'Therapist',
                       style: GoogleFonts.quicksand(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: isDarkMode ? Colors.white : Colors.black87,
                       ),
                     ),
                     subtitle: Text(
                       'Providing mental health services',
-                      style: GoogleFonts.quicksand(
-                        fontSize: 14,
-                        color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
-                      ),
+                      style: GoogleFonts.quicksand(fontSize: 14),
                     ),
                     value: 'Therapist',
-                    groupValue: roleController.text.isEmpty
-                        ? null
-                        : roleController.text,
-                    onChanged: (value) =>
-                        setState(() => roleController.text = value!),
+                    groupValue: roleController.text.isEmpty ? null : roleController.text,
+                    onChanged: (value) => setState(() => roleController.text = value!),
                     activeColor: isDarkMode ? Colors.blue[300] : Colors.blue,
                   ),
                 ],
               ),
             ),
             if (roleController.text.isEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
+              const Padding(
+                padding: EdgeInsets.only(top: 10),
                 child: Text(
                   'Please select a role',
-                  style: GoogleFonts.quicksand(
-                    fontSize: 12,
-                    color: Colors.red,
-                  ),
+                  style: TextStyle(color: Colors.red, fontSize: 12),
                 ),
               ),
           ],
@@ -929,7 +719,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
   }
 
   Widget _buildCredentialsStep() {
-    final isDarkMode = themeProvider.isDarkMode;
     return Form(
       key: _formKeys[6],
       child: Padding(
@@ -942,7 +731,6 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               style: GoogleFonts.quicksand(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: isDarkMode ? Colors.white : Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
@@ -951,37 +739,15 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               'Choose a username and secure password',
               style: GoogleFonts.quicksand(
                 fontSize: 16,
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                color: Colors.grey[600],
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
-            TextFormField(
+            CustomTextField(
               controller: usernameController,
-              style: GoogleFonts.quicksand(
-                  fontSize: 16,
-                  color: isDarkMode ? Colors.white : Colors.black87),
-              decoration: InputDecoration(
-                labelText: 'Username',
-                labelStyle: GoogleFonts.quicksand(
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                prefixIcon: Icon(Icons.person_outline,
-                    color: isDarkMode ? Colors.blue[300] : Colors.blue),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color:
-                          isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color: isDarkMode ? Colors.blue[300]! : Colors.blue,
-                      width: 2),
-                ),
-                fillColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                filled: true,
-              ),
+              labelText: 'Username',
+              prefixIcon: const Icon(Icons.person_outline),
               validator: (value) {
                 if (value == null || value.length <= 3) {
                   return 'Username must be greater than 3 characters';
@@ -990,39 +756,16 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               },
             ),
             const SizedBox(height: 20),
-            TextFormField(
+            CustomTextField(
               controller: passwordController,
+              labelText: 'Password',
               obscureText: true,
-              style: GoogleFonts.quicksand(
-                  fontSize: 16,
-                  color: isDarkMode ? Colors.white : Colors.black87),
-              decoration: InputDecoration(
-                labelText: 'Password',
-                labelStyle: GoogleFonts.quicksand(
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                prefixIcon: Icon(Icons.lock_outline,
-                    color: isDarkMode ? Colors.blue[300] : Colors.blue),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color:
-                          isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color: isDarkMode ? Colors.blue[300]! : Colors.blue,
-                      width: 2),
-                ),
-                fillColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                filled: true,
-              ),
+              prefixIcon: const Icon(Icons.lock_outline),
               validator: (value) {
                 if (value == null || value.length < 8) {
                   return 'Password must be at least 8 characters';
                 }
-                RegExp passReg =
-                    RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
+                final RegExp passReg = RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
                 if (!passReg.hasMatch(value)) {
                   return 'Password must include characters, number and special character';
                 }
@@ -1030,33 +773,11 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
               },
             ),
             const SizedBox(height: 20),
-            TextFormField(
+            CustomTextField(
               controller: retypePasswordController,
+              labelText: 'Confirm Password',
               obscureText: true,
-              style: GoogleFonts.quicksand(
-                  fontSize: 16,
-                  color: isDarkMode ? Colors.white : Colors.black87),
-              decoration: InputDecoration(
-                labelText: 'Confirm Password',
-                labelStyle: GoogleFonts.quicksand(
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                prefixIcon: Icon(Icons.lock_outline,
-                    color: isDarkMode ? Colors.blue[300] : Colors.blue),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color:
-                          isDarkMode ? Colors.grey[700]! : Colors.grey[300]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(
-                      color: isDarkMode ? Colors.blue[300]! : Colors.blue,
-                      width: 2),
-                ),
-                fillColor: isDarkMode ? Colors.grey[800] : Colors.white,
-                filled: true,
-              ),
+              prefixIcon: const Icon(Icons.lock_outline),
               validator: (value) {
                 if (value != passwordController.text || value == null) {
                   return 'Passwords do not match';
@@ -1070,8 +791,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
     );
   }
 
-  Future<void> _handleFinalSubmit(
-      dynamic userProvider, BuildContext context) async {
+  Future<void> _handleFinalSubmit(dynamic userProvider, BuildContext context) async {
     if (!_formKeys[6].currentState!.validate()) return;
     if (roleController.text.isEmpty) {
       ToastService.showToast(
@@ -1105,7 +825,7 @@ class _MultiStepRegisterPageState extends State<MultiStepRegisterPage> {
         }
       }
 
-      Map<String, String> jsonData = {
+      final Map<String, String> jsonData = {
         "username": usernameController.text.toLowerCase(),
         "password": passwordController.text,
         "firstName": firstNameController.text,

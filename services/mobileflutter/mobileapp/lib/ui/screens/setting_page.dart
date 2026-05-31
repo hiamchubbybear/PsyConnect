@@ -1,9 +1,11 @@
 import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
-import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/setting.dart';
 import 'package:PsyConnect/services/profile_service/setting.dart';
+import 'package:PsyConnect/provider/theme_provider.dart';
+import 'package:PsyConnect/ui/widgets/common/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -106,7 +108,7 @@ class _SettingsPageState extends State<SettingsPage> {
       );
       final prefs = SharedPreferencesProvider();
       await prefs.setSetting(newSetting);
-      SettingService settingService = SettingService();
+      final SettingService settingService = SettingService();
       final response = await settingService.updateSetting();
 
       if (mounted) {
@@ -136,8 +138,10 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Widget _buildToggleRow(String title, bool value, Function(bool) onChanged,
-      {IconData? icon}) {
+  Widget _buildToggleRow(BuildContext context, String title, bool value, Function(bool) onChanged, {IconData? icon}) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -146,19 +150,14 @@ class _SettingsPageState extends State<SettingsPage> {
             Icon(
               icon,
               size: 20,
-              color: themeProvider.isDarkMode
-                  ? Colors.white70
-                  : Colors.grey.shade600,
+              color: isDark ? Colors.white70 : Colors.grey[600],
             ),
             const SizedBox(width: 16),
           ],
           Expanded(
             child: Text(
               title,
-              style: kSubHeadingStyle.copyWith(
-                fontWeight: FontWeight.w500,
-                fontSize: 15,
-              ),
+              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
           GestureDetector(
@@ -170,10 +169,8 @@ class _SettingsPageState extends State<SettingsPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 color: value
-                    ? acceptColor
-                    : (themeProvider.isDarkMode
-                        ? Colors.grey.shade700
-                        : Colors.grey.shade300),
+                    ? Colors.green[300]
+                    : (isDark ? Colors.grey[750] : Colors.grey[300]),
               ),
               child: AnimatedAlign(
                 duration: const Duration(milliseconds: 200),
@@ -195,16 +192,19 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildSection(String title, List<Widget> children, {IconData? icon}) {
+  Widget _buildSection(BuildContext context, String title, List<Widget> children, {IconData? icon}) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: themeProvider.isDarkMode ? Colors.grey.shade800 : Colors.white,
+        color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
@@ -213,27 +213,22 @@ class _SettingsPageState extends State<SettingsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
             child: Row(
               children: [
                 if (icon != null) ...[
                   Icon(
                     icon,
                     size: 20,
-                    color: themeProvider.isDarkMode
-                        ? Colors.white
-                        : Colors.black87,
+                    color: isDark ? Colors.blue[300] : Colors.blue,
                   ),
                   const SizedBox(width: 12),
                 ],
                 Text(
                   title,
-                  style: kSubHeadingStyle.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: themeProvider.isDarkMode
-                        ? Colors.white
-                        : Colors.black87,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
               ],
@@ -246,96 +241,93 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildDropdownRow(
-  BuildContext context,
-  String title,
-  String value,
-  List<String> items,
-  Function(String) onChanged, {
-  IconData? icon,
-}) {
-  final isDark = themeProvider.isDarkMode;
-  final screenWidth = MediaQuery.of(context).size.width;
+    BuildContext context,
+    String title,
+    String value,
+    List<String> items,
+    Function(String) onChanged, {
+    IconData? icon,
+  }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-    child: Row(
-      children: [
-        if (icon != null) ...[
-          Icon(
-            icon,
-            size: 20,
-            color: isDark ? Colors.white70 : Colors.grey.shade600,
-          ),
-          const SizedBox(width: 16),
-        ],
-        Expanded(
-          child: Text(
-            title,
-            style: kSubHeadingStyle.copyWith(
-              fontWeight: FontWeight.w500,
-              fontSize: 15,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
+        children: [
+          if (icon != null) ...[
+            Icon(
+              icon,
+              size: 20,
+              color: isDark ? Colors.white70 : Colors.grey[600],
+            ),
+            const SizedBox(width: 16),
+          ],
+          Expanded(
+            child: Text(
+              title,
+              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: SizedBox(
-            width: screenWidth * 0.20,
-            child: DropdownButton<String>(
-              isDense: true,
-              isExpanded: true,
-              value: value,
-              underline: const SizedBox(),
-              icon: Icon(
-                Icons.keyboard_arrow_down,
-                size: 20,
-                color: isDark ? Colors.white70 : Colors.grey.shade600,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.grey[800] : Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: SizedBox(
+              width: screenWidth * 0.20,
+              child: DropdownButton<String>(
+                isDense: true,
+                isExpanded: true,
+                value: value,
+                underline: const SizedBox(),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  size: 20,
+                  color: isDark ? Colors.white70 : Colors.grey[600],
+                ),
+                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                items: items.map((item) {
+                  return DropdownMenuItem(
+                    value: item,
+                    child: Text(
+                      item.toUpperCase(),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
+                onChanged: (val) {
+                  if (val != null) onChanged(val);
+                },
               ),
-              style: kSubHeadingStyle.copyWith(fontSize: 13),
-              items: items.map((item) {
-                return DropdownMenuItem(
-                  value: item,
-                  child: Text(
-                    item.toUpperCase(),
-                    style: kSubHeadingStyle.copyWith(fontSize: 13),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                );
-              }).toList(),
-              onChanged: (val) {
-                if (val != null) onChanged(val);
-              },
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     if (isLoading) {
       return Scaffold(
-        backgroundColor: themeProvider.isDarkMode
-            ? Colors.grey.shade900
-            : Colors.grey.shade50,
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(
-                color: acceptColor,
+              const CircularProgressIndicator(
                 strokeWidth: 2,
               ),
               const SizedBox(height: 16),
               Text(
                 "Loading settings...",
-                style: kSubHeadingStyle,
+                style: theme.textTheme.bodyLarge,
               ),
             ],
           ),
@@ -344,89 +336,78 @@ class _SettingsPageState extends State<SettingsPage> {
     }
 
     return Scaffold(
-      backgroundColor:
-          themeProvider.isDarkMode ? Colors.grey.shade900 : Colors.grey.shade50,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(
-          "Settings",
-          style: kHeadingStyle.copyWith(fontSize: 20),
-        ),
+        title: const Text("Settings"),
         centerTitle: true,
-        elevation: 0,
-        backgroundColor: themeProvider.isDarkMode
-            ? Colors.grey.shade900
-            : Colors.grey.shade50,
-        foregroundColor:
-            themeProvider.isDarkMode ? Colors.white : Colors.black87,
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           _buildSection(
+            context,
             "Privacy",
             [
-              _buildToggleRow("Show Last Seen", showLastSeen, (val) {
+              _buildToggleRow(context, "Show Last Seen", showLastSeen, (val) {
                 setState(() => showLastSeen = val);
               }, icon: Icons.visibility_outlined),
-              _buildToggleRow("Show Profile Picture", showProfilePicture,
-                  (val) {
+              _buildToggleRow(context, "Show Profile Picture", showProfilePicture, (val) {
                 setState(() => showProfilePicture = val);
               }, icon: Icons.account_circle_outlined),
-              _buildToggleRow("Show Mood", showMood, (val) {
+              _buildToggleRow(context, "Show Mood", showMood, (val) {
                 setState(() => showMood = val);
               }, icon: Icons.mood_outlined),
             ],
             icon: Icons.security_outlined,
           ),
           _buildSection(
+            context,
             "Notifications",
             [
-              _buildToggleRow("Enable Notifications", notificationsEnabled,
-                  (val) {
+              _buildToggleRow(context, "Enable Notifications", notificationsEnabled, (val) {
                 setState(() => notificationsEnabled = val);
               }, icon: Icons.notifications_outlined),
-              _buildToggleRow("Email Notifications", emailNotifications, (val) {
+              _buildToggleRow(context, "Email Notifications", emailNotifications, (val) {
                 setState(() => emailNotifications = val);
               }, icon: Icons.email_outlined),
-              _buildToggleRow("Push Notifications", pushNotifications, (val) {
+              _buildToggleRow(context, "Push Notifications", pushNotifications, (val) {
                 setState(() => pushNotifications = val);
               }, icon: Icons.push_pin_outlined),
-              _buildToggleRow("SMS Notifications", smsNotifications, (val) {
+              _buildToggleRow(context, "SMS Notifications", smsNotifications, (val) {
                 setState(() => smsNotifications = val);
               }, icon: Icons.sms_outlined),
             ],
             icon: Icons.notifications_active_outlined,
           ),
           _buildSection(
+            context,
             "Security",
             [
-              _buildToggleRow("Two-Factor Authentication", twoFactorAuth,
-                  (val) {
+              _buildToggleRow(context, "Two-Factor Authentication", twoFactorAuth, (val) {
                 setState(() => twoFactorAuth = val);
               }, icon: Icons.security_outlined),
-              _buildToggleRow("Allow Login Alerts", allowLoginAlerts, (val) {
+              _buildToggleRow(context, "Allow Login Alerts", allowLoginAlerts, (val) {
                 setState(() => allowLoginAlerts = val);
               }, icon: Icons.login_outlined),
             ],
             icon: Icons.shield_outlined,
           ),
           _buildSection(
+            context,
             "Preferences",
             [
-              _buildDropdownRow(context ,"Language", setting!.language, languages,
-                  (val) {
+              _buildDropdownRow(context, "Language", setting!.language, languages, (val) {
                 setState(() {
                   setting = setting!.copyWith(language: val);
                 });
               }, icon: Icons.language_outlined),
-              _buildDropdownRow(context ,"Theme", setting!.theme, themes, (val) {
+              _buildDropdownRow(context, "Theme", setting!.theme, themes, (val) {
                 setState(() {
                   setting = setting!.copyWith(theme: val);
                   themeProvider.toggleTheme(val == 'dark');
                 });
               }, icon: Icons.palette_outlined),
-              _buildToggleRow("Auto Delete Old Moods", autoDeleteOldMoods,
-                  (val) {
+              _buildToggleRow(context, "Auto Delete Old Moods", autoDeleteOldMoods, (val) {
                 setState(() => autoDeleteOldMoods = val);
               }, icon: Icons.auto_delete_outlined),
             ],
@@ -438,58 +419,18 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextButton(
+                  child: CustomButton(
                     onPressed: _resetDefault,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: themeProvider.isDarkMode
-                              ? Colors.grey.shade600
-                              : Colors.grey.shade300,
-                        ),
-                      ),
-                    ),
-                    child: Text(
-                      "Reset Default",
-                      style: kSubHeadingStyle.copyWith(
-                        fontWeight: FontWeight.w300,
-                        color: themeProvider.isDarkMode
-                            ? Colors.white70
-                            : Colors.grey.shade700,
-                      ),
-                    ),
+                    text: "Reset Default",
+                    isOutlined: true,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: isSaving ? null : _saveSettings,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: acceptColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: isSaving
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            "Save Changes",
-                            style: kSubHeadingStyle.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
+                  child: CustomButton(
+                    onPressed: _saveSettings,
+                    text: "Save Changes",
+                    isLoading: isSaving,
                   ),
                 ),
               ],

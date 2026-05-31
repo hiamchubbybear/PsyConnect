@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uni_links/uni_links.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 
 class LoginService {
   ProfileService profileService = ProfileService();
@@ -99,9 +100,10 @@ class LoginService {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
-        final token = responseBody["data"]["token"];
+        final token = responseBody["data"]["token"].toString();
         await sharedPreferencesProvider.setJwt(token);
         if (context.mounted) {
+          Provider.of<AuthTokenProvider>(context, listen: false).setToken(token);
           ToastService.showToast(
             context: context,
             message: "Login successful via OAuth2",

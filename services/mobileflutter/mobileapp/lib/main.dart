@@ -4,6 +4,7 @@ import 'package:PsyConnect/provider/auth_token_provider.dart';
 import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/provider/user_profile_provider.dart';
 import 'package:PsyConnect/provider/user_provider.dart';
+import 'package:PsyConnect/provider/chat_provider.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -19,7 +20,8 @@ void main() async {
       ChangeNotifierProvider(create: (_) => UserProfileProvider()),
       ChangeNotifierProvider(create: (_) => AuthTokenProvider()),
       ChangeNotifierProvider(create: (_) => ThemeProvider()),
-      ChangeNotifierProvider(create: (_) => MoodNotifier())
+      ChangeNotifierProvider(create: (_) => MoodNotifier()),
+      ChangeNotifierProvider(create: (_) => ChatProvider()),
     ],
     child: const MyApp(),
   ));

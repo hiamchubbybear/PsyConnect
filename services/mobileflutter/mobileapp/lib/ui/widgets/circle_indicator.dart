@@ -1,22 +1,23 @@
-
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class CircleIndicator extends CustomPainter {
-  const CircleIndicator({this.progress = 150.0,required this.mColor, required this.thickness});
-
-  double deg2rad(double deg) => deg * pi / 180;
-  ///double rad2deg(double rad) => rad * 180 / pi;
-
   final Color mColor;
   final double thickness;
   final double progress;
 
+  const CircleIndicator({
+    this.progress = 150.0,
+    required this.mColor,
+    required this.thickness,
+  });
+
+  double deg2rad(double deg) => deg * pi / 180;
+
   @override
   void paint(Canvas canvas, Size size) {
-
     final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
 
     final mPaint = Paint()
       ..color = Colors.grey.withOpacity(.23)
@@ -28,15 +29,27 @@ class CircleIndicator extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = thickness;
 
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      deg2rad(1),
+      deg2rad(358),
+      false,
+      mPaint,
+    );
 
-    canvas.drawArc(Rect.fromCenter(center: center, width: size.width, height: size.height),
-        deg2rad(0 + 1), deg2rad(360 - (1*2)), false, mPaint);
-
-    canvas.drawArc(Rect.fromCenter(center: center, width: size.width, height: size.height),
-        deg2rad(270), deg2rad(progress -(1*2)), false, mPaintColor);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      deg2rad(270),
+      deg2rad(progress - 2),
+      false,
+      mPaintColor,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant CircleIndicator oldDelegate) => true;
-
+  bool shouldRepaint(covariant CircleIndicator oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.mColor != mColor ||
+        oldDelegate.thickness != thickness;
+  }
 }

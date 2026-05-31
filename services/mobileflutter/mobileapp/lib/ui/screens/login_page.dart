@@ -5,7 +5,8 @@ import 'package:PsyConnect/services/account_service/login.dart';
 import 'package:PsyConnect/ui/screens/forgot_page.dart';
 import 'package:PsyConnect/ui/screens/my_home_page.dart';
 import 'package:PsyConnect/ui/screens/register_page.dart';
-import 'package:PsyConnect/ui/screens/update_password.dart';
+import 'package:PsyConnect/ui/widgets/common/custom_text_field.dart';
+import 'package:PsyConnect/ui/widgets/common/custom_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,11 +21,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   bool isPasswordVisible = false;
-  LoginService loginService = LoginService();
+  final LoginService loginService = LoginService();
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();
@@ -52,30 +54,35 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _handleLoginSuccess() {
-    if (mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const MyHomePage(title: 'Home Page'),
-            ),
-          );
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
-      backgroundColor: themeProvider.isDarkMode ? Colors.black : Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
-            _buildAppBar(context),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      themeProvider.toggleTheme(!themeProvider.isDarkMode);
+                    },
+                    icon: Icon(
+                      themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                      color: isDark ? Colors.white : Colors.black87,
+                      size: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Expanded(
               child: _buildLoginForm(context),
             ),
@@ -85,38 +92,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          IconButton(
-            onPressed: () {
-              themeProvider.toggleTheme(!themeProvider.isDarkMode);
-            },
-            icon: Icon(
-              themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-              color: themeProvider.isDarkMode ? Colors.white : Colors.black,
-              size: 24,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildLoginForm(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    UserProfileProvider userProfileProvider =
-        Provider.of<UserProfileProvider>(context, listen: false);
-    AuthTokenProvider tokenProvider =
-        Provider.of<AuthTokenProvider>(context, listen: false);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
+    final tokenProvider = Provider.of<AuthTokenProvider>(context, listen: false);
 
-    final textColor = themeProvider.isDarkMode ? Colors.white : Colors.black;
-    final subtitleColor =
-        themeProvider.isDarkMode ? Colors.grey[400] : Colors.grey[600];
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subtitleColor = isDark ? Colors.grey[400] : Colors.grey[600];
 
     return SingleChildScrollView(
       child: Padding(
@@ -155,15 +138,15 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const MultiStepRegisterPage()),
+                            builder: (context) => const MultiStepRegisterPage(),
+                          ),
                         );
                       },
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             RichText(
               text: TextSpan(
                 style: TextStyle(
@@ -184,143 +167,62 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const ForgotPasswordPage()),
+                            builder: (context) => const ForgotPage(),
+                          ),
                         );
                       },
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 80),
-            _buildTextField(
+            const SizedBox(height: 60),
+            CustomTextField(
               controller: nameController,
-              label: 'Username',
+              labelText: 'Username',
+              prefixIcon: Icon(Icons.person_outline, color: isDark ? Colors.grey[400] : Colors.grey[600]),
               maxLength: 20,
-              isDark: themeProvider.isDarkMode,
             ),
-            const SizedBox(height: 32),
-            _buildTextField(
+            const SizedBox(height: 24),
+            CustomTextField(
               controller: passwordController,
-              label: 'Password',
-              isPassword: true,
-              isDark: themeProvider.isDarkMode,
-            ),
-            const SizedBox(height: 48),
-            _buildLoginButton(context, tokenProvider, userProfileProvider,
-                themeProvider.isDarkMode),
-            const SizedBox(height: 40),
-            _buildDivider(themeProvider.isDarkMode),
-            const SizedBox(height: 40),
-            _buildSocialLoginSection(themeProvider.isDarkMode, context),
-            const SizedBox(height: 40),
-            _buildForgotPasswordSection(context, themeProvider.isDarkMode),
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required bool isDark,
-    bool isPassword = false,
-    int? maxLength,
-  }) {
-    final borderColor = isDark ? Colors.grey[700] : Colors.grey[300];
-    final textColor = isDark ? Colors.white : Colors.black;
-    final labelColor = isDark ? Colors.grey[400] : Colors.grey[600];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.quicksand(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: labelColor,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: borderColor!,
-                width: 1,
+              labelText: 'Password',
+              obscureText: !isPasswordVisible,
+              prefixIcon: Icon(Icons.lock_outline, color: isDark ? Colors.grey[400] : Colors.grey[600]),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  size: 20,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isPasswordVisible = !isPasswordVisible;
+                  });
+                },
               ),
             ),
-          ),
-          child: TextField(
-            controller: controller,
-            maxLength: maxLength,
-            obscureText: isPassword ? !isPasswordVisible : false,
-            style: TextStyle(
-              fontSize: 16,
-              color: textColor,
-              fontWeight: FontWeight.w400,
+            const SizedBox(height: 40),
+            CustomButton(
+              onPressed: () => _handleOnLoginButton(
+                username: nameController.text,
+                password: passwordController.text,
+                provider: "NORMAL",
+                context: context,
+                tokenProvider: tokenProvider,
+                userProfileProvider: userProfileProvider,
+              ),
+              text: 'Sign In',
+              color: isDark ? Colors.white : Colors.black,
+              textColor: isDark ? Colors.black : Colors.white,
             ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              counterText: '',
-              suffixIcon: isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        isPasswordVisible
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        color: labelColor,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          isPasswordVisible = !isPasswordVisible;
-                        });
-                      },
-                    )
-                  : null,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLoginButton(
-      BuildContext context,
-      AuthTokenProvider tokenProvider,
-      UserProfileProvider userProfileProvider,
-      bool isDark) {
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: ElevatedButton(
-        onPressed: () => _handleOnLoginButton(
-          username: nameController.text,
-          password: passwordController.text,
-          provider: "NORMAL",
-          context: context,
-          tokenProvider: tokenProvider,
-          userProfileProvider: userProfileProvider,
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isDark ? Colors.white : Colors.black,
-          foregroundColor: isDark ? Colors.black : Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        child: Text(
-          'Sign In',
-          style: GoogleFonts.quicksand(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
+            const SizedBox(height: 40),
+            _buildDivider(isDark),
+            const SizedBox(height: 40),
+            _buildSocialLoginSection(isDark, context),
+            const SizedBox(height: 40),
+            _buildForgotPasswordSection(context, isDark),
+            const SizedBox(height: 40),
+          ],
         ),
       ),
     );
@@ -400,7 +302,7 @@ class _LoginPageState extends State<LoginPage> {
           color: borderColor!,
           width: 1,
         ),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: IconButton(
         onPressed: onPressed,
@@ -438,7 +340,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  _handleOnLoginButton({
+  void _handleOnLoginButton({
     required String username,
     required String password,
     required String provider,
@@ -446,34 +348,31 @@ class _LoginPageState extends State<LoginPage> {
     required AuthTokenProvider tokenProvider,
     required UserProfileProvider userProfileProvider,
   }) {
-    String platform = "MOBILE";
-    print("handler on press login");
+    const String platform = "MOBILE";
     loginService.loginHandle(username, password, provider, context, platform,
         tokenProvider, userProfileProvider);
   }
 }
 
-_handleOnGoogleLogin({required BuildContext context}) {
-  String provider = "google";
-  LoginService loginService = LoginService();
+void _handleOnGoogleLogin({required BuildContext context}) {
+  const String provider = "google";
+  final LoginService loginService = LoginService();
   loginService.oauth2LoginHandle(provider);
 }
 
-_handleOnAppleLogin({required BuildContext context}) {
-  String provider = "apple";
-  LoginService loginService = LoginService();
+void _handleOnAppleLogin({required BuildContext context}) {
+  const String provider = "apple";
+  final LoginService loginService = LoginService();
   loginService.oauth2LoginHandle(provider);
 }
 
-_handleOnFacebookLogin({required BuildContext context}) {
-  String provider = "facebook";
-  LoginService loginService = LoginService();
+void _handleOnFacebookLogin({required BuildContext context}) {
+  const String provider = "facebook";
+  final LoginService loginService = LoginService();
   loginService.oauth2LoginHandle(provider);
 }
 
-_handleOnResetPassword({
-  required BuildContext context,
-}) {
+void _handleOnResetPassword({required BuildContext context}) {
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => const ForgotPage()),

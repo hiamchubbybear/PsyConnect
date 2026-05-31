@@ -2,76 +2,66 @@ import 'dart:convert';
 
 import 'package:PsyConnect/core/preferences/sharepreference_provider.dart';
 import 'package:PsyConnect/core/toasting&loading/toast.dart';
-import 'package:PsyConnect/core/variable/variable.dart';
 import 'package:PsyConnect/models/user_profile.dart';
-import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/route/route_animation.dart';
 import 'package:PsyConnect/services/profile_service/profile.dart';
 import 'package:PsyConnect/ui/screens/consultation_profile_page.dart';
 import 'package:PsyConnect/ui/screens/login_page.dart';
 import 'package:PsyConnect/ui/screens/setting_page.dart';
-import 'package:PsyConnect/validate/validate.dart';
+import 'package:PsyConnect/ui/widgets/common/custom_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:PsyConnect/provider/theme_provider.dart';
+import 'package:PsyConnect/validate/validate.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late ThemeProvider themeProvider = ThemeProvider();
-  late bool isDarkMode;
-
-  ProfileService profileService = ProfileService();
+  final ProfileService profileService = ProfileService();
   UserProfile userProfile = UserProfile();
 
   void handleSetProfileDetails(BuildContext context) {
-    print("Handle Set Profile Details");
-
     handleOnProfile(context);
   }
 
   void handleUploadResume(BuildContext context) {
-    print("Handle Upload Resume");
-
     handleOnProfile(context);
   }
 
   void handleAddSkills(BuildContext context) {
-    print("Handle Add Skills");
-
     handleOnProfile(context);
   }
 
   List<ProfileCompletionCard> get profileCompletionCards => [
         ProfileCompletionCard(
-            title: "Set Your Profile Details",
-            icon: CupertinoIcons.person_circle,
-            buttonText: "Continue",
-            onTap: handleSetProfileDetails,
-            style: GoogleFonts.quicksand()),
+          title: "Set Your Profile Details",
+          icon: CupertinoIcons.person_circle,
+          buttonText: "Continue",
+          onTap: handleSetProfileDetails,
+        ),
         ProfileCompletionCard(
-            title: "Upload your resume",
-            icon: CupertinoIcons.doc,
-            buttonText: "Upload",
-            onTap: handleUploadResume,
-            style: GoogleFonts.quicksand()),
+          title: "Upload your resume",
+          icon: CupertinoIcons.doc,
+          buttonText: "Upload",
+          onTap: handleUploadResume,
+        ),
         ProfileCompletionCard(
-            title: "Add your skills",
-            icon: CupertinoIcons.square_list,
-            buttonText: "Add",
-            onTap: handleAddSkills,
-            style: GoogleFonts.quicksand()),
+          title: "Add your skills",
+          icon: CupertinoIcons.square_list,
+          buttonText: "Add",
+          onTap: handleAddSkills,
+        ),
       ];
+
   @override
   void initState() {
     super.initState();
-    isDarkMode = themeProvider.isDarkMode;
     loadUserData();
   }
 
@@ -85,7 +75,6 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       final Map<String, dynamic> jsonMap = jsonDecode(data);
-
       final user = UserProfile.fromJson(jsonMap);
 
       if (user.accountId == null || user.username == null) {
@@ -95,7 +84,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
       setState(() {
         userProfile = user;
-        print("User data $userProfile");
       });
     } catch (e) {
       ToastService.showToast(
@@ -112,7 +100,6 @@ class _ProfilePageState extends State<ProfilePage> {
       final userFromApi = await profileService.getUserProfile();
       setState(() {
         userProfile = userFromApi;
-        print(jsonEncode(userProfile.toJson()));
       });
     } catch (e) {
       ToastService.showToast(
@@ -126,18 +113,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDark = themeProvider.isDarkMode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
-        title: Text(
-          "Profile",
-          style: quickSand15Font.copyWith(
-              color: isDark ? whiteColor : secondaryColor),
-        ),
+        title: const Text("Profile"),
         centerTitle: true,
         actions: [
           IconButton(
@@ -147,50 +129,57 @@ class _ProfilePageState extends State<ProfilePage> {
                 MaterialPageRoute(builder: (context) => const SettingsPage()),
               );
             },
-            icon: Icon(Icons.settings_rounded,
-                color: isDark ? Colors.white : Colors.black),
+            icon: const Icon(Icons.settings_rounded),
           )
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 50),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 50),
         children: [
           Column(
             children: [
               GestureDetector(
-                child: CircleAvatar(
+                onTap: () => handleOnProfile(context),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isDark ? Colors.blue[300]! : Colors.blue,
+                      width: 2,
+                    ),
+                  ),
+                  child: CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.grey,
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
                     child: FutureBuilder<bool>(
                       future: checkImageExists(userProfile.getAvatarUri),
                       builder: (context, snapshot) {
-                        String imageUrl = snapshot.hasData &&
-                                snapshot.data == true
+                        final String imageUrl = snapshot.hasData && snapshot.data == true
                             ? userProfile.getAvatarUri
                             : 'https://i.pinimg.com/736x/83/21/ec/8321ec3e2ed58da8e46f1926f10373dc.jpg';
 
                         return CircleAvatar(
-                          radius: 50,
+                          radius: 48,
                           backgroundImage: NetworkImage(imageUrl),
                         );
                       },
-                    )),
-                onTap: () => handleOnProfile(context),
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               Text(
-                (userProfile.getFirstName.isNotEmpty)
-                    ? userProfile.getFirstName
-                    : "Meo",
-                style: subHeadingStyle.copyWith(
-                    color: isDark ? whiteColor : secondaryColor),
+                userProfile.getFirstName.isNotEmpty ? userProfile.getFirstName : "Guest User",
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
-              Text((userProfile.getDescription.isNotEmpty)
-                  ? userProfile.getDescription
-                  : "Meorapist")
+              const SizedBox(height: 4),
+              Text(
+                userProfile.getDescription.isNotEmpty ? userProfile.getDescription : "Mental Health Enthusiast",
+                style: theme.textTheme.bodyMedium?.copyWith(color: isDark ? Colors.grey[400] : Colors.grey[600]),
+              )
             ],
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 32),
           FutureBuilder<int>(
             future: checkComplete(userProfile),
             builder: (context, snapshot) {
@@ -199,42 +188,39 @@ class _ProfilePageState extends State<ProfilePage> {
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else if (snapshot.hasData) {
-                int value = snapshot.data!;
+                final int value = snapshot.data!;
                 if (value > 0) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Padding(
-                            padding: EdgeInsets.only(right: 5),
-                            child: Text(
-                              "Complete your profile",
-                              style: GoogleFonts.quicksand(
-                                  fontWeight: FontWeight.bold),
-                            ),
+                          Text(
+                            "Complete your profile",
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                           ),
+                          const SizedBox(width: 6),
                           Text(
                             "($value/8)",
                             style: TextStyle(
-                              color: successStatus,
+                              color: isDark ? Colors.blue[300] : Colors.blue,
+                              fontWeight: FontWeight.bold,
                             ),
                           )
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 12),
                       Row(
                         children: List.generate(5, (index) {
                           return Expanded(
                             child: Container(
                               height: 7,
-                              margin:
-                                  EdgeInsets.only(right: index == 4 ? 0 : 6),
+                              margin: EdgeInsets.only(right: index == 4 ? 0 : 6),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: index < (7 - value)
-                                    ? successStatus
-                                    : Colors.black12,
+                                color: index < (8 - value)
+                                    ? (isDark ? Colors.blue[300] : Colors.blue)
+                                    : (isDark ? Colors.grey[800] : Colors.grey[200]),
                               ),
                             ),
                           );
@@ -242,17 +228,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   );
-                } else {
-                  return const SizedBox();
                 }
-              } else {
-                return const SizedBox();
               }
+              return const SizedBox();
             },
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
           SizedBox(
-            height: 180,
+            height: 160,
             child: ListView.separated(
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
@@ -261,42 +244,36 @@ class _ProfilePageState extends State<ProfilePage> {
                 return SizedBox(
                   width: 160,
                   child: Card(
-                    shadowColor: Colors.black12,
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: Padding(
-                      padding: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.all(12),
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             card.icon,
-                            size: 30,
+                            size: 28,
+                            color: isDark ? Colors.blue[300] : Colors.blue,
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                           Text(
                             card.title,
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.quicksand(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           const Spacer(),
-                          ElevatedButton(
+                          CustomButton(
                             onPressed: () {
-                              print("Button pressed for: ${card.title}");
                               if (card.onTap != null) {
-                                print("Executing onTap function");
                                 card.onTap!(context);
-                              } else {
-                                print("onTap is null for: ${card.title}");
                               }
                             },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0.5,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                            ),
-                            child: Text(card.buttonText,
-                                style: GoogleFonts.quicksand(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    color: isDark ? whiteColor : blackColor)),
+                            text: card.buttonText,
+                            height: 36,
+                            borderRadius: 8,
                           )
                         ],
                       ),
@@ -304,21 +281,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 );
               },
-              separatorBuilder: (context, index) =>
-                  const Padding(padding: EdgeInsets.only(right: 5)),
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemCount: profileCompletionCards.length,
             ),
           ),
-          const SizedBox(height: 35),
+          const SizedBox(height: 32),
           ...List.generate(
             customListTiles.length,
             (index) {
               final tile = customListTiles[index];
               return Padding(
-                padding: const EdgeInsets.only(bottom: 5),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: Card(
-                  elevation: 4,
-                  shadowColor: Colors.black12,
+                  elevation: 1,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -326,11 +301,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(12),
                     onTap: () => tile.onTap?.call(context),
                     child: ListTile(
-                      leading: Icon(tile.icon),
+                      leading: Icon(tile.icon, color: isDark ? Colors.grey[400] : Colors.grey[600]),
                       title: Text(
                         tile.title,
-                        style:
-                            GoogleFonts.quicksand(fontWeight: FontWeight.w600),
+                        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       trailing: const Icon(Icons.chevron_right),
                     ),
@@ -368,7 +342,6 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 void handleOnProfile(BuildContext context) {
-  print("handleOnProfile called - navigating to ConsultationProfilePage");
   Navigator.push(
       context, createSlideFromBottomRoute(const ConsultationProfilePage()));
 }
@@ -377,14 +350,13 @@ class ProfileCompletionCard {
   final String title;
   final String buttonText;
   final IconData icon;
-  final TextStyle style;
   final void Function(BuildContext context)? onTap;
+
   ProfileCompletionCard({
     required this.title,
     required this.buttonText,
     required this.icon,
     required this.onTap,
-    required this.style,
   });
 }
 
@@ -392,6 +364,7 @@ class CustomListTile {
   final IconData icon;
   final String title;
   final void Function(BuildContext context)? onTap;
+
   CustomListTile({required this.icon, required this.title, this.onTap});
 }
 

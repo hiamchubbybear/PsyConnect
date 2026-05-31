@@ -15,23 +15,30 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return SizedBox(
       width: size.width * 1,
       child: Stack(
         children: [
           Container(
             margin: const EdgeInsets.symmetric(
-                vertical: kDefault / 2, horizontal: kDefault * 1.2),
+              vertical: kDefault / 2,
+              horizontal: kDefault * 1.2,
+            ),
             padding: const EdgeInsets.all(kDefault),
             decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(kDefault),
-                boxShadow: [
-                  BoxShadow(
-                      offset: const Offset(0, .5),
-                      color: Colors.grey.withOpacity(.23),
-                      blurRadius: 12.0)
-                ]),
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(kDefault),
+              boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, .5),
+                  color: isDark ? Colors.black26 : Colors.grey.withOpacity(.15),
+                  blurRadius: 10.0,
+                )
+              ],
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -48,8 +55,17 @@ class TaskCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(taskList[index].title),
-                      Text(taskList[index].subTitle)
+                      Text(
+                        taskList[index].title,
+                        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        taskList[index].subTitle,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: isDark ? Colors.grey[400] : Colors.grey[600],
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -58,19 +74,23 @@ class TaskCard extends StatelessWidget {
                   height: kCircle,
                   child: CustomPaint(
                     painter: CircleIndicator(
-                        thickness: 6,
-                        mColor: taskList[index].progressColor,
-                        progress: taskList[index].progress),
+                      thickness: 6,
+                      mColor: taskList[index].progressColor,
+                      progress: taskList[index].progress,
+                    ),
                     child: Center(
-                      child: Text(taskList[index].progressText),
+                      child: Text(
+                        taskList[index].progressText,
+                        style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(left: kDefault),
+                Padding(
+                  padding: const EdgeInsets.only(left: kDefault),
                   child: Icon(
                     Icons.arrow_forward_ios,
-                    color: Colors.grey,
+                    color: isDark ? Colors.grey[600] : Colors.grey,
                   ),
                 )
               ],
@@ -84,15 +104,17 @@ class TaskCard extends StatelessWidget {
             child: Container(
               width: 1.6,
               height: kDefault,
-              decoration:
-                  BoxDecoration(color: taskList[index].dotColor, boxShadow: [
-                BoxShadow(
-                  offset: const Offset(6.0, 0),
-                  blurRadius: 12.0,
-                  color: taskList[index].dotColor,
-                  spreadRadius: 1.8,
-                )
-              ]),
+              decoration: BoxDecoration(
+                color: taskList[index].dotColor,
+                boxShadow: [
+                  BoxShadow(
+                    offset: const Offset(6.0, 0),
+                    blurRadius: 12.0,
+                    color: taskList[index].dotColor,
+                    spreadRadius: 1.8,
+                  )
+                ],
+              ),
             ),
           ),
         ],

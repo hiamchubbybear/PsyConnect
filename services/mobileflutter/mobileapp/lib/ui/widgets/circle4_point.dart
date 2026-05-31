@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class Circle4Point extends CustomPainter {
@@ -22,12 +21,10 @@ class Circle4Point extends CustomPainter {
 
   double deg2rad(double deg) => deg * pi / 180;
 
-  //double rad2deg(double rad) => rad * 180 / pi;
-
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-
+    final radius = size.width / 2;
 
     Paint paintTr = Paint()
       ..color = topRightColor
@@ -54,39 +51,45 @@ class Circle4Point extends CustomPainter {
       ..strokeWidth = thickness;
 
     canvas.drawArc(
-        Rect.fromCenter(center: center, width: size.width, height: size.height),
-        deg2rad(320 + gap),
-        deg2rad(50 - (gap * 2)),
-        false,
-        paintBr);
+      Rect.fromCircle(center: center, radius: radius),
+      deg2rad(320 + gap),
+      deg2rad(50 - (gap * 2)),
+      false,
+      paintBr,
+    );
 
-    ///BottomLeft :: Ok
     canvas.drawArc(
-        Rect.fromCenter(center: center, width: size.width, height: size.height),
-        deg2rad(24 + gap),
-        deg2rad(54 - (gap * 2)),
-        false,
-        paintBl);
+      Rect.fromCircle(center: center, radius: radius),
+      deg2rad(24 + gap),
+      deg2rad(54 - (gap * 2)),
+      false,
+      paintBl,
+    );
 
-    ///TopLeft
     canvas.drawArc(
-        Rect.fromCenter(center: center, width: size.width, height: size.height),
-        deg2rad(94 + gap),
-        deg2rad(144 - (gap * 2)),
-        false,
-        paintTl);
+      Rect.fromCircle(center: center, radius: radius),
+      deg2rad(94 + gap),
+      deg2rad(144 - (gap * 2)),
+      false,
+      paintTl,
+    );
 
-    ///Top Right :: OK
     canvas.drawArc(
-        Rect.fromCenter(center: center, width: size.width, height: size.height),
-        deg2rad(256 + gap),
-        deg2rad(50 - (gap * 2)),
-        false,
-        paintTr);
+      Rect.fromCircle(center: center, radius: radius),
+      deg2rad(256 + gap),
+      deg2rad(50 - (gap * 2)),
+      false,
+      paintTr,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(covariant Circle4Point oldDelegate) {
+    return oldDelegate.gap != gap ||
+        oldDelegate.thickness != thickness ||
+        oldDelegate.bottomLeftColor != bottomLeftColor ||
+        oldDelegate.bottomRightColor != bottomRightColor ||
+        oldDelegate.topLeftColor != topLeftColor ||
+        oldDelegate.topRightColor != topRightColor;
   }
 }

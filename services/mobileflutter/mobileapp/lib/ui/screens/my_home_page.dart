@@ -4,6 +4,7 @@ import 'package:PsyConnect/provider/theme_provider.dart';
 import 'package:PsyConnect/ui/screens/home_page_scroll_view.dart';
 import 'package:PsyConnect/ui/screens/profile_page.dart';
 import 'package:PsyConnect/ui/screens/schedule_home_page.dart';
+import 'package:PsyConnect/ui/screens/chat_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -56,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage>
           const HomePageScrollView(),
           ScheduleHomePage(size: size),
           const ProfilePage(),
-          const ProfilePage(),
+          const ChatListScreen(),
           const ProfilePage()
         ],
       ),
